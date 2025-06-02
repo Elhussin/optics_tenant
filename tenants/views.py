@@ -6,7 +6,7 @@ from rest_framework import status
 from .serializers import RegisterTenantSerializer
 from .utils.utils import send_activation_email, send_message_acount_activated
 # api/views.py (تكملة)
-from customers.models import PendingTenantRequest, Client, Domain
+from tenants.models import PendingTenantRequest, Client, Domain
 from django_tenants.utils import schema_context
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
@@ -14,6 +14,7 @@ from django.conf import settings
 from django.utils import timezone
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+
 class RegisterTenantView(APIView):
     # swagger
     @swagger_auto_schema(

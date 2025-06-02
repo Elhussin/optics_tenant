@@ -34,7 +34,7 @@ DATABASE_ROUTERS = (
 # ===============================
 SHARED_APPS = (
     'django_tenants',               # يجب أن يكون أولاً
-    'customers',                   # تطبيق العملاء (في سكيما public)
+    'tenants',                   # 
 
     # Django apps للعمل العام
     'django.contrib.contenttypes',
@@ -45,7 +45,7 @@ SHARED_APPS = (
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'drf_yasg',
+    'drf_yasg',                          
 
     # Any shared apps between tenants, or general management
 )
@@ -63,9 +63,11 @@ TENANT_APPS = (
     'django.contrib.staticfiles',
 
     # التطبيقات الخاصة بالعميل فقط
+    'users',
     'core',
     'orders',
     'accounts',
+    'prescriptions',
 )
 # ===============================
 # merge apps

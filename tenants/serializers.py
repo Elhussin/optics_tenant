@@ -107,7 +107,7 @@
 #         return value
 # api/serializers.py
 from rest_framework import serializers
-from customers.models import PendingTenantRequest
+from tenants.models import PendingTenantRequest
 from django.core.validators import RegexValidator
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
