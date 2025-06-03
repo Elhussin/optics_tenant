@@ -68,6 +68,8 @@ TENANT_APPS = (
     'orders',
     'accounts',
     'prescriptions',
+    'products',
+    # 'sales',
 )
 # ===============================
 # merge apps
@@ -134,8 +136,8 @@ WSGI_APPLICATION = 'optics_tenant.wsgi.application'
 # ===============================
 ROOT_URLCONF = "optics_tenant.urls"  # Main urls.py for main requests
 PUBLIC_SCHEMA_URLCONF = "optics_tenant.urls"  # Main urls.py for public schema
-TENANT_MODEL = "customers.Client" # Tenant model
-TENANT_DOMAIN_MODEL = "customers.Domain" # Tenant domain model
+TENANT_MODEL = "tenants.Client" # Tenant model
+TENANT_DOMAIN_MODEL = "tenants.Domain" # Tenant domain model
 # ===============================
 # Static Files
 # ===============================
