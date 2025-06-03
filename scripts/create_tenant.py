@@ -11,7 +11,7 @@ django.setup()
 
 from django_tenants.utils import schema_context
 from django.contrib.auth import get_user_model
-from customers.models import Client, Domain
+from tenants.models import Client, Domain
 import datetime
 
 def create_tenant_with_admin(schema_name, name, admin_email, admin_username, admin_password):
@@ -46,6 +46,7 @@ def create_tenant_with_admin(schema_name, name, admin_email, admin_username, adm
 
 # مثال على الاستخدام المباشر عند تشغيل الملف كـ script
 if __name__ == "__main__":
+    print("🔧 Creating tenant with superuser...")
     if len(sys.argv) != 6:
         print("❌ Usage: python create_tenant_superuser.py <schema_name> <name> <admin_email> <admin_username> <admin_password>")
         sys.exit(1)
@@ -61,17 +62,17 @@ if __name__ == "__main__":
 
 
 # run code
-# python create_tenant.py store5 "Solo Vision 5" admin@store5.com admin admin123
+# python scripts/create_tenant.py store1 "Solo Vision 5" admin@store5.com admin admin123
 
 
 # python manage.py shell
-# from optics_tenant.scripts.create_tenant import create_tenant_with_admin
+# from scripts.create_tenant import create_tenant_with_admin
 
-# create_tenant_with_admin(
-#     schema_name="store3",
-#     name="Solo Vision 3",
+create_tenant_with_admin(
+    schema_name="store1",
+    name="Solo Vision 5",
 
-#     admin_email="admin@store3.com",
-#     admin_username="admin",
-#     admin_password="admin123"
-# )
+    admin_email="admin@store3.com",
+    admin_username="admin",
+    admin_password="admin123"
+)
