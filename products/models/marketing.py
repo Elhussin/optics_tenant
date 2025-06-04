@@ -1,6 +1,6 @@
 
 from .product import ProductVariant
-from .base import BaseModel
+from core.models import BaseModel
 from django.db import models
 
 class ProductVariantMarketing(BaseModel):

@@ -1,8 +1,8 @@
-
-from .base import BaseModel
+from core.models import BaseModel
 from .suppliers import Supplier, Manufacturer, Brand
 from .attributes import AttributeValue
 from django.db import models
+import hashlib
 
 class Category(BaseModel):
     """Category for glasses"""
@@ -42,7 +42,8 @@ class Product(BaseModel):
     # Main image
     main_image = models.ImageField(upload_to='products/', blank=True, null=True)
 
-
+    class Meta:
+        unique_together = ('name', 'brand', 'model')
     def __str__(self):
         return f"{self.brand.name} {self.name}"
     
@@ -75,24 +76,23 @@ class ProductVariant(BaseModel):
     ]
     """Different shapes of the product (different colors for example)"""
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
-    sku = models.TextField(unique=True)
-    barcode = models.TextField(unique=True)
+    sku = models.CharField(max_length=50, unique=True ,editable=False)
+    sku = models.CharField(max_length=50, unique=True, editable=False)
 
     # Frame specifications 
     frame_shape = models.CharField(max_length=20, choices=FRAME_SHAPES)
     frame_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='frame_material')
     frame_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='frame_color')
-    frame_size = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='frame_size')
     temple_length = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='temple_length')
     bridge_width = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='bridge_width')
     
     # specifications for lenses and frames
-    lens_type = models.CharField(max_length=20, choices=LENS_TYPES)
     lens_diameter = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='lens_diameter')
     lens_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='lens_color')
     lens_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='lens_material')
     lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='lens_base_curve')
     # specifications for lenses 
+    lens_type = models.CharField(max_length=20, choices=LENS_TYPES)
     lens_power_spherical = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     lens_power_cylinder = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
@@ -119,6 +119,7 @@ class ProductVariant(BaseModel):
     weight = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     dimensions = models.CharField(max_length=100, default='0x0x0')
 
+    unique_hash = models.CharField(max_length=64, unique=True, editable=False)
 
     # Images
     def __str__(self):
@@ -132,11 +133,42 @@ class ProductVariant(BaseModel):
     def profit_margin(self):
         """Profit margin"""
         return ((self.current_price - self.cost_price) / self.cost_price) * 100
+    def generate_unique_hash(self):
+            fields = [str(self.product.id)]
 
+            # بناء القيم التي تحدد التفرد بناءً على نوع المنتج
+            if self.product.type == 'eyewear' or self.product.type == 'sunglasses':
+                fields += [
+                    str(self.product.id),
+                    str(self.frame_color.id),
+                    str(self.temple_length.id),
+                    str(self.bridge_width.id),
+                    str(self.lens_diameter.id),
+                    str(self.lens_color.id),
+                ]
+            elif self.product.type == 'contact_lenses':
+                fields += [
+                    str(self.lens_base_curve.id),
+                    str(self.lens_water_content),
+                    str(self.replacement_schedule),
+                ]
+            elif self.product.type == 'accessories':
+                fields += [
+                    str(self.lens_color.id),
+                    str(self.frame_shape),
+                ]
+            elif self.product.type == 'devices' or self.product.type == 'other':
+                fields += [
+                    str(self.lens_type),
+                    str(self.lens_power_spherical),
+                    str(self.lens_power_cylinder),
+                    str(self.lens_axis),
+                    str(self.lens_addition),
+                ]
 class ProductImage(models.Model):
     """Additional product images"""
     variant = models.ForeignKey(ProductVariant, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='products/')
+    image = models.ImageField(upload_to='products/', unique=True)
     alt_text = models.CharField(max_length=200, blank=True)
     order = models.PositiveIntegerField(default=0)
     

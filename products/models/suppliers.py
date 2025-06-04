@@ -1,9 +1,9 @@
-from .base import BaseModel
+from core.models import BaseModel
 from django.db import models
 
 class Manufacturer(BaseModel):
     """Manufacturer for glasses"""
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     country = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
     email = models.EmailField(blank=True)
@@ -17,7 +17,7 @@ class Manufacturer(BaseModel):
 
 class Brand(BaseModel):
     """Brand for glasses"""
-    name = models.TextField(max_length=100)
+    name = models.TextField(max_length=100, unique=True)
     country = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
     description = models.TextField(blank=True)
@@ -31,7 +31,7 @@ class Brand(BaseModel):
 
 class Supplier(BaseModel):
     """Suppliers"""
-    name = models.CharField(max_length=200)
+    name = models.TextField(max_length=200, unique=True)
     contact_person = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20, blank=True)

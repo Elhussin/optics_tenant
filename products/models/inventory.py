@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from users.models import Branch
-from .base import BaseModel
+from core.models import BaseModel
 from .product import ProductVariant
 
 
