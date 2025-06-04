@@ -4,12 +4,15 @@ from django.contrib.auth.models import User
 from products.models import Product, ProductVariant
 from users.models import Branch ,Customer , BranchUsers
 from core.models import BaseModel
-from products.models import Product, ProductVariant
+from products.models import Product, ProductVariant, Stock, StockMovement
 from prescriptions.models import PrescriptionRecord
+from decimal import Decimal
+from django.db import transaction
+
 
 class Order(BaseModel):
     """ sales order """
-    INVOICE_TYPE_choices = [
+    ORDER_TYPE_choices = [
         ('cash', 'cash'),
         ('credit', 'credit'),
         ('insurance', 'insurance'),
@@ -25,12 +28,12 @@ class Order(BaseModel):
         ('prepaid', 'prepaid'),
         ('voucher', 'voucher'),
         ('loyalty', 'loyalty'),
+        ('mixed', 'mixed'),
     ]
 
     STATUS_CHOICES = [
         ('pending', 'pending'),
         ('confirmed', 'confirmed'),
-        ('processing', 'processing'),
         ('ready', 'ready'),
         ('delivered', 'delivered'),
         ('cancelled', 'cancelled'),
@@ -41,10 +44,11 @@ class Order(BaseModel):
         ('partial', 'partial'),
         ('paid', 'paid'),
         ('refunded', 'refunded'),
+        ('disputed', 'disputed'),
     ]
     
     # basic order information
-    invoice_type = models.CharField(max_length=20, choices=INVOICE_TYPE_choices, default='cash')
+    order_type = models.CharField(max_length=20, choices=ORDER_TYPE_choices, default='cash')
     order_number = models.CharField(max_length=20, unique=True)
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='orders')
     branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
@@ -133,3 +137,90 @@ class OrderItem(models.Model):
     
     def __str__(self):
         return f"{self.product.name} - {self.quantity}"
+
+
+
+class Invoice(models.Model):
+    INVOICE_STATUS = [
+        ('draft', 'Draft'),
+        ('sent', 'Sent'),
+        ('paid', 'Paid'),
+        ('cancelled', 'Cancelled'),
+    ]
+    invoice_number = models.CharField(max_length=50, unique=True)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='invoices')
+    branch = models.ForeignKey('Branch', on_delete=models.CASCADE)  # الفرع المسؤل
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    date_created = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=INVOICE_STATUS, default='draft')
+    notes = models.TextField(blank=True, null=True)
+
+    # أسعار ومبالغ
+    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    tax = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    paid_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    balance_due = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    def __str__(self):
+        return f"Invoice {self.invoice_number} - {self.customer.name}"
+
+    def calculate_totals(self):
+        items = self.items.all()
+        self.subtotal = sum([item.total_price for item in items])
+        self.tax = self.subtotal * Decimal('0.15')  # مثال: 15% ضريبة
+        self.total = self.subtotal + self.tax
+        self.balance_due = self.total - self.paid_amount
+        self.save()
+
+
+class InvoiceItem(models.Model):
+    # الحقول كما سبق
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
+    product_variant = models.ForeignKey('products.ProductVariant', on_delete=models.SET_NULL, null=True)
+    quantity = models.PositiveIntegerField(default=1)
+    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+    total_price = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.total_price = self.quantity * self.unit_price
+        super().save(*args, **kwargs)
+
+    def adjust_stock(self, increase=False):
+        """
+        تعديل المخزون: نقص الكمية اذا increase=False
+        أو اضافة الكمية اذا increase=True (مثلاً عند إلغاء الفاتورة)
+        """
+        if not self.product_variant:
+            return
+
+        stock = Stock.objects.filter(
+            branch=self.invoice.branch,
+            variant=self.product_variant
+        ).first()
+
+        if not stock:
+            # ممكن تنشئ سجل مخزون جديد هنا أو ترفع استثناء
+            raise ValueError("Stock record not found for this product variant and branch.")
+
+        if increase:
+            stock.stock_quantity += self.quantity
+        else:
+            if stock.available_quantity < self.quantity:
+                raise ValueError("Not enough stock to fulfill this sale.")
+            stock.stock_quantity -= self.quantity
+
+        stock.save()
+
+        StockMovement.objects.create(
+        branch=stock.branch,
+        variant=stock.variant,
+        movement_type='out' if not increase else 'in',
+        quantity=self.quantity,
+        reference_number=self.invoice.invoice_number,
+        reference_type='sale',
+        notes=f"Stock {'added back' if increase else 'deducted'} for invoice {self.invoice.invoice_number}",
+        created_by=self.invoice.created_by,
+        movement_date=timezone.now()
+    )
