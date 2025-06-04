@@ -29,6 +29,7 @@ class PendingTenantRequest(models.Model):
     ], default='basic')
     max_users = models.IntegerField(default=5)
     max_products = models.IntegerField(default=1000)
+    
 
 class Client(TenantMixin):
     name = models.CharField(max_length=100)

@@ -21,7 +21,7 @@ class Branch(BaseModel):
         return self.name
 
 
-class BranchUsers(models.Model):
+class BranchUsers(BaseModel):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     def __str__(self):
@@ -63,3 +63,47 @@ class Customer(models.Model):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+
+class Employee(BaseModel):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    position = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    hire_date = models.DateField()
+    salary = models.DecimalField(max_digits=10, decimal_places=2)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
+# إجراء لتحديث المخزون بعد البيع
+# sqlDELIMITER //
+# CREATE PROCEDURE UpdateStockAfterSale(
+#     IN p_variant_id INT,
+#     IN p_quantity INT,
+#     IN p_sale_id INT
+# )
+# BEGIN
+#     DECLARE current_stock INT;
+    
+#     -- التحقق من المخزون الحالي
+#     SELECT stock_quantity INTO current_stock 
+#     FROM Product_Variants 
+#     WHERE variant_id = p_variant_id;
+    
+#     IF current_stock >= p_quantity THEN
+#         -- تحديث المخزون
+#         UPDATE Product_Variants 
+#         SET stock_quantity = stock_quantity - p_quantity,
+#             updated_at = NOW()
+#         WHERE variant_id = p_variant_id;
+        
+#         -- إضافة حركة مخزون
+#         INSERT INTO Stock_Movements (variant_id, movement_type, quantity, reference_type, reference_id)
+#         VALUES (p_variant_id, 'إخراج', -p_quantity, 'مبيعات', p_sale_id);
+#     ELSE
+#         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'المخزون غير كافي';
+#     END IF;
+# END //
+# DELIMITER ;

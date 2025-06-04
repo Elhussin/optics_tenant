@@ -69,7 +69,7 @@ TENANT_APPS = (
     'accounts',
     'prescriptions',
     'products',
-    # 'sales',
+    'sales',
 )
 # ===============================
 # merge apps

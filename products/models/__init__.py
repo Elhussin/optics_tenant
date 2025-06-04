@@ -1,9 +1,10 @@
 
 from .product import Product, ProductVariant, Category
-from .inventory import Stock, StockMovement
+from .inventory import Stock, StockMovement, InventoryDocument, InventoryLineItem
 from .marketing import ProductVariantMarketing
 from .attributes import Attributes, AttributeValue
 from .suppliers import Supplier, Manufacturer, Brand
+
 
 __all__ = [
     "Product", "ProductVariant", "Category",
@@ -11,4 +12,5 @@ __all__ = [
     "ProductVariantMarketing",
     "Attributes", "AttributeValue",
     "Supplier", "Manufacturer", "Brand",
+    "InventoryDocument", "InventoryLineItem"
 ]
