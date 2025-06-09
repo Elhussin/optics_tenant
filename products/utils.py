@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
-from .models import Order, Stock
+from products.models import Order, Stock
 from django.db import transaction
 
 

@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils import timezone
-from .models import Order, Invoice, Stock, StockMovement
+from products.models import Order, Invoice, Stock, StockMovement
 from decimal import Decimal
 
 

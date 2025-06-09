@@ -20,6 +20,7 @@ from optics_tenant.utils import schema_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('tenants.urls')),
+    path('csv/', include('core.urls')),
     # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 
     # توثيق Swagger

@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='branchusers',
             name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=1, verbose_name='Created at'),
+            field=models.DateTimeField(auto_now_add=True, verbose_name='Created at'),
             preserve_default=False,
         ),
         migrations.AddField(
