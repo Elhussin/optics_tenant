@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Product, Category, Brand ,ProductVariant ,
+from .models import (Product, Category, Brand ,ProductVariant ,LensCoating,
 Stock, StockMovement,ProductVariantMarketing,Attributes, AttributeValue,
 Supplier, Manufacturer)
 
@@ -30,6 +30,7 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brand, BrandAdmin)
 admin.site.register(ProductVariant, ProductVariantAdmin)
+admin.site.register(LensCoating)
 admin.site.register(Stock)
 admin.site.register(StockMovement)
 admin.site.register(ProductVariantMarketing)

@@ -71,11 +71,15 @@ class Command(BaseCommand):
                                 lookup_field = rel_conf['lookup_field']
                                 try:
                                     rel_obj = rel_model.objects.get(**{lookup_field: row[field_name]})
-                                    instance_data[field_name] = rel_obj
                                 except rel_model.DoesNotExist:
-                                    self.stderr.write(f"foreign key not found: {app_label}.{model_name}")
-                                    failed_rows.append(row_num)
-                                    break
+                                    if rel_conf.get("create_if_missing"):
+                                        rel_obj = rel_model.objects.create(**{lookup_field: row[field_name]})
+                                        self.stdout.write(f"🆕 تم إنشاء {rel_model.__name__} جديد: {row[field_name]}")
+                                    else:
+                                        self.stderr.write(f"⚠️ [{csv_path} line {row_num}] قيمة غير موجودة لـ {field_name}: {row[field_name]}")
+                                        failed_rows.append(row_num)
+                                        break
+
                             else:
                                 instance_data[field_name] = row[field_name]
 
@@ -96,5 +100,7 @@ class Command(BaseCommand):
                     self.stdout.write(f"❌ failed: {len(failed_rows)} - rows: {failed_rows}")
 
 
-# python manage.py import_csv --config 'import_config.json.json' --dry-run
+# python manage.py import_csv --config 'import_config.json' --dry-run
+# python manage.py import_csv --config 'import_config.json'
+# python manage.py import_csv --config 'import_config.json' --report
 # optics_tenant/scripts/csv/csv_config.json

@@ -1,12 +1,13 @@
 name
-Size
-color
-material
-color
-length
-shape
-base_curve
-width
-warranty 
-weight
-dimensions
+Shape
+Material
+Color
+Length
+Width
+Diameter
+Base Curve
+Lens Type
+Water Content
+Replacement Schedule
+Warranty
+Dimensions

@@ -1,8 +1,0 @@
-[
-  {
-    "schema": "store1",
-    "app": "products",
-    "model": "Category",
-    "csv": "csvs/categories.csv"
-  }
-]

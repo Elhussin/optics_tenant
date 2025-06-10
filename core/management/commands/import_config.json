@@ -1,0 +1,13 @@
+[{
+  "schema": "store1",
+  "app": "products",
+  "model": "Brand",
+  "csv": "csvs/brand.csv"
+},
+{
+  "schema": "store1",
+  "app": "products",
+  "model": "Supplier",
+  "csv": "csvs/supplier.csv"
+}
+]

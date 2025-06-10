@@ -11,22 +11,74 @@
         "create_if_missing": true
       }
     }
+  },
+  {
+    "schema": "store1",
+    "app": "products",
+    "model": "Category",
+    "csv": "csv/Categories.csv",
+    "foreign_keys": {
+      "parent": {
+        "lookup_field": "name",
+        "create_if_missing": true
+      }
+    }
+  },
+  {
+    "schema": "store1",
+    "app": "products",
+    "model": "Brand",
+    "csv": "csv/brand.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "products",
+    "model": "Supplier",
+    "csv": "csv/supplier.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "products",
+    "model": "Manufacturer",
+    "csv": "csv/manufacturer.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "products",
+    "model": "LensCoating",
+    "csv": "csv/lens_coating.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "products",
+    "model": "Product",
+    "csv": "csv/product.csv",
+    "foreign_keys": {
+      "brand": {
+        "lookup_field": "name",
+        "create_if_missing": true
+      },
+      "supplier": {
+        "lookup_field": "name",
+        "create_if_missing": true
+      },
+      "manufacturer": {
+        "lookup_field": "name",
+        "create_if_missing": true
+      },
+      "category": {
+        "lookup_field": "name",
+        "create_if_missing": true
+      }
+    }
+  },
+  {
+    "schema": "store1",
+    "app": "users",
+    "model": "Branch",
+    "csv": "csv/branch.csv"
   }
 ]
 
 
 
-// if by pi
-// {
-//   "schema": "store1",
-//   "app": "products",
-//   "model": "AttributeValue",
-//   "csv": "csvs/attribute_value.csv",
-//   "foreign_keys": {
-//     "attribute": {
-//       "related_model": "products.Attributes",
-//       "lookup_field": "name",
-//       "create_if_missing": true
-//     }
-//   }
-// }

@@ -1,11 +1,25 @@
 attribute,value
-Size,48
-color,5010
-material,astat
-length,135
-shape,round
-base_curve,20-15
-width,17
-warranty ,6
-weight,45
-dimensions,30-120-140
+Shape,Cercl
+Material,Plastic
+Color,Green
+Length,152
+Width,18
+Diameter,52
+Base Curve,4
+Lens Type,Single Stok
+Water Content,50%
+Replacement Schedule,6 Month
+Warranty,2 Year
+Dimensions,30-140-150
+Shape,Round
+Material,Astat
+Color,Red
+Length,150
+Width,17
+Diameter,50
+Base Curve,6
+Lens Type,Single RX
+Water Content,60%
+Replacement Schedule,1 Month
+Warranty,1 Year
+Dimensions,28-138-148
