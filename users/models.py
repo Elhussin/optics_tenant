@@ -2,7 +2,16 @@ from django.db import models
 from django.contrib.auth.models import User
 from core.models import BaseModel
 
+class Employee(BaseModel):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    position = models.CharField(max_length=100)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    hire_date = models.DateField()
+    salary = models.DecimalField(max_digits=10, decimal_places=2)
 
+    
 class Branch(BaseModel):
     BRANCH_CHOICES = [
         ('store', 'Store'),
@@ -23,9 +32,12 @@ class Branch(BaseModel):
 
 class BranchUsers(BaseModel):
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     def __str__(self):
-        return f"{self.user} - {self.branch}"    
+        return f"{self.employee} - {self.branch}"    
+    
+    class Meta:
+        unique_together = ('branch', 'employee')
 
 
 class Customer(models.Model):
@@ -65,14 +77,3 @@ class Customer(models.Model):
         return f"{self.first_name} {self.last_name}"
 
 
-class Employee(BaseModel):
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    position = models.CharField(max_length=100)
-    phone = models.CharField(max_length=20)
-    email = models.EmailField()
-    hire_date = models.DateField()
-    salary = models.DecimalField(max_digits=10, decimal_places=2)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    

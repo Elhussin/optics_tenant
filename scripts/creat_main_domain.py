@@ -1,5 +1,17 @@
+import django
+import os
+import sys
 
-from django_tenants.utils import get_tenant_model,get_tenant_domain_model
+# تهيئة بيئة Django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "optics_tenant.settings")
+django.setup()
+
+from django_tenants.utils import schema_context,get_tenant_model,get_tenant_domain_model
+from django.contrib.auth import get_user_model
+from tenants.models import Client, Domain
+import datetime
+
+
 
 TenantModel = get_tenant_model()
 DomainModel = get_tenant_domain_model()

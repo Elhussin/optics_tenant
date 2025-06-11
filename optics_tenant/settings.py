@@ -9,7 +9,8 @@ SECRET_KEY = 'django-insecure-d(ha9ou$)!6d8)vqzc0c87)s*sju@k%odcjayt!l%&tyj_p%a3
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']  # during development only
+# ALLOWED_HOSTS = ['*']  # during development only
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".localhost", "store1.local", "client1.local"]
 
 # ===============================
 # Database PostgreSQL
@@ -141,6 +142,7 @@ TENANT_DOMAIN_MODEL = "tenants.Domain" # Tenant domain model
 # ===============================
 # Static Files
 # ===============================
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
