@@ -3,8 +3,14 @@
   {
     "schema": "store1",
     "app": "products",
+    "model": "Attribute",
+    "csv": "attribute.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "products",
     "model": "AttributeValue",
-    "csv": "csv/attribute_value.csv",
+    "csv": "attribute_value.csv",
     "foreign_keys": {
       "attribute": {
         "lookup_field": "name",
@@ -16,7 +22,7 @@
     "schema": "store1",
     "app": "products",
     "model": "Category",
-    "csv": "csv/Categories.csv",
+    "csv": "Categories.csv",
     "foreign_keys": {
       "parent": {
         "lookup_field": "name",
@@ -28,31 +34,31 @@
     "schema": "store1",
     "app": "products",
     "model": "Brand",
-    "csv": "csv/brand.csv"
+    "csv": "brand.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "Supplier",
-    "csv": "csv/supplier.csv"
+    "csv": "supplier.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "Manufacturer",
-    "csv": "csv/manufacturer.csv"
+    "csv": "manufacturer.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "LensCoating",
-    "csv": "csv/lens_coating.csv"
+    "csv": "lens_coating.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "Product",
-    "csv": "csv/product.csv",
+    "csv": "product.csv",
     "foreign_keys": {
       "brand": {
         "lookup_field": "name",
@@ -74,9 +80,9 @@
   },
   {
     "schema": "store1",
-    "app": "users",
+    "app": "branches",
     "model": "Branch",
-    "csv": "csv/branch.csv"
+    "csv": "branch.csv"
   }
 ]
 

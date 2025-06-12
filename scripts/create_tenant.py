@@ -68,11 +68,11 @@ if __name__ == "__main__":
 # python manage.py shell
 # from scripts.create_tenant import create_tenant_with_admin
 
-create_tenant_with_admin(
-    schema_name="store1",
-    name="Solo Vision 5",
+# create_tenant_with_admin(
+#     schema_name="store2",
+#     name="Solo Vision 5",
 
-    admin_email="admin@store3.com",
-    admin_username="admin",
-    admin_password="admin123"
-)
+#     admin_email="admin@store3.com",
+#     admin_username="admin",
+#     admin_password="admin123"
+# )

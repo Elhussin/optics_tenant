@@ -78,7 +78,7 @@ class ProductVariant(BaseModel):
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
     
     # unique hash
-    sku = models.CharField(max_length=50, unique=True, editable=False, help_text="SKU (Stock Keeping Unit)") 
+    sku = models.CharField(max_length=50, unique=True,help_text="SKU (Stock Keeping Unit)") 
     unique_hash = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique Hash")
     # Frame specifications 
     frame_shape = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute__name': 'Shape'})
@@ -151,7 +151,7 @@ class ProductVariant(BaseModel):
         ]
 
     def generate_unique_hash(self):
-        fields = [str(self.product.id or '')]
+        fields = [str(self.product or '')]
 
         if self.product.type in ['EW', 'SG']:
             fields += self._eyewear_fields()
@@ -222,7 +222,7 @@ class ProductImage(models.Model):
     image = models.ImageField(upload_to='products/', unique=True)
     alt_text = models.CharField(max_length=200, blank=True)
     order = models.PositiveIntegerField(default=0)
-    
+    is_primary = models.BooleanField(default=False)
     class Meta:
         ordering = ['order','id']
         indexes = [
@@ -230,5 +230,4 @@ class ProductImage(models.Model):
         ]
     def __str__(self):
         return f"{self.variant.product.name} - {self.variant.color}"
-
 

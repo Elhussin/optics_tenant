@@ -1,8 +1,8 @@
 from django.db import models
-from users.models import Customer
-
+from core.models import BaseModel
+from CRM.models import Customer
 # Create your models here.
-class PrescriptionRecord(models.Model):
+class PrescriptionRecord(BaseModel):
     """Prescription Record"""
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='prescriptions')
     
@@ -27,8 +27,6 @@ class PrescriptionRecord(models.Model):
     prescription_date = models.DateField()
     notes = models.TextField(blank=True)
     
-    created_at = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)  # the current prescription
     
     def __str__(self):
         return f"Prescription {self.customer.full_name} - {self.prescription_date}"

@@ -1,7 +1,10 @@
 from django.contrib import admin
-from .models import (Product, Category, Brand ,ProductVariant ,LensCoating,
-Stock, StockMovement,ProductVariantMarketing,Attributes, AttributeValue,
-Supplier, Manufacturer)
+
+
+from .models import( Attributes, AttributeValue,Stock, StockMovement, InventoryDocument, InventoryLineItem,   ProductVariantMarketing,
+ ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer,
+ Category, LensCoating, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand
+)
 
 admin.site.site_header = "Optics Admin"
 admin.site.site_title = "Optics Admin Portal"
@@ -26,6 +29,7 @@ class ProductVariantAdmin(admin.ModelAdmin):
     list_filter = ('product',)
     ordering = ('-created_at',)
     pass
+
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brand, BrandAdmin)
@@ -38,3 +42,10 @@ admin.site.register(Attributes)
 admin.site.register(AttributeValue)
 admin.site.register(Supplier)
 admin.site.register(Manufacturer)
+admin.site.register(ProductImage)
+admin.site.register(ProductVariantReview)
+admin.site.register(ProductVariantQuestion)
+admin.site.register(ProductVariantAnswer)
+admin.site.register(ProductVariantOffer)
+admin.site.register(InventoryDocument)
+admin.site.register(InventoryLineItem)

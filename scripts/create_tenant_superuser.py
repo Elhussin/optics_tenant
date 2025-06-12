@@ -43,4 +43,4 @@ if __name__ == "__main__":
 
 # OR
 
-# python scripts/create_tenant_superuser.py store3 admin admin@store3.com adminpass123
+#  python scripts/create_tenant_superuser.py store2 admin admin@store2.com admin1234

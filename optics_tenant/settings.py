@@ -9,8 +9,8 @@ SECRET_KEY = 'django-insecure-d(ha9ou$)!6d8)vqzc0c87)s*sju@k%odcjayt!l%&tyj_p%a3
 
 DEBUG = True
 
-# ALLOWED_HOSTS = ['*']  # during development only
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".localhost", "store1.local", "client1.local"]
+ALLOWED_HOSTS = ['*']  # during development only
+# ALLOWED_HOSTS = ["127.0.0.1", "localhost", ".localhost", "store1.local", "client1.local"]
 
 # ===============================
 # Database PostgreSQL
@@ -64,13 +64,17 @@ TENANT_APPS = (
     'django.contrib.staticfiles',
 
     # التطبيقات الخاصة بالعميل فقط
-    'users',
+
     'core',
     'orders',
-    'accounts',
     'prescriptions',
     'products',
-    # 'sales',
+    'CRM',
+    'HRM',
+    'branches',
+    'accounting',
+
+
 )
 # ===============================
 # merge apps
