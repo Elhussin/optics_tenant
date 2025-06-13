@@ -183,7 +183,7 @@ class OrderItem(models.Model):
     """order items"""
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     # product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True, blank=True)
+    # variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, null=True, blank=True)
     
     # quantity and prices
     quantity = models.PositiveIntegerField(default=1)
@@ -402,7 +402,7 @@ class Payment(BaseModel):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name="payments")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=50, choices=[('cash', 'Cash'), ('card', 'Card')])
-    created_by = models.ForeignKey(BranchUsers, on_delete=models.SET_NULL, null=True)
+
 
     def __str__(self):
         return f"Payment of {self.amount} for Invoice {self.invoice.invoice_number}"

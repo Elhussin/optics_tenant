@@ -109,6 +109,7 @@ class ProductVariant(BaseModel):
     cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True)
     axis = models.IntegerField(default=0,blank=True,null=True, validators=[MinValueValidator(0), MaxValueValidator(180)])
     addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True)
+    unit = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, limit_choices_to={'attribute__name': 'Unit'},help_text="Unit of measurement box piesces")
   
     # Extra information
     warranty = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',blank=True,null=True, limit_choices_to={'attribute__name': 'Warranty'})
@@ -116,10 +117,9 @@ class ProductVariant(BaseModel):
     dimensions = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_dimensions',blank=True,null=True, limit_choices_to={'attribute__name': 'Dimensions'})
 
     # Pricing
-    cost_price = models.DecimalField(max_digits=10, decimal_places=2)
+    last_purchase_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     discount_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    discount_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True ,default=0 ,validators=[MinValueValidator(0), MaxValueValidator(30)])
 
 
 
@@ -186,17 +186,6 @@ class ProductVariant(BaseModel):
         return f"{self.product.brand.name} {self.product.model}"
 
     @property
-    def current_price(self):
-        return self.discount_price if self.discount_price else self.selling_price
-
-    @property
-    def profit_margin(self):
-        """Calculate profit margin percentage"""
-        if self.cost_price > 0:
-            return ((self.current_price - self.cost_price) / self.cost_price) * 100
-        return Decimal('0.00')
-  
-    @property
     def discount_price(self):
         """Calculate discounted price"""
         if self.discount_percentage > 0:
@@ -230,4 +219,5 @@ class ProductImage(models.Model):
         ]
     def __str__(self):
         return f"{self.variant.product.name} - {self.variant.color}"
+
 

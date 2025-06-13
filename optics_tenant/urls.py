@@ -21,12 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('tenants.urls')),
     path('csv/', include('core.urls')),
-    # path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-
     # توثيق Swagger
     re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-
-    # توثيق ReDoc (شكل مختلف)
     re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-
-]
+    ]

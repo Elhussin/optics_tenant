@@ -381,8 +381,11 @@
 #     """لوحة التحكم"""
 #     # إحصائ
 #     pass
-
 # views.py
+from rest_framework import viewsets
+from .models import ProductVariant, Stocks, StockMovements, StockTransfer, StockTransferItem, Product
+from .serializers import *
+
 class BulkInventoryMovementAPIView(APIView):
     def post(self, request, branch_id):
         serializer = BulkStockMovementSerializer(data=request.data)
@@ -434,3 +437,33 @@ class BulkInventoryMovementAPIView(APIView):
             return Response({"error": f"Inventory not found for one of the variants."}, status=status.HTTP_404_NOT_FOUND)
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ProductVariantViewSet(viewsets.ModelViewSet):
+    queryset = ProductVariant.objects.all()
+    serializer_class = ProductVariantSerializer
+
+
+class StocksViewSet(viewsets.ModelViewSet):
+    queryset = Stocks.objects.all()
+    serializer_class = StocksSerializer
+
+
+class StockMovementsViewSet(viewsets.ModelViewSet):
+    queryset = StockMovements.objects.all()
+    serializer_class = StockMovementsSerializer
+
+
+class StockTransferViewSet(viewsets.ModelViewSet):
+    queryset = StockTransfer.objects.all()
+    serializer_class = StockTransferSerializer
+
+
+class StockTransferItemViewSet(viewsets.ModelViewSet):
+    queryset = StockTransferItem.objects.all()
+    serializer_class = StockTransferItemSerializer
