@@ -8,7 +8,7 @@ from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from products.models import StockMovement
+from products.models import StockMovements
 
 # Create your models here.
 
@@ -315,33 +315,33 @@ class Invoice(BaseModel):
 
             with transaction.atomic():
                 for item in self.items.select_for_update():
-                    inventory, _ = Inventory.objects.get_or_create(
+                    stock, _ = Stocks.objects.get_or_create(
                         branch=self.branch,
                         variant=item.variant,
                         defaults={'quantity_in_stock': 0}
                     )
 
-                    before_qty = inventory.quantity_in_stock
+                    before_qty = stock.quantity_in_stock
                     qty_change = item.quantity
 
                     # Determine if quantity is positive or negative
                     if self.invoice_type in ['purchase', 'return_sale']:
-                        inventory.quantity_in_stock += qty_change
+                        stock.quantity_in_stock += qty_change
                         movement_type = 'purchase'
                     elif self.invoice_type in ['sale', 'return_purchase']:
-                        if inventory.available_quantity < qty_change:
+                        if stock.available_quantity < qty_change:
                             raise ValueError(f"Not enough stock for {item.variant}")
-                        inventory.quantity_in_stock -= qty_change
+                        stock.quantity_in_stock -= qty_change
                         movement_type = 'sale'
 
-                    inventory.save()
+                    stock.save()
 
                     StockMovements.objects.create(
-                        inventory=inventory,
+                        stocks=stock,
                         movement_type=movement_type,
                         quantity=qty_change if movement_type == 'purchase' else -qty_change,
                         quantity_before=before_qty,
-                        quantity_after=inventory.quantity_in_stock,
+                        quantity_after=stock.quantity_in_stock,
                         reference_number=self.invoice_number,
                         notes=f"Invoice {self.invoice_type}"
                     )
@@ -367,7 +367,7 @@ class InvoiceItem(BaseModel):
         if not self.variant:
             return
 
-        stock = Stock.objects.select_for_update().filter(
+        stock = Stocks.objects.select_for_update().filter(
             branch=self.invoice.branch,
             variant=self.variant
         ).first()
@@ -380,7 +380,7 @@ class InvoiceItem(BaseModel):
 
         # إنشاء حركة المخزون
         StockMovement.objects.create(
-            branch=self.invoice.branch,
+            branch=stock.branch,
             variant=self.variant,
             movement_type='in' if increase else 'out',
             quantity=self.quantity,
@@ -411,16 +411,6 @@ class Payment(BaseModel):
         self.invoice.paid_amount += self.amount
         self.invoice.save()
         super().save(*args, **kwargs)
-
-
-
-class Tax(BaseModel):
-    name = models.CharField(max_length=100)
-    rate = models.DecimalField(max_digits=5, decimal_places=2)
-    description = models.TextField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.name} ({self.rate}%)"
 
 
 def generate_serial_number(model, prefix: str, number_field: str = 'order_number'):

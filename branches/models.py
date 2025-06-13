@@ -39,7 +39,7 @@ class BranchUsers(BaseModel):
     status = models.BooleanField(default=True)
     notes = models.TextField(null=True, blank=True)
     def __str__(self):
-        return f"{self.employee} - {self.branch}"    
+        return f"{self.employee.user.username} - {self.branch}"    
     
     class Meta:
         unique_together = ('branch', 'employee')

@@ -36,7 +36,8 @@ DATABASE_ROUTERS = (
 SHARED_APPS = (
     'django_tenants',               # يجب أن يكون أولاً
     'tenants',                   # 
-
+    'admin_interface',
+    'colorfield',
     # Django apps للعمل العام
     'django.contrib.contenttypes',
     'django.contrib.auth',
@@ -55,6 +56,8 @@ SHARED_APPS = (
 # TENANT_APPS
 # ===============================
 TENANT_APPS = (
+    'admin_interface',
+    'colorfield',
     # Django apps
     'django.contrib.contenttypes',
     'django.contrib.auth',
@@ -81,7 +84,7 @@ TENANT_APPS = (
 # ===============================
 INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
 
-
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 # ===============================
 # Middleware
 # ===============================

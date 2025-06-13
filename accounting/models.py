@@ -5,10 +5,6 @@ from djmoney.money import Money
 
 
 User = get_user_model()
-# TRANSACTION_TYPES = [
-#         ('income', 'Income'),
-#         ('expense', 'Expense'),
-#     ]
 
 class FinancialPeriod(models.Model):
     """ Represents a financial period (e.g., fiscal year). """

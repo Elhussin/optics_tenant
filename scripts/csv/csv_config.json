@@ -83,6 +83,35 @@
     "app": "branches",
     "model": "Branch",
     "csv": "branch.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "HRM",
+    "model": "Department",
+    "csv": "department.csv"
+  },
+  {
+    "schema": "store1",
+    "app": "HRM",
+    "model": "Employee",
+    "csv": "employee.csv",
+    "foreign_keys": {
+      "user": {
+        "related_model": "auth.User",
+        "lookup_field": "username",
+        "create_if_missing": false
+      },
+      "department": {
+        "lookup_field": "name",
+        "create_if_missing": true
+      }
+    }
+  },
+  {
+    "schema": "store1",
+    "app": "auth",
+    "model": "User",
+    "csv": "Users.csv"
   }
 ]
 

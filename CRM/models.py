@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from core.models import BaseModel
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 User = get_user_model()
 # Create your models here.
 
@@ -14,10 +15,10 @@ class Customer(BaseModel):
     """عملاء المتجر"""
     # Personal Information
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="crm_customer")
-    first_name = models.CharField(max_length=100)
-    last_name = models.CharField(max_length=100)
-    identification_number = models.CharField(max_length=20, unique=True)
-    email = models.EmailField(unique=True)
+    first_name = models.CharField(max_length=100,blank=True)
+    last_name = models.CharField(max_length=100, blank=True)
+    identification_number = models.CharField(max_length=20, unique=True,validators=[MinLengthValidator(10), MaxLengthValidator(10)],help_text="Enter a valid identification number 10 digits.")
+    email = models.EmailField(unique=True, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     customer_type = models.CharField(max_length=10, choices=CUSTOMER_TYPE_CHOICES, default='individual')
@@ -66,7 +67,7 @@ class Interaction(BaseModel):
 
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="interactions")
     interaction_type = models.CharField(max_length=10, choices=INTERACTION_TYPES)
-    notes = models.TextField()
+    notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.interaction_type} with {self.customer.user.username}"
@@ -108,7 +109,7 @@ class Task(BaseModel):
     title = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     priority = models.CharField(max_length=10, choices=PRIORITIES, default='medium')
-    due_date = models.DateTimeField()
+    due_date = models.DateTimeField(null=True, blank=True)
     completed = models.BooleanField(default=False)
 
     def __str__(self):

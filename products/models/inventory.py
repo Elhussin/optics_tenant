@@ -308,7 +308,7 @@ class StockMovements(BaseModel):
         RESERVE = 'reserve', 'Reserve Stock'
         RELEASE = 'release', 'Release Reserved'
     
-    stoks = models.ForeignKey(Stocks, on_delete=models.CASCADE, related_name='movements')
+    stocks = models.ForeignKey(Stocks, on_delete=models.CASCADE, related_name='movements')
     movement_type = models.CharField(max_length=20, choices=MovementType.choices)
     quantity = models.IntegerField()
     quantity_before = models.PositiveIntegerField()
@@ -320,7 +320,7 @@ class StockMovements(BaseModel):
     class Meta:
         ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['inventory', '-created_at']),
+            models.Index(fields=['stocks', '-created_at']),
             models.Index(fields=['movement_type', '-created_at']),
         ]
     

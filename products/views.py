@@ -91,7 +91,7 @@
 #     context = {
 #         'form': form,
 #         'formset': formset,
-#     }
+#     }__all__ = [
     
 #     return render(request, 'orders/order_form.html', context)
 

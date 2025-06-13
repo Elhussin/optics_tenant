@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-from .models import( Attributes, AttributeValue,Stock, StockMovement, InventoryDocument, InventoryLineItem,   ProductVariantMarketing,
+from .models import( Attributes, AttributeValue,StockMovements,Stocks,StockTransfer, StockTransferItem,   ProductVariantMarketing,
  ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer,
  Category, LensCoating, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand
 )
@@ -28,15 +28,17 @@ class ProductVariantAdmin(admin.ModelAdmin):
     search_fields = ('product__name', 'variant_name')
     list_filter = ('product',)
     ordering = ('-created_at',)
-    pass
+    
 
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brand, BrandAdmin)
 admin.site.register(ProductVariant, ProductVariantAdmin)
 admin.site.register(LensCoating)
-admin.site.register(Stock)
-admin.site.register(StockMovement)
+admin.site.register(StockMovements)
+admin.site.register(Stocks)
+admin.site.register(StockTransfer)
+admin.site.register(StockTransferItem)
 admin.site.register(ProductVariantMarketing)
 admin.site.register(Attributes)
 admin.site.register(AttributeValue)
@@ -47,5 +49,3 @@ admin.site.register(ProductVariantReview)
 admin.site.register(ProductVariantQuestion)
 admin.site.register(ProductVariantAnswer)
 admin.site.register(ProductVariantOffer)
-admin.site.register(InventoryDocument)
-admin.site.register(InventoryLineItem)

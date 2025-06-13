@@ -38,8 +38,8 @@ class Leave(models.Model):
 
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="leaves")
     leave_type = models.CharField(max_length=10, choices=LEAVE_TYPES)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(auto_now_add=True)
+    end_date = models.DateField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')], default='pending')
 
     def __str__(self):
@@ -56,8 +56,13 @@ class Attendance(models.Model):
     
     def save(self, *args, **kwargs):
         if self.check_in and self.check_out:
+            # Convert time to datetime using the date field
+            from datetime import datetime
+            check_in_dt = datetime.combine(self.date, self.check_in)
+            check_out_dt = datetime.combine(self.date, self.check_out)
+            
             # Calculate hours worked
-            delta = self.check_out - self.check_in
+            delta = check_out_dt - check_in_dt
             self.hours_worked = delta.total_seconds() / 3600
         super().save(*args, **kwargs)
         
@@ -81,9 +86,9 @@ class Payroll(models.Model):
     
 class PerformanceReview(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="performance_reviews")
-    review_date = models.DateField()
+    review_date = models.DateField(auto_now_add=True)
     rating = models.IntegerField(choices=[(i, i) for i in range(1, 6)])  # من 1 إلى 5
-    comments = models.TextField()
+    comments = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.employee.user.username} - {self.review_date}"
@@ -91,7 +96,7 @@ class PerformanceReview(models.Model):
 class Task(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="tasks")
     title = models.CharField(max_length=200)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
     due_date = models.DateField()
     status = models.CharField(max_length=20, choices=[('pending', 'Pending'), ('in_progress', 'In Progress'), ('completed', 'Completed')], default='pending')
 
@@ -108,7 +113,7 @@ class Notification(models.Model):
     ]
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="notifications")
-    message = models.TextField()
+    message = models.TextField(blank=True, null=True ,default="Notification")
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
