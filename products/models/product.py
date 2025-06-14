@@ -7,6 +7,9 @@ from django.core.exceptions import ValidationError
 from scripts.lens_power import spherical_lens_powers ,cylinder_lens_powers,additional_lens_powers
 from decimal import Decimal
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils import timezone
+from CRM.models import Customer
+from branches.models import Branch
 
 class Category(BaseModel):
     """Category for glasses"""
@@ -203,7 +206,16 @@ class ProductVariant(BaseModel):
         ]
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"
- 
+
+    def get_price_for(self, customer=None, branch=None, quantity=1, date=None):
+        today = date or timezone.now().date()
+        rules = self.price_rules.all()
+
+        for rule in rules:
+            if rule.is_valid(customer=customer, branch=branch, quantity=quantity, date=today):
+                return rule.special_price
+
+        return self.discount_price or self.selling_price
 
 class ProductImage(models.Model):
     """Additional product images"""
@@ -220,4 +232,42 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"{self.variant.product.name} - {self.variant.color}"
 
+
+class FlexiblePrice(models.Model):
+    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name='price_rules')
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
+    customer_group = models.ForeignKey('CRM.CustomerGroup', on_delete=models.SET_NULL, null=True, blank=True)
+    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
+
+    # السعر الخاص
+    special_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # صلاحية السعر
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+
+    # شروط إضافية (مثل الكمية أو الوحدة)
+    min_quantity = models.PositiveIntegerField(default=1)
+    currency = models.CharField(max_length=10, default="SAR")
+    
+    # ترتيب الأولوية (لتحديد أي سعر يستخدم عند وجود أكثر من خيار)
+    priority = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['-priority', 'start_date']
+
+    def is_valid(self, customer=None, branch=None, quantity=1, date=None):
+        """تحقق من صلاحية هذا السعر لعميل معين"""
+        date = date or timezone.now().date()
+        if self.start_date and self.start_date > date:
+            return False
+        if self.end_date and self.end_date < date:
+            return False
+        if self.min_quantity > quantity:
+            return False
+        if self.customer and self.customer != customer:
+            return False
+        if self.branch and self.branch != branch:
+            return False
+        return True
 

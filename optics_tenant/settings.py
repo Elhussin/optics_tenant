@@ -12,7 +12,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
-CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='*').split(',')
+# CORS_ALLOWED_ORIGINS = config('CORS_ALLOWED_ORIGINS', default='*').split(',')
 
 CORS_ALLOW_CREDENTIALS = config('CORS_ALLOW_CREDENTIALS', default=True, cast=bool)
 
@@ -20,7 +20,7 @@ CORS_ALLOW_HEADERS = config('CORS_ALLOW_HEADERS', default='*').split(',')
 
 CORS_ALLOW_METHODS = config('CORS_ALLOW_METHODS', default='*').split(',')
 
-CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='*').split(',')
+# CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='*').split(',')
 
 # ===============================
 # Database PostgreSQL
@@ -194,7 +194,7 @@ TENANT_DOMAIN_MODEL = "tenants.Domain" # Tenant domain model
 # ===============================
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -288,9 +288,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # In development (DEBUG=True), no email verification is required.
 # In production (DEBUG=False), email verification is optional.
 ACCOUNT_EMAIL_VERIFICATION = "none" if DEBUG else 'optional'
-
+# ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
 # Enforce email requirement during registration.
-ACCOUNT_EMAIL_REQUIRED = True  # Email is required for registration.
+# ACCOUNT_EMAIL_REQUIRED = True  # Email is required for registration.
 
 # Allow login using either email or username.
 ACCOUNT_LOGIN_METHODS = {'email', 'username'}  # Login can be done using email or username.

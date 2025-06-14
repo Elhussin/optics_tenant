@@ -220,6 +220,16 @@ class CustomerModelTest(BaseTenantTestCase):
             due_date="2022-01-01",
             completed=False
         )
+        campaign = Campaign.objects.create(
+            customer=customer,
+            opportunity=opportunity,
+            task=task,
+            title="Test campaign title",
+            description="Test campaign description",
+            start_date="2022-01-01",
+            end_date="2022-01-31",
+            status="active"
+        )
         def __str__(self):
             return self.title
         
@@ -250,13 +260,13 @@ class CustomerModelTest(BaseTenantTestCase):
         )
         opportunity = Opportunity.objects.create(
             customer=customer,
-            title="Test opportunity title",
+            title="Test opportunillty title",
             stage="lead",
             amount=1000.00
         )
         task = Task.objects.create(
             customer=customer,
-            opportunity=opportunity,
+            opportunity=opportuinity,
             title="Test task title",
             description="Test task description",
             priority="medium",

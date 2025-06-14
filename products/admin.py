@@ -3,7 +3,8 @@ from django.contrib import admin
 
 from .models import( Attributes, AttributeValue,StockMovements,Stocks,StockTransfer, StockTransferItem,   ProductVariantMarketing,
  ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer,
- Category, LensCoating, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand
+ Category, LensCoating, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand,
+ FlexiblePrice
 )
 
 admin.site.site_header = "Optics Admin"
@@ -49,3 +50,4 @@ admin.site.register(ProductVariantReview)
 admin.site.register(ProductVariantQuestion)
 admin.site.register(ProductVariantAnswer)
 admin.site.register(ProductVariantOffer)
+admin.site.register(FlexiblePrice)

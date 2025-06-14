@@ -467,3 +467,5 @@ class StockTransferViewSet(viewsets.ModelViewSet):
 class StockTransferItemViewSet(viewsets.ModelViewSet):
     queryset = StockTransferItem.objects.all()
     serializer_class = StockTransferItemSerializer
+
+

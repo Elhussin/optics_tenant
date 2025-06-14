@@ -150,3 +150,14 @@ class Subscription(BaseModel):
     class Meta:
         verbose_name = "Subscription"
         verbose_name_plural = "Subscriptions"
+
+
+class CustomerGroup(BaseModel):
+    name = models.CharField(max_length=100)
+    customers = models.ManyToManyField(Customer, related_name="groups")
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = "Customer Group"
+        verbose_name_plural = "Customer Groups"
