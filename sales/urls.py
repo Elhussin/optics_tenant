@@ -2,9 +2,7 @@
 
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from sales.views.orders_views import OrderViewSet
-from sales.views.orders_views import InvoiceViewSet
-from sales.views.orders_views import PaymentViewSet
+from sales.views import OrderViewSet,InvoiceViewSet,PaymentViewSet
 
 router = DefaultRouter()
 router.register(r'orders', OrderViewSet, basename='order')
@@ -15,3 +13,4 @@ urlpatterns = [
     path('api/', include(router.urls)),
 ]
 
+ 

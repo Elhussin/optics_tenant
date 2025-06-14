@@ -4,10 +4,10 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from sales.models import Order
-from sales.serializers import OrderSerializer
+from sales.models import Order,Invoice,Payment
+from sales.serializers import OrderSerializer,InvoiceSerializer,Payment
 from sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
-
+from rest_framework.decorators import api_view
 # views.py - Invoice API with actions
 
 from sales.models import Invoice
@@ -59,14 +59,29 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
 
 
-# views.py - Payment API
-
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from sales.models import Payment
-from sales.serializers import PaymentSerializer
 
 class PaymentViewSet(viewsets.ModelViewSet):
     queryset = Payment.objects.all()
-    serializer_class = PaymentSerializer
+    serializer_class = PaymentSerializer 
     permission_classes = [IsAuthenticated]
+
+# views.py - API for returning choices
+
+
+
+
+@api_view(['GET'])
+def order_choices(request):
+    return Response({
+        'order_type': Order.ORDER_TYPE_choices,
+        'payment_type': Order.PAYMENT_TYPE_CHOICES,
+        'status': Order.STATUS_CHOICES,
+        'payment_status': Order.PAYMENT_STATUS_CHOICES,
+    })
+
+@api_view(['GET'])
+def invoice_choices(request):
+    return Response({
+        'invoice_type': Invoice.INVOICE_TYPES,
+        'status': Invoice.INVOICE_STATUS,
+    })

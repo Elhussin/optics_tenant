@@ -89,8 +89,6 @@ class Order(BaseDocument):
 class OrderItem(BaseItem):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='%(class)s_order')
     prescription = models.ForeignKey(PrescriptionRecord, on_delete=models.SET_NULL, null=True, blank=True, related_name='%(class)s_prescription')
-    notes = models.TextField(blank=True)
-    internal_notes = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.product_variant.product.model} - {self.quantity}"
