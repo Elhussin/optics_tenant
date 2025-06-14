@@ -9,6 +9,10 @@ from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 from products.models import StockMovements
+from sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
+from sales.services.invoice_service import confirm_invoice, calculate_invoice_totals
+from sales.services.payment_service import apply_payment
+
 
 # Create your models here.
 
@@ -56,13 +60,13 @@ class Order(BaseModel):
     payment_status = models.CharField(max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
     
     # financial information
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    tax_rate = models.DecimalField(max_digits=5, decimal_places=4, default=Decimal('0.15'))  # 15%
-    tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES, default='cash')
+    # subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    # tax_rate = models.DecimalField(max_digits=5, decimal_places=4, default=Decimal('0.15'))  # 15%
+    # tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    # paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # payment_type = models.CharField(max_length=20, choices=PAYMENT_TYPE_CHOICES, default='cash')
  
     # additional information
     notes = models.TextField(blank=True, help_text="notes")

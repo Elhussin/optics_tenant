@@ -7,7 +7,7 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY','django-insecure-d(ha9ou$)!6d8)vqzc0c87)s*sju@k%odcjayt!l%&tyj_p%a3')
+SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
@@ -60,7 +60,7 @@ SHARED_APPS = (
     'rest_framework_simplejwt',
     "rest_framework_simplejwt.token_blacklist", # Token blacklist for logout 
     "rest_framework.authtoken",         # Token-based authentication
-    'drf_yasg',                         # OpenAPI 3.0 schema generator for Django REST framework 
+    # 'drf_yasg',                         # OpenAPI 3.0 schema generator for Django REST framework 
     'allauth',                          # User authentication & registration 
     'allauth.account',                  # User registration & email verification & password reset
     'allauth.socialaccount',            # Social authentication OAuth 2.0
@@ -71,6 +71,7 @@ SHARED_APPS = (
     'djmoney',                          # MoneyField for Django models
     'drf_spectacular',                  # OpenAPI 3.0 schema generator for Django REST framework 
     'drf_spectacular_sidecar',          # OpenAPI 3.0 UI 'Swagger UI' for Django REST framework 
+    'django_extensions',                # django extensions  create database 
     # Any shared apps between tenants, or general management
 )
 
@@ -89,7 +90,7 @@ TENANT_APPS = (
     'django.contrib.staticfiles',
     "django.contrib.sites",             # Multiple sites in one Django project
     # التطبيقات الخاصة بالعميل فقط
-
+    'django_extensions',
     'core',
     'orders',
     'prescriptions',
@@ -98,8 +99,7 @@ TENANT_APPS = (
     'HRM',
     'branches',
     'accounting',
-
-
+    'sales',
 )
 
 
@@ -113,29 +113,20 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # Middleware
 # ===============================
 MIDDLEWARE = [
-    'django_tenants.middleware.main.TenantMainMiddleware',  # يجب أن يأتي أولاً
-    "corsheaders.middleware.CorsMiddleware",                    # Handles Cross-Origin Resource Sharing (CORS) for API requests        # Provides security enhancements such as HTTPS redirection
-    "whitenoise.middleware.WhiteNoiseMiddleware",               # Serves static files efficiently in production
+    'django_tenants.middleware.main.TenantMainMiddleware',  # يجب أن يكون أولاً لـ django-tenants
+    "corsheaders.middleware.CorsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # احتفظ بهذا ما لم تكن متأكدًا أنك لا تحتاج لحماية CSRF في أي مكان (مثل جميع نماذج HTML)
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "simple_history.middleware.HistoryRequestMiddleware",       # Tracks model changes with django-simple-history
+    "simple_history.middleware.HistoryRequestMiddleware",
+    "allauth.account.middleware.AccountMiddleware", # أضف هذا من قائمتك الثانية
 ]
 
-MIDDLEWARE = [
-
-    "django.contrib.sessions.middleware.SessionMiddleware",     # Manages user sessions 
-               # Provides common utilities like URL normalization
-    # "django.middleware.csrf.CsrfViewMiddleware",              # Protects against Cross-Site Request Forgery (CSRF) attacks
-    "django.contrib.auth.middleware.AuthenticationMiddleware",  # Handles user authentication
-    "django.contrib.messages.middleware.MessageMiddleware",     # Enables message framework for temporary notifications
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",   # Prevents clickjacking attacks by setting X-Frame-Options (iframes)
-    "allauth.account.middleware.AccountMiddleware",             # Manages user accounts and authentication with django-allauth
-]
 # ===============================
 # TEMPLATES
 # ===============================
@@ -247,7 +238,7 @@ SPECTACULAR_SETTINGS = {
 
 # Security settings for production HTTPS
 if not DEBUG:
-    SECURE_HSTS_SECONDS =  86400           # Purpose: Enables HTTP Strict Transport Security (HSTS). For one Year =31536000
+    SECURE_HSTS_SECONDS =  31536000  #86400           # Purpose: Enables HTTP Strict Transport Security (HSTS). For one Year =31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True   # Purpose: Applies HSTS to all subdomains.
     # SECURE_HSTS_PRELOAD = True              # Purpose: Enables HSTS preloading. need register in hstspreload.org.
     # SECURE_SSL_REDIRECT = False              # Purpose: Redirects all HTTP traffic to HTTPS.

@@ -3,6 +3,11 @@
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from products.models import Stocks, StockMovements
+from sales.services.base_document_service import calculate_document_totals
+
+
+def calculate_invoice_totals(invoice):
+    return calculate_document_totals(invoice)
 
 @transaction.atomic
 def confirm_invoice(invoice):
