@@ -19,6 +19,7 @@ class Department(models.Model):
 
     
 class Employee(BaseModel):
+    
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
     position = models.CharField(max_length=100,blank=True)

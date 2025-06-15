@@ -36,6 +36,7 @@ DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 # ===============================
 SHARED_APPS = (
     'django_tenants',
+    'core',
     'tenants',
     'admin_interface',
     'colorfield',
@@ -140,7 +141,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
 
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'
 
@@ -209,6 +212,8 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+
+
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -216,9 +221,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-ACCOUNT_EMAIL_VERIFICATION = 'none' if DEBUG else 'mandatory'
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# ACCOUNT_EMAIL_VERIFICATION = 'none' if DEBUG else 'mandatory'
+# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 
 REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
 }
+

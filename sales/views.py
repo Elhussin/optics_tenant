@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from sales.models import Order,Invoice,Payment
-from sales.serializers import OrderSerializer,InvoiceSerializer,Payment
+from sales.serializers import OrderSerializer,InvoiceSerializer,PaymentSerializer
 from sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
 from rest_framework.decorators import api_view
 # views.py - Invoice API with actions
@@ -85,3 +85,11 @@ def invoice_choices(request):
         'invoice_type': Invoice.INVOICE_TYPES,
         'status': Invoice.INVOICE_STATUS,
     })
+
+
+
+# from sales.permissions import IsBranchManagerOrReadOnly
+
+# class OrderViewSet(viewsets.ModelViewSet):
+#     ...
+#     permission_classes = [IsAuthenticated, IsBranchManagerOrReadOnly]

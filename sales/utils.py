@@ -19,3 +19,6 @@ def generate_serial_number(model, prefix, field_name='number', with_date=True):
 
     new_serial = f"{serial_prefix}-{last_serial + 1:04d}"
     return new_serial
+
+
+

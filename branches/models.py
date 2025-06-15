@@ -34,6 +34,11 @@ class Branch(BaseModel):
 
 
 class BranchUsers(BaseModel):
+    BRANCH_CHOICES = [
+        ('manager', 'Manager'),
+        ('staff', 'Staff'),
+    ]
+    role = models.CharField(max_length=10, choices=BRANCH_CHOICES)
     branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     status = models.BooleanField(default=True)

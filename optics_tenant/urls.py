@@ -16,12 +16,20 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path, include
-from optics_tenant.utils import schema_view
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from rest_framework import routers
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('tenants.urls')),
     path('csv/', include('core.urls')),
-    # توثيق Swagger
-    re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('sales/', include('sales.urls')),
+    # path('accounting/', include('accounting.urls')),
+    # path('hrm/', include('HRM.urls')),
+    # path('crm/', include('CRM.urls')),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     ]
+
+
+
