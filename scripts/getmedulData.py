@@ -38,5 +38,9 @@ if __name__ == "__main__":
     app_label="products"
     model_name="Attributes"   
     data = get_data(schema_name, app_label, model_name)
-    # print(data)
+    print(data)
     save_data_to_csv(data, "scripts/csv/Attributes_data.csv")
+
+
+
+#  py scripts/getmedulData.py

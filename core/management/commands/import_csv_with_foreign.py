@@ -49,6 +49,7 @@ class Command(BaseCommand):
             created_count = 0
             skipped_count = 0
             failed_rows = []
+            print(csv_file_path)
             print(os.path.abspath(csv_file_path))
             with open(os.path.abspath(csv_file_path), newline='', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
@@ -117,4 +118,4 @@ class Command(BaseCommand):
 
 
 # 
-# python manage.py import_csv_with_foreign --config scripts/csv/csv_config.json
+# python manage.py import_csv_with_foreign --config data/csv_config.json

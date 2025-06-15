@@ -41,6 +41,7 @@ SHARED_APPS = (
     'admin_interface',
     'colorfield',
     'django.contrib.contenttypes',
+
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.sessions',
@@ -181,6 +182,7 @@ else:
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# Api Documentation
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API Documentation',
     'DESCRIPTION': 'API for your project',

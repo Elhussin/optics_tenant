@@ -1,0 +1,1430 @@
+openapi: 3.0.3
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: API for your project
+paths:
+  /api/activate/:
+    get:
+      operationId: activate_retrieve
+      tags:
+      - activate
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/register/:
+    post:
+      operationId: register_create
+      tags:
+      - register
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/token/:
+    post:
+      operationId: token_create
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenObtainPairRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenObtainPair'
+          description: ''
+  /api/token/refresh/:
+    post:
+      operationId: token_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - token
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /csv/api/import-csv/:
+    post:
+      operationId: csv_api_import_csv_create
+      tags:
+      - csv
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /sales/api/invoices/:
+    get:
+      operationId: sales_api_invoices_list
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Invoice'
+          description: ''
+    post:
+      operationId: sales_api_invoices_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+  /sales/api/invoices/{id}/:
+    get:
+      operationId: sales_api_invoices_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this invoice.
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+    put:
+      operationId: sales_api_invoices_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this invoice.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+    patch:
+      operationId: sales_api_invoices_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this invoice.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInvoiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedInvoiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInvoiceRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+    delete:
+      operationId: sales_api_invoices_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this invoice.
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /sales/api/invoices/{id}/calculate_totals/:
+    post:
+      operationId: sales_api_invoices_calculate_totals_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this invoice.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+  /sales/api/invoices/{id}/confirm/:
+    post:
+      operationId: sales_api_invoices_confirm_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this invoice.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+          description: ''
+  /sales/api/invoices/choices/:
+    get:
+      operationId: sales_api_invoices_choices_retrieve
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /sales/api/orders/:
+    get:
+      operationId: sales_api_orders_list
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+          description: ''
+    post:
+      operationId: sales_api_orders_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /sales/api/orders/{id}/:
+    get:
+      operationId: sales_api_orders_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    put:
+      operationId: sales_api_orders_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    patch:
+      operationId: sales_api_orders_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrderRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+    delete:
+      operationId: sales_api_orders_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /sales/api/orders/{id}/calculate_totals/:
+    post:
+      operationId: sales_api_orders_calculate_totals_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /sales/api/orders/{id}/cancel/:
+    post:
+      operationId: sales_api_orders_cancel_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /sales/api/orders/{id}/confirm/:
+    post:
+      operationId: sales_api_orders_confirm_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this order.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/OrderRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+          description: ''
+  /sales/api/orders/choices/:
+    get:
+      operationId: sales_api_orders_choices_retrieve
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /sales/api/payments/:
+    get:
+      operationId: sales_api_payments_list
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Payment'
+          description: ''
+    post:
+      operationId: sales_api_payments_create
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+  /sales/api/payments/{id}/:
+    get:
+      operationId: sales_api_payments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    put:
+      operationId: sales_api_payments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    patch:
+      operationId: sales_api_payments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - sales
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+          description: ''
+    delete:
+      operationId: sales_api_payments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this payment.
+        required: true
+      tags:
+      - sales
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItem'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,4})?$
+        tax_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        invoice_number:
+          type: string
+          readOnly: true
+        invoice_type:
+          $ref: '#/components/schemas/InvoiceTypeEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/InvoiceStatusEnum'
+          readOnly: true
+        notes:
+          type: string
+          nullable: true
+        branch:
+          type: integer
+          nullable: true
+        customer:
+          type: integer
+        created_by:
+          type: integer
+          readOnly: true
+          nullable: true
+        order:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - customer
+      - id
+      - invoice_number
+      - items
+      - status
+      - subtotal
+      - tax_amount
+      - total_amount
+      - updated_at
+    InvoiceItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        product_variant:
+          type: integer
+          nullable: true
+        invoice:
+          type: integer
+      required:
+      - created_at
+      - id
+      - invoice
+      - total_price
+      - unit_price
+      - updated_at
+    InvoiceItemRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        product_variant:
+          type: integer
+          nullable: true
+        invoice:
+          type: integer
+      required:
+      - invoice
+      - unit_price
+    InvoiceRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItemRequest'
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,4})?$
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        invoice_type:
+          $ref: '#/components/schemas/InvoiceTypeEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        branch:
+          type: integer
+          nullable: true
+        customer:
+          type: integer
+        order:
+          type: integer
+          nullable: true
+      required:
+      - customer
+      - items
+    InvoiceStatusEnum:
+      enum:
+      - draft
+      - paid
+      - partially_paid
+      - overdue
+      - confirmed
+      type: string
+      description: |-
+        * `draft` - Draft
+        * `paid` - Paid
+        * `partially_paid` - Partially Paid
+        * `overdue` - Overdue
+        * `confirmed` - Confirmed
+    InvoiceTypeEnum:
+      enum:
+      - purchase
+      - sale
+      - return_purchase
+      - return_sale
+      type: string
+      description: |-
+        * `purchase` - Purchase
+        * `sale` - Sale
+        * `return_purchase` - Return Purchase
+        * `return_sale` - Return Sale
+    Order:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        subtotal:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,4})?$
+        tax_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        order_number:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+        payment_status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        payment_type:
+          $ref: '#/components/schemas/PaymentTypeEnum'
+        notes:
+          type: string
+        internal_notes:
+          type: string
+        confirmed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        delivered_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        expected_delivery:
+          type: string
+          format: date-time
+          nullable: true
+        branch:
+          type: integer
+          nullable: true
+        customer:
+          type: integer
+        sales_person:
+          type: integer
+          nullable: true
+      required:
+      - confirmed_at
+      - created_at
+      - customer
+      - delivered_at
+      - id
+      - items
+      - order_number
+      - subtotal
+      - tax_amount
+      - total_amount
+      - updated_at
+    OrderItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        total_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+          readOnly: true
+        product_variant:
+          type: integer
+          nullable: true
+        order:
+          type: integer
+        prescription:
+          type: integer
+          nullable: true
+      required:
+      - created_at
+      - id
+      - order
+      - total_price
+      - unit_price
+      - updated_at
+    OrderItemRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        quantity:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        unit_price:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        product_variant:
+          type: integer
+          nullable: true
+        order:
+          type: integer
+        prescription:
+          type: integer
+          nullable: true
+      required:
+      - order
+      - unit_price
+    OrderRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,4})?$
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+        payment_status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        payment_type:
+          $ref: '#/components/schemas/PaymentTypeEnum'
+        notes:
+          type: string
+        internal_notes:
+          type: string
+        expected_delivery:
+          type: string
+          format: date-time
+          nullable: true
+        branch:
+          type: integer
+          nullable: true
+        customer:
+          type: integer
+        sales_person:
+          type: integer
+          nullable: true
+      required:
+      - customer
+      - items
+    OrderStatusEnum:
+      enum:
+      - pending
+      - confirmed
+      - ready
+      - delivered
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - pending
+        * `confirmed` - confirmed
+        * `ready` - ready
+        * `delivered` - delivered
+        * `cancelled` - cancelled
+    OrderTypeEnum:
+      enum:
+      - cash
+      - credit
+      - insurance
+      type: string
+      description: |-
+        * `cash` - cash
+        * `credit` - credit
+        * `insurance` - insurance
+    PatchedInvoiceRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceItemRequest'
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,4})?$
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        invoice_type:
+          $ref: '#/components/schemas/InvoiceTypeEnum'
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        branch:
+          type: integer
+          nullable: true
+        customer:
+          type: integer
+        order:
+          type: integer
+          nullable: true
+    PatchedOrderRequest:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItemRequest'
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        tax_rate:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,1}(?:\.\d{0,4})?$
+        discount_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,10}(?:\.\d{0,2})?$
+        order_type:
+          $ref: '#/components/schemas/OrderTypeEnum'
+        status:
+          $ref: '#/components/schemas/OrderStatusEnum'
+        payment_status:
+          $ref: '#/components/schemas/PaymentStatusEnum'
+        payment_type:
+          $ref: '#/components/schemas/PaymentTypeEnum'
+        notes:
+          type: string
+        internal_notes:
+          type: string
+        expected_delivery:
+          type: string
+          format: date-time
+          nullable: true
+        branch:
+          type: integer
+          nullable: true
+        customer:
+          type: integer
+        sales_person:
+          type: integer
+          nullable: true
+    PatchedPaymentRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        invoice:
+          type: integer
+    Payment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        invoice:
+          type: integer
+      required:
+      - amount
+      - created_at
+      - id
+      - invoice
+      - payment_method
+      - updated_at
+    PaymentMethodEnum:
+      enum:
+      - cash
+      - card
+      type: string
+      description: |-
+        * `cash` - Cash
+        * `card` - Card
+    PaymentRequest:
+      type: object
+      properties:
+        is_active:
+          type: boolean
+          title: Active
+        is_deleted:
+          type: boolean
+          title: Deleted
+        amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        payment_method:
+          $ref: '#/components/schemas/PaymentMethodEnum'
+        invoice:
+          type: integer
+      required:
+      - amount
+      - invoice
+      - payment_method
+    PaymentStatusEnum:
+      enum:
+      - pending
+      - partial
+      - paid
+      - refunded
+      - disputed
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `partial` - Partial
+        * `paid` - Paid
+        * `refunded` - Refunded
+        * `disputed` - Disputed
+    PaymentTypeEnum:
+      enum:
+      - cash
+      - credit
+      - insurance
+      type: string
+      description: |-
+        * `cash` - cash
+        * `credit` - credit
+        * `insurance` - insurance
+    TokenObtainPair:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+      required:
+      - access
+      - refresh
+    TokenObtainPairRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

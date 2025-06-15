@@ -4,13 +4,13 @@
     "schema": "store1",
     "app": "products",
     "model": "Attribute",
-    "csv": "attribute.csv"
+    "csv": "csv/attribute.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "AttributeValue",
-    "csv": "attribute_value.csv",
+    "csv": "csv/attribute_value.csv",
     "foreign_keys": {
       "attribute": {
         "lookup_field": "name",
@@ -22,7 +22,7 @@
     "schema": "store1",
     "app": "products",
     "model": "Category",
-    "csv": "Categories.csv",
+    "csv": "csv/Categories.csv",
     "foreign_keys": {
       "parent": {
         "lookup_field": "name",
@@ -34,31 +34,31 @@
     "schema": "store1",
     "app": "products",
     "model": "Brand",
-    "csv": "brand.csv"
+    "csv": "csv/brand.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "Supplier",
-    "csv": "supplier.csv"
+    "csv": "csv/supplier.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "Manufacturer",
-    "csv": "manufacturer.csv"
+    "csv": "csv/manufacturer.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "LensCoating",
-    "csv": "lens_coating.csv"
+    "csv": "csv/lens_coating.csv"
   },
   {
     "schema": "store1",
     "app": "products",
     "model": "Product",
-    "csv": "product.csv",
+    "csv": "csv/product.csv",
     "foreign_keys": {
       "brand": {
         "lookup_field": "name",
@@ -82,19 +82,19 @@
     "schema": "store1",
     "app": "branches",
     "model": "Branch",
-    "csv": "branch.csv"
+    "csv": "csv/branch.csv"
   },
   {
     "schema": "store1",
     "app": "HRM",
     "model": "Department",
-    "csv": "department.csv"
+    "csv": "csv/department.csv"
   },
   {
     "schema": "store1",
     "app": "HRM",
     "model": "Employee",
-    "csv": "employee.csv",
+    "csv": "csv/employee.csv",
     "foreign_keys": {
       "user": {
         "related_model": "auth.User",
@@ -111,9 +111,10 @@
     "schema": "store1",
     "app": "auth",
     "model": "User",
-    "csv": "Users.csv"
+    "csv": "csv/Users.csv"
   }
 ]
+
 
 
 

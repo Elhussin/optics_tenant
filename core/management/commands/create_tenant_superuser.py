@@ -44,3 +44,5 @@ class Command(BaseCommand):
             raise CommandError(f"Failed to create superuser: {e}")
 
 # python manage.py create_tenant_superuser --schema_name store1 --username admin --email admin@store1.com
+
+# ython manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com

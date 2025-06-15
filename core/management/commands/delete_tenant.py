@@ -9,12 +9,12 @@ class Command(BaseCommand):
     #     parser.add_argument('schema_name', type=str, help='The schema name of the tenant to delete')
     #     parser.add_argument('--force', action='store_true', help='Force deletion without confirmation')
     def add_arguments(self, parser):
-        parser.add_argument('schema_name', type=str, help='The schema name of the tenant to delete')
+        parser.add_argument('--schema_name', '-s', type=str, help='The schema name of the tenant to delete')
         parser.add_argument('--force', action='store_true', help='Force deletion without confirmation')
 
 
     def handle(self, *args, **options):
-        schema_name = options['schema_name']
+        schema_name = options['schema_name'] if 'schema_name' in options else options.get('s')
 
         try:
             tenant = Client.objects.get(schema_name=schema_name)
@@ -41,3 +41,6 @@ class Command(BaseCommand):
 
         except Exception as e:
             raise CommandError(f'Error while deleting tenant or dropping schema: {e}')
+
+
+# python manage.py delete_tenant -s store1 --force
