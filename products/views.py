@@ -444,7 +444,7 @@ from .models import Product
 from .forms import ProductForm
 
 from rest_framework import viewsets
-from .serializers import (
+from products.serializers.product import (
     ProductSerializer,
     ProductVariantSerializer,
     StocksSerializer,

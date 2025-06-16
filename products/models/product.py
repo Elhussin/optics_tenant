@@ -11,7 +11,7 @@ from django.utils import timezone
 from CRM.models import Customer
 from branches.models import Branch
 from django.urls import reverse
-
+from products.services.generate_sku_code import generate_sku_code
 class Category(BaseModel):
     """Category for glasses"""
     name = models.CharField(max_length=100)
@@ -82,10 +82,10 @@ class ProductVariant(BaseModel):
 
     product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
     
-    # unique hash
+    # SKU International
     sku = models.CharField(max_length=50, unique=True,help_text="SKU (Stock Keeping Unit)") 
     
-    unique_hash = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique Hash")
+    usku = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique USKU")
     # Frame specifications 
     frame_shape = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute__name': 'Shape'})
     frame_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_material',blank=True,null=True, limit_choices_to={'attribute__name': 'Material'})
@@ -156,24 +156,10 @@ class ProductVariant(BaseModel):
             str(self.addition or ''),
         ]
 
-    def generate_unique_hash(self):
-        fields = [str(self.product or '')]
-
-        if self.product.type in ['EW', 'SG']:
-            fields += self._eyewear_fields()
-        elif self.product.type in ['SL', 'CL']:
-            fields += self._lenses_fields()
-        elif self.product.type in ['AX', 'DV', 'OT']:
-            fields += [str(self.product.type),str(self.product.model)]
-
-        base = "-".join(fields)
-        return hashlib.sha256(base.encode()).hexdigest()
-
-
     def clean(self):
-        """Ensure the unique_hash is not already used by another variant."""
-        self.unique_hash = self.generate_unique_hash()
-        exists = ProductVariant.objects.filter(unique_hash=self.unique_hash)
+        """Ensure the unique_USKU not already used by another variant."""
+        self.usku = generate_sku_code(self)
+        exists = ProductVariant.objects.filter(usku=self.usku)
 
         if self.pk:
             exists = exists.exclude(pk=self.pk)
@@ -182,14 +168,9 @@ class ProductVariant(BaseModel):
             raise ValidationError("Variant with identical specifications already exists.")
 
     def save(self, *args, **kwargs):
-        # if not self.sku:
-        #     self.sku = f"SKU-{uuid.uuid4().hex[:8].upper()}"
         self.full_clean()  # <-- This calls clean() and validates before saving
         super().save(*args, **kwargs)
 
-
-    def __str__(self):
-        return f"{self.product.brand.name} {self.product.model}"
 
     @property
     def discount_price(self):
@@ -201,11 +182,11 @@ class ProductVariant(BaseModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['unique_hash']),
+            models.Index(fields=['usku']),
             models.Index(fields=['product_id'])
         ]
         constraints = [
-            models.UniqueConstraint(fields=['unique_hash'], name='unique_variant_by_hash')
+            models.UniqueConstraint(fields=['usku'], name='unique_variant_by_hash')
         ]
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"

@@ -2,28 +2,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
-from products.models import Order, Stock
-from django.db import transaction
 
-
-def generate_serial_number(model, prefix: str, number_field: str = 'order_number'):
-    today = timezone.now().date()
-    serial_prefix = f"{prefix}-{today.strftime('%Y%m%d')}"
-    last_obj = model.objects.filter(
-        **{f"{number_field}__startswith": serial_prefix}
-    ).order_by('-created_at').first()
-
-    if last_obj:
-        try:
-            last_number = int(last_obj.__dict__[number_field].split('-')[-1])
-            next_number = last_number + 1
-        except (ValueError, IndexError):
-            next_number = 1
-    else:
-        next_number = 1
-
-    return f"{serial_prefix}-{next_number:04d}"
-
+import hashlib
 
 
 def send_low_stock_email(stock_items, recipient_email=None):

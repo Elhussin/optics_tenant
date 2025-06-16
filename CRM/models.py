@@ -155,6 +155,7 @@ class Subscription(BaseModel):
 class CustomerGroup(BaseModel):
     name = models.CharField(max_length=100)
     customers = models.ManyToManyField(Customer, related_name="groups")
+    description = models.TextField(blank=True)
     def __str__(self):
         return self.name
     
