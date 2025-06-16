@@ -10,6 +10,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from CRM.models import Customer
 from branches.models import Branch
+from django.urls import reverse
 
 class Category(BaseModel):
     """Category for glasses"""
@@ -74,7 +75,8 @@ class Product(BaseModel):
         unique_together = ('type','brand', 'model')
     def __str__(self):
         return f"{self.brand.name} {self.model}"
-
+    def get_absolute_url(self):
+        return reverse('products:product_detail', args=[str(self.pk)])
 
 class ProductVariant(BaseModel):
 
@@ -82,6 +84,7 @@ class ProductVariant(BaseModel):
     
     # unique hash
     sku = models.CharField(max_length=50, unique=True,help_text="SKU (Stock Keeping Unit)") 
+    
     unique_hash = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique Hash")
     # Frame specifications 
     frame_shape = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute__name': 'Shape'})

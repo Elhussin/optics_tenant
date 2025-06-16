@@ -382,62 +382,88 @@
 #     # إحصائ
 #     pass
 # views.py
+# from rest_framework import viewsets
+# from .models import ProductVariant, Stocks, StockMovements, StockTransfer, StockTransferItem, Product
+# from .serializers import *
+
+# class BulkInventoryMovementAPIView(APIView):
+#     def post(self, request, branch_id):
+#         serializer = BulkStockMovementSerializer(data=request.data)
+#         if not serializer.is_valid():
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         movements_data = serializer.validated_data['movements']
+#         results = []
+
+#         try:
+#             with transaction.atomic():
+#                 for move in movements_data:
+#                     variant_id = move['variant_id']
+#                     quantity = move['quantity']
+#                     movement_type = move['movement_type']
+#                     notes = move.get('notes', '')
+
+#                     inventory = Inventory.objects.select_for_update().get(
+#                         branch_id=branch_id, variant_id=variant_id
+#                     )
+
+#                     quantity_before = inventory.quantity_in_stock
+#                     inventory.quantity_in_stock += quantity
+
+#                     if inventory.quantity_in_stock < 0 and not inventory.allow_backorder:
+#                         raise ValueError(f"Insufficient stock for variant {variant_id}")
+
+#                     inventory.save(update_fields=['quantity_in_stock'])
+
+#                     StockMovements.objects.create(
+#                         inventory=inventory,
+#                         movement_type=movement_type,
+#                         quantity=quantity,
+#                         quantity_before=quantity_before,
+#                         quantity_after=inventory.quantity_in_stock,
+#                         notes=notes
+#                     )
+
+#                     results.append({
+#                         'variant_id': variant_id,
+#                         'quantity_before': quantity_before,
+#                         'quantity_after': inventory.quantity_in_stock,
+#                         'status': 'success'
+#                     })
+
+#             return Response({'movements': results}, status=status.HTTP_200_OK)
+
+#         except Inventory.DoesNotExist:
+#             return Response({"error": f"Inventory not found for one of the variants."}, status=status.HTTP_404_NOT_FOUND)
+#         except ValueError as e:
+#             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import Product
+from .forms import ProductForm
+
 from rest_framework import viewsets
-from .models import ProductVariant, Stocks, StockMovements, StockTransfer, StockTransferItem, Product
-from .serializers import *
-
-class BulkInventoryMovementAPIView(APIView):
-    def post(self, request, branch_id):
-        serializer = BulkStockMovementSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        movements_data = serializer.validated_data['movements']
-        results = []
-
-        try:
-            with transaction.atomic():
-                for move in movements_data:
-                    variant_id = move['variant_id']
-                    quantity = move['quantity']
-                    movement_type = move['movement_type']
-                    notes = move.get('notes', '')
-
-                    inventory = Inventory.objects.select_for_update().get(
-                        branch_id=branch_id, variant_id=variant_id
-                    )
-
-                    quantity_before = inventory.quantity_in_stock
-                    inventory.quantity_in_stock += quantity
-
-                    if inventory.quantity_in_stock < 0 and not inventory.allow_backorder:
-                        raise ValueError(f"Insufficient stock for variant {variant_id}")
-
-                    inventory.save(update_fields=['quantity_in_stock'])
-
-                    StockMovements.objects.create(
-                        inventory=inventory,
-                        movement_type=movement_type,
-                        quantity=quantity,
-                        quantity_before=quantity_before,
-                        quantity_after=inventory.quantity_in_stock,
-                        notes=notes
-                    )
-
-                    results.append({
-                        'variant_id': variant_id,
-                        'quantity_before': quantity_before,
-                        'quantity_after': inventory.quantity_in_stock,
-                        'status': 'success'
-                    })
-
-            return Response({'movements': results}, status=status.HTTP_200_OK)
-
-        except Inventory.DoesNotExist:
-            return Response({"error": f"Inventory not found for one of the variants."}, status=status.HTTP_404_NOT_FOUND)
-        except ValueError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+from .serializers import (
+    ProductSerializer,
+    ProductVariantSerializer,
+    StocksSerializer,
+    StockMovementsSerializer,
+    StockTransferSerializer,
+    StockTransferItemSerializer
+)
+from .models import (
+    ProductVariant, 
+    Stocks,
+    StockMovements,
+    StockTransfer,
+    StockTransferItem
+)
+# from rest_framework.decorators import action
+# from rest_framework.response import Response
+# from rest_framework import status
+# from django.db import transaction
+# from django.shortcuts import get_object_or_404
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -469,3 +495,40 @@ class StockTransferItemViewSet(viewsets.ModelViewSet):
     serializer_class = StockTransferItemSerializer
 
 
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'templates/products/product_list.html'
+    context_object_name = 'object_list'
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'products/product_detail.html'
+    context_object_name = 'object'
+
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'templates/products/product_form.html'
+    success_url = reverse_lazy('products:product_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['view'] = {'action': 'Create'}
+        return context
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'templates/products/product_form.html'
+    success_url = reverse_lazy('products:product_list')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['view'] = {'action': 'Update'}
+        return context
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'templates/products/product_confirm_delete.html'
+    success_url = reverse_lazy('products:product_list')

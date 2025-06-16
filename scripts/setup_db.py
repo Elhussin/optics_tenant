@@ -3,7 +3,7 @@ import psycopg2
 # Database connection parameters
 params = {
     'dbname': 'optics_tenant',
-    'user': 'postgres',  # Using postgres user to grant permissions
+    'user': 'taha1',  # Using postgres user to grant permissions
     'password': '3112',  # Adjust this if your postgres password is different
     'host': 'localhost',
     'port': '5432'

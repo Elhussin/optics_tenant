@@ -50,7 +50,7 @@ class StockTransferSerializer(serializers.ModelSerializer):
 
 class StockMovementItemSerializer(serializers.Serializer):
     variant_id = serializers.IntegerField()
-    movement_type = serializers.ChoiceField(choices=StockMovements.MOVEMENT_TYPES)
+    movement_type = serializers.ChoiceField(choices=StockMovements.MovementType.choices)
     quantity = serializers.IntegerField()
     notes = serializers.CharField(allow_blank=True, required=False)
 
