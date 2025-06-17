@@ -187,7 +187,7 @@ class ProductVariant(BaseModel):
         ]
         constraints = [
             models.UniqueConstraint(fields=['usku'], name='unique_variant_by_hash')
-        ]
+                            ]
         verbose_name = "Product Variant"
         verbose_name_plural = "Product Variants"
 

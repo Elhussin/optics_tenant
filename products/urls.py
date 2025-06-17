@@ -1,46 +1,36 @@
-# from django.urls import path, include
-# from rest_framework.routers import DefaultRouter
-# from .views import *
-
-# urlpatterns = [
-
-# path('api/inventory/<int:branch_id>/bulk-move/', BulkInventoryMovementAPIView.as_view(), name='bulk-inventory-move'),
-# ]
-
-
-
-# router = DefaultRouter()
-# router.register(r'products', ProductViewSet)
-# router.register(r'variants', ProductVariantViewSet)
-# router.register(r'stocks', StocksViewSet)
-# router.register(r'movements', StockMovementsViewSet)
-# router.register(r'transfers', StockTransferViewSet)
-# router.register(r'transfer-items', StockTransferItemViewSet)
-
-
-# urlpatterns = [
-#     path('api/', include(router.urls)),
-# ]
-
-# urlpatterns = [
-#     path('variant/<int:variant_id>/stock-summary/', views.VariantStockSummaryAPIView.as_view(), name='variant-stock-summary'),
-#     path('variant/<int:variant_id>/nearest-branch/', views.NearestBranchAPIView.as_view(), name='nearest-branch'),
-#     path('orders/can-fulfill/', views.OrderFulfillmentCheckAPIView.as_view(), name='can-fulfill-order'),
-# ]
-
-
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 from .views import (
-    ProductListView, ProductDetailView,
-    ProductCreateView, ProductUpdateView, ProductDeleteView
+    CategoryListCreateView, CategoryRetrieveUpdateDestroyView,
+    ProductListCreateView, ProductRetrieveUpdateDestroyView,
+    ProductVariantListCreateView, ProductVariantRetrieveUpdateDestroyView,
+    FlexiblePriceListCreateView, FlexiblePriceRetrieveUpdateDestroyView,
+    ProductImageListCreateView, ProductImageRetrieveUpdateDestroyView,
+    ProductSearchView, ProductPriceCalculatorView
 )
 
-app_name = 'products'
+router = DefaultRouter()
+# Registering viewsets with the router
+
 
 urlpatterns = [
-    path('', ProductListView.as_view(), name='product_list'),
-    path('create/', ProductCreateView.as_view(), name='product_create'),
-    path('<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
-    path('<int:pk>/update/', ProductUpdateView.as_view(), name='product_update'),
-    path('<int:pk>/delete/', ProductDeleteView.as_view(), name='product_delete'),
+    path('categories/', CategoryListCreateView.as_view(), name='category-list'),
+    path('categories/<int:pk>/', CategoryRetrieveUpdateDestroyView.as_view(), name='category-detail'),
+    
+    path('products/', ProductListCreateView.as_view(), name='product-list'),
+    path('products/<int:pk>/', ProductRetrieveUpdateDestroyView.as_view(), name='product-detail'),
+    
+    path('products/<int:product_id>/variants/', ProductVariantListCreateView.as_view(), name='variant-list'),
+    path('variants/<int:pk>/', ProductVariantRetrieveUpdateDestroyView.as_view(), name='variant-detail'),
+    
+    path('variants/<int:variant_id>/prices/', FlexiblePriceListCreateView.as_view(), name='price-list'),
+    path('prices/<int:pk>/', FlexiblePriceRetrieveUpdateDestroyView.as_view(), name='price-detail'),
+    
+    path('variants/<int:variant_id>/images/', ProductImageListCreateView.as_view(), name='image-list'),
+    path('images/<int:pk>/', ProductImageRetrieveUpdateDestroyView.as_view(), name='image-detail'),
+    
+    path('search/', ProductSearchView.as_view(), name='product-search'),
+    path('variants/<int:variant_id>/calculate-price/', ProductPriceCalculatorView.as_view(), name='price-calculator'),
+    
+    path('', include(router.urls)),
 ]

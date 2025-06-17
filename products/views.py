@@ -1,534 +1,177 @@
-# from django.shortcuts import render
+from rest_framework import generics, permissions
+from rest_framework.response import Response
+from .models import Category, Product, ProductVariant,FlexiblePrice,ProductImage
 
-# # Create your views here.
-# # views.py - عرض البيانات
-# from django.shortcuts import render, get_object_or_404, redirect
-# from django.contrib.auth.decorators import login_required
-# from django.contrib import messages
-# from django.http import JsonResponse, HttpResponse
-# from django.core.paginator import Paginator
-# from django.db.models import Q, Sum, Count
-# from django.db import transaction
-# from django.utils import timezone
-# from django.views.decorators.http import require_http_methods
-# from django.views.decorators.csrf import csrf_exempt
-# import json
+from products.serializers.inventory import StocksSerializer, StockMovementsSerializer, StockTransferSerializer, StockTransferItemSerializer
+from products.serializers.product import CategorySerializer, ProductSerializer, ProductVariantSerializer, FlexiblePriceSerializer, ProductImageSerializer
 
-# from .models import Order, OrderItem, Invoice, InvoiceItem, Stock, StockMovement
-# from .forms import OrderForm, OrderItemFormSet, InvoiceForm, StockAdjustmentForm
-# from .services import OrderService, InventoryService, InvoiceService
+from rest_framework import filters, status
 
-
-# # Order Views
-# @login_required
-# def order_list(request):
-#     """قائمة الطلبات"""
-#     orders = Order.objects.select_related('customer', 'branch').order_by('-created_at')
-    
-#     # البحث والفلترة
-#     search = request.GET.get('search')
-#     if search:
-#         orders = orders.filter(
-#             Q(order_number__icontains=search) |
-#             Q(customer__full_name__icontains=search) |
-#             Q(customer__phone__icontains=search)
-#         )
-    
-#     status = request.GET.get('status')
-#     if status:
-#         orders = orders.filter(status=status)
-    
-#     # التصفح
-#     paginator = Paginator(orders, 20)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-    
-#     context = {
-#         'page_obj': page_obj,
-#         'status_choices': Order.STATUS_CHOICES,
-#         'search': search,
-#         'selected_status': status,
-#     }
-    
-#     return render(request, 'orders/order_list.html', context)
+from rest_framework.parsers import MultiPartParser, FormParser
+# Search and Price Calculation Views
+from CRM.models import Customer
+from branches.models import Branch
+from rest_framework.views import APIView
+import six
+from django.db.models import Q
+from django_filters import rest_framework as filters
+from django_filters.rest_framework import DjangoFilterBackend
 
 
-# @login_required
-# def order_detail(request, order_id):
-#     """تفاصيل الطلب"""
-#     order = get_object_or_404(Order, id=order_id)
-    
-#     context = {
-#         'order': order,
-#         'items': order.items.select_related('variant__product').all(),
-#         'invoices': order.invoices.all(),
-#     }
-    
-#     return render(request, 'orders/order_detail.html', context)
+class CategoryListCreateView(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'pk'
 
 
-# @login_required
-# @transaction.atomic
-# def order_create(request):
-#     """إنشاء طلب جديد"""
-#     if request.method == 'POST':
-#         form = OrderForm(request.POST)
-#         formset = OrderItemFormSet(request.POST)
-        
-#         if form.is_valid() and formset.is_valid():
-#             order = form.save(commit=False)
-#             order.save()
-            
-#             formset.instance = order
-#             formset.save()
-            
-#             messages.success(request, f'تم إنشاء الطلب {order.order_number} بنجاح')
-#             return redirect('order_detail', order_id=order.id)
-#     else:
-#         form = OrderForm()
-#         formset = OrderItemFormSet()
-    
-#     context = {
-#         'form': form,
-#         'formset': formset,
-#     }__all__ = [
-    
-#     return render(request, 'orders/order_form.html', context)
+class ProductFilter(filters.FilterSet):
+    class Meta:
+        model = Product
+        fields = {
+            'category': ['exact'],
+            'brand': ['exact'],
+            'type': ['exact'],
+            'is_active': ['exact'],
+        }
 
-
-# @login_required
-# @require_http_methods(["POST"])
-# def order_confirm(request, order_id):
-#     """تأكيد الطلب"""
-#     order = get_object_or_404(Order, id=order_id)
-    
-#     try:
-#         order.confirm_order(request.user)
-#         messages.success(request, f'تم تأكيد الطلب {order.order_number}')
-#     except ValidationError as e:
-#         messages.error(request, str(e))
-    
-#     return redirect('order_detail', order_id=order.id)
-
-
-# @login_required
-# @require_http_methods(["POST"])
-# def order_cancel(request, order_id):
-#     """إلغاء الطلب"""
-#     order = get_object_or_404(Order, id=order_id)
-    
-#     try:
-#         order.cancel_order(request.user)
-#         messages.success(request, f'تم إلغاء الطلب {order.order_number}')
-#     except ValidationError as e:
-#         messages.error(request, str(e))
-    
-#     return redirect('order_detail', order_id=order.id)
-
-
-# # Invoice Views
-# @login_required
-# def invoice_list(request):
-#     """قائمة الفواتير"""
-#     invoices = Invoice.objects.select_related('customer', 'branch').order_by('-date_created')
-    
-#     # البحث والفلترة
-#     search = request.GET.get('search')
-#     if search:
-#         invoices = invoices.filter(
-#             Q(invoice_number__icontains=search) |
-#             Q(customer__full_name__icontains=search)
-#         )
-    
-#     status = request.GET.get('status')
-#     if status:
-#         invoices = invoices.filter(status=status)
-    
-#     # التصفح
-#     paginator = Paginator(invoices, 20)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-    
-#     context = {
-#         'page_obj': page_obj,
-#         'status_choices': Invoice.INVOICE_STATUS_CHOICES,
-#         'search': search,
-#         'selected_status': status,
-#     }
-    
-#     return render(request, 'invoices/invoice_list.html', context)
-
-
-# @login_required
-# def invoice_detail(request, invoice_id):
-#     """تفاصيل الفاتورة"""
-#     invoice = get_object_or_404(Invoice, id=invoice_id)
-    
-#     context = {
-#         'invoice': invoice,
-#         'items': invoice.items.select_related('variant__product').all(),
-#     }
-    
-#     return render(request, 'invoices/invoice_detail.html', context)
-
-
-# @login_required
-# @transaction.atomic
-# def invoice_create_from_order(request, order_id):
-#     """إنشاء فاتورة من الطلب"""
-#     order = get_object_or_404(Order, id=order_id)
-    
-#     try:
-#         invoice = InvoiceService.create_invoice_from_order(order, request.user)
-#         messages.success(request, f'تم إنشاء الفاتورة {invoice.invoice_number} من الطلب {order.order_number}')
-#         return redirect('invoice_detail', invoice_id=invoice.id)
-#     except ValidationError as e:
-#         messages.error(request, str(e))
-#         return redirect('order_detail', order_id=order.id)
-
-
-# @login_required
-# @require_http_methods(["POST"])
-# def invoice_payment(request, invoice_id):
-#     """معالجة دفع الفاتورة"""
-#     invoice = get_object_or_404(Invoice, id=invoice_id)
-    
-#     try:
-#         amount = float(request.POST.get('amount', 0))
-#         payment_method = request.POST.get('payment_method', 'cash')
-        
-#         InvoiceService.process_invoice_payment(invoice, amount, payment_method)
-#         messages.success(request, f'تم تسجيل دفعة بقيمة {amount} للفاتورة {invoice.invoice_number}')
-#     except (ValueError, ValidationError) as e:
-#         messages.error(request, str(e))
-    
-#     return redirect('invoice_detail', invoice_id=invoice.id)
-
-
-# # Stock Views
-# @login_required
-# def stock_list(request):
-#     """قائمة المخزون"""
-#     stocks = Stock.objects.select_related('variant__product', 'branch').order_by('branch', 'variant__product__name')
-    
-#     # الفلترة
-#     branch_id = request.GET.get('branch')
-#     if branch_id:
-#         stocks = stocks.filter(branch_id=branch_id)
-    
-#     low_stock = request.GET.get('low_stock')
-#     if low_stock:
-#         stocks = stocks.filter(stock_quantity__lte=models.F('minimum_stock_level'))
-    
-#     search = request.GET.get('search')
-#     if search:
-#         stocks = stocks.filter(
-#             Q(variant__product__name__icontains=search) |
-#             Q(variant__sku__icontains=search)
-#         )
-    
-#     # التصفح
-#     paginator = Paginator(stocks, 50)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-    
-#     context = {
-#         'page_obj': page_obj,
-#         'search': search,
-#         'selected_branch': branch_id,
-#         'low_stock': low_stock,
-#     }
-    
-#     return render(request, 'stock/stock_list.html', context)
-
-
-# @login_required
-# def stock_movements(request):
-#     """حركات المخزون"""
-#     movements = StockMovement.objects.select_related('variant__product', 'branch', 'created_by').order_by('-movement_date')
-    
-#     # الفلترة
-#     branch_id = request.GET.get('branch')
-#     if branch_id:
-#         movements = movements.filter(branch_id=branch_id)
-    
-#     movement_type = request.GET.get('type')
-#     if movement_type:
-#         movements = movements.filter(movement_type=movement_type)
-    
-#     # التصفح
-#     paginator = Paginator(movements, 100)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-    
-#     context = {
-#         'page_obj': page_obj,
-#         'movement_types': StockMovement.MOVEMENT_TYPES,
-#         'selected_branch': branch_id,
-#         'selected_type': movement_type,
-#     }
-    
-#     return render(request, 'stock/movements.html', context)
-
-
-# @login_required
-# @transaction.atomic
-# def stock_adjustment(request):
-#     """تعديل المخزون"""
-#     if request.method == 'POST':
-#         form = StockAdjustmentForm(request.POST)
-#         if form.is_valid():
-#             try:
-#                 InventoryService.adjust_stock(
-#                     branch=form.cleaned_data['branch'],
-#                     variant=form.cleaned_data['variant'],
-#                     new_quantity=form.cleaned_data['new_quantity'],
-#                     user=request.user,
-#                     reason=form.cleaned_data.get('reason', 'Manual adjustment')
-#                 )
-#                 messages.success(request, 'تم تعديل المخزون بنجاح')
-#                 return redirect('stock_list')
-#             except ValidationError as e:
-#                 messages.error(request, str(e))
-#     else:
-#         form = StockAdjustmentForm()
-    
-#     context = {'form': form}
-#     return render(request, 'stock/adjustment_form.html', context)
-
-
-# # API Views for AJAX
-# @login_required
-# def api_product_variants(request):
-#     """API للحصول على متغيرات المنتج"""
-#     product_id = request.GET.get('product_id')
-#     if not product_id:
-#         return JsonResponse({'variants': []})
-    
-#     variants = ProductVariant.objects.filter(product_id=product_id).values(
-#         'id', 'sku', 'name', 'selling_price', 'cost_price'
-#     )
-    
-#     return JsonResponse({'variants': list(variants)})
-
-
-# @login_required
-# def api_stock_check(request):
-#     """API للتحقق من المخزون"""
-#     variant_id = request.GET.get('variant_id')
-#     branch_id = request.GET.get('branch_id')
-    
-#     if not variant_id or not branch_id:
-#         return JsonResponse({'available': 0})
-    
-#     stock = Stock.objects.filter(variant_id=variant_id, branch_id=branch_id).first()
-#     available = stock.available_quantity if stock else 0
-    
-#     return JsonResponse({
-#         'available': available,
-#         'reserved': stock.quantity_reserved if stock else 0,
-#         'total': stock.stock_quantity if stock else 0,
-#     })
-
-
-# @login_required
-# def api_customer_search(request):
-#     """API للبحث عن العملاء"""
-#     query = request.GET.get('q', '')
-#     if len(query) < 2:
-#         return JsonResponse({'customers': []})
-    
-#     customers = Customer.objects.filter(
-#         Q(full_name__icontains=query) |
-#         Q(phone__icontains=query) |
-#         Q(email__icontains=query)
-#     )[:10]
-    
-#     results = []
-#     for customer in customers:
-#         results.append({
-#             'id': customer.id,
-#             'name': customer.full_name,
-#             'phone': customer.phone,
-#             'email': customer.email,
-#         })
-    
-#     return JsonResponse({'customers': results})
-
-
-# # Export Views
-# @login_required
-# def export_stock_excel(request):
-#     """تصدير المخزون إلى Excel"""
-#     branch_id = request.GET.get('branch')
-#     low_stock = request.GET.get('low_stock')
-    
-#     stocks = Stock.objects.select_related('variant__product', 'branch')
-    
-#     if branch_id:
-#         stocks = stocks.filter(branch_id=branch_id)
-    
-#     if low_stock:
-#         stocks = stocks.filter(stock_quantity__lte=models.F('minimum_stock_level'))
-    
-#     from .utils import export_stock_to_excel
-#     return export_stock_to_excel(stocks)
-
-
-# # Dashboard Views
-# @login_required
-# def dashboard(request):
-#     """لوحة التحكم"""
-#     # إحصائ
-#     pass
-# views.py
-# from rest_framework import viewsets
-# from .models import ProductVariant, Stocks, StockMovements, StockTransfer, StockTransferItem, Product
-# from .serializers import *
-
-# class BulkInventoryMovementAPIView(APIView):
-#     def post(self, request, branch_id):
-#         serializer = BulkStockMovementSerializer(data=request.data)
-#         if not serializer.is_valid():
-#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#         movements_data = serializer.validated_data['movements']
-#         results = []
-
-#         try:
-#             with transaction.atomic():
-#                 for move in movements_data:
-#                     variant_id = move['variant_id']
-#                     quantity = move['quantity']
-#                     movement_type = move['movement_type']
-#                     notes = move.get('notes', '')
-
-#                     inventory = Inventory.objects.select_for_update().get(
-#                         branch_id=branch_id, variant_id=variant_id
-#                     )
-
-#                     quantity_before = inventory.quantity_in_stock
-#                     inventory.quantity_in_stock += quantity
-
-#                     if inventory.quantity_in_stock < 0 and not inventory.allow_backorder:
-#                         raise ValueError(f"Insufficient stock for variant {variant_id}")
-
-#                     inventory.save(update_fields=['quantity_in_stock'])
-
-#                     StockMovements.objects.create(
-#                         inventory=inventory,
-#                         movement_type=movement_type,
-#                         quantity=quantity,
-#                         quantity_before=quantity_before,
-#                         quantity_after=inventory.quantity_in_stock,
-#                         notes=notes
-#                     )
-
-#                     results.append({
-#                         'variant_id': variant_id,
-#                         'quantity_before': quantity_before,
-#                         'quantity_after': inventory.quantity_in_stock,
-#                         'status': 'success'
-#                     })
-
-#             return Response({'movements': results}, status=status.HTTP_200_OK)
-
-#         except Inventory.DoesNotExist:
-#             return Response({"error": f"Inventory not found for one of the variants."}, status=status.HTTP_404_NOT_FOUND)
-#         except ValueError as e:
-#             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from .models import Product
-from .forms import ProductForm
-
-from rest_framework import viewsets
-from products.serializers.product import (
-    ProductSerializer,
-    ProductVariantSerializer,
-    StocksSerializer,
-    StockMovementsSerializer,
-    StockTransferSerializer,
-    StockTransferItemSerializer
-)
-from .models import (
-    ProductVariant, 
-    Stocks,
-    StockMovements,
-    StockTransfer,
-    StockTransferItem
-)
-# from rest_framework.decorators import action
-# from rest_framework.response import Response
-# from rest_framework import status
-# from django.db import transaction
-# from django.shortcuts import get_object_or_404
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
+class ProductListCreateView(generics.ListCreateAPIView):
+    queryset = Product.objects.select_related(
+        'category', 'supplier', 'manufacturer', 'brand'
+    ).prefetch_related('variants')
     serializer_class = ProductSerializer
+    # filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
+    filterset_class = ProductFilter
+    search_fields = ['name', 'model', 'brand__name']
+    ordering_fields = ['name', 'created_at', 'selling_price']
+    ordering = ['-created_at']
+
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+
+class ProductRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.select_related(
+        'category', 'supplier', 'manufacturer', 'brand'
+    ).prefetch_related('variants', 'variants__images')
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
 
 
-class ProductVariantViewSet(viewsets.ModelViewSet):
-    queryset = ProductVariant.objects.all()
+
+class ProductVariantListCreateView(generics.ListCreateAPIView):
     serializer_class = ProductVariantSerializer
+    
+    def get_queryset(self):
+        product_id = self.kwargs.get('product_id')
+        return ProductVariant.objects.filter(product_id=product_id).select_related(
+            'product', 'frame_color', 'lens_color', 'lens_type'
+        ).prefetch_related('lens_coatings', 'images')
 
+    def perform_create(self, serializer):
+        product_id = self.kwargs.get('product_id')
+        serializer.save(product_id=product_id, created_by=self.request.user)
 
-class StocksViewSet(viewsets.ModelViewSet):
-    queryset = Stocks.objects.all()
-    serializer_class = StocksSerializer
-
-
-class StockMovementsViewSet(viewsets.ModelViewSet):
-    queryset = StockMovements.objects.all()
-    serializer_class = StockMovementsSerializer
-
-
-class StockTransferViewSet(viewsets.ModelViewSet):
-    queryset = StockTransfer.objects.all()
-    serializer_class = StockTransferSerializer
-
-
-class StockTransferItemViewSet(viewsets.ModelViewSet):
-    queryset = StockTransferItem.objects.all()
-    serializer_class = StockTransferItemSerializer
+class ProductVariantRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProductVariant.objects.select_related(
+        'product', 'frame_color', 'lens_color', 'lens_type'
+    ).prefetch_related('lens_coatings', 'images')
+    serializer_class = ProductVariantSerializer
+    lookup_field = 'pk'
 
 
 
-class ProductListView(ListView):
-    model = Product
-    template_name = 'templates/products/product_list.html'
-    context_object_name = 'object_list'
+class FlexiblePriceListCreateView(generics.ListCreateAPIView):
+    serializer_class = FlexiblePriceSerializer
+    
+    def get_queryset(self):
+        variant_id = self.kwargs.get('variant_id')
+        return FlexiblePrice.objects.filter(variant_id=variant_id).select_related(
+            'variant', 'customer', 'customer_group', 'branch'
+        )
 
-class ProductDetailView(DetailView):
-    model = Product
-    template_name = 'products/product_detail.html'
-    context_object_name = 'object'
+    def perform_create(self, serializer):
+        variant_id = self.kwargs.get('variant_id')
+        serializer.save(variant_id=variant_id, created_by=self.request.user)
 
-class ProductCreateView(CreateView):
-    model = Product
-    form_class = ProductForm
-    template_name = 'templates/products/product_form.html'
-    success_url = reverse_lazy('products:product_list')
+class FlexiblePriceRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = FlexiblePrice.objects.select_related(
+        'variant', 'customer', 'customer_group', 'branch'
+    )
+    serializer_class = FlexiblePriceSerializer
+    lookup_field = 'pk'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['view'] = {'action': 'Create'}
-        return context
 
-class ProductUpdateView(UpdateView):
-    model = Product
-    form_class = ProductForm
-    template_name = 'templates/products/product_form.html'
-    success_url = reverse_lazy('products:product_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['view'] = {'action': 'Update'}
-        return context
+class ProductImageListCreateView(generics.ListCreateAPIView):
+    serializer_class = ProductImageSerializer
+    parser_classes = [MultiPartParser, FormParser]
+    
+    def get_queryset(self):
+        variant_id = self.kwargs.get('variant_id')
+        return ProductImage.objects.filter(variant_id=variant_id)
 
-class ProductDeleteView(DeleteView):
-    model = Product
-    template_name = 'templates/products/product_confirm_delete.html'
-    success_url = reverse_lazy('products:product_list')
+    def perform_create(self, serializer):
+        variant_id = self.kwargs.get('variant_id')
+        serializer.save(variant_id=variant_id)
+
+class ProductImageRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ProductImage.objects.all()
+    serializer_class = ProductImageSerializer
+    parser_classes = [MultiPartParser, FormParser]
+    lookup_field = 'pk'
+
+
+
+
+class ProductSearchView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '')
+        category = request.query_params.get('category', None)
+        
+        queryset = ProductVariant.objects.select_related(
+            'product', 'product__brand', 'frame_color', 'lens_color'
+        ).prefetch_related('images')
+        
+        if query:
+            queryset = queryset.filter(
+                Q(product__name__icontains=query) |
+                Q(product__model__icontains=query) |
+                Q(product__brand__name__icontains=query) |
+                Q(sku__icontains=query)
+            )
+        
+        if category:
+            queryset = queryset.filter(product__category_id=category)
+        
+        serializer = ProductVariantListSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class ProductPriceCalculatorView(APIView):
+    def post(self, request, variant_id):
+        variant = generics.get_object_or_404(ProductVariant, pk=variant_id)
+        customer_id = request.data.get('customer_id')
+        branch_id = request.data.get('branch_id')
+        quantity = request.data.get('quantity', 1)
+        
+        price = variant.get_price_for(
+            customer=Customer.objects.get(pk=customer_id) if customer_id else None,
+            branch=Branch.objects.get(pk=branch_id) if branch_id else None,
+            quantity=quantity
+        )
+        
+        return Response({
+            'variant_id': variant_id,
+            'original_price': variant.selling_price,
+            'final_price': price,
+            'currency': 'SAR'
+        }, status=status.HTTP_200_OK)
+    
