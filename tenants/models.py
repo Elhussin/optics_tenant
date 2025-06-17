@@ -35,34 +35,13 @@ class Client(TenantMixin):
     name = models.CharField(max_length=100)
     paid_until = models.DateField(null=True, blank=True)
     on_trial = models.BooleanField(default=True)
-
-    # True to automatically create schema on save
     auto_create_schema = True
 
     def __str__(self):
         return self.name
 
-# class Domain(DomainMixin):
-#     pass
 class Domain(DomainMixin):
     pass
-    # tenant = models.ForeignKey('Client', on_delete=models.CASCADE, related_name='domains')
-    
-    # class Meta:
-    #     unique_together = ('tenant', 'domain')
-        
-    # def __str__(self):
-    #     return self.domain
-
-
-
-
-
-
-
-
-
-
 
 
 

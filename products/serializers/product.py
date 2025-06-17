@@ -1,5 +1,5 @@
-
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 from products.models import (
     Category, LensCoating, Product, ProductVariant, 
     ProductImage, FlexiblePrice,Supplier,Manufacturer,Brand,AttributeValue,
@@ -41,17 +41,17 @@ class ProductImageSerializer(serializers.ModelSerializer):
         model = ProductImage
         fields = [
             'id', 'variant', 'image', 'alt_text', 
-            'order', 'is_primary', 'created_at'
+            'order', 'is_primary'
         ]
-        read_only_fields = ['id', 'created_at']
+        read_only_fields = ['id', ]
         extra_kwargs = {
             'image': {'required': True}
         }
 
 class ProductVariantListSerializer(serializers.ModelSerializer):
-    frame_color = AttributeValueSerializer(read_only=True)
-    lens_color = AttributeValueSerializer(read_only=True)
-    discount_price = serializers.SerializerMethodField()
+    frame_color: AttributeValueSerializer = AttributeValueSerializer(read_only=True)
+    lens_color: AttributeValueSerializer = AttributeValueSerializer(read_only=True)
+    discount_price: float | None = serializers.SerializerMethodField()
     
     class Meta:
         model = ProductVariant
@@ -61,8 +61,19 @@ class ProductVariantListSerializer(serializers.ModelSerializer):
             'is_active'
         ]
     
-    def get_discount_price(self, obj):
-        return obj.discount_price
+    @extend_schema_field(float)
+    def get_discount_price(self, obj: ProductVariant) -> float | None:
+        """Calculate the discount price for the product variant.
+        
+        Args:
+            obj: ProductVariant instance
+            
+        Returns:
+            float: Discounted price or None if no discount
+        """
+        if obj.discount_percentage:
+            return float(obj.selling_price * (1 - obj.discount_percentage / 100))
+        return None
 
 class ProductSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True)

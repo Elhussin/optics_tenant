@@ -2,12 +2,10 @@
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.text import slugify
+from dateutil.relativedelta import relativedelta
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _ # for translation
 
-# def send_activation_email(email, token):
-#     activation_link = f"http://{settings.TENANT_BASE_DOMAIN}/api/activate/?token={token}"
-#     subject = "Activate your account"
-#     message = f"Click the link to activate your account:\n{activation_link}"
-#     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
 
 def send_activation_email(email, token):
     activation_link = f"http://{settings.TENANT_BASE_DOMAIN}:{settings.PORT}/api/activate/?token={token}"
@@ -66,3 +64,8 @@ def send_message_acount_activated(email,schema_name,name):
     Solo Vizion Team
     """
     send_mail("Account Activated", message, settings.DEFAULT_FROM_EMAIL, [email])
+
+
+def paid_until_date():
+    return timezone.now().date() + relativedelta(years=1)
+
