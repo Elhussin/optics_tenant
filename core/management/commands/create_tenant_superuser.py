@@ -45,4 +45,4 @@ class Command(BaseCommand):
 
 # python manage.py create_tenant_superuser --schema_name store1 --username admin --email admin@store1.com
 
-# ython manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com
+# python manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com

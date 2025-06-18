@@ -5,7 +5,7 @@ from psycopg2 import sql
 admin_params = {
     'dbname': 'postgres',
     'user': 'postgres',  # يجب أن يكون user لديه صلاحيات إنشاء قواعد
-    'password': '3112',
+    'password': 'admin1234',
     'host': 'localhost',
     'port': '5432'
 }
@@ -37,7 +37,7 @@ try:
     db_conn = psycopg2.connect(
         dbname=target_db,
         user='postgres',
-        password='3112',
+        password='admin1234',
         host='localhost',
         port='5432'
     )
