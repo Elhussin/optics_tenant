@@ -5,6 +5,10 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view
 from django.contrib.auth import authenticate
+from rest_framework import viewsets
+from .serializers import UserSerializer,EmployeeSerializer, LeaveSerializer,AttendanceSerializer,PerformanceReviewSerializer,PayrollSerializer,TaskSerializer,NotificationSerializer
+from .models import User,Employee,Leave,Attendance,PerformanceReview,Payroll,Task,Notification
+
 
 @api_view(['POST'])
 def login_view(request):
@@ -40,8 +44,6 @@ def login_view(request):
 
     return response
 
-
-
 @api_view(['POST'])
 def refresh_token_view(request):
     from rest_framework_simplejwt.tokens import RefreshToken
@@ -73,3 +75,62 @@ def logout_view(request):
     response.delete_cookie('access_token')
     response.delete_cookie('refresh_token')
     return response
+
+@api_view(['POST'])
+def register_view(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        return Response({"detail": "User registered successfully"})
+
+    return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def update_profile_view(request):
+    user = request.user
+    serializer = UserSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"detail": "Profile updated successfully"})
+
+    return Response(serializer.errors, status=400)
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class EmployeeViewSet(viewsets.ModelViewSet):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+
+
+class LeaveViewSet(viewsets.ModelViewSet):
+    queryset = Leave.objects.all()
+    serializer_class = LeaveSerializer
+
+
+class AttendanceViewSet(viewsets.ModelViewSet):
+    queryset = Attendance.objects.all()
+    serializer_class = AttendanceSerializer
+
+
+class PerformanceReviewViewSet(viewsets.ModelViewSet):
+    queryset = PerformanceReview.objects.all()
+    serializer_class = PerformanceReviewSerializer
+
+
+class PayrollViewSet(viewsets.ModelViewSet):
+    queryset = Payroll.objects.all()
+    serializer_class = PayrollSerializer
+
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer

@@ -3,7 +3,8 @@ from django.contrib.auth import get_user_model
 from core.models import BaseModel
 from django.core.validators import MinLengthValidator, MaxLengthValidator
 User = get_user_model()
-# Create your models here.
+
+
 
 class Customer(BaseModel):
     CUSTOMER_TYPE_CHOICES = [
@@ -54,8 +55,6 @@ class Customer(BaseModel):
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
-
-
 
 
 class Interaction(BaseModel):

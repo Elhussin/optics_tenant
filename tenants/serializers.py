@@ -14,6 +14,8 @@ from django.utils.translation import gettext_lazy as _ # for translation
 from django.utils.text import slugify
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
+
+
     password = serializers.CharField(
         write_only=True,
         min_length=8,

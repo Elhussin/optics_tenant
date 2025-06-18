@@ -12,7 +12,6 @@ router.register(r'categories', CategoryViewSet, basename='category')
 router.register(r'recurring-transactions', RecurringTransactionViewSet, basename='recurring-transaction')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    path('', include(router.urls)),
 ]
-
 

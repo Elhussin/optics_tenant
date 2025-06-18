@@ -3,9 +3,20 @@ from django.db import models
 # Create your models here.
 from django.db import models
 from datetime import timedelta
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+from core.permissions.roles import Role
 from core.models import BaseModel
-User = get_user_model()
+
+class User(AbstractUser):
+    role = models.CharField(
+        max_length=50,
+        choices=[(role.name, role.value) for role in Role],
+        default=Role.RECEPTIONIST.name
+    )
+
+    phone = models.CharField(max_length=20, null=True, blank=True)
+
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
@@ -15,9 +26,6 @@ class Department(models.Model):
     def __str__(self):
         return self.name
 
-
-
-    
 class Employee(BaseModel):
     
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
@@ -103,8 +111,6 @@ class Task(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.employee.user.username}"
-    
-
 
 class Notification(models.Model):
     NOTIFICATION_TYPES = [

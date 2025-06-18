@@ -1,33 +1,92 @@
-from django.shortcuts import render
 
-# Create your views here.
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from dj_rest_auth.views import LoginView
-from notsDjango.utulities import BaseViewSet,DynamicModelViewSet
-from .serializers import UserSerializer
-from django.contrib.auth import get_user_model
+from rest_framework import viewsets
 from rest_framework.response import Response
-User = get_user_model()
 
-# UserDetailView: get the current user by token
 
-class UserDetailView(BaseViewSet):
-    serializer_class = UserSerializer
+from .models import (
+    Customer, CustomerGroup, Opportunity, Interaction, 
+    Complaint, Subscription, Task,Campaign,Document
+)
+from .serializers import (
+    CustomerSerializer, CustomerGroupSerializer, OpportunitySerializer, InteractionSerializer, 
+    ComplaintSerializer, SubscriptionSerializer, TaskSerializer,CampaignSerializer,DocumentSerializer
+)
 
-    def get_queryset(self):
-        # استرجاع المستخدم الحالي فقط
-        return User.objects.filter(id=self.request.user.id).only('id', 'username', 'email', 'is_superuser', 'last_name', 'first_name', 'is_staff', 'is_active')
 
-    def retrieve(self, request, pk=None):
-        user = request.user  # استرجاع المستخدم الحالي من التوكن
-        serializer = self.serializer_class(user)
-        return Response(serializer.data)
+class CustomerViewSet(viewsets.ModelViewSet):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+
+
+# CustomerGroupViewSet: get all ``CustomerGroup`` objects
+
+class CustomerGroupViewSet(viewsets.ModelViewSet):
+    queryset = CustomerGroup.objects.all()
+    serializer_class = CustomerGroupSerializer
+
+    # def get_permissions(self):
+    #     return get_default_permissions()
+
+# OpportunityViewSet: get all ``Opportunity`` objects
+
+class OpportunityViewSet(viewsets.ModelViewSet):
+    queryset = Opportunity.objects.all()
+    serializer_class = OpportunitySerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
     
-# get all ``User`` objects
-class UserViewSet(DynamicModelViewSet):
-    model = User
-    serializer_class = UserSerializer
+# InteractionViewSet: get all ``Interaction`` objects
 
-    def get_permissions(self):
-        return super().get_default_permissions()
+class InteractionViewSet(viewsets.ModelViewSet):
+    queryset = Interaction.objects.all()
+    serializer_class = InteractionSerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
+    
+# ComplaintViewSet: get all ``Complaint`` objects
+
+class ComplaintViewSet(viewsets.ModelViewSet):
+    queryset = Complaint.objects.all()
+    serializer_class = ComplaintSerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
+    
+# SubscriptionViewSet: get all ``Subscription`` objects
+
+class SubscriptionViewSet(viewsets.ModelViewSet):
+    queryset = Subscription.objects.all()
+    serializer_class = SubscriptionSerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
+    
+# TaskViewSet: get all ``Task`` objects
+
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = Task.objects.all()
+    serializer_class = TaskSerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
+    
+# CampaignViewSet: get all ``Campaign`` objects
+
+class CampaignViewSet(viewsets.ModelViewSet):
+    queryset = Campaign.objects.all()
+    serializer_class = CampaignSerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
+    
+# DocumentViewSet: get all ``Document`` objects
+
+class DocumentViewSet(viewsets.ModelViewSet):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
+
+    # def get_permissions(self):
+    #     return super().get_default_permissions()
+    

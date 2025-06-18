@@ -22,10 +22,15 @@ class PrescriptionRecord(BaseModel):
     # Reading ADD
     right_reading_add = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True)
     left_reading_add = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True)
+
     
     # Additional Information
     right_pupillary_distance = models.IntegerField(null=True, blank=True)
     left_pupillary_distance = models.IntegerField(null=True, blank=True)
+    sigmant_right = models.CharField(max_length=20, blank=True)
+    sigmant_left = models.CharField(max_length=20, blank=True)
+    a_v_right = models.CharField(max_length=20, blank=True)
+    a_v_left = models.CharField(max_length=20, blank=True)
     doctor_name = models.CharField(max_length=200, blank=True)
     prescription_date = models.DateField()
     notes = models.TextField(blank=True)

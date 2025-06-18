@@ -76,11 +76,3 @@ def process_stock_movement(variant, branch, quantity, movement_type, user, refer
         created_by=user
     )
 
-
-
-# items = [
-#     {'variant': some_variant, 'quantity': 10, 'from_branch': None, 'to_branch': branch1},
-#     {'variant': another_variant, 'quantity': 5, 'from_branch': branch1, 'to_branch': branch2},
-# ]
-
-# doc = create_inventory_document('purchase', branch1, current_user, items, reference_number='PO12345', notes="Received shipment")

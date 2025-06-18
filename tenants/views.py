@@ -13,23 +13,16 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi    
 from rest_framework.permissions import AllowAny
 from django.utils.translation import gettext_lazy as _ # for translation
+from django.http import HttpResponseForbidden
+from django_tenants.utils import get_tenant
 
 class RegisterTenantView(APIView):
     permission_classes = [AllowAny]
 
-    # @swagger_auto_schema(
-    #     operation_description="Register a new tenant and send activation email.",
-    #  responses={
-    #         201: openapi.Response(
-    #             description="Activation email sent",
-    #             examples={"application/json": {"detail": "Activation email sent."}}
-    #         ),
-    #         400: "Validation error"
-    #     },
-    # )        request_body=RegisterTenantSerializer,  # 👈 هذا هو المفتاح لظهور الحقول
-   
-
     def post(self, request):
+        tenant = get_tenant(request)
+        if tenant.schema_name != 'public':
+            return HttpResponseForbidden("Not allowed on tenant domains.")
         serializer = RegisterTenantSerializer(data=request.data)
         if serializer.is_valid():
             pending = serializer.save()

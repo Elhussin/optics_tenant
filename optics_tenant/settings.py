@@ -3,18 +3,21 @@ import os
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
-
+from django.contrib import admin
+from django.db import connection
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('SECRET_KEY')
 # DEBUG = config('DEBUG', default=True, cast=bool)
 DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
+
 
 CORS_ALLOW_CREDENTIALS = config('CORS_ALLOW_CREDENTIALS', default=True, cast=bool)
-CORS_ALLOW_HEADERS = config('CORS_ALLOW_HEADERS', default='Authorization,Content-Type').split(',')
-CORS_ALLOW_METHODS = config('CORS_ALLOW_METHODS', default='GET,POST,PUT,PATCH,DELETE').split(',')
+CORS_ALLOW_HEADERS = config('CORS_ALLOW_HEADERS').split(',')
+CORS_ALLOW_METHODS = config('CORS_ALLOW_METHODS').split(',')
+
 
 # ===============================
 # Database PostgreSQL
@@ -38,11 +41,11 @@ DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 SHARED_APPS = (
     'django_tenants',
     'core',
+    'HRM',
     'tenants',
     'admin_interface',
     'colorfield',
     'django.contrib.contenttypes',
-
     'django.contrib.auth',
     'django.contrib.admin',
     'django.contrib.sessions',
@@ -53,9 +56,9 @@ SHARED_APPS = (
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'rest_framework.authtoken',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
+    # 'allauth',
+    # 'allauth.account',
+    # 'allauth.socialaccount',
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'simple_history',
@@ -88,6 +91,8 @@ TENANT_APPS = (
     'sales'
 )
 
+AUTH_USER_MODEL = 'HRM.User'
+
 # ===============================
 # merge apps
 # ===============================
@@ -110,7 +115,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
+    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 # ===============================
@@ -154,7 +159,7 @@ REST_FRAMEWORK = {
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'
 
 ROOT_URLCONF = 'optics_tenant.urls'
-PUBLIC_SCHEMA_URLCONF = 'optics_tenant.urls'
+PUBLIC_SCHEMA_URLCONF = 'optics_tenant.public_urls'
 TENANT_MODEL = 'tenants.Client'
 TENANT_DOMAIN_MODEL = 'tenants.Domain'
 
@@ -235,3 +240,8 @@ REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
 }
 
+
+
+
+# admin.site.site_title = "Control Panel"
+# admin.site.site_header = f"Control Panel - {connection.schema_name.upper()}"
