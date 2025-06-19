@@ -1,8 +1,6 @@
 [
   {
-    "schema": "store1",
-    "name": "Store 1",
-    "domain": "store1.localhost",
+    "name": "Store1",
     "paid_until": "2030-12-31",
     "trial": true,
     "create_superuser": true,
@@ -10,9 +8,7 @@
     "email": "admin@store1.com"
   },
   {
-    "schema": "store2",
-    "name": "Store 2",
-    "domain": "store2.localhost",
+    "name": "Store 3",
     "paid_until": "2031-12-31",
     "trial": false,
     "create_superuser": true,

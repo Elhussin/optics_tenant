@@ -7,7 +7,7 @@ DB_NAME_TO_DROP = "optics_tenant"
 DB_SUPERUSER_PARAMS = {
     'dbname': 'postgres',
     'user': 'postgres',
-    'password': 'admin1234',
+    'password': '3112',
     'host': 'localhost',
     'port': '5432'
 }
@@ -36,4 +36,4 @@ finally:
         conn.close()
 
 
-# python scripts/delete_db.py
+# python scripts/delete_db.py3

@@ -41,7 +41,7 @@ DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 SHARED_APPS = (
     'django_tenants',
     'core',
-    'HRM',
+    'users',
     'tenants',
     'admin_interface',
     'colorfield',
@@ -82,6 +82,7 @@ TENANT_APPS = (
     'django.contrib.sites',
     'django_extensions',
     'core',
+    'users',
     'prescriptions',
     'products',
     'CRM',
@@ -91,7 +92,7 @@ TENANT_APPS = (
     'sales'
 )
 
-AUTH_USER_MODEL = 'HRM.User'
+AUTH_USER_MODEL = 'users.User'
 
 # ===============================
 # merge apps

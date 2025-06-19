@@ -1,21 +1,10 @@
 from django.db import models
-
-# Create your models here.
 from django.db import models
 from datetime import timedelta
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-from core.permissions.roles import Role
 from core.models import BaseModel
-
-class User(AbstractUser):
-    role = models.CharField(
-        max_length=50,
-        choices=[(role.name, role.value) for role in Role],
-        default=Role.RECEPTIONIST.name
-    )
-
-    phone = models.CharField(max_length=20, null=True, blank=True)
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 class Department(models.Model):

@@ -1,7 +1,8 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+
 from core.models import BaseModel
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
