@@ -105,7 +105,8 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # Middleware
 # ===============================
 MIDDLEWARE = [
-    'django_tenants.middleware.main.TenantMainMiddleware',
+    # 'django_tenants.middleware.main.TenantMainMiddleware',
+    'core.middleware.TenantMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -138,15 +139,16 @@ TEMPLATES = [
     },
 ]
 
+
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
 SITE_ID = 1
 
 REST_USE_JWT = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        #'rest_framework_simplejwt.authentication.JWTAuthentication',
-        'optics_tenant.middleware.CookieJWTAuthentication',
-
+        'core.middleware.CookieJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

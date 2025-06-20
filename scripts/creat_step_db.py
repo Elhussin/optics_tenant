@@ -30,7 +30,7 @@ try:
         )
         print(f"✅ User '{target_user}' created successfully.")
     else:
-        print(f"ℹ️ User '{target_user}' already exists.")
+        print(f"ℹ️ User '{target_user}' already exis ts.")
 
     # 🛠️ Create database if not exists
     cursor.execute("SELECT 1 FROM pg_database WHERE datname = %s", (target_db,))

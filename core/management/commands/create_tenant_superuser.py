@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 User = get_user_model()
                 if User.objects.filter(username=username).exists():
                     self.stdout.write(self.style.WARNING(
-                        f"Superuser '{username}' already exists in schema '{schema_name}'."
+                        f"Superuser '{username}' already exists in schema '{sche ma_name}'."
                     ))
                     return
 

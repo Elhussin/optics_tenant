@@ -2,6 +2,9 @@
 from django.http import HttpResponseForbidden
 from functools import wraps
 
+from core.permissions.roles import Role
+from core.permissions.permissions import ROLE_PERMISSIONS
+
 def role_required(allowed_roles):
     def decorator(view_func):
         @wraps(view_func)
@@ -21,8 +24,6 @@ def role_required(allowed_roles):
 # def create_prescription(request):
 #     return render(request, 'prescription_form.html')
 
-from core.permissions.roles import Role
-from core.permissions.permissions import ROLE_PERMISSIONS
 
 def permission_required(required_permission):
     def decorator(view_func):

@@ -5,7 +5,7 @@ from psycopg2 import sql
 host = "localhost"  # أو عنوان السيرفر
 port = "5432"
 admin_user = "postgres"
-admin_password = "3112"
+admin_password = "admin1234"  # كلمة مرور المستخدم الإداري
 new_password = "3112"
 
 try:
