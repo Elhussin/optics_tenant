@@ -2,7 +2,9 @@
 from django.urls import path, include
 
 urlpatterns = [
+
     path('core/', include('core.urls')),
+    path('users/', include('users.urls')),
     path('sales/', include('sales.urls')),
     path('accounting/', include('accounting.urls')),
     path('products/', include('products.urls')),
@@ -10,4 +12,5 @@ urlpatterns = [
     path('hrm/', include('HRM.urls')),
     path('crm/', include('CRM.urls')),
     path('prescriptions/', include('prescriptions.urls')),
+
 ]

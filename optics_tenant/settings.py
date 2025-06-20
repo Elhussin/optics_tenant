@@ -14,10 +14,6 @@ DEBUG = config('DEBUG')
 ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
 
 
-CORS_ALLOW_CREDENTIALS = config('CORS_ALLOW_CREDENTIALS', default=True, cast=bool)
-CORS_ALLOW_HEADERS = config('CORS_ALLOW_HEADERS').split(',')
-CORS_ALLOW_METHODS = config('CORS_ALLOW_METHODS').split(',')
-
 
 # ===============================
 # Database PostgreSQL
@@ -105,19 +101,17 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 # Middleware
 # ===============================
 MIDDLEWARE = [
-    # 'django_tenants.middleware.main.TenantMainMiddleware',
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     'core.middleware.TenantMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    # 'allauth.account.middleware.AccountMiddleware',
 ]
 
 # ===============================
@@ -157,6 +151,17 @@ REST_FRAMEWORK = {
 }
 
 
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ORIGINS = ['http://localhost:3000']
+CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with']
+CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^http://localhost:3000$",
+    r"^http://.+\.localhost:3000$",  # يسمح لكل subdomain
+]
 
 
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'

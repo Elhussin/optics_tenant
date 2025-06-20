@@ -1,0 +1,11 @@
+export interface RegisterFormData {
+    name: string;
+    email: string;
+    password: string;
+  }
+  
+  export type MessageType = {
+    type: "success" | "error";
+    text: string;
+  };
+  

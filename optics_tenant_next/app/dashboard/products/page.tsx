@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation"; // هذا البديل المناسب
-import { SecureRequest } from "@/lib/apiClient";
+import { SecureRequest } from "@/lib/";
 
 export default function MyComponent() {
   const router = useRouter();
