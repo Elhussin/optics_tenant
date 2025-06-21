@@ -97,9 +97,9 @@
     "csv": "csv/employee.csv",
     "foreign_keys": {
       "user": {
-        "related_model": "auth.User",
+        "related_model": "users.User",
         "lookup_field": "username",
-        "create_if_missing": false
+        "create_if_missing": true
       },
       "department": {
         "lookup_field": "name",
@@ -114,7 +114,3 @@
     "csv": "csv/Users.csv"
   }
 ]
-
-
-
-

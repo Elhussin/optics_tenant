@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "generate:api": "openapi-typescript http://localhost:8000/api/schema/ --output lib/api-types.ts",
+    "gen:zod": "openapi-zod-client http://store1.localhost:8000/api/schema/ -o src/api-zod",
     "devX": "npm run generate:api && next dev",
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -14,6 +15,7 @@
     "@hookform/resolvers": "^5.1.1",
     "@rjsf/core": "^5.24.11",
     "@tanstack/react-query": "^5.80.10",
+    "@zodios/core": "^10.9.6",
     "axios": "^1.10.0",
     "jwt-decode": "^4.0.0",
     "next": "15.3.3",
@@ -33,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "openapi-typescript": "^7.8.0",
+    "openapi-zod-client": "^1.18.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

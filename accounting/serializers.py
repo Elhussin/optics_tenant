@@ -2,6 +2,9 @@ from rest_framework import serializers
 from accounting.models import  (FinancialPeriod,
  Account,Transaction,JournalEntry,
 Tax,Category,RecurringTransaction)
+
+
+
 class FinancialPeriodSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialPeriod
