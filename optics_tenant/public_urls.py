@@ -6,9 +6,6 @@ from .api.urls import urlpatterns
 import tenants.admin_public
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(urlpatterns)),  # الآن كل شيء تحت /api/
-    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
-    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+    path('admin/', admin.site.urls),   
     path('api/tenants/', include('tenants.urls')),
 ]

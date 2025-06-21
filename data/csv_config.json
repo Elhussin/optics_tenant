@@ -109,7 +109,7 @@
   },
   {
     "schema": "store1",
-    "app": "auth",
+    "app": "users",
     "model": "User",
     "csv": "csv/Users.csv"
   }

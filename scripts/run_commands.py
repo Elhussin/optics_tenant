@@ -13,4 +13,4 @@ call_command("create_tenant_superuser", schema_name="public", username="admin", 
 call_command("import_csv_with_foreign", config="data/csv_config.json")
 
 
-# python run_commands.py
+# python scripts/run_commands.py
