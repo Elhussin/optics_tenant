@@ -126,12 +126,9 @@ fs.mkdirSync(path.dirname(hookFile), { recursive: true });
 fs.writeFileSync(formFile, formCode);
 fs.writeFileSync(hookFile, hookCode);
 
-console.log(`✅ تم إنشاء:
+console.log(`✅ Form and hook files generated successfully!:
 - ${formFile}
 - ${hookFile}`);
 
 
-// node 'scripts/generate-zod-form.js' UserRequest
-
-
-// npx tsc src/api-zod.tsx --outDir dist-src
+//  npx tsx scripts/generate-zod-form.ts UserRequest

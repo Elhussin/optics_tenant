@@ -18,18 +18,19 @@
     "@zodios/core": "^10.9.6",
     "axios": "^1.10.0",
     "jwt-decode": "^4.0.0",
-    "next": "15.3.3",
+    "next": "15.4.0-canary.91",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.58.1",
     "react-hot-toast": "^2.5.2",
     "react-toastify": "^11.0.5",
+    "sonner": "^2.0.5",
     "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24.0.3",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
@@ -40,7 +41,18 @@
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "NodeNext",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": "src"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  },
   "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
-  
-
 }

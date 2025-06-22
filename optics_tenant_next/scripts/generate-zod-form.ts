@@ -1,13 +1,13 @@
 import fs from 'fs';
 import path from 'path';
-import { schemas } from '../src/api-zod'; // تأكد أن المسار صحيح
+import { schemas } from '@/src/api-zod/zodSchemas'; // تأكد أن المسار صحيح
 import { z } from 'zod';
 
 // اسم schema من الطرفية
 const [,, schemaName] = process.argv;
 
 if (!schemaName || !(schemaName in schemas)) {
-  console.error('❌ أدخل اسم schema صالح موجود في zodSchemas.ts');
+  console.error('❌ Please provide a valid schema name as an argument.');
   process.exit(1);
 }
 
@@ -44,7 +44,7 @@ function getFieldCode(field: string, fieldSchema: z.ZodTypeAny): string {
       .join('\n    ');
     inputElement = `
     <select id="${field}" {...register("${field}")} className=${baseClasses}>
-      <option value="">اختر...</option>
+      <option value="">Seleact...</option>
       ${options}
     </select>
     `;
@@ -81,7 +81,7 @@ export default function ${pascal}Form({ defaultValues, onSuccess }: any) {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       ${fields.map((f) => getFieldCode(f, shape[f])).join('\n')}
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">حفظ</button>
+      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
     </form>
   );
 }
@@ -90,7 +90,7 @@ export default function ${pascal}Form({ defaultValues, onSuccess }: any) {
 const hookCode = `import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemas } from '@/api-zod/zodSchemas';
+import { schemas } from '@/src/api-zod';
 
 const schema = schemas.${schemaName};
 
@@ -122,17 +122,8 @@ fs.mkdirSync(path.dirname(hookFile), { recursive: true });
 fs.writeFileSync(formFile, formCode);
 fs.writeFileSync(hookFile, hookCode);
 
-console.log(`✅ تم إنشاء الملفات:
+console.log(`✅Form and hook files generated successfully:
 - ${formFile}
 - ${hookFile}`);
 
-
-// npx ts-node scripts/generate-zod-form.ts UserRequest
-// install ts-node typescript --save-dev
-// pnpm install --save-dev ts-node typescript
-
-// npx ts-node --loader ts-node/esm scripts/generate-zod-form.ts UserRequest
-
-
-
-// npx tsc scripts/generate-zod-form.ts --outDir dist-scripts
+//  npx tsx scripts/generate-zod-form.ts UserRequest
