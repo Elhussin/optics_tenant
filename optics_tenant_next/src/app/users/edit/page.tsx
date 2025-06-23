@@ -1,6 +1,6 @@
 'use client';
 
-import UserForm from '@/src/components/forms/UserForm';
+import UserForm from '@/src/components/forms/UserRequestForm';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/src/api-zod/zodSchemas';

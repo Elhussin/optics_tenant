@@ -1,8 +1,3 @@
-// await API.post("/users/login/", { email, password });
-// router.push("/dashboard");
-// const res = await API.get("/users/profile/");
-// await API.post("/users/logout/");
-// router.push("/login");
 
 'use client';
 import { useLoginForm } from '@/src/lib/forms/useLoginForm';
@@ -15,7 +10,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { register, handleSubmit, formState: { errors }, handleServerErrors } = useLoginForm();
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: any) => {   
     try {
       // Replace with your actual login API call
       await fetch('/api/auth/login', {

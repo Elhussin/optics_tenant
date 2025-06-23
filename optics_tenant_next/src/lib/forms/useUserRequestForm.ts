@@ -5,7 +5,7 @@ import { schemas } from '@/src/api-zod/zodSchemas';
 
 const schema = schemas.UserRequest;
 
-export function useUserForm(defaultValues?: Partial<z.infer<typeof schema>>) {
+export function useUserRequestForm(defaultValues?: Partial<z.infer<typeof schema>>) {
   const methods = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues,
@@ -25,3 +25,4 @@ export function useUserForm(defaultValues?: Partial<z.infer<typeof schema>>) {
     handleServerErrors,
   };
 }
+
