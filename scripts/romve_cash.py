@@ -1,11 +1,15 @@
 import os
 import shutil
+import sys
 
 import django
 from django.conf import settings
 from django.core.cache import cache
 
+#This ensures the parent directory (the project root) is in the Python path.
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'optics_tenant.settings')
+
 django.setup()
 
 from django.utils.translation import gettext
