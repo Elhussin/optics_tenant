@@ -4,11 +4,10 @@ import fs from 'fs';
 import path from 'path';
 import { schemas } from '../src/api-zod/zodSchemas';
 import { z } from 'zod';
-import { group } from 'console';
 
 const [,, schemaName] = process.argv;
 if (!schemaName || !(schemaName in schemas)) {
-  console.error('❌ يجب تمرير اسم schema صالح موجود في zodSchemas.ts');
+  console.error('❌ Please provide a valid schema name from zodSchemas.ts');
   process.exit(1);
 }
 const YOUR_ENDPOINT = process.argv[3] || 'YOUR_ENDPOINT'
@@ -36,7 +35,7 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
 }
 
 function getFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
-  const baseClasses = `"w-full border border-gray-300 rounded-md px-3 py-2"`;
+  const baseClasses = `"input-base"`;
   const schema = unwrapSchema(rawSchema);
   const description = rawSchema.description || field;
 
@@ -95,14 +94,14 @@ function getFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
 
 
 const formCode = `import { use${pascal}Form } from '@/src/lib/forms/use${pascal}Form';
-import { api } from '@/src/api-zod/zodSchemas';
+import { API } from '@/src/lib/api';
 
 export default function ${pascal}Form({ defaultValues, onSuccess }: any) {
   const { register, handleSubmit, formState: { errors }, handleServerErrors } = use${pascal}Form(defaultValues);
 
   const onSubmit = async (data: any) => {
     try {
-      await api.post('/api/${YOUR_ENDPOINT}/', data);
+      await API.post('/api/${YOUR_ENDPOINT}/', data);
       onSuccess?.();
     } catch (e: any) {
       if (e.response?.status === 400) {
@@ -155,10 +154,11 @@ fs.mkdirSync(path.dirname(hookFile), { recursive: true });
 fs.writeFileSync(formFile, formCode);
 fs.writeFileSync(hookFile, hookCode);
 
-console.log(`✅ تم إنشاء:
+console.log(`✅ ${pascal}Form created successfully :
 - ${formFile}
 - ${hookFile}`);
 
 
 // npx ts-node scripts/generate-zod-form.ts UserRequest
-//  npx tsx scripts/generate-zod-form.ts UserRequest users/register
+//  npx tsx scripts/generate-form.ts UserRequest users/register
+// npx tsx scripts/generate-form.ts LoginRequest users/login

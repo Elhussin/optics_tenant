@@ -14,15 +14,13 @@ from django.utils.translation import gettext_lazy as _ # for translation
 from django.utils.text import slugify
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
-
-
     password = serializers.CharField(
         write_only=True,
         min_length=8,
         validators=[
             RegexValidator(
                 regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$',
-                message=_("Password must contain at least one uppercase, one lowercase letter, and one number.")
+                message=_("Password must contain at least one uppercase, one lowercase letter, one number.")
             )
         ],
         error_messages={
@@ -50,10 +48,19 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
         model = PendingTenantRequest
         fields = ['name', 'email', 'password']  
 
+
+    def validate_name(self, value):
+        if PendingTenantRequest.objects.filter(name=value).exists():
+            raise serializers.ValidationError(_("A store with this name already exists."))
+        return value
+    
     def validate_email(self, value):
         if PendingTenantRequest.objects.filter(email=value, is_activated=False).exists():
             raise serializers.ValidationError(_("An activation email has already been sent to this email."))
         return value
+    
+    
+
 
     def create(self, validated_data):
         name = validated_data['name']

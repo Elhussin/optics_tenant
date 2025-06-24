@@ -1862,6 +1862,20 @@ const PatchedPaymentRequest = z
   })
   .partial()
   .passthrough();
+const LoginRequest = z
+  .object({ username: z.string().min(1), password: z.string().min(1) })
+  .passthrough();
+const RegisterRequest = z
+  .object({
+    username: z
+      .string()
+      .min(1)
+      .max(150)
+      .regex(/^[\w.@+-]+$/),
+    email: z.string().max(254).email().optional(),
+    password: z.string().min(1),
+  })
+  .passthrough();
 const UserRoleEnum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
@@ -1875,67 +1889,49 @@ const UserRoleEnum = z.enum([
 const User = z
   .object({
     id: z.number().int(),
-    password: z.string().max(128),
-    last_login: z.string().datetime({ offset: true }).nullish(),
-    is_superuser: z.boolean().optional(),
     username: z
       .string()
       .max(150)
       .regex(/^[\w.@+-]+$/),
+    email: z.string().max(254).email(),
     first_name: z.string().max(150).optional(),
     last_name: z.string().max(150).optional(),
-    email: z.string().max(254).email().optional(),
-    is_staff: z.boolean().optional(),
     is_active: z.boolean().optional(),
-    date_joined: z.string().datetime({ offset: true }).optional(),
+    is_staff: z.boolean().optional(),
+    is_superuser: z.boolean().optional(),
     role: UserRoleEnum.optional(),
-    phone: z.string().max(20).nullish(),
-    groups: z.array(z.number().int()).optional(),
-    user_permissions: z.array(z.number().int()).optional(),
   })
   .passthrough();
 const UserRequest = z
   .object({
-    password: z.string().min(1).max(128),
-    last_login: z.string().datetime({ offset: true }).nullish(),
-    is_superuser: z.boolean().optional(),
     username: z
       .string()
       .min(1)
       .max(150)
       .regex(/^[\w.@+-]+$/),
+    email: z.string().min(1).max(254).email(),
     first_name: z.string().max(150).optional(),
     last_name: z.string().max(150).optional(),
-    email: z.string().max(254).email().optional(),
-    is_staff: z.boolean().optional(),
     is_active: z.boolean().optional(),
-    date_joined: z.string().datetime({ offset: true }).optional(),
+    is_staff: z.boolean().optional(),
+    is_superuser: z.boolean().optional(),
     role: UserRoleEnum.optional(),
-    phone: z.string().max(20).nullish(),
-    groups: z.array(z.number().int()).optional(),
-    user_permissions: z.array(z.number().int()).optional(),
   })
   .passthrough();
 const PatchedUserRequest = z
   .object({
-    password: z.string().min(1).max(128),
-    last_login: z.string().datetime({ offset: true }).nullable(),
-    is_superuser: z.boolean(),
     username: z
       .string()
       .min(1)
       .max(150)
       .regex(/^[\w.@+-]+$/),
+    email: z.string().min(1).max(254).email(),
     first_name: z.string().max(150),
     last_name: z.string().max(150),
-    email: z.string().max(254).email(),
-    is_staff: z.boolean(),
     is_active: z.boolean(),
-    date_joined: z.string().datetime({ offset: true }),
+    is_staff: z.boolean(),
+    is_superuser: z.boolean(),
     role: UserRoleEnum,
-    phone: z.string().max(20).nullable(),
-    groups: z.array(z.number().int()),
-    user_permissions: z.array(z.number().int()),
   })
   .partial()
   .passthrough();
@@ -2069,12 +2065,13 @@ export const schemas = {
   Payment,
   PaymentRequest,
   PatchedPaymentRequest,
+  LoginRequest,
+  RegisterRequest,
   UserRoleEnum,
   User,
   UserRequest,
   PatchedUserRequest,
 };
-
 
 const endpoints = makeApi([
   {
@@ -4830,9 +4827,16 @@ const endpoints = makeApi([
     response: z.void(),
   },
   {
+    method: "get",
+    path: "/api/tenants/activate/",
+    alias: "tenants_activate_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
     method: "post",
-    path: "/api/users//refresh-token/",
-    alias: "users_refresh_token_create",
+    path: "/api/tenants/register/",
+    alias: "tenants_register_create",
     requestFormat: "json",
     response: z.void(),
   },
@@ -4840,13 +4844,37 @@ const endpoints = makeApi([
     method: "post",
     path: "/api/users/login/",
     alias: "users_login_create",
+    description: `Login endpoint for users`,
     requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: LoginRequest,
+      },
+    ],
     response: z.void(),
   },
   {
     method: "post",
     path: "/api/users/logout/",
     alias: "users_logout_create",
+    description: `Logout endpoint for users`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/users/profile/",
+    alias: "users_profile_retrieve",
+    description: `Profile endpoint for users`,
     requestFormat: "json",
     response: z.void(),
   },
@@ -4854,14 +4882,30 @@ const endpoints = makeApi([
     method: "post",
     path: "/api/users/register/",
     alias: "users_register_create",
+    description: `Register endpoint for users`,
     requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterRequest,
+      },
+    ],
     response: z.void(),
   },
   {
     method: "post",
-    path: "/api/users/update-profile/",
-    alias: "users_update_profile_create",
+    path: "/api/users/token/refresh/",
+    alias: "users_token_refresh_create",
+    description: `Refresh token endpoint for users`,
     requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
     response: z.void(),
   },
   {
@@ -4953,14 +4997,11 @@ const endpoints = makeApi([
   },
 ]);
 
+
+
+
 export const api = new Zodios(endpoints);
 
 export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
   return new Zodios(baseUrl, endpoints, options);
 }
-
-
-
-
-
-

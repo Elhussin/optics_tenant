@@ -139,6 +139,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, TokenErro
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema
 
 User = get_user_model()
 
@@ -163,8 +164,12 @@ def set_token_cookies(response, refresh):
         max_age=7 * 24 * 60 * 60  # 7 أيام
     )
 
-
 class RegisterView(APIView):
+    @extend_schema(
+        request=RegisterSerializer,
+        responses={200: None},
+        description="Register endpoint for users"
+    )
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -178,6 +183,11 @@ class RegisterView(APIView):
 class LoginView(APIView):
     permission_classes = [AllowAny]  # 👈 مفتوح للجميع
 
+    @extend_schema(
+        request=LoginSerializer,
+        responses={200: None},
+        description="Login endpoint for users"
+    )
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -193,8 +203,12 @@ class LoginView(APIView):
             return Response({"error": "Invalid credentials"}, status=401)
         return Response(serializer.errors, status=400)
 
-
 class RefreshTokenView(APIView):
+    @extend_schema(
+        request=RefreshToken,
+        responses={200: None},
+        description="Refresh token endpoint for users"
+    )
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if refresh_token is None:
@@ -217,19 +231,25 @@ class RefreshTokenView(APIView):
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=401)
 
-
 class LogoutView(APIView):
-    permission_classes = [AllowAny]  # 👈 مفتوح للجميع
+    @extend_schema(
+        request=RefreshToken,
+        responses={200: None},
+        description="Logout endpoint for users"
+    )
     def post(self, request):
         response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         return response
 
-
 class ProfileView(APIView):
-    permission_classes = [IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+    # permission_classes = [IsAuthenticated]
+    # authentication_classes = [JWTAuthentication]
 
+    @extend_schema(
+        responses={200: None},
+        description="Profile endpoint for users"
+    )
     def get(self, request):
         return Response({"user": request.user.username})
 
