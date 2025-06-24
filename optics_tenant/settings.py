@@ -50,7 +50,7 @@ SHARED_APPS = (
     'django.contrib.sites',
     'rest_framework',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
+    #'rest_framework_simplejwt.token_blacklist',
     'rest_framework.authtoken',
     # 'allauth',
     # 'allauth.account',
@@ -146,6 +146,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',  # 👈 هذا يسمح بالوصول المفتوح ما لم يُحدد غيره
+
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
@@ -227,11 +229,17 @@ CSRF_COOKIE_HTTPONLY = True
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME_MINUTES', 15))),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME_DAYS', 7))),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-}
 
+    "UPDATE_LAST_LOGIN": True,
+#    "ROTATE_REFRESH_TOKENS": False,
+ #   "BLACKLIST_AFTER_ROTATION": False,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_COOKIE": "access_token",  # اسم الكوكي المستخدم
+    "AUTH_COOKIE_REFRESH": "refresh_token",  # الكوكي لتخزين refresh token
+    "AUTH_COOKIE_SECURE": True,
+    "AUTH_COOKIE_HTTP_ONLY": True,
+    "AUTH_COOKIE_SAMESITE": "Lax",
+}
 
 
 AUTH_PASSWORD_VALIDATORS = [
