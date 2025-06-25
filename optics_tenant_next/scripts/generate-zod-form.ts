@@ -544,3 +544,32 @@ console.log(`✅ ${pascal}Form created successfully:
 
 // # إنشاء form بـ minimal theme
 // npm run form:generate order_schema orders ./config/themes/minimal.json
+
+
+// ssin@hussin-HP-EliteBook-840-G1:~/Desktop/learning/optics_tenant/optics_tenant_next$ npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
+// ✅ LoginRequestForm created successfully:
+// 📁 Form Component: src/components/forms/LoginRequestForm.tsx
+// 📁 Hook: src/lib/forms/useLoginRequestForm.ts
+// 📁 API Service: src/lib/api/form-api.ts
+// 📁 Config Template: config/form-generator.json
+
+// 🚀 Usage examples:
+// // Basic usage
+// <LoginRequestForm onSuccess={() => console.log('Success!')} />
+
+// // Update mode
+// <LoginRequestForm 
+//   mode="update" 
+//   id={123}
+//   defaultValues={existingData}
+//   onSuccess={handleUpdate} 
+// />
+
+// // Custom API endpoint
+// <LoginRequestForm 
+//   apiOptions={{ 
+//     endpoint: 'custom-endpoint',
+//     method: 'PATCH',
+//     transform: (data) => ({ ...data, extra: 'field' })
+//   }} 
+// />
