@@ -1,48 +1,103 @@
-import { useLoginRequestForm } from '@/src/lib/forms/useLoginRequestForm';
-import { API } from '@/src/lib/api';
-import MessageAlert from '@/src/components/MessageAlert';
-import { toast } from 'sonner';
-export default function LoginRequestForm({ defaultValues, onSuccess }: any) {
-  const { register, handleSubmit, formState: { errors }, handleServerErrors } = useLoginRequestForm(defaultValues);
+// src/components/forms/LoginRequestForm.tsx
+import React from 'react';
+import { useLoginRequestForm, UseLoginRequestFormOptions } from '@/src/lib/forms/useLoginRequestForm';
 
-const onSubmit = async (data: any) => {
-  try {
-    const response = await API.post('/api/users/login/', data);
-    console.log("✅ Login response:", response);
+export interface LoginRequestFormProps extends UseLoginRequestFormOptions {
+  onSuccess?: (data?: any) => void;
+  onCancel?: () => void;
+  className?: string;
+  submitText?: string;
+  showCancelButton?: boolean;
+}
 
-    toast.success("Login successful"); // ← حتى تظهر فورًا
-    onSuccess?.();
-  } catch (e: any) {
-    console.log("❌ Login error:", e);
-    console.log("Status:", e.response?.status);
-    console.log("Data:", e.response?.data);
+export default function LoginRequestForm({
+  onSuccess,
+  onCancel,
+  className = "",
+  submitText = "Save",
+  showCancelButton = false,
+  ...options
+}: LoginRequestFormProps) {
+  const { 
+    register, 
+    handleSubmit, 
+    formState: { errors, isSubmitting }, 
+    submitForm,
+    reset
+  } = useLoginRequestForm(options);
 
-    if (e.response?.status === 400) {
-      handleServerErrors(e.response.data);
-    } else if (e.response?.status === 401) {
-      toast.error("Invalid username or password");
-    } else {
-      toast.error("Something went wrong. Try again.");
+  const onSubmit = async (data: any) => {
+    try {
+      const result = await submitForm(data);
+      onSuccess?.(result);
+      if (options.mode === 'create') {
+        reset();
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
     }
-  }
-};
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <div className={`${className}`}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        
   <div className="mb-4">
     
-    <label htmlFor="username" className="block text-sm font-medium mb-1">username</label>
-    <input id="username" type="text" {...register("username")} className="input-base" />
-    {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
+    <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+      Username *
+    </label>
+    <input 
+      id="username" 
+      type="text" 
+      {...register("username")} 
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+      placeholder="Username..."
+      
+    />
+    
+    {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username?.message}</p>}
   </div>
 
   <div className="mb-4">
     
-    <label htmlFor="password" className="block text-sm font-medium mb-1">password</label>
-    <input id="password" type="text" {...register("password")} className="input-base" />
-    {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+      Password *
+    </label>
+    <input 
+      id="password" 
+      type="password" 
+      {...register("password")} 
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+      placeholder="Password..."
+      
+    />
+    
+    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>}
   </div>
-      <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Save</button>
-    </form>
+        
+        <div className="flex gap-3 pt-4">
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isSubmitting ? 'جاري الحفظ...' : submitText}
+          </button>
+          
+          
+          
+          {showCancelButton && (
+            <button 
+              type="button" 
+              onClick={onCancel}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
+            >
+              إلغاء
+            </button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 }

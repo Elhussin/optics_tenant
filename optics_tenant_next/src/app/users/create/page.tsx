@@ -3,9 +3,15 @@
 import UserRequestForm from '@/src/components/forms/UserRequestForm';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { useCurrentUser } from '@/src/hooks/useCurrentUser';
 
 export default function CreateUserPage() {
   const router = useRouter();
+  const user = useCurrentUser();
+
+  if (user?.role !== 'ADMIN') {
+    return <div>You are not allowed to view this page.</div>;
+  }
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">

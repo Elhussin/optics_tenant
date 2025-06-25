@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { schemas,api } from '@/src/api-zod/zodSchemas';
+import { schemas,api } from '@/src/api-zod/gin-api';
 
 const userSchema = schemas.UserRequest;
 type UserFormData = z.infer<typeof userSchema>;

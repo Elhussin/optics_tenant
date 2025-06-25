@@ -1,132 +1,7 @@
-# from django.shortcuts import render
-# from rest_framework.response import Response
-# from rest_framework_simplejwt.tokens import RefreshToken
-# from rest_framework.decorators import api_view
-# from django.contrib.auth import authenticate
 
-# from .serializers import UserSerializer
-# from django.contrib.auth import get_user_model
-# from rest_framework.views import APIView
-# from rest_framework.generics import GenericAPIView
-# from rest_framework.mixins import CreateModelMixin, UpdateModelMixin
-# from rest_framework.permissions import AllowAny
-# User = get_user_model()
-
-# # Create your views here.
-
-
-# @api_view(['POST'])
-# def login_view(request):
-#     refresh = RefreshToken.for_user(request.user)
-#     access = str(refresh.access_token)
-#     response = Response({"detail": "Login successful"})
-#     response.set_cookie(
-#         "access_token", access,
-#         httponly=True, secure=True, samesite="Lax",
-#         domain=".example.com", max_age=300
-#     )
-#     response.set_cookie(
-#         "refresh_token", str(refresh),
-#         httponly=True, secure=True, samesite="Lax",
-#         domain=".example.com", max_age=7*24*3600
-#     )
-#     return response
-
-# @api_view(['POST'])
-# def refresh_token_view(request):
-#     token = request.COOKIES.get('refresh_token')
-#     refresh = RefreshToken(token)
-#     new_access = str(refresh.access_token)
-#     res = Response({"detail": "Refreshed"})
-#     res.set_cookie("access_token", new_access, httponly=True, secure=True, samesite="Lax", domain=".example.com", max_age=300)
-#     return res
-
-# @api_view(['POST'])
-# def logout_view(request):
-#     response = Response({"detail": "Logged out"})
-#     response.delete_cookie('access_token', domain=".example.com")
-#     response.delete_cookie('refresh_token', domain=".example.com")
-#     return response
-
-
-# @api_view(['POST'])
-# def register_view(request):
-#     serializer = UserSerializer(data=request.data)
-#     if serializer.is_valid():
-#         user = serializer.save()
-#         return Response({"detail": "User registered successfully"})
-
-#     return Response(serializer.errors, status=400)
-
-# @api_view(['POST'])
-# def update_profile_view(request):
-#     user = request.user
-#     serializer = UserSerializer(user, data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         return Response({"detail": "Profile updated successfully"})
-
-#     return Response(serializer.errors, status=400)
-
-
-
-
-# class LoginView(viewsets.ModelViewSet):
-#     authentication_classes = [AllowAny]
-#     def post(self, request):
-#         refresh = RefreshToken.for_user(request.user)
-#         access = str(refresh.access_token)
-#         response = Response({"detail": "Login successful"})
-#         response.set_cookie(
-#             "access_token", access,
-#             httponly=True, secure=True, samesite="Lax",
-#             domain=".example.com", max_age=300
-#         )
-#         response.set_cookie(
-#             "refresh_token", str(refresh),
-#             httponly=True, secure=True, samesite="Lax",
-#             domain=".example.com", max_age=7*24*3600
-#         )
-#         return response
-
-# class RefreshTokenView(viewsets.ModelViewSet):
-#     def post(self, request):
-#         token = request.COOKIES.get('refresh_token')
-#         refresh = RefreshToken(token)
-#         new_access = str(refresh.access_token)
-#         res = Response({"detail": "Refreshed"})
-#         res.set_cookie("access_token", new_access, httponly=True, secure=True, samesite="Lax", domain=".example.com", max_age=300)
-#         return res
-
-# class LogoutView(viewsets.ModelViewSet):
-#     def post(self, request):
-#         response = Response({"detail": "Logged out"})
-#         response.delete_cookie('access_token', domain=".example.com")
-#         response.delete_cookie('refresh_token', domain=".example.com")
-#         return response
-
-
-
-# class RegisterView(viewsets.ModelViewSet, CreateModelMixin):
-#     serializer_class = UserSerializer
-
-#     def post(self, request, *args, **kwargs):
-#         return self.create(request, *args, **kwargs)
-
-# class UpdateProfileView(viewsets.ModelViewSet, UpdateModelMixin):
-#     serializer_class = UserSerializer
-
-#     def get_object(self):
-#         return self.request.user
-
-#     def post(self, request, *args, **kwargs):
-#         return self.update(request, *args, **kwargs)
-
-
-# accounts/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,serializers
 from .serializers import RegisterSerializer, LoginSerializer,UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -139,31 +14,13 @@ from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, TokenErro
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import extend_schema , OpenApiResponse, inline_serializer
 from django.db import connection
+from core.utils.set_token import set_token_cookies
+from rest_framework.permissions import IsAuthenticated
 
 User = get_user_model()
 
-def set_token_cookies(response, refresh):
-    access_token = str(refresh.access_token)
-    refresh_token = str(refresh)
-
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        secure=True,
-        samesite='Lax',
-        max_age=300  # 5 دقائق
-    )
-    response.set_cookie(
-        key="refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=True,
-        samesite='Lax',
-        max_age=7 * 24 * 60 * 60  # 7 أيام
-    )
 
 class RegisterView(APIView):
     @extend_schema(
@@ -186,30 +43,65 @@ class LoginView(APIView):
 
     @extend_schema(
         request=LoginSerializer,
-        responses={200: None},
+        responses={
+            200: inline_serializer(
+                name='LoginSuccessResponse',
+                fields={'msg': serializers.CharField()}
+            ),
+            400: inline_serializer(
+                name='LoginBadRequest',
+                fields={'username': serializers.ListField(child=serializers.CharField(), required=False),
+                        'password': serializers.ListField(child=serializers.CharField(), required=False)}
+            ),
+            403: inline_serializer(
+                name='LoginForbidden',
+                fields={'detail': serializers.CharField()}
+            ),
+        },
         description="Login endpoint for users"
     )
-    def post(self, request):
-        print("Current Schema:", connection.schema_name)
 
+    def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
+            
+            if not user.is_active:
+                return Response(
+                    {"detail": "User account is disabled."},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
             refresh = RefreshToken.for_user(user)
-            response = Response({"msg": "Login successful"}, status=status.HTTP_200_OK)
+            response = Response(
+                {"msg": "Login successful"},
+                status=status.HTTP_200_OK
+            )
             set_token_cookies(response, refresh)
-            # print("Login successful")
             return response
 
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class RefreshTokenView(APIView):
     @extend_schema(
-        request=RefreshToken,
-        responses={200: None},
-        description="Refresh token endpoint for users"
+        responses={
+            200: inline_serializer(
+                name='RefreshTokenResponse',
+                fields={
+                    'msg': serializers.CharField(),
+                    'access': serializers.CharField()
+                }
+            ),
+            401: inline_serializer(
+                name='TokenRefreshError',
+                fields={
+                    'error': serializers.CharField()
+                }
+            )
+        }
     )
+
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if refresh_token is None:
@@ -218,13 +110,14 @@ class RefreshTokenView(APIView):
         try:
             refresh = RefreshToken(refresh_token)
             new_access = str(refresh.access_token)
+        
 
             response = Response({"msg": "Token refreshed"})
             response.set_cookie(
                 key="access_token",
                 value=new_access,
-                httponly=True,
-                secure=True,
+                httponly=True, # HttpOnly flag to prevent JavaScript access
+                secure=False,  # Secure flag to ensure cookie is sent over HTTPS
                 samesite="Lax",
                 max_age=300
             )
@@ -244,16 +137,43 @@ class LogoutView(APIView):
         return response
 
 class ProfileView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     # authentication_classes = [JWTAuthentication]
 
     @extend_schema(
         responses={200: None},
         description="Profile endpoint for users"
+        
     )
     def get(self, request):
-        return Response({"user": request.user.username})
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
+
+
+# class CurrentUserView(APIView):
+#         # authentication_classes = [JWTAuthentication]
+#     permission_classes = [IsAuthenticated]
+#     @extend_schema(
+#         responses={200: UserSerializer},
+#         description="Current user endpoint for users"
+        
+#     )
+
+#     def get(self, request):
+#         serializer = UserSerializer(request.user)
+#         return Response(serializer.data)
+
+
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]  # ✅ يتأكد من أن المستخدم مصادق عليه
+
+    def get_queryset(self):
+        # يمكن فلترة بناءً على المستخدم الحالي إذا أردت مثلاً
+        user = self.request.user
+        if user.is_superuser:
+            return User.objects.all()
+        return User.objects.filter(id=user.id)

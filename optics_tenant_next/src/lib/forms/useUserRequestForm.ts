@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemas } from '@/src/api-zod/zodSchemas';
+import { schemas } from '@/src/api-zod/gin-api';
 
 const schema = schemas.UserRequest;
 

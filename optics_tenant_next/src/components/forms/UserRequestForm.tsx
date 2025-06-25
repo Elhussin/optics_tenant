@@ -1,15 +1,18 @@
 import { useUserRequestForm } from '@/src/lib/forms/useUserRequestForm';
 import { API } from '@/src/lib/api';
-import MessageAlert from '@/src/components/MessageAlert';
+
 export default function UserRequestForm({ defaultValues, onSuccess }: any) {
   const { register, handleSubmit, formState: { errors }, handleServerErrors } = useUserRequestForm(defaultValues);
 
   const onSubmit = async (data: any) => {
     try {
-      await API.post('/api/users/register/', data);
+      console.log('Submitting user here:', data);
+      await API.post('/api/users/users/', data);
       onSuccess?.();
     } catch (e: any) {
+      console.log('Submitting user here:', e);
       if (e.response?.status === 400) {
+        console.error('Validation error:', e.response.data);
         handleServerErrors(e.response.data);
       }
     }

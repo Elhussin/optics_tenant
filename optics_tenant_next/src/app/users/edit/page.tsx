@@ -3,7 +3,7 @@
 import UserForm from '@/src/components/forms/UserRequestForm';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/src/api-zod/zodSchemas';
+import { api } from '@/src/api-zod/gin-api';
 import { toast } from 'sonner';
 
 export default function EditUserPage({ params }: { params: { id: string } }) {

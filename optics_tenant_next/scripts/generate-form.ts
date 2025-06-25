@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { schemas } from '../src/api-zod/zodSchemas';
+import { schemas } from '../src/api-zod/gin-api';
 import { z } from 'zod';
 
 const [,, schemaName] = process.argv;

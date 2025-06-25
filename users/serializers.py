@@ -28,7 +28,6 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name': {'required': False, 'allow_blank': True},
         }
 
-from django.contrib.auth.password_validation import validate_password
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
@@ -63,7 +62,7 @@ class LoginSerializer(serializers.Serializer):
         user = authenticate(username=username, password=password)
         if user is None:
             raise serializers.ValidationError({"password": ["Incorrect password."]})
+        
 
         attrs['user'] = user
         return attrs
-    

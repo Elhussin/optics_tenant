@@ -1,18 +1,14 @@
-import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "الصفحة الرئيسية",
-  description: "مرحبًا بك في الصفحة الرئيسية لتطبيقنا!",
+export const metadata = {
+  title: 'Home | Solo Vizion',
+  description: 'Discover the latest eyewear collections at Solo Vizion.',
 };
 
 export default function HomePage() {
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">مرحبًا بك في الصفحة الرئيسية!</h1>
-      <p className="text-gray-700">
-        هذه هي الصفحة الرئيسية لتطبيقنا. يمكنك البدء من هنا لاستكشاف المزيد من الميزات.
-      </p>
+    <div>
+      <h2 className="text-2xl font-semibold">Welcome to Solo Vizion</h2>
+      <p className="mt-4 text-gray-700">Explore our latest collection of glasses and sunglasses.</p>
     </div>
   );
 }
-
