@@ -2073,7 +2073,7 @@ export const schemas = {
   PatchedUserRequest,
 };
 
-const endpoints = makeApi([
+export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/accounting/accounts/",

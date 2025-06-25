@@ -140,6 +140,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema
+from django.db import connection
 
 User = get_user_model()
 
@@ -181,7 +182,7 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]  # 👈 مفتوح للجميع
+    permission_classes = [AllowAny]
 
     @extend_schema(
         request=LoginSerializer,
@@ -189,19 +190,19 @@ class LoginView(APIView):
         description="Login endpoint for users"
     )
     def post(self, request):
+        print("Current Schema:", connection.schema_name)
+
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
-            user = authenticate(
-                username=serializer.validated_data['username'],
-                password=serializer.validated_data['password']
-            )
-            if user is not None:
-                refresh = RefreshToken.for_user(user)
-                response = Response({"msg": "Login successful"})
-                set_token_cookies(response, refresh)
-                return response
-            return Response({"error": "Invalid credentials"}, status=401)
+            user = serializer.validated_data['user']
+            refresh = RefreshToken.for_user(user)
+            response = Response({"msg": "Login successful"}, status=status.HTTP_200_OK)
+            set_token_cookies(response, refresh)
+            # print("Login successful")
+            return response
+
         return Response(serializer.errors, status=400)
+
 
 class RefreshTokenView(APIView):
     @extend_schema(

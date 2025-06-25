@@ -2,6 +2,7 @@
 import React from 'react';
 // import { Inter } from 'next/font/google';
 import '../styles/globals.css';
+import { Toaster } from 'sonner';
 
 
 export default function RegisterLayout({
@@ -11,7 +12,7 @@ export default function RegisterLayout({
 }) {
   return (
 
-    <html lang="ar" dir="rtl">
+    <html lang="en" dir="ltr">
     <head>
       <title>تسجيل الدخول</title>
       <meta name="description" content="صفحة تسجيل الدخول للمستخدمين الجدد" />
@@ -22,6 +23,8 @@ export default function RegisterLayout({
     <section>
       {/* يمكن وضع عناصر الواجهة المشتركة مثل Sidebar, Header... */}
       {children}
+              <Toaster /> {/* 👈 هذا مهم ليظهر الـ toast */}
+
     </section>
     </body>
     </html>

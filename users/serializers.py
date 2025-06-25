@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth import authenticate
+
 
 User = get_user_model()
 
@@ -43,6 +45,25 @@ class RegisterSerializer(serializers.ModelSerializer):
         )
         return user
     
+
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
+
+    def validate(self, attrs):
+        username = attrs.get("username")
+        password = attrs.get("password")
+
+        # تحقق من وجود المستخدم أولًا
+        user = User.objects.filter(username=username).first()
+        if user is None:
+            raise serializers.ValidationError({"username": ["User does not exist."]})
+
+        # تحقق من صحة كلمة المرور
+        user = authenticate(username=username, password=password)
+        if user is None:
+            raise serializers.ValidationError({"password": ["Incorrect password."]})
+
+        attrs['user'] = user
+        return attrs
+    

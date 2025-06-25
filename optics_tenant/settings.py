@@ -156,7 +156,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_ORIGINS = ['http://localhost:3000']
+CORS_ALLOW_ORIGINS = ['http://localhost:3000','http://store1.localhost:3000', 'http://store2.localhost:3000', 'http://store3.localhost:3000']
 CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with']
 CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
 
