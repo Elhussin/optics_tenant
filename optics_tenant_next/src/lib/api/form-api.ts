@@ -21,7 +21,7 @@ export class FormApiService {
 
     try {
       const transformedData = transform ? transform(data) : data;
-      
+      console.log("transformedData",transformedData);
       const response = await api[method.toLowerCase() as 'post' | 'put' | 'patch'](
         `/api/${endpoint}/`,
         transformedData
@@ -30,6 +30,7 @@ export class FormApiService {
       onSuccess?.(response);
       return response;
     } catch (error: any) {
+      console.log("error",error);
       onError?.(error);
       throw error;
     }

@@ -3,6 +3,7 @@
 
 import Link from 'next/link';
 import { useCurrentUser } from '@/src/hooks/useCurrentUser';
+import LogoutButton from './logout';
 
 export default function Navbar() {
   const { user, loading } = useCurrentUser();
@@ -25,14 +26,16 @@ export default function Navbar() {
             {user.role === 'TECHNICIAN' && <Link href="/prescriptions">Prescriptions</Link>}
             
             <Link href="/profile">Profile</Link>
+            <LogoutButton />
             <form action="/api/users/logout" method="POST">
+
               <button className="text-red-600" type="submit">Logout</button>
             </form>
           </>
         ) : (
           <>
-            <Link href="/login">Login</Link>
-            <Link href="/register">Register</Link>
+            <Link href="/auth/login">Login</Link>
+            <Link href="/auth/register">Register</Link>
           </>
         )}
       </div>

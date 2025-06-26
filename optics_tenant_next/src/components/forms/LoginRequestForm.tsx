@@ -14,7 +14,7 @@ export default function LoginRequestForm({
   onSuccess,
   onCancel,
   className = "",
-  submitText = "Save",
+  submitText = "Login",
   showCancelButton = false,
   ...options
 }: LoginRequestFormProps) {
@@ -28,7 +28,9 @@ export default function LoginRequestForm({
 
   const onSubmit = async (data: any) => {
     try {
+      console.log("data",data);
       const result = await submitForm(data);
+      console.log("result",result);
       onSuccess?.(result);
       if (options.mode === 'create') {
         reset();
@@ -82,7 +84,7 @@ export default function LoginRequestForm({
             disabled={isSubmitting}
             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSubmitting ? 'جاري الحفظ...' : submitText}
+            {isSubmitting ? 'Login...' : submitText}
           </button>
           
           
@@ -93,7 +95,7 @@ export default function LoginRequestForm({
               onClick={onCancel}
               className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
             >
-              إلغاء
+              Cancel
             </button>
           )}
         </div>

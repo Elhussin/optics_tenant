@@ -62,10 +62,11 @@ class LoginView(APIView):
     )
 
     def post(self, request):
+        print("request",request.data)
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            
+            print("user",user)
             if not user.is_active:
                 return Response(
                     {"detail": "User account is disabled."},
@@ -136,33 +137,23 @@ class LogoutView(APIView):
         response.delete_cookie('access_token')
         return response
 
+
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
-    # authentication_classes = [JWTAuthentication]
 
     @extend_schema(
-        responses={200: None},
-        description="Profile endpoint for users"
-        
+        request=None,
+        responses={200: UserSerializer},
+        description="Get current authenticated user profile data"
+
     )
     def get(self, request):
+        """
+        Returns the current authenticated user's profile data.
+        """
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
-
-
-# class CurrentUserView(APIView):
-#         # authentication_classes = [JWTAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     @extend_schema(
-#         responses={200: UserSerializer},
-#         description="Current user endpoint for users"
-        
-#     )
-
-#     def get(self, request):
-#         serializer = UserSerializer(request.user)
-#         return Response(serializer.data)
 
 
 

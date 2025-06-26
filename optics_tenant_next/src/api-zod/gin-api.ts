@@ -1871,21 +1871,6 @@ const LoginBadRequest = z
   .partial()
   .passthrough();
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
-const RegisterRequest = z
-  .object({
-    username: z
-      .string()
-      .min(1)
-      .max(150)
-      .regex(/^[\w.@+-]+$/),
-    email: z.string().max(254).email().optional(),
-    password: z.string().min(1),
-  })
-  .passthrough();
-const RefreshTokenResponse = z
-  .object({ msg: z.string(), access: z.string() })
-  .passthrough();
-const TokenRefreshError = z.object({ error: z.string() }).passthrough();
 const UserRoleEnum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
@@ -1912,6 +1897,21 @@ const User = z
     role: UserRoleEnum.optional(),
   })
   .passthrough();
+const RegisterRequest = z
+  .object({
+    username: z
+      .string()
+      .min(1)
+      .max(150)
+      .regex(/^[\w.@+-]+$/),
+    email: z.string().max(254).email().optional(),
+    password: z.string().min(1),
+  })
+  .passthrough();
+const RefreshTokenResponse = z
+  .object({ msg: z.string(), access: z.string() })
+  .passthrough();
+const TokenRefreshError = z.object({ error: z.string() }).passthrough();
 const UserRequest = z
   .object({
     username: z
@@ -2079,11 +2079,11 @@ export const schemas = {
   LoginSuccessResponse,
   LoginBadRequest,
   LoginForbidden,
+  UserRoleEnum,
+  User,
   RegisterRequest,
   RefreshTokenResponse,
   TokenRefreshError,
-  UserRoleEnum,
-  User,
   UserRequest,
   PatchedUserRequest,
 };
@@ -4899,9 +4899,9 @@ const endpoints = makeApi([
     method: "get",
     path: "/api/users/profile/",
     alias: "users_profile_retrieve",
-    description: `Profile endpoint for users`,
+    description: `Get current authenticated user profile data`,
     requestFormat: "json",
-    response: z.void(),
+    response: User,
   },
   {
     method: "post",

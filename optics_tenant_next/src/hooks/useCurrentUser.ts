@@ -13,7 +13,7 @@ export function useCurrentUser() {
     const fetchUser = async () => {
       try {
         const res = await api.get('/api/users/profile/');
-        console.log(res.received);
+        console.log(res.data);
         setUser(res);
       } catch (error) {
         console.error('Error fetching user:', error);
