@@ -52,39 +52,39 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error: AxiosError) => {
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
 
-//     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-//     if (
-//       error.response?.status !== 401 ||
-//       isAuthEndpoint(originalRequest?.url || "") ||
-//       originalRequest._retry
-//     ) {
-//       return Promise.reject(error);
-//     }
+    if (
+      error.response?.status !== 401 ||
+      isAuthEndpoint(originalRequest?.url || "") ||
+      originalRequest._retry
+    ) {
+      return Promise.reject(error);
+    }
 
-//     originalRequest._retry = true;
+    originalRequest._retry = folse;
 
-//     try {
-//       console.log("🔄 Attempting to refresh token via httpOnly cookie...");
-//       await axiosInstance.post("/users/token/refresh/");
-//       console.log("✅ Token refreshed successfully via httpOnly cookie");
-//       return axiosInstance(originalRequest);
-//     } catch (refreshError) {
-//       console.error("Token refresh failed:", refreshError);
+    try {
+      console.log("🔄 Attempting to refresh token via httpOnly cookie...");
+      await axiosInstance.post("/users/token/refresh/");
+      console.log("✅ Token refreshed successfully via httpOnly cookie");
+      return axiosInstance(originalRequest);
+    } catch (refreshError) {
+      console.error("Token refresh failed:", refreshError);
 
-//       if (typeof window !== "undefined") {
-//         localStorage.removeItem("user");
-//         localStorage.removeItem("userPreferences");
-//         window.location.href = "/auth/login";
-//       }
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("user");
+        localStorage.removeItem("userPreferences");
+        window.location.href = "/auth/login";
+      }
 
-//       return Promise.reject(refreshError);
-//     }
-//   }
-// );
+      return Promise.reject(refreshError);
+    }
+  }
+);
 
 export { axiosInstance ,baseUrl};

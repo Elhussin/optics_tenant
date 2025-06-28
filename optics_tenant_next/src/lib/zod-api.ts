@@ -1899,6 +1899,7 @@ const User = z
     role: UserRoleEnum.optional(),
   })
   .passthrough();
+const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
   .object({
     username: z
@@ -2084,6 +2085,7 @@ export const schemas = {
   TokenRefreshError,
   UserRoleEnum,
   User,
+  Unauthorized,
   RegisterRequest,
   RefreshTokenResponse,
   UserRequest,
@@ -4910,6 +4912,12 @@ export const endpoints = makeApi([
     description: `Get current authenticated user profile data`,
     requestFormat: "json",
     response: User,
+    errors: [
+      {
+        status: 401,
+        schema: z.object({ error: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "post",

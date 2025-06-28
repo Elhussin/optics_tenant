@@ -76,7 +76,8 @@ const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
 const shape = schema.shape;
 
 // ignore fields
-const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'is_active', 'group'];
+// const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'is_active', 'group'];
+const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'group'];
 const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
 const visibleFields = config.fieldOrder || allFields;
 

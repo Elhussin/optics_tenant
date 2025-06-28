@@ -8,5 +8,11 @@ export async function registerTenant(data: RegisterFormData) {
 
 
 export async function activeTenant(){
-  
+  const res = await api.post("/api/tenants/active/");
+  return res.data;
+}
+
+export async function getTenant(){
+  const res = await api.get("/api/tenants/");
+  return res.data;
 }

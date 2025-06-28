@@ -2,11 +2,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
+// import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
+import { useUser } from  '@/src/lib/hooks/useCurrentUser'
+
 import LogoutButton from './logout';
 
 export default function Navbar() {
-  const { user, loading } = useCurrentUser();
+  const { user, loading } = useUser();
 
   if (loading) return <div>Loading...</div>; // أو spinner لو تحب
 

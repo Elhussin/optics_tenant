@@ -2,6 +2,8 @@ import React from 'react';
 import '../styles/globals.css';
 import MainLayout from '@/src/components/layout/MainLayout';
 import { generateMetadata } from '@/src/lib/utils/metadata';
+import { UserProvider } from  '@/src/lib/hooks/useCurrentUser'
+
 
 generateMetadata({
   title: 'O-S-M | Optical System Management',
@@ -15,7 +17,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <MainLayout>{children}</MainLayout>
+       
+        <UserProvider>
+          <MainLayout>
+              {children}
+            </MainLayout>
+         </UserProvider>  
+     
+        
       </body>
     </html>
   );

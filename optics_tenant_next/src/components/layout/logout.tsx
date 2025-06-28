@@ -2,13 +2,16 @@
 import { useRouter } from "next/navigation";
 import { api } from "@/src/lib/zodios-client";
 import { toast } from "sonner";
+import { useUser } from  '@/src/lib/hooks/useCurrentUser'
+
 export default function LogoutButton() {
   const router = useRouter();
-
+  const { refreshUser } = useUser();
   const handleLogout = async () => {
-    // Call the server-side logout endpoint to clear HTTP-only cookies
     await api.post("/api/users/logout/").then(() => {
       toast.success("Logged out successfully");
+        refreshUser(); 
+
       router.push("/auth/login");
     }).catch((error) => {
       toast.error("Failed to log out");

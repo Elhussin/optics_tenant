@@ -111,6 +111,20 @@ export default function UserRequestForm({
     <div className="flex items-center space-x-2">
     
       <input 
+        id="is_active" 
+        type="checkbox" 
+        {...register("is_active")} 
+        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+      />
+      <label htmlFor="is_active" className="block text-sm font-medium text-gray-700 mb-1">Is active</label>
+    </div>
+    {errors.is_active && <p className="text-red-500 text-sm mt-1">{errors.is_active?.message}</p>}
+  </div>
+
+  <div className="mb-4">
+    <div className="flex items-center space-x-2">
+    
+      <input 
         id="is_staff" 
         type="checkbox" 
         {...register("is_staff")} 
@@ -131,7 +145,7 @@ export default function UserRequestForm({
       {...register("role")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
     >
-      <option value="">اختر...</option>
+      <option value="">Select...</option>
       <option value="ADMIN">ADMIN</option>
       <option value="BRANCH_MANAGER">BRANCH_MANAGER</option>
       <option value="TECHNICIAN">TECHNICIAN</option>
@@ -143,8 +157,27 @@ export default function UserRequestForm({
     </select>
     
     {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>}
+
+  </div>
+
+  <div className="mb-4">
+    
+    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+      Password *
+    </label>
+    <input 
+      id="password" 
+      type="password" 
+      {...register("password")} 
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+      placeholder="Password..."
+      
+    />
+    
+    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>}
   </div>
         
+
         <div className="flex gap-3 pt-4">
           <button 
             type="submit" 
