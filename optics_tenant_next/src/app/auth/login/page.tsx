@@ -4,8 +4,8 @@
 import LoginRequestForm from '@/src/components/forms/LoginRequestForm';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { generateMetadata } from '@/src/lib/metadata';
-
+import { generateMetadata } from '@/src/lib/utils/metadata';
+import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
  generateMetadata({
   title: 'Login | O-S-M',
   description: 'Login to your account',
@@ -18,6 +18,13 @@ import { generateMetadata } from '@/src/lib/metadata';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { user, loading } = useCurrentUser();
+  
+  if (loading) return <div>Loading...</div>;
+
+  if (user) {
+    return <div>You are already logged in</div>;
+  }
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
@@ -27,6 +34,7 @@ export default function LoginPage() {
           toast.success('Login successfully');
           router.push('/dashboard');
         }}
+
       />
     </div>
   );

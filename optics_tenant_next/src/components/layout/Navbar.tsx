@@ -2,7 +2,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCurrentUser } from '@/src/hooks/useCurrentUser';
+import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
 import LogoutButton from './logout';
 
 export default function Navbar() {
@@ -27,10 +27,7 @@ export default function Navbar() {
             
             <Link href="/profile">Profile</Link>
             <LogoutButton />
-            <form action="/api/users/logout" method="POST">
-
-              <button className="text-red-600" type="submit">Logout</button>
-            </form>
+     
           </>
         ) : (
           <>

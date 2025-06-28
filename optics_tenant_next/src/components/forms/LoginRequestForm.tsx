@@ -1,6 +1,6 @@
 // src/components/forms/LoginRequestForm.tsx
 import React from 'react';
-import { useLoginRequestForm, UseLoginRequestFormOptions } from '@/src/lib/forms/useLoginRequestForm';
+import { useLoginRequestForm, UseLoginRequestFormOptions } from '@/src/lib/hooks/useLoginRequest';
 
 export interface LoginRequestFormProps extends UseLoginRequestFormOptions {
   onSuccess?: (data?: any) => void;
@@ -14,7 +14,7 @@ export default function LoginRequestForm({
   onSuccess,
   onCancel,
   className = "",
-  submitText = "Login",
+  submitText = "Save",
   showCancelButton = false,
   ...options
 }: LoginRequestFormProps) {
@@ -28,9 +28,7 @@ export default function LoginRequestForm({
 
   const onSubmit = async (data: any) => {
     try {
-      console.log("data",data);
       const result = await submitForm(data);
-      console.log("result",result);
       onSuccess?.(result);
       if (options.mode === 'create') {
         reset();
@@ -84,7 +82,7 @@ export default function LoginRequestForm({
             disabled={isSubmitting}
             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSubmitting ? 'Login...' : submitText}
+            {isSubmitting ? 'Saving...' : submitText}
           </button>
           
           

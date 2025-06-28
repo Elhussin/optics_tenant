@@ -1871,6 +1871,8 @@ const LoginBadRequest = z
   .partial()
   .passthrough();
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
+const LogoutResponse = z.object({ msg: z.string() }).passthrough();
+const TokenRefreshError = z.object({ error: z.string() }).passthrough();
 const UserRoleEnum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
@@ -1911,7 +1913,6 @@ const RegisterRequest = z
 const RefreshTokenResponse = z
   .object({ msg: z.string(), access: z.string() })
   .passthrough();
-const TokenRefreshError = z.object({ error: z.string() }).passthrough();
 const UserRequest = z
   .object({
     username: z
@@ -2079,16 +2080,17 @@ export const schemas = {
   LoginSuccessResponse,
   LoginBadRequest,
   LoginForbidden,
+  LogoutResponse,
+  TokenRefreshError,
   UserRoleEnum,
   User,
   RegisterRequest,
   RefreshTokenResponse,
-  TokenRefreshError,
   UserRequest,
   PatchedUserRequest,
 };
 
-const endpoints = makeApi([
+export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/accounting/accounts/",
@@ -4893,7 +4895,13 @@ const endpoints = makeApi([
         schema: z.object({}).partial().passthrough(),
       },
     ],
-    response: z.void(),
+    response: z.object({ msg: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 401,
+        schema: z.object({ error: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "get",

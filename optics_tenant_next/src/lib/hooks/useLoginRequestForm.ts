@@ -1,8 +1,8 @@
-// src/lib/forms/useLoginRequestForm.ts
+// src/lib/lip-forms/useLoginRequestForm.ts
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemas } from '@/src/api-zod/gin-api';
+import { schemas } from '@/src/lib/zod-api';
 import { FormApiService, FormApiOptions } from '@/src/lib/api/form-api';
 
 const schema = schemas.LoginRequest;

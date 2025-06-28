@@ -1,5 +1,5 @@
 // src/lib/api/form-api.ts
-import api from '@/src/lib/api';
+import api from '@/src/lib/zodios-client';
 
 export interface FormApiOptions {
   endpoint: string;

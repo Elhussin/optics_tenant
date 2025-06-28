@@ -1,21 +1,13 @@
-# django settings
 import os
 from pathlib import Path
-from decouple import config
 from datetime import timedelta
-from django.contrib import admin
-from django.db import connection
+from .config_loader import config
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
-# DEBUG = config('DEBUG', default=True, cast=bool)
-DEBUG = config('DEBUG')
-
-# ALLOWED_HOSTS = config('ALLOWED_HOSTS').split(',')
-ALLOWED_HOSTS = ['*']
-
-
-
+SECRET_KEY = config("SECRET_KEY")
+DEBUG = config("DEBUG", default=False, cast=bool)
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost").split(",")
 
 # ===============================
 # Database PostgreSQL
@@ -52,11 +44,7 @@ SHARED_APPS = (
     'django.contrib.sites',
     'rest_framework',
     'rest_framework_simplejwt',
-    #'rest_framework_simplejwt.token_blacklist',
     'rest_framework.authtoken',
-    # 'allauth',
-    # 'allauth.account',
-    # 'allauth.socialaccount',
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'simple_history',
@@ -87,7 +75,7 @@ TENANT_APPS = (
     'HRM',
     'branches',
     'accounting',
-    'sales'
+    'sales',
 )
 
 AUTH_USER_MODEL = 'users.User'
@@ -135,7 +123,6 @@ TEMPLATES = [
     },
 ]
 
-
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 SITE_ID = 1
@@ -148,29 +135,18 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',  # 👈 هذا يسمح بالوصول المفتوح ما لم يُحدد غيره
-
+        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOW_ORIGINS = ['http://localhost:3000','http://store1.localhost:3000', 'http://store2.localhost:3000', 'http://store3.localhost:3000']
-CORS_ALLOW_ORIGINS = ['*']
-CORS_ALLOW_HEADERS = ['accept', 'accept-encoding', 'authorization', 'content-type', 'dnt', 'origin', 'user-agent', 'x-csrftoken', 'x-requested-with']
-CORS_ALLOW_METHODS = ['DELETE', 'GET', 'OPTIONS', 'PATCH', 'POST', 'PUT']
-
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^http://localhost:3000$",
-    r"^http://.+\.localhost:3000$",  # يسمح لكل subdomain
-]
-
+CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
+CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
+CORS_ALLOW_HEADERS = config("CORS_ALLOW_HEADERS", default="accept,accept-encoding,authorization,content-type,dnt,origin,user-agent,x-csrftoken,x-requested-with").split(',')
+CORS_ALLOW_METHODS = config("CORS_ALLOW_METHODS", default="DELETE,GET,OPTIONS,PATCH,POST,PUT").split(',')
+CORS_ALLOWED_ORIGIN_REGEXES = config("CORS_ALLOWED_ORIGIN_REGEXES", default=r"^http://localhost:3000$,^http://.+\.localhost:3000$", cast=lambda v: v.split(","))
 
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'
-
 ROOT_URLCONF = 'optics_tenant.urls'
 PUBLIC_SCHEMA_URLCONF = 'optics_tenant.public_urls'
 TENANT_MODEL = 'tenants.Client'
@@ -191,59 +167,67 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TENANT_BASE_DOMAIN = config('TENANT_BASE_DOMAIN')
-PORT = config('PORT', default=8000)
+PORT = config('PORT', default=8000, cast=int)
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = config('EMAIL_HOST')
-    EMAIL_PORT = config('EMAIL_PORT')
-    EMAIL_USE_SSL = True
-    EMAIL_USE_TLS = False
+    EMAIL_PORT = config('EMAIL_PORT', cast=int)
+    EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=True, cast=bool)
+    EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-# Api Documentation
 SPECTACULAR_SETTINGS = {
     'TITLE': 'API Documentation',
-    'DESCRIPTION': 'API for your project',
+    'DESCRIPTION': 'API for optics Management System',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
     'SCHEMA_PATH_PREFIX': '/api/',
 }
 
-#  if not DEBUG:
-SECURE_HSTS_SECONDS = 31536000
-SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-SECURE_CONTENT_TYPE_NOSNIFF = True
 
-CSRF_COOKIE_NAME = 'csrftoken'
-CSRF_HEADER_NAME = 'HTTP_X_CSRFTOKEN'
-SESSION_COOKIE_NAME = 'sessionid'
-CSRF_COOKIE_HTTPONLY = False  # for next js app to work with csrf token
+CSRF_COOKIE_NAME = 'optics_tenant_csrftoken'
+CSRF_HEADER_NAME = 'HTTP_X_OPTICS_TENANT_CSRFTOKEN'
+SESSION_COOKIE_NAME = 'optics_tenant_sessionid'
+CSRF_COOKIE_HTTPONLY = False
+
+if DEBUG:
+    SESSION_COOKIE_SECURE = False # required https 
+    CSRF_COOKIE_SECURE = False  # required https
+    SECURE_HSTS_SECONDS = 0 # required https
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False # required https
+    SECURE_CONTENT_TYPE_NOSNIFF = False  
+    SECURE_PROXY_SSL_HEADER = None # required https 
+else:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+
+ACCESS_TOKEN_LIFETIME_MINUTES = config("ACCESS_TOKEN_LIFETIME_MINUTES", cast=int, default=15)
+REFRESH_TOKEN_LIFETIME_DAYS = config("REFRESH_TOKEN_LIFETIME_DAYS", cast=int, default=7)
+AUTH_COOKIE_SECURE = config("AUTH_COOKIE_SECURE", default=False, cast=bool)
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=int(os.getenv('ACCESS_TOKEN_LIFETIME_MINUTES', 15))),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=int(os.getenv('REFRESH_TOKEN_LIFETIME_DAYS', 7))),
-
-    "UPDATE_LAST_LOGIN": True,
-#    "ROTATE_REFRESH_TOKENS": False,
- #   "BLACKLIST_AFTER_ROTATION": False,
-    "AUTH_HEADER_TYPES": ("Bearer",),
-    "AUTH_COOKIE": "access_token",  # اسم الكوكي المستخدم
-    "AUTH_COOKIE_REFRESH": "refresh_token",  # الكوكي لتخزين refresh token
-    "AUTH_COOKIE_SECURE": True,
-    "AUTH_COOKIE_HTTP_ONLY": True,
-    "AUTH_COOKIE_SAMESITE": "Lax",
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=ACCESS_TOKEN_LIFETIME_MINUTES),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=REFRESH_TOKEN_LIFETIME_DAYS),
+    'UPDATE_LAST_LOGIN': True,
+    'AUTH_HEADER_TYPES': ("Bearer",),
+    'AUTH_COOKIE': "access_token",
+    'AUTH_COOKIE_REFRESH': "refresh_token",
+    'AUTH_COOKIE_SECURE': AUTH_COOKIE_SECURE,
+    'AUTH_COOKIE_HTTP_ONLY': True,
+    'AUTH_COOKIE_SAMESITE': "Lax",
 }
-
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -252,15 +236,6 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# ACCOUNT_EMAIL_VERIFICATION = 'none' if DEBUG else 'mandatory'
-# ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
-
 REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
 }
-
-
-
-
-# admin.site.site_title = "Control Panel"
-# admin.site.site_header = f"Control Panel - {connection.schema_name.upper()}"

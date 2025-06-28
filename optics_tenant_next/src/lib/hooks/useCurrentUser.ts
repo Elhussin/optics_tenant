@@ -1,9 +1,9 @@
 // src/hooks/useCurrentUser.ts
-'use client';
+// 'use client';
 
 import { useEffect, useState } from 'react';
 // import axios from 'axios';
-import api from '@/src/lib/api';
+import api from '@/src/lib/zodios-client';
 
 export function useCurrentUser() {
   const [user, setUser] = useState<any>(null);
@@ -13,7 +13,6 @@ export function useCurrentUser() {
     const fetchUser = async () => {
       try {
         const res = await api.get('/api/users/profile/');
-        console.log(res.data);
         setUser(res);
       } catch (error) {
         console.error('Error fetching user:', error);

@@ -5,9 +5,8 @@ export  interface MetadataOptions {
     keywords?: string[];
     canonicalUrl?: string;
     suffix?: string;
-    openGraphImage?: string; // ← صورة لمعاينة OG / Twitter
-    openGraphType?: string; // ← نوع المحتوى في OG (مثلاً: article)
-    twitterCardType?: 'summary' | 'summary_large_image'; // ← نوع بطاقة تويتر
+    openGraphImage?: string; // og image preview in social media
+    openGraphType?: string; // og type of the content in OG (e.g: article)
+    twitterCardType?: 'summary' | 'summary_large_image'; // twitter card type
   }
   
-

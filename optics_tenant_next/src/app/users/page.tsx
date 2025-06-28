@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { api } from '@/src/api-zod/gin-api';
+import { api } from '@/src/lib/zod-api';
 import UserForm from '@/src/components/form/UserForm';
 
 export default function UserList() {

@@ -2,10 +2,10 @@
 
 import fs from 'fs';
 import path from 'path';
-import { schemas } from '../src/api-zod/gin-api';
+import { schemas } from '../src/lib/zod-api';
 import { z } from 'zod';
 
-// ===== التكوين والإعدادات =====
+// ===== configuration and settings =====
 interface GeneratorConfig {
   baseClasses: string;
   labelClasses: string;
@@ -54,34 +54,37 @@ const fieldTemplates: Record<string, FieldTemplate> = {
   'range': { component: 'input', type: 'range' }
 };
 
-// ===== معالجة الـ Schema =====
+// command line arguments
 const [,, schemaName, apiEndpoint, configPath] = process.argv;
 
+// check if schema name is provided
 if (!schemaName || !(schemaName in schemas)) {
   console.error('❌ Please provide a valid schema name from zodSchemas.ts');
   console.log('Available schemas:', Object.keys(schemas).join(', '));
   process.exit(1);
 }
-
+// load config
 let config: GeneratorConfig = defaultConfig;
 if (configPath && fs.existsSync(configPath)) {
   const userConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
   config = { ...defaultConfig, ...userConfig };
 }
 
+// set api endpoint
 const YOUR_ENDPOINT = apiEndpoint || 'YOUR_ENDPOINT';
 const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
 const shape = schema.shape;
 
-// ===== معالجة الحقول =====
+// ignore fields
 const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'is_active', 'group'];
 const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
 const visibleFields = config.fieldOrder || allFields;
 
+// generate file names
 const pascal = schemaName.replace(/(^\w|_\w)/g, (m) => m.replace('_', '').toUpperCase());
 const camel = schemaName.replace(/_(\w)/g, (_, c) => c.toUpperCase());
 
-// ===== مساعدات للتحليل =====
+// helper functions
 function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   while (
     schema instanceof z.ZodOptional ||
@@ -93,10 +96,11 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   return schema;
 }
 
+// detect field type
 function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
   const schema = unwrapSchema(rawSchema);
   
-  // تحليل اسم الحقل
+  // analyze field name
   const fieldLower = field.toLowerCase();
   if (fieldLower.includes('email')) return 'email';
   if (fieldLower.includes('password')) return 'password';
@@ -107,7 +111,7 @@ function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
   if (fieldLower.includes('time')) return 'time';
   if (fieldLower.includes('description') || fieldLower.includes('content') || fieldLower.includes('notes')) return 'textarea';
   
-  // تحليل نوع الـ schema
+  // analyze schema type
   if (schema instanceof z.ZodBoolean) return 'checkbox';
   if (schema instanceof z.ZodEnum) return 'select';
   if (schema instanceof z.ZodNumber) return 'number';
@@ -131,6 +135,7 @@ function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
   return 'text';
 }
 
+// generate field code
 function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
   const fieldType = detectFieldType(field, rawSchema);
   const template = fieldTemplates[fieldType] || fieldTemplates['text'] || { component: 'input', type: 'text' };
@@ -246,11 +251,11 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
   </div>`;
 }
 
-// ===== توليد الكود =====
+// ===== generate api service =====
 
 // API Service
 const apiServiceCode = `// src/lib/api/form-api.ts
-import { API } from '@/src/lib/api';
+import { api } from '@/src/lib/zodios-client';
 
 export interface FormApiOptions {
   endpoint: string;
@@ -305,11 +310,11 @@ export class FormApiService {
 `;
 
 // Hook
-const hookCode = `// src/lib/forms/use${pascal}Form.ts
+const hookCode = `// src/lib/hooks/use${pascal}.ts
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { schemas } from '@/src/api-zod/gin-api';
+import { schemas } from '@/src/lib/zod-api';
 import { FormApiService, FormApiOptions } from '@/src/lib/api/form-api';
 
 const schema = schemas.${schemaName};
@@ -376,7 +381,7 @@ export function use${pascal}Form(options: Use${pascal}FormOptions = {}) {
 // Form Component
 const formCode = `// src/components/forms/${pascal}Form.tsx
 import React from 'react';
-import { use${pascal}Form, Use${pascal}FormOptions } from '@/src/lib/forms/use${pascal}Form';
+import { use${pascal}Form, Use${pascal}FormOptions } from '@/src/lib/hooks/use${pascal}';
 
 export interface ${pascal}FormProps extends Use${pascal}FormOptions {
   onSuccess?: (data?: any) => void;
@@ -425,7 +430,7 @@ export default function ${pascal}Form({
             disabled={isSubmitting}
             className={\`${config.submitButtonClasses} \${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}\`}
           >
-            {isSubmitting ? 'جاري الحفظ...' : submitText}
+            {isSubmitting ? 'Saving...' : submitText}
           </button>
           
           ${config.includeResetButton ? `
@@ -434,7 +439,7 @@ export default function ${pascal}Form({
             onClick={() => reset()}
             className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors"
           >
-            إعادة تعيين
+            Reset
           </button>` : ''}
           
           {showCancelButton && (
@@ -443,7 +448,7 @@ export default function ${pascal}Form({
               onClick={onCancel}
               className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
             >
-              إلغاء
+              Cancel
             </button>
           )}
         </div>
@@ -459,7 +464,7 @@ const configTemplate = `{
   "labelClasses": "block text-sm font-medium text-gray-700 mb-1",
   "errorClasses": "text-red-500 text-sm mt-1",
   "submitButtonClasses": "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors",
-  "submitButtonText": "حفظ",
+  "submitButtonText": "Save",
   "includeResetButton": true,
   "spacing": "mb-6",
   "containerClasses": "space-y-6",
@@ -467,28 +472,28 @@ const configTemplate = `{
 }
 `;
 
-// ===== كتابة الملفات =====
+// ===== write files =====
 const formFile = `src/components/forms/${pascal}Form.tsx`;
-const hookFile = `src/lib/forms/use${pascal}Form.ts`;
+const hookFile = `src/lib/hooks/use${pascal}.ts`;
 const apiFile = `src/lib/api/form-api.ts`;
 const configFile = `config/form-generator.json`;
 
-// إنشاء المجلدات
+// create directories
 fs.mkdirSync(path.dirname(formFile), { recursive: true });
 fs.mkdirSync(path.dirname(hookFile), { recursive: true });
 fs.mkdirSync(path.dirname(apiFile), { recursive: true });
 fs.mkdirSync(path.dirname(configFile), { recursive: true });
 
-// كتابة الملفات
+// write files
 fs.writeFileSync(formFile, formCode);
 fs.writeFileSync(hookFile, hookCode);
 
-// كتابة API service فقط إذا لم يكن موجود
+// write API service only if it doesn't exist
 if (!fs.existsSync(apiFile)) {
   fs.writeFileSync(apiFile, apiServiceCode);
 }
 
-// كتابة config template فقط إذا لم يكن موجود
+// write config template only if it doesn't exist
 if (!fs.existsSync(configFile)) {
   fs.writeFileSync(configFile, configTemplate);
 }
@@ -520,56 +525,8 @@ console.log(`✅ ${pascal}Form created successfully:
   }} 
 />
 `);
-// تشغيل مع config مخصص
-// pnpm run generate-form user_schema users ./config/custom-form.json
 
-
-// node scripts/generate-zod-form.ts user_schema users
-
-
-// pnpm install -D typescript ts-node @types/node
-// npx ts-node scripts/generate-zod-form.ts user_schema users
-// pnpm install -D typescript ts-node @types/node
-
-
-
-// pnpm install -D typescript ts-node @types/node
+// npx ts-node scripts/generate-zod-form.ts user_schema users/login
 // npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
-
-
-// npm run form:generate user_schema users ./config/themes/modern.json
-
-// # إنشاء form للمنتجات بـ dashboard theme  
-// npm run form:generate product_schema products ./config/themes/dashboard.json
-
-// # إنشاء form بـ minimal theme
-// npm run form:generate order_schema orders ./config/themes/minimal.json
-
-
-// ssin@hussin-HP-EliteBook-840-G1:~/Desktop/learning/optics_tenant/optics_tenant_next$ npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
-// ✅ LoginRequestForm created successfully:
-// 📁 Form Component: src/components/forms/LoginRequestForm.tsx
-// 📁 Hook: src/lib/forms/useLoginRequestForm.ts
-// 📁 API Service: src/lib/api/form-api.ts
-// 📁 Config Template: config/form-generator.json
-
-// 🚀 Usage examples:
-// // Basic usage
-// <LoginRequestForm onSuccess={() => console.log('Success!')} />
-
-// // Update mode
-// <LoginRequestForm 
-//   mode="update" 
-//   id={123}
-//   defaultValues={existingData}
-//   onSuccess={handleUpdate} 
-// />
-
-// // Custom API endpoint
-// <LoginRequestForm 
-//   apiOptions={{ 
-//     endpoint: 'custom-endpoint',
-//     method: 'PATCH',
-//     transform: (data) => ({ ...data, extra: 'field' })
-//   }} 
-// />
+// npx tsx scripts/generate-zod-form.ts LogoutResponse users/logout ./config/custom-form.json
+// npx tsx scripts/generate-zod-form.ts UserRequest users/register ./config/custom-form.json

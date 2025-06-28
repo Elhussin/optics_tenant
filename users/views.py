@@ -18,6 +18,7 @@ from drf_spectacular.utils import extend_schema , OpenApiResponse, inline_serial
 from django.db import connection
 from core.utils.set_token import set_token_cookies
 from rest_framework.permissions import IsAuthenticated
+from django.conf import settings
 
 User = get_user_model()
 
@@ -91,7 +92,7 @@ class RefreshTokenView(APIView):
                 name='RefreshTokenResponse',
                 fields={
                     'msg': serializers.CharField(),
-                    'access': serializers.CharField()
+                    'access': serializers.CharField(),  # ❗️اختياري
                 }
             ),
             401: inline_serializer(
@@ -102,35 +103,50 @@ class RefreshTokenView(APIView):
             )
         }
     )
-
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if refresh_token is None:
-            return Response({"error": "No refresh token found"}, status=401)
+            return Response({"error": "No refresh token found"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             refresh = RefreshToken(refresh_token)
             new_access = str(refresh.access_token)
-        
-
-            response = Response({"msg": "Token refreshed"})
-            response.set_cookie(
-                key="access_token",
-                value=new_access,
-                httponly=True, # HttpOnly flag to prevent JavaScript access
-                secure=False,  # Secure flag to ensure cookie is sent over HTTPS
-                samesite="Lax",
-                max_age=300
-            )
-            return response
         except TokenError:
-            return Response({"error": "Invalid or expired refresh token"}, status=401)
+            return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        response = Response({
+            "msg": "Token refreshed",
+            "access": new_access  # For dev only shod remove
+        })
+
+        response.set_cookie(
+            key="access_token",
+            value=new_access,
+            httponly=True,
+            secure=not settings.DEBUG,
+            samesite="Lax",
+            max_age=60 * 15,  # 15 minutes
+        )
+        return response
 
 class LogoutView(APIView):
     @extend_schema(
         request=RefreshToken,
-        responses={200: None},
-        description="Logout endpoint for users"
+        description="Logout endpoint for users",
+        responses={
+            200: inline_serializer(
+                name='LogoutResponse',
+                fields={
+                    'msg': serializers.CharField(),
+                }
+            ),
+            401: inline_serializer(
+                name='TokenRefreshError',
+                fields={
+                    'error': serializers.CharField()
+                }
+            )
+        }
     )
     def post(self, request):
         response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)

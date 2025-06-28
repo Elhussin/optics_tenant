@@ -1,7 +1,7 @@
 import React from 'react';
 import '../styles/globals.css';
 import MainLayout from '@/src/components/layout/MainLayout';
-import { generateMetadata } from '@/src/lib/metadata';
+import { generateMetadata } from '@/src/lib/utils/metadata';
 
 generateMetadata({
   title: 'O-S-M | Optical System Management',

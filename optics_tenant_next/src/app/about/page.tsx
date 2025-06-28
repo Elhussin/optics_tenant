@@ -1,5 +1,5 @@
 
-import { generateMetadata } from '@/src/lib/metadata';
+import { generateMetadata } from '@/src/lib/utils/metadata';
 generateMetadata({
   title: 'About | O-S-M',
   description: 'About  Optical System Management[O-S-M] ',
