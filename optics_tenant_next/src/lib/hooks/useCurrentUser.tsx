@@ -11,7 +11,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUser = async () => {
     try {
       const res = await api.get('/api/users/profile/');
-      console.log(res)
+      console.log("res",res)
       setUser(res);
     } catch {
       setUser(null);

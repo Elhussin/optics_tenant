@@ -3,11 +3,11 @@
 import UserRequestForm from '@/src/components/forms/UserRequestForm';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { useCurrentUser } from '@/src/hooks/useCurrentUser';
+import { useUser } from '@/src/lib/hooks/useCurrentUser';
 
 export default function CreateUserPage() {
   const router = useRouter();
-  const user = useCurrentUser();
+  const {user} = useUser();
 
   if (user?.role !== 'ADMIN') {
     return <div>You are not allowed to view this page.</div>;

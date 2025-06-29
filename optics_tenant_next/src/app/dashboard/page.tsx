@@ -1,3 +1,6 @@
+import { ProtectedRoute } from '@/src/components/ProtectedRoute'
+
+
 const dashboardPage = async () => {
   // يمكنك هنا جلب البيانات من API إذا أردت
   const stats = {
@@ -7,6 +10,8 @@ const dashboardPage = async () => {
   };
 
   return (
+    <ProtectedRoute requiredPermissions={['admin_access']}>
+
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h1 className="text-xl font-bold mb-6">Welcome to the Admin Dashboard</h1>
       <ul>
@@ -15,6 +20,7 @@ const dashboardPage = async () => {
         <li>Revenue: ${stats.revenue}</li>
       </ul>
     </div>
+    </ProtectedRoute>
   );
 };
 

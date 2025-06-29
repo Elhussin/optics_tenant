@@ -2,11 +2,11 @@
 'use client';
 
 import LoginRequestForm from '@/src/components/forms/LoginRequestForm';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation'
 import { toast } from 'sonner';
 import { generateMetadata } from '@/src/lib/utils/metadata';
 import { useUser } from  '@/src/lib/hooks/useCurrentUser'
-
+import { useState, useEffect } from 'react'
 
  generateMetadata({
   title: 'Login | O-S-M',
@@ -21,11 +21,19 @@ import { useUser } from  '@/src/lib/hooks/useCurrentUser'
 export default function LoginPage() {
   const router = useRouter();
   const { user, loading ,refreshUser} = useUser();
-  
+
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || 
+      searchParams.get('callbackUrl') || 
+      '/dashboard'
+
   if (loading) return <div>Loading...</div>;
 
   if (user) {
-    return <div>You are already logged in</div>;
+    toast.success('You are already logged in will redirect to ' + redirectTo);
+    console.log(user)
+    router.push(redirectTo);
+
   }
 
   return (
@@ -35,7 +43,7 @@ export default function LoginPage() {
         onSuccess={() => {
           toast.success('Login successfully');
           refreshUser(); // يحدث NavBar تلقائيًا الآن
-          router.push('/dashboard');
+          router.push(redirectTo);
         }}
 
       />
