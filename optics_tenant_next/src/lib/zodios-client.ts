@@ -1,7 +1,7 @@
 // src/lib/zodios-client.ts
 import { createApiClient } from "@/src/lib/zod-api";
 
-import { Zodios, type ZodiosOptions } from "@zodios/core";
+import { Zodios } from "@zodios/core";
 import { endpoints } from "@/src/lib/zod-api";
 import { axiosInstance ,baseUrl} from "./axios";
 

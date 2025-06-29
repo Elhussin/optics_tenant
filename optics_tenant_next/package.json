@@ -8,7 +8,8 @@
     "form:user": "node scripts/generate-zod-form.ts user_schema users ./config/themes/modern.json",
     "form:admin": "node scripts/generate-zod-form.ts admin_schema admins ./config/themes/dashboard.json",
     "devX": "npm run generate:api && next dev",
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
+    "dev-t": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

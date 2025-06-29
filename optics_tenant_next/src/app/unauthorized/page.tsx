@@ -38,11 +38,11 @@ export default function UnauthorizedPage() {
         </div>
         
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          غير مخول للوصول
+          No Permission
         </h1>
         
         <p className="text-gray-600 mb-6">
-          عذراً، ليس لديك الصلاحية للوصول إلى هذه الصفحة.
+          You do not have permission to access this page.
         </p>
         
         <div className="space-y-3">
@@ -50,19 +50,19 @@ export default function UnauthorizedPage() {
             onClick={() => router.back()}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
           >
-            العودة للخلف
+            Back
           </button>
           
           <button
-            onClick={() => router.push('/dashboard')}
+            onClick={() => router.push('/')}
             className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-200"
           >
-            الذهاب للوحة التحكم
+            Go to Home
           </button>
         </div>
         
         <p className="text-sm text-gray-500 mt-4">
-          سيتم إعادة توجيهك تلقائياً خلال 3 ثواني...
+          You will be redirected to the home page in 3 seconds...
         </p>
       </div>
     </div>

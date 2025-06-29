@@ -7,9 +7,9 @@ import { useUser } from '@/src/lib/hooks/useCurrentUser';
 
 export default function CreateUserPage() {
   const router = useRouter();
-  const {user} = useUser();
+  const userContext = useUser();
 
-  if (user?.role !== 'ADMIN') {
+  if (userContext?.user?.role !== 'ADMIN') {
     return <div>You are not allowed to view this page.</div>;
   }
 

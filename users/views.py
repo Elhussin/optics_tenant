@@ -22,23 +22,6 @@ from django.conf import settings
 
 User = get_user_model()
 
-
-class RegisterView(APIView):
-    @extend_schema(
-        request=RegisterSerializer,
-        responses={200: None},
-        description="Register endpoint for users"
-    )
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            response = Response({"msg": "User created"}, status=status.HTTP_201_CREATED)
-            set_cookie(response, str(refresh.access_token))
-            return response
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -61,28 +44,41 @@ class LoginView(APIView):
         },
         description="Login endpoint for users"
     )
-
     def post(self, request):
-        print("request",request.data)
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.validated_data['user']
-            print("user",user)
+
             if not user.is_active:
-                return Response(
-                    {"detail": "User account is disabled."},
-                    status=status.HTTP_403_FORBIDDEN
-                )
-            
+                return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
+
             refresh = RefreshToken.for_user(user)
-            response = Response(
-                {"msg": "Login successful"},
-                status=status.HTTP_200_OK
-            )
-            set_token_cookies(response, refresh)
+            refresh["role"] = user.role
+            refresh["tenant"] = connection.schema_name
+
+            response = Response({"msg": "Login successful"})
+            set_token_cookies(response, access=str(refresh.access_token), refresh=str(refresh))
             return response
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class RegisterView(APIView):
+    @extend_schema(
+        request=RegisterSerializer,
+        responses={200: None},
+        description="Register endpoint for users"
+    )
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            response = Response({"msg": "User created"}, status=status.HTTP_201_CREATED)
+            set_cookie(response, str(refresh.access_token))
+            return response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class RefreshTokenView(APIView):
@@ -92,42 +88,30 @@ class RefreshTokenView(APIView):
                 name='RefreshTokenResponse',
                 fields={
                     'msg': serializers.CharField(),
-                    'access': serializers.CharField(),  # ❗️اختياري
+                    'access': serializers.CharField(),
                 }
             ),
             401: inline_serializer(
                 name='TokenRefreshError',
-                fields={
-                    'error': serializers.CharField()
-                }
+                fields={'error': serializers.CharField()}
             )
         }
     )
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
-        if refresh_token is None:
+        if not refresh_token:
             return Response({"error": "No refresh token found"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             refresh = RefreshToken(refresh_token)
-            new_access = str(refresh.access_token)
+            access = refresh.access_token
+            access["role"] = refresh["role"]
+            access["tenant"] = refresh["tenant"]
+            response = Response({"msg": "Token refreshed", "access": str(access)})
+            set_token_cookies(response, access=str(access))  # فقط access
+            return response
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
-
-        response = Response({
-            "msg": "Token refreshed",
-            "access": new_access  # For dev only shod remove
-        })
-
-        response.set_cookie(
-            key="access_token",
-            value=new_access,
-            httponly=True,
-            secure=not settings.DEBUG,
-            samesite="Lax",
-            max_age=60 * 15,  # 15 minutes
-        )
-        return response
 
 class LogoutView(APIView):
     @extend_schema(
@@ -151,6 +135,8 @@ class LogoutView(APIView):
     def post(self, request):
         response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        print("Logged out")
         return response
 
 
@@ -159,16 +145,30 @@ class ProfileView(APIView):
 
     @extend_schema(
         request=None,
-        responses={200: UserSerializer},
+        responses={
+            200: UserSerializer,
+                401: inline_serializer(
+                    name='Unauthorized',
+                    fields={
+                        'error': serializers.CharField()
+                    }
+                )
+        },
         description="Get current authenticated user profile data"
-
     )
     def get(self, request):
         """
         Returns the current authenticated user's profile data.
         """
-        serializer = UserSerializer(request.user)
-        return Response(serializer.data)
+        if request.user.is_authenticated:
+            serializer = UserSerializer(request.user)
+            return Response(serializer.data,status=status.HTTP_200_OK)
+        else:
+            return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+
+
 
 
 
@@ -184,3 +184,15 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.is_superuser:
             return User.objects.all()
         return User.objects.filter(id=user.id)
+
+
+def generate_jwt(user):
+    payload = {
+        'sub': user.id,
+        'role': user.role,
+        'tenant': connection.schema_name,  # هنا يتم التقاط الـ schema (مثال: store1)
+        'exp': datetime.utcnow() + timedelta(days=7),
+    }
+
+    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
+    return token

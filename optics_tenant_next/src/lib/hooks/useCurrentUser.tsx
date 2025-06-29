@@ -1,8 +1,17 @@
 'use client';
+
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '@/src/lib/zodios-client';
 
-const UserContext = createContext(null);
+interface UserContextType {
+  user: any | null;
+  setUser: (user: any) => void;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
+}
+
+const UserContext = createContext<UserContextType | undefined>(undefined);
+
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
@@ -11,7 +20,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUser = async () => {
     try {
       const res = await api.get('/api/users/profile/');
-      console.log("res",res)
       setUser(res);
     } catch {
       setUser(null);
@@ -23,7 +31,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     fetchUser();
   }, []);
-  
+
   return (
     <UserContext.Provider value={{ user, setUser, loading, refreshUser: fetchUser }}>
       {children}

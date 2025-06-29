@@ -1,16 +1,23 @@
-import { ProtectedRoute } from '@/src/components/ProtectedRoute'
+'use client'
+import { UsePermission } from '@/src/lib/hooks/usePermission';
 
 
-const dashboardPage = async () => {
-  // يمكنك هنا جلب البيانات من API إذا أردت
+
+
+
+const dashboardPage = () => {
+
   const stats = {
     users: 100,
     orders: 50,
     revenue: 5000,
   };
-
+  const canViewDashboard = UsePermission('view_dashboard');
+  if (!canViewDashboard) {
+    return <p>🚫 ليس لديك صلاحية لعرض لوحة التحكم</p>;
+  } 
   return (
-    <ProtectedRoute requiredPermissions={['admin_access']}>
+ 
 
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h1 className="text-xl font-bold mb-6">Welcome to the Admin Dashboard</h1>
@@ -20,7 +27,7 @@ const dashboardPage = async () => {
         <li>Revenue: ${stats.revenue}</li>
       </ul>
     </div>
-    </ProtectedRoute>
+
   );
 };
 

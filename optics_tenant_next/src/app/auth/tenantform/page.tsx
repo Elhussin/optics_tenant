@@ -55,4 +55,13 @@
 //       </form>
 //     );
 //   }
-  
+
+'use client';
+
+export default function TenantForm() {
+    return (
+        <div>
+            <h1>Tenant Form</h1>
+        </div>
+    );
+}

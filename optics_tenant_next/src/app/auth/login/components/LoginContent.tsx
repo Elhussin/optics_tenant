@@ -3,31 +3,17 @@
 import LoginRequestForm from '@/src/components/forms/LoginRequestForm';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { generateMetadata } from '@/src/lib/utils/metadata';
 import { useUser } from '@/src/lib/hooks/useCurrentUser';
-import { Suspense } from 'react';
 
-generateMetadata({
-  title: 'Login | O-S-M',
-  description: 'Login to your account',
-  keywords: ['login', 'account', 'O-S-M'],
-  canonicalUrl: 'https://solovizion.com/products/sunglasses-2025',
-  openGraphImage: 'https://solovizion.com/images/products/sunglasses-og.jpg',
-  openGraphType: 'login',
-  twitterCardType: 'summary',
-});
-
-
-// Create a separate client component for the login logic
-function LoginContent() {
+export default function LoginContent() {
   const router = useRouter();
-  const searchParams = useSearchParams(); // Now safely inside client context
+  const searchParams = useSearchParams();
   const userContext = useUser();
 
   if (!userContext) return <div>Loading...</div>;
 
   const { user, loading, refreshUser } = userContext;
-
+  
   const redirectTo = searchParams.get('redirect') || 
       searchParams.get('callbackUrl') || 
       '/dashboard';
@@ -36,6 +22,7 @@ function LoginContent() {
 
   if (user) {
     toast.success('You are already logged in will redirect to ' + redirectTo);
+    console.log(user);
     router.push(redirectTo);
     return null;
   }
@@ -55,13 +42,5 @@ function LoginContent() {
         }}
       />
     </div>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LoginContent />
-    </Suspense>
   );
 }

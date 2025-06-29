@@ -1,7 +1,7 @@
 from django.http import Http404
 from django_tenants.middleware import TenantMiddleware
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
+import logging
 # optics_tenant/core/middleware.py
 class TenantMiddleware(TenantMiddleware):
     def get_tenant(self, model, hostname):
@@ -38,7 +38,8 @@ class CookieJWTAuthentication(JWTAuthentication):
             validated_token = self.get_validated_token(raw_token)
             return self.get_user(validated_token), validated_token
         except Exception as e:
-            # يمكنك تسجيل الخطأ هنا إذا أردت
+            logger = logging.getLogger(__name__)
+            logger.error(f"Error authenticating user: {e}")
             return None
 
 

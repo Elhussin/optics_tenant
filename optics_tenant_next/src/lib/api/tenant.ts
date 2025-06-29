@@ -1,18 +1,10 @@
 import api from "@/src/lib/zodios-client";
 import { RegisterFormData } from "@/src/types/tenant";
 
+
 export async function registerTenant(data: RegisterFormData) {
-  const res = await api.post("/api/tenants/register/", data);
-  return res.data;
+  const res = await (api.post as any)("/api/tenants/register/", data);
+  return res;
 }
 
 
-export async function activeTenant(){
-  const res = await api.post("/api/tenants/active/");
-  return res.data;
-}
-
-export async function getTenant(){
-  const res = await api.get("/api/tenants/");
-  return res.data;
-}

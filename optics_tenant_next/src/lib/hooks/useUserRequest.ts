@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemas } from '@/src/lib/zod-api';
 import { FormApiService, FormApiOptions } from '@/src/lib/api/form-api';
+import { ApiError } from '@/src/types';
 
 const schema = schemas.UserRequest;
 
@@ -23,7 +24,7 @@ export function useUserRequestForm(options: UseUserRequestFormOptions = {}) {
     mode: 'onChange'
   });
 
-  const handleServerErrors = (apiErrors: any) => {
+  const handleServerErrors = (apiErrors: ApiError) => {
     if (typeof apiErrors === 'object' && apiErrors !== null) {
       Object.entries(apiErrors).forEach(([field, messages]) => {
         const messageArray = Array.isArray(messages) ? messages : [messages];

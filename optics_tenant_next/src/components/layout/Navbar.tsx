@@ -8,7 +8,11 @@ import { useUser } from  '@/src/lib/hooks/useCurrentUser'
 import LogoutButton from './logout';
 
 export default function Navbar() {
-  const { user, loading } = useUser();
+  const userContext = useUser();
+
+  if (!userContext) return <div>Loading...</div>;
+
+  const { user, loading } = userContext;
 
   if (loading) return <div>Loading...</div>; // أو spinner لو تحب
 

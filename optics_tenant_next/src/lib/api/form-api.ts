@@ -22,7 +22,9 @@ export class FormApiService {
     try {
       const transformedData = transform ? transform(data) : data;
       console.log("transformedData",transformedData);
-      const response = await api[method.toLowerCase() as 'post' | 'put' | 'patch'](
+
+      const apiMethod=method.toLowerCase() as 'post' | 'put' | 'patch';
+      const response = await (api[apiMethod] as any)(
         `/api/${endpoint}/`,
         transformedData
       );
