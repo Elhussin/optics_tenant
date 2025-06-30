@@ -66,7 +66,7 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    originalRequest._retry = false;
+    originalRequest._retry = true;
 
     try {
       console.log("🔄 Attempting to refresh token via httpOnly cookie...");

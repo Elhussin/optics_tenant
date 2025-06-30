@@ -4,7 +4,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { schemas } from '@/src/lib/zod-api';
 import { FormApiService, FormApiOptions } from '@/src/lib/api/form-api';
-
+import { toast } from 'sonner';
+import {handleErrorStatus} from '@/src/lib/utils/error';
 const schema = schemas.LoginRequest;
 
 export interface UseLoginRequestFormOptions {
@@ -51,8 +52,12 @@ export function useLoginRequestForm(options: UseLoginRequestFormOptions = {}) {
         return await FormApiService.update(id, data, defaultApiOptions);
       } else {
         return await FormApiService.submit(data, defaultApiOptions);
+
       }
     } catch (error) {
+      console.error('Form submission error:', error);
+      const mesag=handleErrorStatus(error);
+      toast.error(mesag);
       throw error;
     }
   };
