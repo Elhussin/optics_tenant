@@ -19,7 +19,7 @@ from django.db import connection
 from core.utils.set_token import set_token_cookies
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
-
+from core.permissions.permissions import ROLE_PERMISSIONS
 User = get_user_model()
 
 class LoginView(APIView):
@@ -51,10 +51,13 @@ class LoginView(APIView):
 
             if not user.is_active:
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
+            role = user.role
+            permissions = ROLE_PERMISSIONS.get(role, [])
 
             refresh = RefreshToken.for_user(user)
             refresh["role"] = user.role
             refresh["tenant"] = connection.schema_name
+            refresh["permissions"] = permissions
 
             response = Response({"msg": "Login successful"})
             set_token_cookies(response, access=str(refresh.access_token), refresh=str(refresh))
@@ -107,6 +110,7 @@ class RefreshTokenView(APIView):
             access = refresh.access_token
             access["role"] = refresh["role"]
             access["tenant"] = refresh["tenant"]
+            access["permissions"] = refresh["permissions"]
             response = Response({"msg": "Token refreshed", "access": str(access)})
             set_token_cookies(response, access=str(access))  # فقط access
             return response

@@ -1,7 +1,8 @@
 // components/forms/LoginRequestForm.tsx
 import React from 'react';
 import { useLoginRequestForm, UseLoginRequestFormOptions } from '@/lib/hooks/useLoginRequest';
-
+import { toast } from 'sonner';
+import { handleErrorStatus } from '@/utils/error';
 export interface LoginRequestFormProps extends UseLoginRequestFormOptions {
   onSuccess?: (data?: any) => void;
   onCancel?: () => void;
@@ -14,7 +15,7 @@ export default function LoginRequestForm({
   onSuccess,
   onCancel,
   className = "",
-  submitText = "Login",
+  submitText = "Save",
   showCancelButton = false,
   ...options
 }: LoginRequestFormProps) {
@@ -34,7 +35,7 @@ export default function LoginRequestForm({
         reset();
       }
     } catch (error) {
-      console.error('Form submission error:', error);
+      toast.error(handleErrorStatus(error));
     }
   };
 
@@ -82,7 +83,7 @@ export default function LoginRequestForm({
             disabled={isSubmitting}
             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSubmitting ? 'Logging...' : submitText}
+            {isSubmitting ? 'Saving...' : submitText}
           </button>
           
           

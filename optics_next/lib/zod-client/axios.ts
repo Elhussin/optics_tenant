@@ -18,6 +18,19 @@ if (typeof window !== "undefined") {
     baseUrl = `http://${domain}`;
   }
 }
+if (typeof window !== "undefined") {
+  const hostname = window.location.hostname;
+  const subdomain = hostname.split(".")[0];
+  const domain = process.env.NEXT_PUBLIC_API_BASE || "localhost:8001";
+
+  // إذا كنا نعمل على localhost أو store1.localhost
+  if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+    baseUrl = "http://store1.localhost:8001"; // ← تأكد أن هذا صحيح
+  } else {
+    baseUrl = `http://${subdomain}.${domain}`;
+  }
+}
+
 
 const isAuthEndpoint = (url: string) =>
   url.includes('/login') || 

@@ -3,7 +3,12 @@ import { useEffect, useState } from "react";
 
 type GlobalAlertType = "info" | "warning" | "error" | "success";
 
-export default function GlobalAlert() {
+interface GlobalAlertProps {
+  message?: string; // يمكن تمريرها من parent
+  type?: GlobalAlertType; // يمكن تمريرها من parent
+}
+
+export default function GlobalAlert({ message: propMessage, type: propType = "info" }: GlobalAlertProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [type, setType] = useState<GlobalAlertType>("info");
   const [show, setShow] = useState(false);
@@ -16,22 +21,29 @@ export default function GlobalAlert() {
       return null;
     };
 
-    const alert = getCookie("alert_message");
-    const alertType = getCookie("alert_type") as GlobalAlertType;
-
-    if (alert) {
-      setMessage(decodeURIComponent(alert));
-      setType(alertType || "info");
+    if (propMessage) {
+      // الرسالة من props لها أولوية
+      setMessage(propMessage);
+      setType(propType);
       setShow(true);
+    } else {
+      const cookieMessage = getCookie("alert_message");
+      const cookieType = getCookie("alert_type") as GlobalAlertType;
 
-      // حذف الكوكي بعد العرض
-      document.cookie = "alert_message=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-      document.cookie = "alert_type=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      if (cookieMessage) {
+        setMessage(decodeURIComponent(cookieMessage));
+        setType(cookieType || "info");
+        setShow(true);
 
-      const timer = setTimeout(() => setShow(false), 5000);
-      return () => clearTimeout(timer);
+        // حذف الكوكي بعد العرض
+        document.cookie = "alert_message=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        document.cookie = "alert_type=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+      }
     }
-  }, []);
+
+    const timer = setTimeout(() => setShow(false), 5000);
+    return () => clearTimeout(timer);
+  }, [propMessage, propType]);
 
   if (!show || !message) return null;
 
@@ -45,7 +57,7 @@ export default function GlobalAlert() {
   return (
     <div className={`fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-md shadow-md ${alertStyles[type]}`}>
       {message}
-      <button onClick={() => setShow(false)} className="ml-2 font-bold float-right">×</button>
+      <button onClick={() => setShow(false)} className="ml-2 font-bold">×</button>
     </div>
   );
 }
