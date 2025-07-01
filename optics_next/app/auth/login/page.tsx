@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { generateMetadata } from '@/utils/metadata';
 import { useUser } from '@/lib/hooks/useCurrentUser';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
 
 generateMetadata({
   title: 'Login | O-S-M',
@@ -24,25 +24,25 @@ function LoginContent() {
   const searchParams = useSearchParams(); // Now safely inside client context
   const userContext = useUser();
 
+  const redirectTo = searchParams.get('redirect') || 
+        searchParams.get('callbackUrl') || 
+        '/profile';
+        
   if (userContext) {
     const { user, loading, refreshUser } = userContext;
+    
+    useEffect(() => {
+      if (user) {
+        toast.success('You are already logged in will redirect to ' + redirectTo);
+        router.push(redirectTo);
+      }
+    }, [user, router, redirectTo]); // يتم تشغيله فقط عندما يتغير user
 
-    const redirectTo = searchParams.get('redirect') || 
-      searchParams.get('callbackUrl') || 
-      '/dashboard';
-
-    if (user) {
-      toast.success('You are already logged in will redirect to ' + redirectTo);
-      router.push(redirectTo);
-      return null;
-    }
     if (loading) return <div>Loading...</div>;
   }
 
 
-  const redirectTo = searchParams.get('redirect') || 
-      searchParams.get('callbackUrl') || 
-      '/dashboard';
+
 
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">

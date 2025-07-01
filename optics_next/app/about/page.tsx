@@ -1,5 +1,5 @@
 
-import { generateMetadata } from '@/src/lib/utils/metadata';
+import { generateMetadata } from '@/utils/metadata';
 generateMetadata({
   title: 'About | O-S-M',
   description: 'About  Optical System Management[O-S-M] ',
@@ -12,7 +12,7 @@ generateMetadata({
 
 export default function AboutPage() {
   return (
-    <div>
+    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-semibold">Welcome to O-S-M</h2>
       <p className="mt-4 text-gray-700">O-S-M is a web application for managing an optical system.</p>
       <p className="mt-4 text-gray-700">Start your journey with O-S-M today!</p>

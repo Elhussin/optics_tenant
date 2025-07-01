@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 // import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
-import { useUser } from  '@/src/lib/hooks/useCurrentUser'
+import { useUser } from  '@/lib/hooks/useCurrentUser'
 
 import LogoutButton from '../logout';
 

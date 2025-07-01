@@ -1,5 +1,5 @@
 'use client'
-import { UsePermission } from '@/src/lib/hooks/usePermission';
+import { UsePermission } from '@/lib/hooks/usePermission';
 
 
 

@@ -14,7 +14,7 @@ export default function LoginRequestForm({
   onSuccess,
   onCancel,
   className = "",
-  submitText = "Save",
+  submitText = "Login",
   showCancelButton = false,
   ...options
 }: LoginRequestFormProps) {
@@ -82,7 +82,7 @@ export default function LoginRequestForm({
             disabled={isSubmitting}
             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSubmitting ? 'Saving...' : submitText}
+            {isSubmitting ? 'Logging...' : submitText}
           </button>
           
           

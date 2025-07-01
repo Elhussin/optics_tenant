@@ -1,5 +1,5 @@
 // src/lib/zodios-client.ts
-import { createApiClient } from "./";
+import { createApiClient } from ".";
 
 import { Zodios } from "@zodios/core";
 import { endpoints } from "./index";
