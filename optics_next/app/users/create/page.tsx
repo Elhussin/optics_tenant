@@ -1,9 +1,9 @@
 'use client';
 
-import UserRequestForm from '@/src/components/forms/UserRequestForm';
+import UserRequestForm from '@/components/forms/UserRequestForm';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
-import { useUser } from '@/src/lib/hooks/useCurrentUser';
+import { useUser } from '@/lib/hooks/useCurrentUser';
 
 export default function CreateUserPage() {
   const router = useRouter();

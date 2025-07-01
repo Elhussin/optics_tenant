@@ -28,19 +28,20 @@ function LoginContent() {
         searchParams.get('callbackUrl') || 
         '/profile';
         
-  if (userContext) {
-    const { user, loading, refreshUser } = userContext;
-    
+
     useEffect(() => {
-      if (user) {
-        toast.success('You are already logged in will redirect to ' + redirectTo);
-        router.push(redirectTo);
+      if (userContext) {
+        const { user, loading } = userContext;
+        
+        if (user) {
+          toast.success('You are already logged in will redirect to ' + redirectTo);
+          router.push(redirectTo);
+        }
       }
-    }, [user, router, redirectTo]); // يتم تشغيله فقط عندما يتغير user
+    }, [userContext, router, redirectTo]); // يتم تشغيله فقط عندما يتغير user
 
-    if (loading) return <div>Loading...</div>;
-  }
-
+    if (userContext?.loading) return <div>Loading...</div>;
+  
 
 
 
