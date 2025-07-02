@@ -1,8 +1,14 @@
 // components/forms/UserRequestForm.tsx
 import React from 'react';
-import { useUserRequestForm, UseUserRequestFormOptions } from '@/lib/hooks/useUserRequest';
+import { schemas } from '@/lib/zod-client';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
+import { toast } from 'sonner';
+import { handleErrorStatus } from '@/utils/error';
+import { z } from 'zod';
+import { FormApiOptions } from '@/types';
+const schema = schemas.UserRequest;
 
-export interface UserRequestFormProps extends UseUserRequestFormOptions {
+export interface UserRequestFormProps extends FormApiOptions {
   onSuccess?: (data?: any) => void;
   onCancel?: () => void;
   className?: string;

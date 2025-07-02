@@ -1,13 +1,7 @@
 // lib/api/form-api.ts
 import { api } from '@/lib/zod-client/zodios-client';
+import { FormApiOptions, ApiResponse } from '@/types';
 
-export interface FormApiOptions {
-  endpoint: string;
-  method?: 'POST' | 'PUT' | 'PATCH';
-  transform?: (data: any) => any;
-  onSuccess?: (response: any) => void;
-  onError?: (error: any) => void;
-}
 
 export class FormApiService {
   static async submit(data: any, options: FormApiOptions) {
@@ -21,12 +15,13 @@ export class FormApiService {
 
     try {
       const transformedData = transform ? transform(data) : data;
-      const apiMethod=method.toLowerCase() as 'post' | 'put' | 'patch';
-      const response = await( api[apiMethod] as any)(
+      const apiMethod = method.toLowerCase() as 'post' | 'put' | 'patch';
+
+      const response = await (api[apiMethod] as any)(
         `/api/${endpoint}/`,
         transformedData
       );
-      
+
       onSuccess?.(response);
       return response;
     } catch (error: any) {
@@ -49,5 +44,30 @@ export class FormApiService {
       endpoint: `${options.endpoint}/${id}`,
       method: 'PATCH'
     });
+  }
+
+  static async get(idOrParams: string | number | undefined, options: Omit<FormApiOptions, 'method' | 'transform'>) {
+    try {
+      const endpoint = idOrParams ? `${options.endpoint}/${idOrParams}` : options.endpoint;
+      const response = await api.get(`/api/${endpoint}/` as any, { params: {} });
+
+      options.onSuccess?.(response);
+      return response;
+    } catch (error: any) {
+      options.onError?.(error);
+      throw error;
+    }
+  }
+
+
+  static async delete(id: string | number, options: Omit<FormApiOptions, 'method' | 'transform'>) {
+    try {
+      const response = await api.delete(`/api/${options.endpoint}/${id}/` as any, options as any,options as any);
+      options.onSuccess?.(response);
+      return response;
+    } catch (error: any) {
+      options.onError?.(error);
+      throw error;
+    }
   }
 }

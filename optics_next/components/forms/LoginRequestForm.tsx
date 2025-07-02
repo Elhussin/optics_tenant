@@ -1,38 +1,55 @@
 // components/forms/LoginRequestForm.tsx
 import React from 'react';
-import { useLoginRequestForm, UseLoginRequestFormOptions } from '@/lib/hooks/useLoginRequest';
+import { schemas } from '@/lib/zod-client';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import { handleErrorStatus } from '@/utils/error';
-export interface LoginRequestFormProps extends UseLoginRequestFormOptions {
+import { z } from 'zod';
+
+const schema = schemas.LoginRequest;
+
+export interface LoginRequestFormProps {
   onSuccess?: (data?: any) => void;
   onCancel?: () => void;
   className?: string;
   submitText?: string;
   showCancelButton?: boolean;
+
+  // خيارات إضافية لـ useFormRequest
+  mode?: 'create' | 'update';
+  id?: string | number;
 }
 
 export default function LoginRequestForm({
   onSuccess,
   onCancel,
-  className = "",
-  submitText = "Save",
+  className = '',
+  submitText = 'Save',
   showCancelButton = false,
-  ...options
+  mode = 'create',
+  id,
 }: LoginRequestFormProps) {
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting }, 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
     submitForm,
-    reset
-  } = useLoginRequestForm(options);
+    isLoading,
+    reset,
+  } = useFormRequest(schema, {
+    mode,
+    id,
+    apiOptions: {
+      endpoint: 'users/login',
+      onSuccess: (res) => onSuccess?.(res),
+    },
+  });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
       const result = await submitForm(data);
-      onSuccess?.(result);
-      if (options.mode === 'create') {
-        reset();
+      if (result.success && mode === 'create') {
+        reset(); // reset النموذج بعد إرسال ناجح
       }
     } catch (error) {
       toast.error(handleErrorStatus(error));
@@ -40,57 +57,50 @@ export default function LoginRequestForm({
   };
 
   return (
-    <div className={`${className}`}>
+    <div className={className}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        
-  <div className="mb-4">
-    
-    <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-      Username *
-    </label>
-    <input 
-      id="username" 
-      type="text" 
-      {...register("username")} 
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-      placeholder="Username..."
-      
-    />
-    
-    {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username?.message}</p>}
-  </div>
+        <div>
+          <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+            Username *
+          </label>
+          <input
+            id="username"
+            type="text"
+            {...register('username')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Username..."
+          />
+          {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>}
+        </div>
 
-  <div className="mb-4">
-    
-    <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-      Password *
-    </label>
-    <input 
-      id="password" 
-      type="password" 
-      {...register("password")} 
-      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-      placeholder="Password..."
-      
-    />
-    
-    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>}
-  </div>
-        
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            Password *
+          </label>
+          <input
+            id="password"
+            type="password"
+            {...register('password')}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Password..."
+          />
+          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+        </div>
+
         <div className="flex gap-3 pt-4">
-          <button 
-            type="submit" 
-            disabled={isSubmitting}
-            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          <button
+            type="submit"
+            disabled={isSubmitting || isLoading}
+            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${
+              isSubmitting || isLoading ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
           >
-            {isSubmitting ? 'Saving...' : submitText}
+            {isSubmitting || isLoading ? 'Saving...' : submitText}
           </button>
-          
-          
-          
+
           {showCancelButton && (
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={onCancel}
               className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
             >

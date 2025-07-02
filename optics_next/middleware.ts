@@ -13,28 +13,7 @@ export const config = {
   ],
 };
 
-// // صلاحيات الأدوار
-// const ROLE_PERMISSIONS: Record<string, string[]> = {
-//   ADMIN: ['__all__'],
-//   TECHNICIAN: [
-//     'view_dashboard',
-//     'create_prescription',
-//     'edit_prescription',
-//     'view_prescriptions',
-//     'view_profile',
-//   ],
-//   SALESPERSON: [
-//     'view_dashboard',
-//     'create_invoice',
-//     'view_invoices',
-//     'edit_invoice',
-//     'view_profile',
-//   ],
-//   USER: ['view_profile'],
-//   RECEPTIONIST: ['view_profile'],
-// };
 
-// استخراج الصلاحية المطلوبة بناءً على المسار
 function getRequiredPermission(pathname: string): string | null {
   const routeMap: [RegExp, string][] = [
     [/^\/admin/, 'admin_access'],
@@ -54,9 +33,10 @@ function getRequiredPermission(pathname: string): string | null {
   return null;
 }
 
-// دالة مساعدة لإنشاء رد غير مصرح به مع رسالة
 function unauthorizedResponse(target: string, message: string) {
+
   const response = NextResponse.redirect(new URL(target, 'http://' + process.env.NEXT_PUBLIC_BASE_DOMAIN));
+  
   response.cookies.set('alert_message', message, { path: '/', maxAge: 5 });
   response.cookies.set('alert_type', 'error', { path: '/', maxAge: 5 });
   return response;
