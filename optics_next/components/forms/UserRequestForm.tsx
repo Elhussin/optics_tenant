@@ -5,16 +5,8 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import { handleErrorStatus } from '@/utils/error';
 import { z } from 'zod';
-import { FormApiOptions } from '@/types';
+import { UseRequestFormProps } from '@/types';
 const schema = schemas.UserRequest;
-
-export interface UserRequestFormProps extends FormApiOptions {
-  onSuccess?: (data?: any) => void;
-  onCancel?: () => void;
-  className?: string;
-  submitText?: string;
-  showCancelButton?: boolean;
-}
 
 export default function UserRequestForm({
   onSuccess,
@@ -22,17 +14,19 @@ export default function UserRequestForm({
   className = "",
   submitText = "Save",
   showCancelButton = false,
+  mode = 'create',
+  id,
   ...options
-}: UserRequestFormProps) {
+}: UseRequestFormProps) {
   const { 
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting }, 
     submitForm,
     reset
-  } = useUserRequestForm(options);
+  } =useFormRequest(schema,{ mode, id, apiOptions: { endpoint: 'users/register', onSuccess: (res) => onSuccess?.(res), }});
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
       const result = await submitForm(data);
       onSuccess?.(result);
@@ -40,6 +34,7 @@ export default function UserRequestForm({
         reset();
       }
     } catch (error) {
+      toast.error(handleErrorStatus(error));
       console.error('Form submission error:', error);
     }
   };

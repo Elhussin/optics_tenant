@@ -19,3 +19,16 @@ export interface ApiResponse<T> {
   data?: T;
   error?: any;
 }
+
+
+
+export interface UseRequestFormProps  {
+  onSuccess?: (data?: any) => void;
+  onCancel?: () => void;
+  className?: string;
+  submitText?: string;
+  showCancelButton?: boolean;
+  
+  mode?: 'create' | 'update';
+  id?: string | number;
+}

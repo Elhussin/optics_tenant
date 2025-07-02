@@ -79,7 +79,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 //       return Promise.reject(error);
 //     }
 
-//     originalRequest._retry = true;
+//     originalRequest._retry = false;
 
 //     try {
 //       console.log("🔄 Attempting to refresh token via httpOnly cookie...");
@@ -90,8 +90,6 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 //       console.error("Token refresh failed:", refreshError);
 
 //       if (typeof window !== "undefined") {
-//         localStorage.removeItem("user");
-//         localStorage.removeItem("userPreferences");
 //         window.location.href = "/auth/login";
 //       }
 

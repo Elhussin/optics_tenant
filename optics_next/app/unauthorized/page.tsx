@@ -1,7 +1,7 @@
 // app/unauthorized/page.tsx
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function UnauthorizedPage() {
@@ -10,7 +10,8 @@ export default function UnauthorizedPage() {
   useEffect(() => {
     // إعادة التوجيه التلقائي بعد 3 ثواني
     const timer = setTimeout(() => {
-      router.push('/dashboard');
+      router.push('/');
+      redirect('/');
     }, 3000);
 
     return () => clearTimeout(timer);

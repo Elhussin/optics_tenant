@@ -5,44 +5,16 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import { handleErrorStatus } from '@/utils/error';
 import { z } from 'zod';
-
+import { UseRequestFormProps } from '@/types';
 const schema = schemas.LoginRequest;
 
-export interface LoginRequestFormProps {
-  onSuccess?: (data?: any) => void;
-  onCancel?: () => void;
-  className?: string;
-  submitText?: string;
-  showCancelButton?: boolean;
 
-  // خيارات إضافية لـ useFormRequest
-  mode?: 'create' | 'update';
-  id?: string | number;
-}
 
-export default function LoginRequestForm({
-  onSuccess,
-  onCancel,
-  className = '',
-  submitText = 'Save',
-  showCancelButton = false,
-  mode = 'create',
-  id,
-}: LoginRequestFormProps) {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    submitForm,
-    isLoading,
-    reset,
+export default function LoginRequestForm({ onSuccess, onCancel, className = '', submitText = 'Save', showCancelButton = false, mode = 'create', id,
+}: UseRequestFormProps) {
+  const { register, handleSubmit, formState: { errors, isSubmitting }, submitForm, isLoading, reset,
   } = useFormRequest(schema, {
-    mode,
-    id,
-    apiOptions: {
-      endpoint: 'users/login',
-      onSuccess: (res) => onSuccess?.(res),
-    },
+    mode, id, apiOptions: { endpoint: 'users/login', onSuccess: (res) => onSuccess?.(res), },
   });
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
@@ -91,9 +63,8 @@ export default function LoginRequestForm({
           <button
             type="submit"
             disabled={isSubmitting || isLoading}
-            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${
-              isSubmitting || isLoading ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting || isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             {isSubmitting || isLoading ? 'Saving...' : submitText}
           </button>

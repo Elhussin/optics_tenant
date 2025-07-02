@@ -10,6 +10,8 @@ export const config = {
     '/prescriptions/:path*',
     '/invoices/:path*',
     '/reports/:path*',
+    // '/users/:path*',
+    '/profile/:path*',
   ],
 };
 

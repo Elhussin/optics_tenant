@@ -76,8 +76,8 @@ const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
 const shape = schema.shape;
 
 // ignore fields
-// const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'is_active', 'group'];
-const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'group'];
+
+const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', '', 'group'];
 const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
 const visibleFields = config.fieldOrder || allFields;
 
@@ -252,145 +252,17 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
   </div>`;
 }
 
-// ===== generate api service =====
-
-// API Service
-const apiServiceCode = `// lib/api/form-api.ts
-import { api } from '@/lib/zod-client/zodios-client';
-
-export interface FormApiOptions {
-  endpoint: string;
-  method?: 'POST' | 'PUT' | 'PATCH';
-  transform?: (data: any) => any;
-  onSuccess?: (response: any) => void;
-  onError?: (error: any) => void;
-}
-
-export class FormApiService {
-  static async submit(data: any, options: FormApiOptions) {
-    const {
-      endpoint,
-      method = 'POST',
-      transform,
-      onSuccess,
-      onError
-    } = options;
-
-    try {
-      const transformedData = transform ? transform(data) : data;
-      const apiMethod=method.toLowerCase() as 'post' | 'put' | 'patch';
-      const response = await( api[apiMethod] as any)(
-        \`/api/\${endpoint}/\`,
-        transformedData
-      );
-      
-      onSuccess?.(response);
-      return response;
-    } catch (error: any) {
-      onError?.(error);
-      throw error;
-    }
-  }
-
-  static async update(id: string | number, data: any, options: FormApiOptions) {
-    return this.submit(data, {
-      ...options,
-      endpoint: \`\${options.endpoint}/\${id}\`,
-      method: 'PUT'
-    });
-  }
-
-  static async partialUpdate(id: string | number, data: any, options: FormApiOptions) {
-    return this.submit(data, {
-      ...options,
-      endpoint: \`\${options.endpoint}/\${id}\`,
-      method: 'PATCH'
-    });
-  }
-}
-`;
-
-// Hook
-const hookCode = `// lib/hooks/use${pascal}.ts
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { schemas } from '@/lib/zod-client';
-import { FormApiService, FormApiOptions } from '@/lib/api/form-api';
-
-const schema = schemas.${schemaName};
-
-export interface Use${pascal}FormOptions {
-  defaultValues?: Partial<z.infer<typeof schema>>;
-  apiOptions?: Partial<FormApiOptions>;
-  mode?: 'create' | 'update';
-  id?: string | number;
-}
-
-export function use${pascal}Form(options: Use${pascal}FormOptions = {}) {
-  const { defaultValues, apiOptions, mode = 'create', id } = options;
-  
-  const methods = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema),
-    defaultValues,
-    mode: 'onChange'
-  });
-
-  const handleServerErrors = (apiErrors: any) => {
-    if (typeof apiErrors === 'object' && apiErrors !== null) {
-      Object.entries(apiErrors).forEach(([field, messages]) => {
-        const messageArray = Array.isArray(messages) ? messages : [messages];
-        methods.setError(field as any, {
-          type: 'server',
-          message: messageArray[0] as string,
-        });
-      });
-    }
-  };
-
-  const submitForm = async (data: z.infer<typeof schema>) => {
-    const defaultApiOptions: FormApiOptions = {
-      endpoint: '${YOUR_ENDPOINT}',
-      onError: (error) => {
-        if (error.response?.status === 400) {
-          handleServerErrors(error.response.data);
-        }
-      },
-      ...apiOptions
-    };
-
-    try {
-      if (mode === 'update' && id) {
-        return await FormApiService.update(id, data, defaultApiOptions);
-      } else {
-        return await FormApiService.submit(data, defaultApiOptions);
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  return {
-    ...methods,
-    handleServerErrors,
-    submitForm,
-    schema
-  };
-}
-`;
 
 // Form Component
 const formCode = `// components/forms/${pascal}Form.tsx
 import React from 'react';
-import { use${pascal}Form, Use${pascal}FormOptions } from '@/lib/hooks/use${pascal}';
-
-export interface ${pascal}FormProps extends Use${pascal}FormOptions {
-  onSuccess?: (data?: any) => void;
-  onCancel?: () => void;
-  className?: string;
-  submitText?: string;
-  showCancelButton?: boolean;
-}
+import { schemas } from '@/lib/zod-client';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
+import { toast } from 'sonner';
+import { handleErrorStatus } from '@/utils/error';
+import { z } from 'zod';
+import { UseRequestFormProps } from '@/types';
+const schema = schemas.${schemaName};
 
 export default function ${pascal}Form({
   onSuccess,
@@ -398,17 +270,19 @@ export default function ${pascal}Form({
   className = "",
   submitText = "${config.submitButtonText}",
   showCancelButton = false,
+  mode = 'create',
+  id,
   ...options
-}: ${pascal}FormProps) {
+}: UseRequestFormProps) {
   const { 
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting }, 
     submitForm,
     reset
-  } = use${pascal}Form(options);
+  } =useFormRequest(schema,{ mode, id, apiOptions: { endpoint: '${YOUR_ENDPOINT}', onSuccess: (res) => onSuccess?.(res), }});
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
       const result = await submitForm(data);
       onSuccess?.(result);
@@ -416,6 +290,7 @@ export default function ${pascal}Form({
         reset();
       }
     } catch (error) {
+      toast.error(handleErrorStatus(error));
       console.error('Form submission error:', error);
     }
   };
@@ -459,75 +334,21 @@ export default function ${pascal}Form({
 }
 `;
 
-// Config Template
-const configTemplate = `{
-  "baseClasses": "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-  "labelClasses": "block text-sm font-medium text-gray-700 mb-1",
-  "errorClasses": "text-red-500 text-sm mt-1",
-  "submitButtonClasses": "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors",
-  "submitButtonText": "Save",
-  "includeResetButton": true,
-  "spacing": "mb-6",
-  "containerClasses": "space-y-6",
-  "fieldOrder": ["name", "email", "description"]
-}
-`;
+
 
 // ===== write files =====
 const formFile = `components/forms/${pascal}Form.tsx`;
-const hookFile = `lib/hooks/use${pascal}.ts`;
-const apiFile = `lib/api/form-api.ts`;
-const configFile = `config/form-generator.json`;
+
 
 // create directories
 fs.mkdirSync(path.dirname(formFile), { recursive: true });
-fs.mkdirSync(path.dirname(hookFile), { recursive: true });
-fs.mkdirSync(path.dirname(apiFile), { recursive: true });
-fs.mkdirSync(path.dirname(configFile), { recursive: true });
-
-// write files
-fs.writeFileSync(formFile, formCode);
-fs.writeFileSync(hookFile, hookCode);
-
-// write API service only if it doesn't exist
-if (!fs.existsSync(apiFile)) {
-  fs.writeFileSync(apiFile, apiServiceCode);
-}
-
-// write config template only if it doesn't exist
-if (!fs.existsSync(configFile)) {
-  fs.writeFileSync(configFile, configTemplate);
-}
+fs.writeFileSync(formFile, formCode)
 
 console.log(`✅ ${pascal}Form created successfully:
 📁 Form Component: ${formFile}
-📁 Hook: ${hookFile}
-📁 API Service: ${apiFile}
-📁 Config Template: ${configFile}
-
-🚀 Usage examples:
-// Basic usage
-<${pascal}Form onSuccess={() => console.log('Success!')} />
-
-// Update mode
-<${pascal}Form 
-  mode="update" 
-  id={123}
-  defaultValues={existingData}
-  onSuccess={handleUpdate} 
-/>
-
-// Custom API endpoint
-<${pascal}Form 
-  apiOptions={{ 
-    endpoint: 'custom-endpoint',
-    method: 'PATCH',
-    transform: (data) => ({ ...data, extra: 'field' })
-  }} 
-/>
 `);
 
 // npx ts-node scripts/generate-zod-form.ts user_schema users/login
 // npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
 // npx tsx scripts/generate-zod-form.ts LogoutResponse users/logout ./config/custom-form.json
-// npx tsx scripts/generate-zod-form0.ts UserRequest users/register ./config/custom-form.json
+// npx tsx scripts/gen-zod.ts UserRequest users/register ./config/custom-form.json
