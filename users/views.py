@@ -20,6 +20,9 @@ from core.utils.set_token import set_token_cookies
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from core.permissions.permissions import ROLE_PERMISSIONS
+from core.permissions.decorators import role_required
+from django.utils.decorators import method_decorator
+
 User = get_user_model()
 
 class LoginView(APIView):
@@ -66,7 +69,10 @@ class LoginView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+@method_decorator(role_required(['ADMIN']), name='dispatch')
 class RegisterView(APIView):
+
     @extend_schema(
         request=RegisterSerializer,
         responses={200: None},
@@ -76,9 +82,9 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            refresh = RefreshToken.for_user(user)
-            response = Response({"msg": "User created"}, status=status.HTTP_201_CREATED)
-            set_cookie(response, str(refresh.access_token))
+            # refresh = RefreshToken.for_user(user)
+            response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
+            # set_token_cookies(response, str(refresh.access_token))
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -180,7 +186,7 @@ class ProfileView(APIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]  # ✅ يتأكد من أن المستخدم مصادق عليه
+    permission_classes = [IsAuthenticated] 
 
     def get_queryset(self):
         # يمكن فلترة بناءً على المستخدم الحالي إذا أردت مثلاً
@@ -190,13 +196,3 @@ class UserViewSet(viewsets.ModelViewSet):
         return User.objects.filter(id=user.id)
 
 
-def generate_jwt(user):
-    payload = {
-        'sub': user.id,
-        'role': user.role,
-        'tenant': connection.schema_name,  # هنا يتم التقاط الـ schema (مثال: store1)
-        'exp': datetime.utcnow() + timedelta(days=7),
-    }
-
-    token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
-    return token

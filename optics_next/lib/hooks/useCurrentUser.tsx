@@ -11,38 +11,40 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const logout = async () => {
-     
-        try {
-          await api.post("/api/users/logout/", {});
-          useRouter().push("/auth/login");
-        } catch (error) {
-          console.log(error);
-        }
-      
-    
+    try {
+      await api.post("/api/users/logout/", {});
+    } catch (error) {
+      console.log(error);
+    }
     setUser(null);
-    window.location.href = '/auth/login';
+    router.push('/auth/login');
   };
 
   const fetchUser = async () => {
     try {
-      // await api.post("/api/users/token/refresh/"); // سيتم إرسال refreshToken الموجود في HttpOnly Cookie
+      await api.post("/api/users/token/refresh/"); 
       const res = await api.get('/api/users/profile/');
-      console.log("fetchUser",res);
+
       setUser(res);
-    } catch (error) {
-      toast.error("Failed to fetch user");
-      console.log("error",error);
+    } catch (error: any) {
+      if (error.response?.status === 401) {
+        logout();
+        router.push('/auth/login');
+        toast.error("Session expired. Please log in again.");
+      } else {
+        router.push('/auth/login');
+        toast.error("Failed to fetch user");
+        console.log("error", error);
+      }
       setUser(null);
-      throw error; 
     } finally {
       setLoading(false);
     }
   };
 
-  
   useEffect(() => {
     fetchUser();
   }, []);

@@ -1873,7 +1873,7 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ msg: z.string() }).passthrough();
 const TokenRefreshError = z.object({ error: z.string() }).passthrough();
-const UserRoleEnum = z.enum([
+const Role3d7Enum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
   "TECHNICIAN",
@@ -1896,19 +1896,25 @@ const User = z
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     is_superuser: z.boolean().optional(),
-    role: UserRoleEnum.optional(),
+    role: Role3d7Enum.optional(),
+    password: z.string().max(128),
   })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
   .object({
-    username: z
+    username: z.string().min(1),
+    email: z.string().min(1).email(),
+    first_name: z.string().max(150).optional(),
+    last_name: z.string().max(150).optional(),
+    is_active: z.boolean().optional(),
+    is_staff: z.boolean().optional(),
+    is_superuser: z.boolean().optional(),
+    role: Role3d7Enum.optional(),
+    password: z
       .string()
-      .min(1)
-      .max(150)
-      .regex(/^[\w.@+-]+$/),
-    email: z.string().max(254).email().optional(),
-    password: z.string().min(1),
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
   })
   .passthrough();
 const RefreshTokenResponse = z
@@ -1927,7 +1933,8 @@ const UserRequest = z
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     is_superuser: z.boolean().optional(),
-    role: UserRoleEnum.optional(),
+    role: Role3d7Enum.optional(),
+    password: z.string().min(1).max(128),
   })
   .passthrough();
 const PatchedUserRequest = z
@@ -1943,7 +1950,8 @@ const PatchedUserRequest = z
     is_active: z.boolean(),
     is_staff: z.boolean(),
     is_superuser: z.boolean(),
-    role: UserRoleEnum,
+    role: Role3d7Enum,
+    password: z.string().min(1).max(128),
   })
   .partial()
   .passthrough();
@@ -2083,7 +2091,7 @@ export const schemas = {
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
-  UserRoleEnum,
+  Role3d7Enum,
   User,
   Unauthorized,
   RegisterRequest,

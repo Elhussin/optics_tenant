@@ -22,15 +22,16 @@ export interface ApiResponse<T> {
 
 
 
-export interface UseRequestFormProps  {
+export interface CreateUserType  {
   onSuccess?: (data?: any) => void;
   onCancel?: () => void;
   className?: string;
   submitText?: string;
   showCancelButton?: boolean;
-  
-  mode?: 'create' | 'update';
+  defaultValues?: any;
+  mode?: 'create' | 'edit' | 'view' | 'delete';
   id?: string | number;
+  endpoint?: string;
 }
 
 

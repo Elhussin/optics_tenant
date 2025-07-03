@@ -12,6 +12,7 @@ export const config = {
     '/reports/:path*',
     // '/users/:path*',
     '/profile/:path*',
+
   ],
 };
 
@@ -28,6 +29,8 @@ function getRequiredPermission(pathname: string): string | null {
     [/\/invoices\/(create|new)/, 'create_invoice'],
     [/\/invoices\/edit/, 'edit_invoice'],
     [/^\/invoices/, 'view_invoices'],
+    [/^\/users/, 'view_users']
+
   ];
   for (const [regex, permission] of routeMap) {
     if (regex.test(pathname)) return permission;
@@ -70,7 +73,13 @@ export async function middleware(request: NextRequest) {
     const permissions = payload.permissions as string[];
 
     if (userTenant !== subdomain) {
+      console.log("userTenant",userTenant);
+      console.log("subdomain",subdomain);
       return unauthorizedResponse('/unauthorized', 'Tenant mismatch, access denied to ' + pathname);
+    }
+    // إذا كان المسار هو /profile فلا نتحقق من الصلاحيات
+    if (pathname.startsWith('/profile')) {
+      return NextResponse.next();
     }
 
     const requiredPermission = getRequiredPermission(pathname);

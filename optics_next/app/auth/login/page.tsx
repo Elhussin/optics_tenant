@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { generateMetadata } from '@/utils/metadata';
 import { useUser } from '@/lib/hooks/useCurrentUser';
-import { Suspense, useEffect } from 'react';
+
 
 generateMetadata({
   title: 'Login | O-S-M',
@@ -18,8 +18,51 @@ generateMetadata({
 });
 
 
-// Create a separate client component for the login logic
-function LoginContent() {
+// // Create a separate client component for the login logic
+// function LoginContent() {
+//   const router = useRouter();
+//   const searchParams = useSearchParams(); // Now safely inside client context
+//   const userContext = useUser();
+
+//   const redirectTo = searchParams.get('redirect') || 
+//         searchParams.get('callbackUrl') || 
+//         '/profile';
+        
+//         useEffect(() => {
+//           if (!userContext?.loading && userContext?.user) {
+//             toast.success(`You are already logged in, redirecting to ${redirectTo}`);
+//             router.push(redirectTo);
+//           }
+//         }, [userContext?.loading, userContext?.user, router, redirectTo]);
+        
+//         if (userContext?.loading) {
+//           return <div>Loading...</div>;
+//         }
+        
+//         if (userContext?.user) {
+//           // Render nothing if user is already logged in (redirecting)
+//           return null;
+//         }
+        
+  
+
+
+
+//   return (
+//     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
+//       <h1 className="text-xl font-bold mb-6">Login</h1>
+//       <LoginRequestForm
+//         onSuccess={() => {
+//           toast.success('Login successfully');
+//           userContext?.refreshUser();
+//           router.push(redirectTo);
+//         }}
+//       />
+//     </div>
+//   );
+// }
+
+export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams(); // Now safely inside client context
   const userContext = useUser();
@@ -27,28 +70,9 @@ function LoginContent() {
   const redirectTo = searchParams.get('redirect') || 
         searchParams.get('callbackUrl') || 
         '/profile';
-        
-        useEffect(() => {
-          if (!userContext?.loading && userContext?.user) {
-            toast.success(`You are already logged in, redirecting to ${redirectTo}`);
-            router.push(redirectTo);
-          }
-        }, [userContext?.loading, userContext?.user, router, redirectTo]);
-        
-        if (userContext?.loading) {
-          return <div>Loading...</div>;
-        }
-        
-        if (userContext?.user) {
-          // Render nothing if user is already logged in (redirecting)
-          return null;
-        }
-        
-  
-
-
 
   return (
+
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h1 className="text-xl font-bold mb-6">Login</h1>
       <LoginRequestForm
@@ -59,13 +83,6 @@ function LoginContent() {
         }}
       />
     </div>
-  );
-}
 
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <LoginContent />
-    </Suspense>
   );
 }

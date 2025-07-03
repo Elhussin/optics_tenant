@@ -261,36 +261,53 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import { handleErrorStatus } from '@/utils/error';
 import { z } from 'zod';
-import { UseRequestFormProps } from '@/types';
+import { CreateUserType } from '@/types';
 const schema = schemas.${schemaName};
 
 export default function ${pascal}Form({
   onSuccess,
   onCancel,
+  defaultValues,
   className = "",
   submitText = "${config.submitButtonText}",
   showCancelButton = false,
   mode = 'create',
   id,
   ...options
-}: UseRequestFormProps) {
+}: CreateUserType) {
   const { 
     register, 
     handleSubmit, 
     formState: { errors, isSubmitting }, 
     submitForm,
     reset
-  } =useFormRequest(schema,{ mode, id, apiOptions: { endpoint: '${YOUR_ENDPOINT}', onSuccess: (res) => onSuccess?.(res), }});
+  } =useFormRequest(schema,{ mode, id, defaultValues, apiOptions: { endpoint: '${YOUR_ENDPOINT}', onSuccess: (res) => onSuccess?.(res), }});
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
       const result = await submitForm(data);
       onSuccess?.(result);
-      if (options.mode === 'create') {
+      if (mode === 'create') {
         reset();
       }
-    } catch (error) {
-      toast.error(handleErrorStatus(error));
+    } catch (error: any) {
+      if (error.response?.data) {
+        const errorData = error.response.data;
+        if (typeof errorData === 'object') {
+          // عرض جميع رسائل الخطأ
+          Object.entries(errorData).forEach(([field, messages]) => {
+            if (Array.isArray(messages)) {
+              messages.forEach(message => toast.error(\`\${field}: \${message}\`));
+            } else {
+              toast.error(\`\${field}: \${messages}\`);
+            }
+          });
+        } else {
+          toast.error(errorData);
+        }
+      } else {
+        toast.error(handleErrorStatus(error));
+      }
       console.error('Form submission error:', error);
     }
   };
@@ -305,7 +322,9 @@ export default function ${pascal}Form({
             type="submit" 
             disabled={isSubmitting}
             className={\`${config.submitButtonClasses} \${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}\`}
-          >
+            disabled={mode === 'edit' && fieldName === 'email'||mode === 'edit' && fieldName === 'username'||mode === 'edit' && fieldName === 'password'}
+            
+            >
             {isSubmitting ? 'Saving...' : submitText}
           </button>
           

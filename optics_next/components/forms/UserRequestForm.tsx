@@ -8,15 +8,16 @@ import { z } from 'zod';
 import { CreateUserType } from '@/types';
 const schema = schemas.UserRequest;
 
-export default function CreateUserForm({
+export default function UserRequestForm({
   onSuccess,
   onCancel,
+  defaultValues,
   className = "",
   submitText = "Save",
   showCancelButton = false,
-  mode =  'create',
+  mode = 'create' | 'edit'|'view'|'delete',
   id,
-  endpoint='users/register',
+  ...options
 }: CreateUserType) {
   const { 
     register, 
@@ -24,15 +25,15 @@ export default function CreateUserForm({
     formState: { errors, isSubmitting }, 
     submitForm,
     reset
-  } =useFormRequest(schema,{ mode: mode as any, id, apiOptions: { endpoint: endpoint, onSuccess: (res) => onSuccess?.(res), }});
+  } =useFormRequest(schema,{ mode, id, defaultValues, apiOptions: { endpoint: 'users/register', onSuccess: (res) => onSuccess?.(res), }});
 
   const onSubmit = async (data: z.infer<typeof schema>) => {
     try {
       const result = await submitForm(data);
       onSuccess?.(result);
-      // if (mode === 'create') {
-      //   reset();
-      // }
+      if (mode === 'create') {
+        reset();
+      }
     } catch (error: any) {
       if (error.response?.data) {
         const errorData = error.response.data;
@@ -86,7 +87,6 @@ export default function CreateUserForm({
       {...register("email")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
       placeholder="Email..."
-      disabled={mode === 'edit'}
       
     />
     
@@ -177,7 +177,7 @@ export default function CreateUserForm({
       {...register("role")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
     >
-      <option value="">Select...</option>
+      <option value="">اختر...</option>
       <option value="ADMIN">ADMIN</option>
       <option value="BRANCH_MANAGER">BRANCH_MANAGER</option>
       <option value="TECHNICIAN">TECHNICIAN</option>
@@ -202,7 +202,8 @@ export default function CreateUserForm({
       {...register("password")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
       placeholder="Password..."
-      disabled={mode === 'edit'}
+      disabled={mode === 'edit' && fieldName === 'password'}
+      
     />
     
     {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>}
@@ -213,7 +214,7 @@ export default function CreateUserForm({
             type="submit" 
             disabled={isSubmitting}
             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-          >
+            >
             {isSubmitting ? 'Saving...' : submitText}
           </button>
           
