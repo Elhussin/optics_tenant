@@ -1,28 +1,22 @@
 // lib/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-
+import { useRouter } from "next/navigation";
 const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
 
 // Fallback base URL
 let baseUrl = "http://localhost:8001";
 
+
 if (typeof window !== "undefined") {
   const hostname = window.location.hostname;
   const subdomain = hostname.split(".")[0];
   const domain = process.env.NEXT_PUBLIC_API_BASE || "localhost:8001";
-
   if (!hostname.includes("localhost") || hostname !== "localhost") {
     baseUrl = `http://${subdomain}.${domain}`;
   } else {
     baseUrl = `http://${domain}`;
   }
-}
-if (typeof window !== "undefined") {
-  const hostname = window.location.hostname;
-  const subdomain = hostname.split(".")[0];
-  const domain = process.env.NEXT_PUBLIC_API_BASE || "localhost:8001";
-
   // إذا كنا نعمل على localhost أو store1.localhost
   if (hostname === "localhost" || hostname.endsWith(".localhost")) {
     baseUrl = "http://store1.localhost:8001"; // ← تأكد أن هذا صحيح
@@ -32,11 +26,7 @@ if (typeof window !== "undefined") {
 }
 
 
-const isAuthEndpoint = (url: string) =>
-  url.includes('/login') || 
-  url.includes('/refresh') || 
-  url.includes('/register') ||
-  url.includes('/logout');
+
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
@@ -65,37 +55,45 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error: AxiosError) => {
+// Flag لتفادي تكرار المحاولة
+let isRefreshing = false;
 
-//     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+axiosInstance.interceptors.response.use(
+  (response) => response,
 
-//     if (
-//       error.response?.status !== 401 ||
-//       isAuthEndpoint(originalRequest?.url || "") ||
-//       originalRequest._retry
-//     ) {
-//       return Promise.reject(error);
-//     }
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-//     originalRequest._retry = false;
+    // لا نحاول عمل refresh في الحالات التالية:
+    if (
+      error.response?.status !== 401 || // فقط إذا الخطأ 401
+      originalRequest._retry ||         // تم المحاولة من قبل
+      originalRequest.url?.includes("/users/token/refresh/") // لا نحاول إن كان هو نفسه refresh endpoint
+    ) {
+      return Promise.reject(error);
+    }
 
-//     try {
-//       console.log("🔄 Attempting to refresh token via httpOnly cookie...");
-//       await axiosInstance.post("/users/token/refresh/");
-//       console.log("✅ Token refreshed successfully via httpOnly cookie");
-//       return axiosInstance(originalRequest);
-//     } catch (refreshError) {
-//       console.error("Token refresh failed:", refreshError);
+    originalRequest._retry = true;
 
-//       if (typeof window !== "undefined") {
-//         window.location.href = "/auth/login";
-//       }
+    try {
+      // محاولة واحدة فقط لعمل refresh
+      if (!isRefreshing) {
+        isRefreshing = true;
+        await axiosInstance.post("/api/users/token/refresh/"); // سيتم إرسال refreshToken الموجود في HttpOnly Cookie
+        isRefreshing = false;
+   
+        return axiosInstance(originalRequest);
+      }
+    } catch (refreshError) {
+      isRefreshing = false;
 
-//       return Promise.reject(refreshError);
-//     }
-//   }
-// );
+      return Promise.reject(refreshError);
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 
 export { axiosInstance ,baseUrl};
+

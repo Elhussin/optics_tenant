@@ -8,7 +8,8 @@ import { z } from 'zod';
 import { UseRequestFormProps } from '@/types';
 const schema = schemas.UserRequest;
 
-export default function UserRequestForm({
+
+export default function CreateUserForm({
   onSuccess,
   onCancel,
   className = "",

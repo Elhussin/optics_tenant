@@ -1,7 +1,7 @@
 
 'use client';
 
-import UserRequestForm from '@/components/forms/UserRequestForm';
+import UserRequestForm from '@/components/forms/CreateUserForm';
 import { toast } from 'sonner';
 
 

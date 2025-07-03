@@ -7,11 +7,13 @@ export default function LogoutButton() {
   const router = useRouter();
   const userContext = useUser();
 
+
   const handleLogout = async () => {
     try {
-      await api.post("/api/users/logout/", {});
-      toast.success("Logged out successfully");
+
+      userContext?.logout();
       userContext?.refreshUser();
+      toast.success("Logged out successfully");
       router.push("/auth/login");
     } catch (error) {
       toast.error("Failed to log out");

@@ -32,3 +32,13 @@ export interface UseRequestFormProps  {
   mode?: 'create' | 'update';
   id?: string | number;
 }
+
+
+// UserContextType
+export interface UserContextType {
+  user: any | null;
+  setUser: (user: any) => void;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
+  logout: () => void; 
+}

@@ -1,7 +1,7 @@
 'use client';
 
-import UserRequestForm from '@/components/forms/UserRequestForm';
-import { useRouter } from 'next/navigation';
+import CreateUserForm from '@/components/forms/CreateUserForm';
+import { useRouter } from 'next/navigation';  
 import { toast } from 'sonner';
 import { useUser } from '@/lib/hooks/useCurrentUser';
 
@@ -16,10 +16,10 @@ export default function CreateUserPage() {
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded shadow">
       <h1 className="text-xl font-bold mb-6">Add New User</h1>
-      <UserRequestForm
+      <CreateUserForm
         onSuccess={() => {
           toast.success('تم إنشاء المستخدم بنجاح!');
-          router.push('/users');
+          router.push('/users/create');
         }}
       />
     </div>
