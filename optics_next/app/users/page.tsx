@@ -4,13 +4,14 @@ import { api } from '@/lib/zod-client/zodios-client';
 import CreateUserForm from '@/components/forms/CreateUserForm';
 import { useRouter } from 'next/navigation';
 import EditUserPage from './[userId]/edit/page';
+import { ApiClient } from "@/lib/zod-client/api-client";
 export default function UserList() {
   const [users, setUsers] = useState<any[]>([]);
   const [editUser, setEditUser] = useState<any | null>(null);
   const router = useRouter();
 
   const load = async () => {
-    const data = await api.get('/api/users/users/');
+    const data = await ApiClient.get('users_users_list');
     setUsers(data);
   };
 
@@ -19,13 +20,13 @@ export default function UserList() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    console.log(id);
-    await api.delete(`/api/users/${id}/`, {});
+
+     await ApiClient.delete("users_users_retrieve", { id: id });
     load();
   };
 
   const handleUpdate = async (id: string) => {
-    console.log(id);
+    // console.log(id);
     router.push(`/users/${id}/edit`);
 
   };
