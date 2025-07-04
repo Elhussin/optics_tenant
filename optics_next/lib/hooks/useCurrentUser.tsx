@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '@/lib/zod-client/zodios-client';
+import api from '@/lib/api/axios';
 import { UserContextType } from '@/types';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';

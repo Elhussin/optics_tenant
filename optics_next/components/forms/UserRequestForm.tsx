@@ -1,6 +1,6 @@
 // components/forms/UserRequestForm.tsx
 import React from 'react';
-import { schemas } from '@/lib/zod-client';
+import { schemas } from '@/lib/api/zodClient';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import { handleErrorStatus } from '@/utils/error';

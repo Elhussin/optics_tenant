@@ -1,17 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/zod-client/zodios-client';
-import CreateUserForm from '@/components/forms/CreateUserForm';
+import { api } from '@/lib/api/axios';
 import { useRouter } from 'next/navigation';
-import EditUserPage from './[userId]/edit/page';
-import { ApiClient } from "@/lib/zod-client/api-client";
+
+
 export default function UserList() {
   const [users, setUsers] = useState<any[]>([]);
   const [editUser, setEditUser] = useState<any | null>(null);
   const router = useRouter();
-
   const load = async () => {
-    const data = await ApiClient.get('users_users_list');
+
+    const data : any = await api.get('api/users/profile/', {});
+    console.log(data);
     setUsers(data);
   };
 
@@ -21,12 +21,11 @@ export default function UserList() {
 
   const handleDelete = async (id: string) => {
 
-     await ApiClient.delete("users_users_retrieve", { id: id });
+     await api.delete("users_users_retrieve", { params: { id: id } }, {});
     load();
   };
 
   const handleUpdate = async (id: string) => {
-    // console.log(id);
     router.push(`/users/${id}/edit`);
 
   };

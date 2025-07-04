@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { schemas } from '../lib/zod-client';
+import { schemas } from '../lib/api/zodClient';
 import { z } from 'zod';
 
 // ===== configuration and settings =====

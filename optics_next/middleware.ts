@@ -49,6 +49,7 @@ function unauthorizedResponse(target: string, message: string) {
 
 // الوسيط الرئيسي
 export async function middleware(request: NextRequest) {
+  console.log("middleware");
   const pathname = request.nextUrl.pathname;
   const host = request.headers.get('host') || '';
   const subdomain = host.split('.')[0]; // store1.localhost → store1

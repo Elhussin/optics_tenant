@@ -30,40 +30,38 @@ export function handleApiError(error: any) {
 }
 
 
-export function handleErrorStatus(error: any) {
-    // Handle different error statuses and show appropriate messages
-    let message :string ='An error occurred';
-    if (error.response?.status === 400) {
-            message='Validation error occurred';
-          }
-          if (error.response?.status === 401) {
-            message = 'Unauthorized access';
-          }
-          if (error.response?.status === 403) {
-            message = 'Forbidden access';
-          }
-          if (error.response?.status === 404) {
-            message = 'Resource not found';
-          }
-          if (error.response?.status === 500) {
-            message = 'Internal server error';
+export function handleErrorStatus(error: any): string {
+  if (!error || typeof error !== "object") return "Unknown error";
 
-          }
-          if (error.response?.status === 503) {
-            message = 'Service unavailable';
+  // شبكة غير متوفرة أو خطأ غير متوقع
+  if (!error.response) {
+    return "Network error. Please check your internet connection.";
+  }
 
-          }
-          if (error.response?.status === 422) {
-            message = 'Unprocessable entity';
-    
-          }
-          if (error.response?.status === 429) {
-            message = 'Too many requests, please try again later';
+  const status = error.response.status;
+  const detail = error.response.data?.detail || error.message;
 
-          }
-          if (error.response?.status === 408) {
-            message = 'Request timeout, please try again';
-          }
-          
-    return message;
+  const statusMessages: Record<number, string> = {
+    400: "Validation error occurred",
+    401: "Unauthorized access",
+    403: "Forbidden access",
+    404: "Resource not found",
+    408: "Request timeout, please try again",
+    422: "Unprocessable entity",
+    429: "Too many requests, please try again later",
+    500: "Internal server error",
+    503: "Service unavailable",
+  };
+
+  // إذا وُجدت رسالة تفصيلية من الـ API، استخدمها
+  if (detail && typeof detail === "string") {
+    return detail;
+  }
+
+  // أو استخدم الرسالة المعرفة حسب الكود
+  if (status in statusMessages) {
+    return statusMessages[status];
+  }
+
+  return "An unexpected error occurred.";
 }

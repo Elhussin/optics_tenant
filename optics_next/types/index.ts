@@ -6,13 +6,14 @@ export type ApiError = {
     [field: string]: string | string[];
   };
   
-export interface FormApiOptions<TInput = any> {
-  endpoint: string;
-  method?: 'POST' | 'PUT' | 'PATCH' | 'GET' | 'DELETE';
-  transform?: (data: TInput) => any;
-  onSuccess?: (response: any) => void;
-  onError?: (error: any) => void;
+
+export interface FormApiOptions<T = any> {
+  alias: string;
+  onSuccess?: (res: any) => void;
+  onError?: (err: any) => void;
+  transform?: (data: any) => any;
 }
+
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -22,16 +23,16 @@ export interface ApiResponse<T> {
 
 
 
-export interface CreateUserType  {
+export interface formRequestProps  {
   onSuccess?: (data?: any) => void;
   onCancel?: () => void;
   className?: string;
   submitText?: string;
   showCancelButton?: boolean;
   defaultValues?: any;
-  mode?: 'create' | 'edit' | 'view' | 'delete';
+  mode?: 'create' 
   id?: string | number;
-  endpoint?: string;
+  alias?: string;
 }
 
 
@@ -42,4 +43,4 @@ export interface UserContextType {
   loading: boolean;
   refreshUser: () => Promise<void>;
   logout: () => void; 
-}
+} 

@@ -1,8 +1,10 @@
 // lib/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { useRouter } from "next/navigation";
 const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
+import { Zodios } from "@zodios/core";
+import { endpoints } from "./zodClient";
+
 
 // Fallback base URL
 let baseUrl = "http://localhost:8001";
@@ -94,6 +96,23 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+if (endpoints.some(e => e.alias === "users_login_create")) {
+  console.log("✅ users_login_create is available");
+} else {
+  console.log("❌ users_login_create is NOT available");
+}
 
-export { axiosInstance ,baseUrl};
+
+export const api = new Zodios("http://localhost:8001", endpoints, {
+  axiosInstance: axios.create({
+    baseURL: "http://localhost:8001",
+    withCredentials: true,
+  }),
+});
+
+// 
+// const api = new Zodios(baseUrl, endpoints, { axiosInstance });
+
+export default axiosInstance;
+// export { api };
 

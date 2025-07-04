@@ -5044,8 +5044,8 @@ export const endpoints = makeApi([
   },
 ]);
 
-export const api = new Zodios(endpoints);
+// export const api = new Zodios(endpoints);
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options);
-}
+// export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+//   return new Zodios(baseUrl, endpoints, options);
+// }
