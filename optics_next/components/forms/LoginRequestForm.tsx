@@ -35,6 +35,7 @@ export default function LoginRequestForm({
     },
     onError: (error) => {
       toast.error(error?.message || "Login failed");
+      
     },
   });
 
@@ -63,6 +64,9 @@ export default function LoginRequestForm({
           {errors.username && (
             <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
           )}
+          {/* {errors.root?.message && (
+            <p className="text-red-500 text-sm mt-1">{errors.root.message}</p>
+          )} */}
         </div>
 
         <div>

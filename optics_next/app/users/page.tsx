@@ -1,35 +1,48 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api/axios';
 import { useRouter } from 'next/navigation';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
 
 
 export default function UserList() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [editUser, setEditUser] = useState<any | null>(null);
-  const router = useRouter();
-  const load = async () => {
-
-    const data : any = await api.get('api/users/profile/', {});
-    console.log(data);
-    setUsers(data);
-  };
-
-  useEffect(() => {
-    load();
-  }, []);
-
-  const handleDelete = async (id: string) => {
-
-     await api.delete("users_users_retrieve", { params: { id: id } }, {});
-    load();
-  };
-
-  const handleUpdate = async (id: string) => {
-    router.push(`/users/${id}/edit`);
-
-  };
-
+    const [users, setUsers] = useState<any[]>([]);
+    const router = useRouter();
+  
+    // 🔹 طلب جلب المستخدمين (GET)
+    const { submitForm: fetchUsers, isLoading } = useFormRequest(undefined, {
+      alias: "users_users_list",
+      method: "GET",
+      onSuccess: (res) => {
+        console.log("Users fetched:", res);
+        setUsers(res);
+      },
+    });
+  
+    // 🔹 طلب حذف مستخدم (DELETE)
+    const { submitForm: deleteUser } = useFormRequest(undefined, {
+      alias: "users_users_destroy", // تأكد من أنه هو alias الصحيح لـ DELETE user
+      method: "DELETE",
+      onSuccess: (res) => {
+        console.log("User deleted:", res);
+        fetchUsers(); // إعادة تحميل المستخدمين بعد الحذف
+      },
+    });
+  
+    // 🔹 تحميل المستخدمين عند الدخول
+    useEffect(() => {
+      fetchUsers();
+    }, []);
+  
+    // 🔹 حذف مستخدم
+    const handleDelete = async (id: string) => {
+      console.log(id);
+      await deleteUser({ id }); // تأكد أن alias يستخدم :id في المسار
+    };
+  
+    // 🔹 تحديث مستخدم
+    const handleUpdate = (id: string) => {
+      router.push(`/users/${id}/edit`);
+    };
 
 
   return (

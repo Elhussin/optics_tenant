@@ -6,35 +6,50 @@ import { Zodios } from "@zodios/core";
 import { endpoints } from "./zodClient";
 
 
-// Fallback base URL
-let baseUrl = "http://localhost:8001";
+// // Fallback base URL
+// let baseUrl = "http://localhost:8001";
 
 
-if (typeof window !== "undefined") {
+// if (typeof window !== "undefined") {
+//   const hostname = window.location.hostname;
+//   const subdomain = hostname.split(".")[0];
+//   const domain = process.env.NEXT_PUBLIC_API_BASE || "localhost:8001";
+//   if (!hostname.includes("localhost") || hostname !== "localhost") {
+//     baseUrl = `http://${subdomain}.${domain}`;
+//   } else {
+//     baseUrl = `http://${domain}`;
+//   }
+//   // إذا كنا نعمل على localhost أو store1.localhost
+//   if (hostname === "localhost" || hostname.endsWith(".localhost")) {
+//     baseUrl = "http://store1.localhost:8001"; // ← تأكد أن هذا صحيح
+//   } else {
+//     baseUrl = `http://${subdomain}.${domain}`;
+//   }
+// }
+
+const getBaseUrl = () => {
+  if (typeof window === "undefined") {
+    return process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8001";
+  }
+
   const hostname = window.location.hostname;
-  const subdomain = hostname.split(".")[0];
   const domain = process.env.NEXT_PUBLIC_API_BASE || "localhost:8001";
-  if (!hostname.includes("localhost") || hostname !== "localhost") {
-    baseUrl = `http://${subdomain}.${domain}`;
-  } else {
-    baseUrl = `http://${domain}`;
-  }
-  // إذا كنا نعمل على localhost أو store1.localhost
+  
   if (hostname === "localhost" || hostname.endsWith(".localhost")) {
-    baseUrl = "http://store1.localhost:8001"; // ← تأكد أن هذا صحيح
-  } else {
-    baseUrl = `http://${subdomain}.${domain}`;
+    return "http://store1.localhost:8001";
   }
-}
+  
+  const subdomain = hostname.split(".")[0];
+  return `http://${subdomain}.${domain}`;
+};
 
-
+const baseUrl = getBaseUrl();
 
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
   return match ? decodeURIComponent(match[2]) : null;
 }
-
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
@@ -58,43 +73,43 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 // Flag لتفادي تكرار المحاولة
-let isRefreshing = false;
+// let isRefreshing = false;
 
-axiosInstance.interceptors.response.use(
-  (response) => response,
+// axiosInstance.interceptors.response.use(
+//   (response) => response,
 
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+//   async (error: AxiosError) => {
+//     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    // لا نحاول عمل refresh في الحالات التالية:
-    if (
-      error.response?.status !== 401 || // فقط إذا الخطأ 401
-      originalRequest._retry ||         // تم المحاولة من قبل
-      originalRequest.url?.includes("/users/token/refresh/") // لا نحاول إن كان هو نفسه refresh endpoint
-    ) {
-      return Promise.reject(error);
-    }
+//     // لا نحاول عمل refresh في الحالات التالية:
+//     if (
+//       error.response?.status !== 401 || // فقط إذا الخطأ 401
+//       originalRequest._retry ||         // تم المحاولة من قبل
+//       originalRequest.url?.includes("/users/token/refresh/") // لا نحاول إن كان هو نفسه refresh endpoint
+//     ) {
+//       return Promise.reject(error);
+//     }
 
-    originalRequest._retry = true;
+//     originalRequest._retry = true;
 
-    try {
-      // محاولة واحدة فقط لعمل refresh
-      if (!isRefreshing) {
-        isRefreshing = true;
-        await axiosInstance.post("/api/users/token/refresh/"); // سيتم إرسال refreshToken الموجود في HttpOnly Cookie
-        isRefreshing = false;
+//     try {
+//       // محاولة واحدة فقط لعمل refresh
+//       if (!isRefreshing) {
+//         isRefreshing = true;
+//         await axiosInstance.post("/api/users/token/refresh/"); // سيتم إرسال refreshToken الموجود في HttpOnly Cookie
+//         isRefreshing = false;
    
-        return axiosInstance(originalRequest);
-      }
-    } catch (refreshError) {
-      isRefreshing = false;
+//         return axiosInstance(originalRequest);
+//       }
+//     } catch (refreshError) {
+//       isRefreshing = false;
 
-      return Promise.reject(refreshError);
-    }
+//       return Promise.reject(refreshError);
+//     }
 
-    return Promise.reject(error);
-  }
-);
+//     return Promise.reject(error);
+//   }
+// );
 
 if (endpoints.some(e => e.alias === "users_login_create")) {
   console.log("✅ users_login_create is available");
@@ -102,17 +117,47 @@ if (endpoints.some(e => e.alias === "users_login_create")) {
   console.log("❌ users_login_create is NOT available");
 }
 
+let refreshTokenPromise: Promise<any> | null = null;
 
-export const api = new Zodios("http://localhost:8001", endpoints, {
-  axiosInstance: axios.create({
-    baseURL: "http://localhost:8001",
-    withCredentials: true,
-  }),
+axiosInstance.interceptors.response.use(
+  (response) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+    if (error.response?.status !== 401 || originalRequest._retry) {
+      return Promise.reject(error);
+    }
+
+    originalRequest._retry = true;
+
+    try {
+      // إذا كان هناك refresh جاري، انتظره
+      if (refreshTokenPromise) {
+        await refreshTokenPromise;
+      } else {
+        // إنشاء promise جديد للrefresh
+        refreshTokenPromise = axiosInstance.post("/api/users/token/refresh/");
+        await refreshTokenPromise;
+        refreshTokenPromise = null;
+      }
+
+      return axiosInstance(originalRequest);
+    } catch (refreshError) {
+      refreshTokenPromise = null;
+      // إعادة توجيه للتسجيل
+      window.location.href = '/auth/login';
+      return Promise.reject(refreshError);
+    }
+  }
+);
+
+export const api = new Zodios(baseUrl, endpoints, {
+  axiosInstance,
 });
 
-// 
+//    new Zodios(baseUrl, endpoints, { axiosInstance });.inmju|"}/;
 // const api = new Zodios(baseUrl, endpoints, { axiosInstance });
 
-export default axiosInstance;
+export default api;
 // export { api };
 

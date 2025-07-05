@@ -1,12 +1,13 @@
+
 // lib/hooks/useFormRequest.ts
 import { useState } from "react";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { z, ZodType } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { api } from "@/lib/api/axios";
+import api from "@/lib/api/axios";
 import { handleErrorStatus } from "@/utils/error";
-import type { Zodios } from "@zodios/core";
-import type { ZodiosApi } from "@zodios/core";
+
+type Maybe<T> = T | undefined;
 
 interface UseFormRequestOptions<TSchema extends ZodType<any, any, any>> {
   defaultValues?: Partial<z.infer<TSchema>>;
@@ -14,11 +15,13 @@ interface UseFormRequestOptions<TSchema extends ZodType<any, any, any>> {
   onSuccess?: (res: any) => void;
   onError?: (err: any) => void;
   transform?: (data: any) => any;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  body?: any; // For GET/refresh/simple POST
 }
 
-export function useFormRequest<TSchema extends ZodType<any, any, any>>(
-  schema: TSchema,
-  options: UseFormRequestOptions<TSchema>
+export function useFormRequest<TSchema extends ZodType<any, any, any> = any>(
+  schema?: TSchema,
+  options?: UseFormRequestOptions<TSchema>
 ) {
   const {
     defaultValues,
@@ -26,31 +29,42 @@ export function useFormRequest<TSchema extends ZodType<any, any, any>>(
     onSuccess,
     onError,
     transform,
-  } = options;
+    method = "POST",
+    body,
+  } = options || {};
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const methods = useForm<z.infer<TSchema>>({
-    resolver: zodResolver(schema),
-    defaultValues,
-    mode: "onChange",
-  });
+  const methods: Maybe<UseFormReturn<z.infer<TSchema>>> = schema
+    ? useForm<z.infer<TSchema>>({
+        resolver: zodResolver(schema),
+        defaultValues,
+        mode: "onChange",
+      })
+    : undefined;
 
-  const submitForm = async (data: z.infer<TSchema>) => {
+  const submitForm = async (data?: z.infer<TSchema>) => {
     setIsLoading(true);
     try {
+      const payload = transform
+        ? transform(data ?? {})
+        : data ?? body ?? {};
 
-      const payload = transform ? transform(data) : data;
-      console.log("alias useFormRequest", alias);
-      console.log("data useFormRequest", data);
-      const response = await api.request(alias, { body: payload });
-      
-      console.log("response useFormRequest", response);
+      const requestFn = api[alias as keyof typeof api] as unknown as (
+        args?: any
+      ) => Promise<any>;
+
+      if (!requestFn) {
+        throw new Error(`API function for alias "${alias}" not found.`);
+      }
+
+      console.log(payload, alias);
+      const response = await requestFn(payload);
 
       onSuccess?.(response);
       return { success: true, data: response };
     } catch (error: any) {
-      methods.setError("root", {
+      methods?.setError?.("root", {
         message: handleErrorStatus(error),
       });
       onError?.(error);
@@ -61,7 +75,7 @@ export function useFormRequest<TSchema extends ZodType<any, any, any>>(
   };
 
   return {
-    ...methods,
+    ...(methods || {}),
     submitForm,
     isLoading,
   };
