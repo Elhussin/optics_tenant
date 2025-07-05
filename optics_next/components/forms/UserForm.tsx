@@ -8,6 +8,29 @@ import { z } from 'zod';
 import { CreateUserType } from '@/types';
 const schema = schemas.UserRequest;
 
+
+// مثال على حذف مستخدم
+export function useDeleteUser() {
+  const { submitForm, isLoading } = useFormRequest({
+    alias: "users_users_destroy",
+    onSuccess: (response) => {
+      console.log("User deleted successfully:", response);
+    },
+    onError: (error) => {
+      console.error("Error deleting user:", error);
+    }
+  });
+
+  const deleteUser = async (userId: string | number) => {
+    return await submitForm({ id: userId });
+  };
+
+  return { deleteUser, isLoading };
+}
+
+
+
+
 export default function UserRequestForm({
   onSuccess,
   onCancel,

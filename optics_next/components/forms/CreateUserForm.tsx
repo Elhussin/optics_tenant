@@ -1,63 +1,60 @@
 // components/forms/UserRequestForm.tsx
 import React from 'react';
-import { schemas } from '@/lib/api/zodClient';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
-import { handleErrorStatus } from '@/utils/error';
-import { z } from 'zod';
-import { CreateUserType } from '@/types';
-const schema = schemas.UserRequest;
-
+import { FormProps } from '@/types';
+import { SubmitHandler } from "react-hook-form";
+import { useRouter } from 'next/navigation';
 export default function CreateUserForm({
   onSuccess,
   onCancel,
   className = "",
   submitText = "Save",
-  showCancelButton = false,
-  mode =  'create',
-  id,
-  endpoint='users/register',
-}: CreateUserType) {
-  const { 
-    register, 
-    handleSubmit, 
-    formState: { errors, isSubmitting }, 
-    submitForm,
-    reset
-  } =useFormRequest(schema,{ mode: mode as any, id, apiOptions: { endpoint: endpoint, onSuccess: (res) => onSuccess?.(res), }});
+  showCancelButton = true,
+  alias="users_users_create",
+  mode="create",
+}: FormProps) {
+  const router = useRouter();
+  const form = useFormRequest({
+      alias:alias,
+      onSuccess: (res) => {
+        onSuccess?.(res);
+      },
+      onError: (err) => {
+        toast.error("User creation failed");
+        console.log("error", err);
+      },
+    });
+    
 
-  const onSubmit = async (data: z.infer<typeof schema>) => {
-    try {
-      const result = await submitForm(data);
-      onSuccess?.(result);
-      // if (mode === 'create') {
-      //   reset();
-      // }
-    } catch (error: any) {
-      if (error.response?.data) {
-        const errorData = error.response.data;
-        if (typeof errorData === 'object') {
-          // عرض جميع رسائل الخطأ
-          Object.entries(errorData).forEach(([field, messages]) => {
-            if (Array.isArray(messages)) {
-              messages.forEach(message => toast.error(`${field}: ${message}`));
-            } else {
-              toast.error(`${field}: ${messages}`);
-            }
-          });
-        } else {
-          toast.error(errorData);
-        }
-      } else {
-        toast.error(handleErrorStatus(error));
-      }
-      console.error('Form submission error:', error);
+  const onSubmit: SubmitHandler<any> = async (data) => {
+    const result = await form.submitForm(data);
+    if (!result || !result.success) {
+      // فشل، إما الاستثناء أو فشل التحقق
+      console.log("error", result?.error);
+      return;
     }
+    if (result.success) {
+      form.reset();
+    }
+  };
+
+  const handleCancel = () => {
+    if (onCancel) onCancel();
+    form.reset();
+    router.push('/users');
   };
 
   return (
     <div className={`${className}`}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+
+            {form.formState.errors.root && (
+              <p className="text-red-500 text-sm mb-2">
+                {form.formState.errors.root.message}
+              </p>
+            )}
+            
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         
   <div className="mb-4">
     
@@ -66,13 +63,13 @@ export default function CreateUserForm({
     </label>
     <textarea 
       id="username" 
-      {...register("username")} 
+      {...form.register("username")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
       rows={3}
       placeholder="Username..."
     />
     
-    {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username?.message}</p>}
+    {form.formState.errors.username && <p className="text-red-500 text-sm mt-1">{form.formState.errors.username?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -83,14 +80,14 @@ export default function CreateUserForm({
     <input 
       id="email" 
       type="email" 
-      {...register("email")} 
+      {...form.register("email")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
       placeholder="Email..."
       disabled={mode === 'edit'}
       
     />
     
-    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email?.message}</p>}
+    {form.formState.errors.email && <p className="text-red-500 text-sm mt-1">{form.formState.errors.email?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -98,15 +95,14 @@ export default function CreateUserForm({
     <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
       First name
     </label>
-    <textarea 
+    <input 
       id="first_name" 
-      {...register("first_name")} 
+      {...form.register("first_name")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-      rows={3}
       placeholder="First name..."
     />
     
-    {errors.first_name && <p className="text-red-500 text-sm mt-1">{errors.first_name?.message}</p>}
+    {form.formState.errors.first_name && <p className="text-red-500 text-sm mt-1">{form.formState.errors.first_name?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -114,15 +110,14 @@ export default function CreateUserForm({
     <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
       Last name
     </label>
-    <textarea 
+    <input 
       id="last_name" 
-      {...register("last_name")} 
+      {...form.register("last_name")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-      rows={3}
       placeholder="Last name..."
     />
     
-    {errors.last_name && <p className="text-red-500 text-sm mt-1">{errors.last_name?.message}</p>}
+    {form.formState.errors.last_name && <p className="text-red-500 text-sm mt-1">{form.formState.errors.last_name?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -131,12 +126,12 @@ export default function CreateUserForm({
       <input 
         id="is_active" 
         type="checkbox" 
-        {...register("is_active")} 
+        {...form.register("is_active")} 
         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
       />
       <label htmlFor="is_active" className="block text-sm font-medium text-gray-700 mb-1">Is active</label>
     </div>
-    {errors.is_active && <p className="text-red-500 text-sm mt-1">{errors.is_active?.message}</p>}
+    {form.formState.errors.is_active && <p className="text-red-500 text-sm mt-1">{form.formState.errors.is_active?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -145,26 +140,12 @@ export default function CreateUserForm({
       <input 
         id="is_staff" 
         type="checkbox" 
-        {...register("is_staff")} 
+        {...form.register("is_staff")} 
         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
       />
       <label htmlFor="is_staff" className="block text-sm font-medium text-gray-700 mb-1">Is staff</label>
     </div>
-    {errors.is_staff && <p className="text-red-500 text-sm mt-1">{errors.is_staff?.message}</p>}
-  </div>
-
-  <div className="mb-4">
-    <div className="flex items-center space-x-2">
-    
-      <input 
-        id="is_superuser" 
-        type="checkbox" 
-        {...register("is_superuser")} 
-        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
-      />
-      <label htmlFor="is_superuser" className="block text-sm font-medium text-gray-700 mb-1">Is superuser</label>
-    </div>
-    {errors.is_superuser && <p className="text-red-500 text-sm mt-1">{errors.is_superuser?.message}</p>}
+    {form.formState.errors.is_staff && <p className="text-red-500 text-sm mt-1">{form.formState.errors.is_staff?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -174,7 +155,7 @@ export default function CreateUserForm({
     </label>
     <select 
       id="role" 
-      {...register("role")} 
+      {...form.register("role")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
     >
       <option value="">Select...</option>
@@ -188,7 +169,7 @@ export default function CreateUserForm({
       <option value="CRM">CRM</option>
     </select>
     
-    {errors.role && <p className="text-red-500 text-sm mt-1">{errors.role?.message}</p>}
+    {form.formState.errors.role && <p className="text-red-500 text-sm mt-1">{form.formState.errors.role?.message}</p>}
   </div>
 
   <div className="mb-4">
@@ -199,22 +180,22 @@ export default function CreateUserForm({
     <input 
       id="password" 
       type="password" 
-      {...register("password")} 
+      {...form.register("password")} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
       placeholder="Password..."
       disabled={mode === 'edit'}
     />
     
-    {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password?.message}</p>}
+    {form.formState.errors.password && <p className="text-red-500 text-sm mt-1">{form.formState.errors.password?.message}</p>}
   </div>
         
         <div className="flex gap-3 pt-4">
           <button 
             type="submit" 
-            disabled={isSubmitting}
-            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={form.formState.isSubmitting}
+            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${form.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            {isSubmitting ? 'Saving...' : submitText}
+            {form.formState.isSubmitting ? 'Saving...' : submitText}
           </button>
           
           
@@ -222,7 +203,7 @@ export default function CreateUserForm({
           {showCancelButton && (
             <button 
               type="button" 
-              onClick={onCancel}
+              onClick={handleCancel}
               className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
             >
               Cancel
@@ -233,3 +214,4 @@ export default function CreateUserForm({
     </div>
   );
 }
+

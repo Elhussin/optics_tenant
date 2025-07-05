@@ -44,3 +44,16 @@ export interface UserContextType {
   refreshUser: () => Promise<void>;
   logout: () => void; 
 } 
+
+
+
+
+export interface FormProps {
+  onSuccess?: (res: any) => void;
+  submitText?: string;
+  className?: string;
+  onCancel?: () => void;
+  showCancelButton?: boolean;
+  alias?: string;
+  mode?: 'create' | 'edit';
+}

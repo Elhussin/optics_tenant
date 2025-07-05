@@ -1,7 +1,7 @@
 // app/login/page.tsx
 'use client';
 
-import LoginRequestForm from "@/components/forms/LoginRequestForm";
+import LoginRequestForm from "@/components/forms/LoginForm";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -11,8 +11,9 @@ export default function LoginPage() {
     <div className="max-w-md mx-auto mt-20 p-6 bg-white shadow-md rounded-md">
       <h1 className="text-xl font-semibold text-center mb-6">Login</h1>
       <LoginRequestForm
-        onSuccess={() => router.push("/dashboard")}
+        onSuccess={() => router.push("/profile")}
         submitText="Login"
+        className="max-w-md mx-auto mt-20 p-6 bg-blue-200 shadow-md rounded-md"
       />
     </div>
   );

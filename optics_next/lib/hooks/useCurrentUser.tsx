@@ -5,7 +5,7 @@ import api from '@/lib/api/axios';
 import { UserContextType } from '@/types';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-
+import { useFormRequest } from './useFormRequest';
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -23,30 +23,35 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     router.push('/auth/login');
   };
 
-  const fetchUser = async () => {
-    try {
-      await api.post("/api/users/token/refresh/"); 
-      const res = await api.get('/api/users/profile/');
+  const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); }, onError: (err) => { console.log(err); } });
 
-      setUser(res);
-    } catch (error: any) {
-      if (error.response?.status === 401) {
-        logout();
-        router.push('/auth/login');
-        toast.error("Session expired. Please log in again.");
-      } else {
-        router.push('/auth/login');
-        toast.error("Failed to fetch user");
-        console.log("error", error);
-      }
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+
+  // const fetchUser = async () => {
+  //   try {
+  //     // await api.post("/api/users/token/refresh/"); 
+  //     // const res = await api.get('/api/users/profile/');
+  //     const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); }, onError: (err) => { console.log(err); } });
+  //     fetchUser.submitForm();
+
+  //     // setUser(res);
+  //   } catch (error: any) {
+  //     if (error.response?.status === 401) {
+  //       logout();
+  //       router.push('/auth/login');
+  //       toast.error("Session expired. Please log in again.");
+  //     } else {
+  //       router.push('/auth/login');
+  //       toast.error("Failed to fetch user");
+  //       console.log("error", error);
+  //     }
+  //     setUser(null);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   useEffect(() => {
-    fetchUser();
+    fetchUser.submitForm();
   }, []);
 
   return (

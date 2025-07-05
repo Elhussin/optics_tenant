@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import CreateUserForm from '@/components/forms/CreateUserForm';
-import { ApiClient } from "@/lib/zod-client/api-client";
+import { api } from "@/lib/api/axios";
 
 type Props = {
   params: {
@@ -18,7 +18,7 @@ export default async function EditUserPage({ params }: Props) {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const data = await ApiClient.get("users_users_retrieve", { id: userId });
+        const data = await api.get("users_users_retrieve", { id: userId });
         setDefaultValues(data);
       } catch (err) {
         // تم التعامل مع الخطأ تلقائيًا في handleApiError
