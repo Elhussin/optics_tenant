@@ -1,16 +1,14 @@
 'use client'
 
-import React, { useEffect } from "react";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { useRouter } from 'next/navigation';
 
-export default function UserDetail(params: { userId: string }) {
+export default function UserDetail({ params }: { params: { userId: string } }) {
     const { userId } = params;
     const router = useRouter();
     const fetchUser = useFormRequest({ 
         alias: "users_users_retrieve", 
         onSuccess: (res) => { 
-            s
             console.log('User loaded:', res); 
         }, 
         onError: (err) => { 
@@ -18,16 +16,8 @@ export default function UserDetail(params: { userId: string }) {
         }
     });
 
-    // Fetch user data when userId changes
-    useEffect(() => {
-        if (userId) {
-            fetchUser.submitForm({ id: userId });
-            console.log('User ID:', userId);
-        }
-    }, [userId]);
-
-    // ... rest of your component
-
+    // Fetch user data when component mounts
+    fetchUser.submitForm({ id: userId });
 
     return (
         <div className="max-w-4xl mx-auto p-6">

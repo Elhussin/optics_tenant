@@ -4,7 +4,7 @@ const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
 import { Zodios } from "@zodios/core";
 import { endpoints } from "./zodClient";
-import { getBaseUrl } from "@/utils/getBaseUrl";
+import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 
 
 
@@ -143,7 +143,7 @@ api.customRequest = async function(alias: string, data: any = {}) {
 
 // إضافة type definition للـ customRequest
 declare module "@zodios/core" {
-  interface ZodiosInstance {
+  interface ZodiosInstanceN {
     customRequest: (alias: string, data?: any) => Promise<any>;
   }
 }

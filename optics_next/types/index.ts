@@ -57,3 +57,13 @@ export interface FormProps {
   alias?: string;
   mode?: 'create' | 'edit';
 }
+
+
+export interface ButtonProps {
+  label: string;
+  onClick: () => void;
+  variant?: "primary" | "secondary" | "danger";
+  icon?: React.ReactNode;
+  className?: string;
+  type?: "button" | "submit" | "reset";
+};

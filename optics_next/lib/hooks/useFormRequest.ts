@@ -3,7 +3,7 @@ import { z, ZodType, ZodObject } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/lib/api/axios";
-import { handleErrorStatus } from "@/utils/error";
+import { handleErrorStatus } from "@/lib/utils/error";
 
 export function useFormRequest(
   options: {

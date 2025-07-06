@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useUser } from  '@/lib/hooks/useCurrentUser'
 
 import LogoutButton from '../logout';
+import ThemeToggle from '../ThemeToggle';
 
 export default function Navbar() {
   const userContext = useUser();
@@ -33,12 +34,14 @@ export default function Navbar() {
             
             <Link href="/profile">Profile</Link>
             <LogoutButton logout={logout}/>
+            <ThemeToggle />
      
           </>
         ) : (
           <>
             <Link href="/auth/login">Login</Link>
             <Link href="/auth/register">Register</Link>
+            <ThemeToggle />
           </>
         )}
       </div>

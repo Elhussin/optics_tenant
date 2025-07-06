@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import '@/styles/globals.css';
 import MainLayout from '@/components/layout/MainLayout';
-import { generateMetadata } from '@/utils/metadata';
+import { generateMetadata } from '@/lib/utils/metadata';
 import { UserProvider } from  '@/lib/hooks/useCurrentUser'
 import React from 'react';
 
@@ -32,9 +32,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased body-background`}
       >
                
                <UserProvider>

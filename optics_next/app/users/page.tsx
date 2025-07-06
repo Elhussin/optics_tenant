@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
-
+import ActionButtons from '@/components/ui/ActionButtons';
+import Button from '@/components/ui/Button';
 export default function UserList() {
 
   const [users, setUsers] = useState<any[]>([]);
@@ -35,33 +36,32 @@ export default function UserList() {
       router.push(`/users/${id}/view`);
     };
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold">Users</h2>
-      <button onClick={handleCreate} className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors">Create User</button>
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="p-2">Username</th>
-            <th className="p-2">Email</th>
-            <th className="p-2">Role</th>
-            <th className="p-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="border-t">
-              <td className="p-2">{user.username}</td>
-              <td className="p-2">{user.email}</td>
-              <td className="p-2">{user.role}</td>
-              <td className="p-2 space-x-2">
-                <button onClick={() => handleUpdate(user.id)} className="text-blue-600 cursor-pointer">Edit</button>
-                <button onClick={() => handleDelete(user.id)} className="text-red-600 cursor-pointer">Delete</button>
-                <button onClick={() => handleView(user.id)} className="text-green-600 cursor-pointer">View</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="space-y-4 md:p-4">
+      <div className="flex flex-wrap justify-between items-center">
+        <h2 className="text-xl font-bold">Users</h2>
+        <Button
+          label="Create User"
+          onClick={() => handleCreate()}
+          variant="primary"
+          className="md:mt-0 mt-4"
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {users.map((user) => (
+          <div key={user.id} className="bg-white shadow-md p-4 rounded-md">
+            <h3 className="text-lg font-bold">{user.username}</h3>
+            <p className="text-sm text-gray-600">{user.email}</p>
+            <p className="text-sm text-gray-600">{user.role}</p>
+            <div className="flex space-x-2 text-sm mt-4">
+              <ActionButtons
+                onView={() => handleView(user.id)}
+                onEdit={() => handleUpdate(user.id)}
+                onDelete={() => handleDelete(user.id)}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

@@ -3,7 +3,7 @@ import React from 'react';
 import { schemas } from '@/lib/api/zodClient';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
-import { handleErrorStatus } from '@/utils/error';
+import { handleErrorStatus } from '@/lib/utils/error';
 import { z } from 'zod';
 import { CreateUserType } from '@/types';
 const schema = schemas.UserRequest;

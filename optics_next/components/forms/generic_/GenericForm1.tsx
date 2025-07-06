@@ -3,7 +3,7 @@ import React from 'react';
 import { ZodType, z } from 'zod';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
-import { handleErrorStatus } from '@/utils/error';
+import { handleErrorStatus } from '@/lib/utils/error';
 
 type FieldType = 'text' | 'number' | 'password' | 'textarea';
 
