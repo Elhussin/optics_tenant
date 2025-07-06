@@ -14,7 +14,7 @@ export default function LoginPage() {
         onSuccess={() => router.push("/profile")}
         submitText="Login"
         className="max-w-md mx-auto mt-20 p-6 bg-blue-200 shadow-md rounded-md"
-      />
+             />
     </div>
   );
 }

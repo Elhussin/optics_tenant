@@ -1,18 +1,13 @@
 "use client";
-import { api } from "@/lib/zod-client/zodios-client";
 import { toast } from "sonner";
-import { useUser } from  '@/lib/hooks/useCurrentUser'
 import { useRouter } from "next/navigation";
-export default function LogoutButton() {
+export default function LogoutButton({logout}: {logout: () => void}) {
   const router = useRouter();
-  const userContext = useUser();
 
 
   const handleLogout = async () => {
     try {
-
-      userContext?.logout();
-      userContext?.refreshUser();
+      logout();
       toast.success("Logged out successfully");
       router.push("/auth/login");
     } catch (error) {

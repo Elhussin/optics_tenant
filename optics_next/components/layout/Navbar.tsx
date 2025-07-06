@@ -12,7 +12,7 @@ export default function Navbar() {
 
   if (!userContext) return <div>Loading...</div>;
 
-  const { user, loading } = userContext;
+  const { user, loading, logout} = userContext;
 
   // if (loading) return <div>Loading...</div>; // أو spinner لو تحب
 
@@ -32,7 +32,7 @@ export default function Navbar() {
             {user.role === 'TECHNICIAN' && <Link href="/prescriptions">Prescriptions</Link>}
             
             <Link href="/profile">Profile</Link>
-            <LogoutButton />
+            <LogoutButton logout={logout}/>
      
           </>
         ) : (

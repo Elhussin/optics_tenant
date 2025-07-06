@@ -2,7 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
@@ -25,9 +25,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     
     username = serializers.CharField(
+        validators=[
+            MinLengthValidator(5),
+            MaxLengthValidator(50)
+        ],
         error_messages={
             "required": _("Username is required."),
-            "blank": _("Username cannot be blank.")
+            "blank": _("Username cannot be blank."),
+            "min_length": _("Username must be at least 5 characters long."),
+            "max_length": _("Username must be at most 50 characters long."),
         }
     )
 
@@ -101,9 +107,15 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     
     username = serializers.CharField(
+        validators=[
+            MinLengthValidator(5),
+            MaxLengthValidator(50)
+        ],
         error_messages={
             "required": _("Username is required."),
-            "blank": _("Username cannot be blank.")
+            "blank": _("Username cannot be blank."),
+            "min_length": _("Username must be at least 5 characters long."),
+            "max_length": _("Username must be at most 50 characters long."),
         }
     )
 

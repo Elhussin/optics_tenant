@@ -2,23 +2,27 @@
 'use client';
 
 import React from "react";
-import { z } from "zod";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import {FormProps} from '@/types'
-
+import { useUser } from "@/lib/hooks/useCurrentUser";
+import { useRouter } from "next/navigation";
 
 export default function LoginRequestForm({
   onSuccess,
   submitText = "Login",
   className = "",
+
 }: FormProps) {
+const { setUser } = useUser();
+const router = useRouter();
   const form = useFormRequest({
     alias: "users_login_create",
     onSuccess: (res) => {
       toast.success("Login successful");
-      onSuccess?.(res);
+      setUser(res);
+      router.push("/profile");
     },
     onError: (err) => {
       toast.error("Login failed");
@@ -37,6 +41,9 @@ export default function LoginRequestForm({
       form.reset();
     }
   };
+
+
+  
 
   return (
     <div className={className}>

@@ -6,9 +6,7 @@ from .serializers import RegisterSerializer, LoginSerializer,UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.timezone import now
-# accounts/views.py
 from rest_framework.permissions import IsAuthenticated
-# from core.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, TokenError
 from rest_framework.permissions import AllowAny
@@ -91,6 +89,7 @@ class RegisterView(APIView):
 
 
 class RefreshTokenView(APIView):
+
     @extend_schema(
         responses={
             200: inline_serializer(
@@ -107,6 +106,10 @@ class RefreshTokenView(APIView):
         }
     )
     def post(self, request):
+        # print("Cookies:", request.COOKIES)
+        # print("Headers:", request.headers)
+        # print("Secure:", request.is_secure())
+        # print("User agent:", request.META.get("HTTP_USER_AGENT"))
         refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
             return Response({"error": "No refresh token found"}, status=status.HTTP_401_UNAUTHORIZED)

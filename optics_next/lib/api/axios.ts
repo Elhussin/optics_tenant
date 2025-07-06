@@ -4,24 +4,13 @@ const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
 import { Zodios } from "@zodios/core";
 import { endpoints } from "./zodClient";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 
-const getBaseUrl = () => {
-  if (typeof window === "undefined") {
-    return process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8001";
-  }
 
-  const hostname = window.location.hostname;
-  const domain = process.env.NEXT_PUBLIC_API_BASE || "localhost:8001";
-  
-  if (hostname === "localhost" || hostname.endsWith(".localhost")) {
-    return "http://store1.localhost:8001";
-  }
-  
-  const subdomain = hostname.split(".")[0];
-  return `http://${subdomain}.${domain}`;
-};
 
 const baseUrl = getBaseUrl();
+
+console.log("Base URL:", baseUrl);
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));

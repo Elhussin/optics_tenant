@@ -9,7 +9,7 @@ import { useFormRequest } from './useFormRequest';
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -22,35 +22,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     router.push('/auth/login');
   };
+  const refreshToken=useFormRequest({ alias: "users_token_refresh_create", onSuccess: (res) => {console.log("refreshToken",res);}, onError: (err) => { console.log(err); setLoading(false); } });
+  const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); setLoading(false); }, onError: (err) => { console.log(err); setLoading(false); } });
 
-  const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); }, onError: (err) => { console.log(err); } });
 
-
-  // const fetchUser = async () => {
-  //   try {
-  //     // await api.post("/api/users/token/refresh/"); 
-  //     // const res = await api.get('/api/users/profile/');
-  //     const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); }, onError: (err) => { console.log(err); } });
-  //     fetchUser.submitForm();
-
-  //     // setUser(res);
-  //   } catch (error: any) {
-  //     if (error.response?.status === 401) {
-  //       logout();
-  //       router.push('/auth/login');
-  //       toast.error("Session expired. Please log in again.");
-  //     } else {
-  //       router.push('/auth/login');
-  //       toast.error("Failed to fetch user");
-  //       console.log("error", error);
-  //     }
-  //     setUser(null);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   useEffect(() => {
+    setLoading(true);
+    refreshToken.submitForm();
     fetchUser.submitForm();
   }, []);
 
