@@ -13,9 +13,9 @@ export default function Button({
 }: ButtonProps) {
 
   const variantClasses = {
-    primary: "primary",
-    secondary: "secondary",
-    danger: "danger",
+    primary: "btn btn-primary",
+    secondary: "btn btn-secondary",
+    danger: "btn btn-danger",
   };
 
   return (

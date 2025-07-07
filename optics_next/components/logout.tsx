@@ -1,6 +1,7 @@
 "use client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Button from "./ui/Button";
 export default function LogoutButton({logout}: {logout: () => void}) {
   const router = useRouter();
 
@@ -17,8 +18,12 @@ export default function LogoutButton({logout}: {logout: () => void}) {
   };
 
   return (
-    <button onClick={handleLogout} className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
-      Logout
-    </button>
+    <>
+    <Button
+      label="Logout"
+      onClick={handleLogout}
+      variant="danger"
+    />
+  </>
   );
 }

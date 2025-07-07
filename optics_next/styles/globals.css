@@ -5,13 +5,46 @@
 /* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
 @custom-variant dark (&:where(.dark, .dark *));
 
+:root {
+  --font-main: 'Mergan', sans-serif;
+  --font-alt: 'Cairo', sans-serif;
 
-.btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700;
-  }
+  --color-primary: #4f46e5;
+  --color-secondary: #f59e0b;
+  --color-danger: #dc2626;
+  --color-success: #22c55d;
+  --color-info: #22c55d;
+
+
+  --bg-body: #f9fafb;
+  --text-main: #111827;
+}
+
+@layer base {
+    html {
+      font-family: var(--font-family-display);
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 700;
+    }
+}
+/* 🌍 2. Global styles */
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+}
+
+
+.container {
+  @apply max-w-screen-xl mx-auto px-4;
+}
+
+
   
-  .card {
+.card {
     @apply p-6 shadow-md rounded-2xl bg-white;
+    
   }
   
 .input-base {
@@ -29,48 +62,57 @@
 }
 
 
-.primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white;
-}
-.secondary {
-    @apply bg-gray-300 hover:bg-gray-400 text-black;
-}
-.danger {
-    @apply bg-red-600 hover:bg-red-700 text-white;
+/* 🧩 3. Reusable Components */
+.btn {
+  @apply px-4 py-2 rounded font-semibold transition;
 }
 
-.body-background{
-    @apply bg-blue-100 dark:bg-gray-500;
+.btn-primary {
+  @apply bg-[var(--color-primary)] text-white hover:opacity-90;
 }
 
-@theme {
-    /* 1. الخطوط (Fonts) */
-    --font-family-display: "Satoshi", sans-serif;
-  
-    /* 2. نقاط التوقف (Breakpoints) */
-    --screen-3xl: 1920px;
-  
-    /* 3. الألوان (Colors) */
-    --color-avocado-100: oklch(0.99 0 0);
-    --color-avocado-200: oklch(0.98 0.04 113.22);
-    --color-avocado-300: oklch(0.94 0.11 115.03);
-    --color-avocado-400: oklch(0.92 0.19 114.08);
-    --color-avocado-500: oklch(0.84 0.18 117.33);
-    --color-avocado-600: oklch(0.53 0.12 118.34);
-  
-    /* 4. دوائر التوقيت (Easing Functions) */
-    --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
-    --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
-  }
-  
-  /* (اختياري) إذا كنت تريد تطبيق الخط الافتراضي */
-  @layer base {
-    html {
-      font-family: var(--font-family-display);
-    }
-  }
-/* 
+.btn-secondary {
+  @apply bg-[var(--color-secondary)] text-white hover:opacity-90;
+}
 
-  <div class="font-display text-avocado-500 max-3xl:px-4 transition-all ease-fluid">
-  <!-- ... -->
-</div> */
+.btn-danger {
+  @apply bg-[var(--color-danger)] text-white hover:opacity-90;
+}
+
+
+.body{
+    @apply bg-[var(--bg-body)] dark:bg-gray-800 dark:text-white;
+}
+
+
+
+
+.nav{
+  @apply bg-white shadow px-4 py-3 flex justify-between items-center dark:bg-gray-900 dark:text-white;
+}
+.header{
+  @apply bg-gray-100 py-4 shadow-md dark:bg-gray-800 dark:text-white;
+}
+
+.footer{
+  @apply bg-gray-100 mt-10 py-4 shadow-md dark:bg-gray-900 dark:text-white;
+}
+
+.card-continear{
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+.cards{
+  @apply bg-white shadow-md p-4 rounded-md dark:bg-gray-700 dark:text-white;
+}
+
+.card-header{
+  @apply  text-lg font-bold capitalize text-gray-600 dark:text-gray-100;
+}
+.card-body{
+  @apply text-sm text-gray-600 dark:text-gray-200;
+}
+
+.btn-card{
+  @apply flex space-x-2 text-sm mt-4;
+}

@@ -5,6 +5,7 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import ActionButtons from '@/components/ui/ActionButtons';
 import Button from '@/components/ui/Button';
+import { Plus } from 'lucide-react';
 export default function UserList() {
 
   const [users, setUsers] = useState<any[]>([]);
@@ -38,21 +39,22 @@ export default function UserList() {
   return (
     <div className="space-y-4 md:p-4">
       <div className="flex flex-wrap justify-between items-center">
-        <h2 className="text-xl font-bold">Users</h2>
+        <h2 className="text-xl font-bold capitalize">Users</h2>
         <Button
-          label="Create User"
+          label="Create"
           onClick={() => handleCreate()}
           variant="primary"
+          icon={<Plus size={16} />}
           className="md:mt-0 mt-4"
         />
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="card-continear">
         {users.map((user) => (
-          <div key={user.id} className="bg-white shadow-md p-4 rounded-md">
-            <h3 className="text-lg font-bold">{user.username}</h3>
-            <p className="text-sm text-gray-600">{user.email}</p>
-            <p className="text-sm text-gray-600">{user.role}</p>
-            <div className="flex space-x-2 text-sm mt-4">
+          <div key={user.id} className="cards">
+            <h3 className="card-header">{user.username}</h3>
+            <p className="card-body">{user.email}</p>
+            <p className="card-body">{user.role}</p>
+            <div className="btn-card">
               <ActionButtons
                 onView={() => handleView(user.id)}
                 onEdit={() => handleUpdate(user.id)}

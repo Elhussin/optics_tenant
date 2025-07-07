@@ -34,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased body-background`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased body`}
       >
                
                <UserProvider>

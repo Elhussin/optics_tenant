@@ -18,7 +18,7 @@ export default function Navbar() {
   // if (loading) return <div>Loading...</div>; // أو spinner لو تحب
 
   return (
-    <nav className="bg-white shadow px-4 py-3 flex justify-between items-center">
+    <nav className="nav">
       <div>
         <Link href="/" className="font-bold text-lg">O S M</Link>
       </div>
