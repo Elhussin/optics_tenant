@@ -1886,24 +1886,19 @@ const Role3d7Enum = z.enum([
 const User = z
   .object({
     id: z.number().int(),
-    username: z
-      .string()
-      .max(150)
-      .regex(/^[\w.@+-]+$/),
-    email: z.string().max(254).email(),
+    username: z.string().min(5).max(50),
+    email: z.string().email(),
     first_name: z.string().max(150).optional(),
     last_name: z.string().max(150).optional(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    is_superuser: z.boolean().optional(),
     role: Role3d7Enum.optional(),
-    password: z.string().max(128),
   })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
   .object({
-    username: z.string().min(1),
+    username: z.string().min(5).max(50),
     email: z.string().min(1).email(),
     first_name: z.string().max(150).optional(),
     last_name: z.string().max(150).optional(),
@@ -1922,36 +1917,32 @@ const RefreshTokenResponse = z
   .passthrough();
 const UserRequest = z
   .object({
-    username: z
-      .string()
-      .min(1)
-      .max(150)
-      .regex(/^[\w.@+-]+$/),
-    email: z.string().min(1).max(254).email(),
+    username: z.string().min(5).max(50),
+    email: z.string().min(1).email(),
     first_name: z.string().max(150).optional(),
     last_name: z.string().max(150).optional(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    is_superuser: z.boolean().optional(),
     role: Role3d7Enum.optional(),
-    password: z.string().min(1).max(128),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
   })
   .passthrough();
 const PatchedUserRequest = z
   .object({
-    username: z
-      .string()
-      .min(1)
-      .max(150)
-      .regex(/^[\w.@+-]+$/),
-    email: z.string().min(1).max(254).email(),
+    username: z.string().min(5).max(50),
+    email: z.string().min(1).email(),
     first_name: z.string().max(150),
     last_name: z.string().max(150),
     is_active: z.boolean(),
     is_staff: z.boolean(),
-    is_superuser: z.boolean(),
     role: Role3d7Enum,
-    password: z.string().min(1).max(128),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
   })
   .partial()
   .passthrough();
@@ -4960,6 +4951,28 @@ export const endpoints = makeApi([
     path: "/api/users/users/",
     alias: "users_users_list",
     requestFormat: "json",
+    parameters: [
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "username",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
     response: z.array(User),
   },
   {
@@ -5043,9 +5056,3 @@ export const endpoints = makeApi([
     response: z.void(),
   },
 ]);
-
-// export const api = new Zodios(endpoints);
-
-// export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-//   return new Zodios(baseUrl, endpoints, options);
-// }

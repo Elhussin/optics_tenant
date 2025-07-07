@@ -97,6 +97,71 @@ export function useFormRequest(
       setIsLoading(false);
     }
   };
+
+  
+  // const submitForm = async (data: any = undefined) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const endpoint = api.api.find((e) => e.alias === alias);
+  //     if (!endpoint) {
+  //       throw new Error(`Endpoint with alias "${alias}" not found.`);
+  //     }
+  
+  //     const payload = transform ? transform(data) : data;
+  
+  //     // ✅ كشف نوع الطلب
+  //     const method = endpoint.method.toLowerCase();
+  
+  //     // ✅ إذا كانت GET → نمرر البيانات كـ params وليس body
+  //     const response =
+  //       method === "get"
+  //         ? await api.instance.request({
+  //             method,
+  //             url: endpoint.path,
+  //             params: payload, // ✅ params here
+  //           })
+  //         : await api.customRequest(alias, payload); // POST/PUT/DELETE
+  
+  //     onSuccess?.(response.data ?? response);
+  //     return { success: true, data: response.data ?? response };
+  //   } catch (error: any) {
+  //     // .. error handling كما هو تمامًا
+  //     console.error("API Error:", error);
+  //     const serverErrors = error?.response?.data;
+  //     if (serverErrors && typeof serverErrors === "object") {
+  //       for (const [field, messages] of Object.entries(serverErrors)) {
+  //         if (Array.isArray(messages)) {
+  //           methods.setError(field as string, {
+  //             type: "server",
+  //             message: messages.join(" "),
+  //           });
+  //         }
+  //       }
+  
+  //       const nonFieldError =
+  //         (Array.isArray(serverErrors?.non_field_errors) && serverErrors.non_field_errors.join(" ")) ||
+  //         serverErrors?.detail ||
+  //         handleErrorStatus(error);
+  
+  //       if (nonFieldError) {
+  //         methods.setError("root", {
+  //           type: "server",
+  //           message: nonFieldError,
+  //         });
+  //       }
+  //     } else {
+  //       methods.setError("root", {
+  //         type: "server",
+  //         message: handleErrorStatus(error),
+  //       });
+  //     }
+  
+  //     onError?.(error);
+  //     return { success: false, error };
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   
   return {
     ...methods,

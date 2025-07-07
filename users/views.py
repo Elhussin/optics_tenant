@@ -20,7 +20,8 @@ from django.conf import settings
 from core.permissions.permissions import ROLE_PERMISSIONS
 from core.permissions.decorators import role_required
 from django.utils.decorators import method_decorator
-
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import UserFilter
 User = get_user_model()
 
 class LoginView(APIView):
@@ -180,15 +181,14 @@ class ProfileView(APIView):
             return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
         
 
-
-
-
-
-
-
 class UserViewSet(viewsets.ModelViewSet):
+
+
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserFilter
     permission_classes = [IsAuthenticated] 
 
     def get_queryset(self):
