@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchField } from '@/types/search';
 import { useState } from 'react';
+import Button from '@/components/ui/Button';
 
 interface Props {
   fields: SearchField[];
@@ -28,17 +29,17 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <form className="grid grid-cols-1 gap-4 mb-6">
       {fields.map((field) => (
-        <div key={field.name}>
-          <label className="block text-sm font-medium mb-1">{field.label}</label>
+        <div key={field.name} className="flex items-center">
+          <label className="block text-sm font-medium mr-2 capitalize w-24">{field.label}</label>
           {field.type === 'select' && field.options ? (
             <select
               className="w-full border p-2 rounded"
               onChange={(e) => handleChange(field.name, e.target.value)}
               defaultValue={''}
             >
-              <option value="">الكل</option>
+              <option value="">ALL</option>
               {field.options.map((opt) => (
                 <option key={opt.value} value={opt.value}>
                   {opt.label}
@@ -48,15 +49,18 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
           ) : (
             <input
               type="text"
-              className="w-full border p-2 rounded"
+              className="w-full  border p-2 rounded"
               onChange={(e) => handleChange(field.name, e.target.value)}
             />
           )}
         </div>
       ))}
-      <button type="submit" className="col-span-full bg-blue-600 text-white py-2 rounded">
-        بحث
-      </button>
+      <Button
+        label="Search"
+        type="submit"
+        className="col-span-full bg-blue-600 text-white py-2 rounded"
+        onClick={handleSubmit}
+      />
     </form>
   );
 };

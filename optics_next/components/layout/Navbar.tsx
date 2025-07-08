@@ -5,7 +5,7 @@ import Link from 'next/link';
 // import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
 import { useUser } from  '@/lib/hooks/useCurrentUser'
 
-import LogoutButton from '../logout';
+import LogoutButton from '../ui/logout';
 import ThemeToggle from '../ThemeToggle';
 
 export default function Navbar() {

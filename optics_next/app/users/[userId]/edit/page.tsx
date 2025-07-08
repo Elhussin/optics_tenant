@@ -3,38 +3,51 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import CreateUserForm from '@/components/forms/CreateUserForm';
 import { api } from "@/lib/api/axios";
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
+import { useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
-type Props = {
-  params: {
-    userId: string;
-  };
-};
+export default function UserDetail() {
+  const params = useParams();
+  const userId = params.userId; // or params['userId']
 
-export default async function EditUserPage({ params }: Props) {
-  const { userId } = await params;
   const [defaultValues, setDefaultValues] = useState<any>(null);
+  const router = useRouter();
 
+    const fetchUser = useFormRequest({
+        alias: "users_users_retrieve",
+        onSuccess: (res) => {
+            console.log('User loaded:', res);
+            setDefaultValues(res);
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const data = await api.get("users_users_retrieve", { id: userId });
-        setDefaultValues(data);
-      } catch (err) {
-        // تم التعامل مع الخطأ تلقائيًا في handleApiError
-      }
-    }
-  
-    fetchUser();
-  }, [userId]);
-  
+        },
+        onError: (err) => {
+            console.error('Error loading user:', err);
+        }
+    });
+
+    useEffect(() => {
+        if (userId) {
+            fetchUser.submitForm({ id: userId });
+        }
+    }, [userId]); // ✅ استدعاء مرة واحدة فقط عند تغير userId
+
   
   if (!defaultValues) return <p>Loading...</p>;
 
   return (
     <div>
       <h1>Edit User</h1>
-      <CreateUserForm onSuccess={() => toast.success("User updated successfully")} onCancel={() => router.back()} mode="edit" id={defaultValues.id} apiOptions={{ endpoint: "users_users_update", onSuccess: (res) => toast.success("User updated successfully"), defaultValues: defaultValues }} />
+      <CreateUserForm 
+      onSuccess={() => toast.success("User updated successfully")} 
+      onCancel={() => router.back()} 
+      className = ""
+      submitText = "Update"
+      // showCancelButton = true1
+      alias="users_users_update"
+      mode="edit"
+      defaultValues={defaultValues} 
+      />
     </div>
   );
 }

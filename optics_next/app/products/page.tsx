@@ -1,6 +1,6 @@
 // app/products/page.tsx
 
-import { ProductFilters } from '@/components/Filters/ProductFilters';
+import { ProductFilters } from '@/archive/Filters/ProductFilters';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 
 export default async function ProductsPage() {

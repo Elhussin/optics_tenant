@@ -2,22 +2,32 @@
 
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { useRouter } from 'next/navigation';
-
+import { useEffect, useState } from 'react';
+import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
+import { toast } from 'sonner';
+import ActionButtons from '@/components/ui/ActionButtons';
 export default function UserDetail({ params }: { params: { userId: string } }) {
     const { userId } = params;
     const router = useRouter();
-    const fetchUser = useFormRequest({ 
-        alias: "users_users_retrieve", 
-        onSuccess: (res) => { 
-            console.log('User loaded:', res); 
-        }, 
-        onError: (err) => { 
+    const [user, setUser] = useState<any | null>(null);
+    const { handleView, handleEdit } = useCrudHandlers('/users');
+    const fetchUser = useFormRequest({
+        alias: "users_users_retrieve",
+        onSuccess: (res) => {
+            console.log('User loaded:', res);
+            setUser(res);
+
+        },
+        onError: (err) => {
             console.error('Error loading user:', err);
         }
     });
 
-    // Fetch user data when component mounts
-    fetchUser.submitForm({ id: userId });
+    useEffect(() => {
+        if (userId) {
+            fetchUser.submitForm({ id: userId });
+        }
+    }, [userId]); // ✅ استدعاء مرة واحدة فقط عند تغير userId
 
     return (
         <div className="max-w-4xl mx-auto p-6">
@@ -33,27 +43,34 @@ export default function UserDetail({ params }: { params: { userId: string } }) {
 
             {fetchUser.isLoading ? (
                 <div className="text-center py-8">Loading user details...</div>
-            ) : fetchUser.data ? (
+            ) : user ? (
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="space-y-4">
                         <div>
                             <h3 className="text-lg font-semibold">Basic Information</h3>
                             <div className="mt-2">
-                                <p className="text-gray-600">Username: {fetchUser.data.username}</p>
-                                <p className="text-gray-600">Full Name: {fetchUser.data.first_name} {fetchUser.data.last_name}</p>
-                                <p className="text-gray-600">Email: {fetchUser.data.email}</p>
+                                <p className="text-gray-600">Username: {user.username}</p>
+                                <p className="text-gray-600">Full Name: {user.first_name} {user.last_name}</p>
+                                <p className="text-gray-600">Email: {user.email}</p>
                             </div>
                         </div>
                         <div>
                             <h3 className="text-lg font-semibold">Role & Permissions</h3>
                             <div className="mt-2">
-                                <p className="text-gray-600">Role: {fetchUser.data.role}</p>
-                                <p className="text-gray-600">Status: {fetchUser.data.is_active ? 'Active' : 'Inactive'}</p>
-                                {fetchUser.data.is_staff && <p className="text-gray-600">Staff Member</p>}
-                                {fetchUser.data.is_superuser && <p className="text-gray-600">Superuser</p>}
+                                <p className="text-gray-600">Role: {user.role}</p>
+                                <p className="text-gray-600">Status: {user.is_active ? 'Active' : 'Inactive'}</p>
+                                {user.is_staff && <p className="text-gray-600">Staff Member</p>}
+                                {user.is_superuser && <p className="text-gray-600">Superuser</p>}
                             </div>
                         </div>
                     </div>
+                                {/* <div className="btn-card">
+                                  <ActionButtons
+                                    onView={() => handleView(user.id)}
+                                    onEdit={() => handleUpdate(user.id)}
+                                    onDelete={() => handleDelete(user.id)}
+                                  />
+                                </div> */}
                 </div>
             ) : (
                 <div className="text-center py-8 text-red-500">

@@ -56,6 +56,7 @@ export interface FormProps {
   showCancelButton?: boolean;
   alias?: string;
   mode?: 'create' | 'edit';
+  defaultValues?: any;
 }
 
 

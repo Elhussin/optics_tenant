@@ -1,6 +1,6 @@
 // app/page.tsx
 
-import { SearchForm } from '@/components/Search/SearchForm';
+import { SearchForm } from '@/archive/SearchForm';
 import { SearchField } from '@/types/search';
 
 const searchFields: SearchField[] = [

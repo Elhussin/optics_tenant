@@ -11,16 +11,21 @@ import { toast } from 'sonner';
 import ActionButtons from '@/components/ui/ActionButtons';
 import Button from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
+import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
+
+
 
 export default function UsersListClient() {
+  const { handleView, handleEdit, handleCreate } = useCrudHandlers('/users');
+
   const fields = generateSearchFieldsFromEndpoint('users_users_list');
   const users = useFilteredListRequest('users_users_list');
 
 
-  const router = useRouter();
 
     const deleteUser = useFormRequest({ alias: "users_users_destroy", onSuccess: (res) => { toast.success("User deleted successfully"); users.submitForm(); }, onError: (err) => { console.log(err); } });
-    const handleDelete = (id: string|number) => {
+    
+   const handleDelete = (id: string|number) => {
       deleteUser.submitForm({ id });
       users
     };
@@ -29,23 +34,14 @@ export default function UsersListClient() {
       users
     }, []);
   
-  
-    // 🔹 تحديث مستخدم
-    const handleUpdate = (id: string) => {
-      router.push(`/users/${id}/edit`);
-    };
-
-    const handleCreate = () => {
-      router.push('/users/create');
-    };
-    const handleView = (id: string) => {
-      router.push(`/users/${id}/view`);
-    };
-
 
     return (
-    <div className="space-y-4 md:p-4">
-       <SearchFilterForm fields={fields} />
+
+  <div className="flex flex-col md:flex-row gap-4 w-full">
+    <aside className="md:w-1/4 w-full">
+      <SearchFilterForm fields={fields} />
+    </aside>
+    <main className="md:w-3/4 space-y-4 md:p-4 w-full">
       <div className="flex flex-wrap justify-between items-center">
         <h2 className="text-xl font-bold capitalize">Users</h2>
         <Button
@@ -66,13 +62,18 @@ export default function UsersListClient() {
             <div className="btn-card">
               <ActionButtons
                 onView={() => handleView(user.id)}
-                onEdit={() => handleUpdate(user.id)}
+                onEdit={() => handleEdit(user.id)}
                 onDelete={() => handleDelete(user.id)}
+
               />
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </main>
+  </div>
+
   );
 }
+
+

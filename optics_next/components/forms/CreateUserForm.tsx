@@ -13,6 +13,8 @@ export default function CreateUserForm({
   showCancelButton = true,
   alias="users_users_create",
   mode="create",
+  defaultValues
+
 }: FormProps) {
   const router = useRouter();
   const form = useFormRequest({
@@ -24,6 +26,7 @@ export default function CreateUserForm({
         toast.error("User creation failed");
         console.log("error", err);
       },
+      defaultValues
     });
     
 
@@ -63,7 +66,7 @@ export default function CreateUserForm({
     </label>
     <textarea 
       id="username" 
-      {...form.register("username")} 
+      {...form.register("username", { required: true })} 
       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
       rows={3}
       placeholder="Username..."
