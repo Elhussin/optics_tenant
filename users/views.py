@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework import status,serializers
 from .serializers import RegisterSerializer, LoginSerializer,UserSerializer
 from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.timezone import now
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -90,7 +89,7 @@ class RegisterView(APIView):
 
 
 class RefreshTokenView(APIView):
-
+    permission_classes = [AllowAny]
     @extend_schema(
         responses={
             200: inline_serializer(
@@ -106,12 +105,10 @@ class RefreshTokenView(APIView):
             )
         }
     )
+    
     def post(self, request):
-        # print("Cookies:", request.COOKIES)
-        # print("Headers:", request.headers)
-        # print("Secure:", request.is_secure())
-        # print("User agent:", request.META.get("HTTP_USER_AGENT"))
         refresh_token = request.COOKIES.get("refresh_token")
+ 
         if not refresh_token:
             return Response({"error": "No refresh token found"}, status=status.HTTP_401_UNAUTHORIZED)
 
@@ -122,10 +119,13 @@ class RefreshTokenView(APIView):
             access["tenant"] = refresh["tenant"]
             access["permissions"] = refresh["permissions"]
             response = Response({"msg": "Token refreshed", "access": str(access)})
-            set_token_cookies(response, access=str(access))  # فقط access
+            set_token_cookies(response, access=str(access)) 
             return response
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+        # except TokenError as e:
+        #     print(e)
+        #     return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutView(APIView):
     @extend_schema(

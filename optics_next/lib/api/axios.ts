@@ -57,6 +57,7 @@ axiosInstance.interceptors.response.use(
         await refreshTokenPromise;
       } else {
         refreshTokenPromise = axiosInstance.post("/api/users/token/refresh/");
+        console.log("Refreshing token...",refreshTokenPromise);
         await refreshTokenPromise;
         refreshTokenPromise = null;
       }
@@ -64,6 +65,7 @@ axiosInstance.interceptors.response.use(
       return axiosInstance(originalRequest);
     } catch (refreshError) {
       refreshTokenPromise = null;
+      console.log("Refresh error:", refreshError);
       window.location.href = '/auth/login';
       return Promise.reject(refreshError);
     }

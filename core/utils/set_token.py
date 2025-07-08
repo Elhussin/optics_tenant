@@ -8,7 +8,8 @@ def set_token_cookies(response, access: str = None, refresh: str = None):
     "secure": secure_flag,  # يجب أن تكون False في التطوير
     "samesite": 'Lax' if settings.DEBUG else 'None',  # Lax في localhost
     "path": "/",
-    "domain": None if settings.DEBUG else f".{settings.TENANT_BASE_DOMAIN}",
+    # "domain": None if settings.DEBUG else f".{settings.TENANT_BASE_DOMAIN}", # for local only
+    "domain":None
   
     }
 

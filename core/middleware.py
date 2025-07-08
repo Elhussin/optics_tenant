@@ -24,7 +24,6 @@ class CookieJWTAuthentication(JWTAuthentication):
     def authenticate(self, request):
         raw_token = request.COOKIES.get("access_token")
 
-        # Fallback: استخدم الهيدر لو لم يكن هناك كوكي
         if not raw_token:
             header = self.get_header(request)
             if header is None:

@@ -4,8 +4,7 @@
 import { useFilteredListRequest } from '@/lib/hooks/useFilteredListRequest';
 import { SearchFilterForm } from '@/components/Search/SearchFilterForm';
 import { generateSearchFieldsFromEndpoint } from '@/lib/utils/generateSearchFieldsFromEndpoint';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 import ActionButtons from '@/components/ui/ActionButtons';
@@ -17,13 +16,12 @@ import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
 
 export default function UsersListClient() {
   const { handleView, handleEdit, handleCreate } = useCrudHandlers('/users');
-
   const fields = generateSearchFieldsFromEndpoint('users_users_list');
   const users = useFilteredListRequest('users_users_list');
 
 
 
-    const deleteUser = useFormRequest({ alias: "users_users_destroy", onSuccess: (res) => { toast.success("User deleted successfully"); users.submitForm(); }, onError: (err) => { console.log(err); } });
+  const deleteUser = useFormRequest({ alias: "users_users_destroy", onSuccess: (res) => { toast.success("User deleted successfully"); users.submitForm(); }, onError: (err) => { console.log(err); } });
     
    const handleDelete = (id: string|number) => {
       deleteUser.submitForm({ id });

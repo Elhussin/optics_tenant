@@ -22,14 +22,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
     router.push('/auth/login');
   };
-  const refreshToken=useFormRequest({ alias: "users_token_refresh_create", onSuccess: (res) => {console.log("refreshToken",res);}, onError: (err) => { console.log(err); setLoading(false); } });
   const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); setLoading(false); }, onError: (err) => { console.log(err); setLoading(false); } });
 
 
 
   useEffect(() => {
     setLoading(true);
-    refreshToken.submitForm();
     fetchUser.submitForm();
   }, []);
 

@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import CreateUserForm from '@/components/forms/CreateUserForm';
+import CreateUserForm from '@/components/forms/UserForm';
 import { api } from "@/lib/api/axios";
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useRouter } from 'next/navigation';
@@ -39,12 +39,12 @@ export default function UserDetail() {
     <div>
       <h1>Edit User</h1>
       <CreateUserForm 
-      onSuccess={() => toast.success("User updated successfully")} 
+      onSuccess={() => toast.success("User updated successfully",)} 
       onCancel={() => router.back()} 
       className = ""
       submitText = "Update"
       // showCancelButton = true1
-      alias="users_users_update"
+      alias="users_users_partial_update"
       mode="edit"
       defaultValues={defaultValues} 
       />
