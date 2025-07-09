@@ -1,50 +1,45 @@
-// components/forms/LoginRequestForm.tsx
+// app/auth/login/LoginRequestForm.tsx
 'use client';
 
-import React from "react";
-import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { SubmitHandler } from "react-hook-form";
-import { toast } from "sonner";
-import {FormProps} from '@/types'
-import { useUser } from "@/lib/hooks/useCurrentUser";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/lib/hooks/useCurrentUser";
+import { useFormRequest } from "@/lib/hooks/useFormRequest";
+import { toast } from "sonner";
 
 export default function LoginRequestForm({
   onSuccess,
   submitText = "Login",
   className = "",
+}: {
+  onSuccess?: () => void;
+  submitText?: string;
+  className?: string;
+}) {
+  const { refreshUser } = useUser();
+  const router = useRouter();
 
-}: FormProps) {
-const { setUser } = useUser();
-const router = useRouter();
   const form = useFormRequest({
     alias: "users_login_create",
-    onSuccess: (res) => {
+    onSuccess: async () => {
       toast.success("Login successful");
-      setUser(res);
+      await refreshUser.submitForm(); // جلب بيانات المستخدم بعد تسجيل الدخول
+      onSuccess?.(); // تشغيل كولباك إضافي إن وُجد
       router.push("/profile");
     },
     onError: (err) => {
       toast.error("Login failed");
-      console.log("error", err);
+      console.error("Login error:", err);
     },
   });
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     const result = await form.submitForm(data);
-    if (!result || !result.success) {
-      // فشل، إما الاستثناء أو فشل التحقق
-      console.log("error", result?.error);
-      return;
-    }
-    if (result.success) {
-      form.reset();
+    if (!result?.success) {
+      console.error("Validation error:", result?.error);
     }
   };
-
-
   
-
   return (
     <div className={className}>
 

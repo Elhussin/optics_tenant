@@ -1,34 +1,58 @@
+// lib/hooks/useCurrentUser.tsx
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
-import api from '@/lib/api/axios';
 import { UserContextType } from '@/types';
-import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useFormRequest } from './useFormRequest';
+import { toast } from 'sonner';
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
+
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserType | null>(null);
+  const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const fetchUser = useFormRequest({
+    alias: "users_profile_retrieve",
+    onSuccess: (res) => {
+      setUser(res);
+      setLoading(false);
+    },
+    onError: (err) => {
+      console.log("Fetch user error:", err);
+      setUser(null);
+      setLoading(false);
+    },
+  });
+
+  const logoutRequest = useFormRequest({
+    alias: "users_logout_create", // تأكد من أن هذا معرف في zodios أو axios config
+    onSuccess: () => {
+      setUser(null);
+      router.replace('/auth/login');
+      toast.success("Logged out successfully");
+      // setLoading(false);
+    },
+    onError: (err) => {
+      console.error("Logout error:", err);
+      setUser(null);
+      router.replace('/auth/login');
+      // setLoading(false);
+    },
+  });
+
   const logout = async () => {
-    try {
-      await api.post("/api/users/logout/", {});
-    } catch (error) {
-      console.log(error);
-    }
-    setUser(null);
-    router.push('/auth/login');
+    await logoutRequest.submitForm();
   };
-  const fetchUser = useFormRequest({ alias: "users_profile_retrieve", onSuccess: (res) => { setUser(res); setLoading(false); }, onError: (err) => { console.log(err); setLoading(false); } });
-
-
 
   useEffect(() => {
-    setLoading(true);
-    fetchUser.submitForm();
+    if (!user) {
+      setLoading(false);
+      fetchUser.submitForm();
+    }
   }, []);
 
   return (

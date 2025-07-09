@@ -10,7 +10,21 @@ export default function UserDetail({ params }: { params: { userId: string } }) {
     const { userId } = params;
     const router = useRouter();
     const [user, setUser] = useState<any | null>(null);
-    const { handleView, handleEdit } = useCrudHandlers('/users');
+    const {
+        handleView,
+        handleEdit,
+        handleCreate,
+        handleDelete,
+        handleRestore,
+        handleHardDelete,
+      } = useCrudHandlers('/users', {
+        softDeleteAlias: 'users_users_partial_update',
+        restoreAlias: 'users_users_partial_update',
+        hardDeleteAlias: 'users_users_destroy', // DELETE /api/users/{id}/
+        onSuccessRefresh: users.refetch,
+      });
+
+      
     const fetchUser = useFormRequest({
         alias: "users_users_retrieve",
         onSuccess: (res) => {

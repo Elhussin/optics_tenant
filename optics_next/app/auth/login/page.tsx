@@ -1,20 +1,31 @@
-// app/login/page.tsx
+
+// app/auth/login/page.tsx
 'use client';
 
-import LoginRequestForm from "@/components/forms/LoginForm";
-import { useRouter } from "next/navigation";
+import { useEffect } from 'react';
+import { useUser } from '@/lib/hooks/useCurrentUser';
+import { useRouter } from 'next/navigation';
+import LoginRequestForm from '@/components/forms/LoginForm';
 
 export default function LoginPage() {
+  const { user, loading } = useUser();
   const router = useRouter();
 
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/profile'); // إعادة توجيه المستخدم إذا كان مسجل دخول
+    }
+  }, [user, loading]);
+
+  if (loading || user) {
+    return <div className="p-4 text-center">Loading...</div>;
+  }
+
   return (
-    <div className="max-w-md mx-auto mt-20 p-6 bg-white shadow-md rounded-md">
-      <h1 className="text-xl font-semibold text-center mb-6">Login</h1>
-      <LoginRequestForm
-        onSuccess={() => router.push("/profile")}
-        submitText="Login"
-        className="max-w-md mx-auto mt-20 p-6 bg-blue-200 shadow-md rounded-md"
-             />
+    <div className="max-w-md mx-auto mt-10">
+      <h1 className="text-2xl font-bold mb-6">Login</h1>
+      <LoginRequestForm />
     </div>
   );
 }
+

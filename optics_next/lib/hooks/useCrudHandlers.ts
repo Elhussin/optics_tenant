@@ -2,41 +2,100 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { useFormRequest } from './useFormRequest';
 
-export function useCrudHandlers(basePath: string) {
+type CrudOptions = {
+  softDeleteAlias?: string;
+  restoreAlias?: string;
+  hardDeleteAlias?: string;
+  onSuccessRefresh?: () => void;
+};
+
+export function useCrudHandlers(basePath: string, options?: CrudOptions) {
   const router = useRouter();
+  const {
+    softDeleteAlias,
+    restoreAlias,
+    hardDeleteAlias,
+    onSuccessRefresh,
+  } = options || {};
 
-  const handleView = (id: string) => {
-    router.push(`${basePath}/${id}/view`);
+  // 👉 التوجيهات
+  const handleView = (id: string | number) => router.push(`${basePath}/${id}/view`);
+  const handleEdit = (id: string | number) => router.push(`${basePath}/${id}/edit`);
+  const handleCreate = () => router.push(`${basePath}/create`);
+
+  // 👉 الحذف الجزئي (soft)
+  const softDeleteRequest = useFormRequest({
+    alias: softDeleteAlias ?? '',
+    onSuccess: () => {
+      toast.success('Item soft-deleted');
+      onSuccessRefresh?.();
+    },
+    onError: (err) => {
+      console.error('Soft delete error:', err);
+      toast.error('Failed to soft-delete item');
+    },
+  });
+
+  // 👉 الاستعادة
+  const restoreRequest = useFormRequest({
+    alias: restoreAlias ?? '',
+    onSuccess: () => {
+      toast.success('Item restored');
+      onSuccessRefresh?.();
+    },
+    onError: (err) => {
+      console.error('Restore error:', err);
+      toast.error('Failed to restore item');
+    },
+  });
+
+  // 👉 الحذف النهائي (hard)
+  const hardDeleteRequest = useFormRequest({
+    alias: hardDeleteAlias ?? '',
+    onSuccess: () => {
+      toast.success('Item permanently deleted');
+      onSuccessRefresh?.();
+    },
+    onError: (err) => {
+      console.error('Hard delete error:', err);
+      toast.error('Failed to permanently delete item');
+    },
+  });
+
+  // 👉 عمليات CRUD
+  const handleDelete = (id: string | number) => {
+    if (!softDeleteAlias) {
+      console.warn('Soft delete alias not defined');
+      return;
+    }
+    softDeleteRequest.submitForm({ id, is_deleted: true });
   };
 
-  const handleEdit = (id: string) => {
-    router.push(`${basePath}/${id}/edit`);
+  const handleRestore = (id: string | number) => {
+    if (!restoreAlias) {
+      console.warn('Restore alias not defined');
+      return;
+    }
+    restoreRequest.submitForm({ id, is_deleted: false });
   };
 
-  const handleCreate = () => {
-    router.push(`${basePath}/create`);
+  const handleHardDelete = (id: string | number) => {
+    if (!hardDeleteAlias) {
+      console.warn('Hard delete alias not defined');
+      return;
+    }
+    hardDeleteRequest.submitForm({ id });
   };
-
-//   const handleDelete = (
-//     id: string | number,
-//     submitDelete: (payload: any) => void,
-//     refetchFn?: () => void
-//   ) => {
-//     if (confirm('Are you sure you want to delete this item?')) {
-//       submitDelete({ id });
-//       if (refetchFn) {
-//         // NOTE: You may want to wait until `onSuccess` triggers instead of here
-//         // This depends on useFormRequest internal behavior
-//         // So better to call refetchFn inside onSuccess callback
-//       }
-//     }
-//   };
 
   return {
     handleView,
     handleEdit,
     handleCreate,
-
+    handleDelete,      // Soft delete
+    handleRestore,     // Restore
+    handleHardDelete,  // Final delete
   };
 }

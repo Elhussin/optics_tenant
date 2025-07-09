@@ -33,18 +33,25 @@ export interface formRequestProps  {
   mode?: 'create' 
   id?: string | number;
   alias?: string;
+  submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
 }
 
+// export type FormRequest<T = any> = {
+//   submitForm: (data?: any) => Promise<{ success: boolean; error?: any }>;
+//   handleSubmit: any;
+//   register: any;
+//   errors: any;
+//   isSubmitting: boolean;
+// };
+  
 
-// UserContextType
-export interface UserContextType {
+export type UserContextType = {
   user: any | null;
-  setUser: (user: any) => void;
+  setUser: (user: any | null) => void;
   loading: boolean;
-  refreshUser: () => Promise<void>;
-  logout: () => void; 
-} 
-
+  refreshUser: formRequestProps;  // ✅ هذا مهم جداً
+  logout: () => Promise<void>;
+};
 
 
 

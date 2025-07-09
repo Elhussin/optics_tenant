@@ -1,10 +1,15 @@
 import Button from "@/components/ui/Button";
 import { Eye, Pencil, Trash2 } from "lucide-react"; // أيقونات جميلة
 
-export default function ActionButtons({ onView, onEdit, onDelete }: {
+export default function ActionButtons({ onView, onEdit, onSoftDelete, onRestore, onHardDelete, showRestoreButton, showHardDeleteButton }: {
   onView?: () => void;
   onEdit?: () => void;
-  onDelete?: () => void;
+  onSoftDelete?: () => void;
+  onRestore?: () => void;
+  onHardDelete?: () => void;
+  showRestoreButton?: boolean;
+  showHardDeleteButton?: boolean;
+  
 }) {
   return (
     <div className="flex gap-2">
@@ -22,10 +27,26 @@ export default function ActionButtons({ onView, onEdit, onDelete }: {
       />
       <Button
         label="Delete"
-        onClick={onDelete || (() => {})}
+        onClick={onSoftDelete || (() => {})}
         icon={<Trash2 size={16} />}
         variant="danger"
       />
+      {showRestoreButton && (
+        <Button
+          label="Restore"
+          onClick={onRestore || (() => {})}
+          icon={<Trash2 size={16} />}
+          variant="danger"
+        />
+      )}
+      {showHardDeleteButton && (
+        <Button
+          label="Hard Delete"
+          onClick={onHardDelete || (() => {})}
+          icon={<Trash2 size={16} />}
+          variant="danger"
+        />
+      )}
     </div>
   );
 }

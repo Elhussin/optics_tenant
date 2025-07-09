@@ -43,7 +43,6 @@ export default function UserDetail() {
       onCancel={() => router.back()} 
       className = ""
       submitText = "Update"
-      // showCancelButton = true1
       alias="users_users_partial_update"
       mode="edit"
       defaultValues={defaultValues} 

@@ -15,33 +15,40 @@ import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
 
 
 export default function UsersListClient() {
-  const { handleView, handleEdit, handleCreate } = useCrudHandlers('/users');
   const fields = generateSearchFieldsFromEndpoint('users_users_list');
   const users = useFilteredListRequest('users_users_list');
 
+  const {
+    handleView,
+    handleEdit,
+    handleCreate,
+    handleDelete,
+    handleRestore,
+    handleHardDelete,
+  } = useCrudHandlers('/users', {
+    softDeleteAlias: 'users_users_partial_update',
+    restoreAlias: 'users_users_partial_update',
+    hardDeleteAlias: 'users_users_destroy', // DELETE /api/users/{id}/
+    onSuccessRefresh: users.refetch,
+  });
 
 
-  const deleteUser = useFormRequest({ alias: "users_users_destroy", onSuccess: (res) => { toast.success("User deleted successfully"); users.submitForm(); }, onError: (err) => { console.log(err); } });
-    
-   const handleDelete = (id: string|number) => {
-      deleteUser.submitForm({ id });
-      users
-    };
+
+
 
     useEffect(() => {
-      users
+      users.refetch();
     }, []);
   
-
     return (
 
-  <div className="flex flex-col md:flex-row gap-4 w-full">
-    <aside className="md:w-1/4 w-full">
+  <div className="body-container">
+    <aside className="aside">
       <SearchFilterForm fields={fields} />
     </aside>
-    <main className="md:w-3/4 space-y-4 md:p-4 w-full">
-      <div className="flex flex-wrap justify-between items-center">
-        <h2 className="text-xl font-bold capitalize">Users</h2>
+    <main className="main">
+      <div className="main-header">
+        <h2 className="title-1">Users</h2>
         <Button
           label="Create"
           onClick={() => handleCreate()}
@@ -52,7 +59,7 @@ export default function UsersListClient() {
       </div>
 
       <div className="card-continear">
-        {users.data.map((user) => (
+        {users.data.map((user: any) => (
           <div key={user.id} className="cards">
             <h3 className="card-header">{user.username}</h3>
             <p className="card-body">{user.email}</p>
@@ -61,8 +68,12 @@ export default function UsersListClient() {
               <ActionButtons
                 onView={() => handleView(user.id)}
                 onEdit={() => handleEdit(user.id)}
-                onDelete={() => handleDelete(user.id)}
-
+                showDeleteButton={true}
+                // onSoftDelete={() => handleDelete(user.id)}
+                // onRestore={() => handleRestore(user.id)}
+                // onHardDelete={() => handleHardDelete(user.id)}
+                // showRestoreButton={user.is_deleted}
+                // showHardDeleteButton={!user.is_deleted}
               />
             </div>
           </div>
