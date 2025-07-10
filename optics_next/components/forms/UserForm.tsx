@@ -1,121 +1,78 @@
 // components/forms/UserRequestForm.tsx
 import React from 'react';
-import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
-import { FormProps } from '@/types';
-import { SubmitHandler } from "react-hook-form";
-import { useRouter } from 'next/navigation';
+import { formRequestProps } from '@/types';
 import { cn } from '@/lib/utils/utils';
-export default function CreateUserForm({
-  onSuccess,
-  onCancel,
-  className = "",
-  submitText = "Save",
-  showCancelButton = true,
-  alias="",
-  mode="create",
-  defaultValues
+import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
+import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 
-}: FormProps) {
-  const router = useRouter();
+export default function CreateUserForm(props: formRequestProps) {
+  const { handleCancel } = useCrudHandlers('/users');
+  const {alias, onSuccess, className, submitText, showCancelButton, defaultValues, mode} = props;
 
-const form = useFormRequest({
-      alias:alias,
-      onSuccess: (res) => {
-        onSuccess?.(res);
-      },
-      onError: (err) => {
-        toast.error("User creation failed");
-        console.log("error", err);
-      },
-      defaultValues
-    });
-    
-
-  const onSubmit: SubmitHandler<any> = async (data) => {
-    const result = await form.submitForm(data);
-    if (!result || !result.success) {
-      console.log("error", result?.error);
-      return;
-    }
-    if (result.success) {
-      form.reset(result.data); 
-    }
-    onSuccess?.(result);
-  };
-
-  const handleCancel = () => {
-    if (onCancel) onCancel();
-    form.reset();
-    router.push('/users');
-  };
+  const { form, onSubmit } = useCrudFormRequest({alias: alias!,defaultValues,
+    onSuccess: (res) => { onSuccess?.(res);  toast.success("User created successfully");}
+  });
 
   return (
     <div className={`${className}`}>
-      {form.formState.errors.root && (
-        <p className="text-red-500 text-sm mb-2">
-          {form.formState.errors.root.message}
-        </p>
-      )}
-      
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        
-          <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username *
-            </label>
-            <input
-              id="username"
-              {...form.register("username", { required: true })}
-              placeholder="Username..."
-              disabled={mode === 'edit'}
-              className={cn("input-text", mode === "edit" && "input-disabled")}
-            />
-            {form.formState.errors.username && (
-              <p className="text-red-500 text-sm mt-1">
-                {typeof form.formState.errors.username === 'string' 
-                  ? form.formState.errors.username 
-                  : form.formState.errors.username?.message}
-              </p>
-            )}
-          </div>
+
+        <div className="mb-4">
+          <label htmlFor="username" className="label">
+            Username *
+          </label>
+          <input
+            id="username"
+            {...form.register("username", { required: true })}
+            placeholder="Username..."
+            disabled={mode === 'edit'}
+            className={cn("input-text", mode === "edit" && "input-disabled")}
+          />
+          {form.formState.errors.username && (
+            <p className="error-text">
+              {form.formState.errors.username?.message as string}
+            </p>
+          )}
+        </div>
 
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className="label">
             Email *
           </label>
           <input
             id="email"
             type="email"
             {...form.register("email")}
-         
+
             className={cn("input-text", mode === "edit" && "input-disabled")}
             placeholder="Email..."
             disabled={mode === 'edit'}
           />
           {form.formState.errors.email && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.email?.message}</p>
+            <p className="error-text">{form.formState.errors.email?.message as string}</p>
           )}
         </div>
 
         <div className="mb-4">
-          <label htmlFor="first_name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="first_name" className="label">
             First name
           </label>
           <input
             id="first_name"
             {...form.register("first_name")}
-            className={cn("input-text", mode === "edit" && "input-disabled")}
+            className={cn("input-text")}
             placeholder="First name..."
           />
           {form.formState.errors.first_name && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.first_name?.message}</p>
+            <p className="error-text">{form.formState.errors.first_name?.message as string}</p>
           )}
         </div>
 
         <div className="mb-4">
-          <label htmlFor="last_name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="last_name" className="label">
             Last name
           </label>
           <input
@@ -125,7 +82,7 @@ const form = useFormRequest({
             placeholder="Last name..."
           />
           {form.formState.errors.last_name && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.last_name?.message}</p>
+            <p className="error-text">{form.formState.errors.last_name?.message as string}</p>
           )}
         </div>
 
@@ -135,9 +92,9 @@ const form = useFormRequest({
               id="is_active"
               type="checkbox"
               {...form.register("is_active")}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="input-checkbox"
             />
-            <label htmlFor="is_active" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="is_active" className="label">
               Is active
             </label>
           </div>
@@ -149,22 +106,22 @@ const form = useFormRequest({
               id="is_staff"
               type="checkbox"
               {...form.register("is_staff")}
-              className={cn("input-checkbox") }
+              className={cn("input-checkbox")}
             />
-            <label htmlFor="is_staff" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="is_staff" className="label">
               Is staff
             </label>
           </div>
         </div>
 
         <div className="mb-4">
-          <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="role" className="label">
             Role
           </label>
           <select
             id="role"
             {...form.register("role")}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="input-text"
           >
             <option value="">Select...</option>
             <option value="ADMIN">ADMIN</option>
@@ -177,25 +134,25 @@ const form = useFormRequest({
             <option value="CRM">CRM</option>
           </select>
           {form.formState.errors.role && (
-            <p className="text-red-500 text-sm mt-1">{form.formState.errors.role?.message}</p>
+            <p className="error-text">{form.formState.errors.role?.message as string}</p>
           )}
         </div>
 
         {/* Password فقط في وضع الإنشاء */}
         {mode === 'create' && (
           <div className="mb-4">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="label">
               Password *
             </label>
             <input
               id="password"
               type="password"
               {...form.register("password")}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="input-text"
               placeholder="Password..."
             />
             {form.formState.errors.password && (
-              <p className="text-red-500 text-sm mt-1">{form.formState.errors.password?.message}</p>
+              <p className="error-text">{form.formState.errors.password?.message as string}</p>
             )}
           </div>
         )}
@@ -204,9 +161,8 @@ const form = useFormRequest({
           <button
             type="submit"
             disabled={form.formState.isSubmitting}
-            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${
-              form.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
+            className={`btn btn-primary ${form.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
           >
             {form.formState.isSubmitting ? 'Saving...' : submitText}
           </button>
@@ -215,12 +171,18 @@ const form = useFormRequest({
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
+              className="btn btn-secondary"
             >
               Cancel
             </button>
           )}
         </div>
+        {form.formState.errors.root && (
+        <p className="error-text">
+          {form.formState.errors.root.message as string}
+        </p>
+      )}
+
       </form>
     </div>
   );

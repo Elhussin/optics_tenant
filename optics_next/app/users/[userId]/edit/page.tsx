@@ -2,11 +2,10 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import CreateUserForm from '@/components/forms/UserForm';
-import { api } from "@/lib/api/axios";
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
-
+import { Loading4 } from '@/components/ui/loding';
 export default function UserDetail() {
   const params = useParams();
   const userId = params.userId; // or params['userId']
@@ -30,22 +29,21 @@ export default function UserDetail() {
         if (userId) {
             fetchUser.submitForm({ id: userId });
         }
-    }, [userId]); // ✅ استدعاء مرة واحدة فقط عند تغير userId
+    }, [userId]); 
 
   
-  if (!defaultValues) return <p>Loading...</p>;
+  if (!defaultValues) return <Loading4 />;
 
   return (
     <div>
       <h1>Edit User</h1>
       <CreateUserForm 
       onSuccess={() => toast.success("User updated successfully",)} 
-      onCancel={() => router.back()} 
-      className = ""
-      submitText = "Update"
+      submitText = "Update User"
       alias="users_users_partial_update"
       mode="edit"
       defaultValues={defaultValues} 
+      showCancelButton={true}
       />
     </div>
   );

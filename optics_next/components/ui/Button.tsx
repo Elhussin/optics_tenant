@@ -3,16 +3,10 @@ import React from "react";
 import { cn } from "@/lib/utils/utils"; // دالة لدمج الكلاسات إن كنت تستخدمها
 import { ButtonProps } from "@/types";
 
-export default function Button({
-  label,
-  onClick,
-  variant = "primary",
-  icon,
-  className = "",
-  type = "button",
-}: ButtonProps) {
+export default function Button(props: ButtonProps) {
+const{  label,onClick,variant = "primary",icon,className = "",type = "button",title,}=props
 
-  const variantClasses = {
+const variantClasses = {
     primary: "btn btn-primary",
     secondary: "btn btn-secondary",
     danger: "btn btn-danger",
@@ -22,8 +16,9 @@ export default function Button({
     <button
       onClick={onClick}
       type={type}
+      title={title}
       className={cn(
-        "flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-semibold",
+        "btn",
         variantClasses[variant],
         className
       )}

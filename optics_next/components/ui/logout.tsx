@@ -9,7 +9,6 @@ export default function LogoutButton({logout}: {logout: () => void}) {
   const handleLogout = async () => {
     try {
       logout();
-      toast.success("Logged out successfully");
       router.push("/auth/login");
     } catch (error) {
       toast.error("Failed to log out");
@@ -23,6 +22,7 @@ export default function LogoutButton({logout}: {logout: () => void}) {
       label="Logout"
       onClick={handleLogout}
       variant="danger"
+      title="Logout"
     />
   </>
   );

@@ -37,4 +37,7 @@ ROLE_PERMISSIONS = {
         'view_customer',
         'follow_up',
     ],
+    Role.CUSTOMER: [
+        'view_customer',
+    ],
 }

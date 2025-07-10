@@ -1,86 +1,68 @@
 // app/auth/login/LoginRequestForm.tsx
 'use client';
-
-import { SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/hooks/useCurrentUser";
-import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { toast } from "sonner";
+import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
+import { formRequestProps } from "@/types";
 
-export default function LoginRequestForm({
-  onSuccess,
-  submitText = "Login",
-  className = "",
-}: {
-  onSuccess?: () => void;
-  submitText?: string;
-  className?: string;
-}) {
-  const { refreshUser } = useUser();
+export default function LoginRequestForm(props: formRequestProps) {
+  const { fetchUser } = useUser()
   const router = useRouter();
 
-  const form = useFormRequest({
-    alias: "users_login_create",
-    onSuccess: async () => {
-      toast.success("Login successful");
-      await refreshUser.submitForm(); // جلب بيانات المستخدم بعد تسجيل الدخول
-      onSuccess?.(); // تشغيل كولباك إضافي إن وُجد
-      router.push("/profile");
-    },
-    onError: (err) => {
-      toast.error("Login failed");
-      console.error("Login error:", err);
-    },
+  const { onSuccess, submitText = "Login", className, alias,mode="login" } = props;
+
+  const { form, onSubmit } = useCrudFormRequest({alias,
+
+    onSuccess: async (res) => { onSuccess?.(res);
+      if(mode === "login") {
+        router.push("/profile");
+      
+      if (fetchUser && typeof fetchUser.submitForm === 'function') {
+        await fetchUser.submitForm();
+
+    }
+    }
+  }
   });
 
-  const onSubmit: SubmitHandler<any> = async (data) => {
-    const result = await form.submitForm(data);
-    if (!result?.success) {
-      console.error("Validation error:", result?.error);
-    }
-  };
   
   return (
     <div className={className}>
 
-      {form.formState.errors.root && (
-        <p className="text-red-500 text-sm mb-2">
-          {form.formState.errors.root.message}
-        </p>
-      )}
-
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="username" className="block font-medium mb-1">
-            Username
+          <label htmlFor="username" className="label">
+            User Name
           </label>
           <input
             {...form.register("username")}
             id="username"
-            className="w-full border p-2 rounded"
+            className="input-text"
             placeholder="Enter username"
           />
           {form.formState.errors.username && (
-            <p className="text-red-500 text-sm mt-1">
-              {form.formState.errors.username.message}
+            <p className="error-text">
+              {form.formState.errors.username?.message as string}
             </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="password" className="block font-medium mb-1">
+          <label htmlFor="password" className="label" >
             Password
           </label>
           <input
             {...form.register("password")}
             id="password"
             type="password"
-            className="w-full border p-2 rounded"
+            className="input-text"
             placeholder="Enter password"
           />
+
           {form.formState.errors.password && (
-            <p className="text-red-500 text-sm mt-1">
-              {form.formState.errors.password.message}
+            <p className="error-text">
+              {form.formState.errors.password?.message as string}
             </p>
           )}
         </div>
@@ -88,13 +70,19 @@ export default function LoginRequestForm({
         <button
           type="submit"
           disabled={form.formState.isSubmitting || form.isLoading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="btn btn-primary"
         >
+          
           {form.formState.isSubmitting || form.isLoading
-            ? "Logging in..."
+            ? submitText + "..."
             : submitText}
         </button>
       </form>
+      {form.formState.errors.root && (
+        <p className="error-text">
+          {form.formState.errors.root?.message as string}
+        </p>
+      )}
     </div>
   );
 }

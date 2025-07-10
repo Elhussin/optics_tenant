@@ -1,5 +1,5 @@
 import { toast } from 'react-toastify';
-import { useFormRequest } from './useFormRequest';
+import { useFormRequest } from '../lib/hooks/useFormRequest';
 
 // أنواع العمليات المختلفة
 export type ApiOperation = 'create' | 'read' | 'update' | 'delete' | 'patch';

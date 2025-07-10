@@ -10,3 +10,4 @@ class Role(Enum):
     INVENTORY_MANAGER = 'inventory_manager'
     RECEPTIONIST = 'receptionist'
     CRM = 'crm'
+    CUSTOMER = 'customer'

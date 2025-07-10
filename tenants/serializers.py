@@ -1,16 +1,10 @@
-# customers/serializers.py
+# tenants/serializers.py
 from rest_framework import serializers
-from tenants.models import Client, Domain
-
-from django.conf import settings
-from django.utils.text import slugify
-from django.contrib.auth import get_user_model
-from django_tenants.utils import schema_context
+from tenants.models import Client
 from tenants.models import PendingTenantRequest
 from django.core.validators import RegexValidator
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _ # for translation
-
 from django.utils.text import slugify
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
@@ -73,6 +67,7 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
               PendingTenantRequest.objects.filter(schema_name=schema_name).exists():
             schema_name = f"{schema_base}{i}"
             i += 1
+            
 
         return PendingTenantRequest.objects.create(
             name=name,

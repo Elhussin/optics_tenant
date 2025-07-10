@@ -88,22 +88,22 @@ function replacePathParams(url: string, params: Record<string, any>): string {
 
 // إضافة دالة مخصصة للـ requests مع path parameters
 api.customRequest = async function(alias: string, data: any = {}) {
-  const endpoint = endpoints.find(e => e.alias === alias);
+  const endpoint : any = endpoints.find(e => e.alias === alias);
   if (!endpoint) {
     throw new Error(`Endpoint with alias "${alias}" not found.`);
   }
 
   const method = endpoint.method.toUpperCase();
-  let url = endpoint.path;
+  let url : string = endpoint.path;
   
   // استخراج path parameters
   const pathParams: Record<string, any> = {};
   const otherParams: Record<string, any> = {};
   
   // تحديد أي معاملات هي path parameters
-  const pathParamPattern = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
-  const pathParamNames = [];
-  let match;
+  const pathParamPattern : RegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
+  const pathParamNames : any[] = [];
+  let match : any;
   
   while ((match = pathParamPattern.exec(url)) !== null) {
     pathParamNames.push(match[1]);
@@ -139,11 +139,15 @@ api.customRequest = async function(alias: string, data: any = {}) {
   }
   
   // تنفيذ الـ request
-  const response = await axiosInstance(config);
-  return response.data;
+  try {
+    const response = await axiosInstance(config);
+    return response.data;
+  } catch (error) {
+    console.error("Error in customRequest:", error);
+    throw error;
+  }
 };
 
-// إضافة type definition للـ customRequest
 declare module "@zodios/core" {
   interface ZodiosInstanceN {
     customRequest: (alias: string, data?: any) => Promise<any>;

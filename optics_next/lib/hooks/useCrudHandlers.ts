@@ -25,6 +25,7 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
   const handleView = (id: string | number) => router.push(`${basePath}/${id}/view`);
   const handleEdit = (id: string | number) => router.push(`${basePath}/${id}/edit`);
   const handleCreate = () => router.push(`${basePath}/create`);
+  const handleCancel = () => router.back();
 
   // 👉 الحذف الجزئي (soft)
   const softDeleteRequest = useFormRequest({
@@ -97,5 +98,6 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
     handleDelete,      // Soft delete
     handleRestore,     // Restore
     handleHardDelete,  // Final delete
+    handleCancel
   };
 }

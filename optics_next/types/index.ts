@@ -21,33 +21,29 @@ export interface ApiResponse<T> {
   error?: any;
 }
 
-
-
-export interface formRequestProps  {
-  onSuccess?: (data?: any) => void;
-  onCancel?: () => void;
+//  ues in crud
+export interface CrudFormOptions {
+  alias: string;
+  defaultValues?: any;
+  onSuccess?: (res: any) => void;
+  onError?: (err: any) => void;
   className?: string;
   submitText?: string;
-  showCancelButton?: boolean;
-  defaultValues?: any;
-  mode?: 'create' 
-  id?: string | number;
-  alias?: string;
-  submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
 }
 
-// export type FormRequest<T = any> = {
-//   submitForm: (data?: any) => Promise<{ success: boolean; error?: any }>;
-//   handleSubmit: any;
-//   register: any;
-//   errors: any;
-//   isSubmitting: boolean;
-// };
-  
+//  ues in login and create and edit
+export interface formRequestProps extends CrudFormOptions  {
+  onCancel?: () => void;
+  showCancelButton?: boolean;
+  mode?: 'create' | 'edit'|'login';
+  id?: string | number;
+  submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
+}
 
 export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;
+  fetchUser: formRequestProps;
   loading: boolean;
   refreshUser: formRequestProps;  // ✅ هذا مهم جداً
   logout: () => Promise<void>;
@@ -55,16 +51,6 @@ export type UserContextType = {
 
 
 
-export interface FormProps {
-  onSuccess?: (res: any) => void;
-  submitText?: string;
-  className?: string;
-  onCancel?: () => void;
-  showCancelButton?: boolean;
-  alias?: string;
-  mode?: 'create' | 'edit';
-  defaultValues?: any;
-}
 
 
 export interface ButtonProps {
@@ -74,4 +60,5 @@ export interface ButtonProps {
   icon?: React.ReactNode;
   className?: string;
   type?: "button" | "submit" | "reset";
+  title?: string;
 };

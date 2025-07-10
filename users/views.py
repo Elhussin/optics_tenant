@@ -68,21 +68,23 @@ class LoginView(APIView):
 
 
 
-@method_decorator(role_required(['ADMIN']), name='dispatch')
+# @method_decorator(role_required(['ADMIN']), name='dispatch')
 class RegisterView(APIView):
-
+    permission_classes = [AllowAny]
     @extend_schema(
         request=RegisterSerializer,
-        responses={200: None},
+        responses={200: inline_serializer(
+            name='RegisterSuccessResponse',
+            fields={'msg': serializers.CharField(),
+                    'user': UserSerializer()}
+        )},
         description="Register endpoint for users"
     )
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            # refresh = RefreshToken.for_user(user)
             response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
-            # set_token_cookies(response, str(refresh.access_token))
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -123,9 +125,7 @@ class RefreshTokenView(APIView):
             return response
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
-        # except TokenError as e:
-        #     print(e)
-        #     return Response({"error": str(e)}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class LogoutView(APIView):
     @extend_schema(

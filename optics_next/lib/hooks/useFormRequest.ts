@@ -5,30 +5,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/lib/api/axios";
 import { handleErrorStatus } from "@/lib/utils/error";
 
+interface useFormRequestPropsType {
+  alias: string;
+  defaultValues?: any;
+  onSuccess?: (res: any) => void;
+  onError?: (err: any) => void;
+  transform?: (data: any) => any;
+}
+
 export function useFormRequest(
-  options: {
-    alias: string;
-    defaultValues?: any;
-    onSuccess?: (res: any) => void;
-    onError?: (err: any) => void;
-    transform?: (data: any) => any;
-  }
+  options: useFormRequestPropsType
 ) {
-  const {
-    alias,
-    defaultValues,
-    onSuccess,
-    onError,
-    transform,
-  } = options;
+  const {alias,  defaultValues, onSuccess,onError,transform, } = options;
 
   const [isLoading, setIsLoading] = useState(false);
 
   const endpoint = api.api.find((e) => e.alias === alias);
-  const schema =
-    endpoint?.parameters?.body ??
-    endpoint?.parameters?.query ??
-    undefined;
+  const schema : ZodType<any> = endpoint?.parameters?.body ?? endpoint?.parameters?.query ?? undefined;
   
   const methods = useForm<any>({
     resolver:

@@ -1,4 +1,3 @@
-// lib/hooks/useCurrentUser.tsx
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react';
@@ -8,7 +7,6 @@ import { useFormRequest } from './useFormRequest';
 import { toast } from 'sonner';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
-
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
@@ -56,7 +54,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading, refreshUser: fetchUser, logout }}>
+    <UserContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>
       {children}
     </UserContext.Provider>
   );

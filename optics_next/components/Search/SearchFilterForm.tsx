@@ -59,7 +59,7 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
         label="Search"
         type="submit"
         className="col-span-full bg-blue-600 text-white py-2 rounded"
-        onClick={handleSubmit}
+        onClick={(e: React.FormEvent) => handleSubmit(e)}
       />
     </form>
   );

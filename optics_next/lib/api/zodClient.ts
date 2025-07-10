@@ -1873,7 +1873,7 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ msg: z.string() }).passthrough();
 const TokenRefreshError = z.object({ error: z.string() }).passthrough();
-const Role3d7Enum = z.enum([
+const UserRoleEnum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
   "TECHNICIAN",
@@ -1882,6 +1882,7 @@ const Role3d7Enum = z.enum([
   "INVENTORY_MANAGER",
   "RECEPTIONIST",
   "CRM",
+  "CUSTOMER",
 ]);
 const User = z
   .object({
@@ -1892,25 +1893,28 @@ const User = z
     last_name: z.string().max(150).optional(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: Role3d7Enum.optional(),
+    role: UserRoleEnum.optional(),
+  })
+  .passthrough();
+
+const PlanEnum = z.enum(["basic", "premium", "enterprise"]);
+const RegisterTenantRequest = z
+  .object({
+    id: z.number().int(),
+    name: z.string().min(5),
+    email: z.string().email(),
+    password: z.string().min(8),
+    plan: PlanEnum,
+    max_users: z.number().int().describe("Maximum number of users").default(5),
+    max_products: z.number().int().describe("Maximum number of products").default(1000),
   })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
-  .object({
-    username: z.string().min(5).max(50),
-    email: z.string().min(1).email(),
-    first_name: z.string().max(150).optional(),
-    last_name: z.string().max(150).optional(),
-    is_active: z.boolean().optional(),
-    is_staff: z.boolean().optional(),
-    is_superuser: z.boolean().optional(),
-    role: Role3d7Enum.optional(),
-    password: z
-      .string()
-      .min(8)
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
-  })
+  .object({ username: z.string().min(5).max(50), password: z.string().min(5) })
+  .passthrough();
+const RegisterSuccessResponse = z
+  .object({ msg: z.string(), user: User })
   .passthrough();
 const RefreshTokenResponse = z
   .object({ msg: z.string(), access: z.string() })
@@ -1923,7 +1927,7 @@ const UserRequest = z
     last_name: z.string().max(150).optional(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: Role3d7Enum.optional(),
+    role: UserRoleEnum.optional(),
     password: z
       .string()
       .min(8)
@@ -1938,7 +1942,7 @@ const PatchedUserRequest = z
     last_name: z.string().max(150),
     is_active: z.boolean(),
     is_staff: z.boolean(),
-    role: Role3d7Enum,
+    role: UserRoleEnum,
     password: z
       .string()
       .min(8)
@@ -2082,13 +2086,16 @@ export const schemas = {
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
-  Role3d7Enum,
+  UserRoleEnum,
   User,
   Unauthorized,
   RegisterRequest,
+  RegisterSuccessResponse,
   RefreshTokenResponse,
   UserRequest,
   PatchedUserRequest,
+  RegisterTenantRequest,
+  PlanEnum
 };
 
 export const endpoints = makeApi([
@@ -4857,6 +4864,13 @@ export const endpoints = makeApi([
     alias: "tenants_register_create",
     requestFormat: "json",
     response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+    ],
   },
   {
     method: "post",
@@ -4931,7 +4945,7 @@ export const endpoints = makeApi([
         schema: RegisterRequest,
       },
     ],
-    response: z.void(),
+    response: RegisterSuccessResponse,
   },
   {
     method: "post",
@@ -5056,9 +5070,3 @@ export const endpoints = makeApi([
     response: z.void(),
   },
 ]);
-
-export const api = new Zodios(endpoints);
-
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options);
-}
