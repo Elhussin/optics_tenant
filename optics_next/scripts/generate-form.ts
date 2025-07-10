@@ -87,7 +87,7 @@ function getFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
   return `
   <div className="mb-4">
     ${inputElement}
-    {errors.${field} && <p className="text-red-500 text-sm">{errors.${field}.message}</p>}
+    {form.formState.errors.${field} && <p className="text-red-500 text-sm">{form.formState.errors.${field}.message}</p>}
   </div>`;
 }
 
