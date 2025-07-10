@@ -2,88 +2,43 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { isValidDate, formatDate ,isImageUrl ,handleDownloadPDF } from "@/lib/utils/cardView";
+import { handleCopy, handlePrint } from "@/lib/utils/cardView";
+import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
+import { ViewCardProps } from "@/types";
+import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
+import ActionButtons from "@/components/ui/ActionButtons";
 
-interface FieldMeta {
-  key: string;
-  label: string;
-  zodType: any;
-}
 
-interface Props {
-  item: Record<string, any>;
-  fields: FieldMeta[];
-  title?: string;
-}
+export default function ViewDetailsCard(props: ViewCardProps) {
+  const {alias,fields,item,restoreAlias,hardDeleteAlias,path,title = "Items",} = props;
 
-function isImageUrl(value: string): boolean {
-  return typeof value === "string" && /\.(jpeg|jpg|png|gif|webp|svg)$/.test(value);
-}
-
-function isValidDate(value: any): boolean {
-  return typeof value === "string" && !isNaN(Date.parse(value));
-}
-
-function formatDate(value: string): string {
-  const date = new Date(value);
-  return date.toLocaleString("ar-EG");
-}
-
-export default function ViewDetailsCard({ item, fields, title = "Details" }: Props) {
+  const response = useFilteredListRequest(alias);
   const printRef = useRef<HTMLDivElement>(null);
 
-  const handleCopy = () => {
-    const text = fields.map(({ key, label }) => {
-      const value = item[key];
-      const formatted =
-        typeof value === "boolean"
-          ? value ? "✅" : "❌"
-          : isValidDate(value)
-          ? formatDate(value)
-          : value;
-      return `${label}: ${formatted}`;
-    }).join("\n");
+  const {handleView,handleEdit,handleSoftDelete,handleRestore,handleHardDelete} = useCrudHandlers(path, {
+softDeleteAlias: restoreAlias,
+    restoreAlias: restoreAlias,
+    hardDeleteAlias: hardDeleteAlias,
+    onSuccessRefresh: response.refetch,
+  });
 
-    navigator.clipboard.writeText(text);
-    alert("✅ تم نسخ البيانات إلى الحافظة");
-  };
 
-  const handlePrint = () => {
-    window.print();
-  };
 
-  const handleDownloadPDF = async () => {
-    const element = printRef.current;
-    if (!element) return;
-
-    const canvas = await html2canvas(element);
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("p", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 0, 10, imgWidth, imgHeight);
-    pdf.save(`${title}.pdf`);
-  };
 
   return (
     <div className="body-container">
-      <main className="main">
         <div className="main-header flex justify-between items-center">
           <h2 className="title-1">{title}</h2>
           <div className="flex gap-2">
-            <button className="btn" onClick={handleCopy}>📋 نسخ</button>
-            <button className="btn" onClick={handlePrint}>🖨 طباعة</button>
-            <button className="btn" onClick={handleDownloadPDF}>📄 PDF</button>
+            <button className="btn" onClick={() => handleCopy(item, fields)}>📋 Copy</button>
+            <button className="btn" onClick={() => handlePrint()}>🖨 Print</button>
+            <button className="btn" onClick={() => handleDownloadPDF(printRef, title)}>📄 PDF</button>
           </div>
         </div>
         <div className="card-continear" ref={printRef}>
           <div className="cards">
-            {fields.map(({ key, label }) => {
+            {fields?.map(({ key, label }) => {
               const value = item?.[key];
 
               return (
@@ -110,24 +65,20 @@ export default function ViewDetailsCard({ item, fields, title = "Details" }: Pro
               );
             })}
           </div>
+          <div className="btn-card">
+            <ActionButtons 
+            onView={() =>handleView(item.id)}
+            onEdit={() => handleEdit(item.id) } 
+            onSoftDelete={() => handleSoftDelete(item.id)} 
+            onRestore={() => handleRestore(item.id)} 
+            onHardDelete={() => handleHardDelete(item.id)} 
+            isAll={true}
+            showRestoreButton={true} 
+            showHardDeleteButton={true} />
+          </div>
         </div>
-      </main>
     </div>
   );
 }
 
 
-// @media print {
-//   body * {
-//     visibility: hidden;
-//   }
-//   .card-continear, .card-continear * {
-//     visibility: visible;
-//   }
-//   .card-continear {
-//     position: absolute;
-//     left: 0;
-//     top: 0;
-//     width: 100%;
-//   }
-// }

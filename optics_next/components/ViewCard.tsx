@@ -7,48 +7,23 @@ import ActionButtons from '@/components/ui/ActionButtons';
 import Button from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { SearchFilterForm } from '@/components/Search/SearchFilterForm';
+import { ViewCardProps } from '@/types';
+import { formatLabel } from '@/lib/utils/formatLabel';
 
-interface Props {
-  alias: string;
-  fieldsAlias: string;
-  restoreAlias: string;
-  hardDeleteAlias: string;
-  path: string;
-  viewFields: string[]; // مثلا ["name", "email", "description"]
-  title?: string;
-}
 
-function formatLabel(key: string): string {
-    return key
-      .replace(/_/g, ' ')               // استبدال "_" بمسافة
-      .replace(/\b\w/g, c => c.toUpperCase()); // أول حرف من كل كلمة إلى حرف كبير
-  }
-
-export default function ViewCard(props: Props) {
-  const {
-    alias,
-    fieldsAlias,
-    restoreAlias,
-    hardDeleteAlias,
-    path,
-    viewFields,
-    title = "Items",
-  } = props;
-
+export default function ViewCard(props: ViewCardProps) {
+  const {alias,fieldsAlias,restoreAlias,hardDeleteAlias,path,viewFields,title = "Items",} = props;
   const fields = generateSearchFieldsFromEndpoint(fieldsAlias);
   const data = useFilteredListRequest(alias);
-  console.log("data",data);
 
-  const {
-    handleView,
-    handleEdit,
-    handleCreate,
-  } = useCrudHandlers(path, {
+  const {handleView,handleEdit,handleCreate,handleSoftDelete,handleRestore,handleHardDelete} = useCrudHandlers(path, {
     softDeleteAlias: restoreAlias,
     restoreAlias: restoreAlias,
     hardDeleteAlias: hardDeleteAlias,
     onSuccessRefresh: data.refetch,
   });
+
+
 
   return (
     <div className="body-container">
@@ -69,15 +44,15 @@ export default function ViewCard(props: Props) {
         <div className="card-continear">
           {data.data?.map((item: any) => (
             <div key={item.id} className="cards">
-              {viewFields.map((field) => (
+              {viewFields?.map((field) => (
                 <p key={field} className="card-body">
                   <strong>{formatLabel(field)}:</strong> {item[field]}
                 </p>
               ))}
               <div className="btn-card">
-                <ActionButtons
-                  onView={() => handleView(item.id)}
-                  onEdit={() => handleEdit(item.id)}
+                <ActionButtons 
+                onView={() =>handleView(item.id)}
+                onEdit={() => handleEdit(item.id) } 
                 />
               </div>
             </div>

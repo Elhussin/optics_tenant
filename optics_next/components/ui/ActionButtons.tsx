@@ -12,7 +12,7 @@ interface ActionButtonsProps {
   showHardDeleteButton?: boolean;
 }
 
-export default function ActionButtons({isAll = false, onView, onEdit, onSoftDelete, onRestore, onHardDelete, showRestoreButton, showHardDeleteButton }: ActionButtonsProps) {
+export default function ActionButtons({isAll = false, onView, onEdit, onSoftDelete, onRestore, onHardDelete, showRestoreButton = false, showHardDeleteButton = false }: ActionButtonsProps) {
 
 
   return (

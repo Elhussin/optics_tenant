@@ -67,7 +67,7 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
   });
 
   // 👉 عمليات CRUD
-  const handleDelete = (id: string | number) => {
+  const handleSoftDelete = (id: string | number) => {
     if (!softDeleteAlias) {
       console.warn('Soft delete alias not defined');
       return;
@@ -95,7 +95,7 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
     handleView,
     handleEdit,
     handleCreate,
-    handleDelete,      // Soft delete
+    handleSoftDelete,      // Soft delete
     handleRestore,     // Restore
     handleHardDelete,  // Final delete
     handleCancel

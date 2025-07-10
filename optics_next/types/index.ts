@@ -40,6 +40,12 @@ export interface formRequestProps extends CrudFormOptions  {
   submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
 }
 
+
+// ues in generated form
+export interface GeneratedFormProps extends formRequestProps {
+  schemaName: string;
+}
+
 export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;
@@ -48,6 +54,24 @@ export type UserContextType = {
   refreshUser: formRequestProps;  // ✅ هذا مهم جداً
   logout: () => Promise<void>;
 };
+
+interface FieldMeta {
+  key: string;
+  label: string;
+  zodType: any;
+}
+// ues in view card
+export interface ViewCardProps {
+  alias: string;
+  fieldsAlias: string;
+  restoreAlias: string;
+  hardDeleteAlias: string;
+  path: string;
+  viewFields?: string[]; 
+  title?: string;
+  fields?: FieldMeta[];
+  item?: any;
+}
 
 
 
@@ -62,3 +86,5 @@ export interface ButtonProps {
   type?: "button" | "submit" | "reset";
   title?: string;
 };
+
+
