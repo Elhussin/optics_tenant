@@ -14,7 +14,6 @@ export default function RegisterPage() {
       mode="create"
       onSuccess={() => {
         toast.success('Register successfully');
-        router.push('/auth/login');
       }} />
     </div>
   );

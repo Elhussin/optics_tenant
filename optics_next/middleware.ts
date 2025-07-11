@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-
 // تحديد المسارات التي يتم تطبيق الوسيط عليها
 export const config = {
   matcher: [
@@ -38,18 +37,26 @@ function getRequiredPermission(pathname: string): string | null {
   return null;
 }
 
-function unauthorizedResponse(target: string, message: string) {
+function unauthorizedResponse(target: string, message: string, redirect?: string) {
+  const url = new URL(target, 'http://' + process.env.NEXT_PUBLIC_BASE_DOMAIN);
 
-  const response = NextResponse.redirect(new URL(target, 'http://' + process.env.NEXT_PUBLIC_BASE_DOMAIN));
-  
-  response.cookies.set('alert_message', message, { path: '/', maxAge: 5 });
+  if (redirect) {
+    url.searchParams.set('redirect', redirect);
+    // sessionStorage.setItem('redirect', redirect);
+  }
+
+  const response = NextResponse.redirect(url);
+
+  response.cookies.set('alert_message', message+" " + redirect, { path: '/', maxAge: 5 });
   response.cookies.set('alert_type', 'error', { path: '/', maxAge: 5 });
+
+
   return response;
 }
 
+
 // الوسيط الرئيسي
 export async function middleware(request: NextRequest) {
-  console.log("middleware");
   const pathname = request.nextUrl.pathname;
   const host = request.headers.get('host') || '';
   const subdomain = host.split('.')[0]; // store1.localhost → store1
@@ -65,7 +72,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!token) {
-    return unauthorizedResponse('/auth/login', 'You need to login to access this page ' + pathname);
+    return unauthorizedResponse('/auth/login', 'You need to login to access this page ',pathname);
   }
 
   try {
@@ -74,9 +81,7 @@ export async function middleware(request: NextRequest) {
     const permissions = payload.permissions as string[];
 
     if (userTenant !== subdomain) {
-      console.log("userTenant",userTenant);
-      console.log("subdomain",subdomain);
-      return unauthorizedResponse('/unauthorized', 'Tenant mismatch, access denied to ' + pathname);
+      return unauthorizedResponse('/unauthorized', 'Tenant mismatch, access denied to ',pathname);
     }
     // إذا كان المسار هو /profile فلا نتحقق من الصلاحيات
     if (pathname.startsWith('/profile')) {
@@ -88,14 +93,16 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    return unauthorizedResponse('/unauthorized', 'You do not have permission to access this page ' + pathname);
+    return unauthorizedResponse('/unauthorized', 'You do not have permission to access this page ',pathname);
   } catch (error) {
     const loginUrl = new URL('/auth/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
 
     const response = NextResponse.redirect(loginUrl);
     response.cookies.delete('access_token');
-    return unauthorizedResponse('/auth/login', 'Login failed or session expired ' + pathname);
+    // return response;
+
+    return unauthorizedResponse('/auth/login', 'Login failed or session expired ',pathname);
 
   }
 }

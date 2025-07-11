@@ -26,8 +26,8 @@ export const DynamicForm: React.FC<Props> = ({
     const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
     const shape = schema.shape;
     const allFields = Object.keys(shape).filter((f) => !ignoreFields.includes(f));
-    const visibleFields = config.fieldOrder || allFields;
-    // const visibleFields = schema.shape ? Object.keys(schema.shape).filter((field) => !ignoreFields.includes(field)) : [];
+    // const visibleFields = config.fieldOrder || allFields;
+    const visibleFields = schema.shape ? Object.keys(schema.shape).filter((field) => !ignoreFields.includes(field)) : [];
 
   return (
     <FormProvider {...form}>

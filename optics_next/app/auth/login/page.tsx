@@ -9,11 +9,11 @@ export default function LoginPage() {
   const { user, loading } = useUser();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace('/profile'); 
-    }
-  }, [user, loading]);
+  // useEffect(() => {
+  //   if (!loading && user) {
+  //     router.replace('/profile'); 
+  //   }
+  // }, [user, loading]);
 
   if (loading || user) {
     return <Loading4 />;

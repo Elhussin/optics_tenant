@@ -1,28 +1,38 @@
 // app/auth/login/LoginRequestForm.tsx
 'use client';
-import { useRouter } from "next/navigation";
+import { useRouter,useSearchParams } from "next/navigation";
 import { useUser } from "@/lib/hooks/useCurrentUser";
 import { toast } from "sonner";
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { formRequestProps } from "@/types";
+import { useEffect } from 'react';
 
 export default function LoginRequestForm(props: formRequestProps) {
   const { fetchUser } = useUser()
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get('redirect') || '/profile';
+  console.log(redirect);
 
   const { onSuccess, submitText = "Login", className, alias,mode="login" } = props;
 
   const { form, onSubmit } = useCrudFormRequest({alias,
 
-    onSuccess: async (res) => { onSuccess?.(res);
-      if(mode === "login") {
-        router.push("/profile");
-      
-      if (fetchUser && typeof fetchUser.submitForm === 'function') {
-        await fetchUser.submitForm();
+    onSuccess: async (res) => { 
+      onSuccess?.(res);
+      // const redirectFromSession = sessionStorage.getItem('redirect') || '/';
 
-    }
-    }
+        if (mode === "login") {
+
+          if (fetchUser && typeof fetchUser.submitForm === 'function') {
+            await fetchUser.submitForm();
+          }
+          router.replace(redirect); 
+        } else if (mode === "create") {
+          router.replace('/auth/login');
+        }
+      
+
   }
   });
 

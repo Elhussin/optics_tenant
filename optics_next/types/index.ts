@@ -41,9 +41,24 @@ export interface formRequestProps extends CrudFormOptions  {
 }
 
 
+// ===== أنواع البيانات والواجهات =====
+interface GeneratorConfig {
+  baseClasses: string;
+  labelClasses: string;
+  errorClasses: string;
+  submitButtonClasses: string;
+  submitButtonText: string;
+  includeResetButton: boolean;
+  fieldOrder?: string[];
+  spacing: string;
+  containerClasses: string;
+}
+
+
 // ues in generated form
 export interface GeneratedFormProps extends formRequestProps {
   schemaName: string;
+  customConfig?: GeneratorConfig;
 }
 
 export type UserContextType = {
