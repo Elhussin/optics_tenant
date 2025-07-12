@@ -3,7 +3,8 @@ import { useForm, FieldValues, Path } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { GeneratorConfig } from '@/types';
-
+import {useCrudFormRequest} from '@/lib/hooks/useCrudFormRequest';
+import {useCrudHandlers} from '@/lib/hooks/useCrudHandlers';
 interface FieldTemplate {
   component: string;
   type?: string;
@@ -21,7 +22,8 @@ interface DynamicFormProps<T extends FieldValues> {
   showCancelButton?: boolean;
   mode?: 'create' | 'edit';
   config?: Partial<GeneratorConfig>;
-  apiEndpoint?: string;
+  alias?: string;
+  onSuccess?: () => void;
 }
 
 // ===== الإعدادات الافتراضية =====
@@ -115,51 +117,30 @@ function isFieldRequired(schema: z.ZodTypeAny): boolean {
 // ===== المكون الرئيسي =====
 export default function DynamicFormGenerator<T extends FieldValues>({
   schema,
-  onSubmit,
-  onCancel,
+  onSuccess,
   defaultValues,
   className = "",
   submitText,
   showCancelButton = false,
   mode = 'create',
   config: userConfig = {},
-  apiEndpoint
+  alias
 }: DynamicFormProps<T>) {
   
   const config = { ...defaultConfig, ...userConfig };
   
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    reset,
-    setValue,
-    watch
-  } = useForm<T>({
-    resolver: zodResolver(schema),
-    defaultValues: defaultValues as any
-  });
-
-  // الحصول على شكل الـ schema
   const shape = (schema as any).shape || {};
   
   // تصفية الحقول المتجاهلة
   const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group'];
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
   const visibleFields = config.fieldOrder || allFields;
+  const { handleCancel, handleRefresh, handleReset } = useCrudHandlers(alias!);
 
-  // معالجة إرسال النموذج
-  const handleFormSubmit = async (data: T) => {
-    try {
-      await onSubmit(data);
-      if (mode === 'create') {
-        reset();
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-    }
-  };
-
+    const { form, onSubmit } = useCrudFormRequest({alias: alias!,defaultValues,
+      onSuccess: (res) => { onSuccess?.(); console.log(res); }      
+    });  // معالجة إرسال النموذج
+ 
   // توليد حقل النموذج
   const renderField = (fieldName: string, fieldSchema: z.ZodTypeAny) => {
     const fieldType = detectFieldType(fieldName, fieldSchema);
@@ -327,24 +308,24 @@ export default function DynamicFormGenerator<T extends FieldValues>({
 
   return (
     <div className={className}>
-      <form onSubmit={handleSubmit(handleFormSubmit)} className={config.containerClasses}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className={config.containerClasses}>
         {visibleFields.map((fieldName: string) => renderField(fieldName, shape[fieldName]))}
         
         <div className="flex gap-3 pt-4">
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={form.formState.isSubmitting}
             className={`${config.submitButtonClasses} ${
-              isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+              form.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            {isSubmitting ? 'جاري الحفظ...' : (submitText || config.submitButtonText)}
+            {form.formState.isSubmitting ? 'جاري الحفظ...' : (submitText || config.submitButtonText)}
           </button>
           
           {config.includeResetButton && (
             <button
               type="button"
-              onClick={() => reset()}
+              onClick={() => handleReset()}
               className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors"
             >
               إعادة تعيين
@@ -354,7 +335,7 @@ export default function DynamicFormGenerator<T extends FieldValues>({
           {showCancelButton && (
             <button
               type="button"
-              onClick={onCancel}
+              onClick={handleCancel}
               className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md font-medium transition-colors"
             >
               إلغاء

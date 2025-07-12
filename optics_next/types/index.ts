@@ -42,7 +42,7 @@ export interface formRequestProps extends CrudFormOptions  {
 
 
 // ===== أنواع البيانات والواجهات =====
-interface GeneratorConfig {
+export interface GeneratorConfig {
   baseClasses: string;
   labelClasses: string;
   errorClasses: string;
