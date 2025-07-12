@@ -408,96 +408,74 @@ const PreferredContactEnum = z.enum(["email", "phone", "sms"]);
 const Customer = z
   .object({
     id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    first_name: z.string().max(100).optional(),
-    last_name: z.string().max(100).optional(),
-    identification_number: z.string().min(10).max(20),
-    email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
-    date_of_birth: z.string().nullish(),
-    customer_type: CustomerTypeEnum.optional(),
     address_line1: z.string().max(200).optional(),
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
+    first_name: z.string().max(100).optional(),
+    last_name: z.string().max(100).optional(),
+    email: z.string().max(254).email().optional(),
+    identification_number: z.string().min(10).max(20),
+    customer_type: CustomerTypeEnum.optional(),
     customer_since: z.string().datetime({ offset: true }),
-    is_vip: z.boolean().optional(),
-    loyalty_points: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .optional(),
+    is_vip: z.boolean().nullish(),
+    loyalty_points: z.number().int().gte(-2147483648).lte(2147483647).nullish(),
     accepts_marketing: z.boolean().optional(),
     registration_number: z.string().max(50).nullish(),
     tax_number: z.string().max(50).nullish(),
     preferred_contact: PreferredContactEnum.optional(),
     website: z.string().max(200).url().nullish(),
-    logo: z.string().url().nullish(),
     description: z.string().nullish(),
-    user: z.number().int(),
   })
   .passthrough();
 const CustomerRequest = z
   .object({
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    first_name: z.string().max(100).optional(),
-    last_name: z.string().max(100).optional(),
-    identification_number: z.string().min(10).max(20),
-    email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
-    date_of_birth: z.string().nullish(),
-    customer_type: CustomerTypeEnum.optional(),
     address_line1: z.string().max(200).optional(),
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
-    is_vip: z.boolean().optional(),
-    loyalty_points: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .optional(),
+    first_name: z.string().max(100).optional(),
+    last_name: z.string().max(100).optional(),
+    email: z.string().max(254).email().optional(),
+    identification_number: z.string().min(10).max(20),
+    customer_type: CustomerTypeEnum.optional(),
+    is_vip: z.boolean().nullish(),
+    loyalty_points: z.number().int().gte(-2147483648).lte(2147483647).nullish(),
     accepts_marketing: z.boolean().optional(),
     registration_number: z.string().max(50).nullish(),
     tax_number: z.string().max(50).nullish(),
     preferred_contact: PreferredContactEnum.optional(),
     website: z.string().max(200).url().nullish(),
-    logo: z.instanceof(File).nullish(),
     description: z.string().nullish(),
-    user: z.number().int(),
   })
   .passthrough();
 const PatchedCustomerRequest = z
   .object({
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    first_name: z.string().max(100),
-    last_name: z.string().max(100),
-    identification_number: z.string().min(10).max(20),
-    email: z.string().max(254).email(),
     phone: z.string().max(20),
-    date_of_birth: z.string().nullable(),
-    customer_type: CustomerTypeEnum,
     address_line1: z.string().max(200),
     address_line2: z.string().max(200),
     city: z.string().max(100),
     postal_code: z.string().max(20),
-    is_vip: z.boolean(),
-    loyalty_points: z.number().int().gte(-2147483648).lte(2147483647),
+    first_name: z.string().max(100),
+    last_name: z.string().max(100),
+    email: z.string().max(254).email(),
+    identification_number: z.string().min(10).max(20),
+    customer_type: CustomerTypeEnum,
+    is_vip: z.boolean().nullable(),
+    loyalty_points: z
+      .number()
+      .int()
+      .gte(-2147483648)
+      .lte(2147483647)
+      .nullable(),
     accepts_marketing: z.boolean(),
     registration_number: z.string().max(50).nullable(),
     tax_number: z.string().max(50).nullable(),
     preferred_contact: PreferredContactEnum,
     website: z.string().max(200).url().nullable(),
-    logo: z.instanceof(File).nullable(),
     description: z.string().nullable(),
-    user: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -1896,19 +1874,6 @@ const User = z
     role: UserRoleEnum.optional(),
   })
   .passthrough();
-
-const PlanEnum = z.enum(["basic", "premium", "enterprise"]);
-const RegisterTenantRequest = z
-  .object({
-    id: z.number().int(),
-    name: z.string().min(5),
-    email: z.string().email(),
-    password: z.string().min(8),
-    plan: PlanEnum,
-    max_users: z.number().int().describe("Maximum number of users").default(5),
-    max_products: z.number().int().describe("Maximum number of products").default(1000),
-  })
-  .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
   .object({ username: z.string().min(5).max(50), password: z.string().min(5) })
@@ -2094,8 +2059,6 @@ export const schemas = {
   RefreshTokenResponse,
   UserRequest,
   PatchedUserRequest,
-  RegisterTenantRequest,
-  PlanEnum
 };
 
 export const endpoints = makeApi([
@@ -3161,7 +3124,6 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/customers/",
     alias: "crm_customers_create",
-
     requestFormat: "json",
     parameters: [
       {
@@ -4865,13 +4827,6 @@ export const endpoints = makeApi([
     alias: "tenants_register_create",
     requestFormat: "json",
     response: z.void(),
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: RegisterTenantRequest,
-      },
-    ],
   },
   {
     method: "post",
@@ -5071,3 +5026,9 @@ export const endpoints = makeApi([
     response: z.void(),
   },
 ]);
+
+export const api = new Zodios(endpoints);
+
+export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+  return new Zodios(baseUrl, endpoints, options);
+}

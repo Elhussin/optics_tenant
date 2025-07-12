@@ -7,7 +7,15 @@ from .models import (
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = '__all__'
+        fields = [
+            'id', 'phone', 'address_line1', 'address_line2', 
+            'city', 'postal_code', 'first_name',
+            'last_name', 'email', 'identification_number',
+             'customer_type', 'customer_since', 'is_vip', 
+             'loyalty_points', 'accepts_marketing', 'registration_number',
+              'tax_number', 'preferred_contact', 'website',
+               'description'
+        ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 class InteractionSerializer(serializers.ModelSerializer):

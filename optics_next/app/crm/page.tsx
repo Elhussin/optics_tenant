@@ -1,5 +1,6 @@
 'use client';
 import { GeneratedFormComponent } from '@/components/GeneratedFormComponent';
+
 import ViewCard from '@/components/ViewCard';
 
 export default function ManufacturerPage() {

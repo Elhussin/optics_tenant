@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { GeneratorConfig } from '@/types';
 import {useCrudFormRequest} from '@/lib/hooks/useCrudFormRequest';
 import {useCrudHandlers} from '@/lib/hooks/useCrudHandlers';
+import {schemas} from '@/lib/api/zodClient';
 interface FieldTemplate {
   component: string;
   type?: string;
@@ -13,7 +14,8 @@ interface FieldTemplate {
 }
 
 interface DynamicFormProps<T extends FieldValues> {
-  schema: z.ZodSchema<T>;
+  // schema: z.ZodSchema<T>;
+  schemaName: string;
   onSubmit: (data: T) => void | Promise<void>;
   onCancel?: () => void;
   defaultValues?: Partial<T>;
@@ -116,7 +118,7 @@ function isFieldRequired(schema: z.ZodTypeAny): boolean {
 
 // ===== المكون الرئيسي =====
 export default function DynamicFormGenerator<T extends FieldValues>({
-  schema,
+  schemaName,
   onSuccess,
   defaultValues,
   className = "",
@@ -128,14 +130,16 @@ export default function DynamicFormGenerator<T extends FieldValues>({
 }: DynamicFormProps<T>) {
   
   const config = { ...defaultConfig, ...userConfig };
-  
-  const shape = (schema as any).shape || {};
+  console.log(schemaName);
+
+  const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
+  const shape = schema.shape;
   
   // تصفية الحقول المتجاهلة
   const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group'];
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
   const visibleFields = config.fieldOrder || allFields;
-  const { handleCancel, handleRefresh, handleReset } = useCrudHandlers(alias!);
+  const { handleCancel } = useCrudHandlers(alias!);
 
     const { form, onSubmit } = useCrudFormRequest({alias: alias!,defaultValues,
       onSuccess: (res) => { onSuccess?.(); console.log(res); }      
@@ -158,16 +162,16 @@ export default function DynamicFormGenerator<T extends FieldValues>({
             <input
               id={fieldName}
               type="checkbox"
-              {...register(fieldPath)}
+              {...form.register(fieldPath)}
               className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
             />
             <label htmlFor={fieldName} className={config.labelClasses}>
               {label}
             </label>
           </div>
-          {errors[fieldPath] && (
+          {form.formState.errors[fieldPath] && (
             <p className={config.errorClasses}>
-              {errors[fieldPath]?.message as string}
+              {form.formState.errors[fieldPath]?.message as string}
             </p>
           )}
         </div>
@@ -183,7 +187,7 @@ export default function DynamicFormGenerator<T extends FieldValues>({
           </label>
           <select
             id={fieldName}
-            {...register(fieldPath)}
+            {...form.register(fieldPath)}
             className={config.baseClasses}
           >
             <option value="">اختر...</option>
@@ -193,9 +197,9 @@ export default function DynamicFormGenerator<T extends FieldValues>({
               </option>
             ))}
           </select>
-          {errors[fieldPath] && (
+          {form.formState.errors[fieldPath] && (
             <p className={config.errorClasses}>
-              {errors[fieldPath]?.message as string}
+              {form.formState.errors[fieldPath]?.message as string}
             </p>
           )}
         </div>
@@ -212,14 +216,14 @@ export default function DynamicFormGenerator<T extends FieldValues>({
           </label>
           <textarea
             id={fieldName}
-            {...register(fieldPath)}
+            {...form.register(fieldPath)}
             className={config.baseClasses}
             rows={rows}
             placeholder={`${label}...`}
           />
-          {errors[fieldPath] && (
+          {form.formState.errors[fieldPath] && (
             <p className={config.errorClasses}>
-              {errors[fieldPath]?.message as string}
+              {form.formState.errors[fieldPath]?.message as string}
             </p>
           )}
         </div>
@@ -237,7 +241,7 @@ export default function DynamicFormGenerator<T extends FieldValues>({
             <input
               id={fieldName}
               type="text"
-              {...register(fieldPath)}
+              {...form.register(fieldPath)}
               className={config.baseClasses}
               placeholder="قيم مفصولة بفواصل"
             />
@@ -245,9 +249,9 @@ export default function DynamicFormGenerator<T extends FieldValues>({
               أدخل القيم مفصولة بفواصل
             </p>
           </div>
-          {errors[fieldPath] && (
+          {form.formState.errors[fieldPath] && (
             <p className={config.errorClasses}>
-              {errors[fieldPath]?.message as string}
+              {form.formState.errors[fieldPath]?.message as string}
             </p>
           )}
         </div>
@@ -265,14 +269,14 @@ export default function DynamicFormGenerator<T extends FieldValues>({
             <input
               id={fieldName}
               type="text"
-              {...register(fieldPath)}
+              {...form.register(fieldPath)}
               className={config.baseClasses}
               placeholder="JSON object"
             />
           </div>
-          {errors[fieldPath] && (
+          {form.formState.errors[fieldPath] && (
             <p className={config.errorClasses}>
-              {errors[fieldPath]?.message as string}
+              {form.formState.errors[fieldPath]?.message as string}
             </p>
           )}
         </div>
@@ -291,15 +295,15 @@ export default function DynamicFormGenerator<T extends FieldValues>({
         <input
           id={fieldName}
           type={inputType}
-          {...register(fieldPath)}
+          {...form.register(fieldPath)}
           className={config.baseClasses}
           placeholder={`${label}...`}
           disabled={isDisabled}
           {...(template.props || {})}
         />
-        {errors[fieldPath] && (
+        { form.formState.errors[fieldPath] && (
           <p className={config.errorClasses}>
-            {errors[fieldPath]?.message as string}
+            {form.formState.errors[fieldPath]?.message as string}
           </p>
         )}
       </div>
@@ -325,7 +329,7 @@ export default function DynamicFormGenerator<T extends FieldValues>({
           {config.includeResetButton && (
             <button
               type="button"
-              onClick={() => handleReset()}
+              onClick={() => form.reset()}
               className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-md font-medium transition-colors"
             >
               إعادة تعيين

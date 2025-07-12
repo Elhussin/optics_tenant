@@ -33,8 +33,8 @@ class Customer(BaseModel):
     
     # Membership
     customer_since = models.DateTimeField(auto_now_add=True)
-    is_vip = models.BooleanField(default=False)
-    loyalty_points = models.IntegerField(default=0)
+    is_vip = models.BooleanField(default=False,null=True, blank=True)
+    loyalty_points = models.IntegerField(default=0 ,null=True, blank=True)
     
     # Marketing
     accepts_marketing = models.BooleanField(default=True)

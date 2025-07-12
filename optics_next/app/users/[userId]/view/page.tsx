@@ -6,22 +6,25 @@ import { useEffect, useState } from 'react';
 import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
 import { toast } from 'sonner';
 import ActionButtons from '@/components/ui/ActionButtons';
-export default function UserDetail({ params }: { params: { userId: string } }) {
+import { useParams } from 'next/navigation';
+export default function UserDetail() {
+    const params = useParams();
     const { userId } = params;
     const router = useRouter();
     const [user, setUser] = useState<any | null>(null);
+
     const {
         handleView,
         handleEdit,
         handleCreate,
-        handleDelete,
+        handleSoftDelete,
         handleRestore,
         handleHardDelete,
       } = useCrudHandlers('/users', {
         softDeleteAlias: 'users_users_partial_update',
         restoreAlias: 'users_users_partial_update',
         hardDeleteAlias: 'users_users_destroy', // DELETE /api/users/{id}/
-        onSuccessRefresh: users.refetch,
+        // onSuccessRefresh: user.refetch,
       });
 
       

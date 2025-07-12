@@ -36,6 +36,7 @@ body {
 }
 
 
+
 .container {
   @apply max-w-screen-md mx-auto px-4 ;
 }
@@ -93,11 +94,17 @@ body {
 }
 
 .footer{
-  @apply bg-gray-100 mt-10 py-4 shadow-md dark:bg-gray-900 dark:text-white;
+  @apply bg-gray-100 py-4 shadow-md dark:bg-gray-900 dark:text-white;
+}
+.footer-content{
+  @apply container mx-auto px-4 text-center text-sm dark:bg-gray-900 dark:text-white;
 }
 
+
+
+
 .card-continear{
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4;
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 dark:bg-gray-800 dark:text-white;
 }
 
 .cards{
@@ -133,11 +140,11 @@ body {
 }
 
 .main{
-  @apply md:w-3/4 space-y-4 md:p-4 w-full;
+  @apply lg:w-3/4 space-y-4 md:p-4 w-full dark:bg-gray-800 dark:text-white;
 }
 
 .aside{
-  @apply md:w-1/4 w-full;
+  @apply w-full lg:w-1/4 bg-gray-100 p-4 dark:bg-gray-800 dark:text-white;
 }
 
 .body-container{
@@ -145,7 +152,7 @@ body {
 }
 
 .main-header{
-  @apply flex flex-wrap justify-between items-center;
+  @apply flex flex-wrap justify-between items-center p-4;
 }
 
 .label{

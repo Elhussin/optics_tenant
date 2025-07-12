@@ -26,10 +26,6 @@ export default function ViewCard(props: ViewCardProps) {
 
 
   return (
-    <div className="body-container">
-      <aside className="aside">
-        <SearchFilterForm fields={fields} />
-      </aside>
       <main className="main">
         <div className="main-header">
           <h2 className="title-1">{title}</h2>
@@ -59,6 +55,5 @@ export default function ViewCard(props: ViewCardProps) {
           ))}
         </div>
       </main>
-    </div>
   );
 }

@@ -29,7 +29,8 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
   };
 
   return (
-    <form className="grid grid-cols-1 gap-4 mb-6">
+    <div className=" max-w-screen-md mx-auto px-4">
+    <form className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 lg:grid-cols-1">
       {fields.map((field) => (
         <div key={field.name} className="flex items-center">
           <label className="block text-sm font-medium mr-2 capitalize w-24">{field.label}</label>
@@ -62,5 +63,6 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
         onClick={(e: React.FormEvent) => handleSubmit(e)}
       />
     </form>
+    </div>
   );
 };

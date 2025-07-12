@@ -9,6 +9,7 @@ import Button from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
 import {Loading} from '@/components/ui/loding';
+import { useAside } from "@/lib/context/AsideContext";
 
 
 export default function UsersPage() {
@@ -23,13 +24,18 @@ export default function UsersPage() {
   }, []);
   if (users.isLoading) return <Loading />;
 
-  return (
+  const { setAsideContent } = useAside();
+  useEffect(() => {
+    setAsideContent(
+      <SearchFilterForm fields={fields} />
+    );
 
-    <div className="body-container">
-      <aside className="aside">
-        <SearchFilterForm fields={fields} />
-      </aside>
-      <main className="main">
+    return () => {
+      setAsideContent(null);
+    };
+  }, [setAsideContent]);
+  return (
+      <>
         <div className="main-header">
           <h2 className="title-1">Users</h2>
           <Button
@@ -56,8 +62,6 @@ export default function UsersPage() {
             </div>
           ))}
         </div>
-      </main>
-    </div>
-
+      </>
   );
 }
