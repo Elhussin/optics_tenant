@@ -4,6 +4,7 @@
 import Link from 'next/link';
 // import { useCurrentUser } from '@/src/lib/hooks/useCurrentUser';
 import { useUser } from  '@/lib/hooks/useCurrentUser'
+import { AsideButton } from "@/components/ui/AsideButton";
 
 import LogoutButton from '../ui/logout';
 import ThemeToggle from '../ThemeToggle';
@@ -20,6 +21,7 @@ export default function Navbar() {
   return (
     <nav className="nav">
       <div>
+        <AsideButton/>
         <Link href="/" className="font-bold text-lg">O S M</Link>
       </div>
 
@@ -35,6 +37,7 @@ export default function Navbar() {
             <Link href="/profile">Profile</Link>
             <LogoutButton logout={logout}/>
             <ThemeToggle />
+
      
           </>
         ) : (
