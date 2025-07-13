@@ -1,5 +1,5 @@
 // lib/hooks/usePermission.ts
-import { useUser } from './useCurrentUser';
+import { useUser } from '../context/userContext';
 
 const ROLE_PERMISSIONS: Record<string, string[] | '__all__'> = {
   ADMIN: '__all__',

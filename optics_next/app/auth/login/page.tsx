@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { useUser } from '@/lib/hooks/useCurrentUser';
+import { useUser } from '@/lib/context/userContext';
 import { useRouter } from 'next/navigation';
 import LoginRequestForm from '@/components/forms/LoginForm';
 import { Loading4 } from '@/components/ui/loding';

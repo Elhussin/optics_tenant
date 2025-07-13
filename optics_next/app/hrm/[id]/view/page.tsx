@@ -8,9 +8,9 @@ export default function UserDetailsPage({ user }: { user: any }) {
   const fields = generateViewFieldsWithLabels(schema, {
     hiddenFields: ["id", "password"],
     fieldLabels: {
-      email: "البريد الإلكتروني",
-      first_name: "الاسم الأول",
-      last_name: "اسم العائلة",
+      email: "Customer Email",
+      first_name: "Customer First Name",
+      last_name: "Customer Last Name",
     },
   });
 
@@ -18,7 +18,12 @@ export default function UserDetailsPage({ user }: { user: any }) {
     <ViewDetailsCard
       item={user}
       fields={fields}
-      title="تفاصيل المستخدم"
+      title="Customer Details"
+      alias="crm_customers_retrieve"
+      fieldsAlias="crm_customers_retrieve"
+      restoreAlias="crm_customers_restore"
+      hardDeleteAlias="crm_customers_destroy"
+      path="/crm"
     />
   );
 }

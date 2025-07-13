@@ -89,6 +89,11 @@ body {
 .nav{
   @apply bg-white shadow px-4 py-3 flex justify-between items-center dark:bg-gray-900 dark:text-white;
 }
+
+.nav-link {
+  @apply text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200;
+}
+
 .header{
   @apply bg-gray-100 py-4 shadow-md dark:bg-gray-800 dark:text-white;
 }
@@ -100,8 +105,16 @@ body {
   @apply container mx-auto px-4 text-center text-sm dark:bg-gray-900 dark:text-white;
 }
 
+/* .aside{
+  @apply fixed top-16 left-0 h-full w-72 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-md z-40 
+  transform transition-transform duration-300 
+} */
+/* lg:w-1/4 */
 
-
+.aside {
+  @apply h-full w-96 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-md 
+  transition-all duration-300 ;
+}
 
 .card-continear{
   @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 dark:bg-gray-800 dark:text-white;
@@ -143,9 +156,6 @@ body {
   @apply lg:w-3/4 space-y-4 md:p-4 w-full dark:bg-gray-800 dark:text-white;
 }
 
-.aside{
-  @apply w-full lg:w-1/4 bg-gray-100 p-4 dark:bg-gray-800 dark:text-white;
-}
 
 .body-container{
   @apply flex flex-col md:flex-row gap-4 w-full;

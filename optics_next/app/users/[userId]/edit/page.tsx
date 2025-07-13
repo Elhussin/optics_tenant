@@ -6,31 +6,37 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import { Loading4 } from '@/components/ui/loding';
-export default function UserDetail() {
+
+export default function UserDetailPage() {
   const params = useParams();
   const userId = params.userId; // or params['userId']
-
   const [defaultValues, setDefaultValues] = useState<any>(null);
-  const router = useRouter();
+  const { form, onSubmit } = useCrudFormRequest(...);
 
-    const fetchUser = useFormRequest({
-        alias: "users_users_retrieve",
-        onSuccess: (res) => {
-            console.log('User loaded:', res);
-            setDefaultValues(res);
+    // const fetchUser = useFormRequest({
+    //     alias: "users_users_retrieve",
+    //     onSuccess: (res) => {
+    //         console.log('User loaded:', res);
+    //         setDefaultValues(res);
 
-        },
-        onError: (err) => {
-            console.error('Error loading user:', err);
-        }
-    });
+    //     },
+    //     onError: (err) => {
+    //         console.error('Error loading user:', err);
+    //     }
+    // });
+
+    // useEffect(() => {
+    //     if (userId) {
+    //         fetchUser.submitForm({ id: userId });
+    //     }
+    // }, [userId]); 
+    const fetchUser = createFetcher("users_users_retrieve", setDefaultValues);
 
     useEffect(() => {
-        if (userId) {
-            fetchUser.submitForm({ id: userId });
-        }
-    }, [userId]); 
-
+      if (userId) {
+        fetchUser({ id: userId });
+      }
+    }, [userId]);
   
   if (!defaultValues) return <Loading4 />;
 

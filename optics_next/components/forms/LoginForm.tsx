@@ -1,7 +1,7 @@
 // app/auth/login/LoginRequestForm.tsx
 'use client';
 import { useRouter,useSearchParams } from "next/navigation";
-import { useUser } from "@/lib/hooks/useCurrentUser";
+import { useUser } from "@/lib/context/userContext";
 import { toast } from "sonner";
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { formRequestProps } from "@/types";

@@ -4,19 +4,76 @@ from .models import (
     Complaint, Subscription, Task,Campaign,Document
 )
 
+from django.contrib.auth import get_user_model
+
+from rest_framework import serializers
+
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = [
-            'id', 'phone', 'address_line1', 'address_line2', 
-            'city', 'postal_code', 'first_name',
-            'last_name', 'email', 'identification_number',
-             'customer_type', 'customer_since', 'is_vip', 
-             'loyalty_points', 'accepts_marketing', 'registration_number',
-              'tax_number', 'preferred_contact', 'website',
-               'description'
+            'id', 'phone','identification_number',
+           'first_name',
+            'last_name', 'email', 
+            'customer_type', 'is_vip',
+            'accepts_marketing', 'registration_number',
+            'tax_number', 'preferred_contact', 'website',
+            'description',
+             'address_line1', 'address_line2',
+               'city', 'postal_code',
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
+
+        extra_kwargs = {
+            'phone': {
+                'error_messages': {
+                    'required': 'Phone number is required.',
+                    'blank': 'Please enter a valid phone number.'
+                }
+            },
+            'email': {
+                'error_messages': {
+                    'required': 'Email is required.',
+                    'blank': 'Please enter a valid email address.'
+                }
+            },
+            'identification_number': {
+                'error_messages': {
+                    'required': 'Identification number is required.',
+                    'blank': 'Please enter a valid identification number.'
+                }
+            },
+            'customer_type': {
+                'error_messages': {
+                    'required': 'Customer type is required.',
+                    'blank': 'Please select a valid customer type.'
+                }
+            },
+            'phone': {
+                'error_messages': {
+                    'required': 'Phone number is required.',
+                    'blank': 'Please enter a valid phone number.'
+                }
+            },
+            'first_name': {
+                'error_messages': {
+                    'required': 'First name is required.',
+                    'blank': 'Please enter a valid first name.'
+                }
+            },
+            'last_name': {
+                'error_messages': {
+                    'required': 'Last name is required.',
+                    'blank': 'Please enter a valid last name.'
+                }
+            },
+        }
+
+    def create(self, validated_data):
+        # Add the current user to the new customer
+        validated_data['created_by'] = self.context['request'].user
+        return super().create(validated_data)
+
 
 class InteractionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,6 +124,3 @@ class CustomerGroupSerializer(serializers.ModelSerializer):
         model = CustomerGroup
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at']
-
-
-

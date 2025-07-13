@@ -13,11 +13,20 @@ from .serializers import (
 )
 
 
+# class CustomerViewSet(viewsets.ModelViewSet):
+#     queryset = Customer.objects.all()
+#     serializer_class = CustomerSerializer
+
 class CustomerViewSet(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    # permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        return Customer.objects.filter(created_by=self.request.user)
 
-
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+        
 # CustomerGroupViewSet: get all ``CustomerGroup`` objects
 
 class CustomerGroupViewSet(viewsets.ModelViewSet):

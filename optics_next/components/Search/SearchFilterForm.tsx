@@ -29,9 +29,9 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
   };
 
   return (
-    <div       className={`fixed top-0 left-0 h-full w-72 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-md z-40 
+    <div       className={`fixed top-16 left-0 h-full w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-md z-40 
         transform transition-transform duration-300`}>
-    <form className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 lg:grid-cols-1">
+    <form className="grid grid-cols-1 gap-4 mb-6  mt-32 w-4/5 px-4">
       {fields.map((field) => (
         <div key={field.name} className="flex items-center">
           <label className="block text-sm font-medium mr-2 capitalize w-24">{field.label}</label>

@@ -409,73 +409,64 @@ const Customer = z
   .object({
     id: z.number().int(),
     phone: z.string().max(20).optional(),
-    address_line1: z.string().max(200).optional(),
-    address_line2: z.string().max(200).optional(),
-    city: z.string().max(100).optional(),
-    postal_code: z.string().max(20).optional(),
+    identification_number: z.string().min(10).max(20),
     first_name: z.string().max(100).optional(),
     last_name: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
-    identification_number: z.string().min(10).max(20),
     customer_type: CustomerTypeEnum.optional(),
-    customer_since: z.string().datetime({ offset: true }),
     is_vip: z.boolean().nullish(),
-    loyalty_points: z.number().int().gte(-2147483648).lte(2147483647).nullish(),
     accepts_marketing: z.boolean().optional(),
     registration_number: z.string().max(50).nullish(),
     tax_number: z.string().max(50).nullish(),
     preferred_contact: PreferredContactEnum.optional(),
     website: z.string().max(200).url().nullish(),
     description: z.string().nullish(),
+    address_line1: z.string().max(200).optional(),
+    address_line2: z.string().max(200).optional(),
+    city: z.string().max(100).optional(),
+    postal_code: z.string().max(20).optional(),
   })
   .passthrough();
 const CustomerRequest = z
   .object({
     phone: z.string().max(20).optional(),
-    address_line1: z.string().max(200).optional(),
-    address_line2: z.string().max(200).optional(),
-    city: z.string().max(100).optional(),
-    postal_code: z.string().max(20).optional(),
+    identification_number: z.string().min(10).max(20),
     first_name: z.string().max(100).optional(),
     last_name: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
-    identification_number: z.string().min(10).max(20),
     customer_type: CustomerTypeEnum.optional(),
     is_vip: z.boolean().nullish(),
-    loyalty_points: z.number().int().gte(-2147483648).lte(2147483647).nullish(),
     accepts_marketing: z.boolean().optional(),
     registration_number: z.string().max(50).nullish(),
     tax_number: z.string().max(50).nullish(),
     preferred_contact: PreferredContactEnum.optional(),
     website: z.string().max(200).url().nullish(),
     description: z.string().nullish(),
+    address_line1: z.string().max(200).optional(),
+    address_line2: z.string().max(200).optional(),
+    city: z.string().max(100).optional(),
+    postal_code: z.string().max(20).optional(),
   })
   .passthrough();
 const PatchedCustomerRequest = z
   .object({
     phone: z.string().max(20),
-    address_line1: z.string().max(200),
-    address_line2: z.string().max(200),
-    city: z.string().max(100),
-    postal_code: z.string().max(20),
+    identification_number: z.string().min(10).max(20),
     first_name: z.string().max(100),
     last_name: z.string().max(100),
     email: z.string().max(254).email(),
-    identification_number: z.string().min(10).max(20),
     customer_type: CustomerTypeEnum,
     is_vip: z.boolean().nullable(),
-    loyalty_points: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullable(),
     accepts_marketing: z.boolean(),
     registration_number: z.string().max(50).nullable(),
     tax_number: z.string().max(50).nullable(),
     preferred_contact: PreferredContactEnum,
     website: z.string().max(200).url().nullable(),
     description: z.string().nullable(),
+    address_line1: z.string().max(200),
+    address_line2: z.string().max(200),
+    city: z.string().max(100),
+    postal_code: z.string().max(20),
   })
   .partial()
   .passthrough();

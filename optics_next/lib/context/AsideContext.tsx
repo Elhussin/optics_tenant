@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import Aside from '@/components/layout/Aside';
-
+// import AsideButton from '@/components/ui/AsideButton';
 type AsideContextType = {
   asideContent: ReactNode | null;
   isVisible: boolean;
@@ -24,7 +24,7 @@ export function AsideProvider({ children }: { children: ReactNode }) {
     >
       <MainLayout
         mainContent={children}
-        asideContent={isVisible ? asideContent || <Aside /> : null}
+        asideContent={ isVisible ? asideContent || <Aside /> : null}
       />
     </AsideContext.Provider>
   );

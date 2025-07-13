@@ -16,14 +16,15 @@ class Customer(BaseModel):
     ]
     """عملاء المتجر"""
     # Personal Information
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="crm_customer")
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="crm_customer")
     first_name = models.CharField(max_length=100,blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     identification_number = models.CharField(max_length=20, unique=True,validators=[MinLengthValidator(10), MaxLengthValidator(10)],help_text="Enter a valid identification number 10 digits.")
-    email = models.EmailField(unique=True, blank=True)
+    email = models.EmailField( blank=True)
     phone = models.CharField(max_length=20, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     customer_type = models.CharField(max_length=10, choices=CUSTOMER_TYPE_CHOICES, default='individual')
+    
     
     # Address
     address_line1 = models.CharField(max_length=200, blank=True)

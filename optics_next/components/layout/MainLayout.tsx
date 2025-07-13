@@ -23,28 +23,23 @@ export default function MainLayout({ mainContent, asideContent }: Props) {
     <div className="min-h-screen flex flex-col dark:bg-gray-800 dark:text-white">
       <Header />
       <Navbar />
+      <div className="flex flex-1 min-h-screen">
+      {/* Aside */}
+      {asideContent && showAside && (
+        <aside >
+          {asideContent}
+        </aside>
+      )}
 
-      <div className={`flex flex-col lg:flex-row flex-1 ${showAside ? '' : 'justify-center'}`}>
-        {/* Asaide */}
-        {asideContent && showAside && (
-          <aside className="aside">
-            {asideContent}
-          </aside>
-        )}
-
-        {/* Main */}
-        <main
-          className={`flex justify-center w-full ${
-            asideContent ? 'lg:w-3/4' : ''
-          } p-4`}
-        >
-          <div className="w-full lg:w-5/6 ">
-            <GlobalAlert />
-            {mainContent}
-            <Toaster />
-          </div>
-        </main>
-      </div>
+      {/* Main */}
+      <main className="flex-1 p-4">
+        <div className="max-w-6xl mx-auto">
+          <GlobalAlert />
+          {mainContent}
+          <Toaster />
+        </div>
+      </main>
+    </div>
 
       <Footer />
     </div>
