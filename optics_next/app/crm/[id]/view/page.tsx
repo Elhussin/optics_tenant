@@ -2,8 +2,8 @@ import { schemas } from "@/lib/api/zodClient";
 import { generateViewFieldsWithLabels } from "@/lib/utils/generateViewFieldsFromSchema";
 import ViewDetailsCard from "@/components/ViewDetailsCard";
 
-export default function UserDetailsPage({ user }: { user: any }) {
-  const schema = schemas.User;
+export default function CustomerDetailsPage({ user }: { user: any }) {
+  const schema = schemas.Customer;
 
   const fields = generateViewFieldsWithLabels(schema, {
     hiddenFields: ["id", "password"],

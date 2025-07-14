@@ -1,6 +1,6 @@
 import Button from "@/components/ui/Button";
-import { Eye, Pencil, Trash2 } from "lucide-react"; // أيقونات جميلة
-
+import { Eye, Pencil, Trash2 ,ArrowLeft} from "lucide-react"; // أيقونات جميلة
+import { useRouter } from "next/navigation";
 interface ActionButtonsProps {
   isAll?: boolean;
   onView?: () => void;
@@ -59,4 +59,16 @@ export default function ActionButtons({isAll = false, onView, onEdit, onSoftDele
 
     </div>
   );
+}
+
+
+export const BackButton = () => {
+  const router = useRouter();
+  return <Button
+  label="Back"
+  onClick={() => router.back()}
+  variant="primary"
+  icon={<ArrowLeft size={16} />}
+  className="md:mt-0 mt-4"
+/>
 }

@@ -58,7 +58,10 @@ class UserSerializer(serializers.ModelSerializer):
             'is_active',
             'is_staff',
             'role',
-            'password'
+            'password',
+            'is_deleted',
+            'deleted_at',
+            'phone',
         ]
         read_only_fields = ['id']
         extra_kwargs = {

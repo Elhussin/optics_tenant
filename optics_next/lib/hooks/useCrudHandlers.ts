@@ -81,7 +81,7 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
       console.warn('Restore alias not defined');
       return;
     }
-    restoreRequest.submitForm({ id, is_deleted: false });
+    restoreRequest.submitForm({ id, is_deleted: false,is_active: false });
   };
 
   const handleHardDelete = (id: string | number) => {

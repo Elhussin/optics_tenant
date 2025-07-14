@@ -5,8 +5,8 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
-import Button from '@/components/ui/Button';
-import { ArrowLeft } from 'lucide-react';
+import { BackButton } from '@/components/ui/ActionButtons';
+import { Loading4 } from '@/components/ui/loding';
 export default function CustomerEditPage() {
     const params = useParams();
     const id = params.id;
@@ -33,18 +33,13 @@ export default function CustomerEditPage() {
     }, [id]);
 
 
-    if (!defaultValues) return <p>Loading...</p>;
+    if (!defaultValues) return <Loading4 />;
+
     return (
         <>
             <div className="main-header">
                 <h2 className="title-1">Edit Customer</h2>
-                <Button
-                    label="Back"
-                    onClick={() => router.back()}
-                    variant="primary"
-                    icon={<ArrowLeft size={16} />}
-                    className="md:mt-0 mt-4"
-                />
+                <BackButton />
             </div>
             <DynamicFormGenerator
                 schemaName="Customer"

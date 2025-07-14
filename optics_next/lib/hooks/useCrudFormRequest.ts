@@ -38,9 +38,6 @@ export function useCrudFormRequest({
 }
 
 
-// // lib/helpers/createFetcher.ts
-// import { useFormRequest } from "./useFormRequest";
-
 export function createFetcher(alias: string, onSuccess?: (res: any) => void, onError?: (err: any) => void) {
   return useFormRequest({
     alias,
@@ -49,5 +46,6 @@ export function createFetcher(alias: string, onSuccess?: (res: any) => void, onE
       console.error(`Error in ${alias}:`, err);
       onError?.(err);
     },
+    isLoading: false,
   }).submitForm;
 }

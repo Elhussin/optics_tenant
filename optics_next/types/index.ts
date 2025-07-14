@@ -78,7 +78,7 @@ interface FieldMeta {
 // ues in view card
 export interface ViewCardProps {
   alias: string;
-  fieldsAlias: string;
+  fieldsAlias?: string;
   restoreAlias: string;
   hardDeleteAlias: string;
   path: string;

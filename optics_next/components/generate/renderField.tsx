@@ -148,9 +148,9 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
             {...form.register(fieldPath)}
             className={config.baseClasses}
           >
-            <option value="">Select...</option>
+            <option className="select-option" value="">Select...</option>
             {unwrappedSchema.options.map((option: string) => (
-              <option key={option} value={option}>
+              <option className="select-option" key={option} value={option}>
                 {option}
               </option>
             ))}

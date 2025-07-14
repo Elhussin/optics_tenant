@@ -11,7 +11,7 @@ export default function CreateUserForm(props: formRequestProps) {
   const {alias, onSuccess, className, submitText, showCancelButton, defaultValues, mode} = props;
 
   const { form, onSubmit } = useCrudFormRequest({alias: alias!,defaultValues,
-    onSuccess: (res) => { onSuccess?.(res);  toast.success("User created successfully");}
+    onSuccess: (res) => { onSuccess?.(res);}
   });
 
   return (
@@ -123,15 +123,15 @@ export default function CreateUserForm(props: formRequestProps) {
             {...form.register("role")}
             className="input-text"
           >
-            <option value="">Select...</option>
-            <option value="ADMIN">ADMIN</option>
-            <option value="BRANCH_MANAGER">BRANCH_MANAGER</option>
-            <option value="TECHNICIAN">TECHNICIAN</option>
-            <option value="SALESPERSON">SALESPERSON</option>
-            <option value="ACCOUNTANT">ACCOUNTANT</option>
-            <option value="INVENTORY_MANAGER">INVENTORY_MANAGER</option>
-            <option value="RECEPTIONIST">RECEPTIONIST</option>
-            <option value="CRM">CRM</option>
+            <option className="select-option" value="">Select...</option>
+            <option className="select-option" value="ADMIN">ADMIN</option>
+            <option className="select-option" value="BRANCH_MANAGER">BRANCH_MANAGER</option>
+            <option className="select-option" value="TECHNICIAN">TECHNICIAN</option>
+            <option className="select-option" value="SALESPERSON">SALESPERSON</option>
+            <option className="select-option" value="ACCOUNTANT">ACCOUNTANT</option>
+            <option className="select-option" value="INVENTORY_MANAGER">INVENTORY_MANAGER</option>
+            <option className="select-option" value="RECEPTIONIST">RECEPTIONIST</option>
+            <option className="select-option" value="CRM">CRM</option>
           </select>
           {form.formState.errors.role && (
             <p className="error-text">{form.formState.errors.role?.message as string}</p>

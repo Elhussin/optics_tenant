@@ -3,13 +3,13 @@
 import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFieldsFromEndpoint";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
-import ActionButtons from '@/components/ui/ActionButtons';
 import Button from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { SearchFilterForm } from '@/components/Search/SearchFilterForm';
 import { ViewCardProps } from '@/types';
 import { formatLabel } from '@/lib/utils/formatLabel';
-
+import ViewButton from "@/components/ui/button/ViewButton";
+import EditButton from "@/components/ui/button/EditButton";
 
 export default function ViewCard(props: ViewCardProps) {
   const {alias,fieldsAlias,restoreAlias,hardDeleteAlias,path,viewFields,title = "Items",} = props;
@@ -46,10 +46,8 @@ export default function ViewCard(props: ViewCardProps) {
                 </p>
               ))}
               <div className="btn-card">
-                <ActionButtons 
-                onView={() =>handleView(item.id)}
-                onEdit={() => handleEdit(item.id) } 
-                />
+                <ViewButton onClick={() =>handleView(item.id)} />
+                <EditButton onClick={() => handleEdit(item.id) } />
               </div>
             </div>
           ))}
