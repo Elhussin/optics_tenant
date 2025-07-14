@@ -54,18 +54,7 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
     },
   });
 
-  // 👉 الحذف النهائي (hard)
-  const hardDeleteRequest = useFormRequest({
-    alias: hardDeleteAlias ?? '',
-    onSuccess: () => {
-      toast.success('Item permanently deleted');
-      onSuccessRefresh?.();
-    },
-    onError: (err) => {
-      console.error('Hard delete error:', err);
-      toast.error('Failed to permanently delete item');
-    },
-  });
+
 
   // 👉 عمليات CRUD
   const handleSoftDelete = (id: string | number) => {
@@ -73,7 +62,7 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
       console.warn('Soft delete alias not defined');
       return;
     }
-    softDeleteRequest.submitForm({ id, is_deleted: true });
+    softDeleteRequest.submitForm({ id, is_deleted: true,is_active: false });
   };
 
   const handleRestore = (id: string | number) => {
@@ -81,25 +70,20 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
       console.warn('Restore alias not defined');
       return;
     }
-    restoreRequest.submitForm({ id, is_deleted: false,is_active: false });
+    restoreRequest.submitForm({ id, is_deleted: false,is_active: true });
   };
 
-  const handleHardDelete = (id: string | number) => {
-    if (!hardDeleteAlias) {
-      console.warn('Hard delete alias not defined');
-      return;
-    }
-    hardDeleteRequest.submitForm({ id });
-  };
 
-  return {
+
+    return {
     handleView,
     handleEdit,
     handleCreate,
     handleSoftDelete,      // Soft delete
     handleRestore,     // Restore
-    handleHardDelete,  // Final delete
     handleCancel,
     handleRefresh,
   };
+
+
 }

@@ -3,7 +3,7 @@ import Header from './Header';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { Toaster } from 'sonner';
-import GlobalAlert from '@/components/GlobalAlert';
+import GlobalAlert from '@/components/ui/GlobalAlert';
 import { usePathname } from 'next/navigation';
 interface Props {
   mainContent?: React.ReactNode; // المحتوى الرئيسي

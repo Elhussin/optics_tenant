@@ -13,12 +13,14 @@
   --color-secondary: #f59e0b;
   --color-danger: #dc2626;
   --color-success: #22c55d;
-  --color-info: #22c55d;
+  --color-info: #06702d5d;
 
 
   --bg-body: #f9fafb;
   --text-main: #111827;
 }
+
+
 
 @layer base {
     html {
@@ -35,6 +37,9 @@ body {
   color: var(--text-main);
 }
 
+.dark-light {
+    @apply dark:bg-gray-800 dark:text-white;
+}
 
 
 .container {
@@ -67,24 +72,51 @@ body {
 }
 
 .btn-primary {
-  @apply bg-[var(--color-primary)] text-white hover:opacity-90;
+  @apply bg-[var(--color-primary)] text-white hover:opacity-70;
 }
 
+
 .btn-secondary {
-  @apply bg-[var(--color-secondary)] text-white hover:opacity-90;
+  @apply bg-[var(--color-secondary)] text-white hover:opacity-70;
 }
 
 .btn-danger {
-  @apply bg-[var(--color-danger)] text-white hover:opacity-90;
+  @apply bg-[var(--color-danger)] text-white hover:opacity-70;
 }
 
+.btn-success {
+  @apply bg-[var(--color-success)] text-white hover:opacity-70;
+}
+
+.btn-info {
+  @apply bg-[var(--color-info)] text-white hover:opacity-70 ;
+}
+
+
+/* 
+.btn-secondary:hover {
+  @apply bg-[var(--color-secondary)] text-white hover:opacity-70;
+}
+
+.btn-primary:hover {
+  @apply bg-[var(--color-primary)] text-white hover:opacity-70;
+}
+
+.btn-danger:hover {
+  @apply bg-[var(--color-danger)] text-white hover:opacity-70;
+}
+
+.btn-success:hover {
+  @apply bg-[var(--color-success)] text-white hover:opacity-70;
+}
+
+.btn-info:hover {
+  @apply bg-[var(--color-info)] text-white hover:opacity-70;
+} */
 
 .body{
-    @apply bg-[var(--bg-body)] dark:bg-gray-800 dark:text-white;
+  @apply bg-[var(--bg-body)] dark:bg-gray-800 dark:text-white;
 }
-
-
-
 
 .nav{
   @apply bg-white shadow px-4 py-3 flex justify-between items-center dark:bg-gray-900 dark:text-white;
@@ -189,10 +221,10 @@ body {
   body * {
     visibility: hidden;
   }
-  .card-continear, .card-continear * {
+  .container, .container * {
     visibility: visible;
   }
-  .card-continear {
+  .container {
     position: absolute;
     left: 0;
     top: 0;

@@ -1,32 +1,45 @@
 "use client";
-
-import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFieldsFromEndpoint";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/button/Button';
 import { Plus } from 'lucide-react';
-import { SearchFilterForm } from '@/components/Search/SearchFilterForm';
 import { ViewCardProps } from '@/types';
 import { formatLabel } from '@/lib/utils/formatLabel';
 import ViewButton from "@/components/ui/button/ViewButton";
 import EditButton from "@/components/ui/button/EditButton";
+import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFieldsFromEndpoint";
+import { useAside } from "@/lib/context/AsideContext";
+import { useEffect } from "react";
+import {SearchFilterForm} from "@/components/Search/SearchFilterForm";
 
 export default function ViewCard(props: ViewCardProps) {
-  const {alias,fieldsAlias,restoreAlias,hardDeleteAlias,path,viewFields,title = "Items",} = props;
-  const fields = generateSearchFieldsFromEndpoint(fieldsAlias);
+  const {alias,restoreAlias,hardDeleteAlias,path,viewFields,title = "Items",} = props;
   const data = useFilteredListRequest(alias);
 
-  const {handleView,handleEdit,handleCreate,handleSoftDelete,handleRestore,handleHardDelete} = useCrudHandlers(path, {
+  const {handleView,handleEdit,handleCreate,} = useCrudHandlers(path, {
     softDeleteAlias: restoreAlias,
     restoreAlias: restoreAlias,
     hardDeleteAlias: hardDeleteAlias,
     onSuccessRefresh: data.refetch,
   });
 
+  
+    const SearchFields = generateSearchFieldsFromEndpoint(alias);
+    const { setAsideContent } = useAside();
+    useEffect(() => {
+      setAsideContent(
+        <SearchFilterForm fields={SearchFields} />
+      );
+  
+      return () => {
+        setAsideContent(null);
+      };
+    }, [setAsideContent]);
+  
 
 
   return (
-      <main className="main">
+      <>  
         <div className="main-header">
           <h2 className="title-1">{title}</h2>
           <Button
@@ -52,6 +65,6 @@ export default function ViewCard(props: ViewCardProps) {
             </div>
           ))}
         </div>
-      </main>
+      </>
   );
 }

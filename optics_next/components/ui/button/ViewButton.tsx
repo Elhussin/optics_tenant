@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button/Button";
 import { Eye } from "lucide-react";
 
 interface ViewButtonProps {
@@ -11,7 +11,7 @@ export default function ViewButton({ onClick }: ViewButtonProps) {
       label="View"
       icon={<Eye size={16} />}
       onClick={onClick ?? (() => {})}
-      variant="secondary"
+      variant="info"
     />
   );
 }

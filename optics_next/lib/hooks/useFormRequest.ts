@@ -18,7 +18,7 @@ export function useFormRequest(
 ) {
   const {alias,  defaultValues, onSuccess,onError,transform, } = options;
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const endpoint = api.api.find((e) => e.alias === alias);
   const schema : ZodType<any> = endpoint?.parameters?.body ?? endpoint?.parameters?.query ?? undefined;
@@ -96,9 +96,9 @@ export function useFormRequest(
   return {
     ...methods,
     submitForm,
-    isLoading,
     errors: methods.formState.errors,
     isSubmitting: methods.formState.isSubmitting,
+    isLoading,
 
   };
 }

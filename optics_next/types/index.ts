@@ -36,7 +36,7 @@ export interface formRequestProps extends CrudFormOptions  {
   onCancel?: () => void;
   showCancelButton?: boolean;
   mode?: 'create' | 'edit'|'login';
-  id?: string | number;
+  id?: string | number | undefined;
   submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
 }
 
@@ -78,6 +78,7 @@ interface FieldMeta {
 // ues in view card
 export interface ViewCardProps {
   alias: string;
+  id?: string | number | undefined;
   fieldsAlias?: string;
   restoreAlias: string;
   hardDeleteAlias: string;
@@ -85,7 +86,6 @@ export interface ViewCardProps {
   viewFields?: string[]; 
   title?: string;
   fields?: FieldMeta[];
-  item?: any;
 }
 
 
@@ -95,11 +95,12 @@ export interface ViewCardProps {
 export interface ButtonProps {
   label: string;
   onClick: () => void ;
-  variant?: "primary" | "secondary" | "danger";
+  variant?: "primary" | "secondary" | "danger" | "success" | "info";
   icon?: React.ReactNode;
   className?: string;
   type?: "button" | "submit" | "reset";
   title?: string;
+  disabled?: boolean;
 };
 
 

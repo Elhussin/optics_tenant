@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button/Button";
 import { Eye, Pencil, Trash2 ,ArrowLeft} from "lucide-react"; // أيقونات جميلة
 import { useRouter } from "next/navigation";
 interface ActionButtonsProps {

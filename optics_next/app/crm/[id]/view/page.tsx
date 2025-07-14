@@ -1,6 +1,6 @@
 import { schemas } from "@/lib/api/zodClient";
 import { generateViewFieldsWithLabels } from "@/lib/utils/generateViewFieldsFromSchema";
-import ViewDetailsCard from "@/components/ViewDetailsCard";
+import ViewDetailsCard from "@/components/view/ViewDetailsCard";
 
 export default function CustomerDetailsPage({ user }: { user: any }) {
   const schema = schemas.Customer;

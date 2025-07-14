@@ -1,7 +1,7 @@
 'use client';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
 import { toast } from 'sonner';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/button/Button';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 export default function CreateUserPage() {

@@ -1,4 +1,4 @@
-import Button from "@/components/ui/Button";
+import Button from "@/components/ui/button/Button";
 import { ArrowLeft } from "lucide-react";
 
 interface RestoreButtonProps {
@@ -9,6 +9,7 @@ export default function RestoreButton({ onClick }: RestoreButtonProps) {
   return (
     <Button
       label="Restore"
+      title="This action will restore the item"
       icon={<ArrowLeft size={16} />}
       onClick={onClick ?? (() => {})}
       variant="secondary"

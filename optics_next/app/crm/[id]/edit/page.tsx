@@ -5,8 +5,8 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
-import { BackButton } from '@/components/ui/ActionButtons';
-import { Loading4 } from '@/components/ui/loding';
+import { BackButton } from '@/components/ui/button/ActionButtons';
+import { Loading4 } from '@/components/ui/button/loding';
 export default function CustomerEditPage() {
     const params = useParams();
     const id = params.id;

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useUser } from '@/lib/context/userContext';
 import { useRouter } from 'next/navigation';
 import LoginRequestForm from '@/components/forms/LoginForm';
-import { Loading4 } from '@/components/ui/loding';
+import { Loading4 } from '@/components/ui/button/loding';
 import { toast } from 'sonner';
 export default function LoginPage() {
   const { user, loading } = useUser();

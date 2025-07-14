@@ -46,6 +46,6 @@ export function createFetcher(alias: string, onSuccess?: (res: any) => void, onE
       console.error(`Error in ${alias}:`, err);
       onError?.(err);
     },
-    isLoading: false,
+    // isLoading: false,
   }).submitForm;
 }

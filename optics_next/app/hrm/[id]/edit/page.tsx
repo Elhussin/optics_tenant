@@ -5,7 +5,7 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/button/Button';
 import { ArrowLeft } from 'lucide-react';
 export default function CustomerEditPage() {
     const params = useParams();

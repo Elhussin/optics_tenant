@@ -5,17 +5,39 @@ import { formRequestProps } from '@/types';
 import { cn } from '@/lib/utils/utils';
 import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
+import { createFetcher } from '@/lib/hooks/useCrudFormRequest';
+import { useEffect , useState } from 'react';
+import { Loading4 } from '@/components/ui/button/loding';
 
 export default function CreateUserForm(props: formRequestProps) {
+  const {alias, onSuccess, className, submitText, mode, id, showCancelButton=true} = props;
+  const [defaultValues, setDefaultValues] = useState<any>(null);
   const { handleCancel } = useCrudHandlers('/users');
-  const {alias, onSuccess, className, submitText, showCancelButton, defaultValues, mode} = props;
-
+  const fetchUser = createFetcher("users_users_retrieve", setDefaultValues);
   const { form, onSubmit } = useCrudFormRequest({alias: alias!,defaultValues,
-    onSuccess: (res) => { onSuccess?.(res);}
-  });
+    onSuccess: (res) => { onSuccess?.(res);}});
+
+    useEffect(() => {
+      if (mode === 'edit' && id) {
+        fetchUser({ id: id });
+      }
+    }, [mode, id]);
+    
+    // بعد تحميل البيانات، قم بإعادة ضبط الفورم
+    useEffect(() => {
+      if (defaultValues) {
+        form.reset(defaultValues);
+      }
+    }, [defaultValues]);
+    
+
+  if (mode === 'edit' && !defaultValues) {
+    return <Loading4 />;
+  }
+  
 
   return (
-    <div className={`${className}`}>
+    <div className={`${className} dark-light`}>
 
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
 
@@ -47,9 +69,9 @@ export default function CreateUserForm(props: formRequestProps) {
             type="email"
             {...form.register("email")}
 
-            className={cn("input-text", mode === "edit" && "input-disabled")}
+            className={cn("input-text")}
             placeholder="Email..."
-            disabled={mode === 'edit'}
+            // disabled={mode === 'edit'}
           />
           {form.formState.errors.email && (
             <p className="error-text">{form.formState.errors.email?.message as string}</p>

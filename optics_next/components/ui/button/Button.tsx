@@ -4,12 +4,14 @@ import { cn } from "@/lib/utils/utils"; // دالة لدمج الكلاسات إ
 import { ButtonProps } from "@/types";
 
 export default function Button(props: ButtonProps) {
-const{  label,onClick,variant = "primary",icon,className = "",type = "button",title,}=props
+const{  label,onClick,variant = "primary",icon,className = "",type = "button",title,disabled}=props
 
 const variantClasses = {
-    primary: "btn btn-primary",
-    secondary: "btn btn-secondary",
-    danger: "btn btn-danger",
+    primary: "btn-primary",
+    secondary: "btn-secondary",
+    danger: "btn-danger",
+    success: "btn-success",
+    info: "btn-info",
   };
 
   return (
@@ -17,8 +19,9 @@ const variantClasses = {
       onClick={onClick}
       type={type}
       title={title}
+      disabled={disabled}
       className={cn(
-        "btn",
+        "btn cursor-pointer",
         variantClasses[variant],
         className
       )}
