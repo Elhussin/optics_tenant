@@ -2,7 +2,7 @@
 import { X } from 'lucide-react';
 import { useAside } from '@/lib/context/AsideContext';
 import React from 'react';
-
+import Link from 'next/link';
 
 export default function Aside() {
   const { toggleAside, isVisible } = useAside();
@@ -30,9 +30,21 @@ export default function Aside() {
         <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
           Sidebar
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
-          This is the default sidebar content. You can override it from any page.
-        </p>
+        <div className="flex flex-col gap-2">
+        <Link href="/">Home</Link>
+          <Link href="/auth/login">Login</Link>
+          <Link href="/auth/register">Register</Link>
+          <Link href="/profile">Profile</Link>
+          <Link href="/admin">Admin</Link>
+          <Link href="/prescriptions">Prescriptions</Link>
+          <Link href="/about">About</Link>
+          <Link href="/contact">Contact</Link>
+          <Link href="/users">Users</Link>
+          <Link href="/tenants">Tenants</Link>
+          <Link href="/groups">Groups</Link>
+          <Link href="/crm">CRM</Link>
+          <Link href="/permissions">Permissions</Link>
+        </div>
       </div>
     </aside>
   );

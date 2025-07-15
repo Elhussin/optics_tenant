@@ -92,28 +92,6 @@ body {
   @apply bg-[var(--color-info)] text-white hover:opacity-70 ;
 }
 
-
-/* 
-.btn-secondary:hover {
-  @apply bg-[var(--color-secondary)] text-white hover:opacity-70;
-}
-
-.btn-primary:hover {
-  @apply bg-[var(--color-primary)] text-white hover:opacity-70;
-}
-
-.btn-danger:hover {
-  @apply bg-[var(--color-danger)] text-white hover:opacity-70;
-}
-
-.btn-success:hover {
-  @apply bg-[var(--color-success)] text-white hover:opacity-70;
-}
-
-.btn-info:hover {
-  @apply bg-[var(--color-info)] text-white hover:opacity-70;
-} */
-
 .body{
   @apply bg-[var(--bg-body)] dark:bg-gray-800 dark:text-white;
 }

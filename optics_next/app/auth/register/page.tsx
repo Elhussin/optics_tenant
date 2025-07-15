@@ -12,6 +12,7 @@ export default function RegisterPage() {
       alias="users_register_create"
       submitText="Register"
       mode="create"
+      className="container"
       onSuccess={() => {
         toast.success('Register successfully');
       }} />

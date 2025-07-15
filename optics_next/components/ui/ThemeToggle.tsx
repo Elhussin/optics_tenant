@@ -2,7 +2,7 @@
 "use client"
 import { useEffect, useState } from "react";
 import {Moon, Sun} from "lucide-react"; // أيقونات جميلة
-import { cn } from "@/lib/utils/utils";
+import { cn } from "@/lib/utils/cn";
 
 export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(false);

@@ -2,6 +2,17 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 
+// utils/formatLabel.ts
+export function formatLabel(field: string): string {
+  return field
+    .replace(/[_\-]+/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
+
 export function isImageUrl(value: string): boolean {
   return typeof value === "string" && /\.(jpeg|jpg|png|gif|webp|svg)$/.test(value);
 }
@@ -46,8 +57,6 @@ export const handleDownloadPDF = async (printRef: any, title: string) => {
   pdf.addImage(imgData, "PNG", 0, 10, imgWidth, imgHeight);
   pdf.save(`${title}.pdf`);
 };
-
-
 
 
 export const handleCopy = (item: any, fields: any) => {

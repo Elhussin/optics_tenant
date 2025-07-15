@@ -425,6 +425,8 @@ const Customer = z
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const CustomerRequest = z
@@ -446,6 +448,8 @@ const CustomerRequest = z
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const PatchedCustomerRequest = z
@@ -467,6 +471,8 @@ const PatchedCustomerRequest = z
     address_line2: z.string().max(200),
     city: z.string().max(100),
     postal_code: z.string().max(20),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -1863,6 +1869,9 @@ const User = z
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     role: UserRoleEnum.optional(),
+    is_deleted: z.boolean().optional(),
+    deleted_at: z.string().datetime({ offset: true }).nullish(),
+    phone: z.string().max(20).nullish(),
   })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
@@ -1888,6 +1897,9 @@ const UserRequest = z
       .string()
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+    is_deleted: z.boolean().optional(),
+    deleted_at: z.string().datetime({ offset: true }).nullish(),
+    phone: z.string().max(20).nullish(),
   })
   .passthrough();
 const PatchedUserRequest = z
@@ -1903,6 +1915,9 @@ const PatchedUserRequest = z
       .string()
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+    is_deleted: z.boolean(),
+    deleted_at: z.string().datetime({ offset: true }).nullable(),
+    phone: z.string().max(20).nullable(),
   })
   .partial()
   .passthrough();
@@ -3109,6 +3124,33 @@ export const endpoints = makeApi([
     path: "/api/crm/customers/",
     alias: "crm_customers_list",
     requestFormat: "json",
+    parameters: [
+      {
+        name: "customer_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
     response: z.array(Customer),
   },
   {

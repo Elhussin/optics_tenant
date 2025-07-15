@@ -1,21 +1,16 @@
 'use client';
-import { useEffect } from 'react';
+// import { useEffect } from 'react';
 import { useUser } from '@/lib/context/userContext';
-import { useRouter } from 'next/navigation';
 import LoginRequestForm from '@/components/forms/LoginForm';
-import { Loading4 } from '@/components/ui/button/loding';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { Loading4 } from '@/components/ui/button/loding';
 export default function LoginPage() {
-  const { user, loading } = useUser();
+  const { user } = useUser();
   const router = useRouter();
 
-  // useEffect(() => {
-  //   if (!loading && user) {
-  //     router.replace('/profile'); 
-  //   }
-  // }, [user, loading]);
-
-  if (loading || user) {
+  if ( user) {
+    router.replace('/profile');
     return <Loading4 />;
   }
 
@@ -24,6 +19,7 @@ export default function LoginPage() {
       <h1 className="card-header my-4">Login</h1>
       <LoginRequestForm 
       alias="users_login_create"
+      className="container"
       onSuccess={() => {
         toast.success('Login successfully');
       }} />

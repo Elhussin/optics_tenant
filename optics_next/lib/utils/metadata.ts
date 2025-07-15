@@ -15,24 +15,24 @@ import { MetadataOptions } from "@/types/metadata";
       title: fullTitle,
       description,
       keywords,
-      alternates: canonicalUrl
-        ? {
-            canonical: canonicalUrl,
-          }
-        : undefined,
-      openGraph: {
-        title: fullTitle,
-        description,
-        type: openGraphType,
-        url: canonicalUrl,
-        images: openGraphImage ? [{ url: openGraphImage }] : undefined,
-      },
-      twitter: {
-        card: twitterCardType,
-        title: fullTitle,
-        description,
-        images: openGraphImage ? [openGraphImage] : undefined,
-      },
+      // alternates: canonicalUrl
+      //   ? {
+      //       canonical: canonicalUrl,
+      //     }
+      //   : undefined,
+      // openGraph: {
+      //   title: fullTitle,
+      //   description,
+      //   type: openGraphType,
+      //   url: canonicalUrl,
+      //   images: openGraphImage ? [{ url: openGraphImage }] : undefined,
+      // },
+      // twitter: {
+      //   card: twitterCardType,
+      //   title: fullTitle,
+      //   description,
+      //   images: openGraphImage ? [openGraphImage] : undefined,
+      // },
     };
   }
   

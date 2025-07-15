@@ -1,17 +1,16 @@
 'use client';
 import { toast } from 'sonner';
-import { useParams } from 'next/navigation';
 import { BackButton } from '@/components/ui/button/ActionButtons';
 import { Loading4 } from '@/components/ui/button/loding';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
+import { useParamValue } from '@/lib/hooks/useParamValue';
 
-export default function UserDetailPage() {
-    const params = useParams();
-    const userId = params.userId;
+export default function UserEditPage() {
+  const userId = useParamValue("userId");
 
-    if(!userId){
-        return <Loading4 />
-    }
+  if (!userId) {
+    return <Loading4 />
+  }
   return (
     <div>
       <div className="main-header">
@@ -20,11 +19,11 @@ export default function UserDetailPage() {
       </div>
       <DynamicFormGenerator
         schemaName="UserRequest"
-        id={userId} 
-        onSuccess={() => toast.success("User updated successfully",)}
-        submitText="Update User"
+        id={userId}
         alias="users_users_partial_update"
+        submitText="Update User"
         mode="edit"
+        onSuccess={() => toast.success("User updated successfully",)}
       />
     </div>
   );

@@ -12,7 +12,7 @@ export default function LoginRequestForm(props: formRequestProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/profile';
-  console.log(redirect);
+
 
   const { onSuccess, submitText = "Login", className, alias,mode="login" } = props;
 

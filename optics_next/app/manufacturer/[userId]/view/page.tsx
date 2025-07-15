@@ -1,5 +1,5 @@
 import { schemas } from "@/lib/api/zodClient";
-import { generateViewFieldsWithLabels } from "@/lib/utils/generateViewFieldsFromSchema";
+import { generateViewFieldsWithLabels } from "@/lib/utils/generateViewFields";
 import ViewDetailsCard from "@/components/view/ViewDetailsCard";
 
 export default function UserDetailsPage({ user }: { user: any }) {

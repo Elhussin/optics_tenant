@@ -4,10 +4,10 @@ import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
 import Button from '@/components/ui/button/Button';
 import { Plus } from 'lucide-react';
 import { ViewCardProps } from '@/types';
-import { formatLabel } from '@/lib/utils/formatLabel';
+import { formatLabel } from '@/lib/utils/cardViewHelper';
 import ViewButton from "@/components/ui/button/ViewButton";
 import EditButton from "@/components/ui/button/EditButton";
-import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFieldsFromEndpoint";
+import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFields";
 import { useAside } from "@/lib/context/AsideContext";
 import { useEffect } from "react";
 import {SearchFilterForm} from "@/components/Search/SearchFilterForm";
@@ -25,6 +25,7 @@ export default function ViewCard(props: ViewCardProps) {
 
   
     const SearchFields = generateSearchFieldsFromEndpoint(alias);
+    console.log("SearchFields", SearchFields);
     const { setAsideContent } = useAside();
     useEffect(() => {
       setAsideContent(

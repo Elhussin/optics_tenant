@@ -1,9 +1,8 @@
-'use client'
-import { useParams } from 'next/navigation';
-import { BackButton } from '@/components/ui/button/ActionButtons';
+'use client';
 import ViewDetailsCard from '@/components/view/ViewDetailsCard';
-import { generateViewFieldsWithLabels } from '@/lib/utils/generateViewFieldsFromSchema';
-import { schemas } from '@/lib/api/zodClient';
+import { generateViewFieldsWithLabels } from '@/lib/utils/generateViewFields';
+import { schemas } from '@/lib/api/zodClient'
+import { useParamValue } from '@/lib/hooks/useParamValue';
 import { Loading4 } from '@/components/ui/button/loding';
 
 const fields = generateViewFieldsWithLabels(schemas.User, {
@@ -19,30 +18,23 @@ const fields = generateViewFieldsWithLabels(schemas.User, {
     },
   });
 
-export default function UserDetail() {
-    const params = useParams();
-    const { userId } = params;
-
+  export default function UserDetilesPage() {
+    const userId = useParamValue("userId");
     if(!userId){
         return <Loading4 />
     }
+  
     return (
-        
-        <div className="max-w-4xl mx-auto p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">User Details</h1>
-                <BackButton />
-            </div>
-                <ViewDetailsCard
-                fields={fields}
-                id={userId}
-                alias="users_users_retrieve"
-                restoreAlias="users_users_partial_update"
-                hardDeleteAlias="users_users_destroy"
-                path="/users"
-                title="User Details"
-                />
-        </div>
-    );
-}
+      <ViewDetailsCard
+        id={userId}
+        fields={fields}
+        title="User Details"
+        alias="users_users_retrieve"
+        restoreAlias="users_users_partial_update"
+        hardDeleteAlias="users_users_destroy"
+        path="/users"
 
+      />
+    );
+  }
+  

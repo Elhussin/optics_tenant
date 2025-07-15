@@ -1,6 +1,6 @@
 import { Loader2, Clock, RotateCw, RefreshCw,Hourglass } from "lucide-react";
 import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils/utils"; // دالة لدمج الكلاسات إن كنت تستخدمها
+import { cn } from "@/lib/utils/cn"; // دالة لدمج الكلاسات إن كنت تستخدمها
 
 const Loading = () => {
     return (

@@ -15,6 +15,7 @@ import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/button/Button";
 import { Copy, Printer, FileText } from "lucide-react";
+import {BackButton} from "@/components/ui/button/ActionButtons";
 
 export default function ViewDetailsCard(props: ViewCardProps) {
   const { alias, fields, id, restoreAlias, hardDeleteAlias, path, title = "Details", } = props;
@@ -44,6 +45,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   return (
     <div className="container">
       <div className="main-header">
+
         <h2 className="title-1">{title}</h2>
         <div className="flex gap-2">
           <Button
@@ -65,7 +67,10 @@ export default function ViewDetailsCard(props: ViewCardProps) {
         </div>
       </div>
       <div className="" ref={printRef}>
+    
         <div className="cards">
+          <div className="flex justify-end">       <BackButton /></div>
+    
           {fields?.map(({ key, label }) => {
             const value = data?.[key];
 
@@ -104,6 +109,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
             {data.is_deleted && <RestoreButton onClick={() => handleRestore(data.id)} />}
             {data.is_deleted && <HardDeleteButton onClick={() => confirmHardDelete(data.id)} />}
             {ConfirmDialogComponent}
+
           </div>
         </div>
 
