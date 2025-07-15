@@ -1,6 +1,6 @@
 'use client';
-
 import ViewCard from '@/components/view/ViewCard';
+
 
 export default function CustomerPage() {
   return (

@@ -25,7 +25,6 @@ export default function ViewCard(props: ViewCardProps) {
 
   
     const SearchFields = generateSearchFieldsFromEndpoint(alias);
-    console.log("SearchFields", SearchFields);
     const { setAsideContent } = useAside();
     useEffect(() => {
       setAsideContent(

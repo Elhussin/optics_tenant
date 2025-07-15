@@ -1,11 +1,8 @@
 import Button from "@/components/ui/button/Button";
 import { Trash2 } from "lucide-react";
+import { BaseButtonProps } from "@/types";
 
-interface DeleteButtonProps {
-  onClick?: () => void;
-}
-
-export default function DeleteButton({ onClick }: DeleteButtonProps) {
+export default function DeleteButton({ onClick }: BaseButtonProps) {
   return (
     <Button
       label="Delete"

@@ -63,7 +63,7 @@ class UserSerializer(serializers.ModelSerializer):
             'deleted_at',
             'phone',
         ]
-        read_only_fields = ['id']
+        read_only_fields = ['id','deleted_at']
         extra_kwargs = {
             'username': {'required': True, 'allow_blank': False},
             'email': {'required': True, 'allow_blank': False},

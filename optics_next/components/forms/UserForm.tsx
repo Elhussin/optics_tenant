@@ -7,7 +7,7 @@ import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { createFetcher } from '@/lib/hooks/useCrudFormRequest';
 import { useEffect , useState } from 'react';
-import { Loading4 } from '@/components/ui/button/loding';
+import { Loading4 } from '@/components/ui/loding';
 
 export default function CreateUserForm(props: formRequestProps) {
   const {alias, onSuccess, className, submitText, mode, id, showCancelButton=true} = props;

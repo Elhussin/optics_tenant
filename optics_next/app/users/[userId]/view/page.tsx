@@ -3,7 +3,7 @@ import ViewDetailsCard from '@/components/view/ViewDetailsCard';
 import { generateViewFieldsWithLabels } from '@/lib/utils/generateViewFields';
 import { schemas } from '@/lib/api/zodClient'
 import { useParamValue } from '@/lib/hooks/useParamValue';
-import { Loading4 } from '@/components/ui/button/loding';
+import { Loading4 } from '@/components/ui/loding';
 
 const fields = generateViewFieldsWithLabels(schemas.User, {
     hiddenFields: ["id", "password"],

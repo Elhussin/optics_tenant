@@ -6,10 +6,30 @@ class DepartmentSerializer(serializers.ModelSerializer):
         model = Department
         fields = '__all__'
 
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     data['is_active'] = instance.is_active
+    #     data['is_deleted'] = instance.is_deleted
+    #     return data
+
 class EmployeeSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Employee
-        fields = '__all__'
+        fields = [
+            "id",
+            "user",
+            "department",
+            "position",
+            "salary",
+            "phone",
+            "hire_date",
+            "is_active",
+            "is_deleted",
+            "created_at",
+            "updated_at",
+        ]
+    
 
 class LeaveSerializer(serializers.ModelSerializer):
     class Meta:

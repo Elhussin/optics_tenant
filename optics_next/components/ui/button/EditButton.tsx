@@ -1,11 +1,9 @@
 import Button from "@/components/ui/button/Button";
 import { Pencil } from "lucide-react";
+import { BaseButtonProps } from "@/types";
 
-interface EditButtonProps {
-  onClick?: () => void;
-}
 
-export default function EditButton({ onClick }: EditButtonProps) {
+export default function EditButton({ onClick }: BaseButtonProps) {
   return (
     <Button
       label="Edit"

@@ -23,7 +23,7 @@ export function useHardDeleteWithDialog({
   const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
-
+  console.log("alias",alias);
   const hardDeleteRequest = useFormRequest({
     alias,
     onSuccess: () => {
@@ -31,10 +31,12 @@ export function useHardDeleteWithDialog({
       onSuccess?.();
       if (redirectAfter) router.back();
     },
-    onError: () => {
-      toast.error('Failed to delete item');
+    onError: (err) => {
+      console.error('Hard delete error:', err.response?.data?.detail);
+      toast.error(err.response?.data?.detail);
     },
   });
+
 
   const confirmHardDelete = (id: string | number) => {
     setSelectedId(id);

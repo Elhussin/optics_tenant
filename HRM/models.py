@@ -1,25 +1,32 @@
 from django.db import models
-from django.db import models
-from datetime import timedelta
-from django.db import models
 from core.models import BaseModel
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class Department(models.Model):
-    name = models.CharField(max_length=100)
-    # manager = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True, blank=True, related_name="managed_departments")
+class Department(BaseModel):
+    name = models.CharField(max_length=100,unique=True)
     description = models.TextField(blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     def __str__(self):
         return self.name
 
 class Employee(BaseModel):
-    
+    Position = [
+        ('manager', 'Manager'),
+        ('employee', 'Employee'),
+        ('hr', 'HR'),
+        ('admin', 'Admin'),
+        ('accountant', 'Accountant'),
+        ('marketing', 'Marketing'),
+        ('sales', 'Sales'),
+        ('delivery', 'Delivery'),
+        ('customer_service', 'Customer Service'),
+    ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
     department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
-    position = models.CharField(max_length=100,blank=True)
+    position = models.CharField(max_length=100,blank=True,choices=Position ,default='employee')
+    # customer_type = models.CharField(max_length=10, choices=CUSTOMER_TYPE_CHOICES, default='individual')
     salary = models.DecimalField(max_digits=10, decimal_places=2,blank=True)
     hire_date = models.DateField(auto_now_add=True)
     phone = models.CharField(max_length=20,blank=True)

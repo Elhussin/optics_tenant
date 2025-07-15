@@ -425,8 +425,6 @@ const Customer = z
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const CustomerRequest = z
@@ -448,8 +446,6 @@ const CustomerRequest = z
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const PatchedCustomerRequest = z
@@ -471,8 +467,6 @@ const PatchedCustomerRequest = z
     address_line2: z.string().max(200),
     city: z.string().max(100),
     postal_code: z.string().max(20),
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -696,47 +690,86 @@ const PatchedAttendanceRequest = z
   })
   .partial()
   .passthrough();
-const Employee = z
+const Department = z
   .object({
     id: z.number().int(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    position: z.string().max(100).optional(),
+    name: z.string().max(100),
+    description: z.string().nullish(),
+    location: z.string().max(100).nullish(),
+  })
+  .passthrough();
+const DepartmentRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().min(1).max(100),
+    description: z.string().nullish(),
+    location: z.string().max(100).nullish(),
+  })
+  .passthrough();
+const PatchedDepartmentRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    name: z.string().min(1).max(100),
+    description: z.string().nullable(),
+    location: z.string().max(100).nullable(),
+  })
+  .partial()
+  .passthrough();
+const PositionEnum = z.enum([
+  "manager",
+  "employee",
+  "hr",
+  "admin",
+  "accountant",
+  "marketing",
+  "sales",
+  "delivery",
+  "customer_service",
+]);
+const BlankEnum = z.unknown();
+const Employee = z
+  .object({
+    id: z.number().int(),
+    user: z.number().int(),
+    department: z.number().int().nullish(),
+    position: z.union([PositionEnum, BlankEnum]).optional(),
     salary: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    hire_date: z.string(),
     phone: z.string().max(20).optional(),
-    user: z.number().int(),
-    department: z.number().int().nullish(),
+    hire_date: z.string(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
 const EmployeeRequest = z
   .object({
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    position: z.string().max(100).optional(),
-    salary: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .optional(),
-    phone: z.string().max(20).optional(),
-    user: z.number().int(),
-    department: z.number().int().nullish(),
+    department: z.number().int().nullable(),
+    position: z.union([PositionEnum, BlankEnum]),
+    salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    phone: z.string().max(20),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
   })
+  .partial()
   .passthrough();
 const PatchedEmployeeRequest = z
   .object({
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    position: z.string().max(100),
+    department: z.number().int().nullable(),
+    position: z.union([PositionEnum, BlankEnum]),
     salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     phone: z.string().max(20),
-    user: z.number().int(),
-    department: z.number().int().nullable(),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -1124,7 +1157,6 @@ const SphericalEnum = z.enum([
   "+29.75",
   "+30.00",
 ]);
-const BlankEnum = z.unknown();
 const NullEnum = z.unknown();
 const CylinderEnum = z.enum([
   "-15.00",
@@ -1992,6 +2024,11 @@ export const schemas = {
   Attendance,
   AttendanceRequest,
   PatchedAttendanceRequest,
+  Department,
+  DepartmentRequest,
+  PatchedDepartmentRequest,
+  PositionEnum,
+  BlankEnum,
   Employee,
   EmployeeRequest,
   PatchedEmployeeRequest,
@@ -2012,7 +2049,6 @@ export const schemas = {
   PerformanceReviewRequest,
   PatchedPerformanceReviewRequest,
   SphericalEnum,
-  BlankEnum,
   NullEnum,
   CylinderEnum,
   AdditionEnum,
@@ -3124,33 +3160,6 @@ export const endpoints = makeApi([
     path: "/api/crm/customers/",
     alias: "crm_customers_list",
     requestFormat: "json",
-    parameters: [
-      {
-        name: "customer_type",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "email",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "first_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "last_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "phone",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
     response: z.array(Customer),
   },
   {
@@ -3176,7 +3185,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Customer,
@@ -3195,7 +3204,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Customer,
@@ -3214,7 +3223,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Customer,
@@ -3228,7 +3237,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: z.void(),
@@ -3757,9 +3766,176 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/hrm/departments/",
+    alias: "hrm_departments_list",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "location",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.array(Department),
+  },
+  {
+    method: "post",
+    path: "/api/hrm/departments/",
+    alias: "hrm_departments_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DepartmentRequest,
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "get",
+    path: "/api/hrm/departments/:id/",
+    alias: "hrm_departments_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "put",
+    path: "/api/hrm/departments/:id/",
+    alias: "hrm_departments_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DepartmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "patch",
+    path: "/api/hrm/departments/:id/",
+    alias: "hrm_departments_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedDepartmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "delete",
+    path: "/api/hrm/departments/:id/",
+    alias: "hrm_departments_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/hrm/employee-form-options/",
+    alias: "hrm_employee_form_options_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/hrm/employees/",
     alias: "hrm_employees_list",
     requestFormat: "json",
+    parameters: [
+      {
+        name: "department",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "hire_date_after",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "hire_date_before",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "position",
+        type: "Query",
+        schema: z
+          .array(
+            z.enum([
+              "accountant",
+              "admin",
+              "customer_service",
+              "delivery",
+              "employee",
+              "hr",
+              "manager",
+              "marketing",
+              "sales",
+            ])
+          )
+          .optional(),
+      },
+      {
+        name: "salary_max",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "salary_min",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "user__username",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
     response: z.array(Employee),
   },
   {

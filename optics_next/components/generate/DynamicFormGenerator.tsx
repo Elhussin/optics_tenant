@@ -12,7 +12,7 @@ import Button from '@/components/ui/button/Button';
 import { cn } from '@/lib/utils/cn';
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { createFetcher } from '@/lib/hooks/useCrudFormRequest';
-import { Loading4 } from '@/components/ui/button/loding';
+import { Loading4 } from '@/components/ui/loding';
 import { DynamicFormProps } from '@/types/DynamicFormTypes';
 
 
@@ -35,13 +35,16 @@ export default function DynamicFormGenerator<T extends FieldValues>({
   const config = { ...defaultConfig, ...userConfig };
   const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
   const shape = schema.shape;
-  const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group'];
+  const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group','is_active','is_deleted','deleted_at'];
+  if (mode === 'edit') {
+    ignoredFields.push('password');
+  }
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
   const visibleFields = config.fieldOrder || allFields;
 
   const { form, onSubmit } = useCrudFormRequest({
     alias: alias!, defaultValues,
-    onSuccess: (res) => { onSuccess?.(); console.log(res); }
+    onSuccess: (res) => { onSuccess?.();}
   });
 
 

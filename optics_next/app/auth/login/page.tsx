@@ -4,7 +4,7 @@ import { useUser } from '@/lib/context/userContext';
 import LoginRequestForm from '@/components/forms/LoginForm';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import { Loading4 } from '@/components/ui/button/loding';
+import { Loading4 } from '@/components/ui/loding';
 export default function LoginPage() {
   const { user } = useUser();
   const router = useRouter();

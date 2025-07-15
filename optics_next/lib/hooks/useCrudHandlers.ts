@@ -28,7 +28,33 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
   const handleCancel = () => router.back();
   const handleRefresh = () => router.refresh();
 
-  // 👉 الحذف الجزئي (soft)
+
+
+  const activateRequest=useFormRequest({
+    alias: softDeleteAlias ?? '',
+
+    onSuccess: (res) => {
+      toast.success('Item activated');
+      onSuccessRefresh?.();
+    },
+    onError: (err) => {
+  
+      toast.error('Failed to activate item');
+    },
+  });
+
+    
+  const deactivateRequest=useFormRequest({
+    alias: softDeleteAlias ?? '',
+    onSuccess: () => {
+      toast.success('Item deactivated');
+      onSuccessRefresh?.();
+    },
+    onError: (err) => {
+      toast.error('Failed to deactivate item');
+    },
+  });
+
   const softDeleteRequest = useFormRequest({
     alias: softDeleteAlias ?? '',
     onSuccess: () => {
@@ -36,12 +62,12 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
       onSuccessRefresh?.();
     },
     onError: (err) => {
-      console.error('Soft delete error:', err);
+  
       toast.error('Failed to soft-delete item');
     },
   });
 
-  // 👉 الاستعادة
+
   const restoreRequest = useFormRequest({
     alias: restoreAlias ?? '',
     onSuccess: () => {
@@ -49,40 +75,54 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
       onSuccessRefresh?.();
     },
     onError: (err) => {
-      console.error('Restore error:', err);
       toast.error('Failed to restore item');
     },
   });
 
 
-
   // 👉 عمليات CRUD
   const handleSoftDelete = (id: string | number) => {
     if (!softDeleteAlias) {
-      console.warn('Soft delete alias not defined');
       return;
     }
     softDeleteRequest.submitForm({ id, is_deleted: true,is_active: false });
+    // router.back();
   };
 
   const handleRestore = (id: string | number) => {
     if (!restoreAlias) {
-      console.warn('Restore alias not defined');
       return;
     }
     restoreRequest.submitForm({ id, is_deleted: false,is_active: true });
   };
 
 
+  const handleActivate = (id: string | number) => {
+    if (!softDeleteAlias) {
+      return;
+    }
+    activateRequest.submitForm({ id, is_active: true });
+  };
+
+  const handleDeactivate = (id: string | number) => {
+    if (!softDeleteAlias) {
+  
+      return;
+    }
+    deactivateRequest.submitForm({ id, is_active: false });
+  };
+
 
     return {
     handleView,
     handleEdit,
     handleCreate,
-    handleSoftDelete,      // Soft delete
-    handleRestore,     // Restore
+    handleSoftDelete,     
+    handleRestore, 
     handleCancel,
     handleRefresh,
+    handleActivate,
+    handleDeactivate,
   };
 
 

@@ -5,7 +5,7 @@ import { Loading4 } from '@/components/ui/loding';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
 import { useParamValue } from '@/lib/hooks/useParamValue';
 
-export default function CustomerEditPage() {
+export default function EmployeeEditPage() {
     const id= useParamValue("id");
 
     if(!id){
@@ -15,14 +15,14 @@ export default function CustomerEditPage() {
     return (
         <>
             <div className="main-header">
-                <h2 className="title-1">Edit Customer</h2>
+                <h2 className="title-1">Edit Employee</h2>
                 <BackButton />
             </div>
             <DynamicFormGenerator
-                schemaName="Customer"
+                schemaName="Employee"
                 id={id}
-                alias="crm_customers_partial_update"
-                onSuccess={() => {toast.success('Customer updated successfully');}}
+                alias="hrm_employees_partial_update"
+                onSuccess={() => {toast.success('Employee updated successfully');}}
                 mode="edit"
                 submitText="Update"
     

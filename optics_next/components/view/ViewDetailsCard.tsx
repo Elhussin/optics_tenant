@@ -9,7 +9,9 @@ import EditButton from "@/components/ui/button/EditButton";
 import DeleteButton from "@/components/ui/button/DeleteButton";
 import RestoreButton from "@/components/ui/button/RestoreButton";
 import HardDeleteButton from "@/components/ui/button/HardDeleteButton";
-import { Loading4 } from "@/components/ui/button/loding";
+import ActivateButton from "@/components/ui/button/ActivateButton";
+import DeactivateButton from "@/components/ui/button/DeactivateButton";
+import { Loading4 } from "@/components/ui/loding";
 import { createFetcher } from "@/lib/hooks/useCrudFormRequest";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { useEffect, useState } from "react";
@@ -25,10 +27,9 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const fetchUser = createFetcher(alias, setData);
   useEffect(() => { if (id) { fetchUser({ id: id }); } }, [id]);
 
-  console.log("View datils", data);
   const printRef = useRef<HTMLDivElement>(null);
 
-  const { handleEdit, handleSoftDelete, handleRestore } = useCrudHandlers(path, {
+  const { handleEdit, handleSoftDelete, handleRestore,handleActivate,handleDeactivate } = useCrudHandlers(path, {
     softDeleteAlias: restoreAlias,
     restoreAlias: restoreAlias,
     hardDeleteAlias: hardDeleteAlias,
@@ -36,7 +37,33 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   });
   const { confirmHardDelete, ConfirmDialogComponent, } = useHardDeleteWithDialog({ alias: hardDeleteAlias, onSuccess: () => fetchUser({ id }) });
 
+  const renderButtons=(data:any)=> {
 
+    return (
+      <>
+        {data.is_deleted ? (
+          <>
+            <RestoreButton onClick={() => handleRestore(data.id)} />
+            <HardDeleteButton onClick={() => confirmHardDelete(data.id)} />
+          </>
+        ) : (
+          <>
+            <EditButton onClick={() => handleEdit(data.id)} />
+            <DeleteButton onClick={() => handleSoftDelete(data.id)} />
+          </>
+        )}
+        {data.is_active ? !data.is_deleted && (
+          <DeactivateButton onClick={() => handleDeactivate(data.id)} />
+        ) : !data.is_deleted && (
+          <ActivateButton onClick={() => handleActivate(data.id)} />
+        )}
+      </>
+    );
+  }
+  
+  
+  
+  
   if (!data) {
     return <Loading4 />
   }
@@ -103,13 +130,8 @@ export default function ViewDetailsCard(props: ViewCardProps) {
             <p className="text-red-500 text-sm bg-red-50">{data.is_deleted && "This item is deleted You can restore it or delete it permanently  " }</p>
           </div>
           <div className="btn-card">
-            {!data.is_deleted && <EditButton onClick={() => handleEdit(data.id)} />}
-
-            {!data.is_deleted && <DeleteButton onClick={() => handleSoftDelete(data.id)} />}
-            {data.is_deleted && <RestoreButton onClick={() => handleRestore(data.id)} />}
-            {data.is_deleted && <HardDeleteButton onClick={() => confirmHardDelete(data.id)} />}
+            {renderButtons(data)}
             {ConfirmDialogComponent}
-
           </div>
         </div>
 

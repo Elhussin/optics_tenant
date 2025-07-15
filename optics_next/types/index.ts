@@ -78,11 +78,13 @@ export interface ViewCardProps {
 
 
 
-
-
-export interface ButtonProps {
-  label: string;
+export interface BaseButtonProps {
   onClick: () => void ;
+
+};
+
+export interface ButtonProps extends BaseButtonProps  {
+  label: string;
   variant?: "primary" | "secondary" | "danger" | "success" | "info";
   icon?: React.ReactNode;
   className?: string;

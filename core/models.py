@@ -13,10 +13,10 @@ class BaseModel(models.Model):
     class Meta:
         abstract = True  # without this line, it will create a table in the database
 
-    def delete(self, using=None, keep_parents=False):
-        """soft delete"""
-        self.is_deleted = True
-        self.save()
+    # def delete(self, using=None, keep_parents=False):
+    #     """soft delete"""
+    #     self.is_deleted = True
+    #     self.save()
 
     # def __str__(self):
     #     return f"{self.__class__.__name__} #{self.pk}"

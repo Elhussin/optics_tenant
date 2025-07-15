@@ -1,11 +1,10 @@
 import Button from "@/components/ui/button/Button";
 import { Eye } from "lucide-react";
+import { BaseButtonProps } from "@/types";
 
-interface ViewButtonProps {
-  onClick?: () => void;
-}
 
-export default function ViewButton({ onClick }: ViewButtonProps) {
+
+export default function ViewButton({ onClick }: BaseButtonProps) {
   return (
     <Button
       label="View"

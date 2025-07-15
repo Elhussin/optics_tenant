@@ -182,17 +182,13 @@ class ProfileView(APIView):
         
 
 class UserViewSet(viewsets.ModelViewSet):
-
-
-
-    queryset = User.objects.all()
+    queryset = User.objects.filter(is_deleted=False)
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
     permission_classes = [IsAuthenticated] 
 
     def get_queryset(self):
-        # يمكن فلترة بناءً على المستخدم الحالي إذا أردت مثلاً
         user = self.request.user
         if user.is_superuser:
             return User.objects.all()

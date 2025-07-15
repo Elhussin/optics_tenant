@@ -1,11 +1,9 @@
 import Button from "@/components/ui/button/Button";
 import { ArrowLeft } from "lucide-react";
+import { BaseButtonProps } from "@/types";
 
-interface RestoreButtonProps {
-  onClick?: () => void;
-}
 
-export default function RestoreButton({ onClick }: RestoreButtonProps) {
+export default function RestoreButton({ onClick }: BaseButtonProps) {
   return (
     <Button
       label="Restore"

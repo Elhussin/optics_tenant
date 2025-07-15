@@ -155,7 +155,7 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
 
   // معالجة input عادي
   const inputType = template.type || 'text';
-  const isDisabled = mode === 'edit' && (fieldName === 'email' || fieldName === 'username' || fieldName === 'password');
+  const isDisabled = mode === 'edit' && (fieldName === 'username' || fieldName === 'password');
   const isHidden = mode === 'edit' && fieldName === 'password';
 
   return (
