@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchField } from '@/types/search';
 import { useState } from 'react';
-import Button from '@/components/ui/button/Button';
+import Button from '@/components/ui/buttons/Button';
 
 interface Props {
   fields: SearchField[];

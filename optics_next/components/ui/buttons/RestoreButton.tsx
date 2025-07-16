@@ -1,4 +1,4 @@
-import Button from "@/components/ui/button/Button";
+import Button from "@/components/ui/buttons/Button";
 import { ArrowLeft } from "lucide-react";
 import { BaseButtonProps } from "@/types";
 

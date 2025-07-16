@@ -9,11 +9,11 @@
   --font-main: 'Mergan', sans-serif;
   --font-alt: 'Cairo', sans-serif;
 
-  --color-primary: #4f46e5;
+  --color-primary: #3060aa;
   --color-secondary: #f59e0b;
   --color-danger: #dc2626;
   --color-success: #22c55d;
-  --color-info: #06702d5d;
+  --color-info: #0d4923;
 
 
   --bg-body: #f9fafb;
@@ -68,28 +68,42 @@ body {
 
 /* 🧩 3. Reusable Components */
 .btn {
-  @apply flex items-center gap-2 px-4 py-2 rounded-xl transition-all text-sm font-semibold;
+  @apply flex items-center gap-2 font-medium px-4 py-2 rounded-md transition-all text-white text-sm  hover:opacity-70;
+}
+
+
+.btn-close {
+  @apply absolute top-3 right-3 text-gray-500 hover:text-red-600 text-2xl font-bold
 }
 
 .btn-primary {
-  @apply bg-[var(--color-primary)] text-white hover:opacity-70;
+  @apply bg-[var(--color-primary)]
 }
 
 
 .btn-secondary {
-  @apply bg-[var(--color-secondary)] text-white hover:opacity-70;
+  @apply bg-[var(--color-secondary)];
 }
 
 .btn-danger {
-  @apply bg-[var(--color-danger)] text-white hover:opacity-70;
+  @apply bg-[var(--color-danger)];
 }
 
 .btn-success {
-  @apply bg-[var(--color-success)] text-white hover:opacity-70;
+  @apply bg-[var(--color-success)] ;
 }
 
 .btn-info {
-  @apply bg-[var(--color-info)] text-white hover:opacity-70 ;
+  @apply bg-[var(--color-info)] ;
+}
+
+.btn-cancel {
+  @apply bg-gray-400;
+
+}
+.btn-reset {
+  @apply bg-gray-500;
+
 }
 
 .body{
@@ -163,7 +177,7 @@ body {
          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
 }
 
-.select-option {
+.option {
   @apply cursor-pointer hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white;
 }
 
@@ -193,6 +207,47 @@ body {
 }
 
 
+
+.option__control {
+  @apply border rounded-md px-2 py-1 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.option__option {
+  @apply cursor-pointer hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white;
+}
+
+.option__menu {
+  @apply border rounded-md shadow-lg mt-1;
+}
+
+.option__single-value {
+  @apply text-gray-900 dark:text-white;
+}
+
+.option__placeholder {
+  @apply text-gray-400;
+}
+
+/* Tailwind + dark mode styling */
+.dark .rs__control {
+  @apply bg-gray-800 border-gray-700 text-white;
+}
+
+.dark .rs__menu {
+  @apply bg-gray-800 text-white;
+}
+
+.dark .rs__option {
+  @apply hover:bg-gray-700 text-white;
+}
+
+.dark .rs__single-value {
+  @apply text-white;
+}
+
+.dark .rs__placeholder {
+  @apply text-gray-400;
+}
 
 
 @media print {

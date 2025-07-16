@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useUser } from '@/lib/context/userContext';
-import { AsideButton } from "@/components/ui/button/AsideButton";
-import LogoutButton from '../ui/button/logout';
+import { AsideButton } from "@/components/ui/buttons/AsideButton";
+import LogoutButton from '../ui/buttons/logout';
 import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
 

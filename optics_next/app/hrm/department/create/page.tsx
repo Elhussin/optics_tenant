@@ -1,7 +1,7 @@
 'use client';
 import { toast } from 'sonner';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
-import { BackButton } from '@/components/ui/button/ActionButtons';
+import { BackButton } from '@/components/ui/buttons/ActionButtons';
 
 export default function CreateCustomerPage() {
 
@@ -9,7 +9,7 @@ export default function CreateCustomerPage() {
     <>
       <div className="main-header">
         <h2 className="title-1">Add Department</h2>
-        <BackButton />
+        {/* <BackButton /> */}
       </div>
       <DynamicFormGenerator
         schemaName="Department"

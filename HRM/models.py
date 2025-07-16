@@ -1,6 +1,9 @@
 from django.db import models
 from core.models import BaseModel
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import date
+
 User = get_user_model()
 
 
@@ -27,7 +30,8 @@ class Employee(BaseModel):
     department_id = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
     position = models.CharField(max_length=100,choices=Position ,default='employee')
     salary = models.DecimalField(max_digits=10, decimal_places=2,blank=True)
-    hire_date = models.DateField(auto_now_add=True)
+    hire_date = models.DateField(default=date.today)
+
     phone = models.CharField(max_length=20,blank=True)
     def __str__(self):
         return self.user_id.username

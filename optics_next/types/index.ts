@@ -85,10 +85,10 @@ export interface BaseButtonProps {
 
 export interface ButtonProps extends BaseButtonProps  {
   label: string;
-  variant?: "primary" | "secondary" | "danger" | "success" | "info";
+  variant?: string;
   icon?: React.ReactNode;
   className?: string;
-  type?: "button" | "submit" | "reset";
+  type?: "button" | "submit" | "reset" 
   title?: string;
   disabled?: boolean;
 };

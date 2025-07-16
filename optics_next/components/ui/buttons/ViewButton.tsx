@@ -1,4 +1,4 @@
-import Button from "@/components/ui/button/Button";
+import Button from "@/components/ui/buttons/Button";
 import { Eye } from "lucide-react";
 import { BaseButtonProps } from "@/types";
 

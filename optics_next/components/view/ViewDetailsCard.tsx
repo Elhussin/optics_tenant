@@ -5,19 +5,19 @@ import { isValidDate, formatDate, isImageUrl, handleDownloadPDF } from "@/lib/ut
 import { handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
 import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
 import { ViewCardProps } from "@/types";
-import EditButton from "@/components/ui/button/EditButton";
-import DeleteButton from "@/components/ui/button/DeleteButton";
-import RestoreButton from "@/components/ui/button/RestoreButton";
-import HardDeleteButton from "@/components/ui/button/HardDeleteButton";
-import ActivateButton from "@/components/ui/button/ActivateButton";
-import DeactivateButton from "@/components/ui/button/DeactivateButton";
+import EditButton from "@/components/ui/buttons/EditButton";
+import DeleteButton from "@/components/ui/buttons/DeleteButton";
+import RestoreButton from "@/components/ui/buttons/RestoreButton";
+import HardDeleteButton from "@/components/ui/buttons/HardDeleteButton";
+import ActivateButton from "@/components/ui/buttons/ActivateButton";
+import DeactivateButton from "@/components/ui/buttons/DeactivateButton";
 import { Loading4 } from "@/components/ui/loding";
 import { createFetcher } from "@/lib/hooks/useCrudFormRequest";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { useEffect, useState } from "react";
-import Button from "@/components/ui/button/Button";
+import Button from "@/components/ui/buttons/Button";
 import { Copy, Printer, FileText } from "lucide-react";
-import {BackButton} from "@/components/ui/button/ActionButtons";
+import {BackButton} from "@/components/ui/buttons/ActionButtons";
 
 export default function ViewDetailsCard(props: ViewCardProps) {
   const { alias, fields, id, restoreAlias, hardDeleteAlias, path, title = "Details", } = props;

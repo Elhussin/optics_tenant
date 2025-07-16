@@ -749,7 +749,7 @@ const Employee = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     phone: z.string().max(20).optional(),
-    hire_date: z.string(),
+    hire_date: z.string().optional(),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     created_at: z.string().datetime({ offset: true }),
@@ -766,6 +766,7 @@ const EmployeeRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     phone: z.string().max(20).optional(),
+    hire_date: z.string().optional(),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
   })
@@ -777,6 +778,7 @@ const PatchedEmployeeRequest = z
     position: PositionEnum,
     salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     phone: z.string().max(20),
+    hire_date: z.string(),
     is_active: z.boolean(),
     is_deleted: z.boolean(),
   })
@@ -5270,9 +5272,3 @@ export const endpoints = makeApi([
     response: z.void(),
   },
 ]);
-
-export const api = new Zodios(endpoints);
-
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options);
-}

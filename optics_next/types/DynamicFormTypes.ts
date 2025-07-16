@@ -1,5 +1,3 @@
-import { FieldValues, Path } from 'react-hook-form';
-
 export interface FieldTemplate {
   component: string;
   type?: string;
@@ -37,26 +35,9 @@ export interface ForeignKeyConfig {
   labelField: string;
   valueField: string;
   searchField?: string;
+  createPage?: string;
 }
 
 export interface RelationshipConfig {
   [fieldName: string]: ForeignKeyConfig;
 }
-
-
-
-
-// export interface DynamicFormProps<T extends FieldValues> {
-//   schemaName: string;
-//   onSubmit?: (data: T) => void | Promise<void>;
-//   onCancel?: () => void;
-//   defaultValues?: Partial<T>;
-//   className?: string;
-//   submitText?: string;
-//   showCancelButton?: boolean;
-//   mode?: 'create' | 'edit';
-//   config?: Partial<GeneratorConfig>;
-//   alias?: string;
-//   onSuccess?: () => void;
-//   id?: string;
-// }

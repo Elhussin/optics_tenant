@@ -12,6 +12,12 @@ const variantClasses = {
     danger: "btn-danger",
     success: "btn-success",
     info: "btn-info",
+    outline: "btn-outline",
+    link: "btn-link",
+    reset: "btn-reset",
+    cancel: "btn-cancel",
+    close: "btn-close",
+    
   };
 
   return (

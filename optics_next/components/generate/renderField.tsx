@@ -1,62 +1,50 @@
-import React from 'react';
-import { FieldValues, Path } from 'react-hook-form';
-import { GeneratorConfig } from '@/types/DynamicFormTypes';
-import { fieldTemplates } from './DynamicFormhelper';
+"use client"
+import React, { useState } from 'react';
 import { z } from 'zod';
-import { detectFieldType ,unwrapSchema} from './detectFieldType';
+import { detectFieldType, unwrapSchema } from './detectFieldType';
+import { getFieldLabel, isFieldRequired } from './DynamicFormhelper';
+import { ForeignKeyField, UnionField } from './detectFieldType';
+import { fieldTemplates } from './dataConfig';
+import { Controller } from "react-hook-form";
+import ReactSelect from "react-select";
 
-
-
-function getFieldLabel(field: string, schema: z.ZodTypeAny): string {
-  return schema.description || field.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
-}
-
-function isFieldRequired(schema: z.ZodTypeAny): boolean {
-  return !(schema instanceof z.ZodOptional);
-}
-
-function getUnionOptions(schema: z.ZodUnion<any>): string[] {
-  const options: string[] = [];
-  
-  schema._def.options.forEach((option: any) => {
-    if (option instanceof z.ZodLiteral) {
-      options.push(option.value);
-    } else if (option instanceof z.ZodString) {
-      // يمكن إضافة logic إضافي هنا للتعامل مع string enums
-      options.push(option._def.value || 'string');
-    }
-  });
-  
-  return options;
-}
-
-function useForeignKeyData(fieldName: string, fieldType: string) {
-  const [data, setData] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
-  
-  useEffect(() => {
-    if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
-      setLoading(true);
-      const config = relationshipConfigs[fieldName];
-      const fetcher = createFetcher(config.endpoint, (result: any) => {
-        setData(Array.isArray(result) ? result : result.data || []);
-        setLoading(false);
-      });
-      
-      fetcher({});
-    }
-  }, [fieldName, fieldType]);
-  
-  return { data, loading };
-}
-
-export const renderField = <T extends FieldValues>(fieldName: string, fieldSchema: z.ZodTypeAny, config: GeneratorConfig, form: Form<T>, mode: 'create' | 'edit') => {
+export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
   const fieldType = detectFieldType(fieldName, fieldSchema);
   const template = fieldTemplates[fieldType] || fieldTemplates['text'] || { component: 'input', type: 'text' };
   const unwrappedSchema = unwrapSchema(fieldSchema);
   const label = getFieldLabel(fieldName, fieldSchema);
   const required = isFieldRequired(fieldSchema);
-  const fieldPath = fieldName as Path<T>;
+
+
+  if (fieldType === 'foreignkey') {
+    return (
+      <ForeignKeyField
+        key={fieldName}
+        fieldName={fieldName}
+        register={form.register}
+        config={config}
+        label={label}
+        required={required}
+        errors={form.formState.errors}
+      />
+    );
+  }
+
+  // معالجة Union
+  if (fieldType === 'union') {
+    return (
+      <UnionField
+        key={fieldName}
+        fieldName={fieldName}
+        fieldSchema={fieldSchema}
+        register={form.register}
+        config={config}
+        label={label}
+        required={required}
+        errors={form.formState.errors}
+      />
+    );
+  }
 
   // معالجة checkbox
   if (template.wrapper === 'checkbox') {
@@ -66,47 +54,65 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
           <input
             id={fieldName}
             type="checkbox"
-            {...form.register(fieldPath)}
+            {...form.register(fieldName)}
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />
           <label htmlFor={fieldName} className={config.labelClasses}>
             {label}
           </label>
         </div>
-        {form.formState.errors[fieldPath] && (
+        {form.formState.errors[fieldName] && (
           <p className={config.errorClasses}>
-            {form.formState.errors[fieldPath]?.message as string}
+            {form.formState.errors[fieldName]?.message as string}
           </p>
         )}
       </div>
     );
   }
 
-  // معالجة select
+  // معالجة select عادي (enum)
   if (fieldType === 'select' && unwrappedSchema instanceof z.ZodEnum) {
     return (
+  
       <div key={fieldName} className={config.spacing}>
-        <label htmlFor={fieldName} className={config.labelClasses}>
-          {label}{required ? ' *' : ''}
-        </label>
-        <select
-          id={fieldName}
-          {...form.register(fieldPath)}
-          className={config.baseClasses}
-        >
-          <option className="select-option" value="">Select...</option>
-          {unwrappedSchema.options.map((option: string) => (
-            <option className="select-option" key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-        {form.formState.errors[fieldPath] && (
-          <p className={config.errorClasses}>
-            {form.formState.errors[fieldPath]?.message as string}
-          </p>
+      <label htmlFor={fieldName} className={config.labelClasses}>
+        {label}
+        {required ? ' *' : ''}
+      </label>
+    
+      <Controller
+        name={fieldName}
+        control={form.control}
+        rules={{ required: required ? `${label} is required` : false }}
+        render={({ field }) => (
+          <ReactSelect
+            id={fieldName}
+            options={unwrappedSchema.options.map((opt: string) => ({
+              label: getFieldLabel(opt, unwrappedSchema),
+              value: opt
+            }))}
+            onChange={(selectedOption) => field.onChange(selectedOption?.value)}
+            onBlur={field.onBlur}
+            value={
+              unwrappedSchema.options
+                .map((opt: string) => ({ label: opt, value: opt }))
+                .find((opt : any) => opt.value === field.value) || null
+            }
+            placeholder="Select..."
+            isClearable
+              classNamePrefix="rs"
+
+          />
         )}
-      </div>
+      />
+    
+      {form.formState.errors[fieldName] && (
+        <p className={config.errorClasses}>
+          {form.formState.errors[fieldName]?.message as string}
+        </p>
+      )}
+    </div>
+
     );
   }
 
@@ -120,14 +126,14 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
         </label>
         <textarea
           id={fieldName}
-          {...form.register(fieldPath)}
+          {...form.register(fieldName)}
           className={config.baseClasses}
           rows={rows}
           placeholder={`${label}...`}
         />
-        {form.formState.errors[fieldPath] && (
+        {form.formState.errors[fieldName] && (
           <p className={config.errorClasses}>
-            {form.formState.errors[fieldPath]?.message as string}
+            {form.formState.errors[fieldName]?.message as string}
           </p>
         )}
       </div>
@@ -145,17 +151,17 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
           <input
             id={fieldName}
             type="text"
-            {...form.register(fieldPath)}
+            {...form.register(fieldName)}
             className={config.baseClasses}
-            placeholder="Values separated by commas"
+            placeholder="add values separated by commas"
           />
           <p className="text-xs text-gray-500">
-            Enter values separated by commas
+            add values separated by commas
           </p>
         </div>
-        {form.formState.errors[fieldPath] && (
+        {form.formState.errors[fieldName] && (
           <p className={config.errorClasses}>
-            {form.formState.errors[fieldPath]?.message as string}
+            {form.formState.errors[fieldName]?.message as string}
           </p>
         )}
       </div>
@@ -173,14 +179,14 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
           <input
             id={fieldName}
             type="text"
-            {...form.register(fieldPath)}
+            {...form.register(fieldName)}
             className={config.baseClasses}
             placeholder="JSON object"
           />
         </div>
-        {form.formState.errors[fieldPath] && (
+        {form.formState.errors[fieldName] && (
           <p className={config.errorClasses}>
-            {form.formState.errors[fieldPath]?.message as string}
+            {form.formState.errors[fieldName]?.message as string}
           </p>
         )}
       </div>
@@ -189,29 +195,26 @@ export const renderField = <T extends FieldValues>(fieldName: string, fieldSchem
 
   // معالجة input عادي
   const inputType = template.type || 'text';
-  const isDisabled = mode === 'edit' && (fieldName === 'username' || fieldName === 'password');
-  const isHidden = mode === 'edit' && fieldName === 'password';
+  const mode = form.formState.defaultValues ? 'edit' : 'create'; // A way to infer mode
+  const isDisabled = mode === 'edit' && (fieldName === 'email' || fieldName === 'username' || fieldName === 'password');
 
   return (
     <div key={fieldName} className={config.spacing}>
-      {!isHidden && (
-        <label htmlFor={fieldName} className={config.labelClasses}>
-          {label}{required ? ' *' : ''}
-        </label>
-      )}
+      <label htmlFor={fieldName} className={config.labelClasses}>
+        {label}{required ? ' *' : ''}
+      </label>
       <input
         id={fieldName}
         type={inputType}
-        {...form.register(fieldPath)}
+        {...form.register(fieldName)}
         className={config.baseClasses}
         placeholder={`${label}...`}
         disabled={isDisabled}
-        hidden={isHidden}
         {...(template.props || {})}
       />
-      {form.formState.errors[fieldPath] && (
+      {form.formState.errors[fieldName] && (
         <p className={config.errorClasses}>
-          {form.formState.errors[fieldPath]?.message as string}
+          {form.formState.errors[fieldName]?.message as string}
         </p>
       )}
     </div>

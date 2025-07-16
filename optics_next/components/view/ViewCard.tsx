@@ -1,12 +1,12 @@
 "use client";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
-import Button from '@/components/ui/button/Button';
+import Button from '@/components/ui/buttons/Button';
 import { Plus } from 'lucide-react';
 import { ViewCardProps } from '@/types';
 import { formatLabel } from '@/lib/utils/cardViewHelper';
-import ViewButton from "@/components/ui/button/ViewButton";
-import EditButton from "@/components/ui/button/EditButton";
+import ViewButton from "@/components/ui/buttons/ViewButton";
+import EditButton from "@/components/ui/buttons/EditButton";
 import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFields";
 import { useAside } from "@/lib/context/AsideContext";
 import { useEffect } from "react";

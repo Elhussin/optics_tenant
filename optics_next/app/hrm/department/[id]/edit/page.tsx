@@ -1,6 +1,6 @@
 'use client';
 import { toast } from 'sonner';
-import { BackButton } from '@/components/ui/button/ActionButtons';
+import { BackButton } from '@/components/ui/buttons/ActionButtons';
 import { Loading4 } from '@/components/ui/loding';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
 import { useParamValue } from '@/lib/hooks/useParamValue';
@@ -16,7 +16,7 @@ export default function DepartmentEditPage() {
         <>
             <div className="main-header">
                 <h2 className="title-1">Edit Department</h2>
-                <BackButton />
+                {/* <BackButton /> */}
             </div>
             <DynamicFormGenerator
                 schemaName="Department"
