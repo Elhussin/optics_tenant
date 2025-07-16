@@ -425,6 +425,8 @@ const Customer = z
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const CustomerRequest = z
@@ -446,6 +448,8 @@ const CustomerRequest = z
     address_line2: z.string().max(200).optional(),
     city: z.string().max(100).optional(),
     postal_code: z.string().max(20).optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const PatchedCustomerRequest = z
@@ -467,6 +471,8 @@ const PatchedCustomerRequest = z
     address_line2: z.string().max(200),
     city: z.string().max(100),
     postal_code: z.string().max(20),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -732,13 +738,12 @@ const PositionEnum = z.enum([
   "delivery",
   "customer_service",
 ]);
-const BlankEnum = z.unknown();
 const Employee = z
   .object({
     id: z.number().int(),
-    user: z.number().int(),
-    department: z.number().int().nullish(),
-    position: z.union([PositionEnum, BlankEnum]).optional(),
+    user_id: z.number().int(),
+    department_id: z.number().int().nullish(),
+    position: PositionEnum.optional(),
     salary: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -753,19 +758,23 @@ const Employee = z
   .passthrough();
 const EmployeeRequest = z
   .object({
-    department: z.number().int().nullable(),
-    position: z.union([PositionEnum, BlankEnum]),
-    salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    phone: z.string().max(20),
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
+    user_id: z.number().int(),
+    department_id: z.number().int().nullish(),
+    position: PositionEnum.optional(),
+    salary: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    phone: z.string().max(20).optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
-  .partial()
   .passthrough();
 const PatchedEmployeeRequest = z
   .object({
-    department: z.number().int().nullable(),
-    position: z.union([PositionEnum, BlankEnum]),
+    user_id: z.number().int(),
+    department_id: z.number().int().nullable(),
+    position: PositionEnum,
     salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     phone: z.string().max(20),
     is_active: z.boolean(),
@@ -1157,6 +1166,7 @@ const SphericalEnum = z.enum([
   "+29.75",
   "+30.00",
 ]);
+const BlankEnum = z.unknown();
 const NullEnum = z.unknown();
 const CylinderEnum = z.enum([
   "-15.00",
@@ -1902,7 +1912,7 @@ const User = z
     is_staff: z.boolean().optional(),
     role: UserRoleEnum.optional(),
     is_deleted: z.boolean().optional(),
-    deleted_at: z.string().datetime({ offset: true }).nullish(),
+    deleted_at: z.string().datetime({ offset: true }).nullable(),
     phone: z.string().max(20).nullish(),
   })
   .passthrough();
@@ -1930,7 +1940,6 @@ const UserRequest = z
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     is_deleted: z.boolean().optional(),
-    deleted_at: z.string().datetime({ offset: true }).nullish(),
     phone: z.string().max(20).nullish(),
   })
   .passthrough();
@@ -1948,7 +1957,6 @@ const PatchedUserRequest = z
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     is_deleted: z.boolean(),
-    deleted_at: z.string().datetime({ offset: true }).nullable(),
     phone: z.string().max(20).nullable(),
   })
   .partial()
@@ -2028,7 +2036,6 @@ export const schemas = {
   DepartmentRequest,
   PatchedDepartmentRequest,
   PositionEnum,
-  BlankEnum,
   Employee,
   EmployeeRequest,
   PatchedEmployeeRequest,
@@ -2049,6 +2056,7 @@ export const schemas = {
   PerformanceReviewRequest,
   PatchedPerformanceReviewRequest,
   SphericalEnum,
+  BlankEnum,
   NullEnum,
   CylinderEnum,
   AdditionEnum,
@@ -3160,6 +3168,33 @@ export const endpoints = makeApi([
     path: "/api/crm/customers/",
     alias: "crm_customers_list",
     requestFormat: "json",
+    parameters: [
+      {
+        name: "customer_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
     response: z.array(Customer),
   },
   {
@@ -3185,7 +3220,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Customer,
@@ -3204,7 +3239,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Customer,
@@ -3223,7 +3258,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Customer,
@@ -3237,7 +3272,7 @@ export const endpoints = makeApi([
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: z.void(),
@@ -3884,7 +3919,7 @@ export const endpoints = makeApi([
       {
         name: "department",
         type: "Query",
-        schema: z.number().int().optional(),
+        schema: z.string().optional(),
       },
       {
         name: "hire_date_after",

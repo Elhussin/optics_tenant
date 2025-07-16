@@ -12,7 +12,7 @@ export default function CreateEmployeePage() {
         <BackButton />
       </div>
       <DynamicFormGenerator
-        schemaName="EmployeeRequest"
+        schemaName="Employee"
         alias="hrm_employees_create"
         onSuccess={() => toast.success('Employee created successfully')}
         submitText="Add Employee"

@@ -15,6 +15,40 @@ function isFieldRequired(schema: z.ZodTypeAny): boolean {
   return !(schema instanceof z.ZodOptional);
 }
 
+function getUnionOptions(schema: z.ZodUnion<any>): string[] {
+  const options: string[] = [];
+  
+  schema._def.options.forEach((option: any) => {
+    if (option instanceof z.ZodLiteral) {
+      options.push(option.value);
+    } else if (option instanceof z.ZodString) {
+      // يمكن إضافة logic إضافي هنا للتعامل مع string enums
+      options.push(option._def.value || 'string');
+    }
+  });
+  
+  return options;
+}
+
+function useForeignKeyData(fieldName: string, fieldType: string) {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
+      setLoading(true);
+      const config = relationshipConfigs[fieldName];
+      const fetcher = createFetcher(config.endpoint, (result: any) => {
+        setData(Array.isArray(result) ? result : result.data || []);
+        setLoading(false);
+      });
+      
+      fetcher({});
+    }
+  }, [fieldName, fieldType]);
+  
+  return { data, loading };
+}
 
 export const renderField = <T extends FieldValues>(fieldName: string, fieldSchema: z.ZodTypeAny, config: GeneratorConfig, form: Form<T>, mode: 'create' | 'edit') => {
   const fieldType = detectFieldType(fieldName, fieldSchema);

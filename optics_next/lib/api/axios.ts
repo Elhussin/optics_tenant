@@ -2,15 +2,16 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
-import { Zodios } from "@zodios/core";
 import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
+import { Zodios, type ZodiosInstance } from "@zodios/core";
 
-
+// Define a custom interface that includes our new method
+interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
+  customRequest: (alias: string, data?: any) => Promise<any>;
+}
 
 const baseUrl = getBaseUrl();
-
-console.log("Base URL:", baseUrl);
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
@@ -57,7 +58,6 @@ axiosInstance.interceptors.response.use(
         await refreshTokenPromise;
       } else {
         refreshTokenPromise = axiosInstance.post("/api/users/token/refresh/");
-        console.log("Refreshing token...",refreshTokenPromise);
         await refreshTokenPromise;
         refreshTokenPromise = null;
       }
@@ -65,7 +65,6 @@ axiosInstance.interceptors.response.use(
       return axiosInstance(originalRequest);
     } catch (refreshError) {
       refreshTokenPromise = null;
-      console.log("Refresh error:", refreshError);
       window.location.href = '/auth/login';
       return Promise.reject(refreshError);
     }
@@ -87,7 +86,7 @@ function replacePathParams(url: string, params: Record<string, any>): string {
 }
 
 // إضافة دالة مخصصة للـ requests مع path parameters
-api.customRequest = async function(alias: string, data: any = {}) {
+api.customRequest = async function (alias: string, data: any = {}) {
   const endpoint : any = endpoints.find(e => e.alias === alias);
   if (!endpoint) {
     throw new Error(`Endpoint with alias "${alias}" not found.`);
@@ -141,6 +140,7 @@ api.customRequest = async function(alias: string, data: any = {}) {
   // تنفيذ الـ request
   try {
     const response = await axiosInstance(config);
+    console.log("Response:", response);
     return response.data;
   } catch (error) {
     console.error("Error in customRequest:", error);
@@ -154,10 +154,5 @@ declare module "@zodios/core" {
   }
 }
 
-if (endpoints.some(e => e.alias === "users_login_create")) {
-  console.log("✅ users_login_create is available");
-} else {
-  console.log("❌ users_login_create is NOT available");
-}
 
 export default api;

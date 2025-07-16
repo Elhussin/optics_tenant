@@ -1,7 +1,8 @@
 
 from rest_framework import viewsets
 from rest_framework.response import Response
-
+from django_filters.rest_framework import DjangoFilterBackend
+from .filters import CustomerFilter
 
 from .models import (
     Customer, CustomerGroup, Opportunity, Interaction, 
@@ -13,21 +14,21 @@ from .serializers import (
 )
 
 
-# class CustomerViewSet(viewsets.ModelViewSet):
-#     queryset = Customer.objects.all()
-#     serializer_class = CustomerSerializer
 
 class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
-    # permission_classes = [IsAuthenticated]
-    
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = CustomerFilter
+ 
     def get_queryset(self):
         return Customer.objects.filter(created_by=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
         
-# CustomerGroupViewSet: get all ``CustomerGroup`` objects
+
 
 class CustomerGroupViewSet(viewsets.ModelViewSet):
     queryset = CustomerGroup.objects.all()

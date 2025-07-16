@@ -45,7 +45,7 @@ export function useFormRequest(
       // استخدام الـ customRequest للتعامل مع path parameters
       const response = await api.customRequest(alias, payload);
 
-      console.log("response", response);
+      // console.log("response", response);
       onSuccess?.(response);
       return { success: true, data: response };
     } catch (error: any) {

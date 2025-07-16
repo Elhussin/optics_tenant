@@ -23,15 +23,14 @@ class Employee(BaseModel):
         ('delivery', 'Delivery'),
         ('customer_service', 'Customer Service'),
     ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
-    position = models.CharField(max_length=100,blank=True,choices=Position ,default='employee')
-    # customer_type = models.CharField(max_length=10, choices=CUSTOMER_TYPE_CHOICES, default='individual')
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
+    department_id = models.ForeignKey(Department, on_delete=models.CASCADE, null=True, blank=True)
+    position = models.CharField(max_length=100,choices=Position ,default='employee')
     salary = models.DecimalField(max_digits=10, decimal_places=2,blank=True)
     hire_date = models.DateField(auto_now_add=True)
     phone = models.CharField(max_length=20,blank=True)
     def __str__(self):
-        return self.user.username
+        return self.user_id.username
 
 
 class Leave(models.Model):

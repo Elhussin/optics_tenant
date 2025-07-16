@@ -13,13 +13,14 @@ class DepartmentSerializer(serializers.ModelSerializer):
     #     return data
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+    # user_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    # department_id = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Employee
         fields = [
             "id",
-            "user",
-            "department",
+            "user_id",
+            "department_id",
             "position",
             "salary",
             "phone",

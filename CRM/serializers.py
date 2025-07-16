@@ -20,7 +20,7 @@ class CustomerSerializer(serializers.ModelSerializer):
             'tax_number', 'preferred_contact', 'website',
             'description',
              'address_line1', 'address_line2',
-               'city', 'postal_code',
+               'city', 'postal_code','is_active','is_deleted'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
