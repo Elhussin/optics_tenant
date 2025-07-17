@@ -26,6 +26,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
         label={label}
         required={required}
         errors={form.formState.errors}
+        form={form}
       />
     );
   }
@@ -77,7 +78,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
       <div key={fieldName} className={config.spacing}>
       <label htmlFor={fieldName} className={config.labelClasses}>
         {label}
-        {required ? ' *' : ''}
+        {required ? <span className="text-red-500">*</span> : ''}
       </label>
     
       <Controller
@@ -86,6 +87,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
         rules={{ required: required ? `${label} is required` : false }}
         render={({ field }) => (
           <ReactSelect
+              menuPortalTarget={document.body}
             id={fieldName}
             options={unwrappedSchema.options.map((opt: string) => ({
               label: getFieldLabel(opt, unwrappedSchema),
@@ -122,7 +124,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
     return (
       <div key={fieldName} className={config.spacing}>
         <label htmlFor={fieldName} className={config.labelClasses}>
-          {label}{required ? ' *' : ''}
+          {label}{required ? <span className="text-red-500">*</span> : ''}
         </label>
         <textarea
           id={fieldName}
@@ -145,7 +147,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
     return (
       <div key={fieldName} className={config.spacing}>
         <label htmlFor={fieldName} className={config.labelClasses}>
-          {label}{required ? ' *' : ''}
+          {label}{required ? <span className="text-red-500">*</span> : ''}
         </label>
         <div className="space-y-2">
           <input
@@ -173,7 +175,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
     return (
       <div key={fieldName} className={config.spacing}>
         <label htmlFor={fieldName} className={config.labelClasses}>
-          {label}{required ? ' *' : ''}
+          {label}{required ? <span className="text-red-500">*</span> : ''}
         </label>
         <div className="border border-gray-200 rounded-md p-3">
           <input
@@ -201,7 +203,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
   return (
     <div key={fieldName} className={config.spacing}>
       <label htmlFor={fieldName} className={config.labelClasses}>
-        {label}{required ? ' *' : ''}
+        {label}{required ? <span className="text-red-500">*</span> : ''}
       </label>
       <input
         id={fieldName}

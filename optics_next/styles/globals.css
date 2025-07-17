@@ -207,47 +207,47 @@ body {
 }
 
 
-
-.option__control {
+.rs__control {
   @apply border rounded-md px-2 py-1 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
-.option__option {
+.rs__option {
   @apply cursor-pointer hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white;
 }
 
-.option__menu {
+.rs__menu {
   @apply border rounded-md shadow-lg mt-1;
 }
 
-.option__single-value {
+.rs__single-value {
   @apply text-gray-900 dark:text-white;
 }
 
-.option__placeholder {
+.rs__placeholder {
   @apply text-gray-400;
 }
 
 /* Tailwind + dark mode styling */
 .dark .rs__control {
-  @apply bg-gray-800 border-gray-700 text-white;
+  @apply bg-gray-800 border-gray-700 text-white dark:text-gray-100;
 }
 
 .dark .rs__menu {
-  @apply bg-gray-800 text-white;
+  @apply bg-gray-800 text-white dark:text-gray-100;
 }
 
 .dark .rs__option {
-  @apply hover:bg-gray-700 text-white;
+  @apply hover:bg-gray-700 text-white dark:text-gray-100;
 }
 
 .dark .rs__single-value {
-  @apply text-white;
+  @apply text-white dark:text-gray-100;
 }
 
 .dark .rs__placeholder {
-  @apply text-gray-400;
-}
+  @apply text-gray-400 dark:text-gray-100;
+} */
+
 
 
 @media print {

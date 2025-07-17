@@ -6,6 +6,9 @@ import Link from 'next/link';
 import Modal from "@/components/view/Modal";
 import Button from "@/components/ui/buttons/Button";
 import { CirclePlus } from 'lucide-react';
+import ReactSelect from 'react-select';
+import { getFieldLabel } from './DynamicFormhelper';
+import { Controller } from 'react-hook-form';
 
 export function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   while (
@@ -33,29 +36,29 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
   if (fieldLower.includes('date')) return 'date';
   if (fieldLower.includes('time')) return 'time';
   if (fieldLower.includes('description') || fieldLower.includes('content') || fieldLower.includes('notes')) return 'textarea';
-  
+
   // check schema type
   if (schema instanceof z.ZodBoolean) return 'checkbox';
   if (schema instanceof z.ZodEnum) return 'select';
   if (schema instanceof z.ZodUnion) return 'union';
   if (schema instanceof z.ZodNumber) return 'number';
-  
+
   if (schema instanceof z.ZodString) {
     const checks = schema._def.checks || [];
     const hasEmail = checks.some((c: any) => c.kind === 'email');
     const hasUrl = checks.some((c: any) => c.kind === 'url');
     const hasMinLength = checks.some((c: any) => c.kind === 'min' && c.value >= 6);
     const hasMaxLength = checks.some((c: any) => c.kind === 'max' && c.value > 100);
-    
+
     if (hasEmail) return 'email';
     if (hasUrl) return 'url';
     if (hasMinLength && fieldLower.includes('password')) return 'password';
     if (hasMaxLength) return 'textarea';
   }
-  
+
   if (schema instanceof z.ZodArray) return 'array';
   if (schema instanceof z.ZodObject) return 'object';
-  
+
   return 'text';
 }
 
@@ -63,7 +66,7 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
 // استخراج خيارات Union
 export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
   const options: string[] = [];
-  
+
   schema._def.options.forEach((option: any) => {
     if (option instanceof z.ZodLiteral) {
       options.push(option.value);
@@ -72,7 +75,7 @@ export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
       options.push(option._def.value || 'string');
     }
   });
-  
+
   return options;
 }
 
@@ -92,65 +95,84 @@ export function useForeignKeyData(fieldName: string, fieldType: string) {
       setLoading(false);
     },
   });
+
   
-  // ثم تستخدمه داخل useEffect
   useEffect(() => {
     if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
       setLoading(true);
-      fetchForeignKeyData.submitForm(); // حسب طريقة استخدام hook
+      fetchForeignKeyData.submitForm(); 
     }
   }, [fieldName, fieldType]);
-  
+
 
   return { data, loading };
 }
 
-export function ForeignKeyField({ 
-  fieldName, 
-  register, 
-  config, 
-  label, 
-  required, 
-  errors 
+export function ForeignKeyField({
+  fieldName,
+  register,
+  config,
+  label,
+  required,
+  errors,
+  form
 }: any) {
+
+
+
   const { data, loading } = useForeignKeyData(fieldName, 'foreignkey');
   const relationConfig = relationshipConfigs[fieldName];
   const [showModal, setShowModal] = useState(false);
   if (!relationConfig) return null;
-  
+
   return (
+
     <div className={config.spacing}>
+
       <label htmlFor={fieldName} className={config.labelClasses}>
         {label}{required ? <span className="text-red-500">*</span> : ''}
-       
+
       </label>
-      <div className="flex items-center">
-      <select
-        id={fieldName}
-        {...register(fieldName)}
-        className={config.baseClasses}
-        disabled={loading}
-      >
-        <option value="" className="option">
-          {loading ? 'Loading...' : 'Select...'}
-        </option>
-        {data.map((item: any) => (
-          <option className="option" key={item[relationConfig.valueField]} value={item[relationConfig.valueField]}>
-            {item[relationConfig.labelField]}
-          </option>
-        ))}
-      </select>
+      <div className="flex items-center w-full">
+<Controller
+  name={fieldName}
+  control={form.control}
+  render={({ field }) => (
+    <ReactSelect
+    menuPortalTarget={document.body}
 
-      
-      <Button
-      onClick={() => setShowModal(true)}
-      variant="info"
-      className="ml-2"
-      icon={<CirclePlus size={16} />}
-      label="Add"
+      {...field}
+      options={data.map((item) => ({
+        value: item[relationConfig.valueField],
+        label: item[relationConfig.labelField],
+      }))}
+      onChange={(selected) => field.onChange(selected?.value)}
+      value={data
+        .map((item) => ({
+          value: item[relationConfig.valueField],
+          label: item[relationConfig.labelField],
+        }))
+        .find((opt) => opt.value === field.value) || null}
+      placeholder="Select..."
+      isClearable
+      classNamePrefix="rs"
+      className="w-full"
 
-      />
-      </div>
+    />
+  )}
+/>
+
+
+
+        <Button
+          onClick={() => setShowModal(true)}
+          variant="info"
+          className="ml-2"
+          icon={<CirclePlus size={16} />}
+          label="Add"
+
+        />
+    </div>
       {showModal && (
         <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
       )}
@@ -165,18 +187,18 @@ export function ForeignKeyField({
 }
 
 // مكون حقل Union
-export function UnionField({ 
-  fieldName, 
+export function UnionField({
+  fieldName,
   fieldSchema,
-  register, 
-  config, 
-  label, 
-  required, 
-  errors 
+  register,
+  config,
+  label,
+  required,
+  errors
 }: any) {
   const unwrappedSchema = unwrapSchema(fieldSchema);
   const options = getUnionOptions(unwrappedSchema);
-  
+
   return (
     <div className={config.spacing}>
       <label htmlFor={fieldName} className={config.labelClasses}>
