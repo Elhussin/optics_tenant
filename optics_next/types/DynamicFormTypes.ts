@@ -28,6 +28,7 @@ export interface DynamicFormProps<T> {
   config?: Partial<GeneratorConfig>;
   alias?: string;
   id?: string;
+  title?: string;
 }
 
 export interface ForeignKeyConfig {

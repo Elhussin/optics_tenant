@@ -48,9 +48,8 @@ export function useFormRequest(
       // console.log("response", response);
       onSuccess?.(response);
       return { success: true, data: response };
+
     } catch (error: any) {
-      console.error("API Error:", error);
-      
       const serverErrors = error?.response?.data;
 
       if (serverErrors && typeof serverErrors === "object") {

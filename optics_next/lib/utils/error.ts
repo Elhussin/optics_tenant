@@ -38,8 +38,9 @@ export function handleErrorStatus(error: any): string {
     return "Network error. Please check your internet connection.";
   }
 
-  const status = error.response.status;
+  const status = error.status;
   const detail = error.response.data?.detail || error.message;
+
 
   const statusMessages: Record<number, string> = {
     400: "Validation error occurred",
@@ -54,9 +55,9 @@ export function handleErrorStatus(error: any): string {
   };
 
   // إذا وُجدت رسالة تفصيلية من الـ API، استخدمها
-  if (detail && typeof detail === "string") {
-    return detail;
-  }
+  // if (detail && typeof detail === "string") {
+  //   return detail;
+  // }
 
   // أو استخدم الرسالة المعرفة حسب الكود
   if (status in statusMessages) {

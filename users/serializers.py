@@ -5,73 +5,28 @@ from django.contrib.auth import authenticate
 from django.core.validators import RegexValidator, MinLengthValidator, MaxLengthValidator
 from django.utils.translation import gettext_lazy as _
 from core.permissions.roles import Role
+from core.utils.ReusableFields import ReusableFields
+from core.utils.check_unique_field import check_unique_field
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-    write_only=True,
-    min_length=8,
-    validators=[
-        RegexValidator(
-            regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$',
-            message=_("Password must contain at least one uppercase, one lowercase letter, one number.")
-        )
-    ],
-    error_messages={
-        "required": _("Password is required."),
-        "blank": _("Password cannot be blank."),
-    }
-    )
-
-    
-    username = serializers.CharField(
-        validators=[
-            MinLengthValidator(5),
-            MaxLengthValidator(50)
-        ],
-        error_messages={
-            "required": _("Username is required."),
-            "blank": _("Username cannot be blank."),
-            "min_length": _("Username must be at least 5 characters long."),
-            "max_length": _("Username must be at most 50 characters long."),
-        }
-    )
-
-    email = serializers.EmailField(
-        error_messages={
-            "required": _("Email is required."),
-            "blank": _("Email cannot be blank."),
-            "invalid": _("Enter a valid email address.")
-        }
-    )
-
+    # username = ReusableFields.username(read_only=True)
+    username = ReusableFields.username()
+    email = ReusableFields.email()
+    phone = ReusableFields.phone()
+    password = ReusableFields.password()
+    first_name = ReusableFields.first_name()
+    last_name = ReusableFields.last_name()
 
     class Meta:
         model = User
         fields = [
-            'id',
-            'username',
-            'email',
-            'first_name',
-            'last_name',
-            'is_active',
-            'is_staff',
-            'role',
-            'password',
-            'is_deleted',
-            'deleted_at',
-            'phone',
+            'id', 'username', 'email', 'first_name', 'last_name',
+            'is_active', 'is_staff', 'role', 'password',
+            'is_deleted', 'deleted_at', 'phone',
         ]
-        read_only_fields = ['id','deleted_at']
-        extra_kwargs = {
-            'username': {'required': True, 'allow_blank': False},
-            'email': {'required': True, 'allow_blank': False},
-            'first_name': {'required': False, 'allow_blank': True},
-            'last_name': {'required': False, 'allow_blank': True},
-        }
-
-
+        read_only_fields = ['id', 'deleted_at']
 
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -80,60 +35,23 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
-    
+
     def validate_username(self, value):
-        if self.instance and self.instance.pk:
-            # Update case - exclude current user
-            if User.objects.exclude(pk=self.instance.pk).filter(username=value).exists():
-                raise serializers.ValidationError("A user with this username already exists.")
-        else:
-            # Create case - check if username exists
-            if User.objects.filter(username=value).exists():
-                raise serializers.ValidationError("A user with this username already exists.")
-        return value
-    
+        return check_unique_field(User, 'username', value, self.instance)
+
     def validate_email(self, value):
-        if self.instance and self.instance.pk:
-            # Update case - exclude current user
-            if User.objects.exclude(pk=self.instance.pk).filter(email=value).exists():
-                raise serializers.ValidationError("A user with this email already exists.")
-        else:
-            # Create case - check if email exists
-            if User.objects.filter(email=value).exists():
-                raise serializers.ValidationError("A user with this email already exists.")
-        return value
+        return check_unique_field(User, 'email', value, self.instance)
 
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-    write_only=True,
-    min_length=5,
-    error_messages={
-        "required": _("Password is required."),
-        "blank": _("Password cannot be blank."),
-    }
-    )
-    username = serializers.CharField(
-        validators=[
-            MinLengthValidator(5),
-            MaxLengthValidator(50)
-        ],
-        error_messages={
-            "required": _("Username is required."),
-            "blank": _("Username cannot be blank."),
-            "min_length": _("Username must be at least 5 characters long."),
-            "max_length": _("Username must be at most 50 characters long."),
-        }
-    )
+    username = ReusableFields.username()
+    email = ReusableFields.email()
+    password = ReusableFields.password()
 
     class Meta:
         model = User
-        fields = [
-            'id',
-            'username',
-            'password'
-        ]
+        fields = [ 'id', 'username','password','email' ]
     
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -144,18 +62,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+    def validate_email(self, value):
+        return check_unique_field(User, 'email', value, self.instance)
+
     
     def validate_username(self, value):
-        if self.instance and self.instance.pk:
-            # Update case - exclude current user
-            if User.objects.exclude(pk=self.instance.pk).filter(username=value).exists():
-                raise serializers.ValidationError("A user with this username already exists.")
-        else:
-            # Create case - check if username exists
-            if User.objects.filter(username=value).exists():
-                raise serializers.ValidationError("A user with this username already exists.")
-        return value
-    
+        return check_unique_field(User, 'username', value, self.instance)
+
+    def validate_email(self, value):
+        return check_unique_field(User, 'email', value, self.instance)
 
 
 class LoginSerializer(serializers.Serializer):

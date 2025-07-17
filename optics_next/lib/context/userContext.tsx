@@ -5,6 +5,7 @@ import { UserContextType } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useFormRequest } from '../hooks/useFormRequest';
 import { toast } from 'sonner';
+import { handleErrorStatus } from '@/lib/utils/error';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -20,7 +21,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     },
     onError: (err) => {
-      console.log("Fetch user error:", err);
+      toast.error(handleErrorStatus(err));
       setUser(null);
       setLoading(false);
     },
@@ -35,7 +36,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       // setLoading(false);
     },
     onError: (err) => {
-      console.error("Logout error:", err);
+      toast.error(handleErrorStatus(err));
       setUser(null);
       router.replace('/auth/login');
       // setLoading(false);

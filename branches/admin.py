@@ -9,9 +9,9 @@ class BranchAdmin(admin.ModelAdmin):
 
 
 class BranchUsersAdmin(admin.ModelAdmin):
-    list_display = ('employee', 'branch')
-    search_fields = ('employee__name', 'branch__name')
-    list_filter = ('branch',)
+    list_display = ('employee_id', 'branch_id')
+    search_fields = ('employee_id__name', 'branch_id__name')
+    list_filter = ('branch_id',)
     ordering = ('-created_at',)
 
 admin.site.register(Branch,BranchAdmin)

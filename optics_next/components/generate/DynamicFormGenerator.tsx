@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils/cn';
 import Button from '@/components/ui/buttons/Button';
 import { CircleX, TimerReset, CirclePlus } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
+import { BackButton } from '@/components/ui/buttons/ActionButtons';
 
 export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   const { schemaName, onSuccess, className = "", submitText, showCancelButton = true, mode = 'create', config: userConfig = {}, alias, id } = props;
@@ -59,6 +60,10 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
 
   return (
     <div className={cn(className, "container")}>
+      <div className="main-header">
+        <h2 className="title-1" >{mode === 'edit' ? 'Edit' : 'Add'}{}</h2>
+        <BackButton />
+      </div>
       <form onSubmit={form.handleSubmit(onSubmit)} className={config.containerClasses}>
         {visibleFields.map((fieldName) => (
           <RenderField
@@ -67,6 +72,7 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
             fieldSchema={shape[fieldName]}
             form={form}
             config={config}
+            mode={mode}
           />
         ))}
 

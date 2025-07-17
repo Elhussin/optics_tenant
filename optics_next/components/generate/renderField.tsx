@@ -8,12 +8,13 @@ import { fieldTemplates } from './dataConfig';
 import { Controller } from "react-hook-form";
 import ReactSelect from "react-select";
 
-export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
+export const RenderField = ({ fieldName, fieldSchema, form, config , mode }: any) => {
   const fieldType = detectFieldType(fieldName, fieldSchema);
   const template = fieldTemplates[fieldType] || fieldTemplates['text'] || { component: 'input', type: 'text' };
   const unwrappedSchema = unwrapSchema(fieldSchema);
   const label = getFieldLabel(fieldName, fieldSchema);
   const required = isFieldRequired(fieldSchema);
+
 
 
   if (fieldType === 'foreignkey') {
@@ -87,7 +88,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
         rules={{ required: required ? `${label} is required` : false }}
         render={({ field }) => (
           <ReactSelect
-              menuPortalTarget={document.body}
+              // menuPortalTarget={document.body}
             id={fieldName}
             options={unwrappedSchema.options.map((opt: string) => ({
               label: getFieldLabel(opt, unwrappedSchema),
@@ -132,6 +133,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
           className={config.baseClasses}
           rows={rows}
           placeholder={`${label}...`}
+          autoComplete="off"
         />
         {form.formState.errors[fieldName] && (
           <p className={config.errorClasses}>
@@ -156,6 +158,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
             {...form.register(fieldName)}
             className={config.baseClasses}
             placeholder="add values separated by commas"
+            autoComplete="off"
           />
           <p className="text-xs text-gray-500">
             add values separated by commas
@@ -183,6 +186,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
             type="text"
             {...form.register(fieldName)}
             className={config.baseClasses}
+            autoComplete="off"
             placeholder="JSON object"
           />
         </div>
@@ -197,7 +201,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
 
   // معالجة input عادي
   const inputType = template.type || 'text';
-  const mode = form.formState.defaultValues ? 'edit' : 'create'; // A way to infer mode
+  // const mode = form.formState.defaultValues ? 'edit' : 'create'; // A way to infer mode
   const isDisabled = mode === 'edit' && (fieldName === 'email' || fieldName === 'username' || fieldName === 'password');
 
   return (
@@ -212,6 +216,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config }: any) => {
         className={config.baseClasses}
         placeholder={`${label}...`}
         disabled={isDisabled}
+        autoComplete="off"
         {...(template.props || {})}
       />
       {form.formState.errors[fieldName] && (

@@ -6,9 +6,9 @@ from django.db.models import Q
 from .models import ProductVariant
 from .serializers.product import ProductVariantSerializer, ProductVariantListSerializer
 from CRM.models import Customer
-from branches.models import Branch
-from .models import Supplier
-from .serializers.supplier import SupplierSerializer
+# from branches.models import Branch
+# from .models import Supplier
+# from .serializers.supplier import SupplierSerializer
 
 class ProductVariantViewSet(viewsets.ModelViewSet):
     queryset = ProductVariant.objects.select_related(

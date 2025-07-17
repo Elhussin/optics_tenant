@@ -2,7 +2,8 @@
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
+import { toast } from 'sonner';
+import { handleErrorStatus } from '@/lib/utils/error';
 
 export function useFilteredListRequest(alias: string) {
   const searchParams = useSearchParams();
@@ -14,7 +15,8 @@ export function useFilteredListRequest(alias: string) {
       setData(res);
     },
     onError: (err) => {
-      console.error("fetch error", err);
+      toast.error(handleErrorStatus(err));
+      // console.error("fetch error", err);
     },
   });
 

@@ -2,17 +2,27 @@
 'use client';
 import { useRouter,useSearchParams } from "next/navigation";
 import { useUser } from "@/lib/context/userContext";
-import { toast } from "sonner";
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { formRequestProps } from "@/types";
 import { useEffect } from 'react';
+import { Loading4 } from '@/components/ui/loding';
 
-export default function LoginRequestForm(props: formRequestProps) {
-  const { fetchUser } = useUser()
+export default function LoginForm(props: formRequestProps) {
+  const { fetchUser ,user } = useUser()
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/profile';
 
+
+  useEffect(() => {
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user, router]);
+
+  if (user) {
+    return <Loading4 />;
+  }
 
   const { onSuccess, submitText = "Login", className, alias,mode="login" } = props;
 
@@ -50,6 +60,7 @@ export default function LoginRequestForm(props: formRequestProps) {
             id="username"
             className="input-text"
             placeholder="Enter username"
+            autoComplete="off"
           />
           {form.formState.errors.username && (
             <p className="error-text">
@@ -57,6 +68,25 @@ export default function LoginRequestForm(props: formRequestProps) {
             </p>
           )}
         </div>
+        {mode === "create" && (
+        <div>
+          <label htmlFor="email" className="label" >
+            Email
+          </label>
+          <input
+            {...form.register("email")}
+            id="email"
+            className="input-text"
+            placeholder="Enter email"
+            autoComplete="off"
+          />
+          {form.formState.errors.email && (
+            <p className="error-text">
+              {form.formState.errors.email?.message as string}
+            </p>
+          )}
+        </div>
+        )}
 
         <div>
           <label htmlFor="password" className="label" >
@@ -68,6 +98,7 @@ export default function LoginRequestForm(props: formRequestProps) {
             type="password"
             className="input-text"
             placeholder="Enter password"
+            autoComplete="off"
           />
 
           {form.formState.errors.password && (
@@ -88,11 +119,14 @@ export default function LoginRequestForm(props: formRequestProps) {
             : submitText}
         </button>
       </form>
-      {form.formState.errors.root && (
-        <p className="error-text">
-          {form.formState.errors.root?.message as string}
-        </p>
-      )}
+
     </div>
   );
 }
+
+
+      {/* {form.formState.errors.root && (
+        <p className="error-text">
+          {form.formState.errors.root?.message as string}
+        </p>
+      )} */}

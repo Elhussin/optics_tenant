@@ -32,7 +32,7 @@ export function useHardDeleteWithDialog({
       if (redirectAfter) router.back();
     },
     onError: (err) => {
-      console.error('Hard delete error:', err.response?.data?.detail);
+      // console.error('Hard delete error:', err.response?.data?.detail);
       toast.error(err.response?.data?.detail);
     },
   });

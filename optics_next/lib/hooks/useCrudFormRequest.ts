@@ -3,7 +3,7 @@ import { useFormRequest } from "./useFormRequest";
 import { toast } from "sonner";
 import { SubmitHandler } from "react-hook-form";
 import { formRequestProps } from '@/types';
-
+import { handleErrorStatus } from "@/lib/utils/error";
 
 export function useCrudFormRequest({
   alias,
@@ -16,15 +16,13 @@ export function useCrudFormRequest({
     defaultValues,
     onError: (err) => {
       onError?.(err);
-      toast.error("Something went wrong");
-      console.error("Form error:", err);
+      toast.error(handleErrorStatus(err));
     },
   });
 
   const onSubmit: SubmitHandler<any> = async (data) => {
     const result = await form.submitForm(data);
     if (!result || !result.success) {
-      console.error("Form submission failed:", result?.error);
       return;
     }
     form.reset(result.data);
@@ -43,7 +41,6 @@ export function createFetcher(alias: string, onSuccess?: (res: any) => void, onE
     alias,
     onSuccess,
     onError: (err) => {
-      console.error(`Error in ${alias}:`, err);
       onError?.(err);
     },
     // isLoading: false,

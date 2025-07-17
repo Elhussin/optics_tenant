@@ -63,6 +63,7 @@ axiosInstance.interceptors.response.use(
       }
 
       return axiosInstance(originalRequest);
+
     } catch (refreshError) {
       refreshTokenPromise = null;
       window.location.href = '/auth/login';
@@ -140,10 +141,10 @@ api.customRequest = async function (alias: string, data: any = {}) {
   // تنفيذ الـ request
   try {
     const response = await axiosInstance(config);
-    console.log("Response:", response);
-    return response.data;
+      return response.data;
+
   } catch (error) {
-    console.error("Error in customRequest:", error);
+
     throw error;
   }
 };

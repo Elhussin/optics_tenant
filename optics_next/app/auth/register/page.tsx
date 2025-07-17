@@ -1,20 +1,29 @@
 'use client';
 
-import LoginRequestForm from '@/components/forms/LoginForm';
+import LoginForm from '@/components/forms/LoginForm';
 import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
+import { getSubdomain } from '@/lib/utils/getSubdomain';
 export default function RegisterPage() {
-  const router = useRouter();
+  const subdomain = getSubdomain();
+  let alias : string = "users_register_create";
+  let message : string = "Register successfully";
+
+  if(!subdomain){
+    alias = "tenants_register_create";
+    message = "Account Created! activate your account";
+  }
+  
+
   return (
     <div className="card">
       <h1 className="card-header my-4">Register</h1>
-      <LoginRequestForm 
-      alias="users_register_create"
+      <LoginForm 
+      alias={alias}
       submitText="Register"
       mode="create"
       className="container"
       onSuccess={() => {
-        toast.success('Register successfully');
+        toast.success(message);
       }} />
     </div>
   );

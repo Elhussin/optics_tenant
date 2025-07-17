@@ -209,7 +209,6 @@ const PatchedTransactionRequest = z
   })
   .partial()
   .passthrough();
-const BranchUsersRoleEnum = z.enum(["manager", "staff"]);
 const BranchUsers = z
   .object({
     id: z.number().int(),
@@ -217,33 +216,30 @@ const BranchUsers = z
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    role: BranchUsersRoleEnum,
     status: z.boolean().optional(),
     notes: z.string().nullish(),
-    branch: z.number().int(),
-    employee: z.number().int(),
+    branch_id: z.number().int(),
+    employee_id: z.number().int(),
   })
   .passthrough();
 const BranchUsersRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    role: BranchUsersRoleEnum,
     status: z.boolean().optional(),
     notes: z.string().nullish(),
-    branch: z.number().int(),
-    employee: z.number().int(),
+    branch_id: z.number().int(),
+    employee_id: z.number().int(),
   })
   .passthrough();
 const PatchedBranchUsersRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
-    role: BranchUsersRoleEnum,
     status: z.boolean(),
     notes: z.string().nullable(),
-    branch: z.number().int(),
-    employee: z.number().int(),
+    branch_id: z.number().int(),
+    employee_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -256,7 +252,7 @@ const Branch = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     name: z.string().max(100),
-    branch_code: z.string().max(10),
+    branch_code: z.string(),
     branch_type: BranchTypeEnum,
     country: z.string().optional(),
     city: z.string().max(100).optional(),
@@ -273,7 +269,6 @@ const BranchRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
-    branch_code: z.string().min(1).max(10),
     branch_type: BranchTypeEnum,
     country: z.string().optional(),
     city: z.string().max(100).optional(),
@@ -290,7 +285,6 @@ const PatchedBranchRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     name: z.string().min(1).max(100),
-    branch_code: z.string().min(1).max(10),
     branch_type: BranchTypeEnum,
     country: z.string(),
     city: z.string().max(100),
@@ -1892,7 +1886,7 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ msg: z.string() }).passthrough();
 const TokenRefreshError = z.object({ error: z.string() }).passthrough();
-const UserRoleEnum = z.enum([
+const RoleEnum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
   "TECHNICIAN",
@@ -1908,19 +1902,26 @@ const User = z
     id: z.number().int(),
     username: z.string().min(5).max(50),
     email: z.string().email(),
-    first_name: z.string().max(150).optional(),
-    last_name: z.string().max(150).optional(),
+    first_name: z.string().max(30),
+    last_name: z.string().max(30),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: UserRoleEnum.optional(),
+    role: RoleEnum.optional(),
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
-    phone: z.string().max(20).nullish(),
+    phone: z.string().regex(/^\+?\d{7,15}$/),
   })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
-  .object({ username: z.string().min(5).max(50), password: z.string().min(5) })
+  .object({
+    username: z.string().min(5).max(50),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+    email: z.string().min(1).email(),
+  })
   .passthrough();
 const RegisterSuccessResponse = z
   .object({ msg: z.string(), user: User })
@@ -1932,34 +1933,40 @@ const UserRequest = z
   .object({
     username: z.string().min(5).max(50),
     email: z.string().min(1).email(),
-    first_name: z.string().max(150).optional(),
-    last_name: z.string().max(150).optional(),
+    first_name: z.string().min(1).max(30),
+    last_name: z.string().min(1).max(30),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: UserRoleEnum.optional(),
+    role: RoleEnum.optional(),
     password: z
       .string()
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     is_deleted: z.boolean().optional(),
-    phone: z.string().max(20).nullish(),
+    phone: z
+      .string()
+      .min(1)
+      .regex(/^\+?\d{7,15}$/),
   })
   .passthrough();
 const PatchedUserRequest = z
   .object({
     username: z.string().min(5).max(50),
     email: z.string().min(1).email(),
-    first_name: z.string().max(150),
-    last_name: z.string().max(150),
+    first_name: z.string().min(1).max(30),
+    last_name: z.string().min(1).max(30),
     is_active: z.boolean(),
     is_staff: z.boolean(),
-    role: UserRoleEnum,
+    role: RoleEnum,
     password: z
       .string()
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     is_deleted: z.boolean(),
-    phone: z.string().max(20).nullable(),
+    phone: z
+      .string()
+      .min(1)
+      .regex(/^\+?\d{7,15}$/),
   })
   .partial()
   .passthrough();
@@ -1989,7 +1996,6 @@ export const schemas = {
   Transaction,
   TransactionRequest,
   PatchedTransactionRequest,
-  BranchUsersRoleEnum,
   BranchUsers,
   BranchUsersRequest,
   PatchedBranchUsersRequest,
@@ -2103,7 +2109,7 @@ export const schemas = {
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
-  UserRoleEnum,
+  RoleEnum,
   User,
   Unauthorized,
   RegisterRequest,
@@ -5272,3 +5278,9 @@ export const endpoints = makeApi([
     response: z.void(),
   },
 ]);
+
+export const api = new Zodios(endpoints);
+
+export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+  return new Zodios(baseUrl, endpoints, options);
+}
