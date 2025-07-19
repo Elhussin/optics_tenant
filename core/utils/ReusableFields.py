@@ -89,3 +89,16 @@ class ReusableFields:
             },
             **kwargs
         )
+
+    @staticmethod
+    def name(**kwargs):
+        return serializers.CharField(
+            max_length=25,
+            error_messages={
+                "required": _("Name is required."),
+                "blank": _("Name cannot be blank."),
+                "max_length": _("Name must be at most 25 characters."),
+            },
+            **kwargs
+        )
+            

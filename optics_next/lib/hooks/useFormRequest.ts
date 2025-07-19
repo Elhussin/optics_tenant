@@ -51,7 +51,7 @@ export function useFormRequest(
 
     } catch (error: any) {
       const serverErrors = error?.response?.data;
-
+      console.log("serverErrors", serverErrors);
       if (serverErrors && typeof serverErrors === "object") {
         // معالجة أخطاء الحقول
         for (const [field, messages] of Object.entries(serverErrors)) {

@@ -7,10 +7,12 @@ export default function RegisterPage() {
   const subdomain = getSubdomain();
   let alias : string = "users_register_create";
   let message : string = "Register successfully";
+  let istenant : boolean = false;
 
   if(!subdomain){
     alias = "tenants_register_create";
     message = "Account Created! activate your account";
+    istenant = true;
   }
   
 
@@ -18,6 +20,7 @@ export default function RegisterPage() {
     <div className="card">
       <h1 className="card-header my-4">Register</h1>
       <LoginForm 
+      istenant={istenant}
       alias={alias}
       submitText="Register"
       mode="create"

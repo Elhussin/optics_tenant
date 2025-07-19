@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _ # for translation
 
 
 def send_activation_email(email, token):
-    activation_link = f"http://{settings.TENANT_BASE_DOMAIN}:{settings.PORT}/api/activate/?token={token}"
+    activation_link = f"{settings.FRONTEND_URL}/auth/activate/?token={token}"
     message = f"""
         Hi 👋,
         Please activate your account by clicking the link below:
@@ -22,12 +22,11 @@ def send_activation_email(email, token):
     send_mail("Activate your account", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 
-def send_password_reset_email(email, token):
-    reset_link = f"http://{settings.TENANT_BASE_DOMAIN}/api/reset-password/?token={token}"
+def send_password_reset_email(email, url):
     message = f"""
         Hi 👋,
         Please reset your password by clicking the link below:
-        {reset_link}
+        {url}
 
         Note: This link will expire in 24 hours.
 
@@ -48,16 +47,16 @@ def send_password_change_email(email):
     send_mail("Password Changed", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 def send_message_acount_activated(email,schema_name,name):
-    domain = f"{slugify(schema_name)}.{settings.TENANT_BASE_DOMAIN}"
+    domain = f"{slugify(schema_name)}.{settings.TENANT_BASE_DOMAIN}:3000"
     message = f"""
     Hi 👋,
     Your account has been activated successfully.
     
     Your store name: {schema_name}
     Your domain: {domain}
-    Your login link: http://{domain}/login
+    Your login link: http://{domain}/auth/login
     Your superuser email: {email}
-    Your superuser username: {schema_name}
+    Your superuser username: {name}
     Your superuser password: ***Enter at Registration
     
     Thanks,

@@ -7,7 +7,6 @@ from django.utils.translation import gettext_lazy as _
 from core.permissions.roles import Role
 from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
-
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):

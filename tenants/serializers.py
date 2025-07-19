@@ -2,58 +2,25 @@
 from rest_framework import serializers
 from tenants.models import Client
 from tenants.models import PendingTenantRequest
-from django.core.validators import RegexValidator
-from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _ # for translation
 from django.utils.text import slugify
+from core.utils.ReusableFields import ReusableFields
+from core.utils.check_unique_field import check_unique_field
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(
-        write_only=True,
-        min_length=8,
-        validators=[
-            RegexValidator(
-                regex=r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$',
-                message=_("Password must contain at least one uppercase, one lowercase letter, one number.")
-            )
-        ],
-        error_messages={
-            "required": _("Password is required."),
-            "blank": _("Password cannot be blank."),
-        }
-    )
-
-    name = serializers.CharField(
-        error_messages={
-            "required": _("Store name is required."),
-            "blank": _("Store name cannot be blank.")
-        }
-    )
-
-    email = serializers.EmailField(
-        error_messages={
-            "required": _("Email is required."),
-            "blank": _("Email cannot be blank."),
-            "invalid": _("Enter a valid email address.")
-        }
-    )
+    email = ReusableFields.email()
+    password = ReusableFields.password()
+    name = ReusableFields.name()
 
     class Meta:
         model = PendingTenantRequest
         fields = ['name', 'email', 'password']  
 
-
-    def validate_name(self, value):
-        if PendingTenantRequest.objects.filter(name=value).exists():
-            raise serializers.ValidationError(_("A store with this name already exists."))
-        return value
-    
     def validate_email(self, value):
-        if PendingTenantRequest.objects.filter(email=value, is_activated=False).exists():
-            raise serializers.ValidationError(_("An activation email has already been sent to this email."))
-        return value
+        return check_unique_field(PendingTenantRequest, 'email', value, self.instance)
     
-    
+    def validate_name(self, value):
+        return check_unique_field(PendingTenantRequest, 'name', value, self.instance)
 
 
     def create(self, validated_data):

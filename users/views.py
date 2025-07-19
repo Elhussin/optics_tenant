@@ -1,26 +1,27 @@
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,serializers
 from .serializers import RegisterSerializer, LoginSerializer,UserSerializer
-from django.contrib.auth import authenticate
-from django.utils.timezone import now
 from rest_framework.permissions import IsAuthenticated
-from rest_framework_simplejwt.authentication import JWTAuthentication
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken, TokenError
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema , OpenApiResponse, inline_serializer
+from drf_spectacular.utils import extend_schema , inline_serializer
 from django.db import connection
 from core.utils.set_token import set_token_cookies
 from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from core.permissions.permissions import ROLE_PERMISSIONS
-from core.permissions.decorators import role_required
-from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
+
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_str, force_bytes
+
 from .filters import UserFilter
+from core.utils.email import send_password_reset_email
+from django_tenants.utils import get_tenant
 User = get_user_model()
 
 class LoginView(APIView):
@@ -195,3 +196,37 @@ class UserViewSet(viewsets.ModelViewSet):
         return User.objects.filter(id=user.id)
 
 
+class RequestPasswordResetView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        email = request.data.get('email')
+        tenant = request.data.get('tenant')
+        user = User.objects.filter(email=email).first()
+        if user:
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_url = f"http://{tenant}.{settings.TENANT_BASE_DOMAIN}:3000/auth/forgot-password/?uid={uid}&token={token}"
+            send_password_reset_email(email, reset_url)
+
+        return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
+
+
+class PasswordResetConfirmView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        uidb64 = request.data.get('uid')
+        token = request.data.get('token')
+        password = request.data.get('password')
+
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            return Response({"detail": "Invalid UID"}, status=400)
+
+        if not default_token_generator.check_token(user, token):
+            return Response({"detail": "Invalid or expired token"}, status=400)
+
+        user.set_password(password)
+        user.save()
+        return Response({"detail": "Password has been reset successfully"}, status=200)

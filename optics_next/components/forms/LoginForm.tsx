@@ -12,19 +12,7 @@ export default function LoginForm(props: formRequestProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get('redirect') || '/profile';
-
-
-  useEffect(() => {
-    if (user) {
-      router.replace('/profile');
-    }
-  }, [user, router]);
-
-  if (user) {
-    return <Loading4 />;
-  }
-
-  const { onSuccess, submitText = "Login", className, alias,mode="login" } = props;
+  const { onSuccess, submitText = "Login", className, alias,mode="login",istenant=false } = props;
 
   const { form, onSubmit } = useCrudFormRequest({alias,
 
@@ -46,6 +34,16 @@ export default function LoginForm(props: formRequestProps) {
   }
   });
 
+  useEffect(() => {
+    if (user) {
+      router.replace('/profile');
+    }
+  }, [user, router]);
+
+  if (user) {
+    return <Loading4 />;
+  }
+
   
   return (
     <div className={className}>
@@ -55,17 +53,37 @@ export default function LoginForm(props: formRequestProps) {
           <label htmlFor="username" className="label">
             User Name
           </label>
-          <input
-            {...form.register("username")}
-            id="username"
-            className="input-text"
-            placeholder="Enter username"
-            autoComplete="off"
-          />
-          {form.formState.errors.username && (
-            <p className="error-text">
-              {form.formState.errors.username?.message as string}
-            </p>
+          {istenant && (
+            <>
+              <input
+                {...form.register("name")}
+                id="name"
+                className="input-text"
+                placeholder="Enter name"
+                autoComplete="off"
+              />
+              {form.formState.errors.name && (
+                <p className="error-text">
+                  {form.formState.errors.name?.message as string}
+                </p>
+              )}
+            </>
+          )}
+          {!istenant && (
+            <>
+              <input
+                {...form.register("username")}
+                id="username"
+                className="input-text"
+                placeholder="Enter username"
+                autoComplete="off"
+              />
+              {form.formState.errors.username && (
+                <p className="error-text">
+                  {form.formState.errors.username?.message as string}
+                </p>
+              )}
+            </>
           )}
         </div>
         {mode === "create" && (

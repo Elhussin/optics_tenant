@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useFormRequest } from '../hooks/useFormRequest';
 import { toast } from 'sonner';
 import { handleErrorStatus } from '@/lib/utils/error';
+import { getSubdomain } from '@/lib/utils/getSubdomain';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -13,6 +14,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const subdomain = getSubdomain();
 
   const fetchUser = useFormRequest({
     alias: "users_profile_retrieve",
@@ -48,7 +50,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (!user) {
+    if (!user || subdomain) {
       setLoading(false);
       fetchUser.submitForm();
     }

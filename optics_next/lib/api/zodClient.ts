@@ -5126,6 +5126,21 @@ export const endpoints = makeApi([
       },
     ],
   },
+ 
+  {
+    method: "post",
+    path: "/api/users/password-reset-confirm/",
+    alias: "users_password_reset_confirm_create",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/users/password-reset/",
+    alias: "users_password_reset_create",
+    requestFormat: "json",
+    response: z.void(),
+  },
   {
     method: "get",
     path: "/api/users/profile/",

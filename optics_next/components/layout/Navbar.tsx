@@ -7,11 +7,13 @@ import { AsideButton } from "@/components/ui/buttons/AsideButton";
 import LogoutButton from '../ui/buttons/logout';
 import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
-
+import { getSubdomain } from '@/lib/utils/getSubdomain';
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const userContext = useUser();
 
+  const subdomain = getSubdomain();
+  console.log(subdomain);
   if (!userContext) return <div>Loading...</div>;
   const { user, logout } = userContext;
 
@@ -37,8 +39,17 @@ export default function Navbar() {
           </>
         ) : (
           <>
+          {subdomain ? (
+            <>
             <Link href="/auth/login" className="nav-link">Login</Link>
             <Link href="/auth/register" className="nav-link">Register</Link>
+            </>
+          ) : (
+            <>
+        
+            <Link href="/auth/register" className="nav-link">Register</Link>
+            </>
+          )}
             <ThemeToggle />
           </>
         )}
@@ -69,8 +80,16 @@ export default function Navbar() {
             </>
           ) : (
             <>
+            {subdomain ? (
+              <>
               <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="nav-link">Login</Link>
               <Link href="/auth/register" onClick={() => setIsMenuOpen(false)} className="nav-link">Register</Link>
+              </>
+            ) : (
+              <>
+              <Link href="/auth/register" onClick={() => setIsMenuOpen(false)} className="nav-link">Register</Link>
+              </>
+            )}
               <div className="flex items-center gap-2">
                 <ThemeToggle />
               </div>

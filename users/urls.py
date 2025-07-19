@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import LoginView, RegisterView, LogoutView, RefreshTokenView,ProfileView,UserViewSet
+from .views import LoginView, RegisterView, LogoutView, RefreshTokenView,ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView
 from rest_framework.routers import DefaultRouter
 from django.urls import include
 
@@ -13,6 +13,8 @@ urlpatterns = [
     path("logout/", LogoutView.as_view()),
     path("token/refresh/", RefreshTokenView.as_view()),
     path("profile/", ProfileView.as_view()),
+    path('password-reset/', RequestPasswordResetView.as_view(), name='password-reset'),
+    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
 ]
 
 
@@ -20,3 +22,4 @@ urlpatterns = [
 #   -H "Content-Type: application/json" \
 #   -d '{"username": "admin", "password": "12345"}' \
 #   -i
+# urls.py

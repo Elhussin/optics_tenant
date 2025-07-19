@@ -2,7 +2,7 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import MainLayout from '@/components/layout/MainLayout';
 import Aside from '@/components/layout/Aside';
-// import AsideButton from '@/components/ui/AsideButton';
+
 type AsideContextType = {
   asideContent: ReactNode | null;
   isVisible: boolean;
@@ -17,6 +17,7 @@ export function AsideProvider({ children }: { children: ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
 
   const toggleAside = () => setIsVisible((prev) => !prev);
+
 
   return (
     <AsideContext.Provider

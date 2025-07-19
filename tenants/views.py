@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import RegisterTenantSerializer
-from .utils import send_activation_email, send_message_acount_activated,paid_until_date
+
 from tenants.models import PendingTenantRequest, Client, Domain
 from django_tenants.utils import schema_context
 from django.contrib.auth import get_user_model
@@ -15,10 +15,11 @@ from rest_framework.permissions import AllowAny
 from django.utils.translation import gettext_lazy as _ # for translation
 from django.http import HttpResponseForbidden
 from django_tenants.utils import get_tenant
+from core.utils.email import send_activation_email, send_message_acount_activated,paid_until_date
 
 class RegisterTenantView(APIView):
     permission_classes = [AllowAny]
-
+    print("RegisterTenantView")
     def post(self, request):
         tenant = get_tenant(request)
         if tenant.schema_name != 'public':
@@ -60,14 +61,15 @@ class ActivateTenantView(APIView):
         with schema_context(pending.schema_name):
             User = get_user_model()
             User.objects.create_superuser(
-                username=pending.email,
+                username=pending.name,
                 email=pending.email,
-                password=pending.password
+                password=pending.password,
+                role='owner'
             )
 
         pending.is_activated = True
         pending.save()
 
-        send_message_acount_activated(pending.email, pending.schema_name, pending.name)
+        send_message_acount_activated(pending.email, pending.schema_name,pending.name)
 
         return Response({"detail": _("Account activated successfully. You can now log in.")})

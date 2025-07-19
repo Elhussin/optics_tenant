@@ -38,6 +38,7 @@ export interface formRequestProps extends CrudFormOptions  {
   mode?: 'create' | 'edit'|'login';
   id?: string | number | undefined;
   submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
+  istenant?: boolean;
 }
 
 
