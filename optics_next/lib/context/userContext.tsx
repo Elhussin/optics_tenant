@@ -18,11 +18,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   const fetchUser = useFormRequest({
     alias: "users_profile_retrieve",
-    onSuccess: (res) => {
+    onSuccess: (res: any) => {
       setUser(res);
       setLoading(false);
     },
-    onError: (err) => {
+    onError: (err: any) => {
       toast.error(handleErrorStatus(err));
       setUser(null);
       setLoading(false);
@@ -30,18 +30,16 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   });
 
   const logoutRequest = useFormRequest({
-    alias: "users_logout_create", // تأكد من أن هذا معرف في zodios أو axios config
+    alias: "users_logout_create", 
     onSuccess: () => {
       setUser(null);
       router.replace('/auth/login');
       toast.success("Logged out successfully");
-      // setLoading(false);
     },
-    onError: (err) => {
+    onError: (err: any) => {
       toast.error(handleErrorStatus(err));
       setUser(null);
       router.replace('/auth/login');
-      // setLoading(false);
     },
   });
 
@@ -50,14 +48,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (!user || subdomain) {
+    if (!user && subdomain) {
       setLoading(false);
       fetchUser.submitForm();
     }
   }, []);
-
+  const value: UserContextType = { user, setUser, loading, fetchUser, logout };
   return (
-    <UserContext.Provider value={{ user, setUser, loading, fetchUser, logout }}>
+    <UserContext.Provider value={value}>
       {children}
     </UserContext.Provider>
   );

@@ -39,23 +39,28 @@ export interface formRequestProps extends CrudFormOptions  {
   id?: string | number | undefined;
   submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
   istenant?: boolean;
+  
 }
 
 
 
 
-// ues in generated form
-export interface GeneratedFormProps extends formRequestProps {
-  schemaName: string;
-  customConfig?: GeneratorConfig;
+export interface useFormRequestProps {
+  alias: string;
+  defaultValues?: any;
+  onSuccess?: (res: any) => void;
+  onError?: (err: any) => void;
+  transform?: (data: any) => any;
 }
+
+
+
 
 export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;
-  fetchUser: formRequestProps;
+  fetchUser: (data?: any) => Promise<{ success: boolean; error?: any }>;
   loading: boolean;
-  refreshUser: formRequestProps;  // ✅ هذا مهم جداً
   logout: () => Promise<void>;
 };
 

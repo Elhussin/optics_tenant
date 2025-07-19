@@ -14,10 +14,8 @@ export function useCrudFormRequest({
   const form = useFormRequest({
     alias,
     defaultValues,
-    onError: (err) => {
+    onError: (err: any) => {
       onError?.(err);
-      // console.log(err.response.data);
-      // const Error :string = err.response.data.detail;
       const statusError : string = handleErrorStatus(err);
       toast.error(`${statusError}`);
     },
@@ -43,9 +41,8 @@ export function createFetcher(alias: string, onSuccess?: (res: any) => void, onE
   return useFormRequest({
     alias,
     onSuccess,
-    onError: (err) => {
+    onError: (err: any) => {
       onError?.(err);
     },
-    // isLoading: false,
   }).submitForm;
 }

@@ -1,6 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
+import { getSubdomain } from '@/lib/utils/getSubdomain';
 // تحديد المسارات التي يتم تطبيق الوسيط عليها
 export const config = {
   matcher: [
@@ -9,7 +10,6 @@ export const config = {
     '/prescriptions/:path*',
     '/invoices/:path*',
     '/reports/:path*',
-    // '/users/:path*',
     '/profile/:path*',
 
   ],
@@ -17,20 +17,24 @@ export const config = {
 
 
 function getRequiredPermission(pathname: string): string | null {
-  const routeMap: [RegExp, string][] = [
+  const subdomain = getSubdomain();
+
+  let routeMap: [RegExp, string][] = [
     [/^\/admin/, 'admin_access'],
     [/^\/dashboard/, 'view_dashboard'],
     [/^\/profile/, 'view_profile'],
     [/^\/reports/, 'view_reports'],
+    [/^\/users/, 'view_users'],
     [/\/prescriptions\/(create|new)/, 'create_prescription'],
     [/\/prescriptions\/edit/, 'edit_prescription'],
     [/^\/prescriptions/, 'view_prescriptions'],
     [/\/invoices\/(create|new)/, 'create_invoice'],
     [/\/invoices\/edit/, 'edit_invoice'],
     [/^\/invoices/, 'view_invoices'],
-    [/^\/users/, 'view_users']
-
   ];
+
+
+
   for (const [regex, permission] of routeMap) {
     if (regex.test(pathname)) return permission;
   }
@@ -79,7 +83,7 @@ export async function middleware(request: NextRequest) {
     const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET!));
     const userTenant = payload.tenant as string;
     const permissions = payload.permissions as string[];
-
+    
     if (userTenant !== subdomain) {
       return unauthorizedResponse('/unauthorized', 'Tenant mismatch, access denied to ',pathname);
     }
@@ -88,6 +92,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
+
+
+    
     const requiredPermission = getRequiredPermission(pathname);
     if (permissions.includes('__all__') || permissions.includes(requiredPermission!)) {
       return NextResponse.next();

@@ -13,7 +13,6 @@ export default function Navbar() {
   const userContext = useUser();
 
   const subdomain = getSubdomain();
-  console.log(subdomain);
   if (!userContext) return <div>Loading...</div>;
   const { user, logout } = userContext;
 

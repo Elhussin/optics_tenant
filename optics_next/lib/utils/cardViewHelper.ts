@@ -1,8 +1,6 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-
-// utils/formatLabel.ts
 export function formatLabel(field: string): string {
   return field
     .replace(/[_\-]+/g, ' ')
@@ -23,7 +21,7 @@ export function isValidDate(value: any): boolean {
 
 export function formatDate(value: string): string {
   const date = new Date(value);
-  return date.toLocaleString("ar-EG");
+  return date.toLocaleString("en-US");
 }
 
 export const handleDownloadPDF = async (printRef: any, title: string) => {

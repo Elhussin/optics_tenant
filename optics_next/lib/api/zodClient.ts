@@ -5126,7 +5126,6 @@ export const endpoints = makeApi([
       },
     ],
   },
- 
   {
     method: "post",
     path: "/api/users/password-reset-confirm/",
@@ -5294,8 +5293,3 @@ export const endpoints = makeApi([
   },
 ]);
 
-export const api = new Zodios(endpoints);
-
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options);
-}

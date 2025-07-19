@@ -4,17 +4,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/lib/api/axios";
 import { handleErrorStatus } from "@/lib/utils/error";
-
-interface useFormRequestPropsType {
-  alias: string;
-  defaultValues?: any;
-  onSuccess?: (res: any) => void;
-  onError?: (err: any) => void;
-  transform?: (data: any) => any;
-}
+import { useFormRequestProps} from "@/types";
 
 export function useFormRequest(
-  options: useFormRequestPropsType
+  options: useFormRequestProps
 ) {
   const {alias,  defaultValues, onSuccess,onError,transform, } = options;
 
@@ -42,16 +35,13 @@ export function useFormRequest(
 
       const payload = transform ? transform(data) : data;
 
-      // استخدام الـ customRequest للتعامل مع path parameters
-      const response = await api.customRequest(alias, payload);
 
-      // console.log("response", response);
+      const response = await api.customRequest(alias, payload);
       onSuccess?.(response);
       return { success: true, data: response };
 
     } catch (error: any) {
       const serverErrors = error?.response?.data;
-      console.log("serverErrors", serverErrors);
       if (serverErrors && typeof serverErrors === "object") {
         // معالجة أخطاء الحقول
         for (const [field, messages] of Object.entries(serverErrors)) {
