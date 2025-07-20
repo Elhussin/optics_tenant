@@ -25,7 +25,7 @@ export interface ApiResponse<T> {
 export interface CrudFormOptions {
   alias: string;
   defaultValues?: any;
-  onSuccess?: (res: any) => void;
+  onSuccess?: () => void;
   onError?: (err: any) => void;
   className?: string;
   submitText?: string;
@@ -54,12 +54,23 @@ export interface useFormRequestProps {
 }
 
 
+export type UseFormRequestReturn = {
+  isLoading: boolean;
+  isSubmitting: boolean;
+  errors: any;
+  formErrors: any;
+  submitForm: any;
+  retry: () => Promise<any>;
+  reset: (defaultValues?: any) => void;
+  [key: string]: any; // للسماح بخصائص إضافية مثل methods الأخرى
+};
+
 
 
 export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;
-  fetchUser: (data?: any) => Promise<{ success: boolean; error?: any }>;
+  fetchUser:UseFormRequestReturn;
   loading: boolean;
   logout: () => Promise<void>;
 };
@@ -75,7 +86,7 @@ export interface ViewCardProps {
   id?: string | number | undefined;
   fieldsAlias?: string;
   restoreAlias: string;
-  hardDeleteAlias: string;
+  hardDeleteAlias?: string;
   path: string;
   viewFields?: string[]; 
   title?: string;

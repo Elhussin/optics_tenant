@@ -11,6 +11,8 @@ export function useCrudFormRequest({
   onSuccess,
   onError,
 }: formRequestProps) {
+
+  
   const form = useFormRequest({
     alias,
     defaultValues,
@@ -21,13 +23,15 @@ export function useCrudFormRequest({
     },
   });
 
+
+
   const onSubmit: SubmitHandler<any> = async (data) => {
     const result = await form.submitForm(data);
     if (!result || !result.success) {
       return;
     }
-    form.reset(result.data);
-    onSuccess?.(result.data);
+    form.reset();
+    onSuccess?.();
   };
 
   return {

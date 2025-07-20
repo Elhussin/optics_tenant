@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { schemas } from '@/lib/api/zodClient';
 import { createFetcher } from '@/lib/hooks/useCrudFormRequest';
-import { useCrudFormRequest } from '@/lib/hooks/useCrudFormRequest';
+
 import { Loading4 } from '@/components/ui/loding';
 import { DynamicFormProps } from '@/types/DynamicFormTypes';
 import { defaultConfig,ignoredFields } from './dataConfig';
@@ -14,16 +14,16 @@ import Button from '@/components/ui/buttons/Button';
 import { CircleX, TimerReset, CirclePlus } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { BackButton } from '@/components/ui/buttons/ActionButtons';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
+
 
 export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   const { schemaName, onSuccess, className = "", submitText, showCancelButton = true, mode = 'create', config: userConfig = {}, alias, id } = props;
-  
+
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
-  const fetchData = createFetcher(alias!, setDefaultValues);
- 
-  const router = useRouter();
 
+  const router = useRouter();
   const config = { ...defaultConfig, ...userConfig };
   const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
   const shape = schema.shape;
@@ -34,12 +34,15 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
   const visibleFields = config.fieldOrder || allFields;
 
-  const { form, onSubmit } = useCrudFormRequest({
-    alias: alias!,
-    defaultValues,
-    onSuccess: () => { onSuccess?.(); 
-     }
-  });
+  const fetchData = createFetcher(alias!, setDefaultValues);
+  const formRequest=useFormRequest({alias:alias!,defaultValues});
+
+  const onSubmit=async(data:any)=>{
+    const result=await formRequest.submitForm(data);
+    if(result?.success){
+      onSuccess?.();
+    }
+  }
 
   useEffect(() => {
     if (mode === 'edit' && id) {
@@ -49,7 +52,7 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
 
   useEffect(() => {
     if (defaultValues) {
-      form.reset(defaultValues);
+      formRequest.reset(defaultValues);
     }
   }, [defaultValues]);
 
@@ -64,13 +67,14 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
         <h2 className="title-1" >{mode === 'edit' ? 'Edit' : 'Add'}{}</h2>
         <BackButton />
       </div>
-      <form onSubmit={form.handleSubmit(onSubmit)} className={config.containerClasses}>
+
+      <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
         {visibleFields.map((fieldName) => (
           <RenderField
             key={fieldName}
             fieldName={fieldName}
             fieldSchema={shape[fieldName]}
-            form={form}
+            form={formRequest}
             config={config}
             mode={mode}
           />
@@ -79,11 +83,11 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
         <div className="flex gap-3 pt-4">
           <Button
             type="submit"
-            label={form.formState.isSubmitting ? 'Saving...' : (submitText || config.submitButtonText)}
-            onClick={() => form.handleSubmit(onSubmit)}
-            className={`${config.submitButtonClasses} ${form.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            label={formRequest.formState.isSubmitting ? 'Saving...' : (submitText || config.submitButtonText)}
+            onClick={() => formRequest.handleSubmit(onSubmit)}
+            className={`${config.submitButtonClasses} ${formRequest.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
-            disabled={form.formState.isSubmitting}
+            disabled={formRequest.formState.isSubmitting}
             variant="info"
             icon={<CirclePlus size={16} />}
           />
@@ -91,7 +95,7 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
           {!isIframe && config.includeResetButton && (
             <Button
               label="Reset"
-              onClick={() => form.reset()}
+              onClick={() =>formRequest.reset()}
               variant="reset"
               icon={<TimerReset size={16} />}
             />

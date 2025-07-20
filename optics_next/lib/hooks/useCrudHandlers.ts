@@ -8,7 +8,6 @@ import { useFormRequest } from './useFormRequest';
 type CrudOptions = {
   softDeleteAlias?: string;
   restoreAlias?: string;
-  hardDeleteAlias?: string;
   onSuccessRefresh?: () => void;
 };
 
@@ -17,11 +16,10 @@ export function useCrudHandlers(basePath: string, options?: CrudOptions) {
   const {
     softDeleteAlias,
     restoreAlias,
-    hardDeleteAlias,
     onSuccessRefresh,
   } = options || {};
 
-  // 👉 التوجيهات
+  // routes
   const handleView = (id: string | number) => router.push(`${basePath}/${id}/view`);
   const handleEdit = (id: string | number) => router.push(`${basePath}/${id}/edit`);
   const handleCreate = () => router.push(`${basePath}/create`);

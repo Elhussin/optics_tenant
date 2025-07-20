@@ -33,7 +33,6 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     config.headers[CSRF_HEADER_NAME] = csrfToken;
   }
 
-  // Optional: pass tenant header
   const tenant = window.location.hostname.split(".")[0];
   config.headers["X-Tenant"] = tenant;
 
@@ -72,12 +71,11 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-// إنشاء instance من Zodios
-export const api = new Zodios(baseUrl, endpoints, {
-  axiosInstance,
-});
 
-// إضافة دالة مخصصة لمعالجة path parameters
+export const api: CustomZodiosInstance = new Zodios(baseUrl, endpoints, {
+  axiosInstance,
+}) as CustomZodiosInstance;
+
 function replacePathParams(url: string, params: Record<string, any>): string {
   let processedUrl = url;
   Object.entries(params).forEach(([key, value]) => {
@@ -86,7 +84,7 @@ function replacePathParams(url: string, params: Record<string, any>): string {
   return processedUrl;
 }
 
-// إضافة دالة مخصصة للـ requests مع path parameters
+
 api.customRequest = async function (alias: string, data: any = {}) {
   const endpoint : any = endpoints.find(e => e.alias === alias);
   if (!endpoint) {
@@ -96,11 +94,9 @@ api.customRequest = async function (alias: string, data: any = {}) {
   const method = endpoint.method.toUpperCase();
   let url : string = endpoint.path;
   
-  // استخراج path parameters
   const pathParams: Record<string, any> = {};
   const otherParams: Record<string, any> = {};
   
-  // تحديد أي معاملات هي path parameters
   const pathParamPattern : RegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
   const pathParamNames : any[] = [];
   let match : any;
@@ -109,7 +105,6 @@ api.customRequest = async function (alias: string, data: any = {}) {
     pathParamNames.push(match[1]);
   }
   
-  // تقسيم البيانات
   if (data && typeof data === 'object') {
     Object.entries(data).forEach(([key, value]) => {
       if (pathParamNames.includes(key)) {
@@ -120,16 +115,14 @@ api.customRequest = async function (alias: string, data: any = {}) {
     });
   }
   
-  // تبديل path parameters في الـ URL
+
   url = replacePathParams(url, pathParams);
   
-  // إعداد الـ request config
   const config: any = {
     method: method,
     url: url,
   };
   
-  // إضافة البيانات حسب نوع الـ request
   if (method === 'GET' || method === 'DELETE') {
     if (Object.keys(otherParams).length > 0) {
       config.params = otherParams;
@@ -138,7 +131,6 @@ api.customRequest = async function (alias: string, data: any = {}) {
     config.data = otherParams;
   }
   
-  // تنفيذ الـ request
   try {
     const response = await axiosInstance(config);
       return response.data;

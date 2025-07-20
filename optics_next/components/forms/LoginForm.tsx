@@ -1,38 +1,54 @@
-// app/auth/login/LoginRequestForm.tsx
 'use client';
-import { useRouter,useSearchParams } from "next/navigation";
+
+import { useRouter } from "next/navigation";
 import { useUser } from "@/lib/context/userContext";
-import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
-import { formRequestProps } from "@/types";
-import { useEffect } from 'react';
+import { formRequestProps, UseFormRequestReturn } from "@/types";
+import { useFormRequest } from "@/lib/hooks/useFormRequest";
+import { useEffect, useState } from 'react';
 import { Loading4 } from '@/components/ui/loding';
 
 export default function LoginForm(props: formRequestProps) {
-  const { fetchUser ,user } = useUser()
+  const { fetchUser, user, setUser } = useUser();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect') || '/profile';
-  const { onSuccess, submitText = "Login", className, alias,mode="login",istenant=false } = props;
+  const [redirect, setRedirect] = useState<string | null>(null);
 
-  const { form, onSubmit } = useCrudFormRequest({alias,
+  const { onSuccess, submitText = "Login", className, alias, mode = "login", istenant = false } = props;
 
-    onSuccess: async (res) => { 
-      onSuccess?.(res);
-      // const redirectFromSession = sessionStorage.getItem('redirect') || '/';
+  const {
+    handleSubmit,
+    submitForm,
+    formErrors,
+    errors,
+    isSubmitting,
+    isLoading,
+    register
+  }: UseFormRequestReturn = useFormRequest({ alias: alias });
 
-        if (mode === "login") {
+  
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirect(params.get("redirect") || "/profile");
+  }, []);
 
-          if (fetchUser && typeof fetchUser.submitForm === 'function') {
-            await fetchUser.submitForm();
-          }
-          router.replace(redirect); 
-        } else if (mode === "create") {
-          router.replace('/auth/login');
+  const onSubmit = async (data: any) => {
+    const result = await submitForm(data);
+    if (result?.success) {
+      onSuccess?.();
+
+      if (mode === "login") {
+        const userResult = await fetchUser.submitForm();
+        if (userResult.success) {
+          setUser(userResult.data);
+          router.replace(redirect || "/profile");
+        } else {
+          console.error("Failed to fetch user data after login");
         }
-      
-
-  }
-  });
+      } else if (mode === "create") {
+        router.replace('/auth/login');
+      }
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -40,111 +56,75 @@ export default function LoginForm(props: formRequestProps) {
     }
   }, [user, router]);
 
-  if (user) {
+  if (!redirect || user) {
     return <Loading4 />;
   }
 
-  
+
+
+
   return (
     <div className={className}>
 
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label htmlFor="username" className="label">
-            User Name
-          </label>
-          {istenant && (
+          <label className="label">User Name</label>
+          {istenant ? (
             <>
               <input
-                {...form.register("name")}
-                id="name"
+                {...register("name")}
                 className="input-text"
                 placeholder="Enter name"
-                autoComplete="off"
               />
-              {form.formState.errors.name && (
-                <p className="error-text">
-                  {form.formState.errors.name?.message as string}
-                </p>
-              )}
+              {errors.name && <p className="error-text">{errors.name.message as string}</p>}
             </>
-          )}
-          {!istenant && (
+          ) : (
             <>
               <input
-                {...form.register("username")}
-                id="username"
+                {...register("username")}
                 className="input-text"
                 placeholder="Enter username"
-                autoComplete="off"
               />
-              {form.formState.errors.username && (
-                <p className="error-text">
-                  {form.formState.errors.username?.message as string}
-                </p>
-              )}
+              {errors.username && <p className="error-text">{errors.username.message as string}</p>}
             </>
           )}
         </div>
+
         {mode === "create" && (
-        <div>
-          <label htmlFor="email" className="label" >
-            Email
-          </label>
-          <input
-            {...form.register("email")}
-            id="email"
-            className="input-text"
-            placeholder="Enter email"
-            autoComplete="off"
-          />
-          {form.formState.errors.email && (
-            <p className="error-text">
-              {form.formState.errors.email?.message as string}
-            </p>
-          )}
-        </div>
+          <div>
+            <label className="label">Email</label>
+            <input
+              {...register("email")}
+              className="input-text"
+              placeholder="Enter email"
+            />
+            {errors.email && <p className="error-text">{errors.email.message as string}</p>}
+          </div>
         )}
 
         <div>
-          <label htmlFor="password" className="label" >
-            Password
-          </label>
+          <label className="label">Password</label>
           <input
-            {...form.register("password")}
-            id="password"
+            {...register("password")}
             type="password"
             className="input-text"
             placeholder="Enter password"
-            autoComplete="off"
           />
-
-          {form.formState.errors.password && (
-            <p className="error-text">
-              {form.formState.errors.password?.message as string}
-            </p>
-          )}
+          {errors.password && <p className="error-text">{errors.password.message as string}</p>}
         </div>
+
+        {errors.root && (
+          <p className="error-text">{errors.root.message as string}</p>
+        )}
 
         <button
           type="submit"
-          disabled={form.formState.isSubmitting || form.isLoading}
-          className="btn btn-primary"
+          disabled={isSubmitting || isLoading}
+          className="btn btn-primary" 
         >
-          
-          {form.formState.isSubmitting || form.isLoading
-            ? submitText + "..."
-            : submitText}
+          {isSubmitting || isLoading ? submitText + "..." : submitText}
         </button>
       </form>
-
     </div>
   );
 }
-
-
-      {/* {form.formState.errors.root && (
-        <p className="error-text">
-          {form.formState.errors.root?.message as string}
-        </p>
-      )} */}

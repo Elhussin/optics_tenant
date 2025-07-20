@@ -1,7 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-import { getSubdomain } from '@/lib/utils/getSubdomain';
 // تحديد المسارات التي يتم تطبيق الوسيط عليها
 export const config = {
   matcher: [
@@ -17,7 +16,6 @@ export const config = {
 
 
 function getRequiredPermission(pathname: string): string | null {
-  const subdomain = getSubdomain();
 
   let routeMap: [RegExp, string][] = [
     [/^\/admin/, 'admin_access'],
@@ -107,8 +105,6 @@ export async function middleware(request: NextRequest) {
 
     const response = NextResponse.redirect(loginUrl);
     response.cookies.delete('access_token');
-    // return response;
-
     return unauthorizedResponse('/auth/login', 'Login failed or session expired ',pathname);
 
   }

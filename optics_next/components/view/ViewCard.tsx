@@ -13,18 +13,18 @@ import { useEffect } from "react";
 import {SearchFilterForm} from "@/components/Search/SearchFilterForm";
 
 export default function ViewCard(props: ViewCardProps) {
-  const {alias,restoreAlias,hardDeleteAlias,path,viewFields,title = "Items",} = props;
+  const {alias,restoreAlias,path,viewFields,title = "Items",} = props;
   const data = useFilteredListRequest(alias);
 
   const {handleView,handleEdit,handleCreate,} = useCrudHandlers(path, {
     softDeleteAlias: restoreAlias,
     restoreAlias: restoreAlias,
-    hardDeleteAlias: hardDeleteAlias,
     onSuccessRefresh: data.refetch,
   });
 
   
     const SearchFields = generateSearchFieldsFromEndpoint(alias);
+    
     const { setAsideContent } = useAside();
     useEffect(() => {
       setAsideContent(

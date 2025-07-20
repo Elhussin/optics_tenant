@@ -31,7 +31,6 @@ export function useHardDeleteWithDialog({
       if (redirectAfter) router.back();
     },
     onError: (err: any) => {
-      // console.error('Hard delete error:', err.response?.data?.detail);
       toast.error(err.response?.data?.detail);
     },
   });
@@ -50,6 +49,7 @@ export function useHardDeleteWithDialog({
   };
 
   const ConfirmDialogComponent = (
+    <>
     <ConfirmDialog
       open={showDialog}
       title={title}
@@ -57,7 +57,9 @@ export function useHardDeleteWithDialog({
       onCancel={() => setShowDialog(false)}
       onConfirm={handleConfirm}
     />
+    </>
   );
+
 
   return {
     confirmHardDelete,

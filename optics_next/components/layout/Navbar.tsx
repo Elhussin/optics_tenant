@@ -1,20 +1,34 @@
+
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/context/userContext';
 import { AsideButton } from "@/components/ui/buttons/AsideButton";
 import LogoutButton from '../ui/buttons/logout';
 import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
+import { LoadingSpinner } from '../ui/loding';
+
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [subdomain, setSubdomain] = useState<string | null>(null);
+
   const userContext = useUser();
 
-  const subdomain = getSubdomain();
-  if (!userContext) return <div>Loading...</div>;
-  const { user, logout } = userContext;
+  useEffect(() => {
+    setSubdomain(getSubdomain());
+    setReady(true);
+  }, []);
+
+  if (!ready || !userContext) return null;
+
+
+  const { user, loading,logout } = useUser();
+  console.log("user",user);
+  // if (loading) return <LoadingSpinner />;
 
   return (
     <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between relative z-50">
@@ -38,17 +52,8 @@ export default function Navbar() {
           </>
         ) : (
           <>
-          {subdomain ? (
-            <>
-            <Link href="/auth/login" className="nav-link">Login</Link>
+            {subdomain && <Link href="/auth/login" className="nav-link">Login</Link>}
             <Link href="/auth/register" className="nav-link">Register</Link>
-            </>
-          ) : (
-            <>
-        
-            <Link href="/auth/register" className="nav-link">Register</Link>
-            </>
-          )}
             <ThemeToggle />
           </>
         )}
@@ -64,8 +69,8 @@ export default function Navbar() {
       {/* Mobile Drawer Menu */}
       {isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white dark:bg-gray-900 shadow-md flex flex-col gap-4 p-4 md:hidden z-50">
-
           <Link href="/" onClick={() => setIsMenuOpen(false)} className="nav-link">Home</Link>
+
           {user ? (
             <>
               {user.role === 'ADMIN' && <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="nav-link">Admin Panel</Link>}
@@ -79,16 +84,9 @@ export default function Navbar() {
             </>
           ) : (
             <>
-            {subdomain ? (
-              <>
-              <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="nav-link">Login</Link>
+              {subdomain && <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="nav-link">Login</Link>}
               <Link href="/auth/register" onClick={() => setIsMenuOpen(false)} className="nav-link">Register</Link>
-              </>
-            ) : (
-              <>
-              <Link href="/auth/register" onClick={() => setIsMenuOpen(false)} className="nav-link">Register</Link>
-              </>
-            )}
+
               <div className="flex items-center gap-2">
                 <ThemeToggle />
               </div>
