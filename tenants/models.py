@@ -13,6 +13,7 @@ def get_expiration_date():
     return timezone.now() + timedelta(days=1)
 
 
+
 class PendingTenantRequest(models.Model):
     schema_name = models.CharField(max_length=63, unique=True)
     name = models.CharField(max_length=100)

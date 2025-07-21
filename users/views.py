@@ -14,14 +14,12 @@ from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from core.permissions.permissions import ROLE_PERMISSIONS
 from django_filters.rest_framework import DjangoFilterBackend
-
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str, force_bytes
 
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
-from django_tenants.utils import get_tenant
 User = get_user_model()
 
 class LoginView(APIView):
@@ -198,18 +196,46 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
+    @extend_schema(
+        request=serializers.EmailField(),
+        responses={
+            200: inline_serializer(
+                name='PasswordResetSuccessResponse',
+                fields={'detail': serializers.CharField()}
+            ),
+            400: inline_serializer(
+                name='PasswordResetBadRequest',
+                fields={'email': serializers.ListField(child=serializers.CharField(), required=False)}
+            ),
+        },
+        description="Request password reset"
+    )
+
+
     def post(self, request):
         email = request.data.get('email')
         tenant = request.headers.get('X-Tenant')
+
+        if not tenant:
+            return Response({"detail": "Missing X-Tenant header."}, status=400)
+
+        # تحقق من صحة tenant إذا لزم الأمر (اختياري)
+        try:
+            tenant_obj = Client.objects.get(schema_name=tenant)
+        except Client.DoesNotExist:
+            return Response({"detail": "Invalid tenant."}, status=400)
 
         user = User.objects.filter(email=email).first()
         if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-            reset_url = f"http://{tenant}.{settings.TENANT_BASE_DOMAIN}:3000/auth/forgot-password/?uid={uid}&token={token}"
+            protocol = "https" if not settings.DEBUG else "http"
+            port = ":3000" if settings.DEBUG else ""
+            reset_url = f"{protocol}://{tenant}.{settings.TENANT_BASE_DOMAIN}{port}/auth/forgot-password/?uid={uid}&token={token}"
             send_password_reset_email(email, reset_url)
 
         return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
+
 
 
 class PasswordResetConfirmView(APIView):

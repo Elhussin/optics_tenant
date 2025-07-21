@@ -5,10 +5,17 @@ from django.utils.text import slugify
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ # for translation
+from optics_tenant.config_loader import config
 
+FRONTEND_DOMAIN =config("FRONTEND_DOMAIN")
+FRONTEND_PORT =config("FRONTEND_PORT")
+PROTOCOL =config("PROTOCOL")
 
 def send_activation_email(email, token):
-    activation_link = f"{settings.FRONTEND_URL}/auth/activate/?token={token}"
+    if FRONTEND_PORT:
+        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/auth/activate/?token={token}"
+    else:
+        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}/auth/activate/?token={token}"
     message = f"""
         Hi 👋,
         Please activate your account by clicking the link below:
@@ -22,19 +29,42 @@ def send_activation_email(email, token):
     send_mail("Activate your account", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 
+def send_message_acount_activated(email,schema_name,name):
+    if FRONTEND_PORT:
+        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}:{FRONTEND_PORT}"
+    else:
+        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}"
+    message = f"""
+    Hi 👋,
+    Your account has been activated successfully.
+    
+    Your store name: {schema_name}
+    Your domain: {domain}
+    Your login link: {PROTOCOL}://{domain}/auth/login
+    Your superuser email: {email}
+    Your superuser username: {name}
+    Your superuser password: ***Enter at Registration
+    
+    Thanks,
+    Solo Vizion Team
+    """
+    send_mail("Account Activated", message, settings.DEFAULT_FROM_EMAIL, [email])
+
+
+
 def send_password_reset_email(email, url):
     message = f"""
-Hi 👋,
+    Hi 👋,
 
-Please reset your password by clicking the link below:
+    Please reset your password by clicking the link below:
 
-{url}
+    {url}
 
-Note: This link will expire in 24 hours.
+    Note: This link will expire in 24 hours.
 
-Thanks,  
-Solo Vizion Team
-"""
+    Thanks,  
+    Solo Vizion Team
+    """
     send_mail("Reset your password", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 def send_password_change_email(email):
@@ -47,23 +77,6 @@ def send_password_change_email(email):
     """
     send_mail("Password Changed", message, settings.DEFAULT_FROM_EMAIL, [email])
 
-def send_message_acount_activated(email,schema_name,name):
-    domain = f"{slugify(schema_name)}.{settings.TENANT_BASE_DOMAIN}:3000"
-    message = f"""
-    Hi 👋,
-    Your account has been activated successfully.
-    
-    Your store name: {schema_name}
-    Your domain: {domain}
-    Your login link: http://{domain}/auth/login
-    Your superuser email: {email}
-    Your superuser username: {name}
-    Your superuser password: ***Enter at Registration
-    
-    Thanks,
-    Solo Vizion Team
-    """
-    send_mail("Account Activated", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 
 def paid_until_date():

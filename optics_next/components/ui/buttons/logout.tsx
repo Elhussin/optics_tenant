@@ -2,9 +2,11 @@
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import Button from "./Button";
+import { useTranslations } from 'next-intl';
+
 export default function LogoutButton({logout}: {logout: () => void}) {
   const router = useRouter();
-
+  const t = useTranslations('logout');
 
   const handleLogout = async () => {
     try {
@@ -19,10 +21,10 @@ export default function LogoutButton({logout}: {logout: () => void}) {
   return (
     <>
     <Button
-      label="Logout"
+      label={t('title')}
       onClick={handleLogout}
       variant="danger"
-      title="Logout"
+      title={t('title')}
     />
   </>
   );

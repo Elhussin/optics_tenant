@@ -2,6 +2,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
+const LANGUAGE_COOKIE_NAME = "django_language";
 import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
@@ -35,6 +36,11 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   const tenant = window.location.hostname.split(".")[0];
   config.headers["X-Tenant"] = tenant;
+
+  const language = getCookie(LANGUAGE_COOKIE_NAME);
+  if (language && config.headers) {
+    config.headers["Accept-Language"] = language || "en";
+  }
 
   return config;
 });

@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost").split(",")
-FRONTEND_URL =config("FRONTEND_URL")
+
 # ===============================
 # Database PostgreSQL
 # ===============================
@@ -93,7 +93,7 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
-    'core.middleware.TenantMiddleware',
+    'core.middleware.TenantMiddleware.TenantMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -102,7 +102,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  
+    'core.middleware.CustomLanguageMiddleware.CustomLanguageMiddleware',    
 ]
+
 
 # ===============================
 # Templates
@@ -131,7 +134,7 @@ REST_USE_JWT = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'core.middleware.CookieJWTAuthentication',
+        'core.middleware.CookieJWTAuthentication.CookieJWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -159,10 +162,19 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+LANGUAGES = [
+    ('en', 'English'),
+    ('ar', 'Arabic'),
+]
+
+
+
+
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
 USE_TZ = True
+LOCALE_PATHS = [BASE_DIR / 'locale']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

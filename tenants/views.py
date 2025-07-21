@@ -2,17 +2,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import RegisterTenantSerializer
-
-from tenants.models import PendingTenantRequest, Client, Domain
+from tenants.models import PendingTenantRequest, Client, Domain, get_expiration_date
 from django_tenants.utils import schema_context
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 from django.conf import settings
 from django.utils import timezone
-from drf_yasg.utils import swagger_auto_schema
-from drf_yasg import openapi    
 from rest_framework.permissions import AllowAny
-from django.utils.translation import gettext_lazy as _ # for translation
+from django.utils.translation import gettext_lazy as _
 from django.http import HttpResponseForbidden
 from django_tenants.utils import get_tenant
 from core.utils.email import send_activation_email, send_message_acount_activated,paid_until_date
@@ -43,10 +40,13 @@ class ActivateTenantView(APIView):
             return Response({"detail": _("Invalid or expired activation link.")}, status=400)
 
         if pending.is_activated:
-            return Response({"detail": _("Your account is already activated.")}, status=400)
+            return Response({"detail": _("Your account is already activated. Please login. You can find your login link in the activation email.")}, status=400)
 
         if pending.expires_at < timezone.now():
-            return Response({"detail": _("Activation link has expired. Please register again.")}, status=400)
+            pending.expires_at = get_expiration_date()
+            pending.save()
+            send_activation_email(pending.email, pending.token)
+            return Response({"detail": _("Activation link has expired. A new activation email has been sent.")}, status=400)
 
         tenant = Client.objects.create(
             schema_name=pending.schema_name,

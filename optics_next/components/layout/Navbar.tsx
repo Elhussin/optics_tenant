@@ -8,6 +8,7 @@ import LogoutButton from '../ui/buttons/logout';
 import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
+import LanguageToggle from '../ui/LanguageToggle';
 
 
 export default function Navbar() {
@@ -44,12 +45,14 @@ export default function Navbar() {
             <Link href="/profile" className="nav-link">Profile</Link>
             <LogoutButton logout={logout} />
             <ThemeToggle />
+            <LanguageToggle />
           </>
         ) : (
           <>
             {subdomain && <Link href="/auth/login" className="nav-link">Login</Link>}
             <Link href="/auth/register" className="nav-link">Register</Link>
             <ThemeToggle />
+            <LanguageToggle />
           </>
         )}
       </div>
@@ -75,6 +78,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <LogoutButton logout={() => { setIsMenuOpen(false); logout(); }} />
                 <ThemeToggle />
+                <LanguageToggle />
               </div>
             </>
           ) : (
@@ -84,6 +88,7 @@ export default function Navbar() {
 
               <div className="flex items-center gap-2">
                 <ThemeToggle />
+                <LanguageToggle />
               </div>
             </>
           )}

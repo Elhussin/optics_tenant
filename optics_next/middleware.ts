@@ -1,111 +1,55 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from './app/i18n/routing';
 import { jwtVerify } from 'jose';
-// تحديد المسارات التي يتم تطبيق الوسيط عليها
-export const config = {
-  matcher: [
-    '/dashboard/:path*',
-    '/admin/:path*',
-    '/prescriptions/:path*',
-    '/invoices/:path*',
-    '/reports/:path*',
-    '/profile/:path*',
+import { getSubdomain } from './lib/utils/getSubdomain';
+import { getRequiredPermission,unauthorizedResponse } from './lib/utils/middleware';
 
-  ],
-};
+// إعداد i18n
+const intl = createIntlMiddleware(routing);
 
 
-function getRequiredPermission(pathname: string): string | null {
-
-  let routeMap: [RegExp, string][] = [
-    [/^\/admin/, 'admin_access'],
-    [/^\/dashboard/, 'view_dashboard'],
-    [/^\/profile/, 'view_profile'],
-    [/^\/reports/, 'view_reports'],
-    [/^\/users/, 'view_users'],
-    [/\/prescriptions\/(create|new)/, 'create_prescription'],
-    [/\/prescriptions\/edit/, 'edit_prescription'],
-    [/^\/prescriptions/, 'view_prescriptions'],
-    [/\/invoices\/(create|new)/, 'create_invoice'],
-    [/\/invoices\/edit/, 'edit_invoice'],
-    [/^\/invoices/, 'view_invoices'],
-  ];
-
-
-
-  for (const [regex, permission] of routeMap) {
-    if (regex.test(pathname)) return permission;
-  }
-  return null;
-}
-
-function unauthorizedResponse(target: string, message: string, redirect?: string) {
-  const url = new URL(target, 'http://' + process.env.NEXT_PUBLIC_BASE_DOMAIN);
-
-  if (redirect) {
-    url.searchParams.set('redirect', redirect);
-    // sessionStorage.setItem('redirect', redirect);
-  }
-
-  const response = NextResponse.redirect(url);
-
-  response.cookies.set('alert_message', message+" " + redirect, { path: '/', maxAge: 5 });
-  response.cookies.set('alert_type', 'error', { path: '/', maxAge: 5 });
-
-
-  return response;
-}
-
-
-// الوسيط الرئيسي
 export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-  const host = request.headers.get('host') || '';
-  const subdomain = host.split('.')[0]; // store1.localhost → store1
-  const token = request.cookies.get('access_token')?.value;
+  const intlRes = intl(request);
+  if (intlRes) return intlRes;
 
-  // تخطي بعض المسارات العامة
+  const pathname = request.nextUrl.pathname;
   if (
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/api/') ||
-    pathname.includes('.') // للملفات الثابتة
+    pathname.includes('.')
   ) {
     return NextResponse.next();
   }
 
+
+  const host = request.headers.get('host') || '';
+  const subdomain = getSubdomain(host);
+  const token = request.cookies.get('access_token')?.value;
   if (!token) {
     return unauthorizedResponse('/auth/login', 'You need to login to access this page ',pathname);
   }
 
   try {
     const { payload } = await jwtVerify(token, new TextEncoder().encode(process.env.JWT_SECRET!));
-    const userTenant = payload.tenant as string;
-    const permissions = payload.permissions as string[];
-    
-    if (userTenant !== subdomain) {
-      return unauthorizedResponse('/unauthorized', 'Tenant mismatch, access denied to ',pathname);
-    }
-    // إذا كان المسار هو /profile فلا نتحقق من الصلاحيات
-    if (pathname.startsWith('/profile')) {
-      return NextResponse.next();
+ 
+    if (payload.tenant !== subdomain) {
+        return unauthorizedResponse('/unauthorized', 'Tenant mismatch, access denied to ',pathname);
     }
 
-
-
-    
-    const requiredPermission = getRequiredPermission(pathname);
-    if (permissions.includes('__all__') || permissions.includes(requiredPermission!)) {
-      return NextResponse.next();
-    }
-
-    return unauthorizedResponse('/unauthorized', 'You do not have permission to access this page ',pathname);
-  } catch (error) {
-    const loginUrl = new URL('/auth/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-
-    const response = NextResponse.redirect(loginUrl);
-    response.cookies.delete('access_token');
+    if (!pathname.startsWith('/profile')) {
+        const required = getRequiredPermission(pathname);
+        const permissions = payload.permissions as string[];
+        if (required && !permissions.includes(required)) {
+            return unauthorizedResponse('/unauthorized', 'You do not have permission to access this page ',pathname);
+        }
+      }
+    return NextResponse.next();
+  } catch {
     return unauthorizedResponse('/auth/login', 'Login failed or session expired ',pathname);
-
   }
 }
+
+export const config = {
+  matcher: '/((?!api|_next|.*\\..*).*)'
+};

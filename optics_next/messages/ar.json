@@ -1,0 +1,17 @@
+{
+    "HomePage": {
+      "title": "مرحبا في O-S-M",
+      "description": "أفضل حلول لإدارة نظام إدارة شركات البصريات في O-S-M."
+    },
+    "login": {
+      "title": "تسجيل الدخول"
+
+    },
+    "about": {
+      "title": "عن O-S-M"
+    },
+    "logout": {
+      "title": "Logout"
+    }
+
+  }
