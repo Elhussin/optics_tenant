@@ -1,13 +1,12 @@
+"use client"
 import { z } from 'zod';
 import { relationshipConfigs } from './dataConfig';
 import { useState, useEffect } from 'react';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
-import Link from 'next/link';
 import Modal from "@/components/view/Modal";
 import Button from "@/components/ui/buttons/Button";
 import { CirclePlus } from 'lucide-react';
 import ReactSelect from 'react-select';
-import { getFieldLabel } from './DynamicFormhelper';
 import { Controller } from 'react-hook-form';
 
 export function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {

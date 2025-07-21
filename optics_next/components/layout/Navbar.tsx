@@ -1,4 +1,3 @@
-
 'use client';
 
 import Link from 'next/link';
@@ -9,29 +8,25 @@ import LogoutButton from '../ui/buttons/logout';
 import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
-import { LoadingSpinner } from '../ui/loding';
+
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [ready, setReady] = useState(false);
   const [subdomain, setSubdomain] = useState<string | null>(null);
 
-  const userContext = useUser();
+  const { user, loading, logout } = useUser();
 
   useEffect(() => {
     setSubdomain(getSubdomain());
-    setReady(true);
   }, []);
 
-  if (!ready || !userContext) return null;
-
-
-  const { user, loading,logout } = useUser();
-  console.log("user",user);
-  // if (loading) return <LoadingSpinner />;
+    if(loading){
+      return null
+    }
 
   return (
     <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between relative z-50">
+
       {/* Logo + Aside Button */}
       <div className="flex items-center gap-4">
         <AsideButton />

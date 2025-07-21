@@ -6,8 +6,7 @@ export default function DepartmentPage() {
   return (
     <ViewCard
       alias="hrm_departments_list"
-      fieldsAlias="hrm_departments_list"
-      restoreAlias="hrm_departments_restore"
+      restoreAlias="hrm_departments_partial_update"
       hardDeleteAlias="hrm_departments_destroy"
       path="/hrm/department"
       viewFields={["name", "location", "description"]}

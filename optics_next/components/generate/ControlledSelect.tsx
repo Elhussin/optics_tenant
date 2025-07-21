@@ -2,7 +2,7 @@
 
 import { Controller, FieldValues, Control } from 'react-hook-form';
 import ReactSelect from 'react-select';
-import { getFieldLabel } from './DynamicFormhelper'; // أو حسب مكانك
+import { getFieldLabel } from './DynamicFormhelper'; 
 
 type Option = { label: string; value: string };
 
@@ -29,7 +29,7 @@ export function ControlledSelect<T extends FieldValues>({
 }: ControlledSelectProps<T>) {
   const parsedOptions: Option[] = options.map((opt) =>
     typeof opt === 'string'
-      ? { value: opt, label: getFieldLabel(opt) }
+      ? { value: opt, label: getFieldLabel(opt ) }
       : opt
   );
 
@@ -43,7 +43,7 @@ export function ControlledSelect<T extends FieldValues>({
       )}
 
       <Controller
-        name={name}
+        name={name as any}
         control={control}
         rules={{ required: required ? `${label || name} is required` : false }}
         render={({ field, fieldState }) => (

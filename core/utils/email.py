@@ -24,17 +24,18 @@ def send_activation_email(email, token):
 
 def send_password_reset_email(email, url):
     message = f"""
-        Hi 👋,
-        Please reset your password by clicking the link below:
-        {url}
+Hi 👋,
 
-        Note: This link will expire in 24 hours.
+Please reset your password by clicking the link below:
 
-        Thanks,
-        Solo Vizion Team
-        """
+{url}
+
+Note: This link will expire in 24 hours.
+
+Thanks,  
+Solo Vizion Team
+"""
     send_mail("Reset your password", message, settings.DEFAULT_FROM_EMAIL, [email])
-
 
 def send_password_change_email(email):
     message = """

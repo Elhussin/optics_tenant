@@ -200,7 +200,8 @@ class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
     def post(self, request):
         email = request.data.get('email')
-        tenant = request.data.get('tenant')
+        tenant = request.headers.get('X-Tenant')
+
         user = User.objects.filter(email=email).first()
         if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))

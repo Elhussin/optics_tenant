@@ -1,5 +1,4 @@
 "use client"
-import React, { useState } from 'react';
 import { z } from 'zod';
 import { detectFieldType, unwrapSchema } from './detectFieldType';
 import { getFieldLabel, isFieldRequired } from './DynamicFormhelper';
@@ -202,7 +201,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config , mode }: any
   // معالجة input عادي
   const inputType = template.type || 'text';
   // const mode = form.formState.defaultValues ? 'edit' : 'create'; // A way to infer mode
-  const isDisabled = mode === 'edit' && (fieldName === 'email' || fieldName === 'username' || fieldName === 'password');
+  const isDisabled = mode === 'edit' && (fieldName === 'username' || fieldName === 'password');
 
   return (
     <div key={fieldName} className={config.spacing}>

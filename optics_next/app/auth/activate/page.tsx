@@ -2,6 +2,7 @@
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useFormRequest } from "@/lib/hooks/useFormRequest";
 
 export default function ActivatePage() {
   const alias = "tenants_activate_retrieve";
@@ -13,7 +14,7 @@ export default function ActivatePage() {
   );
   const [message, setMessage] = useState<string>("Activating your account...");
 
-  const { onSubmit } = useCrudFormRequest({
+  const formRquest= useFormRequest({
     alias,
     onSuccess: async (res) => {
       console.log(res);
@@ -29,6 +30,7 @@ export default function ActivatePage() {
     },
   });
 
+
   useEffect(() => {
     if (!token) {
       setStatus("invalid");
@@ -36,7 +38,7 @@ export default function ActivatePage() {
       return;
     }
 
-    onSubmit({ token });
+    formRquest.submitForm({ token });
     }, []);
 
   return (
