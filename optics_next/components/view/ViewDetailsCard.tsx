@@ -5,19 +5,15 @@ import { isValidDate, formatDate, isImageUrl, handleDownloadPDF } from "@/lib/ut
 import { handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
 import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
 import { ViewCardProps } from "@/types";
-import EditButton from "@/components/ui/buttons/EditButton";
-import DeleteButton from "@/components/ui/buttons/DeleteButton";
-import RestoreButton from "@/components/ui/buttons/RestoreButton";
-import HardDeleteButton from "@/components/ui/buttons/HardDeleteButton";
-import ActivateButton from "@/components/ui/buttons/ActivateButton";
-import DeactivateButton from "@/components/ui/buttons/DeactivateButton";
+import {
+  EditButton, DeleteButton, RestoreButton, HardDeleteButton,
+  ActivateButton, DeactivateButton, BackButton, PDFButton, PrintButton, CopyButton
+} from "@/components/ui/buttons/Button";
 import { Loading4 } from "@/components/ui/loding";
 import { createFetcher } from "@/lib/hooks/useCrudFormRequest";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { useEffect, useState } from "react";
-import Button from "@/components/ui/buttons/Button";
-import { Copy, Printer, FileText } from "lucide-react";
-import {BackButton} from "@/components/ui/buttons/ActionButtons";
+
 
 export default function ViewDetailsCard(props: ViewCardProps) {
   const { alias, fields, id, restoreAlias, hardDeleteAlias, path, title = "Details", } = props;
@@ -29,15 +25,14 @@ export default function ViewDetailsCard(props: ViewCardProps) {
 
   const printRef = useRef<HTMLDivElement>(null);
 
-  const { handleEdit, handleSoftDelete, handleRestore,handleActivate,handleDeactivate } = useCrudHandlers(path, {
+  const { handleEdit, handleSoftDelete, handleRestore, handleActivate, handleDeactivate } = useCrudHandlers(path, {
     softDeleteAlias: restoreAlias,
     restoreAlias: restoreAlias,
-    hardDeleteAlias: hardDeleteAlias,
     onSuccessRefresh: () => fetchUser({ id }),
   });
-  const { confirmHardDelete, ConfirmDialogComponent, } = useHardDeleteWithDialog({ alias: hardDeleteAlias, onSuccess: () => fetchUser({ id }) });
+  const { confirmHardDelete, ConfirmDialogComponent, } = useHardDeleteWithDialog({ alias: hardDeleteAlias!, onSuccess: () => fetchUser({ id }) });
 
-  const renderButtons=(data:any)=> {
+  const renderButtons = (data: any) => {
 
     return (
       <>
@@ -60,10 +55,10 @@ export default function ViewDetailsCard(props: ViewCardProps) {
       </>
     );
   }
-  
-  
-  
-  
+
+
+
+
   if (!data) {
     return <Loading4 />
   }
@@ -75,29 +70,24 @@ export default function ViewDetailsCard(props: ViewCardProps) {
 
         <h2 className="title-1">{title}</h2>
         <div className="flex gap-2">
-          <Button
-          label="Copy"
-          onClick={() => handleCopy(data, fields)}
-          icon={<Copy size={16} />}
+          <CopyButton
+            onClick={() => handleCopy(data, fields)}
           />
-          <Button
-          label="Print"
-          onClick={() => handlePrint()}
-          icon={<Printer size={16} />}
+          <PrintButton
+            onClick={() => handlePrint()}
           />
-          <Button
-          label="PDF"
-          onClick={() => handleDownloadPDF(printRef, `${title}-${data.id}-${data.username}`)}
-          icon={<FileText size={16} />}
+          <PDFButton
+            onClick={() => handleDownloadPDF(printRef, `${title}-${data.id}-${data.username}`)}
           />
-          
+
         </div>
       </div>
       <div className="" ref={printRef}>
-    
+
         <div className="cards">
-          <div className="flex justify-end">       <BackButton /></div>
-    
+          <div className="flex justify-end">
+            <BackButton /></div>
+
           {fields?.map(({ key, label }) => {
             const value = data?.[key];
 
@@ -127,7 +117,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
             );
           })}
           <div>
-            <p className="text-red-500 text-sm bg-red-50">{data.is_deleted && "This item is deleted You can restore it or delete it permanently  " }</p>
+            <p className="text-red-500 text-sm bg-red-50">{data.is_deleted && "This item is deleted You can restore it or delete it permanently  "}</p>
           </div>
           <div className="btn-card">
             {renderButtons(data)}

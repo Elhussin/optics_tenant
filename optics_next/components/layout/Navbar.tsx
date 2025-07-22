@@ -9,14 +9,14 @@ import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
 import LanguageToggle from '../ui/LanguageToggle';
-
+import { useTranslations } from 'next-intl';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [subdomain, setSubdomain] = useState<string | null>(null);
 
   const { user, loading, logout } = useUser();
-
+  const t = useTranslations('navBar');
   useEffect(() => {
     setSubdomain(getSubdomain());
   }, []);
@@ -26,7 +26,7 @@ export default function Navbar() {
     }
 
   return (
-    <nav className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between relative z-50">
+    <nav dir='ltr' className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between relative z-50">
 
       {/* Logo + Aside Button */}
       <div className="flex items-center gap-4">
@@ -36,21 +36,21 @@ export default function Navbar() {
 
       {/* Desktop Links */}
       <div className="hidden md:flex gap-4 items-center">
-        <Link href="/" className="nav-link">Home</Link>
+        <Link href="/" className="nav-link">{t('home')}</Link>
 
         {user ? (
           <>
-            {user.role === 'ADMIN' && <Link href="/admin" className="nav-link">Admin Panel</Link>}
-            {user.role === 'TECHNICIAN' && <Link href="/prescriptions" className="nav-link">Prescriptions</Link>}
-            <Link href="/profile" className="nav-link">Profile</Link>
+            {user.role === 'ADMIN' && <Link href="/admin" className="nav-link">{t('admin')}</Link>}
+            {user.role === 'TECHNICIAN' && <Link href="/prescriptions" className="nav-link">{t('technician')}</Link>}
+            <Link href="/profile" className="nav-link">{t('profile')}</Link>
             <LogoutButton logout={logout} />
             <ThemeToggle />
             <LanguageToggle />
           </>
         ) : (
           <>
-            {subdomain && <Link href="/auth/login" className="nav-link">Login</Link>}
-            <Link href="/auth/register" className="nav-link">Register</Link>
+            {subdomain && <Link href="/auth/login" className="nav-link">{t('login')}</Link>}
+            <Link href="/auth/register" className="nav-link">{t('register')}</Link>
             <ThemeToggle />
             <LanguageToggle />
           </>
@@ -67,13 +67,13 @@ export default function Navbar() {
       {/* Mobile Drawer Menu */}
       {isMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white dark:bg-gray-900 shadow-md flex flex-col gap-4 p-4 md:hidden z-50">
-          <Link href="/" onClick={() => setIsMenuOpen(false)} className="nav-link">Home</Link>
+          <Link href="/" onClick={() => setIsMenuOpen(false)} className="nav-link">{t('home')}</Link>
 
           {user ? (
             <>
-              {user.role === 'ADMIN' && <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="nav-link">Admin Panel</Link>}
-              {user.role === 'TECHNICIAN' && <Link href="/prescriptions" onClick={() => setIsMenuOpen(false)} className="nav-link">Prescriptions</Link>}
-              <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="nav-link">Profile</Link>
+              {user.role === 'ADMIN' && <Link href="/admin" onClick={() => setIsMenuOpen(false)} className="nav-link">{t('admin')}</Link>}
+              {user.role === 'TECHNICIAN' && <Link href="/prescriptions" onClick={() => setIsMenuOpen(false)} className="nav-link">{t('technician')}</Link>}
+              <Link href="/profile" onClick={() => setIsMenuOpen(false)} className="nav-link">{t('profile')}</Link>
 
               <div className="flex items-center gap-2">
                 <LogoutButton logout={() => { setIsMenuOpen(false); logout(); }} />
@@ -83,8 +83,8 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {subdomain && <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="nav-link">Login</Link>}
-              <Link href="/auth/register" onClick={() => setIsMenuOpen(false)} className="nav-link">Register</Link>
+              {subdomain && <Link href="/auth/login" onClick={() => setIsMenuOpen(false)} className="nav-link">{t('login')}</Link>}
+              <Link href="/auth/register" onClick={() => setIsMenuOpen(false)} className="nav-link">{t('register')}</Link>
 
               <div className="flex items-center gap-2">
                 <ThemeToggle />

@@ -5,8 +5,7 @@ import Button from '@/components/ui/buttons/Button';
 import { Plus } from 'lucide-react';
 import { ViewCardProps } from '@/types';
 import { formatLabel } from '@/lib/utils/cardViewHelper';
-import ViewButton from "@/components/ui/buttons/ViewButton";
-import EditButton from "@/components/ui/buttons/EditButton";
+import {ViewButton,EditButton, CreateButton} from "@/components/ui/buttons/Button";
 import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFields";
 import { useAside } from "@/lib/context/AsideContext";
 import { useEffect } from "react";
@@ -42,12 +41,8 @@ export default function ViewCard(props: ViewCardProps) {
       <>  
         <div className="main-header">
           <h2 className="title-1">{title}</h2>
-          <Button
-            label="Create"
+          <CreateButton
             onClick={() => handleCreate()}
-            variant="primary"
-            icon={<Plus size={16} />}
-            className="md:mt-0 mt-4"
           />
         </div>
         <div className="card-continear">

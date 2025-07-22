@@ -20,9 +20,11 @@ DATABASES = {
         'PASSWORD': config('DB_PASSWORD'),
         'HOST': config('DB_HOST', default='localhost'),
         'PORT': config('DB_PORT', default='5432'),
+        'OPTIONS': {
+            'options': '-c search_path=public,shared'
+        }
     }
 }
-
 DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 
 # ===============================
@@ -30,9 +32,9 @@ DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 # ===============================
 SHARED_APPS = (
     'django_tenants',
-    'core',
     'users',
-    'tenants',
+    'core',
+   'tenants',
     'admin_interface',
     'colorfield',
     'django.contrib.contenttypes',

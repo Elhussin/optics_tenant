@@ -1,3 +1,5 @@
+import { AnyActionArg } from "react";
+
 export type ApiError = {
     [field: string]: string | string[];
   };
@@ -100,9 +102,11 @@ export interface BaseButtonProps {
 
 };
 
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close';
+
 export interface ButtonProps extends BaseButtonProps  {
   label: string;
-  variant?: string;
+  variant?: ButtonVariant;
   icon?: React.ReactNode;
   className?: string;
   type?: "button" | "submit" | "reset" 

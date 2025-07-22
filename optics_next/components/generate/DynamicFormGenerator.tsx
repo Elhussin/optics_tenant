@@ -10,10 +10,9 @@ import { DynamicFormProps } from '@/types/DynamicFormTypes';
 import { defaultConfig,ignoredFields } from './dataConfig';
 import { RenderField } from './renderField';
 import { cn } from '@/lib/utils/cn';
-import Button from '@/components/ui/buttons/Button';
+import {BackButton,RestButton,Button} from '@/components/ui/buttons/Button';
 import { CircleX, TimerReset, CirclePlus } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
-import { BackButton } from '@/components/ui/buttons/ActionButtons';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 
 
@@ -93,21 +92,13 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
           />
 
           {!isIframe && config.includeResetButton && (
-            <Button
-              label="Reset"
+            <RestButton
               onClick={() =>formRequest.reset()}
-              variant="reset"
-              icon={<TimerReset size={16} />}
             />
           )}
 
           {!isIframe && showCancelButton && (
-            <Button
-              label="Cancel"
-              onClick={() => router.back()}
-              variant="cancel"
-              icon={<CircleX size={16} />}
-            />
+            <BackButton/>
           )}
         </div>
         

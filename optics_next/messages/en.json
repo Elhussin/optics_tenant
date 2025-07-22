@@ -1,7 +1,8 @@
 {
 
     "logout": {
-      "title": "Logout"
+      "title": "Logout",
+      "error": "Failed to log out"
     },
     "HomePage": {
       "title": "Welcome to O-S-M",
@@ -10,6 +11,38 @@
     "login": {
       "title": "Login"
 
+
+    },
+    "navBar": {
+      "title": "Navigation",
+      "home": "Home",
+      "about": "About",
+      "contact": "Contact",
+      "admin": "Admin",
+      "technician": "Technician",
+      "profile": "Profile",
+      "logout": "Logout",
+      "dark": "Dark",
+      "light": "Light",
+      "register": "Register",
+      "login": "Login"
+    },
+    "button":{
+      "close":"Close",
+      "deactivate":"Deactivate",
+      "delete":"Delete",
+      "delatetitle":"This action will restore the item",
+      "edit":"Edit",
+      "hardDelete":"Remove",
+      "restore":"Restore",
+      "view":"View",
+      "activate":"Activate",
+      "back":"Back",
+      "rest":"Reset",
+      "create":"Create",
+      "copy":"Copy",
+      "print":"Print",
+      "pdf":"PDF"
     }
   
   }

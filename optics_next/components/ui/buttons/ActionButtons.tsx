@@ -62,13 +62,3 @@ export default function ActionButtons({isAll = false, onView, onEdit, onSoftDele
 }
 
 
-export const BackButton = () => {
-  const router = useRouter();
-  return <Button
-  label="Back"
-  onClick={() => router.back()}
-  variant="primary"
-  icon={<ArrowLeft size={16} />}
-  className="md:mt-0 mt-4"
-/>
-}

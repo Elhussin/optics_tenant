@@ -11,7 +11,39 @@
       "title": "عن O-S-M"
     },
     "logout": {
-      "title": "Logout"
+      "title": "Logout",  
+      "error": "فشل تسجيل الخروج"
+    },
+    "navBar": {
+      "title": "Navigation",
+      "home": "الرئيسية",
+      "about": "عنا",
+      "contact": "اتصل بنا",
+      "admin": "المدير",
+      "technician": " الفني",
+      "profile": "الملف الشخصي",
+      "logout": "تسجيل الخروج",
+      "dark": "الظلام",
+      "light": "الضوء",
+      "register": "تسجيل",
+      "login": " الدخول"
+    },
+    "button":{
+      "close":"اغلاق",
+      "deactivate":"الغاء تنشيط",
+      "delete":"مسح",
+      "deleteTitle":"اسرجاع عنصر محذوف",
+      "edit":"تعديل",
+      "hardDelete":"حذف",
+      "restore":"استرجاع",
+      "view":"عرض",
+      "activate":"تنشيط",
+      "back":"رجوع",
+      "rest":"إعادة تعيين",
+      "create":"إنشاء",
+      "copy":"نسخ",
+      "print":"طباعة",
+      "pdf":"PDF"
     }
 
   }

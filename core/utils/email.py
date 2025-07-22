@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ # for translation
 from optics_tenant.config_loader import config
+from django.utils.translation import gettext_lazy as _
 
 FRONTEND_DOMAIN =config("FRONTEND_DOMAIN")
 FRONTEND_PORT =config("FRONTEND_PORT")
@@ -16,7 +17,7 @@ def send_activation_email(email, token):
         activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/auth/activate/?token={token}"
     else:
         activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}/auth/activate/?token={token}"
-    message = f"""
+    message =_(f"""
         Hi 👋,
         Please activate your account by clicking the link below:
         {activation_link}
@@ -25,7 +26,7 @@ def send_activation_email(email, token):
 
         Thanks,
         Solo Vizion Team
-        """
+        """)
     send_mail("Activate your account", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 

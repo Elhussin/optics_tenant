@@ -4,7 +4,7 @@ from rest_framework import status
 from .serializers import RegisterTenantSerializer
 from tenants.models import PendingTenantRequest, Client, Domain, get_expiration_date
 from django_tenants.utils import schema_context
-from django.contrib.auth import get_user_model
+
 from django.utils.text import slugify
 from django.conf import settings
 from django.utils import timezone
@@ -59,6 +59,7 @@ class ActivateTenantView(APIView):
         Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
 
         with schema_context(pending.schema_name):
+            from django.contrib.auth import get_user_model
             User = get_user_model()
             User.objects.create_superuser(
                 username=pending.name,
@@ -73,3 +74,9 @@ class ActivateTenantView(APIView):
         send_message_acount_activated(pending.email, pending.schema_name,pending.name)
 
         return Response({"detail": _("Account activated successfully. You can now log in.")})
+
+
+
+
+# django-admin makemessages -l ar
+# django-admin compilemessages

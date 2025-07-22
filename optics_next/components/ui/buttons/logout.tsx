@@ -1,7 +1,7 @@
 "use client";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import Button from "./Button";
+import {Button} from "./Button";
 import { useTranslations } from 'next-intl';
 
 export default function LogoutButton({logout}: {logout: () => void}) {
@@ -13,7 +13,7 @@ export default function LogoutButton({logout}: {logout: () => void}) {
       logout();
       router.push("/auth/login");
     } catch (error) {
-      toast.error("Failed to log out");
+      toast.error(t('error'));
       console.log(error);
     }
   };
@@ -27,5 +27,5 @@ export default function LogoutButton({logout}: {logout: () => void}) {
       title={t('title')}
     />
   </>
-  );
+  ); 
 }
