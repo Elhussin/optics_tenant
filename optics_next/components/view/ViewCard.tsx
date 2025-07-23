@@ -1,8 +1,6 @@
 "use client";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
-import Button from '@/components/ui/buttons/Button';
-import { Plus } from 'lucide-react';
 import { ViewCardProps } from '@/types';
 import { formatLabel } from '@/lib/utils/cardViewHelper';
 import {ViewButton,EditButton, CreateButton} from "@/components/ui/buttons/Button";
@@ -23,7 +21,7 @@ export default function ViewCard(props: ViewCardProps) {
 
   
     const SearchFields = generateSearchFieldsFromEndpoint(alias);
-    
+
     const { setAsideContent } = useAside();
     useEffect(() => {
       setAsideContent(
@@ -39,7 +37,7 @@ export default function ViewCard(props: ViewCardProps) {
 
   return (
       <>  
-        <div className="main-header">
+        <div className="head">
           <h2 className="title-1">{title}</h2>
           <CreateButton
             onClick={() => handleCreate()}
@@ -47,7 +45,7 @@ export default function ViewCard(props: ViewCardProps) {
         </div>
         <div className="card-continear">
           {data.data?.map((item: any) => (
-            <div key={item.id} className="cards">
+            <div key={item.id} className="card">
               {viewFields?.map((field) => (
                 <p key={field} className="card-body">
                   <strong>{formatLabel(field)}:</strong> {item[field]}

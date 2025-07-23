@@ -4,8 +4,9 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { UserContextType } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useFormRequest } from '../hooks/useFormRequest';
-import { toast } from 'sonner';
+
 import { getSubdomain } from '@/lib/utils/getSubdomain';
+import { safeToast } from '@/lib/utils/toastService';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -22,7 +23,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       setLoading(false);
     },
     onError: (err) => {
-      toast.error("Failed to fetch user");
+      safeToast("Failed to fetch Your Data", {type: "error",});
+      router.replace('/auth/login');
       setLoading(false);
     },
    });
@@ -32,7 +34,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     await logoutRequest.submitForm();
     setUser(null);
     router.replace('/auth/login');
-    toast.success("Logged out successfully");
+    safeToast("Logged out successfully", {type: "success",});
+    
   };
 
   useEffect(() => {

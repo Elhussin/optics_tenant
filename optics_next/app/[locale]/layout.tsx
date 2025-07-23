@@ -1,7 +1,6 @@
 
-import { Geist, Geist_Mono } from 'next/font/google';
-// import '@/styles/globals.css';
-import '@/styles/styles.css';
+import { Geist, Geist_Mono ,Cairo, Inter  } from 'next/font/google';
+import '@/styles/globals.css';
 import { AsideProvider } from '@/lib/context/AsideContext';
 import { UserProvider } from '@/lib/context/userContext';
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
@@ -11,6 +10,10 @@ import {routing} from '@/app/i18n/routing';
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+
+
+const cairo = Cairo({ subsets: ['arabic'], weight: ['400', '600', '700'], variable: '--font-alt' });
+const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-main' });
 
 
 
@@ -31,7 +34,7 @@ export default async function LocaleLayout({
  
 
   return (
-    <html lang={locale} dir={dir} data-theme="dark" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang={locale} dir={dir} data-theme="dark" className={`${cairo.variable} ${inter.variable} `}>
       <body>
         <UserProvider>
           <NextIntlClientProvider locale={locale}>

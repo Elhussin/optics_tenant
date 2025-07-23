@@ -13,11 +13,6 @@ export default function CustomerEditPage() {
     }
  
     return (
-        <>
-            <div className="main-header">
-                <h2 className="title-1">Edit Customer</h2>
-                <BackButton />
-            </div>
             <DynamicFormGenerator
                 schemaName="Customer"
                 id={id}
@@ -25,9 +20,7 @@ export default function CustomerEditPage() {
                 onSuccess={() => {toast.success('Customer updated successfully');}}
                 mode="edit"
                 submitText="Update"
-    
             />
-        </>
     );
 }
 

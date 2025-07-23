@@ -1,122 +1,280 @@
-/* style.css */
 
-/* 1. استيراد Tailwind CSS */
+
+
 @import "tailwindcss";
 
-/* 2. تعريف Custom Variants */
+/* app/globals.css أو src/app/globals.css */
+
+/* @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *)); */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* --- */
+:root {
+  --font-main: 'Mergan', sans-serif;
+  --font-alt: 'Cairo', sans-serif;
 
-/* 3. تعريف متغيرات السمة (Theme Variables) الافتراضية */
-@theme {
-  /* الخطوط */
-  --font-main: 'Roboto', sans-serif;
-  --font-alt: 'Arial', sans-serif;
-
-  /* ألوان الخلفية والأسطح */
-  --bg-body:       #f8fafc;
-  --bg-surface:    #ffffff;
-  --bg-elevated:   #f1f5f9;
-
-  /* ألوان النصوص */
-  --color-main:     #0f172a;
-  --color-secondary:#64748b;
-  --color-primary: #3b82f6;
-
-  /* ألوان الحدود */
-  --color-border:  #e2e8f0;
-
-  /* ألوان الأزرار */
-  --button-bg: #3490dc;
-  --button-text: #ffffff;
-  --button-hover-bg: #2779bd;
-  --button-border-radius: 0.5rem;
-}
-/* 
---font-display-100: "Tagesschrift"', 'sans-serif'
---color-primary: #1e3a8a;
---color-secondary: #f43f5e;
---color-mint-500: oklch(0.72 0.11 178);
- */
-
-/* --- */
-
-/* 4. تعريف تعديلات متغيرات السمة للوضع الداكن */
-@variant dark {
-  --bg-body:       #0f172a;
-  --bg-surface:    #1e293b;
-  --bg-elevated:   #334155;
-
-  --color-primary: #60a5fa;
-  --color-main:     #f8fafc;
-  --color-secondary:#94a3b8;
-  --border-color:  #475569;
-
-  --button-bg: #667eea;
-  --button-text: #e2e8f0;
-  --button-hover-bg: #5a67d8;
-}
+  --color-primary: #3060aa;
+  --color-secondary: #f59e0b;
+  --color-danger: #dc2626;
+  --color-success: #22c55d;
+  --color-info: #0d4923;
 
 
-@font-face {
-    font-family: 'Roboto';
-    src: url('/fonts/Roboto-Regular.woff2') format('woff2');
-    font-weight: 400;
-    font-style: normal;
+  --bg-body: #f9fafb;
+  --text-main: #111827;
 }
 
 
 html[dir="rtl"] {
-    direction: rtl;
-    text-align: right;
+  direction: rtl;
+  text-align: right;
+  font-family: 'Cairo', sans-serif;
+}
+
+html[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
+  font-family: 'Inter', sans-serif;
+}
+
+@layer base {
+    html {
+      font-family: var(--font-family-display);
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: 700;
+    }
+}
+/* 🌍 2. Global styles */
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+}
+
+.dark-light {
+    @apply dark:bg-gray-800 dark:text-white;
+}
+
+
+.container {
+  @apply max-w-screen-md mx-auto px-4 ;
+}
+
+
+  
+.card {
+    @apply p-6 shadow-md rounded-2xl bg-white dark:bg-gray-800 dark:text-white;
+    
   }
   
-  html[dir="ltr"] {
-    direction: ltr;
-    text-align: left;
-  }
-
-@layer components {
-
-.header {
-  @apply py-4 shadow-md; 
-  background-color: var(--bg-body); 
-  color: var(--text-main);          
+.input-base {
+    @apply w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
-.nav {
-  @apply flex items-center justify-between p-4 border-b text-primary bg-surface;
-  /* background-color: var(--bg-surface);  */
-  /* color: var(--color-primary);         */
- 
-  border-color: var(--border-color);  
+.input-radio {
+    @apply w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500;
 }
 
-.card {
-  @apply rounded-lg shadow-md p-6;
-  background-color: var(--bg-surface); 
-  color: var(--text-main);       
-  border: 1px solid var(--border-color); 
+.error-text {
+    @apply text-red-500 text-sm;
+}
+
+
+/* 🧩 3. Reusable Components */
+.btn {
+  @apply flex items-center gap-2 font-medium px-4 py-2 rounded-md transition-all text-white text-sm  hover:opacity-70;
+}
+
+
+.btn-close {
+  @apply absolute top-3 right-3 text-gray-500 hover:text-red-600 text-2xl font-bold
 }
 
 .btn-primary {
-  @apply py-2 px-4 font-semibold transition-colors duration-200 ease-in-out;
-  border-radius: var(--button-border-radius);
-  background-color: var(--button-bg);
-  color: var(--button-text);
-}
-
-.btn-primary:hover {
-  background-color: var(--button-hover-bg);
+  @apply bg-[var(--color-primary)]
 }
 
 
-body {
-    background-color: var(--bg-body);
-    color: var(--text-main);
-    font-family: var(--font-main);
-    min-height: 100vh;
+.btn-secondary {
+  @apply bg-[var(--color-secondary)];
 }
 
+.btn-danger {
+  @apply bg-[var(--color-danger)];
+}
+
+.btn-success {
+  @apply bg-[var(--color-success)] ;
+}
+
+.btn-info {
+  @apply bg-[var(--color-info)] ;
+}
+
+.btn-cancel {
+  @apply bg-gray-400;
+
+}
+.btn-reset {
+  @apply bg-gray-500;
+
+}
+
+.body{
+  @apply bg-[var(--bg-body)] dark:bg-gray-800 dark:text-white;
+}
+
+.nav{
+  @apply bg-white shadow px-4 py-3 flex justify-between items-center dark:bg-gray-900 dark:text-white;
+}
+
+.nav-link {
+  @apply text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200;
+}
+
+.header{
+  @apply bg-gray-100 py-4 shadow-md dark:bg-gray-800 dark:text-white;
+}
+
+.footer{
+  @apply bg-gray-100 py-4 shadow-md dark:bg-gray-900 dark:text-white;
+}
+.footer-content{
+  @apply container mx-auto px-4 text-center text-sm dark:bg-gray-900 dark:text-white;
+}
+
+/* .aside{
+  @apply fixed top-16 left-0 h-full w-72 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-md z-40 
+  transform transition-transform duration-300 
+} */
+/* lg:w-1/4 */
+
+.aside {
+  @apply h-full w-96 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-md 
+  transition-all duration-300 ;
+}
+
+.card-continear{
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 dark:bg-gray-800 dark:text-white;
+}
+
+.cards{
+  @apply bg-white shadow-md p-4 rounded-md dark:bg-gray-700 dark:text-white;
+}
+
+.card-header{
+  @apply  text-lg font-bold capitalize text-gray-600 dark:text-gray-100;
+}
+.card-body{
+  @apply w-full text-sm text-gray-600 dark:text-gray-200;
+}
+
+.btn-card{
+  @apply flex space-x-2 text-sm mt-4;
+}
+
+.input-text {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.input-disabled {
+  @apply bg-gray-200 text-gray-500 cursor-not-allowed;
+}
+
+.input-checkbox {
+  @apply h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded;
+}
+
+.select {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.option {
+  @apply cursor-pointer hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white;
+}
+
+.title-1{
+  @apply text-lg font-bold capitalize text-gray-600 dark:text-gray-100;
+}
+
+.main{
+  @apply lg:w-3/4 space-y-4 md:p-4 w-full dark:bg-gray-800 dark:text-white;
+}
+
+
+.body-container{
+  @apply flex flex-col md:flex-row gap-4 w-full;
+}
+
+.main-header{
+  @apply flex flex-wrap justify-between items-center p-4;
+}
+
+.label{
+  @apply block text-sm font-medium mb-1 capitalize;
+}
+
+.error-text{
+  @apply text-red-500 text-sm mt-1;
+}
+
+
+.rs__control {
+  @apply border rounded-md px-2 py-1 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.rs__option {
+  @apply cursor-pointer hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white;
+}
+
+.rs__menu {
+  @apply border rounded-md shadow-lg mt-1;
+}
+
+.rs__single-value {
+  @apply text-gray-900 dark:text-white;
+}
+
+.rs__placeholder {
+  @apply text-gray-400;
+}
+
+/* Tailwind + dark mode styling */
+.dark .rs__control {
+  @apply bg-gray-800 border-gray-700 text-white dark:text-gray-100;
+}
+
+.dark .rs__menu {
+  @apply bg-gray-800 text-white dark:text-gray-100;
+}
+
+.dark .rs__option {
+  @apply hover:bg-gray-700 text-white dark:text-gray-100;
+}
+
+.dark .rs__single-value {
+  @apply text-white dark:text-gray-100;
+}
+
+.dark .rs__placeholder {
+  @apply text-gray-400 dark:text-gray-100;
+} */
+
+
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .container, .container * {
+    visibility: visible;
+  }
+  .container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
 }

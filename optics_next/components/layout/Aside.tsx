@@ -1,51 +1,48 @@
 'use client';
-import { X } from 'lucide-react';
 import { useAside } from '@/lib/context/AsideContext';
 import React from 'react';
-import Link from 'next/link';
 
+import {Link} from '@/app/i18n/navigation';
+import { motion } from "framer-motion";
+//  className="w-full md:w-80"
 export default function Aside() {
-  const { toggleAside, isVisible } = useAside();
+  const { isVisible,asideContent } = useAside();
+  const asideBase = "fixed top-0 left-0 h-screen bg-surface  w-80 border-r border-gray-200 dark:border-gray-700 shadow-md z-40 transform transition-transform duration-700 ease-in-out";
 
   return (
-    <aside
-    
-      className={`fixed top-16 left-0 h-full w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-md z-40 
-        transform transition-transform duration-300
-        ${isVisible ? 'translate-x-0' : 'translate-x-full'}
-      `}
+    <motion.aside
+  initial={{ x: "-100%" }}
+  animate={{ x: isVisible ? "0%" : "-100%" }}
+  transition={{ duration: 0.7, ease: "easeInOut" }}
+  className={asideBase}
+>
 
-    >
-      {/* زر الإغلاق */}
-      <button
-        onClick={toggleAside}
-        className="absolute top-16 right-3 text-gray-500 hover:text-red-500"
-        aria-label="Close Sidebar"
-      >
-        <X size={20} />
-      </button>
+      <div className="pt-16 px-6 pb-6 h-full overflow-y-auto scrollbar-thin">
+      {asideContent ? asideContent : <AsidDeafualtContent />}
 
-      {/* المحتوى */}
-      <div className="mt-32 px-4 w-4/5">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
-          Sidebar
-        </h2>
-        <div className="flex flex-col gap-2">
-        <Link href="/">Home</Link>
-          <Link href="/auth/login">Login</Link>
-          <Link href="/auth/register">Register</Link>
-          <Link href="/profile">Profile</Link>
-          <Link href="/admin">Admin</Link>
-          <Link href="/prescriptions">Prescriptions</Link>
-          <Link href="/about">About</Link>
-          <Link href="/contact">Contact</Link>
-          <Link href="/users">Users</Link>
-          <Link href="/tenants">Tenants</Link>
-          <Link href="/groups">Groups</Link>
-          <Link href="/crm">CRM</Link>
-          <Link href="/permissions">Permissions</Link>
-        </div>
       </div>
-    </aside>
+    </motion.aside>
+  );
+}
+
+
+const AsidDeafualtContent = () => {
+
+  return (
+        <nav className="flex flex-col gap-3 text-gray-700 dark:text-gray-300">
+          <Link className="nav-link " href="/">Home</Link>
+          <Link className="nav-link " href="/auth/login">Login</Link>
+          <Link className="nav-link " href="/auth/register">Register</Link>
+          <Link className="nav-link " href="/profile">Profile</Link>
+          <Link className="nav-link " href="/admin">Admin</Link>
+          <Link className="nav-link " href="/prescriptions">Prescriptions</Link>
+          <Link className="nav-link " href="/about">About</Link>
+          <Link className="nav-link " href="/contact">Contact</Link>
+          <Link className="nav-link " href="/users">Users</Link>
+          <Link className="nav-link " href="/tenants">Tenants</Link>
+          <Link className="nav-link " href="/groups">Groups</Link>
+          <Link className="nav-link " href="/crm">CRM</Link>
+          <Link className="nav-link " href="/permissions">Permissions</Link>
+        </nav>
   );
 }

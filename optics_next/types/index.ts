@@ -98,7 +98,7 @@ export interface ViewCardProps {
 
 
 export interface BaseButtonProps {
-  onClick: () => void ;
+  onClick: (e?: React.MouseEvent) => void ;
 
 };
 

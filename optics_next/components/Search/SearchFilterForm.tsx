@@ -3,12 +3,13 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchField } from '@/types/search';
 import { useState } from 'react';
-import Button from '@/components/ui/buttons/Button';
+import {Button} from '@/components/ui/buttons/Button';
 
 interface Props {
   fields: SearchField[];
   actionPath?: string; // يمكن تمرير مسار مخصص (افتراضي '')
 }
+
 
 export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
   const router = useRouter();
@@ -27,10 +28,10 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
     }
     router.push(`${actionPath}?${params.toString()}`);
   };
+  // const asideBase = "fixed top-0 left-0 h-screen bg-surface w-80 border-r border-gray-200 dark:border-gray-700 shadow-md z-40 transform transition-transform duration-700 ease-in-out";
 
   return (
-    <div       className={`fixed top-16 left-0 h-full w-96 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 shadow-md z-40 
-        transform transition-transform duration-300`}>
+    <div className="">
     <form className="grid grid-cols-1 gap-4 mb-6  mt-32 w-4/5 px-4">
       {fields.map((field) => (
         <div key={field.name} className="flex items-center">

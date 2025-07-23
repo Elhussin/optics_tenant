@@ -4,11 +4,10 @@ import { ZodType, ZodObject } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/lib/api/axios";
-import { handleErrorStatus } from "@/lib/utils/error";
 import { useFormRequestProps } from "@/types";
-import { toast } from "sonner"; 
 import { UseFormRequestReturn } from "@/types";
 
+import { handleServerErrors } from "@/lib/utils/error";
 function hasParameters(
   endpoint: any
 ): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
@@ -17,42 +16,7 @@ function hasParameters(
 
 
 
-function handleServerErrors(error: any, setError: (name: string, error: any) => void) {
-  const serverErrors = error?.response?.data;
 
-  if (serverErrors && typeof serverErrors === "object") {
-    // ✅ أخطاء الحقول
-    for (const [field, messages] of Object.entries(serverErrors)) {
-      if (Array.isArray(messages)) {
-        setError(field as string, {
-          type: "server",
-          message: messages.join(" "),
-        });
-      }
-    }
-
-    // ✅ الأخطاء العامة
-    const nonFieldError =
-      (Array.isArray(serverErrors?.non_field_errors) && serverErrors.non_field_errors.join(" ")) ||
-      serverErrors?.detail;
-
-    if (nonFieldError) {
-      setError("root", {
-        type: "server",
-        message: nonFieldError,
-      });
-      toast.error(nonFieldError); // عرض رسالة الخطأ (اختياري)
-    }
-
-  } else {
-    const fallbackError = handleErrorStatus(error);
-    setError("root", {
-      type: "server",
-      message: fallbackError,
-    });
-    toast.error(fallbackError); // عرض رسالة الخطأ (اختياري)
-  }
-}
 
 export function useFormRequest(options: useFormRequestProps): UseFormRequestReturn {
 

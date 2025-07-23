@@ -1,57 +1,57 @@
-// src/components/layout/MainLayout.tsx
+"use client"
 import Header from './Header';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { Toaster } from 'sonner';
 import GlobalAlert from '@/components/ui/GlobalAlert';
 import { usePathname } from 'next/navigation';
-import { useIsIframe } from '@/lib/hooks/useIsIframe'; // حسب مكان الهوك
+import { useIsIframe } from '@/lib/hooks/useIsIframe';
+import { AsideButton } from "@/components/ui/buttons/AsideButton";  
+import Aside  from "@/components/layout/Aside";
+import { useAside } from '@/lib/context/AsideContext'; // ✅ أضف هذا
+import { cn } from '@/lib/utils/cn';
 interface Props {
-  mainContent?: React.ReactNode; // المحتوى الرئيسي
-  asideContent?: React.ReactNode; // المحتوى الخاص بـ Asaide
+  mainContent?: React.ReactNode;
 }
 
-export default function MainLayout({ mainContent, asideContent }: Props) {
- 
+export default function MainLayout({ mainContent }: Props) {
+
   const pathname = usePathname();
   const excluded = ['/auth/login', '/auth/register'];
 
   const showAside = !excluded.includes(pathname);
   const isIframe = useIsIframe();
+  const { isVisible } = useAside();
 
 
-  
   return (
-    <div className="min-h-screen flex flex-col dark:bg-gray-800 dark:text-white">
+    <div className="flex flex-col min-h-screen">
       {!isIframe && (
-      <>
-      <Header />
-      <Navbar />
-      </>
+        <>
+          <Header />
+          <Navbar />
+        </>
       )}
-      
-      <div className="flex flex-1 min-h-screen">
-      {/* Aside */}
-      {!isIframe && (
-      <>
-      {asideContent && showAside && (
-        <aside >
-          {asideContent}
-        </aside>
-      )}
-      </>
-      )}
-      
+       <AsideButton />
+      <div className="flex flex-1 flex-col md:flex-row min-h-0">
+   
+        {showAside && (<div className=""><Aside /></div> )}
 
-      {/* Main */}
-      <main className="flex-1 p-4">
-        <div className="max-w-6xl mx-auto">
-          <GlobalAlert />
-          {mainContent}
-          <Toaster />
-        </div>
-      </main>
-    </div>
+
+        <main
+            className={cn(
+              "p-4 flex-1 w-full overflow-y-auto transition-all duration-500",
+              isVisible ? "md:ml-80" : "md:ml-0"
+            )}
+          >
+          <div className="max-w-6xl mx-auto">
+            <GlobalAlert />
+            {mainContent}
+            <Toaster />
+          </div>
+        </main>
+
+      </div>
 
       {!isIframe && <Footer />}
     </div>

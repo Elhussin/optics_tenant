@@ -19,6 +19,7 @@ export function useCrudFormRequest({
     onError: (err: any) => {
       onError?.(err);
       const statusError : string = handleErrorStatus(err);
+      console.log(statusError);
       toast.error(`${statusError}`);
     },
   });

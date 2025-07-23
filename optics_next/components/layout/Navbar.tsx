@@ -1,9 +1,9 @@
 'use client';
 
-import Link from 'next/link';
+import {Link} from '@/app/i18n/navigation';
 import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/context/userContext';
-import { AsideButton } from "@/components/ui/buttons/AsideButton";
+
 import LogoutButton from '../ui/buttons/logout';
 import ThemeToggle from '../ui/ThemeToggle';
 import { Menu, X } from 'lucide-react';
@@ -29,7 +29,7 @@ export default function Navbar() {
     <nav dir='ltr' className="nav">
       {/* Logo + Aside Button */}
       <div className="flex items-center gap-4">
-        <AsideButton />
+
         <Link href="/" className="font-bold text-xl text-gray-800 dark:text-white">O S M</Link>
       </div>
 

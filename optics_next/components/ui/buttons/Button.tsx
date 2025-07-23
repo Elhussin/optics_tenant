@@ -27,7 +27,7 @@ export  function Button(props: ButtonProps) {
 
   return (
     <button
-      onClick={onClick}
+      onClick={onClick ?? (() => { })}
       type={type}
       title={title}
       disabled={disabled}

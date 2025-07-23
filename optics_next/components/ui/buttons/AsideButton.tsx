@@ -1,19 +1,27 @@
 'use client';
 import { useAside } from '@/lib/context/AsideContext';
-import { X, Menu } from 'lucide-react';
+import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export const AsideButton = () => {
   const { isVisible, toggleAside } = useAside();
 
   return (
-    <button
+    <motion.button
       onClick={toggleAside}
-      className="fixed bottom-16 left-4 z-50 p-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl 
-      transition-all duration-200"
       aria-label="Toggle Sidebar"
+      initial={false}
+      animate={{
+        x: isVisible ? 288 : 0, // 288px = 72 * 4 (w-72 أو w-80 حسب عرض الـ Aside)
+      }}
+      transition={{ duration: 0.7, ease: "easeInOut" }}
+      className="aside-button fixed top-4 z-50" // تأكد من وضع button فوق الـ aside دائمًا
     >
-        
-      {isVisible ? <X size={22} className="text-gray-700 dark:text-white  " /> : <Menu size={22} className="text-gray-700 dark:text-white" />}
-    </button>
+      {isVisible ? (
+        <ArrowLeft size={22} className="text-gray-700 dark:text-white" />
+      ) : (
+        <ArrowRight size={22} className="text-gray-700 dark:text-white" />
+      )}
+    </motion.button>
   );
 };

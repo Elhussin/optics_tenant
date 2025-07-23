@@ -11,13 +11,13 @@ import { defaultConfig,ignoredFields } from './dataConfig';
 import { RenderField } from './renderField';
 import { cn } from '@/lib/utils/cn';
 import {BackButton,RestButton,Button} from '@/components/ui/buttons/Button';
-import { CircleX, TimerReset, CirclePlus } from 'lucide-react';
+import { CirclePlus } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 
 
 export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
-  const { schemaName, onSuccess, className = "", submitText, showCancelButton = true, mode = 'create', config: userConfig = {}, alias, id } = props;
+  const { title, schemaName, onSuccess, className = "", submitText, showCancelButton = true, mode = 'create', config: userConfig = {}, alias, id } = props;
 
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
@@ -61,9 +61,9 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
 
 
   return (
-    <div className={cn(className, "container")}>
-      <div className="main-header">
-        <h2 className="title-1" >{mode === 'edit' ? 'Edit' : 'Add'}{}</h2>
+    <div className={cn(className)}>
+      <div className="head">
+        <h2 className="title" >{mode === 'edit' ? 'Edit ' : 'Add '}{title?title:schemaName}</h2>
         <BackButton />
       </div>
 
@@ -97,9 +97,9 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
             />
           )}
 
-          {!isIframe && showCancelButton && (
+          {/* {!isIframe && showCancelButton && (
             <BackButton/>
-          )}
+          )} */}
         </div>
         
       </form>

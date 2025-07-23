@@ -87,7 +87,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config , mode }: any
         rules={{ required: required ? `${label} is required` : false }}
         render={({ field }) => (
           <ReactSelect
-              // menuPortalTarget={document.body}
+              menuPortalTarget={document.body}
             id={fieldName}
             options={unwrappedSchema.options.map((opt: string) => ({
               label: getFieldLabel(opt, unwrappedSchema),

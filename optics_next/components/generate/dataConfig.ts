@@ -1,7 +1,7 @@
 import { GeneratorConfig, FieldTemplate,RelationshipConfig } from '@/types/DynamicFormTypes';
 
 export const defaultConfig: GeneratorConfig = {
-    baseClasses: "input-base",
+    baseClasses: "input-text",
     labelClasses: "label",
     errorClasses: "error-text",
     submitButtonClasses: "btn btn-primary",
