@@ -1,0 +1,122 @@
+/* style.css */
+
+/* 1. استيراد Tailwind CSS */
+@import "tailwindcss";
+
+/* 2. تعريف Custom Variants */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* --- */
+
+/* 3. تعريف متغيرات السمة (Theme Variables) الافتراضية */
+@theme {
+  /* الخطوط */
+  --font-main: 'Roboto', sans-serif;
+  --font-alt: 'Arial', sans-serif;
+
+  /* ألوان الخلفية والأسطح */
+  --bg-body:       #f8fafc;
+  --bg-surface:    #ffffff;
+  --bg-elevated:   #f1f5f9;
+
+  /* ألوان النصوص */
+  --color-main:     #0f172a;
+  --color-secondary:#64748b;
+  --color-primary: #3b82f6;
+
+  /* ألوان الحدود */
+  --color-border:  #e2e8f0;
+
+  /* ألوان الأزرار */
+  --button-bg: #3490dc;
+  --button-text: #ffffff;
+  --button-hover-bg: #2779bd;
+  --button-border-radius: 0.5rem;
+}
+/* 
+--font-display-100: "Tagesschrift"', 'sans-serif'
+--color-primary: #1e3a8a;
+--color-secondary: #f43f5e;
+--color-mint-500: oklch(0.72 0.11 178);
+ */
+
+/* --- */
+
+/* 4. تعريف تعديلات متغيرات السمة للوضع الداكن */
+@variant dark {
+  --bg-body:       #0f172a;
+  --bg-surface:    #1e293b;
+  --bg-elevated:   #334155;
+
+  --color-primary: #60a5fa;
+  --color-main:     #f8fafc;
+  --color-secondary:#94a3b8;
+  --border-color:  #475569;
+
+  --button-bg: #667eea;
+  --button-text: #e2e8f0;
+  --button-hover-bg: #5a67d8;
+}
+
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/fonts/Roboto-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-style: normal;
+}
+
+
+html[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  html[dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+  }
+
+@layer components {
+
+.header {
+  @apply py-4 shadow-md; 
+  background-color: var(--bg-body); 
+  color: var(--text-main);          
+}
+
+.nav {
+  @apply flex items-center justify-between p-4 border-b text-primary bg-surface;
+  /* background-color: var(--bg-surface);  */
+  /* color: var(--color-primary);         */
+ 
+  border-color: var(--border-color);  
+}
+
+.card {
+  @apply rounded-lg shadow-md p-6;
+  background-color: var(--bg-surface); 
+  color: var(--text-main);       
+  border: 1px solid var(--border-color); 
+}
+
+.btn-primary {
+  @apply py-2 px-4 font-semibold transition-colors duration-200 ease-in-out;
+  border-radius: var(--button-border-radius);
+  background-color: var(--button-bg);
+  color: var(--button-text);
+}
+
+.btn-primary:hover {
+  background-color: var(--button-hover-bg);
+}
+
+
+body {
+    background-color: var(--bg-body);
+    color: var(--text-main);
+    font-family: var(--font-main);
+    min-height: 100vh;
+}
+
+}

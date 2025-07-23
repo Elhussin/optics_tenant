@@ -26,8 +26,7 @@ export default function Navbar() {
     }
 
   return (
-    <nav dir='ltr' className="w-full bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between relative z-50">
-
+    <nav dir='ltr' className="nav">
       {/* Logo + Aside Button */}
       <div className="flex items-center gap-4">
         <AsideButton />

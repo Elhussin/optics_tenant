@@ -1,6 +1,7 @@
 
 import { Geist, Geist_Mono } from 'next/font/google';
-import '@/styles/globals.css';
+// import '@/styles/globals.css';
+import '@/styles/styles.css';
 import { AsideProvider } from '@/lib/context/AsideContext';
 import { UserProvider } from '@/lib/context/userContext';
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
