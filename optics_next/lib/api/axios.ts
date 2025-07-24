@@ -6,7 +6,7 @@ const LANGUAGE_COOKIE_NAME = "django_language";
 import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
-
+import { getCookie } from "@/lib/utils/getCookie";
 // Define a custom interface that includes our new method
 interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
   customRequest: (alias: string, data?: any) => Promise<any>;
@@ -14,10 +14,6 @@ interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
 
 const baseUrl = getBaseUrl();
 
-function getCookie(name: string): string | null {
-  const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
-  return match ? decodeURIComponent(match[2]) : null;
-}
 
 const axiosInstance = axios.create({
   baseURL: baseUrl,

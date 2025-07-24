@@ -1,31 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import createMiddleware from 'next-intl/middleware';
-import {routing} from './i18n/routing';
+import createIntlMiddleware from 'next-intl/middleware';
+import { routing } from './app/i18n/routing';
 
 
-export default createMiddleware(routing);
-
-export const config = {
-  // matcher: ['/', '/(en|ar)/:path*']
-  matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
-};
-// تحديد المسارات التي يتم تطبيق الوسيط عليها
 // export const config = {
-//   matcher: [
-//     '/dashboard/:path*',
-//     '/admin/:path*',
-//     '/prescriptions/:path*',
-//     '/invoices/:path*',
-//     '/reports/:path*',
-//     '/profile/:path*',
-
-//   ],
-
+//   // matcher: ['/', '/(en|ar)/:path*']
+//   matcher: '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
 // };
+// تحديد المسارات التي يتم تطبيق الوسيط عليها
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/prescriptions/:path*',
+    '/invoices/:path*',
+    '/reports/:path*',
+    '/profile/:path*',
+
+  ],
+
+};
 
 
-
+const intl = createIntlMiddleware(routing);
 
 function getRequiredPermission(pathname: string): string | null {
 
@@ -72,10 +71,8 @@ function unauthorizedResponse(target: string, message: string, redirect?: string
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  // Set the locale Leng
-  // const intlResponse = intlMiddleware(request);
-  // if (intlResponse) return intlResponse;
-
+  const intlRes = intl(request);
+  if (intlRes) return intlRes;
   const host = request.headers.get('host') || '';
   const subdomain = host.split('.')[0]; 
   const token = request.cookies.get('access_token')?.value;
