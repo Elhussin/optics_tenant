@@ -2,43 +2,19 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* @theme {
-  --font-main: "Inter", sans-serif;
-  --font-alt: "Cairo", sans-serif;
-
-  --color-body: #f8fafc;
-  --color-surface: #ffffff;
-  --color-elevated: #f1f5f9;
-
-  --color-main: #0f172a;
-  --color-secondary: #64748b;
-  --color-primary: #3b82f6;
-
-  --color-border-main: #e2e8f0;
-
-  --color-button-bg: #3490dc;
-  --color-button-text: #ffffff;
-  --color-button-hover-bg: #2779bd;
-  --color-button-border-radius: 0.5rem;
-  --color-danger: #dd1111;
-  --color-success: #22c55d;
-  --color-info: #3b82f6;
-  --color-cancel: bg-grey-400;
-  --color-reset: bg-grey-500;
-} */
 @theme {
   --font-main: "Inter", sans-serif;
   --font-alt: "Cairo", sans-serif;
 
   --color-body: #f9fafb;              /* Light gray background */
-  --color-surface: #ffffff;           /* Card/Surface */
-  --color-elevated: #f1f5f9;          /* Elevated cards or nav */
+  --color-surface: #ffffff;           /* Card/Surface Header  */
+  --color-elevated: #f1f5f9;          /* Elevated cards or nav Footer */
 
   --color-main: #0f172a;              /* Main dark text */
   --color-secondary: #475569;         /* Sub text */
   --color-primary: #2563eb;           /* Main CTA (blue-600) */
 
-  --color-border-main: #e2e8f0;       /* Border gray */
+  --color-border-main: #e2e8f0;       /* Border gray Aside*/
 
   --color-button-bg: #2563eb;         /* Primary button */
   --color-button-text: #ffffff;
@@ -48,33 +24,15 @@
   --color-danger: #dc2626;            /* Red-600 */
   --color-success: #16a34a;           /* Green-600 */
   --color-info: #0ea5e9;              /* Sky-500 */
-}
 
-
-/* 4. تعريف تعديلات متغيرات السمة للوضع الداكن */
-@variant dark {
-  --color-body: #0f172a;
-  --color-surface: #1e293b;
-  --color-elevated: #334155;
-
-  --color-primary: #60a5fa;
-  --color-main: #f8fafc;
-  --color-secondary: #94a3b8;
-  --color-border-main: #475569;
-
-  --color-button-bg: #667eea;
-  --color-button-text: #e2e8f0;
-  --color-button-hover-bg: #5a67d8;
-  --color-danger: #dc2626;
-  --color-info: #0dbcd3;
 }
 
 @variant dark {
   --color-body: #0f172a;              /* Very dark background */
-  --color-surface: #1e293b;           /* Cards */
-  --color-elevated: #334155;          /* Elevated elements */
+  --color-surface: #1e293b;           /* Cards Header Footer nav */ 
+  --color-elevated: #334155;          /* Elevated elements Aside*/
 
-  --color-main: #f8fafc;              /* Light text */
+  --color-main: #f8fafc;              /* Light text  */
   --color-secondary: #94a3b8;         /* Muted text */
   --color-primary: #3b82f6;           /* Blue-500 for CTA */
 
@@ -89,42 +47,7 @@
   --color-info: #38bdf8;              /* Light sky */
 }
 
-/* 
-.colot {
-  --font-main: "Inter", sans-serif;
-  --font-alt: "Cairo", sans-serif;
 
-  --color-body: #f8fafc;
-  --color-surface: #ffffff;
-  --color-elevated: #f1f5f9;
-
-  --color-main: #0f172a;
-  --color-secondary: #64748b;
-  --color-primary: #3b82f6;
-
-  --color-border: #e2e8f0;
-
-  --color-button-bg: #3490dc;
-  --color-button-hover-bg: #2779bd;
-  --color-danger: #dd1111;
-  --color-success: #22c55d;
-  --color-cancel: #60a5fa;
-  --color-reset: #60a5fa;
-}
-.dark {
-  --color-body: #0f172a;
-  --color-surface: #1e293b;
-  --color-elevated: #334155;
-
-  --color-primary: #60a5fa;
-  --color-main: #f8fafc;
-  --color-secondary: #94a3b8;
-  --color-border: #475569;
-
-  --color-button-bg: #667eea;
-  --color-button-text: #e2e8f0;
-  --color-button-hover-bg: #5a67d8;
-} */
 
 @layer main {
   html[dir="rtl"] {
@@ -143,18 +66,18 @@
     @apply bg-body text-main h-screen;
   }
 
-
   .header {
-    @apply py-4 shadow-md;
+    @apply w-full z-30 flex items-center justify-between p-4 text-primary bg-surface;
   }
+
   .nav {
-    @apply flex items-center justify-between p-4 text-primary bg-surface border-b border-primary;
+    @apply w-full z-30 shadow-md px-4 py-2 flex items-center justify-between text-primary bg-elevated border-b border-primary;
   }
   .nav-link {
-    @apply text-main hover:text-primary transition-colors duration-200;
+    @apply p-2 text-main transition-colors duration-200  hover:bg-elevated  ;
   }
   .footer {
-    @apply bg-elevated py-4 shadow-md;
+    @apply bg-elevated py-4 shadow-md dark:bg-surface;
   }
   .footer-content {
     @apply mx-auto px-4 text-center text-sm;
@@ -163,17 +86,19 @@
     @apply lg:w-3/4 space-y-4 md:p-4 w-full;
   }
   
+
+
 .aside {
-  @apply fixed top-0 left-0 h-screen w-80 border-r border-gray-200 dark:border-gray-700 shadow-md z-40 
-  transform transition-transform duration-300
+  @apply bg-border-main fixed top-[120px] left-0 h-[calc(100vh-120px)] w-80 
+         border-r border-gray-200 dark:border-gray-700 
+         shadow-md z-70 transform transition-transform duration-300 hidden md:block;
 }
-
-
 }
 
 @layer buttons {
   .aside-button {
-    @apply fixed top-1/2 z-50 p-2 text-main rounded-full 
+    @apply z-50 p-2 text-main rounded-full 
+
     transition-all duration-200;
   }
   .btn {

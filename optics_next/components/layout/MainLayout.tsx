@@ -25,35 +25,29 @@ export default function MainLayout({ mainContent }: Props) {
 
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {!isIframe && (
-        <>
-          <Header />
-          <Navbar />
-        </>
-      )}
-       <AsideButton />
-      <div className="flex flex-1 flex-col md:flex-row min-h-0">
-   
-        {showAside && (<div className=""><Aside /></div> )}
+<div className="flex flex-col min-h-screen pt-[120px]">
+  {/* Fixed Header + Navbar */}
+  <div className="fixed top-0 left-0 w-full z-30 bg-white dark:bg-surface shadow-md">
+    <Header />
+    <Navbar />
+  </div>
 
 
-        <main
-            className={cn(
-              "p-4 flex-1 w-full overflow-y-auto transition-all duration-500",
-              isVisible ? "md:ml-80" : "md:ml-0"
-            )}
-          >
-          <div className="max-w-6xl mx-auto">
-            <GlobalAlert />
-            {mainContent}
-            <Toaster />
-          </div>
-        </main>
 
+  <div className="flex flex-1 min-h-0">
+    {showAside && <Aside />} {/* يظهر فقط عند md وأكبر */}
+
+    <main className="main">
+      <div className="max-w-6xl mx-auto">
+        <GlobalAlert />
+        {mainContent}
+        <Toaster />
       </div>
+    </main>
+  </div>
 
-      {!isIframe && <Footer />}
-    </div>
+  <Footer />
+</div>
+
   );
 }
