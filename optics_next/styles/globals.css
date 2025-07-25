@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
+/* @theme {
   --font-main: "Inter", sans-serif;
   --font-alt: "Cairo", sans-serif;
 
@@ -25,7 +25,31 @@
   --color-info: #3b82f6;
   --color-cancel: bg-grey-400;
   --color-reset: bg-grey-500;
+} */
+@theme {
+  --font-main: "Inter", sans-serif;
+  --font-alt: "Cairo", sans-serif;
+
+  --color-body: #f9fafb;              /* Light gray background */
+  --color-surface: #ffffff;           /* Card/Surface */
+  --color-elevated: #f1f5f9;          /* Elevated cards or nav */
+
+  --color-main: #0f172a;              /* Main dark text */
+  --color-secondary: #475569;         /* Sub text */
+  --color-primary: #2563eb;           /* Main CTA (blue-600) */
+
+  --color-border-main: #e2e8f0;       /* Border gray */
+
+  --color-button-bg: #2563eb;         /* Primary button */
+  --color-button-text: #ffffff;
+  --color-button-hover-bg: #1d4ed8;   /* Hover blue-700 */
+  --color-button-border-radius: 0.5rem;
+
+  --color-danger: #dc2626;            /* Red-600 */
+  --color-success: #16a34a;           /* Green-600 */
+  --color-info: #0ea5e9;              /* Sky-500 */
 }
+
 
 /* 4. تعريف تعديلات متغيرات السمة للوضع الداكن */
 @variant dark {
@@ -45,6 +69,27 @@
   --color-info: #0dbcd3;
 }
 
+@variant dark {
+  --color-body: #0f172a;              /* Very dark background */
+  --color-surface: #1e293b;           /* Cards */
+  --color-elevated: #334155;          /* Elevated elements */
+
+  --color-main: #f8fafc;              /* Light text */
+  --color-secondary: #94a3b8;         /* Muted text */
+  --color-primary: #3b82f6;           /* Blue-500 for CTA */
+
+  --color-border-main: #475569;
+
+  --color-button-bg: #3b82f6;         /* Blue-500 */
+  --color-button-text: #f1f5f9;
+  --color-button-hover-bg: #2563eb;   /* Blue-600 */
+
+  --color-danger: #f87171;            /* Light red */
+  --color-success: #4ade80;           /* Light green */
+  --color-info: #38bdf8;              /* Light sky */
+}
+
+/* 
 .colot {
   --font-main: "Inter", sans-serif;
   --font-alt: "Cairo", sans-serif;
@@ -79,7 +124,7 @@
   --color-button-bg: #667eea;
   --color-button-text: #e2e8f0;
   --color-button-hover-bg: #5a67d8;
-}
+} */
 
 @layer main {
   html[dir="rtl"] {
@@ -153,10 +198,10 @@
     @apply bg-info;
   }
   .btn-cancel {
-    @apply bg-cancel;
+    @apply bg-gray-400;
   }
   .btn-reset {
-    @apply bg-reset;
+    @apply bg-gray-500;
   }
 }
 
@@ -222,7 +267,8 @@
     @apply text-lg font-bold capitalize text-main;
   }
   .label {
-    @apply block text-sm font-medium mb-1 capitalize;
+    @apply block mb-1 text-sm font-medium text-main;
+
   }
 }
 
