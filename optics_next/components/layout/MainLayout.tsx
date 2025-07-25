@@ -51,3 +51,24 @@ export default function MainLayout({ mainContent }: Props) {
 
   );
 }
+
+
+// <div className="flex flex-1 flex-col md:flex-row min-h-0">
+   
+// {showAside && (<div className=""><Aside /></div> )}
+
+
+// <main
+//     className={cn(
+//       "p-4 flex-1 w-full overflow-y-auto transition-all duration-500",
+//       isVisible ? "md:ml-80" : "md:ml-0"
+//     )}
+//   >
+//   <div className="max-w-6xl mx-auto">
+//     <GlobalAlert />
+//     {mainContent}
+//     <Toaster />
+//   </div>
+// </main>
+
+// </div>
