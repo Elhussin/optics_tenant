@@ -13,3 +13,13 @@ export const URLDATA = [
     { "path": "/crm", "name": "CRM", },
     { "path": "/permissions", "name": "Permissions", },
   ]
+
+export const navUrl=[
+  {"path": "/", "name": "Home", },
+  {"path": "/about", "name": "About", },
+  {"path": "/contact", "name": "Contact", },
+  {"path": "/privacy", "name": "Privacy", },
+  {"path": "/terms", "name": "Terms", },
+  {"path": "/faq", "name": "FAQ", },
+  {"path": "/auth/register", "name": "Register", },  
+]

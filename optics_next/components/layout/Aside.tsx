@@ -5,7 +5,7 @@ import { Link } from '@/app/i18n/navigation';
 import { motion } from "framer-motion";
 import { useUser } from '@/lib/context/userContext';
 import { X } from 'lucide-react';
-import { URLDATA } from '@/config/URLDATA';
+import { URLDATA,navUrl  } from '@/config/URLDATA';
 import Image from 'next/image';
 
 export default function Aside() {
@@ -17,7 +17,7 @@ export default function Aside() {
     <motion.aside
       initial={{ x: "-100%" }}
       animate={{ x: isVisible ? "0%" : "-100%" }}
-      transition={{ duration: 0.7, ease: "easeInOut" }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
       className={asideBase}
     >
 
@@ -25,7 +25,7 @@ export default function Aside() {
         {asideContent ? asideContent : <AsidDeafualtContent />}
 
       </div>
-      <button onClick={toggleAside} className="fixed top-1 left-72  text-danger hover:text-red-600 transition-colors duration-200">
+      <button onClick={toggleAside} className="fixed top-1 left-70   text-danger hover:text-red-600 transition-colors duration-200">
         <X size={24} />
       </button>
     </motion.aside>
@@ -46,8 +46,9 @@ const AsidDeafualtContent = () => {
 
       ) : (
         <div className="flex flex-col gap-3">
-        <Link href="/auth/login" className="nav-link">Login</Link>
-        <Link href="/auth/register" className="nav-link">Register</Link>
+          {navUrl.map((item) => (
+            <Link key={item.path} href={item.path} className="nav-link">{item.name}</Link>
+          ))}
         <Image src="/media/aside.png" alt="logo" width={300} height={100}  priority={true}/>
         </div>
       )}

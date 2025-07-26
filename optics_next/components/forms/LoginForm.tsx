@@ -14,7 +14,7 @@ export default function LoginForm(props: formRequestProps) {
   const router = useRouter();
   const [redirect, setRedirect] = useState<string | null>(null);
 
-  const { onSuccess,title, message,  submitText = "Login", className, alias, mode = "login", istenant = false } = props;
+  const { onSuccess, title, message, submitText = "Login", className, alias, mode = "login", istenant = false } = props;
 
   const {
     handleSubmit,
@@ -26,8 +26,8 @@ export default function LoginForm(props: formRequestProps) {
     register
   }: UseFormRequestReturn = useFormRequest({ alias: alias });
 
-  
-  
+
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setRedirect(params.get("redirect") || "/profile");
@@ -133,105 +133,112 @@ export default function LoginForm(props: formRequestProps) {
   //   </div>
   // )
   return (
-  <div className="min-h-screen flex items-center justify-center px-4 py-8 bg">
-    <div className="max-w-5xl w-full grid grid-cols-1 md:grid-cols-2 gap-8 bg-white rounded-2xl shadow-xl overflow-hidden">
-      {/* الصورة أو النبذة */}
-      <div className="hidden md:flex items-center justify-center bg-info p-6">
-        {/* يمكنك وضع صورة أو نبذة تعريفية هنا */}
-        <div className="text-white text-center space-y-4">
-          <img
-            src="/auth-illustration.svg" // استبدلها بمسار صورتك أو احذف الصورة وضع نبذة
-            alt="Auth illustration"
-            className="w-3/4 mx-auto"
-          />
-          <h2 className="text-2xl font-bold">Welcome to the Portal</h2>
-          <p className="text-base">Please fill in the form to continue.</p>
-        </div>
-      </div>
+    <div className=" flex  justify-center px-4 py-8 bg">
+      <div className="max-w-5xl w-full grid grid-cols-1 bg-surface md:grid-cols-2 gap-8 rounded-2xl shadow-xl overflow-hidden">
+        <div className="hidden md:flex items-center justify-center bg-info p-1 ">
+      
+          <div className="relative w-full h-[400px]  text-white text-center flex items-center justify-center">
+            {/* خلفية الصورة */}
+            <div className="absolute inset-0">
+              <img
+                src="/media/start.jpg"
+                alt="Start APP"
+                className="w-full h-full object-cover opacity-70 rounded-2xl"
+              />
+            </div>
 
-      {/* نموذج الإدخال */}
-      <div className="p-6 md:p-10">
-        <h1 className="text-center text-2xl font-semibold mb-6">{title}</h1>
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* الاسم أو اسم المستخدم */}
-          <div>
-            <label className="label">User Name</label>
-            {istenant ? (
-              <>
-                <input
-                  {...register("name")}
-                  className="input-text"
-                  placeholder="Enter name"
-                />
-                {errors.name && (
-                  <p className="error-text">{errors.name.message as string}</p>
-                )}
-              </>
-            ) : (
-              <>
-                <input
-                  {...register("username")}
-                  className="input-text"
-                  placeholder="Enter username"
-                />
-                {errors.username && (
-                  <p className="error-text">
-                    {errors.username.message as string}
-                  </p>
-                )}
-              </>
-            )}
+            {/* المحتوى فوق الصورة */}
+            <div className="absolute bottom-3 z-10 space-y-4">
+              <h2 className="text-3xl font-bold">Welcome to the Portal</h2>
+              <p className="text-lg">Please fill in the form to continue.</p>
+            </div>
           </div>
 
-          {/* البريد الإلكتروني */}
-          {mode === "create" && (
+        </div>
+
+        {/* نموذج الإدخال */}
+        <div className="p-6 md:p-10">
+          <h1 className="text-center text-2xl font-semibold mb-6">{title}</h1>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* الاسم أو اسم المستخدم */}
             <div>
-              <label className="label">Email</label>
-              <input
-                {...register("email")}
-                className="input-text"
-                placeholder="Enter email"
-              />
-              {errors.email && (
-                <p className="error-text">{errors.email.message as string}</p>
+              <label className="label">User Name</label>
+              {istenant ? (
+                <>
+                  <input
+                    {...register("name")}
+                    className="input-text"
+                    placeholder="Enter name"
+                  />
+                  {errors.name && (
+                    <p className="error-text">{errors.name.message as string}</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <input
+                    {...register("username")}
+                    className="input-text"
+                    placeholder="Enter username"
+                  />
+                  {errors.username && (
+                    <p className="error-text">
+                      {errors.username.message as string}
+                    </p>
+                  )}
+                </>
               )}
             </div>
-          )}
 
-          {/* كلمة المرور */}
-          <div>
-            <label className="label">Password</label>
-            <input
-              {...register("password")}
-              type="password"
-              className="input-text"
-              placeholder="Enter password"
-            />
-            {errors.password && (
-              <p className="error-text">
-                {errors.password.message as string}
-              </p>
+            {/* البريد الإلكتروني */}
+            {mode === "create" && (
+              <div>
+                <label className="label">Email</label>
+                <input
+                  {...register("email")}
+                  className="input-text"
+                  placeholder="Enter email"
+                />
+                {errors.email && (
+                  <p className="error-text">{errors.email.message as string}</p>
+                )}
+              </div>
             )}
-          </div>
 
-          {/* رسالة خطأ عامة */}
-          {errors.root && (
-            <p className="error-text">{errors.root.message as string}</p>
-          )}
+            {/* كلمة المرور */}
+            <div>
+              <label className="label">Password</label>
+              <input
+                {...register("password")}
+                type="password"
+                className="input-text"
+                placeholder="Enter password"
+              />
+              {errors.password && (
+                <p className="error-text">
+                  {errors.password.message as string}
+                </p>
+              )}
+            </div>
 
-          {/* زر الإرسال */}
-          <button
-            type="submit"
-            disabled={isSubmitting || isLoading}
-            className="btn btn-primary w-full"
-          >
-            {isSubmitting || isLoading ? submitText + "..." : submitText}
-          </button>
-        </form>
+            {/* رسالة خطأ عامة */}
+            {errors.root && (
+              <p className="error-text">{errors.root.message as string}</p>
+            )}
+
+            {/* زر الإرسال */}
+            <button
+              type="submit"
+              disabled={isSubmitting || isLoading}
+              className="btn btn-primary w-full"
+            >
+              {isSubmitting || isLoading ? submitText + "..." : submitText}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 
 }

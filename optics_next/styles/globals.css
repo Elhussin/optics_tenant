@@ -14,7 +14,7 @@
   --color-secondary: #475569;         /* Sub text */
   --color-primary: #2563eb;           /* Main CTA (blue-600) */
 
-  --color-border-main: #e2e8f0;       /* Border gray Aside*/
+  --color-border-main: #ced1d4;       /* Border gray Aside*/
 
   --color-button-bg: #2563eb;         /* Primary button */
   --color-button-text: #ffffff;
@@ -82,11 +82,12 @@
   .footer-content {
     @apply mx-auto px-4 text-center text-sm;
   }
-  .main {
-    @apply lg:w-3/4 space-y-4 md:p-4 w-full;
-  }
   
-
+  .main {
+    @apply lg:w-3/4 w-full md:p-4 space-y-4 mx-auto
+    
+           /* flex flex-col items-start justify-center;  الجديد */
+  }
 
 .aside {
   @apply bg-border-main fixed top-[120px] left-0 h-[calc(100vh-120px)] w-80 

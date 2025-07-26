@@ -17,18 +17,15 @@ export default function RegisterPage() {
   
 
   return (
-    <div className="card">
-      <h1 className="card-header my-4">Register</h1>
+
       <LoginForm 
       istenant={istenant}
       alias={alias}
       submitText="Register"
       mode="create"
-      className="container"
-      onSuccess={() => {
-        toast.success(message);
-      }} />
-    </div>
+      title="Register"
+      message={message}     
+      />
   );
 }
 

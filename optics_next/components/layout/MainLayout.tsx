@@ -34,11 +34,11 @@ export default function MainLayout({ mainContent }: Props) {
 
 
 
-  <div className="flex flex-1 min-h-0">
+  <div className={cn("flex flex-1 min-h-0", isVisible ? "md:ml-80" : "md:ml-0")}>
     {showAside && <Aside />} {/* يظهر فقط عند md وأكبر */}
 
     <main className="main">
-      <div className="max-w-6xl mx-auto">
+      <div className="">
         <GlobalAlert />
         {mainContent}
         <Toaster />
