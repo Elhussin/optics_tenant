@@ -6,16 +6,31 @@ import { UserProvider } from '@/lib/context/userContext';
 import {NextIntlClientProvider, hasLocale} from 'next-intl';
 import {notFound} from 'next/navigation';
 import {routing} from '@/app/i18n/routing';
-
-
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-
+import { Metadata } from 'next';
 
 const cairo = Cairo({ subsets: ['arabic'], weight: ['400', '600', '700'], variable: '--font-alt' });
 const inter = Inter({ subsets: ['latin'], weight: ['400', '600', '700'], variable: '--font-main' });
 
 
+export const metadata: Metadata = {
+  title: 'O-S-M',
+  description: 'O-S-M',
+  icons: {
+    icon: [
+      {
+        media: '(prefers-color-scheme: light)',
+        url: '/logo.png', // Assuming icon-light.png is in the public directory or app/
+        href: '/logo.png',
+      },
+      {
+        media: '(prefers-color-scheme: dark)',
+        url: '/logo.png', // Assuming icon-dark.png is in the public directory or app/
+        href: '/logo.png',
+      },
+    ],
+    apple: '/logo.png', // Assuming apple-icon.png is in the public directory or app/
+  },
+};
 
 export default async function LocaleLayout({
   children,
@@ -36,13 +51,15 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} data-theme="dark" className={`${cairo.variable} ${inter.variable} `}>
       <body>
-        <UserProvider>
+
           <NextIntlClientProvider locale={locale}>
+          <UserProvider>
             <AsideProvider>
               {children}
             </AsideProvider>
+            </UserProvider>
           </NextIntlClientProvider>
-        </UserProvider>
+
       </body>
     </html>
   );

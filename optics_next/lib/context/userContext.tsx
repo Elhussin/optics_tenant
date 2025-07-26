@@ -5,16 +5,14 @@ import { UserContextType } from '@/types';
 import { useFormRequest } from '../hooks/useFormRequest';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
 import { safeToast } from '@/lib/utils/toastService';
-import { useRouter } from 'next/navigation'; // التفاف حول next-intl/client
-
-import Cookies from 'js-cookie';
+import {useRouter} from '@/app/i18n/navigation';
+import {redirect} from '@/app/i18n/navigation';
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const locale = Cookies.get('NEXT_LOCALE') || 'en';
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [subdomain, setSubdomain] = useState<string | null>(null);
@@ -26,7 +24,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     },
     onError: (err) => {
       safeToast("Failed to fetch Your Data", {type: "error",});
-      router.replace(`/${locale}/auth/login`);
+      router.replace(`/${router.locale}/auth/login`);
+
       setLoading(false);
     },
    });
@@ -36,7 +35,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     await logoutRequest.submitForm();
     setUser(null);
 
-    router.replace(`/${locale}/auth/login`);
+    router.replace(`/auth/login`);
     safeToast("Logged out successfully", {type: "success",});
     
   };

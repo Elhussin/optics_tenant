@@ -3,15 +3,35 @@
       "title": "مرحبا في O-S-M",
       "description": "أفضل حلول لإدارة نظام إدارة شركات البصريات في O-S-M."
     },
-    "login": {
-      "title": "تسجيل الدخول"
-
+    "login":{
+      "title":"تسجيل الدخول",
+      "description":"Login to O-S-M",
+      "button":"تسجيل الدخول",
+      "message":"تم تسجيل الدخول بنجاح"
+    },
+    "register":{
+      "title":"تسجيل",
+      "description":"Register to O-S-M",
+      "button":"تسجيل",
+      "message":"تم التسجيل بنجاح"
+    },
+    "profile":{
+      "title":"الملف الشخصي",
+      "description":"Profile to O-S-M",
+      "button":"الملف الشخصي",
+      "message":"تم تحديث الملف الشخصي بنجاح"
+    },
+    "tenants":{
+      "title":"ابداء الأن ",
+      "description":"Tenants to O-S-M",
+      "button":"تسجيل ",
+      "message":"تم تسجيل الحساب يرجي مراجعة البريد الالكتروني المسجل"
     },
     "about": {
       "title": "عن O-S-M"
     },
     "logout": {
-      "title": "Logout",  
+      "title": "تسجيل الخروج",  
       "error": "فشل تسجيل الخروج"
     },
     "navBar": {
@@ -44,6 +64,40 @@
       "copy":"نسخ",
       "print":"طباعة",
       "pdf":"PDF"
+    },
+    "aside":{
+      "Home":"الرئيسية",
+      "About":"عنا",
+      "Contact":"اتصل بنا",
+      "Privacy":"الخصوصية",
+      "Terms":"الشروط",
+      "Profile":"الملف الشخصي",
+      "Register":"تسجيل",
+      "FAQ":"الأسئلة الشائعة"
+      
+    },
+    "asideActive":{
+      "Home":"الرئيسية",
+      "Login":"تسجيل الدخول",
+      "Register":"تسجيل",
+      "Profile":"الملف الشخصي",
+      "Admin":"المدير",
+      "Prescriptions":"الوصفات",
+      "About":"عن",
+      "Contact":"اتصل بنا",
+      "Users":"المستخدمين",
+      "Tenants":"الشركات",
+      "Groups":"المجموعات",
+      "CRM":"العملاء",
+      "Permissions":"الصلاحيات"
+    },
+    "unauthorized":{
+      "title":"غير مصرح",
+      "message":"لا تمتلك صلاحيات الوصول لهذه الصفحة.",
+      "backButton":"رجوع",
+      "homeButton":"الرئيسية",
+      "redirectMessage":" سيتم التوجيه إلى الصفحة الرئيسية في 3 ثواني..."
     }
+  
 
   }

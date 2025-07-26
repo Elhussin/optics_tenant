@@ -3,9 +3,19 @@
 
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
+import { generateMetadata } from '@/lib/utils/metadata';
+generateMetadata({
+  title: 'Unauthorized | O-S-M',
+  description: 'You do not have permission to access this page.',
+  keywords: ['optical', 'system', 'management', 'O-S-M'],
+  openGraphType: 'unauthorized',
+  twitterCardType: 'summary',
+});
 
 export default function UnauthorizedPage() {
   const router = useRouter();
+  const t = useTranslations('unauthorized');
 
   useEffect(() => {
     // إعادة التوجيه التلقائي بعد 3 ثواني
@@ -39,11 +49,11 @@ export default function UnauthorizedPage() {
         </div>
         
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          No Permission
+          {t('title')}
         </h1>
         
         <p className="text-gray-600 mb-6">
-          You do not have permission to access this page.
+          {t('message')}
         </p>
         
         <div className="space-y-3">
@@ -51,19 +61,19 @@ export default function UnauthorizedPage() {
             onClick={() => router.back()}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
           >
-            Back
+            {t('backButton')}
           </button>
           
           <button
             onClick={() => router.push('/')}
             className="w-full bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300 transition duration-200"
           >
-            Go to Home
+            {t('homeButton')}
           </button>
         </div>
         
         <p className="text-sm text-gray-500 mt-4">
-          You will be redirected to the home page in 3 seconds...
+          {t('redirectMessage')}
         </p>
       </div>
     </div>

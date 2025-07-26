@@ -7,7 +7,7 @@ import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { getCookie } from "@/lib/utils/getCookie";
-// Define a custom interface that includes our new method
+
 interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
   customRequest: (alias: string, data?: any) => Promise<any>;
 }
@@ -18,7 +18,7 @@ const baseUrl = getBaseUrl();
 const axiosInstance = axios.create({
   baseURL: baseUrl,
   withCredentials: true,
-  timeout: 10000,
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },

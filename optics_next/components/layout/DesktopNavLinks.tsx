@@ -7,8 +7,8 @@ import { useTranslations } from 'next-intl';
 export default function DesktopNavLinks({ subdomain }: { subdomain: string | null }) {
   const { user, logout } = useUser();
   const t = useTranslations('navBar');
-
   return (
+   
     <div className="hidden md:flex gap-4 items-center">
       <Link href="/" className="nav-link">{t('home')}</Link>
 

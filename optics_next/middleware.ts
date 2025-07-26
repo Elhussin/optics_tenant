@@ -14,7 +14,8 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder files
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)' 
+    // '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)' 
+    '/((?!api|trpc|_next|_vercel|.*\\..*).*)'
   ],
 };
 
@@ -38,7 +39,10 @@ function getRequiredPermission(pathname: string): string | null {
     '/privacy',
     '/unauthorized',
     '/auth/login',
-    '/auth/register'
+    '/auth/register',
+    '/auth/activate',
+    '/auth/forget-password',
+    '/auth/reset-password'
   ];
   
   if (publicPaths.includes(cleanPath)) return null;

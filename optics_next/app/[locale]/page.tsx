@@ -1,34 +1,25 @@
 
 import { Metadata } from 'next';
+import { generateMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: 'My Next.js App',
-  description: 'A description of my app',
-  icons: {
-    icon: [
-      {
-        media: '(prefers-color-scheme: light)',
-        url: '/icon-light.png', // Assuming icon-light.png is in the public directory or app/
-        href: '/icon-light.png',
-      },
-      {
-        media: '(prefers-color-scheme: dark)',
-        url: '/icon-dark.png', // Assuming icon-dark.png is in the public directory or app/
-        href: '/icon-dark.png',
-      },
-    ],
-    apple: '/apple-icon.png', // Assuming apple-icon.png is in the public directory or app/
-  },
-};
 
-// import {useTranslations} from 'next-intl';
+export const metadata: Metadata = generateMetadata({
+  title: 'HomePage',
+  description: 'HomePage to O-S-M',
+  keywords: ['optical', 'system', 'management', 'O-S-M','HomePage',"بصريات","ادارة"],
+  openGraphType: 'website',
+  twitterCardType: 'summary',
+});
+
 import { getTranslations } from 'next-intl/server';
 
 import {Link} from '@/app/i18n/navigation';
  
 
-export default async function HomePage() {
-  const t = await getTranslations('HomePage');
+export default async function HomePage({params}: {params: {locale: string}}) {
+  const {locale} = await params;
+  const t = await getTranslations({locale, namespace: 'HomePage'});
+
   return (
     <div>
     

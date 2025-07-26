@@ -1,3 +1,5 @@
+
+
 export const getSubdomain = (hostFromServer?: string): string | null => {
     const hostname =
       typeof window !== "undefined"

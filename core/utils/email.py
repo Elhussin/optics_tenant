@@ -11,12 +11,12 @@ from django.utils.translation import gettext_lazy as _
 FRONTEND_DOMAIN =config("FRONTEND_DOMAIN")
 FRONTEND_PORT =config("FRONTEND_PORT")
 PROTOCOL =config("PROTOCOL")
-
-def send_activation_email(email, token):
+locale =config("LOCALE")
+def send_activation_email(email, token ):
     if FRONTEND_PORT:
-        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/auth/activate/?token={token}"
+        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{locale}/auth/activate/?token={token}"
     else:
-        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}/auth/activate/?token={token}"
+        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}/{locale}/auth/activate/?token={token}"
     message =_(f"""
         Hi 👋,
         Please activate your account by clicking the link below:
@@ -32,9 +32,9 @@ def send_activation_email(email, token):
 
 def send_message_acount_activated(email,schema_name,name):
     if FRONTEND_PORT:
-        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}:{FRONTEND_PORT}"
+        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{locale}"
     else:
-        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}"
+        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}/{locale}"
     message = f"""
     Hi 👋,
     Your account has been activated successfully.

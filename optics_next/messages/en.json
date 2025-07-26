@@ -1,17 +1,35 @@
 {
-
     "logout": {
       "title": "Logout",
       "error": "Failed to log out"
     },
+    "login":{
+      "title":"Login",
+      "description":"Login to O-S-M",
+      "button":"Login",
+      "message":"Login successfully"
+    },
+    "register":{
+      "title":"Register",
+      "description":"Register to O-S-M",
+      "button":"Register",
+      "message":"Register successfully"
+    },
+    "profile":{
+      "title":"Profile",
+      "description":"Profile to O-S-M",
+      "button":"Profile",
+      "message":"Profile successfully"
+    },
+    "tenants":{
+      "title":"Start Now",
+      "description":"Tenants to O-S-M",
+      "button":"Register",
+      "message":"You are successfully registered your account check your email for confirmation"
+    },
     "HomePage": {
       "title": "Welcome to O-S-M",
       "description": "Best Solution For Optical System Management at O-S-M."
-    },
-    "login": {
-      "title": "Login"
-
-
     },
     "navBar": {
       "title": "Navigation",
@@ -43,7 +61,37 @@
       "copy":"Copy",
       "print":"Print",
       "pdf":"PDF"
+    },
+    "aside":{
+      "Home":"Home",
+      "About":"About",
+      "Contact":"Contact",
+      "Privacy":"Privacy",
+      "Terms":"Terms",
+      "FAQ":"FAQ",
+      "Register":"Register"
+    },
+    "asideActive":{
+      "Home":"Home",
+      "Login":"Login",
+      "Register":"Register",
+      "Profile":"Profile",
+      "Admin":"Admin",
+      "Prescriptions":"Prescriptions",
+      "About":"About",
+      "Contact":"Contact",
+      "Users":"Users",
+      "Tenants":"Tenants",
+      "Groups":"Groups",
+      "CRM":"CRM",
+      "Permissions":"Permissions"
+    },
+    "unauthorized":{
+      "title":"Unauthorized",
+      "message":"You do not have permission to access this page.",
+      "backButton":"Back",
+      "homeButton":"Go to Home",
+      "redirectMessage":"You will be redirected to the home page in 3 seconds..."
     }
   
   }
-  

@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
 import { Link } from '@/app/i18n/navigation';
 import DesktopNavLinks from './DesktopNavLinks';

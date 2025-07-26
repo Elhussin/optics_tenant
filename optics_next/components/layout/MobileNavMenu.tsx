@@ -2,8 +2,6 @@
 import { Link } from '@/app/i18n/navigation';
 import { useUser } from '@/lib/context/userContext';
 import LogoutButton from '../ui/buttons/logout';
-import ThemeToggle from '../ui/ThemeToggle';
-import LanguageToggle from '../ui/LanguageToggle';
 import { useTranslations } from 'next-intl';
 
 export default function MobileNavMenu({ isMenuOpen, setIsMenuOpen, subdomain }: {
