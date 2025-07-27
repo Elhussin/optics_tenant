@@ -12,17 +12,14 @@ export const metadata: Metadata = generateMetadata({
 });
 
 import { getTranslations } from 'next-intl/server';
-
 import {Link} from '@/app/i18n/navigation';
  
 
 export default async function HomePage({params}: {params: {locale: string}}) {
   const {locale} = await params;
   const t = await getTranslations({locale, namespace: 'HomePage'});
-
   return (
-    <div>
-    
+    <div className='bg-body text-main'>
       <h2 className="text-2xl font-semibold">{t('title')}</h2>
       <p className="mt-4">{t('description')}</p>
       <Link href="/about">About</Link>

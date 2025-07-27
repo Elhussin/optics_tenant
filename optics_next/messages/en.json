@@ -92,6 +92,24 @@
       "backButton":"Back",
       "homeButton":"Go to Home",
       "redirectMessage":"You will be redirected to the home page in 3 seconds..."
+    },
+    "about": {
+      "title": "About O-S-M",
+      "button":"About",
+      "description":"O-S-M is a web application for managing an optical system\nStart your journey with O-S-M today\nBest solution for managing an optical system."
+    },
+    "error":{
+      "title":"Error",
+      "message":"An error occurred. Please try again later.",
+      "button":"Back",
+      "homeButton":"Go to Home",
+      "redirectMessage":"You will be redirected to the home page in 3 seconds..."
+    },
+    "contact": {
+      "title": "Contact O-S-M",
+      "button":"Contact",
+      "description":"Contact O-S-M",
+      "message":"Contact successfully"
     }
-  
+
   }
