@@ -22,7 +22,6 @@ export default async function RegisterPage({params}: {params: {locale: string}})
   const t = await getTranslations({locale, namespace: 'register'});
   const t2 = await getTranslations({locale, namespace: 'tenants'});
   const subdomain = await getSubdomainServer();
-  console.log("subdomain",subdomain);
 
   const props : formRequestProps = {
     alias: "users_register_create",
@@ -33,8 +32,6 @@ export default async function RegisterPage({params}: {params: {locale: string}})
     istenant: false,
   };
 
-
-  
   if(!subdomain){
     props.alias = "tenants_register_create";
     props.message = t2("message");
@@ -42,7 +39,6 @@ export default async function RegisterPage({params}: {params: {locale: string}})
     props.title = t2("title");
     props.submitText = t2("button");
   }
-  console.log("subdomainhostname",subdomain);
 
   return (
 

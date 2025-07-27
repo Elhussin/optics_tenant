@@ -1,13 +1,23 @@
 {
-    "logout": {
+    "userContext": {
       "title": "Logout",
-      "error": "Failed to log out"
+      "success": "Logged out successfully",
+      "error": "Failed to log out",
+      "fetchError": "Failed to fetch user data"
     },
     "login":{
       "title":"Login",
       "description":"Login to O-S-M",
       "button":"Login",
-      "message":"Login successfully"
+      "message":"Login successfully",
+      "welcomeMessage":"Start Your Journey with O-S-M best solution for Optical System Management",
+      "welcomeTitle":"Welcome to the Portal",
+      "userNameLabel":"User Name",
+      "userNamePlaceholder":"Enter User Name",
+      "emailLabel":"Email",
+      "emailPlaceholder":"Enter Email",
+      "passwordLabel":"Password",
+      "passwordPlaceholder":"Enter Password"
     },
     "register":{
       "title":"Register",
@@ -69,17 +79,11 @@
       "Privacy":"Privacy",
       "Terms":"Terms",
       "FAQ":"FAQ",
-      "Register":"Register"
-    },
-    "asideActive":{
-      "Home":"Home",
-      "Login":"Login",
       "Register":"Register",
+      "Login":"Login",
       "Profile":"Profile",
       "Admin":"Admin",
       "Prescriptions":"Prescriptions",
-      "About":"About",
-      "Contact":"Contact",
       "Users":"Users",
       "Tenants":"Tenants",
       "Groups":"Groups",
@@ -110,6 +114,10 @@
       "button":"Contact",
       "description":"Contact O-S-M",
       "message":"Contact successfully"
+    },
+    "NotFound": {
+      "title": "Page Not Found",
+      "description": "The page you are looking for does not exist.",
+      "goHome": "Go to Home"
     }
-
   }

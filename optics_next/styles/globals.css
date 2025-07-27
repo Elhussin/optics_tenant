@@ -42,7 +42,7 @@
   --color-button-text: #f1f5f9;
   --color-button-hover-bg: #2563eb;   /* Blue-600 */
 
-  --color-danger: #f87171;            /* Light red */
+  /* --color-danger: #f87171;            Light red */
   --color-success: #4ade80;           /* Light green */
   --color-info: #38bdf8;              /* Light sky */
 }
@@ -74,7 +74,7 @@
     @apply w-full z-30 shadow-md px-4 py-2 flex items-center justify-between text-primary bg-elevated border-b border-primary;
   }
   .nav-link {
-    @apply p-2 text-main transition-colors duration-200  hover:bg-elevated  ;
+    @apply p-2 text-main transition-colors duration-200  hover:bg-elevated hover:text-primary  ;
   }
   .footer {
     @apply bg-elevated py-4 shadow-md dark:bg-surface;

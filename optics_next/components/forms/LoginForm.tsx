@@ -8,8 +8,11 @@ import { Loading4 } from '@/components/ui/loding';
 import { cn } from '@/lib/utils/cn';
 import { toast } from 'sonner';
 import {useRouter} from '@/app/i18n/navigation';
+import { useTranslations } from 'next-intl';
 
 export default function LoginForm(props: formRequestProps) {
+  const t = useTranslations('login');
+
   const { fetchUser, user, setUser } = useUser();
   const router = useRouter();
   const [redirect, setRedirect] = useState<string | null>(null);
@@ -63,35 +66,18 @@ export default function LoginForm(props: formRequestProps) {
   return (
     <div className={cn("flex  justify-center px-4 py-8 bg")}>
       <div className={cn("max-w-5xl w-full grid grid-cols-1 bg-surface md:grid-cols-2 gap-8 rounded-2xl shadow-xl overflow-hidden")}>
-        <div className={cn("hidden md:flex items-center justify-center bg-info p-1 ")}>
-      
-          <div className={cn("relative w-full h-[400px]  text-white text-center flex items-center justify-center")}>
-            <div className="absolute inset-0">
-              <img
-                src="/media/start.jpg"
-                alt="Start APP"
-                className="w-full h-full object-cover opacity-70 rounded-2xl"
-              />
-            </div>
-            <div className="absolute bottom-3 z-10 space-y-4">
-              <h2 className="text-3xl font-bold">Welcome to the Portal</h2>
-              <p className="text-lg">Please fill in the form to continue.</p>
-            </div>
-          </div>
-
-        </div>
-        <div className="p-6 md:p-10">
+      <div className="p-6 md:p-10">
           <h1 className="text-center text-2xl font-semibold mb-6">{title}</h1>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="label">User Name</label>
+              <label className="label">{t('userNameLabel')}</label>
               {istenant ? (
                 <>
                   <input
                     {...register("name")}
                     className="input-text"
-                    placeholder="Enter name"
+                    placeholder={t('userNamePlaceholder')}
                   />
                   {errors.name && (
                     <p className="error-text">{errors.name.message as string}</p>
@@ -102,7 +88,7 @@ export default function LoginForm(props: formRequestProps) {
                   <input
                     {...register("username")}
                     className="input-text"
-                    placeholder="Enter username"
+                    placeholder={t('userNamePlaceholder')}
                   />
                   {errors.username && (
                     <p className="error-text">
@@ -115,11 +101,11 @@ export default function LoginForm(props: formRequestProps) {
 
             {mode === "create" && (
               <div>
-                <label className="label">Email</label>
+                <label className="label">{t('emailLabel')}</label>
                 <input
                   {...register("email")}
                   className="input-text"
-                  placeholder="Enter email"
+                  placeholder={t('emailPlaceholder')}
                 />
                 {errors.email && (
                   <p className="error-text">{errors.email.message as string}</p>
@@ -129,12 +115,12 @@ export default function LoginForm(props: formRequestProps) {
 
             {/* كلمة المرور */}
             <div>
-              <label className="label">Password</label>
+              <label className="label">{t('passwordLabel')}</label>
               <input
                 {...register("password")}
                 type="password"
                 className="input-text"
-                placeholder="Enter password"
+                placeholder={t('passwordPlaceholder')}
               />
               {errors.password && (
                 <p className="error-text">
@@ -158,6 +144,24 @@ export default function LoginForm(props: formRequestProps) {
             </button>
           </form>
         </div>
+        <div className={cn("hidden md:flex items-center justify-center bg-info p-1 ")}>
+      
+          <div className={cn("relative w-full h-[400px]  text-white text-center flex items-center justify-center")}>
+            <div className="absolute inset-0">
+              <img
+                src="/media/start.jpg"
+                alt="Start APP"
+                className="w-full h-full object-cover opacity-70 rounded-2xl"
+              />
+            </div>
+            <div className="absolute bottom-3 z-10 space-y-4">
+              <h2 className="text-3xl font-bold">{t('welcomeTitle')}</h2>
+              <p className="text-lg">{t('welcomeMessage')}</p>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

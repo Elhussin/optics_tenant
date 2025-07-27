@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import createIntlMiddleware from 'next-intl/middleware';
 import { routing } from './app/i18n/routing';
-
+import { getRequiredPermission,unauthorizedResponse } from './lib/utils/middleware';
 // تحديد المسارات التي يتم تطبيق الوسيط عليها
 export const config = {
   matcher: [
@@ -21,81 +21,6 @@ export const config = {
 
 const intl = createIntlMiddleware(routing);
 
-function getRequiredPermission(pathname: string): string | null {
-  // إزالة بادئة اللغة من المسار للفحص
-  const cleanPath = pathname.replace(/^\/(ar|en)/, '') || '/';
-  
-  // المسار الرئيسي لا يحتاج صلاحية
-  if (cleanPath === '/') return null;
-  
-  // المسارات العامة التي لا تحتاج صلاحيات خاصة
-  const publicPaths = [
-    '/about',
-    '/contact', 
-    '/services',
-    '/pricing',
-    '/help',
-    '/terms',
-    '/privacy',
-    '/unauthorized',
-    '/auth/login',
-    '/auth/register',
-    '/auth/activate',
-    '/auth/forget-password',
-    '/auth/reset-password'
-  ];
-  
-  if (publicPaths.includes(cleanPath)) return null;
-  
-  const routeMap: [RegExp, string][] = [
-    [/^\/admin/, 'admin_access'],
-    [/^\/dashboard/, 'view_dashboard'],
-    [/^\/profile/, 'view_profile'],
-    [/^\/reports/, 'view_reports'],
-    [/^\/users/, 'view_users'],
-    [/\/prescriptions\/(create|new)/, 'create_prescription'],
-    [/\/prescriptions\/edit/, 'edit_prescription'],
-    [/^\/prescriptions/, 'view_prescriptions'],
-    [/\/invoices\/(create|new)/, 'create_invoice'],
-    [/\/invoices\/edit/, 'edit_invoice'],
-    [/^\/invoices/, 'view_invoices'],
-  ];
-
-  for (const [regex, permission] of routeMap) {
-    if (regex.test(cleanPath)) return permission;
-  }
-  
-  // افتراضياً، المسارات غير المعرفة تحتاج تسجيل دخول لكن بدون صلاحية خاصة
-  return 'authenticated_user';
-}
-
-function unauthorizedResponse(request: NextRequest, target: string, message: string) {
-  // استخدام الـ request للحصول على الـ URL الصحيح
-  const redirectUrl = new URL(target, request.url);
-  
-  // إضافة معلومات الـ redirect
-  redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
-  redirectUrl.searchParams.set('message', encodeURIComponent(message));
-  
-  const response = NextResponse.redirect(redirectUrl);
-  
-  // تعيين الكوكيز مع خيارات أفضل
-  response.cookies.set('alert_message', message, { 
-    path: '/', 
-    maxAge: 30, // 30 ثانية
-    httpOnly: false, // للسماح للجافا سكريبت بقراءتها
-    secure: process.env.NODE_ENV === 'production'
-  });
-  
-  response.cookies.set('alert_type', 'error', { 
-    path: '/', 
-    maxAge: 30,
-    httpOnly: false,
-    secure: process.env.NODE_ENV === 'production'
-  });
-  
-  return response;
-}
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -105,7 +30,8 @@ export async function middleware(request: NextRequest) {
   const host = request.headers.get('host') || '';
   const subdomain = host.split('.')[0];
   const token = request.cookies.get('access_token')?.value;
-  
+
+
   console.log('Token exists:', !!token);
   console.log('Subdomain:', subdomain);
   
@@ -116,6 +42,7 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/favicon.ico') ||
     pathname.includes('.') || // الملفات الثابتة
     pathname.startsWith('/auth/') // مسارات التوثيق
+    
   ) {
     return NextResponse.next();
   }
@@ -130,7 +57,7 @@ export async function middleware(request: NextRequest) {
     return intl(request);
   }
   
-  // الحصول على الصلاحية المطلوبة للمسار
+
   const requiredPermission = getRequiredPermission(pathname);
   console.log('Required permission for', pathname, ':', requiredPermission);
   
@@ -181,9 +108,12 @@ export async function middleware(request: NextRequest) {
       
       const locale = hasLocalePrefix ? pathname.split('/')[1] : 'en';
       const unauthorizedPath = `/${locale}/unauthorized`;
+      if (locale === 'ar') {
+        return unauthorizedResponse(request, unauthorizedPath, 'تم انتقالك لصفحة غير مصرح بها');
+      }
       return unauthorizedResponse(request, unauthorizedPath, 'Tenant mismatch, access denied');
     }
-    
+
     // فحص الصلاحيات
     const hasPermission = permissions.includes('__all__') || 
                          permissions.includes(requiredPermission) ||
@@ -203,6 +133,9 @@ export async function middleware(request: NextRequest) {
     
     const locale = hasLocalePrefix ? pathname.split('/')[1] : 'en';
     const unauthorizedPath = `/${locale}/unauthorized`;
+    if (locale === 'ar') {
+      return unauthorizedResponse(request, unauthorizedPath, 'تم انتقالك لصفحة غير مصرح بها');
+    }
     return unauthorizedResponse(request, unauthorizedPath, 'You do not have permission to access this page');
     
   } catch (error) {
@@ -211,6 +144,9 @@ export async function middleware(request: NextRequest) {
     // حذف التوكن التالف وإعادة التوجيه للتسجيل
     const locale = hasLocalePrefix ? pathname.split('/')[1] : 'en';
     const loginPath = `/${locale}/auth/login`;
+    if (locale === 'ar') {
+      return unauthorizedResponse(request, loginPath, 'فشل تسجيل الدخول أو انتهاء الجلسة');
+    }
     
     const response = unauthorizedResponse(request, loginPath, 'Login failed or session expired');
     response.cookies.delete('access_token');

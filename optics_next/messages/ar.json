@@ -1,13 +1,23 @@
-{
-    "HomePage": {
-      "title": "مرحبا في O-S-M",
-      "description": "أفضل حلول لإدارة نظام إدارة شركات البصريات في O-S-M."
+{    
+    "userContext": {
+      "title": "تسجيل الخروج",  
+      "success": "تم تسجيل الخروج بنجاح",
+      "error": "فشل تسجيل الخروج",
+      "fetchError": "فشل احضار بيانات المستخدم"
     },
     "login":{
       "title":"تسجيل الدخول",
       "description":"Login to O-S-M",
       "button":"تسجيل الدخول",
-      "message":"تم تسجيل الدخول بنجاح"
+      "message":"تم تسجيل الدخول بنجاح",
+      "welcomeMessage":"ابداء الأن رحلتك مع O-S-M لاداء نظام إدارة شركات البصريات",
+      "welcomeTitle":"مرحبا في O-S-M",
+      "userNameLabel":"اسم المستخدم",
+      "userNamePlaceholder":"أدخل اسم المستخدم",
+      "emailLabel":"البريد الالكتروني",
+      "emailPlaceholder":"أدخل البريد الالكتروني",
+      "passwordLabel":"كلمة المرور",
+      "passwordPlaceholder":"أدخل كلمة المرور"
     },
     "register":{
       "title":"تسجيل",
@@ -27,12 +37,9 @@
       "button":"تسجيل ",
       "message":"تم تسجيل الحساب يرجي مراجعة البريد الالكتروني المسجل"
     },
-    "about": {
-      "title": "عن O-S-M"
-    },
-    "logout": {
-      "title": "تسجيل الخروج",  
-      "error": "فشل تسجيل الخروج"
+    "HomePage": {
+      "title": "مرحبا في O-S-M",
+      "description": "أفضل حلول لإدارة نظام إدارة شركات البصريات في O-S-M."
     },
     "navBar": {
       "title": "Navigation",
@@ -73,23 +80,16 @@
       "Terms":"الشروط",
       "Profile":"الملف الشخصي",
       "Register":"تسجيل",
-      "FAQ":"الأسئلة الشائعة"
-      
-    },
-    "asideActive":{
-      "Home":"الرئيسية",
+      "FAQ":"الأسئلة الشائعة",
       "Login":"تسجيل الدخول",
-      "Register":"تسجيل",
-      "Profile":"الملف الشخصي",
       "Admin":"المدير",
       "Prescriptions":"الوصفات",
-      "About":"عن",
-      "Contact":"اتصل بنا",
       "Users":"المستخدمين",
       "Tenants":"الشركات",
       "Groups":"المجموعات",
       "CRM":"العملاء",
       "Permissions":"الصلاحيات"
+      
     },
     "unauthorized":{
       "title":"غير مصرح",
@@ -115,5 +115,10 @@
       "button":"اتصل بنا",
       "description":"اتصل بنا",
       "message":"اتصل بنا بنجاح"
+    },
+    "NotFound": {
+      "title": "الصفحة غير موجودة",
+      "description": "عذرًا، الصفحة التي تبحث عنها غير متوفرة.",
+      "goHome": "العودة إلى الصفحة الرئيسية"
     }
   }

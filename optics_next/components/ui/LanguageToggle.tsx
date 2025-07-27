@@ -59,26 +59,46 @@
 'use client';
 import { usePathname, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
-
+import { useState, useEffect } from "react";
 const locales = ['en', 'ar'];
 
 export default function LanguageSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
+  const [language, setLanguage] = useState(() => Cookies.get('django_language') || 'en');
 
   const changeLanguage = (locale: string) => {
     const newPath = `/${locale}${pathname.slice(3)}`;
-    Cookies.set('django_language', locale, { path: '/' }); // لتزامن Django
+    setLanguage(locale);
+    // Cookies.set('django_language', locale, { path: '/' }); // لتزامن Django
     router.push(newPath);
   };
 
-  return (
-    <div className="flex gap-2">
-      {locales.map((l) => (
-        <button key={l} onClick={() => changeLanguage(l)}>
-          {l.toUpperCase()}
-        </button>
-      ))}
-    </div>
-  );
+  useEffect(() => {
+    const language = document.cookie
+        .split(';')
+        .find((cookie) => cookie.startsWith('django_language='));
+    if (language) {
+        setLanguage(language.split('=')[1]);
+    }
+}, []);
+
+ 
+      return (
+        <select value={language} onChange={(e) => changeLanguage(e.target.value)}>
+            <option value="en">EN</option>
+            <option value="ar">AR</option>
+        </select>
+    );
 }
+
+
+ // return (
+  //   <div className="flex gap-2">
+  //     {locales.map((l) => (
+  //       <button key={l} onClick={() => changeLanguage(l)}>
+  //         {l.toUpperCase()}
+  //       </button>
+  //     ))}
+  //   </div>
+  // );

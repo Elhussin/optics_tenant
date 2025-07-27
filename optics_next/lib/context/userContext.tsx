@@ -5,39 +5,46 @@ import { UserContextType } from '@/types';
 import { useFormRequest } from '../hooks/useFormRequest';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
 import { safeToast } from '@/lib/utils/toastService';
-import {useRouter} from '@/app/i18n/navigation';
-import {redirect} from '@/app/i18n/navigation';
-
+import { useRouter } from '@/app/i18n/navigation';
+// import { useLocale } from 'next-intl';
+// const locale = useLocale();
+import { useTranslations } from 'next-intl';
 const UserContext = createContext<UserContextType | undefined>(undefined);
-
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const t = useTranslations('userContext');
   const [user, setUser] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [subdomain, setSubdomain] = useState<string | null>(null);
+  const [isFetched, setIsFetched] = useState(false);
 
-  const fetchUser = useFormRequest({ alias: "users_profile_retrieve",
+  const fetchUser = useFormRequest({
+    alias: "users_profile_retrieve",
     onSuccess: (res) => {
       setUser(res);
       setLoading(false);
     },
-    onError: (err) => {
-      safeToast("Failed to fetch Your Data", {type: "error",});
-      router.replace(`/${router.locale}/auth/login`);
-
+    onError: () => {
+      safeToast(t('fetchError'), { type: "error" });
+      router.replace(`/auth/login`);
       setLoading(false);
     },
-   });
-  const logoutRequest = useFormRequest({ alias: "users_logout_create" });
+  });
+
+  const logoutRequest = useFormRequest({ alias: "users_logout_create",
+    onSuccess: () => {
+      setUser(null);
+      router.replace(`/auth/login`);
+      safeToast(t('success'), { type: "success" });
+    },
+    onError: () => {
+      safeToast(t('error'), { type: "error" });
+    },
+  });
 
   const logout = async () => {
     await logoutRequest.submitForm();
-    setUser(null);
-
-    router.replace(`/auth/login`);
-    safeToast("Logged out successfully", {type: "success",});
-    
   };
 
   useEffect(() => {
@@ -46,27 +53,15 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if(subdomain){
+    if (subdomain && !isFetched) {
       fetchUser.submitForm();
+      setIsFetched(true);
     }
-
-  }, [subdomain]);
-
-  useEffect(() => {
-    if (!fetchUser.isLoading && !fetchUser.isSubmitting && !fetchUser.data) {
-      setLoading(false);
-    }
-  }, [fetchUser.isLoading, fetchUser.isSubmitting, fetchUser.data]);
+  }, [subdomain, isFetched]);
 
   const value: UserContextType = { user, setUser, loading, fetchUser, logout };
 
-
-
-  return (
-    <UserContext.Provider value={value}>
-      {children}
-    </UserContext.Provider>
-  );
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
 export const useUser = () => {
