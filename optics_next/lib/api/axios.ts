@@ -1,12 +1,20 @@
 // lib/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
-const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
-const LANGUAGE_COOKIE_NAME = "django_language";
+// import { getCookie } from 'cookies-next'; // أو أي مكتبة تستخدمها
 import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { getCookie } from "@/lib/utils/getCookie";
+
+
+const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
+const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
+const LANGUAGE_COOKIE_NAME = "NEXT_LOCALE";
+const DEFAULT_LANGUAGE = 'en';
+const DEFAULT_COUNTRY = 'sa';
+const DEFAULT_CURRENCY = 'sar';
+
+
 
 interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
   customRequest: (alias: string, data?: any) => Promise<any>;
@@ -24,19 +32,29 @@ const axiosInstance = axios.create({
   },
 });
 
+const setHeader = (
+  config: InternalAxiosRequestConfig,
+  key: string,
+  value?: string
+) => {
+  if (value) {
+    config.headers = config.headers || {};
+    config.headers[key] = value;
+  }
+};
+
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const csrfToken = getCookie(CSRF_COOKIE_NAME);
-  if (csrfToken && config.headers) {
-    config.headers[CSRF_HEADER_NAME] = csrfToken;
-  }
-
   const tenant = window.location.hostname.split(".")[0];
-  config.headers["X-Tenant"] = tenant;
+  const language = getCookie(LANGUAGE_COOKIE_NAME) || DEFAULT_LANGUAGE;
+  const country = getCookie("country") || DEFAULT_COUNTRY;
+  const currency = getCookie("currency") || DEFAULT_CURRENCY;
 
-  const language = getCookie(LANGUAGE_COOKIE_NAME);
-  if (language && config.headers) {
-    config.headers["Accept-Language"] = language || "en";
-  }
+  setHeader(config, CSRF_HEADER_NAME, csrfToken);
+  setHeader(config, "X-Tenant", tenant);
+  setHeader(config, "Accept-Language", language);
+  setHeader(config, "Accept-Country", country);
+  setHeader(config, "Accept-Currency", currency);
 
   return config;
 });

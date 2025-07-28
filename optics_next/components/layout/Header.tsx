@@ -1,6 +1,7 @@
 // src/components/layout/Header.tsx
 import ThemeToggle from '../ui/ThemeToggle';
 import LanguageToggle from '../ui/LanguageToggle';
+import LocaleSwitcher from '../ui/LocaleSwitcher';
 export default function Header() {
   return (
     <header className="header ">
@@ -10,8 +11,10 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-2">
 
-      <LanguageToggle />
+      {/* <LanguageToggle /> */}
+      <LocaleSwitcher />
       <ThemeToggle />
+
       </div>
     </header>
   );
