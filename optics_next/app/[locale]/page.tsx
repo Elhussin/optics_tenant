@@ -1,7 +1,9 @@
 
 import { Metadata } from 'next';
 import { generateMetadata } from '@/lib/utils/metadata';
-
+import HeroSection from '@/components/layout/home/HeroSection';
+import FeaturesSection from '@/components/layout/home/FeaturesSection';
+import PricingSection from '@/components/layout/home/PricingSection';
 
 export const metadata: Metadata = generateMetadata({
   title: 'HomePage',
@@ -23,6 +25,9 @@ export default async function HomePage({params}: {params: {locale: string}}) {
       <h2 className="text-2xl font-semibold">{t('title')}</h2>
       <p className="mt-4">{t('description')}</p>
       <Link href="/about">About</Link>
+      <HeroSection />
+      <FeaturesSection />
+      <PricingSection />
     </div>
   );
 }

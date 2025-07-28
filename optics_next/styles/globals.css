@@ -12,8 +12,8 @@
 
   --color-main: #0f172a;              /* Main dark text */
   --color-secondary: #475569;         /* Sub text */
-  --color-primary: #2563eb;           /* Main CTA (blue-600) */
-
+  --color-primary: #4771cc;           /* Main CTA (blue-600) */
+  --color-header:#123a6a;
   --color-border-main: #ced1d4;       /* Border gray Aside*/
 
   --color-button-bg: #2563eb;         /* Primary button */
@@ -35,7 +35,7 @@
   --color-main: #f8fafc;              /* Light text  */
   --color-secondary: #94a3b8;         /* Muted text */
   --color-primary: #3b82f6;           /* Blue-500 for CTA */
-
+  --color-header:#0542747a;
   --color-border-main: #475569;
 
   --color-button-bg: #3b82f6;         /* Blue-500 */
@@ -46,7 +46,29 @@
   --color-success: #4ade80;           /* Light green */
   --color-info: #38bdf8;              /* Light sky */
 }
+.color{
+  --font-main: "Inter", sans-serif;
+  --font-alt: "Cairo", sans-serif;
 
+  --color-body: #f9fafb;              /* Light gray background */
+  --color-surface: #ffffff;           /* Card/Surface Header  */
+  --color-elevated: #f1f5f9;          /* Elevated cards or nav Footer */
+
+  --color-main: #0f172a;              /* Main dark text */
+  --color-secondary: #475569;         /* Sub text */
+  --color-primary: #0542747a;           /* Main CTA (blue-600) */
+
+  --color-border-main: #ced1d4;       /* Border gray Aside*/
+
+  --color-button-bg: #2563eb;         /* Primary button */
+  --color-button-text: #ffffff;
+  --color-button-hover-bg: #1d4ed8;   /* Hover blue-700 */
+  --color-button-border-radius: 0.5rem;
+
+  --color-danger: #dc2626;            /* Red-600 */
+  --color-success: #16a34a;           /* Green-600 */
+  --color-info: #0ea5e9;   
+}
 
 
 @layer main {
@@ -63,11 +85,14 @@
   }
 
   body {
-    @apply bg-body text-main h-screen;
+    @apply bg-body text-main h-screen m-0 p-0;
   }
 
   .header {
-    @apply w-full z-30 flex items-center justify-between p-4 text-primary bg-surface;
+    @apply w-full bg-header dark:bg-body z-30 flex items-center justify-between pl-2 pr-2 p-1 text-button-text;
+  }
+  .header-select{
+    @apply p-2 rounded bg-header dark:bg-body hover:bg-elevated hover:text-primary transition-colors duration-200;
   }
 
   .nav {
@@ -77,23 +102,21 @@
     @apply p-2 text-main transition-colors duration-200  hover:bg-elevated hover:text-primary  ;
   }
   .footer {
-    @apply bg-elevated py-4 shadow-md dark:bg-surface;
+    @apply bg-elevated shadow-md dark:bg-surface  py-10 px-4 md:px-10  mt-10;
   }
   .footer-content {
-    @apply mx-auto px-4 text-center text-sm;
+    @apply mx-auto px-4 text-center text-sm ;
   }
   
   .main {
-    @apply lg:w-3/4 w-full md:p-4 space-y-4 mx-auto
-    
-           /* flex flex-col items-start justify-center;  الجديد */
+    @apply lg:w-3/4  w-full md:p-4 space-y-4 mx-auto
   }
 
-.aside {
+/* .aside {
   @apply bg-border-main fixed top-[120px] left-0 h-[calc(100vh-120px)] w-80 
          border-r border-gray-200 dark:border-gray-700 
          shadow-md z-70 transform transition-transform duration-300 hidden md:block;
-}
+} */
 }
 
 @layer buttons {
@@ -159,7 +182,7 @@
     @apply flex flex-col md:flex-row gap-4 w-full;
   }
 
-  .container {
+  .container-h {
     @apply max-w-screen-md px-4 ml-2 md:ml-2 ;
   }
 

@@ -1,124 +1,188 @@
-{    
-    "userContext": {
-      "title": "تسجيل الخروج",  
-      "success": "تم تسجيل الخروج بنجاح",
-      "error": "فشل تسجيل الخروج",
-      "fetchError": "فشل احضار بيانات المستخدم"
-    },
-    "login":{
-      "title":"تسجيل الدخول",
-      "description":"Login to O-S-M",
-      "button":"تسجيل الدخول",
-      "message":"تم تسجيل الدخول بنجاح",
-      "welcomeMessage":"ابداء الأن رحلتك مع O-S-M لاداء نظام إدارة شركات البصريات",
-      "welcomeTitle":"مرحبا في O-S-M",
-      "userNameLabel":"اسم المستخدم",
-      "userNamePlaceholder":"أدخل اسم المستخدم",
-      "emailLabel":"البريد الالكتروني",
-      "emailPlaceholder":"أدخل البريد الالكتروني",
-      "passwordLabel":"كلمة المرور",
-      "passwordPlaceholder":"أدخل كلمة المرور"
-    },
-    "register":{
-      "title":"تسجيل",
-      "description":"Register to O-S-M",
-      "button":"تسجيل",
-      "message":"تم التسجيل بنجاح"
-    },
-    "profile":{
-      "title":"الملف الشخصي",
-      "description":"Profile to O-S-M",
-      "button":"الملف الشخصي",
-      "message":"تم تحديث الملف الشخصي بنجاح"
-    },
-    "tenants":{
-      "title":"ابداء الأن ",
-      "description":"Tenants to O-S-M",
-      "button":"تسجيل ",
-      "message":"تم تسجيل الحساب يرجي مراجعة البريد الالكتروني المسجل"
-    },
-    "HomePage": {
-      "title": "مرحبا في O-S-M",
-      "description": "أفضل حلول لإدارة نظام إدارة شركات البصريات في O-S-M."
-    },
-    "navBar": {
-      "title": "Navigation",
-      "home": "الرئيسية",
-      "about": "عنا",
-      "contact": "اتصل بنا",
-      "admin": "المدير",
-      "technician": " الفني",
-      "profile": "الملف الشخصي",
-      "logout": "تسجيل الخروج",
-      "dark": "الظلام",
-      "light": "الضوء",
-      "register": "تسجيل",
-      "login": " الدخول"
-    },
-    "button":{
-      "close":"اغلاق",
-      "deactivate":"الغاء تنشيط",
-      "delete":"مسح",
-      "deleteTitle":"اسرجاع عنصر محذوف",
-      "edit":"تعديل",
-      "hardDelete":"حذف",
-      "restore":"استرجاع",
-      "view":"عرض",
-      "activate":"تنشيط",
-      "back":"رجوع",
-      "rest":"إعادة تعيين",
-      "create":"إنشاء",
-      "copy":"نسخ",
-      "print":"طباعة",
-      "pdf":"PDF"
-    },
-    "aside":{
-      "Home":"الرئيسية",
-      "About":"عنا",
-      "Contact":"اتصل بنا",
-      "Privacy":"الخصوصية",
-      "Terms":"الشروط",
-      "Profile":"الملف الشخصي",
-      "Register":"تسجيل",
-      "FAQ":"الأسئلة الشائعة",
-      "Login":"تسجيل الدخول",
-      "Admin":"المدير",
-      "Prescriptions":"الوصفات",
-      "Users":"المستخدمين",
-      "Tenants":"الشركات",
-      "Groups":"المجموعات",
-      "CRM":"العملاء",
-      "Permissions":"الصلاحيات"
-      
-    },
-    "unauthorized":{
-      "title":"غير مصرح",
-      "message":"لا تمتلك صلاحيات الوصول لهذه الصفحة.",
-      "backButton":"رجوع",
-      "homeButton":"الرئيسية",
-      "redirectMessage":" سيتم التوجيه إلى الصفحة الرئيسية في 3 ثواني..."
-    },
-    "about": {
-      "title": "عن O-S-M",
-      "button":"عن",
-      "description":"O-S-M هي تطبيق ويب لإدارة نظام إدارة شركات البصريات\nابدأ رحلتك مع O-S-M اليوم\nأفضل حلول لإدارة نظام إدارة شركات البصريات."
-    },
-    "error":{
-      "title":"خطأ", 
-      "message":"حدث خطأ. يرجى المحاولة مرة أخرى لاحقا.",
-      "button":"رجوع",
-      "homeButton":"الرئيسية",
-      "redirectMessage":" سيتم التوجيه إلى الصفحة الرئيسية في 3 ثواني..."
-    },
-    "contact": {
-      "title": "اتصل بنا",
-      "button":"اتصل بنا",
-      "description":"اتصل بنا",
-      "message":"اتصل بنا بنجاح"
-    },
-    "NotFound": {
-      "title": "الصفحة غير موجودة",
-      "description": "عذرًا، الصفحة التي تبحث عنها غير متوفرة.",
-      "goHome": "العودة إلى الصفحة الرئيسية"
+{
+  "userContext": {
+    "title": "تسجيل الخروج",
+    "success": "تم تسجيل الخروج بنجاح",
+    "error": "فشل تسجيل الخروج",
+    "fetchError": "فشل احضار بيانات المستخدم"
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "description": "Login to O-S-M",
+    "button": "تسجيل الدخول",
+    "message": "تم تسجيل الدخول بنجاح",
+    "welcomeMessage": "ابداء الأن رحلتك مع O-S-M لاداء نظام إدارة شركات البصريات",
+    "welcomeTitle": "مرحبا في O-S-M",
+    "userNameLabel": "اسم المستخدم",
+    "userNamePlaceholder": "أدخل اسم المستخدم",
+    "emailLabel": "البريد الالكتروني",
+    "emailPlaceholder": "أدخل البريد الالكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور"
+  },
+  "register": {
+    "title": "تسجيل",
+    "description": "Register to O-S-M",
+    "button": "تسجيل",
+    "message": "تم التسجيل بنجاح"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "description": "Profile to O-S-M",
+    "button": "الملف الشخصي",
+    "message": "تم تحديث الملف الشخصي بنجاح"
+  },
+  "tenants": {
+    "title": "ابداء الأن ",
+    "description": "Tenants to O-S-M",
+    "button": "تسجيل ",
+    "message": "تم تسجيل الحساب يرجي مراجعة البريد الالكتروني المسجل"
+  },
+  "HomePage": {
+    "title": "مرحبا في O-S-M",
+    "description": "أفضل حلول لإدارة نظام إدارة شركات البصريات في O-S-M."
+  },
+  "navBar": {
+    "title": "Navigation",
+    "home": "الرئيسية",
+    "about": "عنا",
+    "contact": "اتصل بنا",
+    "admin": "المدير",
+    "technician": " الفني",
+    "profile": "الملف الشخصي",
+    "logout": "تسجيل الخروج",
+    "dark": "الظلام",
+    "light": "الضوء",
+    "register": "تسجيل",
+    "login": " الدخول"
+  },
+  "button": {
+    "close": "اغلاق",
+    "deactivate": "الغاء تنشيط",
+    "delete": "مسح",
+    "deleteTitle": "اسرجاع عنصر محذوف",
+    "edit": "تعديل",
+    "hardDelete": "حذف",
+    "restore": "استرجاع",
+    "view": "عرض",
+    "activate": "تنشيط",
+    "back": "رجوع",
+    "rest": "إعادة تعيين",
+    "create": "إنشاء",
+    "copy": "نسخ",
+    "print": "طباعة",
+    "pdf": "PDF"
+  },
+  "aside": {
+    "Home": "الرئيسية",
+    "About": "عنا",
+    "Contact": "اتصل بنا",
+    "Privacy": "الخصوصية",
+    "Terms": "الشروط",
+    "Profile": "الملف الشخصي",
+    "Register": "تسجيل",
+    "FAQ": "الأسئلة الشائعة",
+    "Login": "تسجيل الدخول",
+    "Admin": "المدير",
+    "Prescriptions": "الوصفات",
+    "Users": "المستخدمين",
+    "Tenants": "الشركات",
+    "Groups": "المجموعات",
+    "CRM": "العملاء",
+    "Permissions": "الصلاحيات"
+  },
+  "unauthorized": {
+    "title": "غير مصرح",
+    "message": "لا تمتلك صلاحيات الوصول لهذه الصفحة.",
+    "backButton": "رجوع",
+    "homeButton": "الرئيسية",
+    "redirectMessage": " سيتم التوجيه إلى الصفحة الرئيسية في 3 ثواني..."
+  },
+  "about": {
+    "title": "عن O-S-M",
+    "button": "عن",
+    "description": "O-S-M هي تطبيق ويب لإدارة نظام إدارة شركات البصريات\nابدأ رحلتك مع O-S-M اليوم\nأفضل حلول لإدارة نظام إدارة شركات البصريات."
+  },
+  "error": {
+    "title": "خطأ",
+    "message": "حدث خطأ. يرجى المحاولة مرة أخرى لاحقا.",
+    "button": "رجوع",
+    "homeButton": "الرئيسية",
+    "redirectMessage": " سيتم التوجيه إلى الصفحة الرئيسية في 3 ثواني..."
+  },
+  "contact": {
+    "title": "اتصل بنا",
+    "button": "اتصل بنا",
+    "description": "اتصل بنا",
+    "message": "اتصل بنا بنجاح"
+  },
+  "NotFound": {
+    "title": "الصفحة غير موجودة",
+    "description": "عذرًا، الصفحة التي تبحث عنها غير متوفرة.",
+    "goHome": "العودة إلى الصفحة الرئيسية"
+  },
+  "heroSection": {
+    "title": "إدارة محلات البصريات بكل سهولة",
+    "description": "منصة SaaS قوية مخصصة لإدارة محلات البصريات. تتبع المبيعات، المخزون، العملاء وأكثر.",
+    "cta": "ابدأ التجربة المجانية"
+  },
+  "featuresSection": {
+    "title": "المزايا الرئيسية",
+    "list": {
+      "inventory": "إدارة الفروع والمخزون",
+      "sales": "تتبع المبيعات والفواتير",
+      "permissions": "دعم متعدد المستخدمين والصلاحيات",
+      "support": "تكامل دعم العملاء"
+    }
+  },
+  "pricing": {
+    "title": "خطط الأسعار",
+    "free": "تجربة مجانية",
+    "basic": "الخطة الأساسية",
+    "pro": "الخطة المتقدمة"
+  },
+  "footer": {
+    "followUs": "تابعنا",
+    "more": "روابط هامة",
+    "quickLinks": "روابط سريعة",
+    "footer": "O-S-M",
+    "right": "جميع الحقوق محفوظة",
+    "Support": "دعم",
+    "Careers": "وظائف",
+    "Blog": "المدونة"
+  },
+  "pricingSection": {
+    "title": "اختر الخطة المناسبة",
+    "plans": {
+      "basic": {
+        "name": "أساسية",
+        "price": "١٩$",
+        "description": "مثالية للمحلات الصغيرة",
+        "features": [
+          "فرع واحد",
+          "إدارة مخزون أساسية",
+          "تتبع المبيعات"
+        ]
+      },
+      "pro": {
+        "name": "احترافية",
+        "price": "٤٩$",
+        "description": "للمتاجر المتوسطة والنامية",
+        "features": [
+          "حتى ٥ فروع",
+          "مخزون متقدم",
+          "تقارير وتحليلات"
+        ]
+      },
+      "enterprise": {
+        "name": "مؤسسات",
+        "price": "تواصل معنا",
+        "description": "خطة مخصصة للمؤسسات الكبيرة",
+        "features": [
+          "فروع غير محدودة",
+          "خصائص مخصصة",
+          "دعم أولوية"
+        ]
+      }
     }
   }
+}

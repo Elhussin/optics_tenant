@@ -22,7 +22,6 @@ export default function GlobalAlert({ message: propMessage, type: propType = "in
     };
 
     if (propMessage) {
-      // الرسالة من props لها أولوية
       setMessage(propMessage);
       setType(propType);
       setShow(true);

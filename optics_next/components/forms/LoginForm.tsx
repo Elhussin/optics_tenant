@@ -12,10 +12,10 @@ import { useTranslations } from 'next-intl';
 
 export default function LoginForm(props: formRequestProps) {
   const t = useTranslations('login');
-
   const { fetchUser, user, setUser } = useUser();
   const router = useRouter();
   const [redirect, setRedirect] = useState<string | null>(null);
+  const [plan, setPlan] = useState<string | null>(null);
 
   const { title, message, submitText = "Login", alias, mode = "login", istenant = false } = props;
 
@@ -33,6 +33,7 @@ export default function LoginForm(props: formRequestProps) {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setRedirect(params.get("redirect") || "/profile");
+    setPlan(params.get("plan") || "basic");
   }, []);
 
   const onSubmit = async (data: any) => {
@@ -128,6 +129,29 @@ export default function LoginForm(props: formRequestProps) {
                 </p>
               )}
             </div>
+            {istenant && (
+              <div>
+                <label className="label">Plan</label>
+                <select
+                  {...register("plan")}
+                  className="input-text"
+                  placeholder={t('planPlaceholder')}
+                  value={plan}
+                  onChange={(e) => setPlan(e.target.value)}
+                >
+                  <option value="">Select Plan</option>
+                  <option value="trial">Trial</option>
+                  <option value="basic">Basic</option>
+                  <option value="pro">Pro</option>
+                  <option value="enterprise">Enterprise</option>
+                </select>
+                {errors.plan && (
+                  <p className="error-text">
+                    {errors.plan.message as string}
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* رسالة خطأ عامة */}
             {errors.root && (

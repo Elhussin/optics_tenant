@@ -1,123 +1,189 @@
 {
-    "userContext": {
-      "title": "Logout",
-      "success": "Logged out successfully",
-      "error": "Failed to log out",
-      "fetchError": "Failed to fetch user data"
-    },
-    "login":{
-      "title":"Login",
-      "description":"Login to O-S-M",
-      "button":"Login",
-      "message":"Login successfully",
-      "welcomeMessage":"Start Your Journey with O-S-M best solution for Optical System Management",
-      "welcomeTitle":"Welcome to the Portal",
-      "userNameLabel":"User Name",
-      "userNamePlaceholder":"Enter User Name",
-      "emailLabel":"Email",
-      "emailPlaceholder":"Enter Email",
-      "passwordLabel":"Password",
-      "passwordPlaceholder":"Enter Password"
-    },
-    "register":{
-      "title":"Register",
-      "description":"Register to O-S-M",
-      "button":"Register",
-      "message":"Register successfully"
-    },
-    "profile":{
-      "title":"Profile",
-      "description":"Profile to O-S-M",
-      "button":"Profile",
-      "message":"Profile successfully"
-    },
-    "tenants":{
-      "title":"Start Now",
-      "description":"Tenants to O-S-M",
-      "button":"Register",
-      "message":"You are successfully registered your account check your email for confirmation"
-    },
-    "HomePage": {
-      "title": "Welcome to O-S-M",
-      "description": "Best Solution For Optical System Management at O-S-M."
-    },
-    "navBar": {
-      "title": "Navigation",
-      "home": "Home",
-      "about": "About",
-      "contact": "Contact",
-      "admin": "Admin",
-      "technician": "Technician",
-      "profile": "Profile",
-      "logout": "Logout",
-      "dark": "Dark",
-      "light": "Light",
-      "register": "Register",
-      "login": "Login"
-    },
-    "button":{
-      "close":"Close",
-      "deactivate":"Deactivate",
-      "delete":"Delete",
-      "delatetitle":"This action will restore the item",
-      "edit":"Edit",
-      "hardDelete":"Remove",
-      "restore":"Restore",
-      "view":"View",
-      "activate":"Activate",
-      "back":"Back",
-      "rest":"Reset",
-      "create":"Create",
-      "copy":"Copy",
-      "print":"Print",
-      "pdf":"PDF"
-    },
-    "aside":{
-      "Home":"Home",
-      "About":"About",
-      "Contact":"Contact",
-      "Privacy":"Privacy",
-      "Terms":"Terms",
-      "FAQ":"FAQ",
-      "Register":"Register",
-      "Login":"Login",
-      "Profile":"Profile",
-      "Admin":"Admin",
-      "Prescriptions":"Prescriptions",
-      "Users":"Users",
-      "Tenants":"Tenants",
-      "Groups":"Groups",
-      "CRM":"CRM",
-      "Permissions":"Permissions"
-    },
-    "unauthorized":{
-      "title":"Unauthorized",
-      "message":"You do not have permission to access this page.",
-      "backButton":"Back",
-      "homeButton":"Go to Home",
-      "redirectMessage":"You will be redirected to the home page in 3 seconds..."
-    },
-    "about": {
-      "title": "About O-S-M",
-      "button":"About",
-      "description":"O-S-M is a web application for managing an optical system\nStart your journey with O-S-M today\nBest solution for managing an optical system."
-    },
-    "error":{
-      "title":"Error",
-      "message":"An error occurred. Please try again later.",
-      "button":"Back",
-      "homeButton":"Go to Home",
-      "redirectMessage":"You will be redirected to the home page in 3 seconds..."
-    },
-    "contact": {
-      "title": "Contact O-S-M",
-      "button":"Contact",
-      "description":"Contact O-S-M",
-      "message":"Contact successfully"
-    },
-    "NotFound": {
-      "title": "Page Not Found",
-      "description": "The page you are looking for does not exist.",
-      "goHome": "Go to Home"
+  "userContext": {
+    "title": "Logout",
+    "success": "Logged out successfully",
+    "error": "Failed to log out",
+    "fetchError": "Failed to fetch user data"
+  },
+  "login": {
+    "title": "Login",
+    "description": "Login to O-S-M",
+    "button": "Login",
+    "message": "Login successfully",
+    "welcomeMessage": "Start Your Journey with O-S-M best solution for Optical System Management",
+    "welcomeTitle": "Welcome to the Portal",
+    "userNameLabel": "User Name",
+    "userNamePlaceholder": "Enter User Name",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Enter Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter Password"
+  },
+  "register": {
+    "title": "Register",
+    "description": "Register to O-S-M",
+    "button": "Register",
+    "message": "Register successfully"
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Profile to O-S-M",
+    "button": "Profile",
+    "message": "Profile successfully"
+  },
+  "tenants": {
+    "title": "Start Now",
+    "description": "Tenants to O-S-M",
+    "button": "Register",
+    "message": "You are successfully registered your account check your email for confirmation"
+  },
+  "HomePage": {
+    "title": "Welcome to O-S-M",
+    "description": "Best Solution For Optical System Management at O-S-M."
+  },
+  "navBar": {
+    "title": "Navigation",
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "admin": "Admin",
+    "technician": "Technician",
+    "profile": "Profile",
+    "logout": "Logout",
+    "dark": "Dark",
+    "light": "Light",
+    "register": "Register",
+    "login": "Login"
+  },
+  "button": {
+    "close": "Close",
+    "deactivate": "Deactivate",
+    "delete": "Delete",
+    "delatetitle": "This action will restore the item",
+    "edit": "Edit",
+    "hardDelete": "Remove",
+    "restore": "Restore",
+    "view": "View",
+    "activate": "Activate",
+    "back": "Back",
+    "rest": "Reset",
+    "create": "Create",
+    "copy": "Copy",
+    "print": "Print",
+    "pdf": "PDF"
+  },
+  "aside": {
+    "Home": "Home",
+    "About": "About",
+    "Contact": "Contact",
+    "Privacy": "Privacy",
+    "Terms": "Terms",
+    "FAQ": "FAQ",
+    "Register": "Register",
+    "Login": "Login",
+    "Profile": "Profile",
+    "Admin": "Admin",
+    "Prescriptions": "Prescriptions",
+    "Users": "Users",
+    "Tenants": "Tenants",
+    "Groups": "Groups",
+    "CRM": "CRM",
+    "Permissions": "Permissions"
+  },
+  "unauthorized": {
+    "title": "Unauthorized",
+    "message": "You do not have permission to access this page.",
+    "backButton": "Back",
+    "homeButton": "Go to Home",
+    "redirectMessage": "You will be redirected to the home page in 3 seconds..."
+  },
+  "about": {
+    "title": "About O-S-M",
+    "button": "About",
+    "description": "O-S-M is a web application for managing an optical system\nStart your journey with O-S-M today\nBest solution for managing an optical system."
+  },
+  "error": {
+    "title": "Error",
+    "message": "An error occurred. Please try again later.",
+    "button": "Back",
+    "homeButton": "Go to Home",
+    "redirectMessage": "You will be redirected to the home page in 3 seconds..."
+  },
+  "contact": {
+    "title": "Contact O-S-M",
+    "button": "Contact",
+    "description": "Contact O-S-M",
+    "message": "Contact successfully"
+  },
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist.",
+    "goHome": "Go to Home"
+  },
+  "home": {},
+  "heroSection": {
+    "title": "Manage Your Optical Stores with Ease",
+    "description": "A powerful SaaS platform tailored for optical store management. Track sales, inventory, customers & more.",
+    "cta": "Start Free Trial"
+  },
+  "featuresSection": {
+    "title": "Key Features",
+    "list": {
+      "inventory": "Branch & Inventory Management",
+      "sales": "Sales & Invoice Tracking",
+      "permissions": "Multi-user & Role Permissions",
+      "support": "Customer Support Integration"
+    }
+  },
+  "pricing": {
+    "title": "Pricing Plans",
+    "free": "Free Trial",
+    "basic": "Basic Plan",
+    "pro": "Pro Plan"
+  },
+  "footer": {
+    "followUs": "Follow Us",
+    "more": "More",
+    "quickLinks": "Quick Links",
+    "footer": "O-S-M",
+    "right": "All rights reserved",
+    "Support": "Support",
+    "Careers": "Careers",
+    "Blog": "Blog"
+  },
+  "pricingSection": {
+    "title": "Choose Your Plan",
+    "plans": {
+      "basic": {
+        "name": "Basic",
+        "price": "$19",
+        "description": "Perfect for small optical stores",
+        "features": [
+          "1 Branch",
+          "Basic Inventory",
+          "Sales Tracking"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "$49",
+        "description": "For growing optical businesses",
+        "features": [
+          "Up to 5 Branches",
+          "Advanced Inventory",
+          "Reports & Analytics"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Contact Us",
+        "description": "Custom plan for large enterprises",
+        "features": [
+          "Unlimited Branches",
+          "Custom Features",
+          "Priority Support"
+        ]
+      }
     }
   }
+}
