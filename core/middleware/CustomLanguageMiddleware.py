@@ -6,7 +6,7 @@ class CustomLanguageMiddleware:
 
     def __call__(self, request):
         # الأولوية: Header > Cookie > Default
-        lang = request.headers.get('Accept-Language') or request.COOKIES.get('django_language') or 'en'
+        lang = request.headers.get('Accept-Language') or request.COOKIES.get('language') or 'en'
         translation.activate(lang)
         request.LANGUAGE_CODE = lang
 

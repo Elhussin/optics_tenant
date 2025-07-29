@@ -17,13 +17,23 @@
     "emailLabel": "البريد الالكتروني",
     "emailPlaceholder": "أدخل البريد الالكتروني",
     "passwordLabel": "كلمة المرور",
-    "passwordPlaceholder": "أدخل كلمة المرور"
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "planLabel": "الخطة",
+    "planPlaceholder": "اختر الخطة",
+    "planOption": {
+      "trial": "تجربة مجانية",
+      "basic": "أساسية",
+      "pro": "احترافية",
+      "enterprise": "مؤسسات"
+    }
+  
   },
   "register": {
     "title": "تسجيل",
     "description": "Register to O-S-M",
     "button": "تسجيل",
     "message": "تم التسجيل بنجاح"
+
   },
   "profile": {
     "title": "الملف الشخصي",

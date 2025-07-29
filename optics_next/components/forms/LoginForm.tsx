@@ -131,19 +131,18 @@ export default function LoginForm(props: formRequestProps) {
             </div>
             {istenant && (
               <div>
-                <label className="label">Plan</label>
+                <label className="label">{t('planLabel')}</label>
                 <select
                   {...register("plan")}
-                  className="input-text"
-                  placeholder={t('planPlaceholder')}
+                  className="select"
                   value={plan}
                   onChange={(e) => setPlan(e.target.value)}
                 >
-                  <option value="">Select Plan</option>
-                  <option value="trial">Trial</option>
-                  <option value="basic">Basic</option>
-                  <option value="pro">Pro</option>
-                  <option value="enterprise">Enterprise</option>
+                  <option className="option" value="">{t('planPlaceholder')}</option>
+                  <option className="option" value="trial">{t('planOption.trial')}</option>
+                  <option className="option" value="basic">{t('planOption.basic')}</option>
+                  <option className="option" value="premium">{t('planOption.pro')}</option>
+                  <option className="option" value="enterprise">{t('planOption.enterprise')}</option>
                 </select>
                 {errors.plan && (
                   <p className="error-text">

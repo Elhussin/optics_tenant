@@ -34,9 +34,10 @@ export default function MainLayout({ mainContent }: Props) {
     </div>
   )}
 
+{/*   <div className={clsx("flex flex-1 min-h-0", isVisible ? "md:ml-80" : "md:ml-0", isVisible&&isRTL ? "md:mr-80" : "md:mr-0")}>
+ */}
 
-
-  <div className={clsx("flex flex-1 min-h-0", isVisible ? "md:ml-80" : "md:ml-0", isVisible&&isRTL ? "md:mr-80" : "md:mr-0")}>
+  <div className={clsx("flex flex-1 min-h-0")}>
     {showAside && <Aside />} 
 
     <main className="main">

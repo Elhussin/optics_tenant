@@ -1,6 +1,5 @@
 // lib/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-// import { getCookie } from 'cookies-next'; // أو أي مكتبة تستخدمها
 import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";

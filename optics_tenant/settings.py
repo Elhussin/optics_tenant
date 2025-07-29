@@ -106,6 +106,7 @@ MIDDLEWARE = [
     'simple_history.middleware.HistoryRequestMiddleware',
     'django.middleware.locale.LocaleMiddleware',  
     'core.middleware.CustomLanguageMiddleware.CustomLanguageMiddleware',    
+    'core.middleware.PlanValidationMiddleware.PlanValidationMiddleware',
 ]
 
 
@@ -147,7 +148,7 @@ REST_FRAMEWORK = {
 
 CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
 CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
-CORS_ALLOW_HEADERS = config("CORS_ALLOW_HEADERS", default="accept,accept-encoding,authorization,content-type,dnt,origin,user-agent,x-csrftoken,x-requested-with").split(',')
+CORS_ALLOW_HEADERS = config("CORS_ALLOW_HEADERS").split(',')
 CORS_ALLOW_METHODS = config("CORS_ALLOW_METHODS", default="DELETE,GET,OPTIONS,PATCH,POST,PUT").split(',')
 CORS_ALLOWED_ORIGIN_REGEXES = config("CORS_ALLOWED_ORIGIN_REGEXES", default=r"^http://localhost:3000$,^http://.+\.localhost:3000$", cast=lambda v: v.split(","))
 
