@@ -133,7 +133,7 @@ export default function LoginForm(props: formRequestProps) {
               <div>
                 <label className="label">{t('planLabel')}</label>
                 <select
-                  {...register("plan")}
+                  {...register("requested_plan")}
                   className="select"
                   value={plan}
                   onChange={(e) => setPlan(e.target.value)}
@@ -144,9 +144,9 @@ export default function LoginForm(props: formRequestProps) {
                   <option className="option" value="premium">{t('planOption.pro')}</option>
                   <option className="option" value="enterprise">{t('planOption.enterprise')}</option>
                 </select>
-                {errors.plan && (
+                {errors.requested_plan && (
                   <p className="error-text">
-                    {errors.plan.message as string}
+                    {errors.requested_plan.message as string}
                   </p>
                 )}
               </div>

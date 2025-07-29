@@ -3,7 +3,7 @@ import { useTranslations } from 'next-intl';
 import {Link} from '@/app/i18n/navigation';
 export default function PricingSection() {
   const t = useTranslations('pricingSection');
-  const plans = ['basic', 'pro', 'enterprise'] as const;
+  const plans = ['trial','basic', 'premium', 'enterprise'] as const;
 
   return (
     <section className="py-20 bg-gray-50 dark:bg-gray-900" id="pricing">
@@ -12,7 +12,7 @@ export default function PricingSection() {
           {t('title')}
         </h2>
 
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3">
           {plans.map((plan) => {
             const data = t.raw(`plans.${plan}`) as {
               name: string;

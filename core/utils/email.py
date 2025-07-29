@@ -81,5 +81,5 @@ def send_password_change_email(email):
 
 
 def paid_until_date():
-    return timezone.now().date() + relativedelta(years=1)
+    return timezone.now().date() + relativedelta(weeks=1)
 

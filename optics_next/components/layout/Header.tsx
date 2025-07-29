@@ -14,8 +14,8 @@ export default function Header() {
     <div className="flex justify-center sm:justify-start">
       <Link href="/" className="p-0">
         <Image
-          className="border rounded-full bg-amber-200"
-          src="/media/logo-1.png"
+          className="border rounded-full bg-amber-200 border-2"
+          src="/media/logo.png"
           alt="logo"
           width={60}
           height={60}
