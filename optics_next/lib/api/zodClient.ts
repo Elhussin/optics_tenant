@@ -1886,6 +1886,13 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ msg: z.string() }).passthrough();
 const TokenRefreshError = z.object({ error: z.string() }).passthrough();
+const PasswordResetSuccessResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
+const PasswordResetBadRequest = z
+  .object({ email: z.array(z.string()) })
+  .partial()
+  .passthrough();
 const RoleEnum = z.enum([
   "ADMIN",
   "BRANCH_MANAGER",
@@ -2109,6 +2116,8 @@ export const schemas = {
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
+  PasswordResetSuccessResponse,
+  PasswordResetBadRequest,
   RoleEnum,
   User,
   Unauthorized,
@@ -5074,9 +5083,51 @@ export const endpoints = makeApi([
     response: z.void(),
   },
   {
+    method: "get",
+    path: "/api/tenants/client/",
+    alias: "tenants_client_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/tenants/create-paypal-order/",
+    alias: "tenants_create_paypal_order_create",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/domain/",
+    alias: "tenants_domain_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/execute-paypal-order/",
+    alias: "tenants_execute_paypal_order_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/paypal/cancel/",
+    alias: "tenants_paypal_cancel_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
     method: "post",
     path: "/api/tenants/register/",
     alias: "tenants_register_create",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/subscription-plan/",
+    alias: "tenants_subscription_plan_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
@@ -5137,8 +5188,22 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/users/password-reset/",
     alias: "users_password_reset_create",
+    description: `Request password reset`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: PasswordResetBadRequest,
+      },
+    ],
   },
   {
     method: "get",
@@ -5293,3 +5358,8 @@ export const endpoints = makeApi([
   },
 ]);
 
+export const api = new Zodios(endpoints);
+
+export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+  return new Zodios(baseUrl, endpoints, options);
+}

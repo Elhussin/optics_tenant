@@ -23,9 +23,9 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'is_active', 'is_staff', 'role', 'password',
-            'is_deleted', 'deleted_at', 'phone',
+            'is_deleted', 'deleted_at', 'phone', 'client'
         ]
-        read_only_fields = ['id', 'deleted_at']
+        read_only_fields = ['id', 'deleted_at','client']
 
     def create(self, validated_data):
         password = validated_data.pop("password")

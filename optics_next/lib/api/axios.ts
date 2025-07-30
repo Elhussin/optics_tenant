@@ -4,7 +4,7 @@ import { endpoints } from "./zodClient";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { getCookie } from "@/lib/utils/getCookie";
-
+import { apiConfig } from "./apiConfig";
 
 const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
 const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
@@ -19,11 +19,7 @@ interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
   customRequest: (alias: string, data?: any) => Promise<any>;
 }
 
-const baseUrl = getBaseUrl();
-
-
 const axiosInstance = axios.create({
-  baseURL: baseUrl,
   withCredentials: true,
   timeout: 15000,
   headers: {
@@ -48,6 +44,8 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const language = getCookie(LANGUAGE_COOKIE_NAME) || DEFAULT_LANGUAGE;
   const country = getCookie("country") || DEFAULT_COUNTRY;
   const currency = getCookie("currency") || DEFAULT_CURRENCY;
+  // 🔄 url dynamic
+  config.baseURL = getBaseUrl(undefined, apiConfig.ignoreSubdomain); 
 
   setHeader(config, CSRF_HEADER_NAME, csrfToken);
   setHeader(config, "X-Tenant", tenant);
@@ -90,8 +88,9 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+ 
 
-export const api: CustomZodiosInstance = new Zodios(baseUrl, endpoints, {
+export const api: CustomZodiosInstance = new Zodios(endpoints, {
   axiosInstance,
 }) as CustomZodiosInstance;
 
@@ -169,3 +168,4 @@ declare module "@zodios/core" {
 
 export default api;
 
+export {axiosInstance}

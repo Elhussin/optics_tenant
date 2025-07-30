@@ -159,54 +159,40 @@
     "Careers": "Careers",
     "Blog": "Blog"
   },
+
   "pricingSection": {
     "title": "Choose Your Plan",
+    "free": "Free",
+    "choosePlan": "Choose Plan",
+    "contactUs": "Contact Us",
+    "duration": "Duration",
+    "days": "days",
+    "maxUsers": "Max Users",
+    "maxBranches": "Max Branches",
+    "maxProducts": "Max Products",
     "plans": {
       "trial": {
         "name": "Trial",
-        "price": "$0",
-        "description": "Free trial for 30 days",
-        "features": [
-          "1 User",
-          "1 Branch",
-          "Basic Inventory",
-          "Sales Tracking"
-        ]
+        "description": "Try all features for free for a limited time",
+        "features": ["Basic Inventory", "Sales Tracking"]
       },
       "basic": {
         "name": "Basic",
-        "price": "$19",
-        "description": "Perfect for small optical stores",
-        "features": [
-          "Up to 5 Users",
-          "Up to 2 Branches",
-          "Basic Inventory",
-          "Sales Tracking"
-
-        ]
+        "description": "For small businesses",
+        "features": ["Basic Inventory", "Sales Tracking"]
       },
       "premium": {
         "name": "Premium",
-        "price": "$49",
-        "description": "For growing optical businesses",
-        "features": [
-          "Up to 50 Users",
-          "Up to 5 Branches",
-          "Advanced Inventory",
-          "Reports & Analytics"
-        ]
+        "description": "For growing businesses",
+        "features": ["Advanced Inventory", "Reports & Analytics"]
       },
       "enterprise": {
         "name": "Enterprise",
-        "price": "Contact Us",
-        "description": "Custom plan for large enterprises",
-        "features": [
-          "Unlimited Users",
-          "Unlimited Branches",
-          "Custom Features",
-          "Priority Support"
-        ]
+        "description": "For large enterprises",
+        "features": [ "Custom Features", "Priority Support"]
       }
     }
   }
 }
+
+

@@ -7,16 +7,19 @@ from django.utils.text import slugify
 from django.conf import settings
 from django.utils import timezone
 from django.http import HttpResponseForbidden
-
 from tenants.models import PendingTenantRequest, Client, Domain, PLAN_LIMITS
-from tenants.serializers import RegisterTenantSerializer, CreatePayPalOrderSerializer
+from tenants.serializers import RegisterTenantSerializer, CreatePayPalOrderSerializer ,PaymentSerializer,ClientSerializer ,DomainSerializer,SubscriptionPlanSerializer
 from tenants.paypal_service import create_paypal_order
 from django_tenants.utils import schema_context, get_tenant
-
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 from core.utils.email import send_activation_email, send_message_acount_activated
 from datetime import timedelta, date
 from dateutil.relativedelta import relativedelta
 import paypalrestsdk
+from rest_framework import viewsets, permissions
+from .models import Client
+
 
 # ==============================================================
 # دالة واحدة لتحديث الاشتراك بعد الدفع
@@ -113,7 +116,8 @@ class ActivateTenantView(APIView):
                 username=pending.name,
                 email=pending.email,
                 password=pending.password,
-                role='owner'
+                role='owner',
+                client=tenant
             )
 
         pending.is_activated = True
@@ -203,3 +207,69 @@ class PayPalWebhookView(APIView):
 class PayPalCancelView(APIView):
     def get(self, request):
         return Response({"detail": "Payment cancelled."})
+
+
+
+
+class ClientViewSet(viewsets.ModelViewSet):
+    queryset = Client.objects.all()
+    print("queryset",queryset)
+    serializer_class = ClientSerializer
+    permission_classes = [permissions.IsAuthenticated]  # ⬅️ يمنع الوصول إلا مع جلسة مستخدم نشطة
+
+    def get_queryset(self):
+        """
+        إرجاع الـ Client الخاص بالمستخدم الحالي فقط
+        """
+        print("DEBUG: User:", self.request.user)
+        print("DEBUG: Authenticated:", self.request.user.is_authenticated)
+        print("DEBUG: Client:", getattr(self.request.user, "client", None))
+        user_client = self.request.user.client  # الـ client المرتبط بالمستخدم
+        print("user_client",user_client)        
+        if user_client is None:
+            # لو المستخدم ما عندوش client → ما يرجع حاجة
+            return Client.objects.none()
+
+        # عرض الـ client الخاص به فقط
+        return Client.objects.filter(id=user_client.id)
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        منع الوصول إذا حاول يجيب Client لا يخصه
+        """
+        instance = self.get_object()
+        if request.user.client is None or instance.id != request.user.client.id:
+            raise PermissionDenied("You do not have permission to view this client.")
+        return super().retrieve(request, *args, **kwargs)
+
+    def perform_create(self, serializer):
+        """
+        منع إنشاء Client جديد إلا إذا كان نفس client المستخدم
+        """
+        if self.request.user.client is None:
+            raise PermissionDenied("You do not have permission to create a client.")
+        serializer.save(id=self.request.user.client.id)
+
+
+
+class DomainView(APIView):
+    def get(self, request):
+        tenant = get_tenant(request)
+        if tenant.schema_name != 'public':
+            return HttpResponseForbidden("Not allowed on tenant domains.")
+        
+        serializer = DomainSerializer(tenant)
+        return Response(serializer.data)
+
+
+class SubscriptionPlanView(APIView):
+    def get(self, request):
+        tenant = get_tenant(request)
+        if tenant.schema_name != 'public':
+            return HttpResponseForbidden("Not allowed on tenant domains.")
+        
+        serializer = SubscriptionPlanSerializer(tenant)
+        return Response(serializer.data)
+
+
+

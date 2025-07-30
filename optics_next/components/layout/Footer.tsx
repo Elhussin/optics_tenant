@@ -1,5 +1,5 @@
 "use client"
-import { navUrl, socialLinks, otherLinks } from "@/config/URLDATA"
+import { navUrl, socialLinks, otherLinks } from "@/constants/URLDATA"
 import { Link } from "@/app/i18n/navigation";
 import {useTranslations} from 'next-intl';
 export default function Footer() {
