@@ -6,7 +6,7 @@ class Command(BaseCommand):
     help = "Create the public tenant with custom data"
 
     def add_arguments(self, parser):
-        parser.add_argument('--domain', type=str, default='127.0.0.1', help='Domain name for the public tenant')
+        parser.add_argument('--domain', type=str, default='localhost', help='Domain name for the public tenant')
         parser.add_argument('--name', type=str, default='Main Site', help='Name of the tenant')
         parser.add_argument('--paid_until', type=str, default='2030-12-31', help='Paid until date in YYYY-MM-DD')
         parser.add_argument('--trial', action='store_true', help='Set tenant as on trial')

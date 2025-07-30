@@ -29,7 +29,6 @@ PLAN_LIMITS = {
 # -----------------------
 
 def get_expiration_date(days=1):
-    """حساب تاريخ الانتهاء بعد عدد أيام"""
     return timezone.now() + timedelta(days=days)
 
 

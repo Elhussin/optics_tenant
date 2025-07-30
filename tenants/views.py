@@ -97,7 +97,7 @@ class ActivateTenantView(APIView):
             max_users=PLAN_LIMITS['trial']['max_users'],
             max_products=PLAN_LIMITS['trial']['max_products'],
             max_branches=PLAN_LIMITS['trial']['max_branches'],
-            paid_until=timezone.now().date() + timedelta(days=PLAN_LIMITS['trial']['time']),
+            paid_until=timezone.now().date() + timedelta(days=PLAN_LIMITS['trial']['duration_days']),
             on_trial=True,
         )
 
