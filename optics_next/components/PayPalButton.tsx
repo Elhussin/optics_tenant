@@ -29,14 +29,20 @@ export default function PayPalButton({ clientId, plan, direction, label }: PayPa
       );
 
       const data = res.data;
+      console.log("data", data);
       if (data.approval_url) {
-        window.location.href = data.approval_url;
+        console.log("data.approval_url", data.approval_url);
+        window.open(data.approval_url, '_blank');
+        // window.location.href = data.approval_url;
       } else {
+
+        console.log("Failed to create PayPal order",data);
         alert("Failed to create PayPal order");
       }
     } catch (err) {
+      console.log("err", err);
       console.error("Error creating PayPal order", err);
-      alert("Error creating PayPal order");
+      // alert("Error creating PayPal order");
     } finally {
       setLoading(false);
     }

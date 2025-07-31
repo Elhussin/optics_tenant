@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/context/userContext';
 import { getClientData } from './Client';
 import PricingPlans from '@/components/PricingPlans';
-import { Users, Store, CreditCard, Calendar, AlertTriangle } from 'lucide-react';
-
+import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';
+import { Loading4 } from '@/components/ui/loding';
 export default function UserProfile() {
   const { user } = useUser();
   const [clientData, setClientData] = useState<any>(null);
@@ -14,12 +14,13 @@ export default function UserProfile() {
     if (user?.role === 'owner' && user?.client) {
       (async () => {
         const data = await getClientData(user.client);
+        console.log("clieant", data);
         setClientData(data);
       })();
     }
   }, [user]);
 
-  if (!user) return <p>Loading...</p>;
+  if (!user) return <Loading4 />;
 
   const today = new Date();
   const paidUntil = clientData ? new Date(clientData.paid_until) : null;
@@ -93,7 +94,7 @@ export default function UserProfile() {
           </div>
 
           {/* تنبيه قرب انتهاء الاشتراك */}
-          {daysLeft !== null && daysLeft <= 7 && (
+          {daysLeft !== null && daysLeft <= 7 &&  daysLeft > 0 && (
             <div className="mt-2 p-2 bg-yellow-100 text-yellow-700 rounded flex items-center gap-2">
               <AlertTriangle className="w-4 h-4" /> Your subscription is about to expire
             </div>
@@ -105,7 +106,7 @@ export default function UserProfile() {
           )}
           {daysLeft !== null && daysLeft > 7 && (
             <div className="mt-2 p-2 bg-green-100 text-green-700 rounded flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4" /> Your subscription is active
+              <Check className="w-4 h-4" /> Your subscription is active
 
             </div>
           )}
@@ -114,7 +115,7 @@ export default function UserProfile() {
 
       {/* عرض خطط الترقية إذا كانت الخطة trial أو الاشتراك منتهي */}
       {user.role === 'owner' && clientData && (clientData.plan === 'trial' || daysLeft <= 0) && (
-        <PricingPlans clientId={String(user.uuid)} />
+        <PricingPlans clientId={String(clientData.uuid)} />
       )}
     </div>
   );

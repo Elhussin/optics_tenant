@@ -30,11 +30,11 @@ class Command(BaseCommand):
                 User = get_user_model()
                 if User.objects.filter(username=username).exists():
                     self.stdout.write(self.style.WARNING(
-                        f"Superuser '{username}' already exists in schema '{sche ma_name}'."
+                        f"Superuser '{username}' already exists in schema '{schema_name}'."
                     ))
                     return
 
-                User.objects.create_superuser(username=username, email=email, password=password)
+                User.objects.create_superuser(username=username, email=email, password=password,client_id=config['client_id'])
 
                 self.stdout.write(self.style.SUCCESS(
                     f"Superuser '{username}' created successfully in schema '{schema_name}'."

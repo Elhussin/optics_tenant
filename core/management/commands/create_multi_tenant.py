@@ -97,7 +97,7 @@ class Command(BaseCommand):
                         f"⚠️ Superuser '{username}' already exists in schema '{schema_name}'. Skipping creation."
                     ))
                 else:
-                    User.objects.create_superuser(username=username, email=email, password=password)
+                    User.objects.create_superuser(username=username, email=email, password=password,client_id=config['client_id'])
                     self.stdout.write(self.style.SUCCESS(
                         f"✅ Superuser '{username}' created in schema '{schema_name}'."
                     ))

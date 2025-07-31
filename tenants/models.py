@@ -18,7 +18,7 @@ PLAN_CHOICES = [
 
 # خطة افتراضية في حال ما وجدت في قاعدة البيانات
 PLAN_LIMITS = {
-    'trial':      {'max_users': 1,   'max_branches': 1,  'max_products': 200,    'duration_days': 7,   'price_month': 0,   'price_year': 0},
+    'trial':      {'max_users': 1,   'max_branches': 1,  'max_products': 200,    'duration_days': 30,   'price_month': 0,   'price_year': 0},
     'basic':      {'max_users': 5,   'max_branches': 2,  'max_products': 1000,   'duration_days': 30,  'price_month': 19,  'price_year': 190},
     'premium':    {'max_users': 50,  'max_branches': 5,  'max_products': 10000,  'duration_days': 30,  'price_month': 49,  'price_year': 490},
     'enterprise': {'max_users': 200, 'max_branches': 20, 'max_products': 100000, 'duration_days': 365, 'price_month': 99,  'price_year': 990}
@@ -124,11 +124,19 @@ class Domain(DomainMixin):
         return self.domain
 
 
+# tenants/models.py
+
 class Payment(models.Model):
     PAYMENT_METHODS = [
         ('credit_card', _("Credit Card")),
         ('bank_transfer', _("Bank Transfer")),
         ('paypal', _("PayPal")),
+    ]
+
+    STATUS_CHOICES = [
+        ("success", _("Success")),
+        ("failed", _("Failed")),
+        ("pending", _("Pending")),
     ]
 
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="payments")
@@ -139,19 +147,25 @@ class Payment(models.Model):
     plan = models.CharField(max_length=20, choices=PLAN_CHOICES)
     start_date = models.DateField()
     end_date = models.DateField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.client.name} - {self.amount} {self.currency} ({self.plan})"
+        return f"{self.client.name} - {self.amount} {self.currency} ({self.plan}) [{self.status}]"
 
-    def save(self, *args, **kwargs):
-        """تحديث اشتراك العميل تلقائي بعد الدفع"""
-        super().save(*args, **kwargs)
-        # تحديث بيانات العميل
+    def apply_to_client(self):
+        """تحديث بيانات العميل لو الدفع ناجح"""
+        if self.status != "success":
+            return
+
         client = self.client
         client.plan = self.plan
         client.paid_until = self.end_date
-        client.on_trial = (self.plan == 'trial')
+        client.on_trial = False #(self.plan == 'trial')
         client.is_active = True
-        client.apply_plan_limits()
+
+        # إذا عندك دالة تحدد limits من الخطة
+        if hasattr(client, "apply_plan_limits"):
+            client.apply_plan_limits()
+
         client.save()

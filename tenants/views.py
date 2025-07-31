@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.http import HttpResponseForbidden
 from tenants.models import PendingTenantRequest, Client, Domain, PLAN_LIMITS
 from tenants.serializers import RegisterTenantSerializer, CreatePayPalOrderSerializer ,PaymentSerializer,ClientSerializer ,DomainSerializer,SubscriptionPlanSerializer
-from tenants.paypal_service import create_paypal_order
+from tenants.paypal_service import create_paypal_order,update_subscription_after_payment
 from django_tenants.utils import schema_context, get_tenant
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -19,34 +19,11 @@ from dateutil.relativedelta import relativedelta
 import paypalrestsdk
 from rest_framework import viewsets, permissions
 from .models import Client
+from optics_tenant.config_loader import config
+import logging
 
-
-# ==============================================================
-# دالة واحدة لتحديث الاشتراك بعد الدفع
-# ==============================================================
-
-def update_subscription_after_payment(client, plan):
-    today = timezone.now().date()
-
-    # لو الاشتراك لسه شغال، نمد من تاريخ الانتهاء
-    start_date = client.paid_until if client.paid_until and client.paid_until > today else today
-
-    # تحديد مدة الخطة
-    duration_days = PLAN_LIMITS[plan]['time']
-    end_date = start_date + timedelta(days=duration_days)
-
-    # تحديث بيانات العميل
-    client.plan = plan
-    client.paid_until = end_date
-    client.max_users = PLAN_LIMITS[plan]['max_users']
-    client.max_products = PLAN_LIMITS[plan]['max_products']
-    client.max_branches = PLAN_LIMITS[plan]['max_branches']
-    client.is_active = True
-    client.on_trial = (plan == 'trial')
-    client.save()
-
-    return client
-
+# logger = logging.loggers('paypal')
+logger = logging.getLogger('paypal')
 
 # ==============================================================
 # تسجيل العميل الجديد (trial فقط)
@@ -139,7 +116,7 @@ class CreatePayPalOrderView(APIView):
             client = serializer.validated_data["client"]
             plan = serializer.validated_data["plan"]
             period = serializer.validated_data["period"]
-
+            logger.info(f"Creating PayPal order for client: {client.name}, plan: {plan}, period: {period}")
             try:
                 approval_url = create_paypal_order(client, plan, period)
                 return Response({"approval_url": approval_url})
@@ -149,32 +126,68 @@ class CreatePayPalOrderView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
 # ==============================================================
 # إكمال الدفع بعد عودة المستخدم من PayPal
 # ==============================================================
+FRONTEND_URL=config("FRONTEND_URL")
 
 class PayPalExecuteView(APIView):
-    def get(self, request):
-        payment_id = request.query_params.get("paymentId")
-        payer_id = request.query_params.get("PayerID")
+    permission_classes = [AllowAny]
 
-        payment = paypalrestsdk.Payment.find(payment_id)
+    def post(self, request):
+        payment_id = request.data.get("paymentId")
+        payer_id = request.data.get("PayerID")
+        plan = request.data.get("plan")
+        period = request.data.get("period")
+        amount = request.data.get("amount")
+        client_id = request.data.get("client_id")
+        print("request.data",request.data)
+        if not all([payment_id, payer_id, plan, period, client_id]):
+            logger.error(f"Missing required fields: payment_id={payment_id}, payer_id={payer_id}, plan={plan}, period={period}, client_id={client_id}, amount={amount}")
+            return Response({"error": "Missing required fields"}, status=400)
+        
+        try:
+            payment = paypalrestsdk.Payment.find(payment_id)
+        except Exception as e:
+            Payment.objects.create(
+                client_id=client_id,
+                amount=0,
+                currency="USD",
+                method="paypal",
+                transaction_id=payment_id,
+                plan=plan,
+                start_date=now().date(),
+                end_date=now().date(),
+                status="failed"
+            )
+            logger.error(f"PayPal error while finding payment {payment_id}: {str(e)}")
+            return Response({"error": f"PayPal error: {str(e)}"}, status=400)
+
 
         if payment.execute({"payer_id": payer_id}):
-            # تحديد الخطة من بيانات الدفع
-            plan = payment.transactions[0].item_list.items[0].sku
-            client_id = payment.transactions[0].custom  # لازم نرسل client_id أثناء إنشاء الطلب
-
-            try:
-                client = Client.objects.get(id=client_id)
-            except Client.DoesNotExist:
-                return Response({"error": "Client not found"}, status=404)
-
-            update_subscription_after_payment(client, plan)
-
-            return Response({"detail": "Payment completed successfully."})
-
-        return Response({"error": "Payment execution failed."}, status=400)
+            logger.info(f"Payment executed successfully for payment {payment_id}")
+            client = Client.objects.get(id=client_id)
+            # payment.duration_months = calculate_duration_from_amount(payment)
+            update_subscription_after_payment(client, plan, period,payment.amount,payment_id)
+            return Response({
+                "detail": "Payment executed successfully. Subscription will be updated via webhook."
+            }, status=200)
+        else:
+            logger.error(f"Payment execution failed: {payment.error}")
+            Payment.objects.create(
+                client_id=client_id,
+                amount=0,
+                currency="USD",
+                method="paypal",
+                transaction_id=payment_id,
+                plan=plan,
+                start_date=now().date(),
+                end_date=now().date(),
+                status="failed"
+            )
+            return Response({"error": "Payment execution failed"}, status=400)
 
 
 # ==============================================================
@@ -186,27 +199,67 @@ class PayPalWebhookView(APIView):
 
     def post(self, request):
         event = request.data
-        if event.get("event_type") == "PAYMENT.SALE.COMPLETED":
-            plan = event["resource"]["transactions"][0]["item_list"]["items"][0]["sku"]
-            client_id = event["resource"].get("custom")
+        event_type = event.get("event_type")
+        logger.info(f"Received PayPal webhook: {event.get('event_type')}")
 
+        if event_type == "PAYMENT.SALE.COMPLETED":
             try:
+                plan = event["resource"]["transactions"][0]["item_list"]["items"][0]["sku"]
+                client_id = event["resource"].get("custom")
+                amount = event["resource"]["amount"]["total"]
+                currency = event["resource"]["amount"]["currency"]
+                transaction_id = event["resource"]["id"]
+
+                logger.info(f"Processing PayPal webhook: plan={plan}, client_id={client_id}, amount={amount}, currency={currency}, transaction_id={transaction_id}")
+
+                from tenants.models import Client
                 client = Client.objects.get(id=client_id)
-            except Client.DoesNotExist:
-                return Response({"error": "Client not found"}, status=404)
+                logger.info(f"Found client: {client.name}")
+            except Exception as e:
+                logger.error(f"Error processing PayPal webhook: {str(e)}")
+                return Response({"error": str(e)}, status=400)
 
-            update_subscription_after_payment(client, plan)
+            from django.utils.timezone import now
+            from dateutil.relativedelta import relativedelta
+            today = now().date()
 
-        return Response({"status": "ok"})
+            # تحديد مدة الاشتراك
+            if plan == 'trial':
+                end_date = today + relativedelta(days=7)
+            elif plan == 'basic':
+                end_date = today + relativedelta(months=1)
+            elif plan == 'premium':
+                end_date = today + relativedelta(months=6)
+            elif plan == 'enterprise':
+                end_date = today + relativedelta(years=1)
 
+            # إنشاء الدفع وتحديث العميل
+            payment = Payment.objects.create(
+                client=client,
+                amount=amount,
+                currency=currency,
+                method="paypal",
+                transaction_id=transaction_id,
+                plan=plan,
+                start_date=today,
+                end_date=end_date,
+                status="success"
+            )
+            payment.apply_to_client()
+            logger.info(f"Payment processed successfully for client: {client.name}")
+            return Response({"status": "success"})
+
+        return Response({"status": "ignored"})
 
 # ==============================================================
 # إلغاء الدفع
 # ==============================================================
 
 class PayPalCancelView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
-        return Response({"detail": "Payment cancelled."})
+        return redirect(FRONTEND_URL + "/paypal/cancel")
 
 
 
@@ -221,9 +274,6 @@ class ClientViewSet(viewsets.ModelViewSet):
         """
         إرجاع الـ Client الخاص بالمستخدم الحالي فقط
         """
-        print("DEBUG: User:", self.request.user)
-        print("DEBUG: Authenticated:", self.request.user.is_authenticated)
-        print("DEBUG: Client:", getattr(self.request.user, "client", None))
         user_client = self.request.user.client  # الـ client المرتبط بالمستخدم
         print("user_client",user_client)        
         if user_client is None:

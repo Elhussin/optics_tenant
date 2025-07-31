@@ -256,3 +256,46 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'dj_rest_auth.serializers.LoginSerializer',
 }
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    # formatters
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name}: {message}',
+            'style': '{',
+        },
+    },
+
+    # handlers
+    'handlers': {
+        'paypal_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'paypal.log'),
+            'formatter': 'verbose',
+        },
+        'custom_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'custom.log'),
+            'formatter': 'verbose',
+        },
+    },
+
+    # loggers
+    'loggers': {
+        'paypal': {  # logger name
+            'handlers': ['paypal_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'custom': {  # جديد
+            'handlers': ['custom_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

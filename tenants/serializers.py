@@ -95,11 +95,63 @@ class SubscriptionPlanSerializer(serializers.ModelSerializer):
         model = SubscriptionPlan
         fields = '__all__'
 
-class PaymentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Payment
-        fields = '__all__'
-        read_only_fields = ['created_at']
+# class PaymentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Payment
+#         fields = '__all__'
+#         read_only_fields = ['created_at']
+
+class PayPalPaymentSerializer(serializers.Serializer):
+    client_id = serializers.UUIDField()
+    plan = serializers.ChoiceField(choices=[(p, p.title()) for p in PLAN_LIMITS.keys()])
+    transaction_id = serializers.CharField()
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+    currency = serializers.CharField(default="USD")
+
+    def validate(self, data):
+        # التحقق من أن العميل موجود
+        try:
+            client = Client.objects.get(uuid=data["client_id"])
+        except Client.DoesNotExist:
+            raise serializers.ValidationError({"client_id": "Client not found"})
+
+        data["client"] = client
+        return data
+
+    def create(self, validated_data):
+        client = validated_data["client"]
+        plan = validated_data["plan"]
+
+        # جلب تفاصيل الخطة
+        plan_limits = PLAN_LIMITS[plan]
+        duration_days = plan_limits['duration_days']
+
+        start_date = timezone.now().date()
+        end_date = start_date + timedelta(days=duration_days)
+
+        # إنشاء سجل الدفع
+        payment = Payment.objects.create(
+            client=client,
+            amount=validated_data["amount"],
+            currency=validated_data["currency"],
+            method="paypal",
+            transaction_id=validated_data["transaction_id"],
+            plan=plan,
+            start_date=start_date,
+            end_date=end_date
+        )
+
+        # تحديث بيانات العميل
+        client.plan = plan
+        client.paid_until = end_date
+        client.max_users = plan_limits['max_users']
+        client.max_branches = plan_limits['max_branches']
+        client.max_products = plan_limits['max_products']
+        client.on_trial = False
+        client.is_active = True
+        client.save()
+
+        return payment
 
 
 class CreatePayPalOrderSerializer(serializers.Serializer):
