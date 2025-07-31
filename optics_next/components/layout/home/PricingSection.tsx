@@ -34,10 +34,10 @@ export default function PricingSection() {
                     {data.name}
                   </h3>
                   <p className="text-3xl font-bold my-2 text-primary">
-                    {planData.price_month === 0 ? t('free') : `$${planData.price_month}/mo`}
+                    {planData.price_month === 0 ? t('free') : `$${planData.price_month}/${t('month')}`}
                   </p>
                   <p className="text-3xl font-bold my-2 text-primary">
-                    {planData.price_year === 0 ?"" : `$${planData.price_year}/year`}
+                    {planData.price_year === 0 ?"" : `$${planData.price_year}/${t('year')}`}
                   </p>
                   <p className="text-gray-600 dark:text-gray-300 mb-4">{data.description}</p>
 

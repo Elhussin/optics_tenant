@@ -28,11 +28,11 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
               <div>
                 <h3 className="text-xl font-semibold mb-2 capitalize">{t(`plans.${plan}.name`)}</h3>
                 <p className="text-2xl font-bold text-blue-600 mb-4">
-                  ${details.price_month}/<span className="text-lg">mo</span>
+                  ${details.price_month}/<span className="text-lg">{t('month')}</span>
                 </p>
                 {details.price_year !== 0 && (
                   <p className="text-2xl font-bold text-blue-600 mb-4">
-                    ${details.price_year}/<span className="text-lg">year</span>
+                    ${details.price_year}/<span className="text-lg">{t('year')}</span>
                   </p>
                 )}
                 {/* <p className="text-sm text-gray-500 mb-4">
@@ -55,10 +55,14 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
                   ))}
                 </ul>
               </div>
-              <PayPalButton clientId={clientId} plan={plan} />
+              <div className="flex justify-center gap-4">
+                <PayPalButton clientId={clientId} plan={plan} direction="month" label={t('month')} />
+                <PayPalButton clientId={clientId} plan={plan} direction="year" label={t('year')} />
+              </div>
             </div>
           );
         })}
+        
       </div>
     </div>
   );

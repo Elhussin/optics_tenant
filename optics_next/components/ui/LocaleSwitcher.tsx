@@ -87,7 +87,9 @@ export default function LocaleSwitcher() {
 
     const newPath = pathSegments.join('/');
     router.push(newPath);
-    router.refresh();
+    router.refresh(); // إذا أردت إجبار إعادة جلب البيانات
+    // window.location.href = newPath    
+    // setLanguage(value);
   };
 
   return (

@@ -170,10 +170,12 @@
     "maxUsers": "Max Users",
     "maxBranches": "Max Branches",
     "maxProducts": "Max Products",
+    "month": "Month",
+    "year": "Year",
     "plans": {
       "trial": {
         "name": "Trial",
-        "description": "Try all features for free for a limited time",
+        "description": "Try all features for free for a limited time (1 month)",
         "features": ["Basic Inventory", "Sales Tracking"]
       },
       "basic": {

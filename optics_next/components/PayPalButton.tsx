@@ -8,13 +8,16 @@ import { apiConfig } from "@/lib/api/apiConfig";
 type PayPalButtonProps = {
   clientId: string;
   plan: string; // نوع الخطة المراد شراؤها
+  direction: "month" | "year";
+  label?: string;
 };
 
-export default function PayPalButton({ clientId, plan }: PayPalButtonProps) {
+export default function PayPalButton({ clientId, plan, direction, label }: PayPalButtonProps) {
   const [loading, setLoading] = useState(false);
-  const [period, setPeriod] = useState("month");
+  const [period, setPeriod] = useState("month")
 
   const createOrder = async () => {
+    setPeriod(direction);
     try {
       setLoading(true);
       apiConfig.ignoreSubdomain = true;
@@ -22,7 +25,7 @@ export default function PayPalButton({ clientId, plan }: PayPalButtonProps) {
 
       const res = await axiosInstance.post(
         `${baseUrl}/api/tenants/create-paypal-order/`,
-        { client: clientId, plan, period }
+        { client_id: clientId, plan, period }
       );
 
       const data = res.data;
@@ -45,7 +48,7 @@ export default function PayPalButton({ clientId, plan }: PayPalButtonProps) {
       disabled={loading}
       className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
     >
-      {loading ? "Processing..." : `Choose ${plan}`}
+      {loading ? "Processing..." : label || `${direction}`}
     </button>
   );
 }

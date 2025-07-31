@@ -98,12 +98,23 @@ export default function UserProfile() {
               <AlertTriangle className="w-4 h-4" /> Your subscription is about to expire
             </div>
           )}
+          {daysLeft !== null && daysLeft <= 0 && (
+            <div className="mt-2 p-2 bg-red-100 text-red-700 rounded flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" /> Your subscription is expired
+            </div>
+          )}
+          {daysLeft !== null && daysLeft > 7 && (
+            <div className="mt-2 p-2 bg-green-100 text-green-700 rounded flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4" /> Your subscription is active
+
+            </div>
+          )}
         </section>
       )}
 
       {/* عرض خطط الترقية إذا كانت الخطة trial أو الاشتراك منتهي */}
       {user.role === 'owner' && clientData && (clientData.plan === 'trial' || daysLeft <= 0) && (
-        <PricingPlans clientId={String(user.id)} />
+        <PricingPlans clientId={String(user.uuid)} />
       )}
     </div>
   );
