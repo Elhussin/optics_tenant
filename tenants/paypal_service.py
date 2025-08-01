@@ -134,3 +134,17 @@ def verify_paypal_transaction(transaction_id, access_token):
     response = requests.get(url, headers=headers)
     data = response.json()
     return data.get("status") == "COMPLETED"
+
+
+def log_payment(client_id, plan, transaction_id, status, amount=0):
+    Payment.objects.create(
+        client_id=client_id,
+        amount=amount,
+        currency="USD",
+        method="paypal",
+        transaction_id=transaction_id,
+        plan=plan,
+        start_date=now().date(),
+        end_date=now().date(),
+        status=status
+    )

@@ -8,8 +8,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 from tenants.models import PendingTenantRequest, Client, Domain, PLAN_LIMITS
-from tenants.serializers import RegisterTenantSerializer, CreatePayPalOrderSerializer ,PaymentSerializer,ClientSerializer ,DomainSerializer,SubscriptionPlanSerializer
-from tenants.paypal_service import create_paypal_order,update_subscription_after_payment
+from tenants.serializers import RegisterTenantSerializer, CreatePayPalOrderSerializer ,ClientSerializer ,DomainSerializer,SubscriptionPlanSerializer
+from tenants.paypal_service import create_paypal_order,update_subscription_after_payment,get_paypal_access_token,verify_paypal_transaction
 from django_tenants.utils import schema_context, get_tenant
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated
@@ -133,6 +133,79 @@ class CreatePayPalOrderView(APIView):
 # ==============================================================
 FRONTEND_URL=config("FRONTEND_URL")
 
+# class PayPalExecuteView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def post(self, request):
+#         payment_id = request.data.get("paymentId")
+#         payer_id = request.data.get("PayerID")
+#         plan = request.data.get("plan")
+#         period = request.data.get("period")
+#         amount = request.data.get("amount")
+#         client_id = request.data.get("client_id")
+#         print("request.data",request.data)
+#         if not all([payment_id, payer_id, plan, period, client_id]):
+#             logger.error(f"Missing required fields: payment_id={payment_id}, payer_id={payer_id}, plan={plan}, period={period}, client_id={client_id}, amount={amount}")
+#             return Response({"error": "Missing required fields"}, status=400)
+        
+
+#         access_token = get_paypal_access_token()
+#         print("access_token",access_token)
+        
+#         if not verify_paypal_transaction(payment_id, access_token):
+#             Payment.objects.create(
+#                 client_id=client_id,
+#                 amount=0,
+#                 currency="USD",
+#                 method="paypal",
+#                 transaction_id=payment_id,
+#                 plan=plan,
+#                 start_date=now().date(),
+#                 end_date=now().date(),
+#                 status="failed"
+#                 )
+#             return Response({"error": "Payment not completed"}, status=400)
+
+#         try:    
+#             payment = paypalrestsdk.Payment.find(payment_id)
+#         except Exception as e:
+#             Payment.objects.create(
+#                 client_id=client_id,
+#                 amount=0,
+#                 currency="USD",
+#                 method="paypal",
+#                 transaction_id=payment_id,
+#                 plan=plan,
+#                 start_date=now().date(),
+#                 end_date=now().date(),
+#                 status="failed"
+#             )
+#             logger.error(f"PayPal error while finding payment {payment_id}: {str(e)}")
+#             return Response({"error": f"PayPal error: {str(e)}"}, status=400)
+
+
+#         if payment.execute({"payer_id": payer_id}):
+#             logger.info(f"Payment executed successfully for payment {payment_id}")
+#             client = Client.objects.get(id=client_id)
+#             update_subscription_after_payment(client, plan, period,payment.amount,payment_id)
+#             return Response({
+#                 "detail": "Payment executed successfully. Subscription will be updated via webhook."
+#             }, status=200)
+#         else:
+#             logger.error(f"Payment execution failed: {payment.error}")
+#             Payment.objects.create(
+#                 client_id=client_id,
+#                 amount=0,
+#                 currency="USD",
+#                 method="paypal",
+#                 transaction_id=payment_id,
+#                 plan=plan,
+#                 start_date=now().date(),
+#                 end_date=now().date(),
+#                 status="failed"
+#             )
+#             return Response({"error": "Payment execution failed"}, status=400)
+
 class PayPalExecuteView(APIView):
     permission_classes = [AllowAny]
 
@@ -141,53 +214,35 @@ class PayPalExecuteView(APIView):
         payer_id = request.data.get("PayerID")
         plan = request.data.get("plan")
         period = request.data.get("period")
-        amount = request.data.get("amount")
         client_id = request.data.get("client_id")
-        print("request.data",request.data)
+
         if not all([payment_id, payer_id, plan, period, client_id]):
-            logger.error(f"Missing required fields: payment_id={payment_id}, payer_id={payer_id}, plan={plan}, period={period}, client_id={client_id}, amount={amount}")
+            logger.error("Missing required fields")
             return Response({"error": "Missing required fields"}, status=400)
-        
+
+        access_token = get_paypal_access_token()
+        if not verify_paypal_transaction(payment_id, access_token):
+            log_payment(client_id, plan, payment_id, "failed")
+            return Response({"error": "Payment not completed"}, status=400)
+
         try:
             payment = paypalrestsdk.Payment.find(payment_id)
+            amount = Decimal(payment.transactions[0].amount.total)
         except Exception as e:
-            Payment.objects.create(
-                client_id=client_id,
-                amount=0,
-                currency="USD",
-                method="paypal",
-                transaction_id=payment_id,
-                plan=plan,
-                start_date=now().date(),
-                end_date=now().date(),
-                status="failed"
-            )
-            logger.error(f"PayPal error while finding payment {payment_id}: {str(e)}")
-            return Response({"error": f"PayPal error: {str(e)}"}, status=400)
-
+            log_payment(client_id, plan, payment_id, "failed")
+            logger.error(f"PayPal find error: {str(e)}")
+            return Response({"error": "PayPal error"}, status=400)
 
         if payment.execute({"payer_id": payer_id}):
-            logger.info(f"Payment executed successfully for payment {payment_id}")
+            logger.info(f"Payment executed successfully for {payment_id}")
             client = Client.objects.get(id=client_id)
-            # payment.duration_months = calculate_duration_from_amount(payment)
-            update_subscription_after_payment(client, plan, period,payment.amount,payment_id)
-            return Response({
-                "detail": "Payment executed successfully. Subscription will be updated via webhook."
-            }, status=200)
-        else:
-            logger.error(f"Payment execution failed: {payment.error}")
-            Payment.objects.create(
-                client_id=client_id,
-                amount=0,
-                currency="USD",
-                method="paypal",
-                transaction_id=payment_id,
-                plan=plan,
-                start_date=now().date(),
-                end_date=now().date(),
-                status="failed"
-            )
-            return Response({"error": "Payment execution failed"}, status=400)
+            update_subscription_after_payment(client, plan, period)
+            log_payment(client_id, plan, payment_id, "success", amount)
+            return Response({"detail": "Payment executed successfully"}, status=200)
+
+        logger.error(f"Payment execution failed for {payment_id}")
+        log_payment(client_id, plan, payment_id, "failed")
+        return Response({"error": "Payment execution failed"}, status=400)
 
 
 # ==============================================================
