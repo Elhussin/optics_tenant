@@ -4,6 +4,11 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ReusableFields:
+    """
+    Reusable fields for serializers
+    Must be used as a static method
+    
+    """
     @staticmethod
     def username(**kwargs):
         return serializers.CharField(

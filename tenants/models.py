@@ -4,78 +4,65 @@ import uuid
 from datetime import timedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from core.constants.tenants import PAYMENT_METHODS, STATUS_CHOICES, CURANCY
+from core.utils.update_client_plan import update_client_plan
+from core.utils.expiration_date import expiration_date
 
-# -----------------------
-# Subscription Plans Data
-# -----------------------
+class SubscriptionPlan(models.Model):
+    """Plane Subscription """
+    name = models.CharField(max_length=50, unique=True)  # trial, basic, premium...
+    duration_days = models.PositiveIntegerField()
+    max_users = models.PositiveIntegerField()
+    max_branches = models.PositiveIntegerField()
+    max_products = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    currency = models.CharField(max_length=10, default="USD", choices=CURANCY)
+    is_active = models.BooleanField(default=True)
 
-PLAN_CHOICES = [
-    ('trial', _('Trial')),
-    ('basic', _('Basic')),
-    ('premium', _('Premium')),
-    ('enterprise', _('Enterprise'))
-]
+    class Meta:
+        verbose_name = _("Subscription Plan")
+        verbose_name_plural = _("Subscription Plans")
+        ordering = ["price"]
 
-# خطة افتراضية في حال ما وجدت في قاعدة البيانات
-PLAN_LIMITS = {
-    'trial':      {'max_users': 1,   'max_branches': 1,  'max_products': 200,    'duration_days': 30,   'price_month': 0,   'price_year': 0},
-    'basic':      {'max_users': 5,   'max_branches': 2,  'max_products': 1000,   'duration_days': 30,  'price_month': 19,  'price_year': 190},
-    'premium':    {'max_users': 50,  'max_branches': 5,  'max_products': 10000,  'duration_days': 30,  'price_month': 49,  'price_year': 490},
-    'enterprise': {'max_users': 200, 'max_branches': 20, 'max_products': 100000, 'duration_days': 365, 'price_month': 99,  'price_year': 990}
-}
-
-# -----------------------
-# Utils
-# -----------------------
-
-def get_expiration_date(days=1):
-    return timezone.now() + timedelta(days=days)
+    def __str__(self):
+        return f"{self.name} ({self.price} {self.currency})"
 
 
-# -----------------------
-# Models
-# -----------------------
 
 class PendingTenantRequest(models.Model):
+    """Pending tenant requests"""
+    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True,)
     schema_name = models.CharField(max_length=63, unique=True, verbose_name=_("Schema Name"))
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
     email = models.EmailField(unique=True, verbose_name=_("Email"))
     password = models.CharField(max_length=128, verbose_name=_("Password"))
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    token_expires_at = models.DateTimeField(default=get_expiration_date(1), verbose_name=_("Token Expires At"))
+    token_expires_at = models.DateTimeField(verbose_name=_("Token Expires At"))
     is_activated = models.BooleanField(default=False, verbose_name=_("Activated"))
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
-    expires_at = models.DateTimeField(default=get_expiration_date(PLAN_LIMITS['trial']['duration_days']), verbose_name=_("Expires At"))
-    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='trial', verbose_name=_("Plan"))
-    requested_plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='trial', verbose_name=_("Requested Plan"))
-    max_users = models.IntegerField(default=PLAN_LIMITS['trial']['max_users'], verbose_name=_("Max Users"))
-    max_products = models.IntegerField(default=PLAN_LIMITS['trial']['max_products'], verbose_name=_("Max Products"))
-    max_branches = models.IntegerField(default=PLAN_LIMITS['trial']['max_branches'], verbose_name=_("Max Branches"))
+    expires_at = models.DateTimeField(blank=True, null=True, verbose_name=_("Expires At"))
     is_deleted = models.BooleanField(default=False, verbose_name=_("Deleted"))
 
-    def __str__(self):
-        return self.name
-
-
-class SubscriptionPlan(models.Model):
-    code = models.CharField(max_length=20, choices=PLAN_CHOICES, unique=True)
-    name = models.CharField(max_length=50)
-    max_users = models.IntegerField()
-    max_products = models.IntegerField()
-    max_branches = models.IntegerField()
-    duration_days = models.IntegerField()
-    price_per_month = models.DecimalField(max_digits=10, decimal_places=2)
-    price_per_year = models.DecimalField(max_digits=10, decimal_places=2)
-    description = models.TextField(blank=True)
+    class Meta:
+        verbose_name = _("Pending Tenant Request")
+        verbose_name_plural = _("Pending Tenant Requests")
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        """Set plan to trial and expires_at to expiration_date"""
+        if self.plan and not self.expires_at:
+            self.token_expires_at = expiration_date(1)
+            self.expires_at = expiration_date(self.plan.duration_days)
+            self.plan = "SubscriptionPlan".objects.get(name="trial")
+        super().save(*args, **kwargs)
 
 
 class Client(TenantMixin):
+    """Tenants (Clients) """
+    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
-    plan = models.CharField(max_length=20, choices=PLAN_CHOICES, default='trial', verbose_name=_("Plan"))
-
     max_users = models.IntegerField(default=1, verbose_name=_("Max Users"))
     max_products = models.IntegerField(default=200, verbose_name=_("Max Products"))
     max_branches = models.IntegerField(default=1, verbose_name=_("Max Branches"))
@@ -85,6 +72,7 @@ class Client(TenantMixin):
     is_deleted = models.BooleanField(default=False, verbose_name=_("Deleted"))
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+
     auto_create_schema = True
 
     class Meta:
@@ -95,77 +83,49 @@ class Client(TenantMixin):
         return self.name
 
     def apply_plan_limits(self):
-        """تطبيق حدود الخطة على العميل"""
-        try:
-            plan_obj = SubscriptionPlan.objects.get(code=self.plan)
-            self.max_users = plan_obj.max_users
-            self.max_branches = plan_obj.max_branches
-            self.max_products = plan_obj.max_products
-        except SubscriptionPlan.DoesNotExist:
-            limits = PLAN_LIMITS.get(self.plan)
-            if limits:
-                self.max_users = limits['max_users']
-                self.max_branches = limits['max_branches']
-                self.max_products = limits['max_products']
+        """Apply plan limits to client"""
+        if self.plan:
+            self.max_users = self.plan.max_users
+            self.max_branches = self.plan.max_branches
+            self.max_products = self.plan.max_products
 
     @property
     def is_plan_expired(self):
-        from django.utils.timezone import now
-        return (not self.is_active) or (self.paid_until and self.paid_until < now().date())
+        """Is the plan expired?"""
+        now = timezone.now().date()
+        return (not self.is_active) or (self.paid_until and self.paid_until < now)
 
     @property
     def is_paid(self):
-        from django.utils.timezone import now
-        return self.is_active and self.paid_until and self.paid_until >= now().date()
-
+        """Is the client a subscriber?"""
+        now = timezone.now().date()
+        return self.is_active and self.paid_until and self.paid_until >= now
 
 class Domain(DomainMixin):
+    """Domains for tenants"""
     def __str__(self):
         return self.domain
 
 
-# tenants/models.py
-
 class Payment(models.Model):
-    PAYMENT_METHODS = [
-        ('credit_card', _("Credit Card")),
-        ('bank_transfer', _("Bank Transfer")),
-        ('paypal', _("PayPal")),
-    ]
-
-    STATUS_CHOICES = [
-        ("success", _("Success")),
-        ("failed", _("Failed")),
-        ("pending", _("Pending")),
-    ]
-
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="payments")
+    """سجل المدفوعات"""
+    client = models.ForeignKey("Client", on_delete=models.CASCADE, related_name="payments")
+    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default="USD")
-    method = models.CharField(max_length=20, choices=PAYMENT_METHODS)
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)
-    plan = models.CharField(max_length=20, choices=PLAN_CHOICES)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    currency = models.CharField(max_length=10, default="USD", choices=CURANCY)
+    method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default="paypal")
+    transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = _("Payment")
+        verbose_name_plural = _("Payments")
+        ordering = ["-created_at"]
+
     def __str__(self):
-        return f"{self.client.name} - {self.amount} {self.currency} ({self.plan}) [{self.status}]"
+        return f"{self.client} - {self.amount} {self.currency} via {self.method} ({self.status})"
 
     def apply_to_client(self):
-        """تحديث بيانات العميل لو الدفع ناجح"""
-        if self.status != "success":
-            return
-
-        client = self.client
-        client.plan = self.plan
-        client.paid_until = self.end_date
-        client.on_trial = False #(self.plan == 'trial')
-        client.is_active = True
-
-        # إذا عندك دالة تحدد limits من الخطة
-        if hasattr(client, "apply_plan_limits"):
-            client.apply_plan_limits()
-
-        client.save()
+        """Apply plan to client if payment is success"""
+        update_client_plan(self)

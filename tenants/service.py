@@ -14,13 +14,9 @@ FRONTEND_URL=config("FRONTEND_URL")
 
 
 
-def create_paypal_order(client, plan, period):
-    from tenants.models import PLAN_LIMITS
-    from django.conf import settings
+def create_paypal_order(client, plan, period,amount=0):
     from decouple import config
 
-    # تحديد السعر بناءً على المدة
-    price = PLAN_LIMITS[plan]['price_month'] if period == "month" else PLAN_LIMITS[plan]['price_year']
 
     # روابط الرجوع (مع تمرير معرف العميل لتحديده بعد الدفع)
     return_url = f"{config('FRONTEND_URL')}/paypal/processing?client_id={client.id}&plan={plan}&period={period}"
@@ -41,13 +37,13 @@ def create_paypal_order(client, plan, period):
                 "items": [{
                     "name": f"{plan} plan ({period})",
                     "sku": plan,
-                    "price": str(price),
+                    "price": str(amount),
                     "currency": "USD",
                     "quantity": 1
                 }]
             },
             "amount": {
-                "total": str(price),
+                "total": str(amount),
                 "currency": "USD"
             },
             "description": f"Subscription for {client.name} ({plan} - {period})",
@@ -114,7 +110,7 @@ def update_subscription_after_payment(client, plan,period,amount,payment_id):
 
 
 def get_paypal_access_token():
-    """جلب Access Token من PayPal"""
+    """Get Access Token from PayPal"""
     auth = (config("PAYPAL_CLIENT_ID"), config("PAYPAL_SECRET"))
     data = {"grant_type": "client_credentials"}
     response = requests.post(

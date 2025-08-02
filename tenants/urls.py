@@ -1,26 +1,32 @@
 # api/urls.py
-from struct import pack
-from django.urls import path
-from .views import (RegisterTenantView, ActivateTenantView, CreatePayPalOrderView,
+from django.urls import path, include
+from .views import (
+    RegisterTenantView,
+    ActivateTenantView,
+    CreatePaymentOrderView,  # <-- الاسم الجديد
     PayPalExecuteView,
     PayPalCancelView,
-    PayPalWebhookView ,ClientViewSet,DomainView,SubscriptionPlanView)
+    PayPalWebhookView,
+    ClientViewSet,
+    DomainView,
+    SubscriptionPlanViewSet
+)
 from rest_framework.routers import DefaultRouter
-from django.urls import include
 
 router = DefaultRouter()
-router.register(r'clients', ClientViewSet,basename='clients')
+router.register(r'clients', ClientViewSet, basename='clients')
+router.register(r'subscription-plans', SubscriptionPlanViewSet, basename='subscription-plans')
 
 urlpatterns = [
     path("", include(router.urls)),
     path('register/', RegisterTenantView.as_view()),
     path('activate/', ActivateTenantView.as_view()),
     path("domain/", DomainView.as_view(), name="domain"),
-    path("subscription-plan/", SubscriptionPlanView.as_view(), name="subscription-plan"),
-    #  pay pall
-    path('create-paypal-order/', CreatePayPalOrderView.as_view(), name="create-paypal-order"),
+    # Create payment order
+    path('create-payment-order/', CreatePaymentOrderView.as_view(), name="create-payment-order"),
+
+    # PayPal specific
     path('paypal/execute/', PayPalExecuteView.as_view(), name="execute-paypal-order"),
     path('paypal/cancel/', PayPalCancelView.as_view(), name="paypal-cancel"),
     path('paypal/webhook/', PayPalWebhookView.as_view(), name="paypal-webhook"),
-
 ]

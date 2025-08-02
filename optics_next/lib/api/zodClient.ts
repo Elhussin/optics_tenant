@@ -1875,6 +1875,98 @@ const PatchedPaymentRequest = z
   })
   .partial()
   .passthrough();
+const Client = z
+  .object({
+    id: z.number().int(),
+    is_paid: z.string(),
+    is_plan_expired: z.string(),
+    schema_name: z.string().max(63),
+    name: z.string().max(100),
+    max_users: z.number().int().gte(-2147483648).lte(2147483647).optional(),
+    max_products: z.number().int().gte(-2147483648).lte(2147483647).optional(),
+    max_branches: z.number().int().gte(-2147483648).lte(2147483647).optional(),
+    paid_until: z.string().nullish(),
+    on_trial: z.boolean().optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    uuid: z.string().uuid(),
+    created_at: z.string().datetime({ offset: true }),
+    plan: z.number().int().nullish(),
+  })
+  .passthrough();
+const ClientRequest = z
+  .object({
+    schema_name: z.string().min(1).max(63),
+    name: z.string().min(1).max(100),
+    max_users: z.number().int().gte(-2147483648).lte(2147483647).optional(),
+    max_products: z.number().int().gte(-2147483648).lte(2147483647).optional(),
+    max_branches: z.number().int().gte(-2147483648).lte(2147483647).optional(),
+    paid_until: z.string().nullish(),
+    on_trial: z.boolean().optional(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    plan: z.number().int().nullish(),
+  })
+  .passthrough();
+const PatchedClientRequest = z
+  .object({
+    schema_name: z.string().min(1).max(63),
+    name: z.string().min(1).max(100),
+    max_users: z.number().int().gte(-2147483648).lte(2147483647),
+    max_products: z.number().int().gte(-2147483648).lte(2147483647),
+    max_branches: z.number().int().gte(-2147483648).lte(2147483647),
+    paid_until: z.string().nullable(),
+    on_trial: z.boolean(),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    plan: z.number().int().nullable(),
+  })
+  .partial()
+  .passthrough();
+const SubscriptionPlan = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(50),
+    duration_days: z.number().int().gte(0).lte(2147483647),
+    max_users: z.number().int().gte(0).lte(2147483647),
+    max_branches: z.number().int().gte(0).lte(2147483647),
+    max_products: z.number().int().gte(0).lte(2147483647),
+    price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    currency: z.string().max(10).optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const SubscriptionPlanRequest = z
+  .object({
+    name: z.string().min(1).max(50),
+    duration_days: z.number().int().gte(0).lte(2147483647),
+    max_users: z.number().int().gte(0).lte(2147483647),
+    max_branches: z.number().int().gte(0).lte(2147483647),
+    max_products: z.number().int().gte(0).lte(2147483647),
+    price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    currency: z.string().min(1).max(10).optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedSubscriptionPlanRequest = z
+  .object({
+    name: z.string().min(1).max(50),
+    duration_days: z.number().int().gte(0).lte(2147483647),
+    max_users: z.number().int().gte(0).lte(2147483647),
+    max_branches: z.number().int().gte(0).lte(2147483647),
+    max_products: z.number().int().gte(0).lte(2147483647),
+    price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    currency: z.string().min(1).max(10),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
 const LoginRequest = z
   .object({ username: z.string().min(1), password: z.string().min(1) })
   .passthrough();
@@ -1917,6 +2009,7 @@ const User = z
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
     phone: z.string().regex(/^\+?\d{7,15}$/),
+    client: z.number().int().nullable(),
   })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
@@ -2110,6 +2203,12 @@ export const schemas = {
   Payment,
   PaymentRequest,
   PatchedPaymentRequest,
+  Client,
+  ClientRequest,
+  PatchedClientRequest,
+  SubscriptionPlan,
+  SubscriptionPlanRequest,
+  PatchedSubscriptionPlanRequest,
   LoginRequest,
   LoginSuccessResponse,
   LoginBadRequest,
@@ -2128,7 +2227,7 @@ export const schemas = {
   PatchedUserRequest,
 };
 
-export const endpoints = makeApi([
+export  const endpoints = makeApi([
   {
     method: "get",
     path: "/api/accounting/accounts/",
@@ -5084,15 +5183,95 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/tenants/client/",
-    alias: "tenants_client_retrieve",
+    path: "/api/tenants/clients/",
+    alias: "tenants_clients_list",
     requestFormat: "json",
+    response: z.array(Client),
+  },
+  {
+    method: "post",
+    path: "/api/tenants/clients/",
+    alias: "tenants_clients_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClientRequest,
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "get",
+    path: "/api/tenants/clients/:id/",
+    alias: "tenants_clients_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "put",
+    path: "/api/tenants/clients/:id/",
+    alias: "tenants_clients_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClientRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "patch",
+    path: "/api/tenants/clients/:id/",
+    alias: "tenants_clients_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedClientRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "delete",
+    path: "/api/tenants/clients/:id/",
+    alias: "tenants_clients_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
     response: z.void(),
   },
   {
     method: "post",
-    path: "/api/tenants/create-paypal-order/",
-    alias: "tenants_create_paypal_order_create",
+    path: "/api/tenants/create-payment-order/",
+    alias: "tenants_create_payment_order_create",
     requestFormat: "json",
     response: z.void(),
   },
@@ -5105,15 +5284,22 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/tenants/execute-paypal-order/",
-    alias: "tenants_execute_paypal_order_retrieve",
+    path: "/api/tenants/paypal/cancel/",
+    alias: "tenants_paypal_cancel_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
-    method: "get",
-    path: "/api/tenants/paypal/cancel/",
-    alias: "tenants_paypal_cancel_retrieve",
+    method: "post",
+    path: "/api/tenants/paypal/execute/",
+    alias: "tenants_paypal_execute_create",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/tenants/paypal/webhook/",
+    alias: "tenants_paypal_webhook_create",
     requestFormat: "json",
     response: z.void(),
   },
@@ -5126,9 +5312,89 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/tenants/subscription-plan/",
-    alias: "tenants_subscription_plan_retrieve",
+    path: "/api/tenants/subscription-plans/",
+    alias: "tenants_subscription_plans_list",
     requestFormat: "json",
+    response: z.array(SubscriptionPlan),
+  },
+  {
+    method: "post",
+    path: "/api/tenants/subscription-plans/",
+    alias: "tenants_subscription_plans_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SubscriptionPlanRequest,
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "get",
+    path: "/api/tenants/subscription-plans/:id/",
+    alias: "tenants_subscription_plans_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "put",
+    path: "/api/tenants/subscription-plans/:id/",
+    alias: "tenants_subscription_plans_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SubscriptionPlanRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "patch",
+    path: "/api/tenants/subscription-plans/:id/",
+    alias: "tenants_subscription_plans_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedSubscriptionPlanRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "delete",
+    path: "/api/tenants/subscription-plans/:id/",
+    alias: "tenants_subscription_plans_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
     response: z.void(),
   },
   {

@@ -12,6 +12,7 @@ FRONTEND_DOMAIN =config("FRONTEND_DOMAIN")
 FRONTEND_PORT =config("FRONTEND_PORT")
 PROTOCOL =config("PROTOCOL")
 locale =config("LOCALE")
+
 def send_activation_email(email, token ):
     if FRONTEND_PORT:
         activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{locale}/auth/activate/?token={token}"
@@ -78,8 +79,4 @@ def send_password_change_email(email):
     """
     send_mail("Password Changed", message, settings.DEFAULT_FROM_EMAIL, [email])
 
-
-
-def paid_until_date():
-    return timezone.now().date() + relativedelta(weeks=1)
 
