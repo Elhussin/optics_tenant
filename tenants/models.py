@@ -27,8 +27,6 @@ class SubscriptionPlan(models.Model):
     def __str__(self):
         return f"{self.name} ({self.price} {self.currency})"
 
-
-
 class PendingTenantRequest(models.Model):
     """Pending tenant requests"""
     plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True,)
@@ -57,7 +55,6 @@ class PendingTenantRequest(models.Model):
             self.expires_at = expiration_date(self.plan.duration_days)
             self.plan = "SubscriptionPlan".objects.get(name="trial")
         super().save(*args, **kwargs)
-
 
 class Client(TenantMixin):
     """Tenants (Clients) """
@@ -105,7 +102,6 @@ class Domain(DomainMixin):
     """Domains for tenants"""
     def __str__(self):
         return self.domain
-
 
 class Payment(models.Model):
     """سجل المدفوعات"""

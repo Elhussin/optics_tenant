@@ -8,4 +8,5 @@ import tenants.admin_public
 urlpatterns = [
     path('admin/', admin.site.urls),   
     path('api/tenants/', include('tenants.urls')),
+    path('api/users/', include('users.urls')),
 ]

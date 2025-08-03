@@ -23,37 +23,33 @@ const intl = createIntlMiddleware(routing);
 
 
 export async function middleware(request: NextRequest) {
+  /*
+    Middleware for authentication and authorization
+  */
   const pathname = request.nextUrl.pathname;
-  
-  console.log('Middleware executing for:', pathname);
-  
   const host = request.headers.get('host') || '';
-  const subdomain = host.split('.')[0];
+  let subdomain = host.split('.')[0];
+  if(subdomain === 'localhost' || subdomain === 'localhost:3000') {
+    subdomain='public';
+  }
   const token = request.cookies.get('access_token')?.value;
 
-
-  console.log('Token exists:', !!token);
-  console.log('Subdomain:', subdomain);
-  
-  // تخطي مسارات API والملفات الثابتة والمسارات الخاصة
   if (
     pathname.startsWith('/api/') ||
     pathname.startsWith('/_next/') ||
     pathname.startsWith('/favicon.ico') ||
-    pathname.includes('.') || // الملفات الثابتة
-    pathname.startsWith('/auth/') // مسارات التوثيق
+    pathname.includes('.') || // static files
+    pathname.startsWith('/auth/') // authentication routes
     
   ) {
     return NextResponse.next();
   }
   
-  // فحص وجود بادئة اللغة في المسار
+  // Check for language prefix in the path
   const hasLocalePrefix = /^\/(ar|en)\//.test(pathname);
-  console.log('Has locale prefix:', hasLocalePrefix);
-  
-  // إذا كان المسار الرئيسي فقط، تطبيق intl middleware للإعادة توجيه للغة
+
+  // If the root path, apply intl middleware for language redirection
   if (pathname === '/') {
-    console.log('Root path, applying intl middleware');
     return intl(request);
   }
   
@@ -61,7 +57,7 @@ export async function middleware(request: NextRequest) {
   const requiredPermission = getRequiredPermission(pathname);
   console.log('Required permission for', pathname, ':', requiredPermission);
   
-  // إذا كان المسار عام (لا يحتاج صلاحية)، تطبيق intl middleware إذا لزم الأمر
+  // If the path is public (no permission required), apply intl middleware if needed
   if (!requiredPermission) {
     if (!hasLocalePrefix) {
       return intl(request);
@@ -70,26 +66,23 @@ export async function middleware(request: NextRequest) {
   }
   
   
-  // الآن نحن نعرف أن المسار يحتاج مصادقة
-  // فحص وجود التوكن أولاً
+  // If the path requires authentication
   if (!token) {
-    console.log('No token found, redirecting to login');
-    
-    // إذا لم تكن هناك بادئة لغة، إضافة اللغة الافتراضية
+    // If there is no language prefix, add the default language
     if (!hasLocalePrefix) {
       const defaultLocale = 'en'; // أو حسب إعداداتك
       const loginPath = `/${defaultLocale}/auth/login`;
       return unauthorizedResponse(request, loginPath, 'You need to login to access this page');
     }
     
-    // إذا كانت هناك بادئة لغة، استخدمها
+    // If there is a language prefix, use it
     const locale = pathname.split('/')[1];
     const loginPath = `/${locale}/auth/login`;
     return unauthorizedResponse(request, loginPath, 'You need to login to access this page');
   }
   
   try {
-    // التحقق من صحة التوكن
+    // Verify the token
     const secret = process.env.JWT_SECRET;
     if (!secret) {
       throw new Error('JWT_SECRET not configured');
@@ -97,14 +90,16 @@ export async function middleware(request: NextRequest) {
     
     const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
     const userTenant = payload.tenant as string;
+    const userRole = payload.role as string;
     const permissions = payload.permissions as string[];
-    
+    console.log('User:', payload);
     console.log('User tenant:', userTenant); // للتتبع
+    console.log('User role:', userRole); // للتتبع
     console.log('User permissions:', permissions); // للتتبع
     
-    // فحص مطابقة المستأجر
+    // Check for tenant mismatch
     if (userTenant !== subdomain) {
-      console.log('Tenant mismatch');
+      console.log('Tenant mismatch',userTenant,subdomain);
       
       const locale = hasLocalePrefix ? pathname.split('/')[1] : 'en';
       const unauthorizedPath = `/${locale}/unauthorized`;
@@ -114,11 +109,12 @@ export async function middleware(request: NextRequest) {
       return unauthorizedResponse(request, unauthorizedPath, 'Tenant mismatch, access denied');
     }
 
-    // فحص الصلاحيات
     const hasPermission = permissions.includes('__all__') || 
                          permissions.includes(requiredPermission) ||
-                         (requiredPermission === 'authenticated_user'); // المسارات التي تحتاج مصادقة فقط
+                         (requiredPermission === 'authenticated_user'); // paths that require authentication only
     
+    
+
     console.log('Required permission:', requiredPermission);
     console.log('User permissions:', permissions);
     console.log('Has permission:', hasPermission);
@@ -141,7 +137,7 @@ export async function middleware(request: NextRequest) {
   } catch (error) {
     console.error('JWT verification failed:', error);
     
-    // حذف التوكن التالف وإعادة التوجيه للتسجيل
+
     const locale = hasLocalePrefix ? pathname.split('/')[1] : 'en';
     const loginPath = `/${locale}/auth/login`;
     if (locale === 'ar') {

@@ -1,11 +1,16 @@
 
 from django.urls import path
-from .views import LoginView, RegisterView, LogoutView, RefreshTokenView,ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView
+from .views import( LoginView, RegisterView, LogoutView, RefreshTokenView,
+ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView,
+PermissionViewSet, RolePermissionViewSet, RoleViewSet)
 from rest_framework.routers import DefaultRouter
 from django.urls import include
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
+router.register(r'permissions', PermissionViewSet)
+router.register(r'role-permissions', RolePermissionViewSet)
+router.register(r'roles', RoleViewSet)
 urlpatterns = [
     path("", include(router.urls)),
     path("register/", RegisterView.as_view()),

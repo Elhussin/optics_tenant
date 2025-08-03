@@ -17,10 +17,28 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str, force_bytes
-
+from .models import Permission, RolePermission ,Role
+from .serializers import PermissionSerializer, RolePermissionSerializer, RoleSerializer
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
 User = get_user_model()
+
+
+class PermissionViewSet(viewsets.ModelViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
+    permission_classes = [IsAuthenticated]
+
+class RolePermissionViewSet(viewsets.ModelViewSet):
+    queryset = RolePermission.objects.all()
+    serializer_class = RolePermissionSerializer
+    permission_classes = [IsAuthenticated]
+
+class RoleViewSet(viewsets.ModelViewSet):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+    permission_classes = [IsAuthenticated]
+
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -53,6 +71,8 @@ class LoginView(APIView):
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
             role = user.role
             permissions = ROLE_PERMISSIONS.get(role, [])
+            print("role",role)
+            print("permissions",permissions)
 
             refresh = RefreshToken.for_user(user)
             refresh["role"] = user.role
@@ -64,8 +84,6 @@ class LoginView(APIView):
             return response
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 # @method_decorator(role_required(['ADMIN']), name='dispatch')
 class RegisterView(APIView):
@@ -86,8 +104,6 @@ class RegisterView(APIView):
             response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
@@ -125,7 +141,6 @@ class RefreshTokenView(APIView):
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-
 class LogoutView(APIView):
     @extend_schema(
         request=RefreshToken,
@@ -151,7 +166,6 @@ class LogoutView(APIView):
         response.delete_cookie('refresh_token')
         print("Logged out")
         return response
-
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -179,7 +193,6 @@ class ProfileView(APIView):
         else:
             return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
         
-
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(is_deleted=False)
     serializer_class = UserSerializer
@@ -192,7 +205,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.is_superuser:
             return User.objects.all()
         return User.objects.filter(id=user.id)
-
 
 class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
@@ -235,8 +247,6 @@ class RequestPasswordResetView(APIView):
             send_password_reset_email(email, reset_url)
 
         return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
-
-
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]

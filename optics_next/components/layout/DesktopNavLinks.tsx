@@ -21,8 +21,12 @@ export default function DesktopNavLinks({ subdomain }: { subdomain: string | nul
 
         </>
       ) : (
-        <>
-          {subdomain && <Link href="/auth/login" className="nav-link">{t('login')}</Link>}
+        // <>
+        //   {subdomain && <Link href="/auth/login" className="nav-link">{t('login')}</Link>}
+        //   <Link href="/auth/register" className="nav-link">{t('register')}</Link>
+        // </>
+          <>
+          <Link href="/auth/login" className="nav-link">{t('login')}</Link>
           <Link href="/auth/register" className="nav-link">{t('register')}</Link>
         </>
       )}
