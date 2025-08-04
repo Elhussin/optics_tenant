@@ -6,10 +6,9 @@ import { useFormRequest } from '../hooks/useFormRequest';
 import { getSubdomain } from '@/lib/utils/getSubdomain';
 import { safeToast } from '@/lib/utils/toastService';
 import { useRouter } from '@/app/i18n/navigation';
-// import { useLocale } from 'next-intl';
-// const locale = useLocale();
 import { useTranslations } from 'next-intl';
 const UserContext = createContext<UserContextType | undefined>(undefined);
+import { FetchData } from '@/lib/api/api';
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -22,10 +21,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const fetchUser = useFormRequest({
     alias: "users_profile_retrieve",
     onSuccess: (res) => {
+      console.log(res);
       setUser(res);
       setLoading(false);
     },
     onError: () => {
+      console.log("error");
       safeToast(t('fetchError'), { type: "error" });
       router.replace(`/auth/login`);
       setLoading(false);
@@ -43,6 +44,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     },
   });
 
+
+
   const logout = async () => {
     await logoutRequest.submitForm();
   };
@@ -53,11 +56,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (subdomain && !isFetched) {
+    if (!isFetched) {
       fetchUser.submitForm();
       setIsFetched(true);
     }
-  }, [subdomain, isFetched]);
+
+  }, [isFetched]);
 
   const value: UserContextType = { user, setUser, loading, fetchUser, logout };
 
@@ -71,3 +75,29 @@ export const useUser = () => {
   }
   return context;
 };
+
+
+// {
+//   "id": 2,
+//   "username": "admin",
+//   "email": "admin@public.com",
+//   "first_name": "",
+//   "last_name": "",
+//   "is_active": true,
+//   "is_staff": true,
+//   "role": {
+//       "id": 1,
+//       "name": "ADMIN",
+//       "permissions": [
+//           {
+//               "id": 22,
+//               "code": "__all__",
+//               "description": "ADMIN"
+//           }
+//       ]
+//   },
+//   "is_deleted": false,
+//   "deleted_at": null,
+//   "phone": null,
+//   "client": null
+// }

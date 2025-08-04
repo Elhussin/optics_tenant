@@ -7,7 +7,13 @@ from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
 from core.utils.expiration_date import expiration_date
 from core.constants.tenants import PAYMENT_METHODS,PAYMENT_PERIODS
+from core.mixins.VerboseNameMixin import VerboseNameMixin
 
+class SubscriptionPlanSerializer(VerboseNameMixin, serializers.ModelSerializer):
+    class Meta:
+        model = SubscriptionPlan
+        fields = ['id', 'name', 'duration_months', 'duration_years', 'max_users',
+            'max_branches', 'max_products', 'month_price', 'year_price', 'currency', 'discount','field_labels']
 
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
@@ -55,16 +61,21 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
         )
 
 
-class ClientSerializer(serializers.ModelSerializer):
+
+
+class ClientSerializer(VerboseNameMixin, serializers.ModelSerializer):
+    plans = SubscriptionPlanSerializer(source='plan', read_only=True)  # <-- هنا التعديل
     is_paid = serializers.ReadOnlyField()
     is_plan_expired = serializers.ReadOnlyField()
 
     class Meta:
         model = Client
-        fields = '__all__'
-        read_only_fields = ['uuid', 'created_at', 'auto_create_schema']
-
-
+        fields = [
+            'id', 'name', 'max_users', 'max_products', 'max_branches',
+            'paid_until', 'on_trial', 'is_active', 'is_deleted',
+            'uuid', 'created_at', 'plans', 'is_paid', 'is_plan_expired', 'field_labels'
+        ]
+        read_only_fields = ['uuid', 'created_at', 'plans']
 
 class DomainSerializer(serializers.ModelSerializer):
     class Meta:
@@ -72,10 +83,6 @@ class DomainSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SubscriptionPlanSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SubscriptionPlan
-        fields = '__all__'
 
 
 class PaymentSerializer(serializers.Serializer):

@@ -1,4 +1,6 @@
 name,description
+GUEST,Guest permissions
+OWNER,Owner permissions
 ADMIN,All permissions
 BRANCH_MANAGER,Branch permissions
 TECHNICIAN,Product permissions

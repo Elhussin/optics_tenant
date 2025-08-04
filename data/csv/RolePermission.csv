@@ -1,5 +1,7 @@
 permission,role
 __all__,ADMIN
+__all__,OWNER
+view_profile,GUEST
 view_branch,BRANCH_MANAGER
 manage_employees,BRANCH_MANAGER
 view_sales,BRANCH_MANAGER

@@ -1,7 +1,8 @@
 // utils/auth.ts
 export function hasPermission(user: any, permission: string) {
     if (!user) return false;
-    if (user.role === 'admin') return true; // admin = كل الصلاحيات
+    console.log(user);
+    if (user.role.name === 'ADMIN' || user.role.name === 'OWNER') return true;
     return user.permissions.includes(permission);
   }
   
@@ -26,7 +27,7 @@ export function hasPermission(user: any, permission: string) {
     if (!userContext || userContext.loading || !userContext.user) return false;
   
     // Get the actual user role instead of hardcoding
-    const userRole = userContext.user?.role || 'GUEST';
+    const userRole = userContext.user?.role.name || 'GUEST';
     const permissions = ROLE_PERMISSIONS[userRole as keyof typeof ROLE_PERMISSIONS];
   
     if (!permissions) return false;

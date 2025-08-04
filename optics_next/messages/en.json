@@ -172,6 +172,10 @@
     "maxProducts": "Max Products",
     "month": "Month",
     "year": "Year",
+    "trial": "Trial",
+    "basic": "Basic",
+    "premium": "Premium",
+    "enterprise": "Enterprise",
     "plans": {
       "trial": {
         "name": "Trial",

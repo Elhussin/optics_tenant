@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/context/userContext';
-import { getClientData } from './Client';
+import { FetchData } from '@/lib/api/api';
 import PricingPlans from '@/components/PricingPlans';
 import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';
 import { Loading4 } from '@/components/ui/loding';
@@ -11,16 +11,17 @@ export default function UserProfile() {
   const [clientData, setClientData] = useState<any>(null);
 
   useEffect(() => {
-    if (user?.role === 'owner' && user?.client) {
+    if (user?.role.name === 'OWNER' && user?.client) {
       (async () => {
-        const data = await getClientData(user.client);
-        console.log("clieant", data);
+        const url = `/api/tenants/clients/${user.client}`;
+        const data = await FetchData({url: url });
+        console.log("clientData",data);
         setClientData(data);
       })();
     }
   }, [user]);
 
-  if (!user) return <Loading4 />;
+  if (!user) return  <Loading4 />;
 
   const today = new Date();
   const paidUntil = clientData ? new Date(clientData.paid_until) : null;
@@ -29,7 +30,7 @@ export default function UserProfile() {
     : null;
 
   const statusColor =
-    clientData?.plan === 'trial'
+    clientData?.plans.name === 'trial'
       ? 'bg-yellow-100 text-yellow-800'
       : daysLeft !== null && daysLeft <= 0
       ? 'bg-red-100 text-red-800'
@@ -50,12 +51,12 @@ export default function UserProfile() {
         <div className="grid sm:grid-cols-2 gap-4">
           <p><strong>Username:</strong> {user.username}</p>
           <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Role:</strong> {user.role}</p>
+          <p><strong>Role:</strong> {user.role.name}</p>
         </div>
       </section>
 
-      {/* بطاقة بيانات العميل إذا كان Owner */}
-      {user.role === 'owner' && clientData && (
+      {/* بطاقة بيانات العميل إذا كان OWNER */}
+      {user.role.name === 'OWNER' && clientData && (
         <section className="bg-surface p-6 rounded-xl shadow-md border">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Store className="w-5 h-5 text-purple-500" /> Client Information
@@ -65,7 +66,7 @@ export default function UserProfile() {
             <p className="flex items-center gap-2">
               <CreditCard className="w-4 h-4" /> <strong>Plan:</strong>
               <span className={`px-2 py-0.5 rounded-full text-sm ${statusColor}`}>
-                {clientData.plan}
+                {clientData.plans.name}
               </span>
             </p>
             <p><strong>Max Users:</strong> {clientData.max_users}</p>
@@ -114,8 +115,8 @@ export default function UserProfile() {
       )}
 
       {/* عرض خطط الترقية إذا كانت الخطة trial أو الاشتراك منتهي */}
-      {user.role === 'owner' && clientData && (clientData.plan === 'trial' || daysLeft <= 0) && (
-        <PricingPlans clientId={String(clientData.uuid)} />
+      {user.role.name === 'OWNER' && clientData && (clientData.plans.name === 'trial' || daysLeft <= 0) && (
+        <PricingPlans clientId={String(clientData.uuid)} /> 
       )}
     </div>
   );

@@ -1,28 +1,28 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
-const CurrencyEnum = z.enum(["USD", "EUR", "SAR"]);
+const AccountCurrencyEnum = z.enum(["USD", "EUR", "SAR"]);
 const Account = z
   .object({
     id: z.number().int(),
     name: z.string().max(255),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
-    currency: CurrencyEnum.optional(),
+    currency: AccountCurrencyEnum.optional(),
     user: z.number().int(),
   })
   .passthrough();
 const AccountRequest = z
   .object({
     name: z.string().min(1).max(255),
-    currency: CurrencyEnum.optional(),
+    currency: AccountCurrencyEnum.optional(),
     user: z.number().int(),
   })
   .passthrough();
 const PatchedAccountRequest = z
   .object({
     name: z.string().min(1).max(255),
-    currency: CurrencyEnum,
+    currency: AccountCurrencyEnum,
     user: z.number().int(),
   })
   .partial()
@@ -1875,12 +1875,44 @@ const PatchedPaymentRequest = z
   })
   .partial()
   .passthrough();
+const SubscriptionPlanCurrencyEnum = z.enum([
+  "usd",
+  "egp",
+  "sar",
+  "aud",
+  "eur",
+]);
+const SubscriptionPlan = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().max(50),
+    duration_months: z.number().int().gte(0).lte(2147483647).optional(),
+    duration_years: z.number().int().gte(0).lte(2147483647).optional(),
+    max_users: z.number().int().gte(0).lte(2147483647).optional(),
+    max_branches: z.number().int().gte(0).lte(2147483647).optional(),
+    max_products: z.number().int().gte(0).lte(2147483647).optional(),
+    month_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    year_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    currency: SubscriptionPlanCurrencyEnum.optional(),
+    discount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+  })
+  .passthrough();
 const Client = z
   .object({
     id: z.number().int(),
-    is_paid: z.string(),
-    is_plan_expired: z.string(),
-    schema_name: z.string().max(63),
     name: z.string().max(100),
     max_users: z.number().int().gte(-2147483648).lte(2147483647).optional(),
     max_products: z.number().int().gte(-2147483648).lte(2147483647).optional(),
@@ -1891,12 +1923,13 @@ const Client = z
     is_deleted: z.boolean().optional(),
     uuid: z.string().uuid(),
     created_at: z.string().datetime({ offset: true }),
-    plan: z.number().int().nullish(),
+    plans: SubscriptionPlan,
+    is_paid: z.string(),
+    is_plan_expired: z.string(),
   })
   .passthrough();
 const ClientRequest = z
   .object({
-    schema_name: z.string().min(1).max(63),
     name: z.string().min(1).max(100),
     max_users: z.number().int().gte(-2147483648).lte(2147483647).optional(),
     max_products: z.number().int().gte(-2147483648).lte(2147483647).optional(),
@@ -1905,12 +1938,10 @@ const ClientRequest = z
     on_trial: z.boolean().optional(),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    plan: z.number().int().nullish(),
   })
   .passthrough();
 const PatchedClientRequest = z
   .object({
-    schema_name: z.string().min(1).max(63),
     name: z.string().min(1).max(100),
     max_users: z.number().int().gte(-2147483648).lte(2147483647),
     max_products: z.number().int().gte(-2147483648).lte(2147483647),
@@ -1919,51 +1950,48 @@ const PatchedClientRequest = z
     on_trial: z.boolean(),
     is_active: z.boolean(),
     is_deleted: z.boolean(),
-    plan: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
-const SubscriptionPlan = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(50),
-    duration_days: z.number().int().gte(0).lte(2147483647),
-    max_users: z.number().int().gte(0).lte(2147483647),
-    max_branches: z.number().int().gte(0).lte(2147483647),
-    max_products: z.number().int().gte(0).lte(2147483647),
-    price: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .optional(),
-    currency: z.string().max(10).optional(),
-    is_active: z.boolean().optional(),
-  })
-  .passthrough();
 const SubscriptionPlanRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(50),
-    duration_days: z.number().int().gte(0).lte(2147483647),
-    max_users: z.number().int().gte(0).lte(2147483647),
-    max_branches: z.number().int().gte(0).lte(2147483647),
-    max_products: z.number().int().gte(0).lte(2147483647),
-    price: z
+    duration_months: z.number().int().gte(0).lte(2147483647).optional(),
+    duration_years: z.number().int().gte(0).lte(2147483647).optional(),
+    max_users: z.number().int().gte(0).lte(2147483647).optional(),
+    max_branches: z.number().int().gte(0).lte(2147483647).optional(),
+    max_products: z.number().int().gte(0).lte(2147483647).optional(),
+    month_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    currency: z.string().min(1).max(10).optional(),
-    is_active: z.boolean().optional(),
+    year_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    currency: SubscriptionPlanCurrencyEnum.optional(),
+    discount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
   })
   .passthrough();
 const PatchedSubscriptionPlanRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     name: z.string().min(1).max(50),
-    duration_days: z.number().int().gte(0).lte(2147483647),
+    duration_months: z.number().int().gte(0).lte(2147483647),
+    duration_years: z.number().int().gte(0).lte(2147483647),
     max_users: z.number().int().gte(0).lte(2147483647),
     max_branches: z.number().int().gte(0).lte(2147483647),
     max_products: z.number().int().gte(0).lte(2147483647),
-    price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    currency: z.string().min(1).max(10),
-    is_active: z.boolean(),
+    month_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    year_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    currency: SubscriptionPlanCurrencyEnum,
+    discount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
   })
   .partial()
   .passthrough();
@@ -1985,17 +2013,30 @@ const PasswordResetBadRequest = z
   .object({ email: z.array(z.string()) })
   .partial()
   .passthrough();
-const RoleEnum = z.enum([
-  "ADMIN",
-  "BRANCH_MANAGER",
-  "TECHNICIAN",
-  "SALESPERSON",
-  "ACCOUNTANT",
-  "INVENTORY_MANAGER",
-  "RECEPTIONIST",
-  "CRM",
-  "CUSTOMER",
-]);
+const Permission = z
+  .object({
+    id: z.number().int(),
+    code: z.string().max(100),
+    description: z.string().optional(),
+  })
+  .passthrough();
+const PermissionRequest = z
+  .object({
+    code: z.string().min(1).max(100),
+    description: z.string().optional(),
+  })
+  .passthrough();
+const PatchedPermissionRequest = z
+  .object({ code: z.string().min(1).max(100), description: z.string() })
+  .partial()
+  .passthrough();
+const Role = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(50),
+    permissions: z.array(Permission),
+  })
+  .passthrough();
 const User = z
   .object({
     id: z.number().int(),
@@ -2005,7 +2046,7 @@ const User = z
     last_name: z.string().max(30),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: RoleEnum.optional(),
+    role: Role,
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
     phone: z.string().regex(/^\+?\d{7,15}$/),
@@ -2026,6 +2067,25 @@ const RegisterRequest = z
 const RegisterSuccessResponse = z
   .object({ msg: z.string(), user: User })
   .passthrough();
+const RolePermission = z
+  .object({
+    id: z.number().int(),
+    role: z.number().int(),
+    permission: z.number().int(),
+  })
+  .passthrough();
+const RolePermissionRequest = z
+  .object({ role: z.number().int(), permission: z.number().int() })
+  .passthrough();
+const PatchedRolePermissionRequest = z
+  .object({ role: z.number().int(), permission: z.number().int() })
+  .partial()
+  .passthrough();
+const RoleRequest = z.object({ name: z.string().min(1).max(50) }).passthrough();
+const PatchedRoleRequest = z
+  .object({ name: z.string().min(1).max(50) })
+  .partial()
+  .passthrough();
 const RefreshTokenResponse = z
   .object({ msg: z.string(), access: z.string() })
   .passthrough();
@@ -2035,9 +2095,9 @@ const UserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
+    role_id: z.number().int(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: RoleEnum.optional(),
     password: z
       .string()
       .min(8)
@@ -2055,9 +2115,9 @@ const PatchedUserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
+    role_id: z.number().int(),
     is_active: z.boolean(),
     is_staff: z.boolean(),
-    role: RoleEnum,
     password: z
       .string()
       .min(8)
@@ -2072,7 +2132,7 @@ const PatchedUserRequest = z
   .passthrough();
 
 export const schemas = {
-  CurrencyEnum,
+  AccountCurrencyEnum,
   Account,
   AccountRequest,
   PatchedAccountRequest,
@@ -2203,10 +2263,11 @@ export const schemas = {
   Payment,
   PaymentRequest,
   PatchedPaymentRequest,
+  SubscriptionPlanCurrencyEnum,
+  SubscriptionPlan,
   Client,
   ClientRequest,
   PatchedClientRequest,
-  SubscriptionPlan,
   SubscriptionPlanRequest,
   PatchedSubscriptionPlanRequest,
   LoginRequest,
@@ -2217,17 +2278,25 @@ export const schemas = {
   TokenRefreshError,
   PasswordResetSuccessResponse,
   PasswordResetBadRequest,
-  RoleEnum,
+  Permission,
+  PermissionRequest,
+  PatchedPermissionRequest,
+  Role,
   User,
   Unauthorized,
   RegisterRequest,
   RegisterSuccessResponse,
+  RolePermission,
+  RolePermissionRequest,
+  PatchedRolePermissionRequest,
+  RoleRequest,
+  PatchedRoleRequest,
   RefreshTokenResponse,
   UserRequest,
   PatchedUserRequest,
 };
 
-export  const endpoints = makeApi([
+export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/accounting/accounts/",
@@ -5473,6 +5542,93 @@ export  const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/users/permissions/",
+    alias: "users_permissions_list",
+    requestFormat: "json",
+    response: z.array(Permission),
+  },
+  {
+    method: "post",
+    path: "/api/users/permissions/",
+    alias: "users_permissions_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PermissionRequest,
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "get",
+    path: "/api/users/permissions/:id/",
+    alias: "users_permissions_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "put",
+    path: "/api/users/permissions/:id/",
+    alias: "users_permissions_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "patch",
+    path: "/api/users/permissions/:id/",
+    alias: "users_permissions_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "delete",
+    path: "/api/users/permissions/:id/",
+    alias: "users_permissions_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/users/profile/",
     alias: "users_profile_retrieve",
     description: `Get current authenticated user profile data`,
@@ -5499,6 +5655,183 @@ export  const endpoints = makeApi([
       },
     ],
     response: RegisterSuccessResponse,
+  },
+  {
+    method: "get",
+    path: "/api/users/role-permissions/",
+    alias: "users_role_permissions_list",
+    requestFormat: "json",
+    response: z.array(RolePermission),
+  },
+  {
+    method: "post",
+    path: "/api/users/role-permissions/",
+    alias: "users_role_permissions_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RolePermissionRequest,
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "get",
+    path: "/api/users/role-permissions/:id/",
+    alias: "users_role_permissions_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "put",
+    path: "/api/users/role-permissions/:id/",
+    alias: "users_role_permissions_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RolePermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "patch",
+    path: "/api/users/role-permissions/:id/",
+    alias: "users_role_permissions_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedRolePermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "delete",
+    path: "/api/users/role-permissions/:id/",
+    alias: "users_role_permissions_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/users/roles/",
+    alias: "users_roles_list",
+    requestFormat: "json",
+    response: z.array(Role),
+  },
+  {
+    method: "post",
+    path: "/api/users/roles/",
+    alias: "users_roles_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({ name: z.string().min(1).max(50) }).passthrough(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "get",
+    path: "/api/users/roles/:id/",
+    alias: "users_roles_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "put",
+    path: "/api/users/roles/:id/",
+    alias: "users_roles_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({ name: z.string().min(1).max(50) }).passthrough(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "patch",
+    path: "/api/users/roles/:id/",
+    alias: "users_roles_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ name: z.string().min(1).max(50) })
+          .partial()
+          .passthrough(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "delete",
+    path: "/api/users/roles/:id/",
+    alias: "users_roles_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
   },
   {
     method: "post",

@@ -7,25 +7,29 @@ from django.utils.translation import gettext_lazy as _
 from core.constants.tenants import PAYMENT_METHODS, STATUS_CHOICES, CURANCY
 from core.utils.update_client_plan import update_client_plan
 from core.utils.expiration_date import expiration_date
+from core.models import BaseModel
 
-class SubscriptionPlan(models.Model):
+class SubscriptionPlan(BaseModel):
     """Plane Subscription """
-    name = models.CharField(max_length=50, unique=True)  # trial, basic, premium...
-    duration_days = models.PositiveIntegerField()
-    max_users = models.PositiveIntegerField()
-    max_branches = models.PositiveIntegerField()
-    max_products = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    currency = models.CharField(max_length=10, default="USD", choices=CURANCY)
-    is_active = models.BooleanField(default=True)
+    name = models.CharField(max_length=50, unique=True,verbose_name=_("Name"))  # trial, basic, premium...
+    duration_months = models.PositiveIntegerField(default=30,verbose_name=_("Month"))
+    duration_years = models.PositiveIntegerField(default=365,verbose_name=_("Year"))
+    max_users = models.PositiveIntegerField(default=1,verbose_name=_("Max Users"))
+    max_branches = models.PositiveIntegerField(default=1,verbose_name=_("Max Branches"))
+    max_products = models.PositiveIntegerField(default=200,verbose_name=_("Max Products"))
+    month_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Month Price"))
+    year_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Year Price"))
+    currency = models.CharField(max_length=10, default="USD", choices=CURANCY,verbose_name=_("Currency"))
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Discount"))
+
 
     class Meta:
         verbose_name = _("Subscription Plan")
         verbose_name_plural = _("Subscription Plans")
-        ordering = ["price"]
+        ordering = ["month_price"]
 
     def __str__(self):
-        return f"{self.name} ({self.price} {self.currency})"
+        return f"{self.name} ({self.month_price} {self.currency})"
 
 class PendingTenantRequest(models.Model):
     """Pending tenant requests"""
@@ -58,7 +62,7 @@ class PendingTenantRequest(models.Model):
 
 class Client(TenantMixin):
     """Tenants (Clients) """
-    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True)
+    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True )
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
     max_users = models.IntegerField(default=1, verbose_name=_("Max Users"))
     max_products = models.IntegerField(default=200, verbose_name=_("Max Products"))

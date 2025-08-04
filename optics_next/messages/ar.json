@@ -172,6 +172,10 @@
     "maxProducts": "منتجات",
     "month": "شهر",
     "year": "سنة",
+    "trial": "تجربة مجانية",
+    "basic": "أساسية",
+    "premium": "احترافية",
+    "enterprise": "مؤسسات",
     "plans": {
       "trial": {
         "name": "تجربة مجانية",

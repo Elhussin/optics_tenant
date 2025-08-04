@@ -8,6 +8,11 @@ import django.utils.timezone as timezone
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
+    permissions = models.ManyToManyField(
+        'Permission',
+        through='RolePermission',
+        related_name='roles'
+    )
 
 class Permission(models.Model):
     code = models.CharField(max_length=100, unique=True)  # مثل create_prescription

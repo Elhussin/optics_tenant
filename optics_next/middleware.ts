@@ -89,6 +89,7 @@ export async function middleware(request: NextRequest) {
     }
     
     const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
+    console.log('User:', payload);
     const userTenant = payload.tenant as string;
     const userRole = payload.role as string;
     const permissions = payload.permissions as string[];

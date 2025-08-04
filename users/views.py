@@ -23,7 +23,7 @@ from .filters import UserFilter
 from core.utils.email import send_password_reset_email
 User = get_user_model()
 
-
+# @method_decorator(role_required(['ADMIN']), name='dispatch')
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
@@ -38,6 +38,25 @@ class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated]
+
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
+    @extend_schema(
+        request=RegisterSerializer,
+        responses={200: inline_serializer(
+            name='RegisterSuccessResponse',
+            fields={'msg': serializers.CharField(),
+                    'user': UserSerializer()}
+        )},
+        description="Register endpoint for users"
+    )
+    def post(self, request):
+        serializer = RegisterSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
+            return response
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
@@ -70,39 +89,21 @@ class LoginView(APIView):
             if not user.is_active:
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
             role = user.role
-            permissions = ROLE_PERMISSIONS.get(role, [])
-            print("role",role)
-            print("permissions",permissions)
+            if user.role:
+                permissions = user.role.permissions.all()
+            else:
+                permissions = Permission.objects.none()
 
             refresh = RefreshToken.for_user(user)
-            refresh["role"] = user.role
+            refresh["role_id"] = user.role.id if user.role else None
+            refresh["role"] = user.role.name if user.role else None
             refresh["tenant"] = connection.schema_name
-            refresh["permissions"] = permissions
+            refresh["permissions"] = list(permissions.values_list('code', flat=True))
 
             response = Response({"msg": "Login successful"})
             set_token_cookies(response, access=str(refresh.access_token), refresh=str(refresh))
             return response
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @method_decorator(role_required(['ADMIN']), name='dispatch')
-class RegisterView(APIView):
-    permission_classes = [AllowAny]
-    @extend_schema(
-        request=RegisterSerializer,
-        responses={200: inline_serializer(
-            name='RegisterSuccessResponse',
-            fields={'msg': serializers.CharField(),
-                    'user': UserSerializer()}
-        )},
-        description="Register endpoint for users"
-    )
-    def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
-            return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RefreshTokenView(APIView):
@@ -125,47 +126,33 @@ class RefreshTokenView(APIView):
     
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
- 
         if not refresh_token:
             return Response({"error": "No refresh token found"}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             refresh = RefreshToken(refresh_token)
             access = refresh.access_token
-            access["role"] = refresh["role"]
+
+            # get user permissions from database
+            user_id = refresh["user_id"]
+            user = User.objects.get(id=user_id)
+            if user.role:
+                permissions = user.role.permissions.all()
+            else:
+                permissions = Permission.objects.none()
+
+            access["role_id"] = user.role.id if user.role else None
+            access["role"] = user.role.name if user.role else None
             access["tenant"] = refresh["tenant"]
-            access["permissions"] = refresh["permissions"]
+            access["permissions"] = list(permissions.values_list('code', flat=True))
+
             response = Response({"msg": "Token refreshed", "access": str(access)})
             set_token_cookies(response, access=str(access)) 
             return response
+
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-class LogoutView(APIView):
-    @extend_schema(
-        request=RefreshToken,
-        description="Logout endpoint for users",
-        responses={
-            200: inline_serializer(
-                name='LogoutResponse',
-                fields={
-                    'msg': serializers.CharField(),
-                }
-            ),
-            401: inline_serializer(
-                name='TokenRefreshError',
-                fields={
-                    'error': serializers.CharField()
-                }
-            )
-        }
-    )
-    def post(self, request):
-        response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)
-        response.delete_cookie('access_token')
-        response.delete_cookie('refresh_token')
-        print("Logged out")
-        return response
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -267,3 +254,29 @@ class PasswordResetConfirmView(APIView):
         user.set_password(password)
         user.save()
         return Response({"detail": "Password has been reset successfully"}, status=200)
+
+class LogoutView(APIView):
+    @extend_schema(
+        request=RefreshToken,
+        description="Logout endpoint for users",
+        responses={
+            200: inline_serializer(
+                name='LogoutResponse',
+                fields={
+                    'msg': serializers.CharField(),
+                }
+            ),
+            401: inline_serializer(
+                name='TokenRefreshError',
+                fields={
+                    'error': serializers.CharField()
+                }
+            )
+        }
+    )
+    def post(self, request):
+        response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)
+        response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
+        print("Logged out")
+        return response

@@ -1,5 +1,7 @@
 code,description
 __all__,ADMIN
+view_profile,GUEST
+__all__,OWNER
 view_branch,BRANCH_MANAGER
 manage_employees,BRANCH_MANAGER
 view_sales,BRANCH_MANAGER
@@ -20,3 +22,4 @@ view_customer,RECEPTIONIST
 view_customer,CRM
 follow_up,CRM
 view_customer,CUSTOMER
+
