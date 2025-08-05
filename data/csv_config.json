@@ -1,19 +1,19 @@
 
 [
 {
-  "schema": "store2",
+  "schema": "public",
   "app": "users",
   "model": "Role",
   "csv": "csv/Role.csv"
   },
   {
-    "schema": "store2",
+    "schema": "public",
     "app": "users",
     "model": "Permission",
     "csv": "csv/Permission.csv"
   },
   {
-    "schema": "store2",
+    "schema": "public",
     "app": "users",
     "model": "RolePermission",
     "csv": "csv/RolePermission.csv",
@@ -35,13 +35,13 @@
     "csv": "csv/SubscriptionPlan.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "Attribute",
     "csv": "csv/attribute.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "AttributeValue",
     "csv": "csv/attribute_value.csv",
@@ -53,7 +53,7 @@
     }
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "Category",
     "csv": "csv/Categories.csv",
@@ -65,31 +65,31 @@
     }
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "Brand",
     "csv": "csv/brand.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "Supplier",
     "csv": "csv/supplier.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "Manufacturer",
     "csv": "csv/manufacturer.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "LensCoating",
     "csv": "csv/lens_coating.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "products",
     "model": "Product",
     "csv": "csv/product.csv",
@@ -113,19 +113,19 @@
     }
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "branches",
     "model": "Branch",
     "csv": "csv/branch.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "HRM",
     "model": "Department",
     "csv": "csv/department.csv"
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "HRM",
     "model": "Employee",
     "csv": "csv/employee.csv",
@@ -142,7 +142,7 @@
     }
   },
   {
-    "schema": "store2",
+    "schema": "store1",
     "app": "users",
     "model": "User",
     "csv": "csv/Users.csv"
