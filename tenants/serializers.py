@@ -8,6 +8,7 @@ from core.utils.check_unique_field import check_unique_field
 from core.utils.expiration_date import expiration_date
 from core.constants.tenants import PAYMENT_METHODS,PAYMENT_PERIODS
 from core.mixins.VerboseNameMixin import VerboseNameMixin
+import uuid
 
 class SubscriptionPlanSerializer(VerboseNameMixin, serializers.ModelSerializer):
     class Meta:
@@ -49,7 +50,7 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
 
         # Apply trial limits
         trial_plan = SubscriptionPlan.objects.filter(name__iexact="trial").first()
-        expires_at =expiration_date(days=trial_plan.duration_days)
+        expires_at =expiration_date(days=trial_plan.duration_months)
 
         return PendingTenantRequest.objects.create(
             schema_name=schema_name,
@@ -57,7 +58,9 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
             email=email,
             password=password,
             plan=trial_plan,
-            expires_at=expires_at
+            expires_at=expires_at,
+            token=uuid.uuid4(),
+            token_expires_at=expiration_date(1)
         )
 
 
@@ -85,62 +88,97 @@ class DomainSerializer(serializers.ModelSerializer):
 
 
 
-class PaymentSerializer(serializers.Serializer):
-    client_id = serializers.UUIDField()
-    plan = serializers.PrimaryKeyRelatedField(queryset=SubscriptionPlan.objects.filter(is_active=True))
+# class PaymentSerializer(serializers.Serializer):
+#     client_id = serializers.UUIDField()
+#     plan = serializers.PrimaryKeyRelatedField(queryset=SubscriptionPlan.objects.filter(is_active=True))
 
-    transaction_id = serializers.CharField()
-    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
-    currency = serializers.CharField(default="USD")
+#     transaction_id = serializers.CharField()
+#     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+#     currency = serializers.CharField(default="USD")
 
-    def validate(self, data):
-        # Check client
-        try:
-            client = Client.objects.get(uuid=data["client_id"])
-        except Client.DoesNotExist:
-            raise serializers.ValidationError({"client_id": _("Client not found")})
+#     def validate(self, data):
+#         # Check client
+#         try:
+#             client = Client.objects.get(uuid=data["client_id"])
+#         except Client.DoesNotExist:
+#             raise serializers.ValidationError({"client_id": _("Client not found")})
 
-        # Prevent duplicate transaction_id
-        if Payment.objects.filter(transaction_id=data["transaction_id"]).exists():
-            raise serializers.ValidationError({"transaction_id": _("Transaction already exists")})
+#         # Prevent duplicate transaction_id
+#         if Payment.objects.filter(transaction_id=data["transaction_id"]).exists():
+#             raise serializers.ValidationError({"transaction_id": _("Transaction already exists")})
 
-        data["client"] = client
-        return data
+#         data["client"] = client
+#         return data
 
-    def create(self, validated_data):
-        client = validated_data["client"]
-        plan = validated_data["plan"]
+#     def create(self, validated_data):
+#         client = validated_data["client"]
+#         plan = validated_data["plan"]
 
-        # Create payment
-        payment = Payment.objects.create(
-            client=client,
-            amount=validated_data["amount"],
-            currency=validated_data["currency"],
-            method=validated_data["method"],
-            transaction_id=validated_data["transaction_id"],
-            plan=plan,
-            status="success"
-        )
+#         # Create payment
+#         payment = Payment.objects.create(
+#             client=client,
+#             amount=validated_data["amount"],
+#             currency=validated_data["currency"],
+#             method=validated_data["method"],
+#             transaction_id=validated_data["transaction_id"],
+#             plan=plan,
+#             status="success"
+#         )
 
-        # Apply plan to client
-        payment.apply_to_client()
+#         # Apply plan to client
+#         payment.apply_to_client()
 
-        return payment
+#         return payment
 
 
 class CreatePaymentOrderSerializer(serializers.Serializer):
     client_id = serializers.UUIDField()
-    plan = serializers.PrimaryKeyRelatedField(queryset=SubscriptionPlan.objects.filter(is_active=True))
-    period = serializers.ChoiceField(choices=PAYMENT_PERIODS)
+    plan_id = serializers.PrimaryKeyRelatedField(
+        queryset=SubscriptionPlan.objects.filter(is_active=True)
+    )
+    direction = serializers.ChoiceField(choices=PAYMENT_PERIODS)  # month / year
     method = serializers.ChoiceField(choices=PAYMENT_METHODS)
 
     def validate(self, data):
+        # التحقق من العميل
         try:
             client = Client.objects.get(uuid=data["client_id"])
         except Client.DoesNotExist:
             raise serializers.ValidationError({"client_id": _("Client not found")})
 
+        if not client.is_active:
+            raise serializers.ValidationError({"client_id": _("Client account is inactive")})
+
+        # التحقق من الخطة
+        plan = data["plan_id"]
+        direction = data["direction"]
+
+        # تحديد المدة والسعر
+        if direction == "month":
+            amount = plan.month_price
+            duration = plan.duration_months
+        elif direction == "year":
+            amount = plan.year_price
+            duration = plan.duration_years
+        else:
+            raise serializers.ValidationError({"direction": _("Invalid payment direction")})
+
+        # منع وجود دفعة معلقة لنفس الخطة
+        pending_payments = Payment.objects.filter(
+            client=client,
+            plan=plan,
+            status='pending'
+        )
+        if pending_payments.exists():
+            raise serializers.ValidationError(
+                _("You already have a pending payment for this plan")
+            )
+
+        # إضافة البيانات المعالجة
         data["client"] = client
+        data["plan"] = plan
+        data["amount"] = amount
+        data["duration"] = duration
+        data["method"] = data["method"]
+
         return data
-
-

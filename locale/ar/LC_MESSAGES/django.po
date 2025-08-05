@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-04 17:53+0300\n"
+"POT-Creation-Date: 2025-08-05 11:34+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,18 +144,6 @@ msgstr "✅ تم حذف جميع الملفات المؤقتة والملفات 
 msgid "Name"
 msgstr "اسم المستخدم"
 
-#: .\tenants\models.py:15
-#, fuzzy
-#| msgid "Months"
-msgid "Month"
-msgstr "شهر"
-
-#: .\tenants\models.py:16
-#, fuzzy
-#| msgid "Years"
-msgid "Year"
-msgstr "سنة"
-
 #: .\tenants\models.py:17 .\tenants\models.py:67
 msgid "Max Users"
 msgstr "عدد المستخدمين"
@@ -169,12 +157,12 @@ msgid "Max Products"
 msgstr "المنتجات"
 
 #: .\tenants\models.py:20
-msgid "Month Price"
-msgstr "السعر الشهري"
+msgid "Month"
+msgstr "شهر"
 
 #: .\tenants\models.py:21
-msgid "Year Price"
-msgstr "السعر السنوي"
+msgid "Year"
+msgstr "سنة"
 
 #: .\tenants\models.py:22
 msgid "Currency"
@@ -303,6 +291,12 @@ msgstr "تم تفعيل الحساب بنجاح. يمكنك الآن تسجيل 
 #: .\tenants\views.py:151
 msgid "Payment method not supported yet."
 msgstr "الطريقة الدفع غير مدعومة"
+
+#~ msgid "Month Price"
+#~ msgstr "السعر الشهري"
+
+#~ msgid "Year Price"
+#~ msgstr "السعر السنوي"
 
 #~ msgid "Duration Months"
 #~ msgstr " الاشتراك الشهري"

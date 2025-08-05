@@ -2,24 +2,29 @@
 import { useTranslations } from 'next-intl';
 import { PLAN_LIMITS } from '@/constants/plans';
 import PayPalButton from '@/components/PayPalButton';
-import { Users, Store, Package, Check } from 'lucide-react';
+import { Users, Store, Package, Check, Link as LinkIcon } from 'lucide-react';
 import {FetchData} from '@/lib/api/api';
 import { useEffect, useState } from 'react';
+import { useUser } from '@/lib/context/userContext';
+import { Link } from '@/app/i18n/navigation';
 type PricingPlansProps = {
-  clientId: string;
+  clientId?: string;
 };
 
 export default function PricingPlans({ clientId }: PricingPlansProps) {
   const t = useTranslations('pricingSection');
+  const { user } = useUser();
   const [plans, setPlans] = useState<any>(null);
-  // const plans1= await FetchData({url: "/api/tenants/subscription-plans/"});
-  // const plans = Object.keys(PLAN_LIMITS) as (keyof typeof PLAN_LIMITS)[];
     useEffect(() => {
       (async () => {
         const data = await FetchData({url: `/api/tenants/subscription-plans/` });
-        setPlans(data);
-        console.log("plans",data);
-      })();
+
+        if(user)
+          setPlans(data.filter((p:any) => p.name !== "trial")) 
+        else
+          setPlans(data)
+        })();
+
     }, []);
   
 
@@ -79,26 +84,32 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
   // );
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <section className="py-20 bg-gray-50 dark:bg-gray-900" id="pricing">
+          <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold mb-12 text-gray-900 dark:text-white">
+          {t('title')}
+        </h2>
+
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3">
       {plans?.length > 0 && plans
-        .filter((p) => p.name !== "trial") // استبعاد الباقة المجانية
-        .map((plan) => (
+        .map((plan:any) => (
           <div
             key={plan.id}
-            className="p-6 rounded-xl shadow-md border bg-surface flex flex-col justify-between"
+            className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6 flex flex-col justify-between border hover:scale-[1.02] transition-transform"
           >
             <div>
               {/* اسم الباقة */}
-              <h3 className="text-xl font-semibold mb-2 capitalize">
+              <h3 className="text-xl font-semibold mb-2">
                 {/* {plan[plan.field_labels.name] || plan.name} */}
-                {plan.name}
+                {/* {plan.name} */}
+                {t(plan.name)}
               </h3>
 
               {/* السعر الشهري */}
               <p className="text-2xl font-bold text-blue-600 mb-4">
                 ${plan.month_price}/
                 <span className="text-lg">
-                  {plan.field_labels.duration_months}
+                  {plan.field_labels.month_price}
                 </span>
               </p>
 
@@ -107,7 +118,7 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
                 <p className="text-2xl font-bold text-blue-600 mb-4">
                   ${plan.year_price}/
                   <span className="text-lg">
-                    {plan.field_labels.duration_years}
+                    {plan.field_labels.year_price}
                   </span>
                 </p>
               )}
@@ -138,23 +149,38 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
             </div>
 
             {/* أزرار الدفع */}
-            <div className="flex justify-center gap-4">
+
+             {!user && <Link
+                href={`/auth/register?plan=${plan.name}`}
+                className="mt-6 w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-opacity-90 transition"
+              >
+                {plan.name === 'enterprise' ? t('contactUs') : t('choosePlan')}
+              </Link>}
+
+
+           {user && 
+           <div className="flex justify-center gap-4">
+            
               <PayPalButton
-                clientId={clientId}
-                plan={plan.id}
-                direction="month"
-                label={plan.field_labels.month_price}
+                clientId={clientId!}
+                planId={plan.id}
+                direction={plan.field_labels.month_price}
+                
+                // label={` ${plan.field_labels.month_price}`}
               />
               <PayPalButton
-                clientId={clientId}
-                plan={plan.id}
-                direction="year"
-                label={plan.field_labels.year_price}
+                clientId={clientId!}
+                planId={plan.id}
+                direction={plan.field_labels.year_price}
+                // label={`${plan.field_labels.year_price}`}
               />
             </div>
+            }
           </div>
         ))}
     </div>
+    </div>
+    </section>
   );
 }
 

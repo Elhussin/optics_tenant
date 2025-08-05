@@ -20,7 +20,7 @@ export default function PayPalProcessingPage() {
     const period = searchParams.get("period");
 
     if (!paymentId || !payerId || !clientId || !plan || !period) {
-      router.replace("/paypal/fail");
+      router.replace("/payment/fail");
       return;
     }
 
@@ -41,14 +41,14 @@ export default function PayPalProcessingPage() {
         );
 
         if (res.status === 200) {
-          router.replace("/paypal/success");
+          router.replace("/payment/success");
         } else {
           setStatus("error");
-          router.replace("/paypal/fail");
+          router.replace("/payment/fail");
         }
       } catch (error) {
         setStatus("error");
-        router.replace("/paypal/fail");
+        router.replace("/payment/fail");
       }
     };
 

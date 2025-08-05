@@ -12,13 +12,13 @@ from core.models import BaseModel
 class SubscriptionPlan(BaseModel):
     """Plane Subscription """
     name = models.CharField(max_length=50, unique=True,verbose_name=_("Name"))  # trial, basic, premium...
-    duration_months = models.PositiveIntegerField(default=30,verbose_name=_("Month"))
-    duration_years = models.PositiveIntegerField(default=365,verbose_name=_("Year"))
+    duration_months = models.PositiveIntegerField(default=30,)
+    duration_years = models.PositiveIntegerField(default=365)
     max_users = models.PositiveIntegerField(default=1,verbose_name=_("Max Users"))
     max_branches = models.PositiveIntegerField(default=1,verbose_name=_("Max Branches"))
     max_products = models.PositiveIntegerField(default=200,verbose_name=_("Max Products"))
-    month_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Month Price"))
-    year_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Year Price"))
+    month_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Month"))
+    year_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Year"))
     currency = models.CharField(max_length=10, default="USD", choices=CURANCY,verbose_name=_("Currency"))
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Discount"))
 
@@ -51,6 +51,10 @@ class PendingTenantRequest(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        if not self.schema_name.isalnum():
+            raise ValidationError("Schema name must be alphanumeric")
 
     def save(self, *args, **kwargs):
         """Set plan to trial and expires_at to expiration_date"""
@@ -114,18 +118,36 @@ class Payment(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="USD", choices=CURANCY)
     method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default="paypal")
-    transaction_id = models.CharField(max_length=100, blank=True, null=True, unique=True)
+    transaction_id = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    direction = models.CharField(max_length=10, choices=[('monthly', 'Monthly'), ('yearly', 'Yearly')], default='monthly')
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
         ordering = ["-created_at"]
+        # Prevent duplicate pending payments
+        constraints = [
+            models.UniqueConstraint(
+                fields=['client', 'plan', 'status'],
+                condition=models.Q(status='pending'),
+                name='unique_pending_payment'
+            )
+        ]
 
     def __str__(self):
         return f"{self.client} - {self.amount} {self.currency} via {self.method} ({self.status})"
 
     def apply_to_client(self):
         """Apply plan to client if payment is success"""
-        update_client_plan(self)
+        if self.status == 'success':
+            try:
+                update_client_plan(self)
+                logger.info(f"Successfully applied plan {self.plan} to client {self.client}")
+            except Exception as e:
+                logger.error(f"Failed to apply plan to client: {str(e)}")
+                raise
+        else:
+            logger.warning(f"Attempted to apply plan for non-successful payment: {self.id}")

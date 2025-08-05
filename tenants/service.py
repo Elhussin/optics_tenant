@@ -14,14 +14,18 @@ FRONTEND_URL=config("FRONTEND_URL")
 
 
 
-def create_paypal_order(client, plan, period,amount=0):
+def create_paypal_order(client, plan, direction,amount=0):
     from decouple import config
 
-
+    """
+    Enhanced PayPal order creation with internal payment ID tracking
+    """
     # روابط الرجوع (مع تمرير معرف العميل لتحديده بعد الدفع)
-    return_url = f"{config('FRONTEND_URL')}/paypal/processing?client_id={client.id}&plan={plan}&period={period}"
-    cancel_url = f"{config('FRONTEND_URL')}/paypal/processing?client_id={client.id}&plan={plan}&period={period}"
-
+    return_url = f"{config('FRONTEND_URL')}/payment/processing?client_id={client.id}&plan={plan}&direction={direction}"
+    cancel_url = f"{config('FRONTEND_URL')}/payment/processing?client_id={client.id}&plan={plan}&direction={direction}"
+        # return_url = f"{settings.FRONTEND_URL}/payment/success?payment_id={internal_payment_id}"
+        # cancel_url = f"{settings.FRONTEND_URL}/payment/cancel?payment_id={internal_payment_id}"
+        
     # إنشاء الطلب في PayPal
     payment = paypalrestsdk.Payment({
         "intent": "sale",
@@ -35,7 +39,7 @@ def create_paypal_order(client, plan, period,amount=0):
         "transactions": [{
             "item_list": {
                 "items": [{
-                    "name": f"{plan} plan ({period})",
+                    "name": f"{plan} plan ({direction})",
                     "sku": plan,
                     "price": str(amount),
                     "currency": "USD",
@@ -46,7 +50,7 @@ def create_paypal_order(client, plan, period,amount=0):
                 "total": str(amount),
                 "currency": "USD"
             },
-            "description": f"Subscription for {client.name} ({plan} - {period})",
+            "description": f"Subscription for {client.name} ({plan} - {direction})",
             "custom": str(client.id)  # مهم جدًا عشان نعرف العميل
         }]
     })
@@ -144,3 +148,14 @@ def log_payment(client_id, plan, transaction_id, status, amount=0):
         end_date=now().date(),
         status=status
     )
+
+
+# # Helper function improvements
+# def log_payment(client_id, plan, transaction_id, status):
+#     """Enhanced payment logging"""
+#     try:
+#         logger.info(f"Payment log: client_id={client_id}, plan={plan.name if plan else 'Unknown'}, "
+#                    f"transaction_id={transaction_id}, status={status}")
+#         # Add to database logging table if needed
+#     except Exception as e:
+#         logger.error(f"Failed to log payment: {str(e)}")

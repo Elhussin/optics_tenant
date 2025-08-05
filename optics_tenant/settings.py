@@ -27,6 +27,7 @@ DATABASES = {
 }
 DATABASE_ROUTERS = ('django_tenants.routers.TenantSyncRouter',)
 
+DATABASES['default']['ATOMIC_REQUESTS'] = True  # For extra safety
 # ===============================
 # SHARED_APPS
 # ===============================
@@ -283,6 +284,12 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logs', 'custom.log'),
             'formatter': 'verbose',
         },
+        'tenant_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'tenant.log'),
+            'formatter': 'verbose',
+        },
     },
 
     # loggers
@@ -294,6 +301,11 @@ LOGGING = {
         },
         'custom': {  # جديد
             'handlers': ['custom_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'tenant': {  # جديد
+            'handlers': ['tenant_file'],
             'level': 'INFO',
             'propagate': False,
         },
