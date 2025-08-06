@@ -21,8 +21,8 @@ def create_paypal_order(client, plan, direction,amount=0):
     Enhanced PayPal order creation with internal payment ID tracking
     """
     # روابط الرجوع (مع تمرير معرف العميل لتحديده بعد الدفع)
-    return_url = f"{config('FRONTEND_URL')}/payment/processing?client_id={client.id}&plan={plan}&direction={direction}"
-    cancel_url = f"{config('FRONTEND_URL')}/payment/processing?client_id={client.id}&plan={plan}&direction={direction}"
+    return_url = f"{config('FRONTEND_URL')}/payment/processing?client_id={client.uuid}&plan={plan}&direction={direction}"
+    cancel_url = f"{config('FRONTEND_URL')}/payment/processing?client_id={client.uuid}&plan={plan}&direction={direction}"
         # return_url = f"{settings.FRONTEND_URL}/payment/success?payment_id={internal_payment_id}"
         # cancel_url = f"{settings.FRONTEND_URL}/payment/cancel?payment_id={internal_payment_id}"
         
@@ -51,7 +51,7 @@ def create_paypal_order(client, plan, direction,amount=0):
                 "currency": "USD"
             },
             "description": f"Subscription for {client.name} ({plan} - {direction})",
-            "custom": str(client.id)  # مهم جدًا عشان نعرف العميل
+            "custom": str(client.id) # مهم جدًا عشان نعرف العميل
         }]
     })
 

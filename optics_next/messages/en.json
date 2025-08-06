@@ -159,7 +159,6 @@
     "Careers": "Careers",
     "Blog": "Blog"
   },
-
   "pricingSection": {
     "title": "Choose Your Plan",
     "free": "Free",
@@ -198,6 +197,29 @@
         "features": [ "Custom Features", "Priority Support"]
       }
     }
+  },
+  "paymantPage": {
+    "title": "Complete Your Payment",
+    "duration": "Billing Cycle",
+    "plan": "Plan",
+    "choosePlan": "Choose Plan",
+    "payButton": "Pay Now",
+    "processing": "Processing your payment...",
+    "paypal": "PayPal",
+    "stripe": "Stripe payment coming soon...",
+    "cash": "Please pay in cash at our store.",
+    "bankName": "Bank Name",
+    "accountNumber": "Account Number",
+    "iban": "IBAN",
+    "other": "Please contact support for other payment options.",
+    "sendEmail": "Send Email",
+    "callUs": "Call Us",
+    "whatsapp": "WhatsApp"
+  },
+  "paymentFail": {
+    "title": "Payment Failed",
+    "description": "Unfortunately, your payment could not be processed. Please try again or contact support.",
+    "button": "Try Again"
   }
 }
 

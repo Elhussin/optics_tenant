@@ -1,26 +1,26 @@
+"use client";
 
-'use client';
-import PayPalButton from "@/components/PayPalButton";
-import { useUser } from "@/lib/context/userContext";
-
+import { useSearchParams } from "next/navigation";
+import Paymant from "@/components/layout/paymant/Paymant";
 export default function PaymentPage() {
-  // هنا ممكن تجيب clientId من session أو props
-  const {user} = useUser();
-  console.log(user);
-  const clientId = user?.id; 
-  const planId = user?.plan_id;
-  const direction = user?.direction;
-
+  const searchParams = useSearchParams();
+  const planId = searchParams.get("planId");
+  const direction = (searchParams.get("direction") || "month").toLowerCase() as "month" | "year";
+  const amount = searchParams.get("amount");
+  const planName = searchParams.get("planName");
+  const clientId = searchParams.get("clientId");
   return (
     <>
-    <h1>Payment Page</h1>
-    <h2>Client ID: {clientId}</h2>
-    <h2>Plan ID: {planId}</h2>
-    <h2>Direction: {direction}</h2>
-    <h2>Amount: {user?.amount}</h2>
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <PayPalButton clientId={clientId} planId={planId} direction={direction} />
-    </div>
+    {planId && amount && planName && clientId &&
+      <Paymant
+      planId={planId}
+      direction={direction}
+      amount={amount}
+      planName={planName}
+      clientId={clientId}
+    />
+    }
     </>
   );
+
 }

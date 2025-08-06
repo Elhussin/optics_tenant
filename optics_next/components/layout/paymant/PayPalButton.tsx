@@ -4,14 +4,7 @@ import { useState } from "react";
 import { axiosInstance } from "@/lib/api/axios";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { apiConfig } from "@/lib/api/apiConfig";
-
-type PayPalButtonProps = {
-  clientId: string;
-  planId: string; // نوع الخطة المراد شراؤها
-  direction: "month" | "year";
-  label?: string;
-  method?: string;
-};
+import { PayPalButtonProps } from "@/types";
 
 export default function PayPalButton({ clientId, planId, direction, label ,method}: PayPalButtonProps) {
   const [loading, setLoading] = useState(false);
@@ -19,8 +12,12 @@ export default function PayPalButton({ clientId, planId, direction, label ,metho
     try {
       setLoading(true);
       apiConfig.ignoreSubdomain = true;
+      if(direction=="شهر"){
+        direction='month'
+      }else if(direction=="سنة"){
+        direction='year'
+      }
       const baseUrl = getBaseUrl(undefined, apiConfig.ignoreSubdomain);
-
       const res = await axiosInstance.post(
         `${baseUrl}/api/tenants/create-payment-order/`,
         { client_id: clientId, plan_id: planId, direction: direction?.toLocaleLowerCase() ,method: method?.toLocaleLowerCase() || "paypal" }
@@ -30,7 +27,7 @@ export default function PayPalButton({ clientId, planId, direction, label ,metho
       console.log("data", data);
       if (data.approval_url) {
         console.log("data.approval_url", data.approval_url);
-        window.open(data.approval_url, '_blank');
+        window.open(data.approval_url, '_self');
         // window.location.href = data.approval_url;
       } else {
 

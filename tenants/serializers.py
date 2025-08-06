@@ -1,4 +1,5 @@
 
+from paypalrestsdk.openid_connect import client_id
 from rest_framework import serializers
 from tenants.models import Client, PendingTenantRequest, Payment,Domain,SubscriptionPlan
 from django.utils.translation import gettext_lazy as _
@@ -133,6 +134,7 @@ class DomainSerializer(serializers.ModelSerializer):
 
 class CreatePaymentOrderSerializer(serializers.Serializer):
     client_id = serializers.UUIDField()
+
     plan_id = serializers.PrimaryKeyRelatedField(
         queryset=SubscriptionPlan.objects.filter(is_active=True)
     )
@@ -174,7 +176,6 @@ class CreatePaymentOrderSerializer(serializers.Serializer):
                 _("You already have a pending payment for this plan")
             )
 
-        # إضافة البيانات المعالجة
         data["client"] = client
         data["plan"] = plan
         data["amount"] = amount

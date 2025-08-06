@@ -78,7 +78,7 @@ export async function middleware(request: NextRequest) {
     // If there is a language prefix, use it
     const locale = pathname.split('/')[1];
     const loginPath = `/${locale}/auth/login`;
-    return unauthorizedResponse(request, loginPath, 'You need to login to access this page');
+    return unauthorizedResponse(request, loginPath, 'You need to login to access this page1');
   }
   
   try {

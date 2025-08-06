@@ -4,7 +4,7 @@ import HeroSection from '@/components/layout/home/HeroSection';
 import FeaturesSection from '@/components/layout/home/FeaturesSection';
 import PricingSection from '@/components/layout/home/PricingSection';
 import { getTranslations } from 'next-intl/server';
-import PricingPlans from '@/components/PricingPlans';
+import PricingPlans from '@/components/layout/paymant/PricingPlans';
 export const metadata: Metadata = {
   title: 'O-S-M',
   description: 'Opticl Store Management System',

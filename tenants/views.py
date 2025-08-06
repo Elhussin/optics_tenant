@@ -37,7 +37,7 @@ from core.utils.email import send_activation_email, send_message_acount_activate
 from core.utils.expiration_date import expiration_date
 from optics_tenant.config_loader import config
 
-logger = logging.getLogger('paypal')
+paymant_logger = logging.getLogger('paypal')
 tenant_logger = logging.getLogger('tenant')
 
 FRONTEND_URL = config("FRONTEND_URL")
@@ -61,68 +61,6 @@ class RegisterTenantView(APIView):
             return Response({"detail": _("Activation email sent.")}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-# ==============================================================
-# تفعيل العميل بعد الضغط على رابط التفعيل
-# ==============================================================
-
-# class ActivateTenantView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def get(self, request):
-#         token = request.query_params.get("token")
-#         try:
-#             pending = PendingTenantRequest.objects.get(token=token)
-#         except PendingTenantRequest.DoesNotExist:
-#             return Response({"detail": _("Invalid or expired activation link.")}, status=400)
-
-#         if pending.is_activated:
-#             return Response({"detail": _("Your account is already activated. Please login.")}, status=400)
-
-#         if pending.token_expires_at < timezone.now():
-#             pending.token_expires_at = expiration_date(1)
-#             pending.save()
-#             send_activation_email(pending.email, pending.token)
-#             return Response({"detail": _("Activation link expired. New activation email sent.")}, status=400)
-#         trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
-       
-#         # Create Client with trial plan
-#         tenant = Client.objects.create(
-#                 schema_name=pending.schema_name,
-#                 name=pending.name,
-#                 plan=trial_plan,
-#                 max_users=trial_plan.max_users,
-#                 max_products=trial_plan.max_products,
-#                 max_branches=trial_plan.max_branches,
-#                 paid_until=expiration_date(trial_plan.duration_months),
-#                 on_trial=True,
-#             )
-
-#         # Create domain
-#         domain = f"{slugify(pending.schema_name)}.{settings.TENANT_BASE_DOMAIN}"
-#         Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
-
-#         # Create superuser inside tenant schema
-#         with schema_context(pending.schema_name):
-#             from django.contrib.auth import get_user_model
-#             User = get_user_model()
-#             User.objects.create_superuser(
-#                 username=pending.name,
-#                 email=pending.email,
-#                 password=pending.password,
-#                 role=Role.objects.get(name="owner"),
-#                 client=tenant
-#             )
-
-#         pending.is_activated = True
-#         pending.save()
-
-#         send_message_acount_activated(pending.email, pending.schema_name, pending.name)
-
-#         return Response({"detail": _("Account activated successfully. You can now log in.")})
 
 
 
@@ -189,7 +127,6 @@ class ActivateTenantView(APIView):
                     from django.contrib.auth import get_user_model
                     from users.models import Role,Permission,RolePermission
                     
-
                     try:
                         owner_role=Role.objects.create(name="owner",description="Owner role")
                         all_permission=Permission.objects.create(code="__all__",description="All permissions")
@@ -277,18 +214,17 @@ class CreatePaymentOrderView(APIView):
             duration=serializer.validated_data["duration"]
             method=serializer.validated_data["method"]
             print(client,plan,amount,duration,method)
-            print(plan.name)
-            
+
             try:
                 if method == "paypal" or method == "":
-                    approval_url = create_paypal_order(client, plan.name, duration,amount)
+                    approval_url = create_paypal_order(client, plan.id, duration,amount,)
                     return Response({"approval_url": approval_url})
                 # add other payment methods
                 else:
                     return Response({"detail": _("Payment method not supported yet.")}, status=400)
 
             except Exception as e:
-                logger.error(f"Error creating payment order: {str(e)}")
+                paymant_logger.error(f"Error creating payment order: {str(e)}")
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -298,94 +234,58 @@ class CreatePaymentOrderView(APIView):
 
 
 # ==============================================================
-# Complete payment after user returns from PayPal
+# Complete payment after user returns from PayPal    
 
-
-# class PayPalExecuteView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def post(self, request):
-#         payment_id = request.data.get("paymentId")
-#         payer_id = request.data.get("PayerID")
-#         plan_id = request.data.get("plan_id")
-#         client_uuid = request.data.get("client_id")
-
-#         if not all([payment_id, payer_id, plan_id, client_uuid]):
-#             return Response({"error": "Missing required fields"}, status=400)
-
-#         # Check client
-#         try:
-#             client = Client.objects.get(uuid=client_uuid)
-#         except Client.DoesNotExist:
-#             return Response({"error": "Client not found"}, status=400)
-
-#         # Check plan
-#         try:
-#             plan = SubscriptionPlan.objects.get(id=plan_id)
-#         except SubscriptionPlan.DoesNotExist:
-#             return Response({"error": "Plan not found"}, status=400)
-
-
-#         access_token = get_paypal_access_token()
-#         if not verify_paypal_transaction(payment_id, access_token):
-#             log_payment(client.id, plan, payment_id, "failed") # To log the payment
-#             return Response({"error": "Payment not completed"}, status=400)
-
-#         payment = Payment.objects.create(
-#             client=client,
-#             plan=plan,
-#             amount=Decimal(plan.price),
-#             currency=plan.currency,
-#             method="paypal",
-#             transaction_id=payment_id,
-#             status="success"
-#         )
-#         payment.apply_to_client()
-
-#         return Response({"detail": "Payment executed successfully"}, status=200)
-    
 class PayPalExecuteView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        payment_id = request.data.get("paymentId")
-        payer_id = request.data.get("PayerID")
+        payment_id = request.data.get("payment_id")
+        payer_id = request.data.get("payer_id")
         plan_id = request.data.get("plan_id")
         client_uuid = request.data.get("client_id")
-        internal_payment_id = request.data.get("payment_id")  # Our internal payment ID
-
+        # internal_payment_id = request.data.get("payment_id")  # Our internal payment ID
+        paymant_logger.info(f"PayPalExecuteView: {payment_id}, {payer_id}, {plan_id}, {client_uuid}")
         # Validate required fields
-        if not all([payment_id, payer_id]):
+        
+        if not all([payment_id, payer_id,plan_id, client_uuid]):
             return Response({"error": _("Missing PayPal payment information")}, status=400)
 
         try:
-            with transaction.atomic():
-                # Get internal payment record if provided
-                payment = None
-                if internal_payment_id:
-                    try:
-                        payment = Payment.objects.get(id=internal_payment_id, status='pending')
-                        client = payment.client
-                        plan = payment.plan
-                    except Payment.DoesNotExist:
-                        return Response({"error": _("Payment record not found")}, status=400)
-                else:
-                    # Fallback to old method if internal payment ID not provided
-                    if not all([plan_id, client_uuid]):
-                        return Response({"error": _("Missing required fields")}, status=400)
-                    
-                    try:
-                        client = Client.objects.get(uuid=client_uuid)
-                        plan = SubscriptionPlan.objects.get(id=plan_id)
-                    except (Client.DoesNotExist, SubscriptionPlan.DoesNotExist) as e:
-                        return Response({"error": _("Client or plan not found")}, status=400)
 
+            with transaction.atomic():
+                # print ("start proced")
+                # internal_payment=Payment.objects.get(transaction_id=payment_id, status='pending')
+                payment = None
+                # if internal_payment:
+                #     print("paymant is ")
+                #     try:
+                #         client = internal_payment.client
+                #         plan = internal_payment.plan
+                #     except Payment.DoesNotExist:
+                #         return Response({"error": _("Payment record not found")}, status=400)
+                    
+                # else:
+             
+                # Fallback to old method if internal payment ID not provided
+                print("IF not paymant ")
+                if not all([plan_id, client_uuid]):
+                    return Response({"error": _("Missing required fields")}, status=400)
+                
+
+                try:
+                    client = Client.objects.get(uuid=client_uuid)
+                    plan = SubscriptionPlan.objects.get(id=plan_id)
+                except (Client.DoesNotExist, SubscriptionPlan.DoesNotExist) as e:
+                    return Response({"error": _("Client or plan not found")}, status=400)
+                print("cheacktoken")
                 # Verify PayPal transaction
                 access_token = get_paypal_access_token()
                 if not access_token:
-                    logger.error("Failed to get PayPal access token")
+                    paymant_logger.error("Failed to get PayPal access token")
                     return Response({"error": _("Payment verification failed")}, status=500)
-
+                print("print cheak staus")
+                paymant_logger.info("verify_paypal_transaction",payment_id,access_token)
                 if not verify_paypal_transaction(payment_id, access_token):
                     if payment:
                         payment.status = "failed"
@@ -394,6 +294,7 @@ class PayPalExecuteView(APIView):
                     log_payment(client.id, plan, payment_id, "failed")
                     return Response({"error": _("Payment verification failed")}, status=400)
 
+                # paymant_logger.info("verify_paypal_transaction",payment_id,access_token)
                 # Update existing payment or create new one
                 if payment:
                     payment.transaction_id = payment_id
@@ -413,14 +314,14 @@ class PayPalExecuteView(APIView):
                 # Apply plan to client
                 payment.apply_to_client()
 
-                logger.info(f"PayPal payment executed successfully: {payment_id}")
+                paymant_logger.info(f"PayPal payment executed successfully: {payment_id}")
                 return Response({
                     "detail": _("Payment executed successfully"),
-                    "payment_id": payment.id
+                    "payment_id": payment.pk
                 }, status=200)
 
         except Exception as e:
-            logger.error(f"Error executing PayPal payment: {str(e)}")
+            paymant_logger.error(f"Error executing PayPal payment: {str(e)}")
             return Response({
                 "error": _("Payment processing failed")
             }, status=500)
@@ -434,7 +335,7 @@ class PayPalWebhookView(APIView):
     def post(self, request):
         event = request.data
         event_type = event.get("event_type")
-        logger.info(f"Received PayPal webhook: {event_type}")
+        paymant_logger.info(f"Received PayPal webhook: {event_type}")
 
         if event_type == "PAYMENT.SALE.COMPLETED":
             try:
@@ -456,11 +357,11 @@ class PayPalWebhookView(APIView):
                 )
                 payment.apply_to_client()
 
-                logger.info(f"Payment processed successfully for client: {client.name}")
+                paymant_logger.info(f"Payment processed successfully for client: {client.name}")
                 return Response({"status": "success"})
 
             except Exception as e:
-                logger.error(f"Error processing PayPal webhook: {str(e)}")
+                paymant_logger.error(f"Error processing PayPal webhook: {str(e)}")
                 return Response({"error": str(e)}, status=400)
 
         return Response({"status": "ignored"})

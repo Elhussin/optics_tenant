@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useUser } from '@/lib/context/userContext';
 import { FetchData } from '@/lib/api/api';
-import PricingPlans from '@/components/PricingPlans';
+import PricingPlans from '@/components/layout/paymant/PricingPlans';
 import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';
 import { Loading4 } from '@/components/ui/loding';
 
@@ -117,7 +117,8 @@ export default function Profile() {
   
         {/* عرض خطط الترقية إذا كانت الخطة trial أو الاشتراك منتهي */}
         {user.role.name.toLowerCase() === 'owner' && clientData && (clientData.plans.name === 'trial' || daysLeft !== null && daysLeft <= 0) && (
-          <PricingPlans clientId={String(clientData.uuid)} /> 
+         
+         <PricingPlans clientId={String(clientData.uuid)} /> 
         )}
       </div>
     );

@@ -16,14 +16,19 @@ export default function PayPalProcessingPage() {
     const paymentId = searchParams.get("paymentId");
     const payerId = searchParams.get("PayerID");
     const clientId = searchParams.get("client_id");
-    const plan = searchParams.get("plan");
-    const period = searchParams.get("period");
+    const planID = searchParams.get("plan");
+    const duration = searchParams.get("duration");
 
-    if (!paymentId || !payerId || !clientId || !plan || !period) {
+    if (!paymentId || !payerId || !clientId || !planID ) {
+
       router.replace("/payment/fail");
       return;
     }
-
+    console.log("paymentId", paymentId);
+    console.log("payerId", payerId);
+    console.log("clientId", clientId);
+    console.log("plan", planID);
+    console.log("duration", duration);
     const executePayment = async () => {
       try {
         apiConfig.ignoreSubdomain = true;
@@ -32,21 +37,25 @@ export default function PayPalProcessingPage() {
         const res = await axiosInstance.post(
           `${baseUrl}/api/tenants/paypal/execute/`,
           {
-            paymentId,
-            PayerID: payerId,
+  
+            payment_id:paymentId,
+            payer_id: payerId,
             client_id: clientId,
-            plan,
-            period
+            plan_id:planID,
+            // duration:duration
           }
         );
 
         if (res.status === 200) {
           router.replace("/payment/success");
+          console.log("res", res);
         } else {
           setStatus("error");
           router.replace("/payment/fail");
+          console.log("res", res);
         }
       } catch (error) {
+        console.log("error", error);
         setStatus("error");
         router.replace("/payment/fail");
       }
