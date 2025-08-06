@@ -3,6 +3,9 @@ import paypalrestsdk
 from django.conf import settings
 from optics_tenant.config_loader import config
 import requests
+from tenants.models import Payment
+from django.utils.timezone import now
+from dateutil.relativedelta import relativedelta
 
 paypalrestsdk.configure({
     "mode": config("PAYPAL_MODE"),
@@ -63,16 +66,6 @@ def create_paypal_order(client, plan, period):
         raise Exception("Approval URL not found in PayPal response.")
     else:
         raise Exception(payment.error)
-
-# ==============================================================
-# دالة واحدة لتحديث الاشتراك بعد الدفع
-# ==============================================================
-
-# tenants/utils.py أو أي ملف utils مناسب
-from tenants.models import Payment
-from django.utils.timezone import now
-from dateutil.relativedelta import relativedelta
-
 
 
 def calculate_duration_from_amount(payment):

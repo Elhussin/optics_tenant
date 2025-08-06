@@ -89,48 +89,6 @@ class DomainSerializer(serializers.ModelSerializer):
 
 
 
-# class PaymentSerializer(serializers.Serializer):
-#     client_id = serializers.UUIDField()
-#     plan = serializers.PrimaryKeyRelatedField(queryset=SubscriptionPlan.objects.filter(is_active=True))
-
-#     transaction_id = serializers.CharField()
-#     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
-#     currency = serializers.CharField(default="USD")
-
-#     def validate(self, data):
-#         # Check client
-#         try:
-#             client = Client.objects.get(uuid=data["client_id"])
-#         except Client.DoesNotExist:
-#             raise serializers.ValidationError({"client_id": _("Client not found")})
-
-#         # Prevent duplicate transaction_id
-#         if Payment.objects.filter(transaction_id=data["transaction_id"]).exists():
-#             raise serializers.ValidationError({"transaction_id": _("Transaction already exists")})
-
-#         data["client"] = client
-#         return data
-
-#     def create(self, validated_data):
-#         client = validated_data["client"]
-#         plan = validated_data["plan"]
-
-#         # Create payment
-#         payment = Payment.objects.create(
-#             client=client,
-#             amount=validated_data["amount"],
-#             currency=validated_data["currency"],
-#             method=validated_data["method"],
-#             transaction_id=validated_data["transaction_id"],
-#             plan=plan,
-#             status="success"
-#         )
-
-#         # Apply plan to client
-#         payment.apply_to_client()
-
-#         return payment
-
 
 class CreatePaymentOrderSerializer(serializers.Serializer):
     client_id = serializers.UUIDField()
@@ -180,6 +138,7 @@ class CreatePaymentOrderSerializer(serializers.Serializer):
         data["plan"] = plan
         data["amount"] = amount
         data["duration"] = duration
+        data["direction"] = direction
         data["method"] = data["method"]
 
         return data

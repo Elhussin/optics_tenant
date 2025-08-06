@@ -8,7 +8,7 @@ import PaymentProcessingModal from "./PaymentProcessingModal";
 
 
 export default function Payment(props:PayPalButtonProps) {
-  const {planId,direction,amount,planName,clientId} = props;
+  const {planId,direction,amount,planName,clientId,duration} = props;
   const { user } = useUser();
   const t = useTranslations('paymantPage');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -20,7 +20,7 @@ export default function Payment(props:PayPalButtonProps) {
   
     try {
       // محاكاة معالجة الدفع أو استدعاء API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // await new Promise((resolve) => setTimeout(resolve, 3000));
   
       // بعد المعالجة ممكن تبدأ عرض PayPalButton أو تحويل
       setShowPayPal(true);
@@ -69,23 +69,17 @@ export default function Payment(props:PayPalButtonProps) {
 
         {/* عرض الزر حسب الاختيار */}
         <div className="mt-4">
-          {paymentMethod === "paypal" && user?.client && planId && (
-              showPayPal ? (
+          {paymentMethod === "paypal" && user?.client && planId && 
+            
                 <PayPalButton
                   clientId={clientId}
                   planId={planId}
                   direction={direction}
                   label={t('paypal')}
+                  duration={duration}
                 />
-              ) : (
-                <button
-                  onClick={handlePayment}
-                  className="w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-opacity-80 transition cursor-pointer "
-                >
-                  {t('payButton')}
-                </button>
-              )
-            )}
+              
+            }
 
 
           {paymentMethod === "stripe" && (

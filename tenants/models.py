@@ -8,6 +8,9 @@ from core.constants.tenants import PAYMENT_METHODS, STATUS_CHOICES, CURANCY
 from core.utils.update_client_plan import update_client_plan
 from core.utils.expiration_date import expiration_date
 from core.models import BaseModel
+import logging
+
+paymant_logger = logging.getLogger('paypal')
 
 class SubscriptionPlan(BaseModel):
     """Plane Subscription """
@@ -120,7 +123,7 @@ class Payment(models.Model):
     method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default="paypal")
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    direction = models.CharField(max_length=10, choices=[('monthly', 'Monthly'), ('yearly', 'Yearly')], default='monthly')
+    direction = models.CharField(max_length=10, choices=[('month', 'Monthly'), ('year', 'Yearly')], default='monthly')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -145,9 +148,9 @@ class Payment(models.Model):
         if self.status == 'success':
             try:
                 update_client_plan(self)
-                logger.info(f"Successfully applied plan {self.plan} to client {self.client}")
+                paymant_logger.info(f"Successfully applied plan {self.plan} to client {self.client}")
             except Exception as e:
-                logger.error(f"Failed to apply plan to client: {str(e)}")
+                paymant_logger.error(f"Failed to apply plan to client: {str(e)}")
                 raise
         else:
-            logger.warning(f"Attempted to apply plan for non-successful payment: {self.id}")
+            paymant_logger.warning(f"Attempted to apply plan for non-successful payment: {self.id}")

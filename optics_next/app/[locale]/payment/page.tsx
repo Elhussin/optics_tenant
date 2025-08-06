@@ -9,6 +9,7 @@ export default function PaymentPage() {
   const amount = searchParams.get("amount");
   const planName = searchParams.get("planName");
   const clientId = searchParams.get("clientId");
+  const duration = searchParams.get("duration");
   return (
     <>
     {planId && amount && planName && clientId &&
@@ -18,6 +19,7 @@ export default function PaymentPage() {
       amount={amount}
       planName={planName}
       clientId={clientId}
+      duration={duration}
     />
     }
     </>

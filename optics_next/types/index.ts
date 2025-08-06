@@ -128,4 +128,5 @@ export interface PayPalButtonProps {
   method?: string;
   amount?: string;
   planName?: string;
+  duration?: string|number; // day 30-365
 };

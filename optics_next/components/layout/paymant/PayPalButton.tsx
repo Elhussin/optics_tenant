@@ -6,38 +6,48 @@ import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PayPalButtonProps } from "@/types";
 
-export default function PayPalButton({ clientId, planId, direction, label ,method}: PayPalButtonProps) {
+export default function PayPalButton({ clientId, planId, direction,duration, label, method }: PayPalButtonProps) {
   const [loading, setLoading] = useState(false);
+
   const createOrder = async () => {
     try {
       setLoading(true);
       apiConfig.ignoreSubdomain = true;
-      if(direction=="شهر"){
-        direction='month'
-      }else if(direction=="سنة"){
-        direction='year'
+
+      // توحيد صيغة direction
+      if (direction === "شهر") {
+        direction = "month";
+      } else if (direction === "سنة") {
+        direction = "year";
       }
+
       const baseUrl = getBaseUrl(undefined, apiConfig.ignoreSubdomain);
       const res = await axiosInstance.post(
         `${baseUrl}/api/tenants/create-payment-order/`,
-        { client_id: clientId, plan_id: planId, direction: direction?.toLocaleLowerCase() ,method: method?.toLocaleLowerCase() || "paypal" }
+        {
+          client_id: clientId,
+          plan_id: planId,
+          direction: direction?.toLowerCase(),
+          duration: duration,
+          method: method?.toLowerCase() || "paypal"
+        }
       );
 
       const data = res.data;
-      console.log("data", data);
-      if (data.approval_url) {
-        console.log("data.approval_url", data.approval_url);
-        window.open(data.approval_url, '_self');
-        // window.location.href = data.approval_url;
-      } else {
+      console.log("PayPal Order Response:", data);
 
-        console.log("Failed to create PayPal order",data);
+      if (data.approval_url && data.order_id) {
+        // حفظ order_id في localStorage أو SessionStorage لاستخدامه لاحقًا في PayPalProcessingPage
+        sessionStorage.setItem("paypal_order_id", data.order_id);
+
+        // توجيه المستخدم مباشرة إلى PayPal للموافقة
+        window.location.href = data.approval_url;
+      } else {
+        console.error("Failed to create PayPal order", data);
         alert("Failed to create PayPal order");
       }
     } catch (err) {
-      console.log("err", err);
       console.error("Error creating PayPal order", err);
-      // alert("Error creating PayPal order");
     } finally {
       setLoading(false);
     }
