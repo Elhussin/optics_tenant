@@ -76,28 +76,3 @@ export const useUser = () => {
   return context;
 };
 
-
-// {
-//   "id": 2,
-//   "username": "admin",
-//   "email": "admin@public.com",
-//   "first_name": "",
-//   "last_name": "",
-//   "is_active": true,
-//   "is_staff": true,
-//   "role": {
-//       "id": 1,
-//       "name": "ADMIN",
-//       "permissions": [
-//           {
-//               "id": 22,
-//               "code": "__all__",
-//               "description": "ADMIN"
-//           }
-//       ]
-//   },
-//   "is_deleted": false,
-//   "deleted_at": null,
-//   "phone": null,
-//   "client": null
-// }

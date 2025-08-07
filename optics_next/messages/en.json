@@ -33,11 +33,29 @@
     "button": "Register",
     "message": "Register successfully"
   },
-  "profile": {
+  "profilePage": {
     "title": "Profile",
     "description": "Profile to O-S-M",
     "button": "Profile",
-    "message": "Profile successfully"
+    "message": "Profile successfully",
+    "welcomeMessage": "Start Your Journey with O-S-M MR/S",
+    "userInformation":"User Information",
+    "username":"Username",
+    "email":"Email",
+    "role":"Role",
+    "clientInformation":" Client Information",
+    "clientName":"Name",
+    "plan":"Plan",
+    "maxUsers":"Max Users",
+    "maxProducts":"Max Products",
+    "maxBranches":"Max Branches",
+    "daysLeft":"Days Left",
+    "status":"Status",
+    "paidUntil":"Paid Until",
+    "subscriptionAboutToExpire":"Subscription About To Expire",
+    "subscriptionActive":"Subscription Active",
+    "subscriptionExpiresIn":"Subscription Expires In",
+    "subscriptionExpired":"Subscription Expired"
   },
   "tenants": {
     "title": "Start Now",
@@ -204,7 +222,7 @@
     "plan": "Plan",
     "choosePlan": "Choose Plan",
     "payButton": "Pay Now",
-    "processing": "Processing your payment...",
+    "processing": "Please wait will redirect to payment...",
     "paypal": "PayPal",
     "stripe": "Stripe payment coming soon...",
     "cash": "Please pay in cash at our store.",
@@ -220,6 +238,11 @@
     "title": "Payment Failed",
     "description": "Unfortunately, your payment could not be processed. Please try again or contact support.",
     "button": "Try Again"
+  },
+  "paymentCancel": {
+    "title": "Payment Cancelled",
+    "description": "You have cancelled the payment process. You can try again anytime to complete your subscription.",
+    "tryAgain": "Try Again"
   }
 }
 

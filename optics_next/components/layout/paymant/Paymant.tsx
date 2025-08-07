@@ -4,34 +4,14 @@ import PayPalButton from "./PayPalButton";
 import { useTranslations } from "next-intl";
 import { PayPalButtonProps } from "@/types";
 import {bankDetial,contact,paymentMethods} from '@/constants/conteact';
-import PaymentProcessingModal from "./PaymentProcessingModal";
+
 
 
 export default function Payment(props:PayPalButtonProps) {
-  const {planId,direction,amount,planName,clientId,duration} = props;
+  const {planId,amount,planName,clientId,planDirection} = props;
   const { user } = useUser();
   const t = useTranslations('paymantPage');
-  const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"paypal" | "stripe" | "cash" | "bank" | "other">("paypal");
-  const [showPayPal, setShowPayPal] = useState(false);
-
-  const handlePayment = async () => {
-    setIsProcessing(true); // إظهار شاشة الانتظار
-  
-    try {
-      // محاكاة معالجة الدفع أو استدعاء API
-      // await new Promise((resolve) => setTimeout(resolve, 3000));
-  
-      // بعد المعالجة ممكن تبدأ عرض PayPalButton أو تحويل
-      setShowPayPal(true);
-    } catch (error) {
-      console.error("Payment failed", error);
-    } finally {
-      setIsProcessing(false); // إخفاء شاشة الانتظار
-    }
-  };
-  
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface p-6">
       <div className="w-full max-w-lg bg-body rounded-2xl shadow-lg p-6 space-y-6">
@@ -42,7 +22,7 @@ export default function Payment(props:PayPalButtonProps) {
         {/* تفاصيل الخطة */}
         <div className="bg-surface rounded-xl p-4 space-y-2">
           <h2 className="text-lg font-semibold">{t('plan')}: <span className="text-primary capitalize">{planName}</span></h2>
-          <p>{t('duration')}: <span className="capitalize text-primary"> {direction}</span></p>
+          <p>{t('duration')}: <span className="capitalize text-primary"> {planDirection}</span></p>
           <p className="text-xl font-bold text-green-600">${amount}</p>
         </div>
 
@@ -74,9 +54,8 @@ export default function Payment(props:PayPalButtonProps) {
                 <PayPalButton
                   clientId={clientId}
                   planId={planId}
-                  direction={direction}
+                  planDirection={planDirection}
                   label={t('paypal')}
-                  duration={duration}
                 />
               
             }
@@ -126,8 +105,6 @@ export default function Payment(props:PayPalButtonProps) {
           )}
         </div>
       </div>
-      <PaymentProcessingModal isOpen={isProcessing} message={t('processing')} />
-
     </div>
   );
 }

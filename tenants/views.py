@@ -181,13 +181,10 @@ class CreatePaymentOrderView(APIView):
             amount = serializer.validated_data["amount"]
             direction = serializer.validated_data["direction"] # string
             method = serializer.validated_data["method"]
-            duration= serializer.validated_data["duration"]
-            print(direction)
-            
             try:
                 if method == "paypal" or method == "":
                     approval_url, order_id = create_paypal_order(
-                        client, plan.id, lang,direction,duration, amount
+                        client, plan.id, lang,direction, amount
                     )
                     return Response({
                         "approval_url": approval_url,
@@ -219,7 +216,6 @@ class PayPalExecuteView(APIView):
         plan_id = request.data.get("plan_id")
         client_uuid = request.data.get("client_id")
         direction = request.data.get("direction")
-
 
         # تحقق من المدخلات
         if not all([order_id, plan_id, client_uuid]):

@@ -1,46 +1,27 @@
-
-
 'use client';
-
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter, usePathname } from '@/app/i18n/navigation';
+import { useLocale } from 'next-intl';
+import { useTransition } from 'react';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
-
-type Option = { label: string; value: string };
-
-const languages: Option[] = [
-  { label: 'EN', value: 'en' },
-  { label: 'AR', value: 'ar' },
-];
-
-const countries: Option[] = [
-  { label: 'KSA', value: 'sa' },
-  { label: 'EGY', value: 'eg' },
-  { label: 'UAE', value: 'ae' },
-];
-
-const currencies: Option[] = [
-  { label: 'SAR', value: 'sar' },
-  { label: 'EGP', value: 'egp' },
-  { label: 'AED', value: 'aed' },
-];
-
-// خريطة العملة حسب الدولة
-const currencyMap: Record<string, string> = {
-  sa: 'sar',
-  eg: 'egp',
-  ae: 'aed',
-};
+import { languages, countries, currencies, currencyMap } from '@/constants';
 
 export default function LocaleSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
+  const locale = useLocale(); 
+  const [isPending, startTransition] = useTransition();
 
-  const [language, setLanguage] = useState(Cookies.get('language') || 'en');
-  const [country, setCountry] = useState(Cookies.get('country') || '');
-  const [currency, setCurrency] = useState(Cookies.get('currency') || '');
+  const [language, setLanguage] = useState(locale);
+  const [country, setCountry] = useState(Cookies.get('country') || 'sa');
+  const [currency, setCurrency] = useState(Cookies.get('currency') || 'sar');
 
-  // محاولة اكتشاف البلد والعملة بناءً على IP فقط في أول زيارة
+  // Sync language state with locale changes
+  useEffect(() => {
+    setLanguage(locale);
+  }, [locale]);
+
+  // IP-based country/currency detection (only once)
   useEffect(() => {
     const cookieCountry = Cookies.get('country');
     const cookieCurrency = Cookies.get('currency');
@@ -60,45 +41,50 @@ export default function LocaleSwitcher() {
           Cookies.set('currency', mappedCurrency, { path: '/', expires: 30 });
         })
         .catch(() => {
-          // fallback للقيم الافتراضية في حال فشل API
           setCountry('sa');
           setCurrency('sar');
+          Cookies.set('country', 'sa', { path: '/', expires: 30 });
+          Cookies.set('currency', 'sar', { path: '/', expires: 30 });
         });
     }
   }, []);
 
-  // تحديث الكوكيز عند تغيّر القيم
+  // Update cookies when country/currency changes (not language - that's handled by next-intl)
   useEffect(() => {
-    Cookies.set('language', language, { path: '/', expires: 30 });
-    Cookies.set('country', country, { path: '/', expires: 30 });
-    Cookies.set('currency', currency, { path: '/', expires: 30 });
-  }, [language, country, currency]);
-
-  // تحديث اللغة وإعادة توجيه المسار
-  const handleLanguageChange = (value: string) => {
-    setLanguage(value);
-
-    const pathSegments = pathname.split('/');
-    if (pathSegments.length > 1) {
-      pathSegments[1] = value; 
-    } else {
-      pathSegments.unshift('', value);
+    if (country) {
+      Cookies.set('country', country, { path: '/', expires: 30 });
     }
+  }, [country]);
 
-    const newPath = pathSegments.join('/');
-    // router.push(newPath);
-    // router.refresh(); // إذا أردت إجبار إعادة جلب البيانات
-    window.location.href = newPath    
-    // setLanguage(value);
+  useEffect(() => {
+    if (currency) {
+      Cookies.set('currency', currency, { path: '/', expires: 30 });
+    }
+  }, [currency]);
+
+  const handleLanguageChange = (newLang: string) => {
+    if (newLang !== locale) {
+      startTransition(() => {
+        // This will change the URL and trigger a re-render with new locale
+        router.replace(pathname, { locale: newLang });
+      });
+    }
+  };
+
+  const handleCountryChange = (selected: string) => {
+    setCountry(selected);
+    const newCurrency = currencyMap[selected] || 'sar';
+    setCurrency(newCurrency);
   };
 
   return (
-    <div className="flex flex-row gap-4 items-center ">
-      {/* اللغة */}
+    <div className="flex flex-row gap-4 items-center">
+      {/* Language Selector */}
       <div>
         <select
           className="header-select"
-          value={language}
+          value={locale} // Use locale instead of language state
+          disabled={isPending}
           onChange={(e) => handleLanguageChange(e.target.value)}
         >
           {languages.map((l) => (
@@ -109,18 +95,15 @@ export default function LocaleSwitcher() {
         </select>
       </div>
 
-      {/* الدولة */}
+      {/* Country Selector */}
       <div>
         <select
           disabled
           className="header-select disabled:opacity-50"
           value={country}
-          onChange={(e) => {
-            const selected = e.target.value;
-            setCountry(selected);
-            setCurrency(currencyMap[selected] || 'sar');
-          }}
+          onChange={(e) => handleCountryChange(e.target.value)}
         >
+          {/* <option value="">{country}</option> */}
           {countries.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
@@ -129,7 +112,7 @@ export default function LocaleSwitcher() {
         </select>
       </div>
 
-      {/* العملة */}
+      {/* Currency Selector */}
       <div>
         <select
           disabled
@@ -137,6 +120,7 @@ export default function LocaleSwitcher() {
           value={currency}
           onChange={(e) => setCurrency(e.target.value)}
         >
+          {/* <option value="">{currency}</option> */}
           {currencies.map((c) => (
             <option key={c.value} value={c.value}>
               {c.label}
@@ -144,6 +128,13 @@ export default function LocaleSwitcher() {
           ))}
         </select>
       </div>
+      
+      {/* Loading indicator */}
+      {isPending && (
+        <div className="text-sm text-gray-500">
+          Switching language...
+        </div>
+      )}
     </div>
   );
 }

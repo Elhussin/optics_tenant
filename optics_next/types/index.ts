@@ -122,11 +122,10 @@ export interface ButtonProps extends BaseButtonProps  {
 // use in payment page
 export interface PayPalButtonProps {
   clientId?: string;
-  planId?: string; // نوع الخطة المراد شراؤها
-  direction?: "month" | "year" | "شهر" | "سنة";
+  planId?: string;
+  planDirection?: string;
   label?: string;
   method?: string;
   amount?: string;
   planName?: string;
-  duration?: string|number; // day 30-365
 };

@@ -76,17 +76,17 @@ def get_paypal_access_token():
 
 
 
-def create_paypal_order(client, plan, lang,direction,duration, amount=0):
+def create_paypal_order(client, plan, lang,direction, amount=0):
     access_token = get_paypal_access_token()
     if config("DEBUG"):
         base_url = f"{config("PROTOCOL")}://{client.schema_name}.{config("FRONTEND_DOMAIN")}:{config("FRONTEND_PORT")}/{lang}"
     else:
         base_url = f"{config("PROTOCOL")}://{client.schema_name}.{config("FRONTEND_DOMAIN")}/{lang}"
 
-    return_url = f"{base_url}/payment/processing?client_id={client.uuid}&plan={plan}&direction={direction}&duration={duration}"
+    return_url = f"{base_url}/payment/processing?client_id={client.uuid}&plan={plan}&direction={direction}"
     cancel_url = (
     f"{base_url}/payment/processing?"
-    f"status=cancelled&client_id={client.uuid}&plan={plan}&direction={direction}&duration={duration}"
+    f"status=cancelled&client_id={client.uuid}&plan={plan}&direction={direction}"
 )
 
 
@@ -147,5 +147,5 @@ def verify_paypal_transaction(order_id, access_token):
     data = response.json()
     print("verify_paypal_transaction data:", data)
 
-    # PayPal v2: الحالة بتكون COMPLETED بعد الـ capture
+    # Return 
     return data.get("status") == "COMPLETED"

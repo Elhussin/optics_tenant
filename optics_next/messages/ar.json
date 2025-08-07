@@ -26,7 +26,6 @@
       "pro": "احترافية",
       "enterprise": "مؤسسات"
     }
-  
   },
   "register": {
     "title": "تسجيل",
@@ -35,11 +34,29 @@
     "message": "تم التسجيل بنجاح"
 
   },
-  "profile": {
+  "profilePage": {
     "title": "الملف الشخصي",
     "description": "Profile to O-S-M",
     "button": "الملف الشخصي",
-    "message": "تم تحديث الملف الشخصي بنجاح"
+    "message": "تم تحديث الملف الشخصي بنجاح",
+    "welcomeMessage": "ابداء الأن رحلتك مع O-S-M",
+    "userInformation":"معلومات المستخدم",
+    "username":"اسم المستخدم",
+    "email":"البريد الالكتروني",
+    "role":"الصلاحيات",
+    "clientInformation":"معلومات العميل",
+    "clientName":"اسم العميل",
+    "plan":"الخطة",
+    "maxUsers":"عدد المستخدمين",
+    "maxProducts":"عدد المنتجات",
+    "maxBranches":"عدد الفروع",
+    "daysLeft":"الايام المتبقية",
+    "status":"الحالة",
+    "paidUntil":"تاريخ الانتهاء",
+    "subscriptionAboutToExpire":"الاشتراك سينتهي قريبا",
+    "subscriptionExpired":"الاشتراك منتهي",
+    "subscriptionActive":"الاشتراك نشط",
+    "subscriptionExpiresIn":"الاشتراك سينتهي في"
   },
   "tenants": {
     "title": "ابداء الأن ",
@@ -205,7 +222,7 @@
     "plan": "الخطة",
     "choosePlan": "اختر الخطة",
     "payButton": "دفع الآن",
-    "processing": "معالجة الدفع...",
+    "processing": "الرجاء الانتظار سيتم التوجيه إلى صفحة الدفع...",
     "paypal": "PayPal",
     "stripe": "Stripe الدفع قريبا...",
     "cash": "الدفع بالكاش في متجرنا",
@@ -221,5 +238,10 @@
     "title": "فشل الدفع",
     "description": "لم يتم معالجة الدفع. يرجى المحاولة مرة أخرى أو الاتصال بالدعم.",
     "button": "حاول مرة أخرى"
+  },
+  "paymentCancel": {
+    "title": "الغاء الدفع",
+    "description": "تم الغاء عملية الدفع. يمكنك المحاولة مرة أخرى لاتخاذ الاشتراك.",
+    "tryAgain": "حاول مرة أخرى"
   }
 }

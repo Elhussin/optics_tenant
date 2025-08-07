@@ -116,10 +116,8 @@ class CreatePaymentOrderSerializer(serializers.Serializer):
         # تحديد المدة والسعر
         if direction == "month":
             amount = plan.month_price
-            duration = plan.duration_months
         elif direction == "year":
             amount = plan.year_price
-            duration = plan.duration_years
         else:
             raise serializers.ValidationError({"direction": _("Invalid payment direction")})
 
@@ -137,7 +135,6 @@ class CreatePaymentOrderSerializer(serializers.Serializer):
         data["client"] = client
         data["plan"] = plan
         data["amount"] = amount
-        data["duration"] = duration
         data["direction"] = direction
         data["method"] = data["method"]
 

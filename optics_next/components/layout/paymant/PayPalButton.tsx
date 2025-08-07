@@ -5,8 +5,10 @@ import { axiosInstance } from "@/lib/api/axios";
 import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PayPalButtonProps } from "@/types";
-
-export default function PayPalButton({ clientId, planId, direction,duration, label, method }: PayPalButtonProps) {
+import PaymentProcessingModal from "./PaymentProcessingModal";
+import { useTranslations } from "next-intl";
+export default function PayPalButton({ clientId, planId, planDirection, label, method }: PayPalButtonProps) {
+  const t = useTranslations('paymantPage');
   const [loading, setLoading] = useState(false);
 
   const createOrder = async () => {
@@ -14,21 +16,13 @@ export default function PayPalButton({ clientId, planId, direction,duration, lab
       setLoading(true);
       apiConfig.ignoreSubdomain = true;
 
-      // توحيد صيغة direction
-      if (direction === "شهر") {
-        direction = "month";
-      } else if (direction === "سنة") {
-        direction = "year";
-      }
-
       const baseUrl = getBaseUrl(undefined, apiConfig.ignoreSubdomain);
       const res = await axiosInstance.post(
         `${baseUrl}/api/tenants/create-payment-order/`,
         {
           client_id: clientId,
           plan_id: planId,
-          direction: direction?.toLowerCase(),
-          duration: duration,
+          direction: planDirection,
           method: method?.toLowerCase() || "paypal"
         }
       );
@@ -59,7 +53,9 @@ export default function PayPalButton({ clientId, planId, direction,duration, lab
       disabled={loading}
       className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
     >
-      {loading ? "Processing..." : label || `${direction}`}
+      {loading ? 
+            <PaymentProcessingModal isOpen={true} message={t('processing')} />
+      : label || `${planDirection}`}
     </button>
   );
 }
