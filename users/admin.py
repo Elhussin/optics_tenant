@@ -36,10 +36,3 @@ admin.site.register(User,UserAdmin)
 admin.site.register(Role,RoleAdmin)
 admin.site.register(Permission,PermissionAdmin)
 admin.site.register(RolePermission,RolePermissionAdmin)
-
-0000000000000000000003333333
-000000000000000003333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
-
-
-
-....................
