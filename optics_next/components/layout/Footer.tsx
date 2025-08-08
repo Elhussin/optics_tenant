@@ -1,5 +1,5 @@
 "use client"
-import { navUrl, socialLinks, otherLinks } from "@/constants/URLDATA"
+import { navUrl, socialLinks, otherLinks } from "@/constants/url"
 import { Link } from "@/app/i18n/navigation";
 import {useTranslations} from 'next-intl';
 export default function Footer() {
@@ -12,7 +12,7 @@ export default function Footer() {
 
         {/* Column 2: Page Links */}
         <div>
-          <h4 className="text-lg font-semibold mb-4 border-b pb-2 w-3/4 ">{t("quickLinks")}</h4>
+          <h4 className="text-lg font-semibold mb-4 border-b pb-2 w-1/2 ">{t("quickLinks")}</h4>
           <ul className="space-y-2">
             {navUrl.map((item, index) => (
               <li key={index}>
@@ -26,7 +26,7 @@ export default function Footer() {
 
         {/* Column 3: Other Info */}
         <div>
-          <h4 className="text-lg font-semibold mb-4 border-b pb-2 w-3/4">{t("more")}</h4>
+          <h4 className="text-lg font-semibold mb-4 border-b pb-2 w-1/2">{t("more")}</h4>
           <ul className="space-y-2">
             {otherLinks.map((item, index) => (
               <li key={index}>
@@ -40,8 +40,8 @@ export default function Footer() {
 
         {/* Column 1: Social Icons */}
         <div>
-          <h4 className="text-lg font-semibold mb-4 border-b pb-2 w-3/4">{t("followUs")}</h4>
-          <div className="grid grid-cols-3 gap-3">
+          <h4 className="text-lg font-semibold mb-4 border-b pb-2 w-1/2">{t("followUs")}</h4>
+          <div className="grid grid-cols-3 gap-3  justify-around max-w-1/2">
             {socialLinks.map((item, index) => {
               const Icon = item.icon;
               return (
@@ -57,7 +57,7 @@ export default function Footer() {
                 </Link>
               );
             })}
-          </div>
+        </div>
         </div>
 
       </div>

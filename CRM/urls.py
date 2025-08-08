@@ -12,6 +12,7 @@ router.register(r'subscriptions', SubscriptionViewSet, basename='subscription')
 router.register(r'tasks', TaskViewSet, basename='task')
 router.register(r'campaigns', CampaignViewSet, basename='campaign')
 router.register(r'documents', DocumentViewSet, basename='document')
+router.register(r'contact-us', ContactViewSet, basename='contact-us')
 
 urlpatterns = [
     path('', include(router.urls)),

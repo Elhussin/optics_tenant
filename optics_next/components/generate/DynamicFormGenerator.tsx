@@ -17,7 +17,10 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 
 
 export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
-  const { title, schemaName, onSuccess, className = "", submitText, showCancelButton = true, mode = 'create', config: userConfig = {}, alias, id } = props;
+  const { title, schemaName, onSuccess, className = "", submitText, showCancelButton = true,
+     mode = 'create', config: userConfig = {}, alias, id, 
+    showResetButton=true, showBackButton=true
+    } = props;
 
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
@@ -40,6 +43,7 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
     const result=await formRequest.submitForm(data);
     if(result?.success){
       onSuccess?.();
+      formRequest.reset();
     }
   }
 
@@ -63,8 +67,9 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   return (
     <div className={cn(className)}>
       <div className="head">
-        <h2 className="title" >{mode === 'edit' ? 'Edit ' : 'Add '}{title?title:schemaName}</h2>
-        <BackButton />
+        <h2 className="title" >{mode === 'edit' ? 'Edit ' : ''}{title?title:schemaName}</h2>
+        {showBackButton && <BackButton />}
+
       </div>
 
       <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
@@ -91,15 +96,12 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
             icon={<CirclePlus size={16} />}
           />
 
-          {!isIframe && config.includeResetButton && (
+          {!isIframe && config.includeResetButton && showResetButton && (
             <RestButton
               onClick={() =>formRequest.reset()}
             />
           )}
 
-          {/* {!isIframe && showCancelButton && (
-            <BackButton/>
-          )} */}
         </div>
         
       </form>

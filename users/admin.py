@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from django.contrib.auth import get_user_model
-from .models import Permission, RolePermission ,Role
+from .models import Permission, RolePermission ,Role, Page, PageContent
 User = get_user_model()
 
 
@@ -23,7 +23,23 @@ class RolePermissionAdmin(admin.ModelAdmin):
     def permission_code(self, obj):
         return obj.permission.code
 
+
+@admin.register(Page)
+class PageAdmin(admin.ModelAdmin):
+    list_display = ['title', 'slug', 'author']
+
+@admin.register(PageContent)
+class PageContentAdmin(admin.ModelAdmin):
+    list_display = ['page', 'language', 'title']
+
 admin.site.register(User,UserAdmin)
 admin.site.register(Role,RoleAdmin)
 admin.site.register(Permission,PermissionAdmin)
 admin.site.register(RolePermission,RolePermissionAdmin)
+
+0000000000000000000003333333
+000000000000000003333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+
+
+
+....................

@@ -366,6 +366,40 @@ const PatchedComplaintRequest = z
   })
   .partial()
   .passthrough();
+const Contact = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    email: z.string().max(254).email(),
+    phone: z.string().max(20),
+    name: z.string().max(100),
+    message: z.string().max(500),
+  })
+  .passthrough();
+const ContactRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    email: z.string().min(1).max(254).email(),
+    phone: z.string().min(1).max(20),
+    name: z.string().min(1).max(100),
+    message: z.string().min(1).max(500),
+  })
+  .passthrough();
+const PatchedContactRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    email: z.string().min(1).max(254).email(),
+    phone: z.string().min(1).max(20),
+    name: z.string().min(1).max(100),
+    message: z.string().min(1).max(500),
+  })
+  .partial()
+  .passthrough();
 const CustomerGroup = z
   .object({
     id: z.number().int(),
@@ -1885,10 +1919,6 @@ const SubscriptionPlanCurrencyEnum = z.enum([
 const SubscriptionPlan = z
   .object({
     id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(50),
     duration_months: z.number().int().gte(0).lte(2147483647).optional(),
     duration_years: z.number().int().gte(0).lte(2147483647).optional(),
@@ -1908,6 +1938,7 @@ const SubscriptionPlan = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
+    field_labels: z.string(),
   })
   .passthrough();
 const Client = z
@@ -1926,6 +1957,7 @@ const Client = z
     plans: SubscriptionPlan,
     is_paid: z.string(),
     is_plan_expired: z.string(),
+    field_labels: z.string(),
   })
   .passthrough();
 const ClientRequest = z
@@ -1955,8 +1987,6 @@ const PatchedClientRequest = z
   .passthrough();
 const SubscriptionPlanRequest = z
   .object({
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(50),
     duration_months: z.number().int().gte(0).lte(2147483647).optional(),
     duration_years: z.number().int().gte(0).lte(2147483647).optional(),
@@ -1980,8 +2010,6 @@ const SubscriptionPlanRequest = z
   .passthrough();
 const PatchedSubscriptionPlanRequest = z
   .object({
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(50),
     duration_months: z.number().int().gte(0).lte(2147483647),
     duration_years: z.number().int().gte(0).lte(2147483647),
@@ -2170,6 +2198,9 @@ export const schemas = {
   Complaint,
   ComplaintRequest,
   PatchedComplaintRequest,
+  Contact,
+  ContactRequest,
+  PatchedContactRequest,
   CustomerGroup,
   CustomerGroupRequest,
   PatchedCustomerGroupRequest,
@@ -3251,6 +3282,93 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/contact-us/",
+    alias: "crm_contact_us_list",
+    requestFormat: "json",
+    response: z.array(Contact),
+  },
+  {
+    method: "post",
+    path: "/api/crm/contact-us/",
+    alias: "crm_contact_us_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactRequest,
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "get",
+    path: "/api/crm/contact-us/:id/",
+    alias: "crm_contact_us_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "put",
+    path: "/api/crm/contact-us/:id/",
+    alias: "crm_contact_us_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/contact-us/:id/",
+    alias: "crm_contact_us_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedContactRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/contact-us/:id/",
+    alias: "crm_contact_us_destroy",
     requestFormat: "json",
     parameters: [
       {

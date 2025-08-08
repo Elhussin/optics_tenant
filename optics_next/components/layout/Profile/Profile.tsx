@@ -102,7 +102,7 @@ export default function Profile() {
               {daysLeft !== null && (
                 <p className="text-sm mt-1 text-gray-600">
                   {daysLeft > 0
-                    ? t('subscriptionExpiresIn', { days: daysLeft })
+                    ? t('subscriptionExpiresIn') + `: ${daysLeft}`
                     : t('subscriptionExpired')}
                 </p>
               )}

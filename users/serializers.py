@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from core.permissions.roles import Role
 from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
-from .models import Permission, RolePermission ,Role
+from .models import Permission, RolePermission ,Role, Page, PageContent ,ContactUs
 User = get_user_model()
 
 
@@ -120,3 +120,43 @@ class LoginSerializer(serializers.Serializer):
 
 
 
+class PageSerializer(serializers.ModelSerializer):
+    title = serializers.SerializerMethodField()
+    content = serializers.SerializerMethodField()
+    seo_title = serializers.SerializerMethodField()
+    meta_description = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Page
+        fields = ['slug', 'title', 'content', 'seo_title', 'meta_description']
+
+    def get_lang_content(self, obj):
+        lang = self.context.get('request').LANGUAGE_CODE if 'request' in self.context else 'en'
+        return obj.translations.filter(language=lang).first()
+
+    def get_title(self, obj):
+        content = self.get_lang_content(obj)
+        return content.title if content else obj.title
+
+    def get_content(self, obj):
+        content = self.get_lang_content(obj)
+        return content.content if content else obj.content
+
+    def get_seo_title(self, obj):
+        content = self.get_lang_content(obj)
+        return content.seo_title if content else ""
+
+    def get_meta_description(self, obj):
+        content = self.get_lang_content(obj)
+        return content.meta_description if content else ""
+
+class PageContentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PageContent
+        fields  = ['id', 'page', 'language', 'title', 'content', 'seo_title', 'meta_description', 'meta_keywords']
+
+class ContactUsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactUs  
+
+        fields = ['email', 'phone', 'name', 'message']

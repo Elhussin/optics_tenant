@@ -24,6 +24,8 @@ export interface DynamicFormProps<T> {
   className?: string;
   submitText?: string;
   showCancelButton?: boolean;
+  showResetButton?: boolean;
+  showBackButton?: boolean;
   mode?: 'create' | 'edit';
   config?: Partial<GeneratorConfig>;
   alias?: string;

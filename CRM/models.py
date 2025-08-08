@@ -163,3 +163,14 @@ class CustomerGroup(BaseModel):
     class Meta:
         verbose_name = "Customer Group"
         verbose_name_plural = "Customer Groups"
+
+
+class Contact(BaseModel):
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    name = models.CharField(max_length=100)
+    message = models.TextField(max_length=500)
+
+
+
+    

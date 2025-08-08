@@ -3,16 +3,15 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import CustomerFilter
-
+from rest_framework.permissions import AllowAny
 from .models import (
     Customer, CustomerGroup, Opportunity, Interaction, 
-    Complaint, Subscription, Task,Campaign,Document
+    Complaint, Subscription, Task,Campaign,Document,Contact
 )
 from .serializers import (
     CustomerSerializer, CustomerGroupSerializer, OpportunitySerializer, InteractionSerializer, 
-    ComplaintSerializer, SubscriptionSerializer, TaskSerializer,CampaignSerializer,DocumentSerializer
+    ComplaintSerializer, SubscriptionSerializer, TaskSerializer,CampaignSerializer,DocumentSerializer,ContactSerializer
 )
-
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -28,7 +27,6 @@ class CustomerViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
         
-
 
 class CustomerGroupViewSet(viewsets.ModelViewSet):
     queryset = CustomerGroup.objects.all()
@@ -99,4 +97,9 @@ class DocumentViewSet(viewsets.ModelViewSet):
 
     # def get_permissions(self):
     #     return super().get_default_permissions()
+    
+class ContactViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
     

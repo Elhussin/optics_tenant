@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import (
     Customer, CustomerGroup, Opportunity, Interaction, 
-    Complaint, Subscription, Task,Campaign,Document
+    Complaint, Subscription, Task,Campaign,Document,Contact
 )
 
 from django.contrib.auth import get_user_model
@@ -100,7 +100,6 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
@@ -122,5 +121,11 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 class CustomerGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerGroup
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+class ContactSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Contact
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at']

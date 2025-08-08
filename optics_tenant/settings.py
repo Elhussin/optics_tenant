@@ -35,7 +35,7 @@ SHARED_APPS = (
     'django_tenants',
     'users',
     'core',
-   'tenants',
+    'tenants',
     'admin_interface',
     'colorfield',
     'django.contrib.contenttypes',
@@ -56,6 +56,7 @@ SHARED_APPS = (
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'django_extensions',
+    'modeltranslation',
 )
 
 # ===============================
@@ -170,7 +171,6 @@ LANGUAGES = [
     ('en', 'English'),
     ('ar', 'Arabic'),
 ]
-
 
 
 

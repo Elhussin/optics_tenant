@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,serializers
-from .serializers import RegisterSerializer, LoginSerializer,UserSerializer
+from .serializers import RegisterSerializer, LoginSerializer,UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
@@ -17,7 +17,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str, force_bytes
-from .models import Permission, RolePermission ,Role
+from .models import Permission, RolePermission ,Role, Page, PageContent, ContactUs
+from django.core.exceptions import PermissionDenied
 from .serializers import PermissionSerializer, RolePermissionSerializer, RoleSerializer
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
@@ -280,3 +281,43 @@ class LogoutView(APIView):
         response.delete_cookie('refresh_token')
         print("Logged out")
         return response
+
+    
+class ContactViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = ContactUs.objects.all()
+    serializer_class = ContactUsSerializer
+
+class PageViewSet(viewsets.ModelViewSet):
+    queryset = Page.objects.all()
+    serializer_class = PageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Page.objects.filter(author=self.request.user)
+
+    def perform_create(self, serializer):
+        page = serializer.validated_data.get('page')
+        if page.author != self.request.user:
+            raise PermissionDenied("You do not own this page.")
+        serializer.save()
+
+
+class PageContentViewSet(viewsets.ModelViewSet):
+    queryset = PageContent.objects.all()
+    serializer_class = PageContentSerializer
+    permission_classes = [IsAuthenticated]
+
+
+    def get_queryset(self):
+        qs = PageContent.objects.filter(page__author=self.request.user)
+        lang = self.request.query_params.get('lang')
+        if lang:
+            qs = qs.filter(language=lang)
+        return qs
+
+    def perform_create(self, serializer):
+        page_slug = self.request.data.get('page')
+        page = Page.objects.get(slug=page_slug, author=self.request.user)
+        serializer.save(page=page)
+

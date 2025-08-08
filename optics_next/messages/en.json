@@ -124,10 +124,23 @@
     "redirectMessage": "You will be redirected to the home page in 3 seconds..."
   },
   "about": {
-    "title": "About O-S-M",
-    "button": "About",
-    "description": "O-S-M is a web application for managing an optical system\nStart your journey with O-S-M today\nBest solution for managing an optical system."
+    "title": "About Optical Store Management [O-S-M]",
+    "description": "O-S-M is a powerful system designed to help optical shops and companies manage inventory, track orders, generate invoices, handle accounting tasks, and provide powerful analytics and periodic reports.",
+    "featuresTitle": "Key Features",
+    "features": {
+      "inventory": "Inventory and stock management",
+      "orders": "Order tracking and status updates",
+      "billing": "Invoice generation and payment tracking",
+      "accounting": "Built-in accounting tools",
+      "reports": "Periodic reporting tools",
+      "analytics": "Advanced data analytics and visualization"
+    },
+    "techTitle": "Technology Used",
+    "techDescription": "Built with Django, Next.js, Tailwind CSS, RESTful APIs, and multilingual support for seamless user experience.",
+    "startTrial": "Start Free Trial",
+    "contactUs": "Contact Us"
   },
+  
   "error": {
     "title": "Error",
     "message": "An error occurred. Please try again later.",
@@ -136,10 +149,19 @@
     "redirectMessage": "You will be redirected to the home page in 3 seconds..."
   },
   "contact": {
-    "title": "Contact O-S-M",
-    "button": "Contact",
-    "description": "Contact O-S-M",
-    "message": "Contact successfully"
+      "title": "Contact Us",
+      "description": "Need help? Have feedback or suggestions? We'd love to hear from you.",
+      "company": "Company",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "name": "Your Name",
+      "message": "Your Message",
+      "image": "Upload Image (optional)",
+      "submit": "Send Message",
+      "successMessage": "Message sent successfully!",
+      "errorMessage": "Something went wrong. Please try again later."
+      
   },
   "NotFound": {
     "title": "Page Not Found",
@@ -243,6 +265,84 @@
     "title": "Payment Cancelled",
     "description": "You have cancelled the payment process. You can try again anytime to complete your subscription.",
     "tryAgain": "Try Again"
+  },
+  "privacy": 
+  {
+    
+  "title": "Privacy Policy",
+  "description": "We value your privacy and commit to protecting your personal data.",
+  "section1": {
+    "title": "Information Collection",
+    "content": "We collect minimal personal data necessary to operate the platform."
+  },
+  "section2": {
+    "title": "Data Protection",
+    "content": "Your data is encrypted and not shared with third parties."
+  }
+},
+ "terms": {
+   "title": "Terms of Service",
+  "description": "Please read these terms before using our services.",
+  "section1": {
+    "title": "Usage Terms",
+    "content": "You agree to use the platform lawfully and responsibly."
+  },
+  "section2": {
+    "title": "Liability",
+    "content": "We are not responsible for data loss due to misuse."
+  }
+},
+"faq" :
+{
+  "title": "Frequently Asked Questions",
+  "q1": {
+    "question": "How do I register?",
+    "answer": "Go to the registration page and fill out your details."
+  },
+  "q2": {
+    "question": "How can I contact support?",
+    "answer": "You can use the contact form or email us directly."
+  },
+  "q3": {
+    "question": "Is there a free trial?",
+    "answer": "Yes, we offer a free trial for 30 days."
+  }
+},
+"support":{
+  "title": "Support",
+  "description": "Need help? Our support team is here to assist you anytime.",
+  "section1": {
+    "title": "How to Get Support",
+    "content": "You can reach out via the contact form or email support@osm.com."
+  },
+  "section2": {
+    "title": "Response Time",
+    "content": "We aim to respond to all queries within 24 hours."
+  }
+},
+"careers":{
+  "title": "Careers",
+  "description": "Join our growing team and shape the future of optical retail software.",
+  "section1": {
+    "title": "Why Work With Us?",
+    "content": "We offer a collaborative environment, growth opportunities, and meaningful work."
+  },
+  "section2": {
+    "title": "Open Positions",
+    "content": "Currently, we are hiring developers, designers, and sales representatives."
+  }
+},
+  "blog": {
+    "title": "Blog",
+    "description": "Stay updated with the latest news, tips, and insights from the O-S-M team.",
+    "section1": {
+      "title": "Latest Articles",
+      "content": "Check out our latest articles on optical retail management."
+    },
+    "section2": {
+      "title": "Subscribe",
+      "content": "Subscribe to our newsletter for regular updates."
+    }
   }
 }
 

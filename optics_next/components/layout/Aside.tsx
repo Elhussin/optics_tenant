@@ -5,7 +5,7 @@ import { Link } from '@/app/i18n/navigation';
 import { motion } from "framer-motion";
 import { useUser } from '@/lib/context/userContext';
 import { X } from 'lucide-react';
-import { URLDATA, navUrl } from '@/constants/URLDATA';
+import { URLDATA, navUrl } from '@/constants/url';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl'; // أو استخدم dir من document.documentElement
