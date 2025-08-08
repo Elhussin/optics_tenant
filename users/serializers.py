@@ -3,10 +3,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
+from slugify import slugify
 from core.permissions.roles import Role
 from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
-from .models import Permission, RolePermission ,Role, Page, PageContent ,ContactUs
+from .models import Permission, RolePermission ,Role, Page, PageContent ,ContactUs,TenantSettings
+from django.utils.text import slugify
+
 User = get_user_model()
 
 
@@ -120,43 +123,63 @@ class LoginSerializer(serializers.Serializer):
 
 
 
-class PageSerializer(serializers.ModelSerializer):
-    title = serializers.SerializerMethodField()
-    content = serializers.SerializerMethodField()
-    seo_title = serializers.SerializerMethodField()
-    meta_description = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Page
-        fields = ['slug', 'title', 'content', 'seo_title', 'meta_description']
-
-    def get_lang_content(self, obj):
-        lang = self.context.get('request').LANGUAGE_CODE if 'request' in self.context else 'en'
-        return obj.translations.filter(language=lang).first()
-
-    def get_title(self, obj):
-        content = self.get_lang_content(obj)
-        return content.title if content else obj.title
-
-    def get_content(self, obj):
-        content = self.get_lang_content(obj)
-        return content.content if content else obj.content
-
-    def get_seo_title(self, obj):
-        content = self.get_lang_content(obj)
-        return content.seo_title if content else ""
-
-    def get_meta_description(self, obj):
-        content = self.get_lang_content(obj)
-        return content.meta_description if content else ""
-
 class PageContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageContent
-        fields  = ['id', 'page', 'language', 'title', 'content', 'seo_title', 'meta_description', 'meta_keywords']
+        fields = [
+            'id', 'page', 'language', 'title', 'content',
+            'seo_title', 'meta_description', 'meta_keywords',
+            'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
+class PageSerializer(serializers.ModelSerializer):
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    translations = PageContentSerializer(many=True, read_only=True)
+    slug = serializers.SlugField(
+        max_length=50,
+        error_messages={
+            'blank': 'This field may not be blank.',
+            'max_length': 'Ensure this field has no more than 50 characters.'
+        }
+    )
+
+    class Meta:
+        model = Page
+        fields = ['id', 'slug', 'author', 'status', 'translations', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'author', 'created_at', 'updated_at']
+
+    def validate_slug(self, value):
+        return slugify(value)
+
+    def validate(self, attrs):
+        # Ensure slug is unique
+        slug = attrs.get('slug')
+        if slug:
+            instance_id = self.instance.id if self.instance else None
+            if Page.objects.filter(slug=slug).exclude(id=instance_id).exists():
+                raise serializers.ValidationError({'slug': 'Page with this slug already exists.'})
+        return attrs
+
+
+
+
+
+
+
 
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs  
 
         fields = ['email', 'phone', 'name', 'message']
+
+
+
+
+class TenantSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TenantSettings 
+        
+        fields = '__all__'

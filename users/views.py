@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,serializers
-from .serializers import RegisterSerializer, LoginSerializer,UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer
+from .serializers import RegisterSerializer, LoginSerializer,UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,TenantSettings
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
@@ -17,11 +17,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str, force_bytes
-from .models import Permission, RolePermission ,Role, Page, PageContent, ContactUs
+from .models import Permission, RolePermission ,Role, Page, PageContent, ContactUs,TenantSettings
 from django.core.exceptions import PermissionDenied
-from .serializers import PermissionSerializer, RolePermissionSerializer, RoleSerializer
+from .serializers import PermissionSerializer, RolePermissionSerializer, RoleSerializer,TenantSettingsSerializer
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
+from rest_framework.decorators import action
 User = get_user_model()
 
 # @method_decorator(role_required(['ADMIN']), name='dispatch')
@@ -288,36 +289,111 @@ class ContactViewSet(viewsets.ModelViewSet):
     queryset = ContactUs.objects.all()
     serializer_class = ContactUsSerializer
 
+
+
+class TenantSettingsViewset(viewsets.ModelViewSet):
+    queryset = TenantSettings.objects.all()
+    serializer_class = TenantSettingsSerializer
+
+
+from rest_framework import permissions
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners to edit their pages.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Read permissions for any request
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        # Write permissions only to the owner
+        return obj.author == request.user
+    
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
-    permission_classes = [IsAuthenticated]
+    lookup_field = 'slug'
+
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
     def get_queryset(self):
-        return Page.objects.filter(author=self.request.user)
+        queryset = super().get_queryset()
+        # Show only published pages to anonymous users
+        if not self.request.user.is_authenticated:
+            queryset = queryset.filter(status=Page.PUBLISHED)
+        # Show own pages + published pages to authenticated users
+        elif not self.request.user.is_staff:
+            queryset = queryset.filter(
+                models.Q(status=Page.PUBLISHED) | 
+                models.Q(author=self.request.user)
+            )
+        return queryset
 
-    def perform_create(self, serializer):
-        page = serializer.validated_data.get('page')
-        if page.author != self.request.user:
-            raise PermissionDenied("You do not own this page.")
-        serializer.save()
+    @action(detail=True, methods=['get'])
+    def content(self, request, slug=None):
+        """Get page content for a specific language"""
+        page = self.get_object()
+        language = request.query_params.get('lang', settings.LANGUAGE_CODE)
+        
+        try:
+            content = page.translations.get(language=language)
+            serializer = PageContentSerializer(content)
+            return Response(serializer.data)
+        except PageContent.DoesNotExist:
+            return Response(
+                {'error': f'Content not available in language: {language}'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
 
+    @action(detail=True, methods=['post'])
+    def add_translation(self, request, slug=None):
+        """Add translation for a page"""
+        page = self.get_object()
+        self.check_object_permissions(request, page)
+        
+        serializer = PageContentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(page=page)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PageContentViewSet(viewsets.ModelViewSet):
     queryset = PageContent.objects.all()
     serializer_class = PageContentSerializer
-    permission_classes = [IsAuthenticated]
 
+    def get_permissions(self):
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
     def get_queryset(self):
-        qs = PageContent.objects.filter(page__author=self.request.user)
+        queryset = super().get_queryset()
+        slug = self.request.query_params.get('slug')
         lang = self.request.query_params.get('lang')
+
+        # Filter by published pages for anonymous users
+        if not self.request.user.is_authenticated:
+            queryset = queryset.filter(page__status=Page.PUBLISHED)
+
+        if slug:
+            queryset = queryset.filter(page__slug=slug)
         if lang:
-            qs = qs.filter(language=lang)
-        return qs
+            queryset = queryset.filter(language=lang)
+
+        return queryset
 
     def perform_create(self, serializer):
-        page_slug = self.request.data.get('page')
-        page = Page.objects.get(slug=page_slug, author=self.request.user)
-        serializer.save(page=page)
+        # Ensure user owns the page they're adding content to
+        page = serializer.validated_data['page']
+        if page.author != self.request.user:
+            raise serializers.ValidationError("You can only add content to your own pages.")
+        serializer.save()
 
+    def perform_update(self, serializer):
+        # Ensure user owns the page they're updating content for
+        page = serializer.validated_data.get('page', serializer.instance.page)
+        if page.author != self.request.user:
+            raise serializers.ValidationError("You can only update content of your own pages.")
+        serializer.save()

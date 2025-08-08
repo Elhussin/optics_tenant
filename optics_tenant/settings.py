@@ -56,7 +56,6 @@ SHARED_APPS = (
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'django_extensions',
-    'modeltranslation',
 )
 
 # ===============================

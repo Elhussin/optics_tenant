@@ -1,19 +1,19 @@
 
 [
 {
-  "schema": "public",
+  "schema": "store6",
   "app": "users",
   "model": "Role",
   "csv": "csv/Role.csv"
   },
   {
-    "schema": "public",
+    "schema": "store6",
     "app": "users",
     "model": "Permission",
     "csv": "csv/Permission.csv"
   },
   {
-    "schema": "public",
+    "schema": "store6",
     "app": "users",
     "model": "RolePermission",
     "csv": "csv/RolePermission.csv",
@@ -29,19 +29,19 @@
     }
   },
   {
-    "schema": "public",
+    "schema": "store6",
     "app": "tenants",
     "model": "SubscriptionPlan",
     "csv": "csv/SubscriptionPlan.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "Attribute",
     "csv": "csv/attribute.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "AttributeValue",
     "csv": "csv/attribute_value.csv",
@@ -53,7 +53,7 @@
     }
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "Category",
     "csv": "csv/Categories.csv",
@@ -65,31 +65,31 @@
     }
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "Brand",
     "csv": "csv/brand.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "Supplier",
     "csv": "csv/supplier.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "Manufacturer",
     "csv": "csv/manufacturer.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "LensCoating",
     "csv": "csv/lens_coating.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "products",
     "model": "Product",
     "csv": "csv/product.csv",
@@ -113,19 +113,19 @@
     }
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "branches",
     "model": "Branch",
     "csv": "csv/branch.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "HRM",
     "model": "Department",
     "csv": "csv/department.csv"
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "HRM",
     "model": "Employee",
     "csv": "csv/employee.csv",
@@ -142,9 +142,21 @@
     }
   },
   {
-    "schema": "store1",
+    "schema": "store6",
     "app": "users",
     "model": "User",
     "csv": "csv/Users.csv"
+  },{
+    "schema": "store6",
+    "app": "users",
+    "model": "Page",
+    "csv": "csv/pages.csv",
+    "foreign_keys": {
+      "author": {
+        "related_model": "users.User",
+        "lookup_field": "username",
+        "create_if_missing": true
+      }
+    }
   }
 ]

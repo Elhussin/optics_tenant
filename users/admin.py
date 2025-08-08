@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from django.contrib.auth import get_user_model
-from .models import Permission, RolePermission ,Role, Page, PageContent
+from .models import Permission, RolePermission ,Role, Page, PageContent,TenantSettings
 User = get_user_model()
 
 
@@ -26,13 +26,19 @@ class RolePermissionAdmin(admin.ModelAdmin):
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
-    list_display = ['title', 'slug', 'author']
+    list_display = ['slug', 'author']
 
 @admin.register(PageContent)
 class PageContentAdmin(admin.ModelAdmin):
     list_display = ['page', 'language', 'title']
 
+@admin.register(TenantSettings)
+class TenantSettingsAdmin(admin.ModelAdmin):
+    list_display =['business_name','description']
+
+
 admin.site.register(User,UserAdmin)
 admin.site.register(Role,RoleAdmin)
 admin.site.register(Permission,PermissionAdmin)
 admin.site.register(RolePermission,RolePermissionAdmin)
+
