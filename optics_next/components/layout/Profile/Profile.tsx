@@ -4,8 +4,6 @@ import { useUser } from '@/lib/context/userContext';
 import { FetchData } from '@/lib/api/api';
 import PricingPlans from '@/components/layout/paymant/PricingPlans';
 import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';
-import { Loading4 } from '@/components/ui/loding';
-import { useRouter } from '@/app/i18n/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 
 export default function Profile() {

@@ -90,7 +90,7 @@ export function EditButton({ onClick }: BaseButtonProps) {
     <Button
       label={t('edit')}
       icon={<Pencil size={16} />}
-      onClick={onClick ?? (() => { })}
+      onClick={onClick ?? ((id:string) => { })}
       variant="primary"
       title={t('edit')}
     />
@@ -163,12 +163,12 @@ export const BackButton = () => {
 }
 
 
-export const CreateButton = ({ onClick }: BaseButtonProps) => {
+export const CreateButton = ({ onClick, label }: BaseButtonProps) => {
   const t = useTranslations('button');
   return (
     <Button
-      label={t('create')}
-      title={t('create')}
+      label={label || t('create')}
+      title={label || t('create')}
       onClick={onClick ?? (() => { })}
 
       variant="primary"

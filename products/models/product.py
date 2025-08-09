@@ -12,6 +12,7 @@ from CRM.models import Customer
 from branches.models import Branch
 from django.urls import reverse
 from products.services.generate_sku_code import generate_sku_code
+
 class Category(BaseModel):
     """Category for glasses"""
     name = models.CharField(max_length=100)

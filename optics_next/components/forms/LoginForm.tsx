@@ -7,14 +7,15 @@ import { useEffect, useState } from 'react';
 import { Loading4 } from '@/components/ui/loding';
 import { cn } from '@/lib/utils/cn';
 import { toast } from 'sonner';
-import {useRouter} from '@/app/i18n/navigation';
+// import { useRouter } from '@/app/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
 export default function LoginForm(props: formRequestProps) {
   const t = useTranslations('login');
   const { fetchUser, user, setUser } = useUser();
   const router = useRouter();
-  const [redirect, setRedirect] = useState<string | null>(null);
+  const [redirect, setRedirect] = useState<string>("/profile");
   const [plan, setPlan] = useState<string | null>(null);
 
   const { title, message, submitText = "Login", alias, mode = "login", istenant = false } = props;
@@ -28,12 +29,13 @@ export default function LoginForm(props: formRequestProps) {
     register
   }: UseFormRequestReturn = useFormRequest({ alias: alias });
 
-
-
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setRedirect(params.get("redirect") || "/profile");
-    setPlan(params.get("plan") || "basic");
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const redirectParam = params.get("redirect");
+      setRedirect(redirectParam && redirectParam !== "" ? decodeURIComponent(redirectParam) : "/profile");
+      setPlan(params.get("plan") || "basic");
+    }
   }, []);
 
   const onSubmit = async (data: any) => {
@@ -57,13 +59,14 @@ export default function LoginForm(props: formRequestProps) {
 
   useEffect(() => {
     if (user) {
-      router.replace('/profile');
+      // If user is already logged in, redirect to profile
+      router.replace(redirect);
     }
   }, [user, router]);
 
-  if (!redirect || user) {
-    return <Loading4 />;
-  }
+  // if (!user) {
+  //   return <Loading4 />;
+  // }
   return (
     <div className={cn("flex  justify-center px-4 py-8 bg")}>
       <div className={cn("max-w-5xl w-full grid grid-cols-1 bg-surface md:grid-cols-2 gap-8 rounded-2xl shadow-xl overflow-hidden")}>

@@ -51,9 +51,10 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
      mode = 'create', config: userConfig = {}, alias, id, 
     showResetButton=true, showBackButton=true,
       successMessage,
-      errorMessage
+      errorMessage,
+      fetchAlias,
     } = props;
-
+  console.log('DynamicFormGenerator props:', props);
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
 
@@ -68,8 +69,10 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
   const visibleFields = config.fieldOrder || allFields;
 
-  const fetchData = createFetcher(alias!, setDefaultValues);
+  // const fetchData = createFetcher(`${fetchAlias}/${id}`!, setDefaultValues);
   const formRequest=useFormRequest({alias:alias!,defaultValues});
+
+  const fetchDefaultData= useFormRequest({alias:fetchAlias!});
 
   const onSubmit=async(data:any)=>{
     const result=await formRequest.submitForm(data);
@@ -86,9 +89,16 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
 
   useEffect(() => {
     if (mode === 'edit' && id) {
-      fetchData({ id: id });
+      const fetchData = async () => {
+        const result=await fetchDefaultData.submitForm({ id: id });
+        console.log('Fetched data:', result.data);
+        setDefaultValues(result.data);
+      };
+      fetchData();
     }
   }, [mode, id]);
+
+  console.log('Fetched data for editing:', defaultValues);
 
   useEffect(() => {
     if (defaultValues) {
@@ -97,14 +107,17 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   }, [defaultValues]);
 
   if (mode === 'edit' && !defaultValues) {
-    return <Loading4 />;
+    return (<div> Can not edit this item</div>)
+    // <Loading4 />;
   }
 
 
   return (
-    <div className={cn(className)}>
+    <div className={cn(className) + ' container'}>
       <div className="head">
-        <h2 className="title" >{mode === 'edit' ? 'Edit ' : ''}{title?title:schemaName}</h2>
+        {/* <h2 className="title" >{mode === 'edit' ? 'Edit ' : ''}{title?title:schemaName}</h2> */}
+        <h2 className="title" >{title ? title : schemaName}</h2>
+
         {showBackButton && <BackButton />}
 
       </div>

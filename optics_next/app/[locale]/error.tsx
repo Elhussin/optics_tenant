@@ -10,9 +10,9 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
   const routuer =useRouter();
     
   useEffect(() => {
-    setTimeout(() => {
-      routuer.push(redirectPath);
-    }, 3000);
+    // setTimeout(() => {
+    //   routuer.push(redirectPath);
+    // }, 3000);
     console.error('Error:', error);
   }, [error]);
 

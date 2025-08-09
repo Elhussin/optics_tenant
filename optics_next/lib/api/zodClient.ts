@@ -1750,7 +1750,7 @@ const Supplier = z
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    name: z.string().max(200),
+    name: z.string().max(50),
     contact_person: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
@@ -2124,7 +2124,7 @@ const SupplierRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    name: z.string().min(1).max(200),
+    name: z.string().min(1).max(50),
     contact_person: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
@@ -2138,7 +2138,7 @@ const PatchedSupplierRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
-    name: z.string().min(1).max(200),
+    name: z.string().min(1).max(50),
     contact_person: z.string().max(100),
     email: z.string().max(254).email(),
     phone: z.string().max(20),

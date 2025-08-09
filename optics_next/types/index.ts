@@ -95,12 +95,16 @@ export interface ViewCardProps {
   viewFields?: string[]; 
   title?: string;
   fields?: FieldMeta[];
+  createButton?: React.ReactNode;
+  updateButton?: (id: string) => React.ReactNode;
+
 }
 
 
 
 export interface BaseButtonProps {
   onClick: (e?: React.MouseEvent) => void ;
+  label?: string;
 
 };
 

@@ -31,7 +31,7 @@ class Brand(BaseModel):
 
 class Supplier(BaseModel):
     """Suppliers"""
-    name = models.TextField(max_length=200, unique=True)
+    name = models.TextField(max_length=50, unique=True)
     contact_person = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20, blank=True)

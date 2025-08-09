@@ -36,7 +36,7 @@ import {SearchFilterForm} from "@/components/Search/SearchFilterForm";
  */
 export default function ViewCard(props: ViewCardProps) {
 
-  const {alias,restoreAlias,path,viewFields,title = "Items",} = props;
+  const {alias,restoreAlias,path,viewFields,title = "Items",createButton,updateButton} = props;
   const data = useFilteredListRequest(alias);
   console.log("data", data);
 
@@ -66,9 +66,7 @@ export default function ViewCard(props: ViewCardProps) {
       <>  
         <div className="head">
           <h2 className="title-1">{title}</h2>
-          <CreateButton
-            onClick={() => handleCreate()}
-          />
+          {createButton}
         </div>
         <div className="card-continear">
           {data.data?.map((item: any) => (
@@ -80,7 +78,7 @@ export default function ViewCard(props: ViewCardProps) {
               ))}
               <div className="btn-card">
                 <ViewButton onClick={() =>handleView(item.id)} />
-                <EditButton onClick={() => handleEdit(item.id) } />
+                {updateButton && updateButton(item.id)}
               </div>
             </div>
           ))}

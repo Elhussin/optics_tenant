@@ -31,7 +31,8 @@ export interface DynamicFormProps<T> {
   mode?: 'create' | 'edit';
   config?: Partial<GeneratorConfig>;
   alias?: string;
-  id?: string;
+  fetchAlias?: string;
+  id?: string | number;
   title?: string;
   successMessage?: string;
   errorMessage?: string;
