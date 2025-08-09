@@ -115,7 +115,26 @@
     "Tenants": "الشركات",
     "Groups": "المجموعات",
     "CRM": "العملاء",
-    "Permissions": "الصلاحيات"
+    "Permissions": "الصلاحيات",
+    "Products": "المنتجات",
+    "Suppliers": "الموردين",
+    "Branches": "الفروع",
+    "Orders": "الطلبات",
+    "Invoices": "الفواتير",
+    "Settings": "الإعدادات",
+    "Accounting": "المحاسبة",
+    "Reports": "التقارير",
+    "Analytics": "التحليلات",
+    "Support": "الدعم الفني",
+    "Careers": "الوظائف",
+    "Blog": "المدونة",
+    "Logout": "تسجيل الخروج",
+    "DarkMode": "الوضع المظلم",
+    "LightMode": "الوضع الفاتح",
+    "Language": "اللغة",
+    "Hrm" : "الموارد البشرية"
+
+
   },
   "unauthorized": {
     "title": "غير مصرح",

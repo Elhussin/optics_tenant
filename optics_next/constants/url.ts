@@ -25,7 +25,21 @@ export const URLDATA = [
     { "path": "/tenants", "name": "Tenants", },
     { "path": "/groups", "name": "Groups", },
     { "path": "/crm", "name": "CRM", },
-    { "path": "/permissions", "name": "Permissions", },
+    // { "path": "/permissions", "name": "Permissions", },
+    // { "path": "/hrm", "name": "HRM", },
+    // { "path": "/hrm/department", "name": "Departments", },
+    // { "path": "/hrm/roles", "name": "Roles", },
+    // { "path": "/hrm/employees", "name": "Employees", },
+    // { "path": "/hrm/attendance", "name": "Attendance", },
+    // { "path": "/hrm/salaries", "name": "Salaries", },
+    { "path": "/products/supplier", "name": "Suppliers", },
+    // { "path": "/products/category", "name": "Categories", },
+    // { "path": "/products/product", "name": "Products", },
+    // { "path": "/products/stock", "name": "Stock", },
+    // { "path": "/products/stock-movement", "name": "Stock Movement", },
+    // { "path": "/products/purchase-order", "name": "Purchase Orders", },
+    // { "path": "/products/sales-order", "name": "Sales Orders", },
+    // { "path": "/products/invoices", "name": "Invoices", },
   ]
 
 export const navUrl=[

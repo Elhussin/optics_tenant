@@ -11,8 +11,6 @@ import { useTranslations, useLocale } from 'next-intl';
 export default function Profile() {
     const { user } = useUser();
     const [clientData, setClientData] = useState<any>(null);
-    const router = useRouter();
-    const locale = useLocale(); // Add this
     const t = useTranslations("profilePage");
 
     // Add locale as dependency to force re-render
@@ -24,10 +22,7 @@ export default function Profile() {
           setClientData(data);
         })();
       }
-    }, [user, locale]); // Add locale here
-    useEffect(() => {
-      // Force component refresh on locale change
-    }, [locale]);
+    }, [user]); // Add locale here
 
     
     const today = new Date();
@@ -51,7 +46,7 @@ export default function Profile() {
     return (
       <>
       {user && (
-      <div className="max-w-6xl mx-auto p-6 space-y-6" key={locale}>
+      <div className="max-w-6xl mx-auto p-6 space-y-6">
         {/* Add key prop to force re-render on locale change */}
         
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">

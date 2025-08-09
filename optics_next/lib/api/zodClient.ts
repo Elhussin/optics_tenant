@@ -1393,6 +1393,356 @@ const PatchedPrescriptionRecordRequest = z
   })
   .partial()
   .passthrough();
+const ProductVariantAnswer = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    answer: z.string(),
+    question: z.number().int(),
+    answered_by: z.number().int(),
+  })
+  .passthrough();
+const ProductVariantAnswerRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    answer: z.string().min(1),
+    question: z.number().int(),
+    answered_by: z.number().int(),
+  })
+  .passthrough();
+const PatchedProductVariantAnswerRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    answer: z.string().min(1),
+    question: z.number().int(),
+    answered_by: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const AttributeValue = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    value: z.string().max(100),
+    attribute: z.number().int(),
+  })
+  .passthrough();
+const AttributeValueRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    value: z.string().min(1).max(100),
+    attribute: z.number().int(),
+  })
+  .passthrough();
+const PatchedAttributeValueRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    value: z.string().min(1).max(100),
+    attribute: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const Attributes = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().max(100),
+  })
+  .passthrough();
+const AttributesRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().min(1).max(100),
+  })
+  .passthrough();
+const PatchedAttributesRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    name: z.string().min(1).max(100),
+  })
+  .partial()
+  .passthrough();
+const Brand = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().max(100),
+    country: z.string().max(50).optional(),
+    website: z.string().max(200).url().optional(),
+    description: z.string().optional(),
+    logo: z.string().url().nullish(),
+  })
+  .passthrough();
+const BrandRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().min(1).max(100),
+    country: z.string().max(50).optional(),
+    website: z.string().max(200).url().optional(),
+    description: z.string().optional(),
+    logo: z.instanceof(File).nullish(),
+  })
+  .passthrough();
+const PatchedBrandRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    name: z.string().min(1).max(100),
+    country: z.string().max(50),
+    website: z.string().max(200).url(),
+    description: z.string(),
+    logo: z.instanceof(File).nullable(),
+  })
+  .partial()
+  .passthrough();
+const FlexiblePrice = z
+  .object({
+    id: z.number().int(),
+    variant: z.number().int(),
+    customer: z.number().int().nullable(),
+    customer_group: CustomerGroup,
+    branch: Branch,
+    special_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    start_date: z.string().nullish(),
+    end_date: z.string().nullish(),
+    min_quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    currency: z.string().max(10).optional(),
+    priority: z.number().int().gte(0).lte(2147483647).optional(),
+  })
+  .passthrough();
+const FlexiblePriceRequest = z
+  .object({
+    variant: z.number().int(),
+    customer: z.number().int().nullable(),
+    customer_group_id: z.number().int().nullable(),
+    branch_id: z.number().int().nullable(),
+    special_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    start_date: z.string().nullish(),
+    end_date: z.string().nullish(),
+    min_quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    currency: z.string().min(1).max(10).optional(),
+    priority: z.number().int().gte(0).lte(2147483647).optional(),
+  })
+  .passthrough();
+const PatchedFlexiblePriceRequest = z
+  .object({
+    variant: z.number().int(),
+    customer: z.number().int().nullable(),
+    customer_group_id: z.number().int().nullable(),
+    branch_id: z.number().int().nullable(),
+    special_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    start_date: z.string().nullable(),
+    end_date: z.string().nullable(),
+    min_quantity: z.number().int().gte(0).lte(2147483647),
+    currency: z.string().min(1).max(10),
+    priority: z.number().int().gte(0).lte(2147483647),
+  })
+  .partial()
+  .passthrough();
+const LensCoating = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(100),
+    description: z.string().optional(),
+    is_active: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const LensCoatingRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string().optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedLensCoatingRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string(),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
+const Manufacturer = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().max(100),
+    country: z.string().max(50).optional(),
+    website: z.string().max(200).url().optional(),
+    email: z.string().max(254).email().optional(),
+    phone: z.string().max(20).optional(),
+  })
+  .passthrough();
+const ManufacturerRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().min(1).max(100),
+    country: z.string().max(50).optional(),
+    website: z.string().max(200).url().optional(),
+    email: z.string().max(254).email().optional(),
+    phone: z.string().max(20).optional(),
+  })
+  .passthrough();
+const PatchedManufacturerRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    name: z.string().min(1).max(100),
+    country: z.string().max(50),
+    website: z.string().max(200).url(),
+    email: z.string().max(254).email(),
+    phone: z.string().max(20),
+  })
+  .partial()
+  .passthrough();
+const GenderEnum = z.enum(["unisex", "men", "women", "kids"]);
+const AgeGroupEnum = z.enum(["adult", "child", "senior"]);
+const ProductVariantMarketing = z
+  .object({
+    id: z.number().int(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    title: z.string().max(200),
+    description: z.string(),
+    meta_title: z.string().max(200).optional(),
+    meta_description: z.string().max(300).optional(),
+    meta_keywords: z.string().max(200).optional(),
+    slug: z
+      .string()
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    seo_image: z.string().url().nullish(),
+    seo_image_alt: z.string().max(200).optional(),
+    gender: GenderEnum.optional(),
+    age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const ProductVariantMarketingRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    title: z.string().min(1).max(200),
+    description: z.string().min(1),
+    meta_title: z.string().max(200).optional(),
+    meta_description: z.string().max(300).optional(),
+    meta_keywords: z.string().max(200).optional(),
+    slug: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    seo_image: z.instanceof(File).nullish(),
+    seo_image_alt: z.string().max(200).optional(),
+    gender: GenderEnum.optional(),
+    age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const PatchedProductVariantMarketingRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    title: z.string().min(1).max(200),
+    description: z.string().min(1),
+    meta_title: z.string().max(200),
+    meta_description: z.string().max(300),
+    meta_keywords: z.string().max(200),
+    slug: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    seo_image: z.instanceof(File).nullable(),
+    seo_image_alt: z.string().max(200),
+    gender: GenderEnum,
+    age_group: z.union([AgeGroupEnum, BlankEnum]),
+    variant: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const ProductVariantOffer = z
+  .object({
+    id: z.number().int(),
+    offer: z.string().max(100),
+    start_date: z.string(),
+    end_date: z.string(),
+    ProductVariant: z.number().int(),
+  })
+  .passthrough();
+const ProductVariantOfferRequest = z
+  .object({
+    offer: z.string().min(1).max(100),
+    start_date: z.string(),
+    end_date: z.string(),
+    ProductVariant: z.number().int(),
+  })
+  .passthrough();
+const PatchedProductVariantOfferRequest = z
+  .object({
+    offer: z.string().min(1).max(100),
+    start_date: z.string(),
+    end_date: z.string(),
+    ProductVariant: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const ProductImage = z
+  .object({
+    id: z.number().int(),
+    variant: z.number().int(),
+    image: z.string().url(),
+    alt_text: z.string().max(200).optional(),
+    order: z.number().int().gte(0).lte(2147483647).optional(),
+    is_primary: z.boolean().optional(),
+  })
+  .passthrough();
+const ProductImageRequest = z
+  .object({
+    variant: z.number().int(),
+    image: z.instanceof(File),
+    alt_text: z.string().max(200).optional(),
+    order: z.number().int().gte(0).lte(2147483647).optional(),
+    is_primary: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedProductImageRequest = z
+  .object({
+    variant: z.number().int(),
+    image: z.instanceof(File),
+    alt_text: z.string().max(200),
+    order: z.number().int().gte(0).lte(2147483647),
+    is_primary: z.boolean(),
+  })
+  .partial()
+  .passthrough();
 const Supplier = z
   .object({
     id: z.number().int(),
@@ -1410,46 +1760,7 @@ const Supplier = z
     payment_terms: z.string().max(100).optional(),
   })
   .passthrough();
-const Manufacturer = z
-  .object({
-    id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    name: z.string().max(100),
-    country: z.string().max(50).optional(),
-    website: z.string().max(200).url().optional(),
-    email: z.string().max(254).email().optional(),
-    phone: z.string().max(20).optional(),
-  })
-  .passthrough();
-const Brand = z
-  .object({
-    id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    name: z.string().max(100),
-    country: z.string().max(50).optional(),
-    website: z.string().max(200).url().optional(),
-    description: z.string().optional(),
-    logo: z.string().url().nullish(),
-  })
-  .passthrough();
 const TypeEnum = z.enum(["CL", "SL", "SG", "EW", "AX", "OT", "DV"]);
-const AttributeValue = z
-  .object({
-    id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    value: z.string().max(100),
-    attribute: z.number().int(),
-  })
-  .passthrough();
 const ProductVariantList = z
   .object({
     id: z.number().int(),
@@ -1484,25 +1795,359 @@ const Product = z
     updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
-const LensCoating = z
+const ProductRequest = z
   .object({
-    id: z.number().int(),
-    name: z.string().max(100),
+    category_id: z.number().int(),
+    supplier_id: z.number().int(),
+    manufacturer_id: z.number().int(),
+    brand_id: z.number().int(),
+    model: z.string().min(1).max(50),
+    type: TypeEnum,
+    name: z.string().max(200).nullish(),
     description: z.string().optional(),
+    main_image: z.instanceof(File).nullish(),
     is_active: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
-const ProductImage = z
+const PatchedProductRequest = z
+  .object({
+    category_id: z.number().int(),
+    supplier_id: z.number().int(),
+    manufacturer_id: z.number().int(),
+    brand_id: z.number().int(),
+    model: z.string().min(1).max(50),
+    type: TypeEnum,
+    name: z.string().max(200).nullable(),
+    description: z.string(),
+    main_image: z.instanceof(File).nullable(),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
+const ProductVariantQuestion = z
   .object({
     id: z.number().int(),
-    variant: z.number().int(),
-    image: z.string().url(),
-    alt_text: z.string().max(200).optional(),
-    order: z.number().int().gte(0).lte(2147483647).optional(),
-    is_primary: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    question: z.string(),
+    ProductVariant: z.number().int(),
+    asked_by: z.number().int(),
   })
+  .passthrough();
+const ProductVariantQuestionRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    question: z.string().min(1),
+    ProductVariant: z.number().int(),
+    asked_by: z.number().int(),
+  })
+  .passthrough();
+const PatchedProductVariantQuestionRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    question: z.string().min(1),
+    ProductVariant: z.number().int(),
+    asked_by: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const ProductVariantReview = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    rating: z.number().int().gte(0).lte(32767),
+    review: z.string(),
+    ProductVariant: z.number().int(),
+    reviewed_by: z.number().int(),
+  })
+  .passthrough();
+const ProductVariantReviewRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    rating: z.number().int().gte(0).lte(32767),
+    review: z.string().min(1),
+    ProductVariant: z.number().int(),
+    reviewed_by: z.number().int(),
+  })
+  .passthrough();
+const PatchedProductVariantReviewRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    rating: z.number().int().gte(0).lte(32767),
+    review: z.string().min(1),
+    ProductVariant: z.number().int(),
+    reviewed_by: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const MovementTypeEnum = z.enum([
+  "purchase",
+  "sale",
+  "transfer_in",
+  "transfer_out",
+  "adjustment",
+  "damage",
+  "return",
+  "reserve",
+  "release",
+]);
+const StockMovements = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    movement_type: MovementTypeEnum,
+    quantity: z.number().int().gte(-2147483648).lte(2147483647),
+    quantity_before: z.number().int().gte(0).lte(2147483647),
+    quantity_after: z.number().int().gte(0).lte(2147483647),
+    reference_number: z.string().max(50).optional(),
+    notes: z.string().optional(),
+    movement_date: z.string().datetime({ offset: true }),
+    cost_per_unit: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    stocks: z.number().int(),
+  })
+  .passthrough();
+const StockMovementsRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    movement_type: MovementTypeEnum,
+    quantity: z.number().int().gte(-2147483648).lte(2147483647),
+    quantity_before: z.number().int().gte(0).lte(2147483647),
+    quantity_after: z.number().int().gte(0).lte(2147483647),
+    reference_number: z.string().max(50).optional(),
+    notes: z.string().optional(),
+    cost_per_unit: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    stocks: z.number().int(),
+  })
+  .passthrough();
+const PatchedStockMovementsRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    movement_type: MovementTypeEnum,
+    quantity: z.number().int().gte(-2147483648).lte(2147483647),
+    quantity_before: z.number().int().gte(0).lte(2147483647),
+    quantity_after: z.number().int().gte(0).lte(2147483647),
+    reference_number: z.string().max(50),
+    notes: z.string(),
+    cost_per_unit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    stocks: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const StockTransferItem = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    quantity_requested: z.number().int().gte(0).lte(2147483647),
+    quantity_sent: z.number().int().gte(0).lte(2147483647).optional(),
+    quantity_received: z.number().int().gte(0).lte(2147483647).optional(),
+    unit_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    notes: z.string().optional(),
+    transfer: z.number().int(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const StockTransferItemRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    quantity_requested: z.number().int().gte(0).lte(2147483647),
+    quantity_sent: z.number().int().gte(0).lte(2147483647).optional(),
+    quantity_received: z.number().int().gte(0).lte(2147483647).optional(),
+    unit_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    notes: z.string().optional(),
+    transfer: z.number().int(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const PatchedStockTransferItemRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    quantity_requested: z.number().int().gte(0).lte(2147483647),
+    quantity_sent: z.number().int().gte(0).lte(2147483647),
+    quantity_received: z.number().int().gte(0).lte(2147483647),
+    unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    notes: z.string(),
+    transfer: z.number().int(),
+    variant: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const StockTransferStatusEnum = z.enum([
+  "pending",
+  "in_transit",
+  "completed",
+  "cancelled",
+]);
+const StockTransfer = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    transfer_number: z.string(),
+    status: StockTransferStatusEnum.optional(),
+    requested_by: z.string().max(100).optional(),
+    approved_by: z.string().max(100).optional(),
+    requested_date: z.string().datetime({ offset: true }),
+    approved_date: z.string().datetime({ offset: true }).nullish(),
+    shipped_date: z.string().datetime({ offset: true }).nullish(),
+    received_date: z.string().datetime({ offset: true }).nullish(),
+    notes: z.string().optional(),
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
+  })
+  .passthrough();
+const StockTransferRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    status: StockTransferStatusEnum.optional(),
+    requested_by: z.string().max(100).optional(),
+    approved_by: z.string().max(100).optional(),
+    approved_date: z.string().datetime({ offset: true }).nullish(),
+    shipped_date: z.string().datetime({ offset: true }).nullish(),
+    received_date: z.string().datetime({ offset: true }).nullish(),
+    notes: z.string().optional(),
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
+  })
+  .passthrough();
+const PatchedStockTransferRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    status: StockTransferStatusEnum,
+    requested_by: z.string().max(100),
+    approved_by: z.string().max(100),
+    approved_date: z.string().datetime({ offset: true }).nullable(),
+    shipped_date: z.string().datetime({ offset: true }).nullable(),
+    received_date: z.string().datetime({ offset: true }).nullable(),
+    notes: z.string(),
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const Stocks = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    quantity_in_stock: z.number().int().gte(0).lte(2147483647).optional(),
+    reserved_quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    reorder_level: z.number().int().gte(0).lte(2147483647).optional(),
+    max_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
+    min_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
+    average_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    last_restocked: z.string().datetime({ offset: true }).nullish(),
+    last_sale: z.string().datetime({ offset: true }).nullish(),
+    allow_backorder: z.boolean().optional(),
+    branch: z.number().int(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const StocksRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    quantity_in_stock: z.number().int().gte(0).lte(2147483647).optional(),
+    reserved_quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    reorder_level: z.number().int().gte(0).lte(2147483647).optional(),
+    max_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
+    min_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
+    average_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    last_restocked: z.string().datetime({ offset: true }).nullish(),
+    last_sale: z.string().datetime({ offset: true }).nullish(),
+    allow_backorder: z.boolean().optional(),
+    branch: z.number().int(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const PatchedStocksRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    quantity_in_stock: z.number().int().gte(0).lte(2147483647),
+    reserved_quantity: z.number().int().gte(0).lte(2147483647),
+    reorder_level: z.number().int().gte(0).lte(2147483647),
+    max_stock_level: z.number().int().gte(0).lte(2147483647),
+    min_stock_level: z.number().int().gte(0).lte(2147483647),
+    average_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    last_restocked: z.string().datetime({ offset: true }).nullable(),
+    last_sale: z.string().datetime({ offset: true }).nullable(),
+    allow_backorder: z.boolean(),
+    branch: z.number().int(),
+    variant: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const SupplierRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().min(1).max(200),
+    contact_person: z.string().max(100).optional(),
+    email: z.string().max(254).email().optional(),
+    phone: z.string().max(20).optional(),
+    address: z.string().optional(),
+    country: z.string().max(50).optional(),
+    website: z.string().max(200).url().optional(),
+    payment_terms: z.string().max(100).optional(),
+  })
+  .passthrough();
+const PatchedSupplierRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    name: z.string().min(1).max(200),
+    contact_person: z.string().max(100),
+    email: z.string().max(254).email(),
+    phone: z.string().max(20),
+    address: z.string(),
+    country: z.string().max(50),
+    website: z.string().max(200).url(),
+    payment_terms: z.string().max(100),
+  })
+  .partial()
   .passthrough();
 const ProductVariant = z
   .object({
@@ -2023,6 +2668,31 @@ const PatchedSubscriptionPlanRequest = z
   })
   .partial()
   .passthrough();
+const ContactUs = z
+  .object({
+    email: z.string().max(254).email(),
+    phone: z.string().max(20),
+    name: z.string().max(100),
+    message: z.string().max(500),
+  })
+  .passthrough();
+const ContactUsRequest = z
+  .object({
+    email: z.string().min(1).max(254).email(),
+    phone: z.string().min(1).max(20),
+    name: z.string().min(1).max(100),
+    message: z.string().min(1).max(500),
+  })
+  .passthrough();
+const PatchedContactUsRequest = z
+  .object({
+    email: z.string().min(1).max(254).email(),
+    phone: z.string().min(1).max(20),
+    name: z.string().min(1).max(100),
+    message: z.string().min(1).max(500),
+  })
+  .partial()
+  .passthrough();
 const LoginRequest = z
   .object({ username: z.string().min(1), password: z.string().min(1) })
   .passthrough();
@@ -2034,6 +2704,79 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ msg: z.string() }).passthrough();
 const TokenRefreshError = z.object({ error: z.string() }).passthrough();
+const LanguageEnum = z.enum(["en", "ar"]);
+const PageContent = z
+  .object({
+    id: z.number().int(),
+    page: z.number().int(),
+    language: LanguageEnum,
+    title: z.string().max(255),
+    content: z.string().nullish(),
+    seo_title: z.string().max(255).nullish(),
+    meta_description: z.string().nullish(),
+    meta_keywords: z.string().max(255).nullish(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PageContentRequest = z
+  .object({
+    page: z.number().int(),
+    language: LanguageEnum,
+    title: z.string().min(1).max(255),
+    content: z.string().nullish(),
+    seo_title: z.string().max(255).nullish(),
+    meta_description: z.string().nullish(),
+    meta_keywords: z.string().max(255).nullish(),
+  })
+  .passthrough();
+const PatchedPageContentRequest = z
+  .object({
+    page: z.number().int(),
+    language: LanguageEnum,
+    title: z.string().min(1).max(255),
+    content: z.string().nullable(),
+    seo_title: z.string().max(255).nullable(),
+    meta_description: z.string().nullable(),
+    meta_keywords: z.string().max(255).nullable(),
+  })
+  .partial()
+  .passthrough();
+const PageStatusEnum = z.enum(["draft", "published"]);
+const Page = z
+  .object({
+    id: z.number().int(),
+    slug: z
+      .string()
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    status: PageStatusEnum.optional(),
+    translations: z.array(PageContent),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PageRequest = z
+  .object({
+    slug: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    status: PageStatusEnum.optional(),
+  })
+  .passthrough();
+const PatchedPageRequest = z
+  .object({
+    slug: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    status: PageStatusEnum,
+  })
+  .partial()
+  .passthrough();
 const PasswordResetSuccessResponse = z
   .object({ detail: z.string() })
   .passthrough();
@@ -2262,15 +3005,66 @@ export const schemas = {
   PrescriptionRecord,
   PrescriptionRecordRequest,
   PatchedPrescriptionRecordRequest,
-  Supplier,
-  Manufacturer,
-  Brand,
-  TypeEnum,
+  ProductVariantAnswer,
+  ProductVariantAnswerRequest,
+  PatchedProductVariantAnswerRequest,
   AttributeValue,
+  AttributeValueRequest,
+  PatchedAttributeValueRequest,
+  Attributes,
+  AttributesRequest,
+  PatchedAttributesRequest,
+  Brand,
+  BrandRequest,
+  PatchedBrandRequest,
+  FlexiblePrice,
+  FlexiblePriceRequest,
+  PatchedFlexiblePriceRequest,
+  LensCoating,
+  LensCoatingRequest,
+  PatchedLensCoatingRequest,
+  Manufacturer,
+  ManufacturerRequest,
+  PatchedManufacturerRequest,
+  GenderEnum,
+  AgeGroupEnum,
+  ProductVariantMarketing,
+  ProductVariantMarketingRequest,
+  PatchedProductVariantMarketingRequest,
+  ProductVariantOffer,
+  ProductVariantOfferRequest,
+  PatchedProductVariantOfferRequest,
+  ProductImage,
+  ProductImageRequest,
+  PatchedProductImageRequest,
+  Supplier,
+  TypeEnum,
   ProductVariantList,
   Product,
-  LensCoating,
-  ProductImage,
+  ProductRequest,
+  PatchedProductRequest,
+  ProductVariantQuestion,
+  ProductVariantQuestionRequest,
+  PatchedProductVariantQuestionRequest,
+  ProductVariantReview,
+  ProductVariantReviewRequest,
+  PatchedProductVariantReviewRequest,
+  MovementTypeEnum,
+  StockMovements,
+  StockMovementsRequest,
+  PatchedStockMovementsRequest,
+  StockTransferItem,
+  StockTransferItemRequest,
+  PatchedStockTransferItemRequest,
+  StockTransferStatusEnum,
+  StockTransfer,
+  StockTransferRequest,
+  PatchedStockTransferRequest,
+  Stocks,
+  StocksRequest,
+  PatchedStocksRequest,
+  SupplierRequest,
+  PatchedSupplierRequest,
   ProductVariant,
   ProductVariantRequest,
   PatchedProductVariantRequest,
@@ -2301,12 +3095,23 @@ export const schemas = {
   PatchedClientRequest,
   SubscriptionPlanRequest,
   PatchedSubscriptionPlanRequest,
+  ContactUs,
+  ContactUsRequest,
+  PatchedContactUsRequest,
   LoginRequest,
   LoginSuccessResponse,
   LoginBadRequest,
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
+  LanguageEnum,
+  PageContent,
+  PageContentRequest,
+  PatchedPageContentRequest,
+  PageStatusEnum,
+  Page,
+  PageRequest,
+  PatchedPageRequest,
   PasswordResetSuccessResponse,
   PasswordResetBadRequest,
   Permission,
@@ -4880,6 +5685,1659 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/products/answers/",
+    alias: "products_answers_list",
+    requestFormat: "json",
+    response: z.array(ProductVariantAnswer),
+  },
+  {
+    method: "post",
+    path: "/api/products/answers/",
+    alias: "products_answers_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantAnswerRequest,
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "get",
+    path: "/api/products/answers/:id/",
+    alias: "products_answers_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "put",
+    path: "/api/products/answers/:id/",
+    alias: "products_answers_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantAnswerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "patch",
+    path: "/api/products/answers/:id/",
+    alias: "products_answers_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantAnswerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "delete",
+    path: "/api/products/answers/:id/",
+    alias: "products_answers_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/attribute-values/",
+    alias: "products_attribute_values_list",
+    requestFormat: "json",
+    response: z.array(AttributeValue),
+  },
+  {
+    method: "post",
+    path: "/api/products/attribute-values/",
+    alias: "products_attribute_values_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributeValueRequest,
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "get",
+    path: "/api/products/attribute-values/:id/",
+    alias: "products_attribute_values_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "put",
+    path: "/api/products/attribute-values/:id/",
+    alias: "products_attribute_values_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributeValueRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "patch",
+    path: "/api/products/attribute-values/:id/",
+    alias: "products_attribute_values_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedAttributeValueRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "delete",
+    path: "/api/products/attribute-values/:id/",
+    alias: "products_attribute_values_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/attributes/",
+    alias: "products_attributes_list",
+    requestFormat: "json",
+    response: z.array(Attributes),
+  },
+  {
+    method: "post",
+    path: "/api/products/attributes/",
+    alias: "products_attributes_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributesRequest,
+      },
+    ],
+    response: Attributes,
+  },
+  {
+    method: "get",
+    path: "/api/products/attributes/:id/",
+    alias: "products_attributes_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attributes,
+  },
+  {
+    method: "put",
+    path: "/api/products/attributes/:id/",
+    alias: "products_attributes_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributesRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attributes,
+  },
+  {
+    method: "patch",
+    path: "/api/products/attributes/:id/",
+    alias: "products_attributes_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedAttributesRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attributes,
+  },
+  {
+    method: "delete",
+    path: "/api/products/attributes/:id/",
+    alias: "products_attributes_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/brands/",
+    alias: "products_brands_list",
+    requestFormat: "json",
+    response: z.array(Brand),
+  },
+  {
+    method: "post",
+    path: "/api/products/brands/",
+    alias: "products_brands_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BrandRequest,
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "get",
+    path: "/api/products/brands/:id/",
+    alias: "products_brands_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "put",
+    path: "/api/products/brands/:id/",
+    alias: "products_brands_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BrandRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "patch",
+    path: "/api/products/brands/:id/",
+    alias: "products_brands_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedBrandRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "delete",
+    path: "/api/products/brands/:id/",
+    alias: "products_brands_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/categories/",
+    alias: "products_categories_list",
+    requestFormat: "json",
+    response: z.array(Category),
+  },
+  {
+    method: "post",
+    path: "/api/products/categories/",
+    alias: "products_categories_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CategoryRequest,
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "get",
+    path: "/api/products/categories/:id/",
+    alias: "products_categories_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "put",
+    path: "/api/products/categories/:id/",
+    alias: "products_categories_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CategoryRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "patch",
+    path: "/api/products/categories/:id/",
+    alias: "products_categories_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCategoryRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "delete",
+    path: "/api/products/categories/:id/",
+    alias: "products_categories_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/flexible-prices/",
+    alias: "products_flexible_prices_list",
+    requestFormat: "json",
+    response: z.array(FlexiblePrice),
+  },
+  {
+    method: "post",
+    path: "/api/products/flexible-prices/",
+    alias: "products_flexible_prices_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: FlexiblePriceRequest,
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "get",
+    path: "/api/products/flexible-prices/:id/",
+    alias: "products_flexible_prices_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "put",
+    path: "/api/products/flexible-prices/:id/",
+    alias: "products_flexible_prices_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: FlexiblePriceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "patch",
+    path: "/api/products/flexible-prices/:id/",
+    alias: "products_flexible_prices_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedFlexiblePriceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "delete",
+    path: "/api/products/flexible-prices/:id/",
+    alias: "products_flexible_prices_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/lens-coatings/",
+    alias: "products_lens_coatings_list",
+    requestFormat: "json",
+    response: z.array(LensCoating),
+  },
+  {
+    method: "post",
+    path: "/api/products/lens-coatings/",
+    alias: "products_lens_coatings_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: LensCoatingRequest,
+      },
+    ],
+    response: LensCoating,
+  },
+  {
+    method: "get",
+    path: "/api/products/lens-coatings/:id/",
+    alias: "products_lens_coatings_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: LensCoating,
+  },
+  {
+    method: "put",
+    path: "/api/products/lens-coatings/:id/",
+    alias: "products_lens_coatings_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: LensCoatingRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: LensCoating,
+  },
+  {
+    method: "patch",
+    path: "/api/products/lens-coatings/:id/",
+    alias: "products_lens_coatings_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedLensCoatingRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: LensCoating,
+  },
+  {
+    method: "delete",
+    path: "/api/products/lens-coatings/:id/",
+    alias: "products_lens_coatings_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/manufacturers/",
+    alias: "products_manufacturers_list",
+    requestFormat: "json",
+    response: z.array(Manufacturer),
+  },
+  {
+    method: "post",
+    path: "/api/products/manufacturers/",
+    alias: "products_manufacturers_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ManufacturerRequest,
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "get",
+    path: "/api/products/manufacturers/:id/",
+    alias: "products_manufacturers_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "put",
+    path: "/api/products/manufacturers/:id/",
+    alias: "products_manufacturers_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ManufacturerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "patch",
+    path: "/api/products/manufacturers/:id/",
+    alias: "products_manufacturers_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedManufacturerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "delete",
+    path: "/api/products/manufacturers/:id/",
+    alias: "products_manufacturers_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/marketing/",
+    alias: "products_marketing_list",
+    requestFormat: "json",
+    response: z.array(ProductVariantMarketing),
+  },
+  {
+    method: "post",
+    path: "/api/products/marketing/",
+    alias: "products_marketing_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantMarketingRequest,
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "get",
+    path: "/api/products/marketing/:id/",
+    alias: "products_marketing_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "put",
+    path: "/api/products/marketing/:id/",
+    alias: "products_marketing_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantMarketingRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "patch",
+    path: "/api/products/marketing/:id/",
+    alias: "products_marketing_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantMarketingRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "delete",
+    path: "/api/products/marketing/:id/",
+    alias: "products_marketing_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/offers/",
+    alias: "products_offers_list",
+    requestFormat: "json",
+    response: z.array(ProductVariantOffer),
+  },
+  {
+    method: "post",
+    path: "/api/products/offers/",
+    alias: "products_offers_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantOfferRequest,
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "get",
+    path: "/api/products/offers/:id/",
+    alias: "products_offers_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "put",
+    path: "/api/products/offers/:id/",
+    alias: "products_offers_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantOfferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "patch",
+    path: "/api/products/offers/:id/",
+    alias: "products_offers_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantOfferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "delete",
+    path: "/api/products/offers/:id/",
+    alias: "products_offers_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/product-images/",
+    alias: "products_product_images_list",
+    requestFormat: "json",
+    response: z.array(ProductImage),
+  },
+  {
+    method: "post",
+    path: "/api/products/product-images/",
+    alias: "products_product_images_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductImageRequest,
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "get",
+    path: "/api/products/product-images/:id/",
+    alias: "products_product_images_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "put",
+    path: "/api/products/product-images/:id/",
+    alias: "products_product_images_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductImageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "patch",
+    path: "/api/products/product-images/:id/",
+    alias: "products_product_images_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductImageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "delete",
+    path: "/api/products/product-images/:id/",
+    alias: "products_product_images_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/products/",
+    alias: "products_products_list",
+    requestFormat: "json",
+    response: z.array(Product),
+  },
+  {
+    method: "post",
+    path: "/api/products/products/",
+    alias: "products_products_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductRequest,
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "get",
+    path: "/api/products/products/:id/",
+    alias: "products_products_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "put",
+    path: "/api/products/products/:id/",
+    alias: "products_products_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "patch",
+    path: "/api/products/products/:id/",
+    alias: "products_products_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "delete",
+    path: "/api/products/products/:id/",
+    alias: "products_products_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/questions/",
+    alias: "products_questions_list",
+    requestFormat: "json",
+    response: z.array(ProductVariantQuestion),
+  },
+  {
+    method: "post",
+    path: "/api/products/questions/",
+    alias: "products_questions_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantQuestionRequest,
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "get",
+    path: "/api/products/questions/:id/",
+    alias: "products_questions_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "put",
+    path: "/api/products/questions/:id/",
+    alias: "products_questions_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantQuestionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "patch",
+    path: "/api/products/questions/:id/",
+    alias: "products_questions_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantQuestionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "delete",
+    path: "/api/products/questions/:id/",
+    alias: "products_questions_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/reviews/",
+    alias: "products_reviews_list",
+    requestFormat: "json",
+    response: z.array(ProductVariantReview),
+  },
+  {
+    method: "post",
+    path: "/api/products/reviews/",
+    alias: "products_reviews_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantReviewRequest,
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "get",
+    path: "/api/products/reviews/:id/",
+    alias: "products_reviews_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "put",
+    path: "/api/products/reviews/:id/",
+    alias: "products_reviews_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantReviewRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "patch",
+    path: "/api/products/reviews/:id/",
+    alias: "products_reviews_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantReviewRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "delete",
+    path: "/api/products/reviews/:id/",
+    alias: "products_reviews_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-movements/",
+    alias: "products_stock_movements_list",
+    requestFormat: "json",
+    response: z.array(StockMovements),
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-movements/",
+    alias: "products_stock_movements_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementsRequest,
+      },
+    ],
+    response: StockMovements,
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-movements/:id/",
+    alias: "products_stock_movements_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovements,
+  },
+  {
+    method: "put",
+    path: "/api/products/stock-movements/:id/",
+    alias: "products_stock_movements_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovements,
+  },
+  {
+    method: "patch",
+    path: "/api/products/stock-movements/:id/",
+    alias: "products_stock_movements_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockMovementsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovements,
+  },
+  {
+    method: "delete",
+    path: "/api/products/stock-movements/:id/",
+    alias: "products_stock_movements_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-transfer-items/",
+    alias: "products_stock_transfer_items_list",
+    requestFormat: "json",
+    response: z.array(StockTransferItem),
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-transfer-items/",
+    alias: "products_stock_transfer_items_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferItemRequest,
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-transfer-items/:id/",
+    alias: "products_stock_transfer_items_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "put",
+    path: "/api/products/stock-transfer-items/:id/",
+    alias: "products_stock_transfer_items_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "patch",
+    path: "/api/products/stock-transfer-items/:id/",
+    alias: "products_stock_transfer_items_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockTransferItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "delete",
+    path: "/api/products/stock-transfer-items/:id/",
+    alias: "products_stock_transfer_items_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-transfers/",
+    alias: "products_stock_transfers_list",
+    requestFormat: "json",
+    response: z.array(StockTransfer),
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-transfers/",
+    alias: "products_stock_transfers_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-transfers/:id/",
+    alias: "products_stock_transfers_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "put",
+    path: "/api/products/stock-transfers/:id/",
+    alias: "products_stock_transfers_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "patch",
+    path: "/api/products/stock-transfers/:id/",
+    alias: "products_stock_transfers_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "delete",
+    path: "/api/products/stock-transfers/:id/",
+    alias: "products_stock_transfers_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/stocks/",
+    alias: "products_stocks_list",
+    requestFormat: "json",
+    response: z.array(Stocks),
+  },
+  {
+    method: "post",
+    path: "/api/products/stocks/",
+    alias: "products_stocks_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StocksRequest,
+      },
+    ],
+    response: Stocks,
+  },
+  {
+    method: "get",
+    path: "/api/products/stocks/:id/",
+    alias: "products_stocks_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stocks,
+  },
+  {
+    method: "put",
+    path: "/api/products/stocks/:id/",
+    alias: "products_stocks_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StocksRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stocks,
+  },
+  {
+    method: "patch",
+    path: "/api/products/stocks/:id/",
+    alias: "products_stocks_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStocksRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stocks,
+  },
+  {
+    method: "delete",
+    path: "/api/products/stocks/:id/",
+    alias: "products_stocks_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/suppliers/",
+    alias: "products_suppliers_list",
+    requestFormat: "json",
+    response: z.array(Supplier),
+  },
+  {
+    method: "post",
+    path: "/api/products/suppliers/",
+    alias: "products_suppliers_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SupplierRequest,
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "get",
+    path: "/api/products/suppliers/:id/",
+    alias: "products_suppliers_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "put",
+    path: "/api/products/suppliers/:id/",
+    alias: "products_suppliers_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SupplierRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "patch",
+    path: "/api/products/suppliers/:id/",
+    alias: "products_suppliers_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedSupplierRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "delete",
+    path: "/api/products/suppliers/:id/",
+    alias: "products_suppliers_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/products/variants/",
     alias: "products_variants_list",
     requestFormat: "json",
@@ -4964,32 +7422,6 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
-  },
-  {
-    method: "post",
-    path: "/api/products/variants/:id/calculate-price/",
-    alias: "products_variants_calculate_price_create",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: ProductVariantRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: ProductVariant,
-  },
-  {
-    method: "get",
-    path: "/api/products/variants/search/",
-    alias: "products_variants_search_retrieve",
-    requestFormat: "json",
-    response: ProductVariant,
   },
   {
     method: "get",
@@ -5585,6 +8017,93 @@ export const endpoints = makeApi([
     response: z.void(),
   },
   {
+    method: "get",
+    path: "/api/users/contact-us/",
+    alias: "users_contact_us_list",
+    requestFormat: "json",
+    response: z.array(ContactUs),
+  },
+  {
+    method: "post",
+    path: "/api/users/contact-us/",
+    alias: "users_contact_us_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactUsRequest,
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "get",
+    path: "/api/users/contact-us/:id/",
+    alias: "users_contact_us_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "put",
+    path: "/api/users/contact-us/:id/",
+    alias: "users_contact_us_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactUsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "patch",
+    path: "/api/users/contact-us/:id/",
+    alias: "users_contact_us_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedContactUsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "delete",
+    path: "/api/users/contact-us/:id/",
+    alias: "users_contact_us_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
     method: "post",
     path: "/api/users/login/",
     alias: "users_login_create",
@@ -5629,6 +8148,215 @@ export const endpoints = makeApi([
         schema: z.object({ error: z.string() }).passthrough(),
       },
     ],
+  },
+  {
+    method: "get",
+    path: "/api/users/page-contents/",
+    alias: "users_page_contents_list",
+    requestFormat: "json",
+    response: z.array(PageContent),
+  },
+  {
+    method: "post",
+    path: "/api/users/page-contents/",
+    alias: "users_page_contents_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageContentRequest,
+      },
+    ],
+    response: PageContent,
+  },
+  {
+    method: "get",
+    path: "/api/users/page-contents/:id/",
+    alias: "users_page_contents_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PageContent,
+  },
+  {
+    method: "put",
+    path: "/api/users/page-contents/:id/",
+    alias: "users_page_contents_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageContentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PageContent,
+  },
+  {
+    method: "patch",
+    path: "/api/users/page-contents/:id/",
+    alias: "users_page_contents_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPageContentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PageContent,
+  },
+  {
+    method: "delete",
+    path: "/api/users/page-contents/:id/",
+    alias: "users_page_contents_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/users/pages/",
+    alias: "users_pages_list",
+    requestFormat: "json",
+    response: z.array(Page),
+  },
+  {
+    method: "post",
+    path: "/api/users/pages/",
+    alias: "users_pages_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "get",
+    path: "/api/users/pages/:slug/",
+    alias: "users_pages_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "put",
+    path: "/api/users/pages/:slug/",
+    alias: "users_pages_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "patch",
+    path: "/api/users/pages/:slug/",
+    alias: "users_pages_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPageRequest,
+      },
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "delete",
+    path: "/api/users/pages/:slug/",
+    alias: "users_pages_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/users/pages/:slug/add_translation/",
+    alias: "users_pages_add_translation_create",
+    description: `Add translation for a page`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "get",
+    path: "/api/users/pages/:slug/content/",
+    alias: "users_pages_content_retrieve",
+    description: `Get page content for a specific language`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
   },
   {
     method: "post",

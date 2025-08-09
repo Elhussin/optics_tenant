@@ -1,4 +1,5 @@
 export async function generateMetadata({ params }: { params: { slug: string } }) {
+  
   const res = await fetch(`${process.env.API_URL}/api/pages/${params.slug}`);
   const data = await res.json();
 

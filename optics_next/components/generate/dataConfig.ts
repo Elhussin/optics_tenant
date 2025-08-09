@@ -33,13 +33,13 @@ export const defaultConfig: GeneratorConfig = {
   };
   
   export const relationshipConfigs: RelationshipConfig = {
-    employee_id: {
-      endpoint: 'hrm_employees_list',
-      labelField: 'name',
-      valueField: 'id',
-      searchField: 'name',
-      createPage: '/hrm/employees/create'
-    },
+    // employee_id: {
+    //   endpoint: 'hrm_employees_list',
+    //   labelField: 'name',
+    //   valueField: 'id',
+    //   searchField: 'name',
+    //   createPage: '/hrm/employees/create'
+    // },
     user_id: {
       endpoint: 'users_users_list',
       labelField: 'username',
@@ -62,11 +62,11 @@ export const defaultConfig: GeneratorConfig = {
       createPage: '/hrm/department/create'
     },
     role_id: {
-      endpoint: 'hrm_roles_list',
+      endpoint: 'users_roles_list',
       labelField: 'name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/hrm/roles/create'
+      createPage: '/users/create'
     }
   };
 

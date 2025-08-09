@@ -1,6 +1,5 @@
 
 'use client';
-
 import ViewCard from '@/components/view/ViewCard';
 
 export default function UsersPage() {
@@ -10,7 +9,7 @@ export default function UsersPage() {
   alias="users_users_list"
   restoreAlias="users_users_partial_update"
   path="/users"
-  viewFields={["username", "email", "role"]}
+  viewFields={["username", "email", "role.name"]}
   title="Users List"
 />
     );

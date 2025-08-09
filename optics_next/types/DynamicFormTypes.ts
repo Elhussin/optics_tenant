@@ -1,3 +1,5 @@
+import { error } from "console";
+
 export interface FieldTemplate {
   component: string;
   type?: string;
@@ -31,6 +33,9 @@ export interface DynamicFormProps<T> {
   alias?: string;
   id?: string;
   title?: string;
+  successMessage?: string;
+  errorMessage?: string;
+  
 }
 
 export interface ForeignKeyConfig {

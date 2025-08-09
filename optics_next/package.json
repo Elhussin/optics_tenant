@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "gen-zod": "openapi-zod-client http://store1.localhost:8001/api/schema/ -o lib/api/zodClient.ts",
-    "dev": "next dev",
+    "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"

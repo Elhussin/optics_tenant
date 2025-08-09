@@ -1,7 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,serializers
-from .serializers import RegisterSerializer, LoginSerializer,UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,TenantSettings
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
@@ -19,7 +18,9 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str, force_bytes
 from .models import Permission, RolePermission ,Role, Page, PageContent, ContactUs,TenantSettings
 from django.core.exceptions import PermissionDenied
-from .serializers import PermissionSerializer, RolePermissionSerializer, RoleSerializer,TenantSettingsSerializer
+from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,TenantSettingsSerializer,
+RegisterSerializer, LoginSerializer,UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,TenantSettings)
+
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
 from rest_framework.decorators import action

@@ -1,18 +1,17 @@
-'use client';
+// products/supplier/page.tsx
+// 'use client';
 import ViewCard from '@/components/view/ViewCard';
 
 
 export default function SupplierPage() {
   return (
     <ViewCard
-      alias="hrm_departments_list"
-      fieldsAlias="hrm_departments_list"
-      restoreAlias="hrm_departments_restore"
-      hardDeleteAlias="hrm_departments_destroy"
-      path="/hrm/department"
-      viewFields={["name", "location", "description"]}
-      title="Departments List"
+      alias="products_suppliers_list"
+      restoreAlias="products_suppliers_partial_update"
+      path="/products/supplier"
+      viewFields={["name"]}
+      title="Suppliers"
     />
   );
 }
-Supplier
+

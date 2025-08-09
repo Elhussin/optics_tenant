@@ -49,50 +49,7 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 
-class Page(BaseModel):
-    DRAFT = 'draft'
-    PUBLISHED = 'published'
-    STATUS_CHOICES = [
-        (DRAFT, 'Draft'),
-        (PUBLISHED, 'Published'),
-    ]
-    
-    slug = models.SlugField(max_length=50, unique=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=DRAFT)
-    
-    def __str__(self):
-        # Get the title from default language or first available
-        content = self.translations.filter(
-            language=settings.LANGUAGE_CODE
-        ).first()
-        if not content:
-            content = self.translations.first()
-        return content.title if content else self.slug
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            # Auto-generate slug if not provided
-            base_slug = slugify(self.title) if hasattr(self, 'title') else 'page'
-            self.slug = self._generate_unique_slug(base_slug)
-        super().save(*args, **kwargs)
-    
-
-
-class PageContent(BaseModel):
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="translations")
-    language = models.CharField(max_length=10, choices=settings.LANGUAGES)
-    title = models.CharField(max_length=255)
-    content = models.TextField(blank=True, null=True)
-    seo_title = models.CharField(max_length=255, blank=True, null=True)
-    meta_description = models.TextField(blank=True, null=True)
-    meta_keywords = models.CharField(max_length=255, blank=True, null=True)
-
-    class Meta:
-        unique_together = ('page', 'language')  
-
-    def __str__(self):
-        return f"{self.page.slug} ({self.language})"
 
 class ContactUs(BaseModel):
     email = models.EmailField()

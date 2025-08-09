@@ -269,3 +269,27 @@ class FlexiblePriceSerializer(serializers.ModelSerializer):
                 )
         
         return data
+    
+
+class ProductVariantOfferSerializer (serializers.ModelSerializer):
+    variant = serializers.PrimaryKeyRelatedField(
+        queryset=ProductVariant.objects.all()
+    )
+    customer = serializers.PrimaryKeyRelatedField(
+        queryset=Customer.objects.all(),
+        allow_null=True
+    )
+    customer_group = CustomerGroupSerializer(read_only=True)
+    customer_group_id = serializers.PrimaryKeyRelatedField(
+        queryset=CustomerGroup.objects.all(),
+        source='customer_group',
+        write_only=True,
+        allow_null=True
+    )
+    branch = BranchSerializer(read_only=True)
+    branch_id = serializers.PrimaryKeyRelatedField(
+        queryset=Branch.objects.all(),
+        source='branch',
+        write_only=True,
+        allow_null=True
+    )   
