@@ -86,18 +86,20 @@ interface FieldMeta {
 }
 // ues in view card
 export interface ViewCardProps {
-  alias: string;
+
+  entity?: string;
   id?: string | number | undefined;
-  fieldsAlias?: string;
-  restoreAlias: string;
-  hardDeleteAlias?: string;
-  path?: string;
-  viewFields?: string[]; 
-  title?: string;
-  fields?: FieldMeta[];
-  createButton?: React.ReactNode;
-  updateButton?: (id: string) => React.ReactNode;
-  viewButton?: (id: string) => React.ReactNode;
+  // alias?: string;
+  // fieldsAlias?: string;
+  // restoreAlias: string;
+  // hardDeleteAlias?: string;
+  // path?: string;
+  // viewFields?: string[]; 
+  // title?: string;
+  // fields?: string[];
+  // createButton?: React.ReactNode;
+  // updateButton?: (id: string) => React.ReactNode;
+  // viewButton?: (id: string) => React.ReactNode;
 }
 
 

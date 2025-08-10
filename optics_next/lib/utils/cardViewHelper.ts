@@ -57,22 +57,84 @@ export const handleDownloadPDF = async (printRef: any, title: string) => {
 };
 
 
-export const handleCopy = (item: any, fields: any) => {
-  const text = fields.map(({ key, label }: any) => {
-    const value = item[key];
-    const formatted =
-      typeof value === "boolean"
-        ? value ? "✅" : "❌"
-        : isValidDate(value)
+// export const handleCopy = (item: any, fields: any) => {
+//   const text = fields.map(({ key, label }: any) => {
+//     const value = item[key];
+//     const formatted =
+//       typeof value === "boolean"
+//         ? value ? "✅" : "❌"
+//         : isValidDate(value)
+//           ? formatDate(value)
+//           : value;
+//     return `${label}: ${formatted}`;
+//   }).join("\n");
+
+//   navigator.clipboard.writeText(text);
+//   alert("✅ Copied to clipboard");
+// };
+export const handleCopy = (item: any, fields: Record<string, string>) => {
+  const text = Object.entries(fields)
+    .map(([key, label]) => {
+      const value = item[key];
+      const formatted =
+        typeof value === "boolean"
+          ? value
+            ? "✅"
+            : "❌"
+          : isValidDate(value)
           ? formatDate(value)
-          : value;
-    return `${label}: ${formatted}`;
-  }).join("\n");
+          : value ?? "N/A";
+      return `${label}: ${formatted}`;
+    })
+    .join("\n");
 
   navigator.clipboard.writeText(text);
   alert("✅ Copied to clipboard");
 };
 
-export const handlePrint = () => {
-  window.print();
+
+// export const handlePrint = () => {
+//   window.print();
+// };
+
+export const handlePrint = (printRef: React.RefObject<HTMLElement>) => {
+  if (!printRef.current) {
+    alert("Nothing to print");
+    return;
+  }
+
+  const printContents = printRef.current.innerHTML;
+  const originalContents = document.body.innerHTML;
+
+  // افتح نافذة جديدة للطباعة
+  const printWindow = window.open('', '', 'width=800,height=600');
+  if (!printWindow) return;
+
+  printWindow.document.write(`
+    <html>
+      <head>
+        <title>Print Preview</title>
+        <style>
+          /* أضف هنا CSS خاص بالطباعة */
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+          }
+          @media print {
+            /* يمكن إضافة المزيد من التنسيقات الخاصة */
+          }
+        </style>
+      </head>
+      <body>${printContents}</body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+
+  // اطبع المحتوى بعد تحميل الصفحة الجديدة
+  printWindow.onload = () => {
+    printWindow.print();
+    printWindow.close();
+  };
 };

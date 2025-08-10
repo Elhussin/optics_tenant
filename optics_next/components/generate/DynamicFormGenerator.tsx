@@ -54,7 +54,12 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
       errorMessage,
       fetchAlias,
     } = props;
-  console.log('DynamicFormGenerator props:', props);
+
+
+    
+
+
+
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
 

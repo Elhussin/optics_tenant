@@ -83,14 +83,14 @@ export function DeleteButton({ onClick }: BaseButtonProps) {
   );
 }
 
-
+      // <EditButton onClick={() => goTo({ id: item.id, action: "edit" })} label={form.updateTitle} />
 export function EditButton({ onClick }: BaseButtonProps) {
   const t = useTranslations('button');
   return (
     <Button
       label={t('edit')}
       icon={<Pencil size={16} />}
-      onClick={onClick ?? ((id:string) => { })}
+      onClick={onClick ?? (() => { })}
       variant="primary"
       title={t('edit')}
     />

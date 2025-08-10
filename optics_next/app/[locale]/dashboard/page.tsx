@@ -1,14 +1,17 @@
-'use client'
-import { UsePermission,hasPermission } from '@/lib/utils/auth';
-import { useUser } from '@/lib/context/userContext';
+'use client';
+import { useRouter } from '@/app/i18n/navigation';
 
+export default function DashboardButtons() {
+  const router = useRouter();
 
-export default function DashboardPage() {
-  const user = useUser();
-
-  if (!user) return <p>Loading...</p>;
-  if (!hasPermission(user, 'view_dashboard')) return <p>Unauthorized</p>;
-
-  return <div>Welcome to the dashboard</div>;
+  return (
+    <div>
+      <button className="btn " onClick={() => router.push('/dashboard/supplier?action=viewAll')}>
+        View All Suppliers
+      </button>
+      <button className="btn " onClick={() => router.push('/dashboard/department?action=viewAll')}>
+        View All Departments
+      </button>
+    </div>
+  );
 }
-
