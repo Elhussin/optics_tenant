@@ -12,6 +12,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from django_tenants.utils import schema_context, get_tenant
 import requests
+from django.core.management import call_command
+from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
 from tenants.models import (
     PendingTenantRequest,
     Client,
@@ -148,6 +151,16 @@ class ActivateTenantView(APIView):
                 pending.is_activated = True
                 pending.save()
                 
+                from django.core.management import call_command
+
+                try:
+                    call_command(
+                        "import_csv_with_foreign",
+                        config="data/csv_config.json",
+                        schema=pending.schema_name
+                    )
+                except Exception as e:
+                    tenant_logger.error(f"Failed to import CSV data: {str(e)}")
                 # Send success notification (outside transaction if it fails, activation still succeeds)
                 try:
                     send_message_acount_activated(pending.email, pending.schema_name, pending.name)

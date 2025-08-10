@@ -1,0 +1,10 @@
+{
+  "supplier_create": {
+    "schemaName": "SupplierRequest",
+    "alias": "products_suppliers_create",
+    "submitText": "Add Supplier",
+    "successMessage": "Supplier created successfully",
+    "errorMessage": "Failed to create supplier",
+    "title": "Add Supplier"
+  }
+}

@@ -2,6 +2,8 @@
 
 import django_filters
 from .models import User
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 class UserFilter(django_filters.FilterSet):
     username = django_filters.CharFilter(lookup_expr="icontains")
@@ -15,9 +17,6 @@ class UserFilter(django_filters.FilterSet):
 
 
 
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .models import User
 
 class UserFilterOptionsView(APIView):
     def get(self, request):

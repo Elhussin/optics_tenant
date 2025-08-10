@@ -60,16 +60,14 @@ const Loading3 = () => {
   );
 } 
 
-const Loading4 = () => {
-
-
+const Loading4 = ({ message }: { message?: string }) => {
  return (
       <div className={cn("flex items-center justify-center p-8")}>
         <div className={cn("flex flex-col items-center gap-4 bg-white p-8 rounded-xl shadow-lg")}>
           <Loader2 className={cn("animate-spin h-12 w-12 text-purple-600")} />
           <div className={cn("text-center")}>
             <h3 className={cn("text-lg font-medium text-gray-900")}>Loading...</h3>
-            <p className={cn("text-sm text-gray-500 mt-1")}>Please wait...</p>
+            <p className={cn("text-sm text-gray-500 mt-1")}>{message || 'Please wait...'}</p>
           </div>
         </div>
       </div>

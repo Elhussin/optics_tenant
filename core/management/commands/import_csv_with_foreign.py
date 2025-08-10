@@ -14,11 +14,22 @@ class Command(BaseCommand):
             '--config',
             type=str,
             required=True,
-            help='Path to JSON config file specifying models and CSV files'
+            help='Path to JSON config file specifying models and CSV files',
         )
+        parser.add_argument(
+            '--schema',
+            type=str,
+            required=False,
+            help='Optional schema_name argument for custom use',
+        )
+    
 
     def handle(self, *args, **options):
-        config_path = options['config']
+        config_path = options['config'] 
+        schema_name = options.get('schema')
+        print(f"Using config file: {config_path}")
+        print (f"Schema name: {schema_name}")
+
 
         if not os.path.exists(os.path.abspath(config_path)):
 
@@ -27,8 +38,11 @@ class Command(BaseCommand):
         with open(os.path.abspath(config_path), 'r', encoding='utf-8') as f:
             config_list = json.load(f)
 
+
         for config in config_list:
-            schema_name = config["schema"]
+            if schema_name:
+                config["schema"] = schema_name
+            schema_name =  config["schema"]
             app_label = config["app"]
             model_name = config["model"]
             csv_file_path = os.path.join(os.path.dirname(config_path), config["csv"])

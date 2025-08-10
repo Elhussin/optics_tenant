@@ -107,8 +107,7 @@ export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
   }, [defaultValues]);
 
   if (mode === 'edit' && !defaultValues) {
-    return (<div> Can not edit this item</div>)
-    // <Loading4 />;
+    return (<Loading4 message="loading form data..." />);
   }
 
 

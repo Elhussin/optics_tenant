@@ -1,8 +1,8 @@
 'use client';
 import ViewCard from '@/components/view/ViewCard';
 import { useRouter } from '@/app/i18n/navigation';
-import { CreateButton, EditButton } from '@/components/ui/buttons/Button';
-import { buildFormUrl } from '@/lib/utils/buildFormUrl';
+import { CreateButton, EditButton,ViewButton } from '@/components/ui/buttons/Button';
+import { buildFormUrl,buildDetailsUrl } from '@/lib/utils/buildFormUrl';
 
 export default function SupplierPage() {
   const router = useRouter();
@@ -24,6 +24,12 @@ export default function SupplierPage() {
         <EditButton
           onClick={() => router.push(buildFormUrl('supplier', 'update', { id }))}
           label='Update Supplier'
+        />
+      )}
+      viewButton={(id: string) => (
+        <ViewButton
+          onClick={() => router.push(buildDetailsUrl('supplier', { id }))}
+          label='View Supplier'
         />
       )}
     />

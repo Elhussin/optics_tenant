@@ -32,7 +32,7 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
 
   return (
     <div className="">
-    <form className="grid grid-cols-1 gap-4 mb-6  mt-32 w-4/5 px-4">
+    <form className="grid grid-row gap-4 mb-6  mt-32 w-4/5 px-4">
       {fields.map((field) => (
         <div key={field.name} className="flex items-center">
           <label className="block text-sm font-medium mr-2 capitalize w-24">{field.label}</label>

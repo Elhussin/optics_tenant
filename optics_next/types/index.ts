@@ -91,13 +91,13 @@ export interface ViewCardProps {
   fieldsAlias?: string;
   restoreAlias: string;
   hardDeleteAlias?: string;
-  path: string;
+  path?: string;
   viewFields?: string[]; 
   title?: string;
   fields?: FieldMeta[];
   createButton?: React.ReactNode;
   updateButton?: (id: string) => React.ReactNode;
-
+  viewButton?: (id: string) => React.ReactNode;
 }
 
 
