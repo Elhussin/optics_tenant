@@ -1,94 +1,4 @@
-// type FormMode = 'create' | 'edit' | 'view';
 
-// interface FormConfig {
-//   schemaName: string;
-//   create: {
-//     createAlias: string;
-//     title: string;
-//     successMessage: string;
-//     errorMessage: string;
-//   };
-//   edit: {
-//     fetchAlias: string;
-//     updateAlias: string;
-//     title: string;
-//     successMessage: string;
-//     errorMessage: string;
-//   };
-//   view: {
-//     fetchAlias: string;
-//     title: string;
-//     restoreAlias: string;
-//     hardDeleteAlias: string;
-//     fields: string[];
-//   };
-// }
-
-// // جميع الفورمات هنا
-// export const formsConfig: Record<string, FormConfig> = {
-//   supplier: {
-//     schemaName: 'SupplierRequest',
-//     create: {
-//       createAlias: 'products_suppliers_create',
-//       title: 'Add Supplier',
-//       successMessage: 'Supplier created successfully',
-//       errorMessage: 'Failed to create supplier',
-//     },
-//     edit: {
-//       fetchAlias: 'products_suppliers_retrieve',
-//       updateAlias: 'products_suppliers_update',
-//       title: 'Update Supplier',
-//       successMessage: 'Supplier updated successfully',
-//       errorMessage: 'Failed to update supplier',
-//     },
-//     view: {
-//       fetchAlias: 'products_suppliers_retrieve',
-//       restoreAlias: 'products_suppliers_partial_update',
-//       hardDeleteAlias: 'products_suppliers_destroy',
-//       fields:["name","email","phone","address","is_active","is_deleted"],
-//       title: 'Supplier Details'
-//     },
-//   },
-
-//   department: {
-//     schemaName: 'Department',
-//     createAlias: 'hrm_departments_create',
-//     fetchAlias: 'hrm_departments_retrieve',
-//     updateAlias: 'hrm_departments_partial_update',
-//     hardDeleteAlias: 'hrm_departments_destroy',
-//     createSuccessMessage: 'Department created successfully',
-//     createErrorMessage: 'Failed to create department',
-//     updateSuccessMessage: 'Department updated successfully',
-//     updateErrorMessage: 'Failed to update department',
-//     title: 'Department Details',
-//     createTitle: 'Add Department',
-//     updateTitle: 'Update Department',
-//     fields:["name","description","is_active","is_deleted"],
-
-
-//     // create: {
-//     //   createAlias: 'hrm_departments_create',
-//     //   title: 'Add Department',
-//     //   successMessage: 'Department created successfully',
-//     //   errorMessage: 'Failed to create department',
-//     // },
-//     edit: {
-//       fetchAlias: 'hrm_departments_retrieve',
-//       updateAlias: 'hrm_departments_update',
-//       title: 'Update Department',
-//       successMessage: 'Department updated successfully',
-//       errorMessage: 'Failed to update department',
-//     },
-//     view: {
-//       fetchAlias: 'hrm_departments_retrieve',
-//       restoreAlias: 'hrm_departments_partial_update',
-//       hardDeleteAlias: 'hrm_departments_destroy',
-//       fields:["name","description","is_active","is_deleted"],
-//       title: 'Department Details'
-
-//     },
-//   },
-// };
 interface FormConfig {
   schemaName: string;
   createAlias: string;
@@ -108,6 +18,10 @@ interface FormConfig {
     [key: string]: string;
   };
   listAlias: string;
+  userConfig:{}
+  showResetButton:boolean
+  showBackButton:boolean
+  className:string
 }
 
 export const formsConfig: Record<string, FormConfig> = {
@@ -133,6 +47,10 @@ export const formsConfig: Record<string, FormConfig> = {
       is_active: "Department Is Active",
       is_deleted: "Department Is Deleted",
     },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
 
   },
   supplier: {
@@ -159,7 +77,275 @@ export const formsConfig: Record<string, FormConfig> = {
       website: "Supplier Website",
       is_active: "User Is Active",
       is_deleted: "User Is Deleted",
-    }
-  },
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
 
+  },
+  branch: {
+    schemaName: 'BranchRequest',
+    listAlias: 'branches_branches_list',
+    createAlias: 'branches_branches_create',
+    retrieveAlias: 'branches_branches_retrieve',
+    updateAlias: 'branches_branches_partial_update',
+    hardDeleteAlias: 'branches_branches_destroy',
+    createSuccessMessage: 'Branch created successfully',
+    createErrorMessage: 'Failed to create branch',
+    updateSuccessMessage: 'Branch updated successfully',
+    updateErrorMessage: 'Failed to update branch',
+    title: 'Branch',
+    detailsTitle: 'Branch Details',
+    createTitle: 'Add Branch',
+    updateTitle: 'Update Branch',
+    fields:["name","description"],
+    DetailsField:{
+      name: "Branch Name",
+      description: "Branch Description",
+      is_active: "Branch Is Active",
+      is_deleted: "Branch Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
+
+  },
+  user: {
+    schemaName: 'UserRequest',
+    listAlias: 'users_users_list',
+    createAlias: 'users_users_create',
+    retrieveAlias: 'users_users_retrieve',
+    updateAlias: 'users_users_partial_update',
+    hardDeleteAlias: 'users_users_destroy',
+    createSuccessMessage: 'User created successfully',
+    createErrorMessage: 'Failed to create user',
+    updateSuccessMessage: 'User updated successfully',
+    updateErrorMessage: 'Failed to update user',
+    title: 'User',
+    detailsTitle: 'User Details',
+    createTitle: 'Add User',
+    updateTitle: 'Update User',
+    fields:["name","email","phone"],
+    DetailsField:{
+      name: "User Name",
+      email: "User Email",
+      phone: "User Phone",
+      address: "User Address",
+      website: "User Website",
+      is_active: "User Is Active",
+      is_deleted: "User Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
+  },
+  employees:{
+    schemaName: 'EmployeeRequest',
+    listAlias: 'hrm_employees_list',
+    createAlias: 'hrm_employees_create',
+    retrieveAlias: 'hrm_employees_retrieve',
+    updateAlias: 'hrm_employees_partial_update',
+    hardDeleteAlias: 'hrm_employees_destroy',
+    createSuccessMessage: 'Employee created successfully',
+    createErrorMessage: 'Failed to create employee',
+    updateSuccessMessage: 'Employee updated successfully',
+    updateErrorMessage: 'Failed to update employee',
+    title: 'Employee',
+    detailsTitle: 'Employee Details',
+    createTitle: 'Add Employee',
+    updateTitle: 'Update Employee',
+    fields:["name","email","phone"],
+    DetailsField:{
+      name: "Employee Name",
+      email: "Employee Email",
+      phone: "Employee Phone",
+      address: "Employee Address",
+      website: "Employee Website",
+      is_active: "Employee Is Active",
+      is_deleted: "Employee Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
+  },
+  customer:{
+    schemaName: 'CustomerRequest',
+    listAlias: 'crm_customers_list',
+    createAlias: 'crm_customers_create',
+    retrieveAlias: 'crm_customers_retrieve',
+    updateAlias: 'crm_customers_partial_update',
+    hardDeleteAlias: 'crm_customers_destroy',
+    createSuccessMessage: 'Customer created successfully',
+    createErrorMessage: 'Failed to create customer',
+    updateSuccessMessage: 'Customer updated successfully',
+    updateErrorMessage: 'Failed to update customer',
+    title: 'Customer',
+    detailsTitle: 'Customer Details',
+    createTitle: 'Add Customer',
+    updateTitle: 'Update Customer',
+    fields:["name","email","phone"],
+    DetailsField:{
+      name: "Customer Name",
+      email: "Customer Email",
+      phone: "Customer Phone",
+      address: "Customer Address",
+      website: "Customer Website",
+      is_active: "Customer Is Active",
+      is_deleted: "Customer Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
+  },
+  manufacturer:{
+    schemaName: 'ManufacturerRequest',
+    listAlias: 'products_manufacturers_list',
+    createAlias: 'products_manufacturers_create',
+    retrieveAlias: 'products_manufacturers_retrieve',
+    updateAlias: 'products_manufacturers_partial_update',
+    hardDeleteAlias: 'products_manufacturers_destroy',
+    createSuccessMessage: 'Manufacturer created successfully',
+    createErrorMessage: 'Failed to create manufacturer',
+    updateSuccessMessage: 'Manufacturer updated successfully',
+    updateErrorMessage: 'Failed to update manufacturer',
+    title: 'Manufacturer',
+    detailsTitle: 'Manufacturer Details',
+    createTitle: 'Add Manufacturer',
+    updateTitle: 'Update Manufacturer',
+    fields:["name","email","phone"],
+    DetailsField:{
+      name: "Manufacturer Name",
+      email: "Manufacturer Email",
+      phone: "Manufacturer Phone",
+      address: "Manufacturer Address",
+      website: "Manufacturer Website",
+      is_active: "Manufacturer Is Active",
+      is_deleted: "Manufacturer Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{},
+  },
+  subscription:{
+    schemaName: 'SubscriptionPlanRequest',
+    listAlias: 'tenants_subscription_plans_list',
+    createAlias: 'tenants_subscription_plans_create',
+    retrieveAlias: 'tenants_subscription_plans_retrieve',
+    updateAlias: 'tenants_subscription_plans_partial_update',
+    hardDeleteAlias: 'tenants_subscription_plans_destroy',
+    createSuccessMessage: 'Subscription Plan created successfully',
+    createErrorMessage: 'Failed to create subscription plan',
+    updateSuccessMessage: 'Subscription Plan updated successfully',
+    updateErrorMessage: 'Failed to update subscription plan',
+    title: 'Subscription Plan',
+    detailsTitle: 'Subscription Plan Details',
+    createTitle: 'Add Subscription Plan',
+    updateTitle: 'Update Subscription Plan',
+    fields:["name","email","phone"],
+    DetailsField:{
+      name: "Subscription Plan Name",
+      email: "Subscription Plan Email",
+      phone: "Subscription Plan Phone",
+      address: "Subscription Plan Address",
+      website: "Subscription Plan Website",
+      is_active: "Subscription Plan Is Active",
+      is_deleted: "Subscription Plan Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{ }
+  },
+  tenant:{
+    schemaName: 'TenantRequest',
+    listAlias: 'tenants_tenants_list',
+    createAlias: 'tenants_tenants_create',
+    retrieveAlias: 'tenants_tenants_retrieve',
+    updateAlias: 'tenants_tenants_partial_update',
+    hardDeleteAlias: 'tenants_tenants_destroy',
+    createSuccessMessage: 'Tenant created successfully',
+    createErrorMessage: 'Failed to create tenant',
+    updateSuccessMessage: 'Tenant updated successfully',
+    updateErrorMessage: 'Failed to update tenant',
+    title: 'Tenant',
+    detailsTitle: 'Tenant Details',
+    createTitle: 'Add Tenant',
+    updateTitle: 'Update Tenant',
+    fields:["name","email","phone"],
+    DetailsField:{
+      name: "Tenant Name",
+      email: "Tenant Email",
+      phone: "Tenant Phone",
+      address: "Tenant Address",
+      website: "Tenant Website",
+      is_active: "Tenant Is Active",
+      is_deleted: "Tenant Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{ }
+  },
+  page:{
+    schemaName: 'PageRequest',
+    listAlias: 'users_pages_list',
+    createAlias: 'users_pages_create',
+    retrieveAlias: 'users_pages_retrieve',
+    updateAlias: 'users_pages_partial_update',
+    hardDeleteAlias: 'users_pages_destroy',
+    createSuccessMessage: 'User Page created successfully',
+    createErrorMessage: 'Failed to create user page',
+    updateSuccessMessage: 'User Page updated successfully',
+    updateErrorMessage: 'Failed to update user page',
+    title: 'Page',
+    detailsTitle: 'Page Details',
+    createTitle: 'Add Page',
+    updateTitle: 'Update Page',
+    fields:["slug","author","status"],
+    DetailsField:{
+      slug: "Page Slug",
+      author: "Page Author",
+      status: "Page Status",
+      is_active: "Page Is Active",
+      is_deleted: "Page Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{}
+  },
+  pagecontent:{
+    schemaName: 'PageContentRequest',
+    listAlias: 'users_page_contents_list',
+    createAlias: 'users_page_contents_create',
+    retrieveAlias: 'users_page_contents_retrieve',
+    updateAlias: 'users_page_contents_partial_update',
+    hardDeleteAlias: 'users_page_contents_destroy',
+    createSuccessMessage: 'Page Content created successfully',
+    createErrorMessage: 'Failed to create page content',
+    updateSuccessMessage: 'Page Content updated successfully',
+    updateErrorMessage: 'Failed to update page content',
+    title: 'Page Content',
+    detailsTitle: 'Page Content Details',
+    createTitle: 'Add Page Content',
+    updateTitle: 'Update Page Content',
+    fields:["slug","author","status"],
+    DetailsField:{
+      slug: "Page Content Slug",
+      author: "Page Content Author",
+      status: "Page Content Status",
+      is_active: "Page Content Is Active",
+      is_deleted: "Page Content Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{}
+  }
 };

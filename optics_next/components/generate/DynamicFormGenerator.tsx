@@ -15,6 +15,7 @@ import { CirclePlus } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
+import { formsConfig } from '@/config/formsConfig';
 
 /**
  * DynamicFormGenerator is a generic React component for dynamically generating forms
@@ -45,19 +46,58 @@ import { toast } from 'sonner';
  * - Fields can be reordered or hidden via the config prop.
  * - Integrates with Zod for schema validation and react-hook-form for form state management.
  */
-export default function DynamicFormGenerator<T>(props: DynamicFormProps<T>) {
-  const { title, schemaName, onSuccess, className = "", 
-      submitText, showCancelButton = true,
-     mode = 'create', config: userConfig = {}, alias, id, 
-    showResetButton=true, showBackButton=true,
-      successMessage,
-      errorMessage,
-      fetchAlias,
-    } = props;
+
+export default function DynamicFormGenerator(props: DynamicFormProps) {
+  // const { title, schemaName, onSuccess, className = "", 
+  //     submitText, showCancelButton = true,
+  //    mode = 'create', config: userConfig = {}, alias, id, 
+  //   showResetButton=true, showBackButton=true,
+  //     successMessage,
+  //     errorMessage,
+  //     fetchAlias,
+  //   } = props;
 
 
+
+      const {entity,id,mode='create'}=props
+    if(!entity || mode==='edit' && !id){
+      throw new Error('entity is required');
+    }
+
+ 
+      const form = formsConfig[entity];
+      if (!form) return <div>Invalid entity</div>;
     
 
+    if(mode==='edit' && !id){
+      throw new Error('id is required in edit mode');
+    }
+    let alias:string
+    let submitText:string
+    let successMessage:string
+    let errorMessage:string
+    let title:string
+    let schemaName:string=form.schemaName
+    let fetchAlias:string=form.retrieveAlias
+    let showResetButton:boolean=form.showResetButton || true
+    let showBackButton:boolean=form.showBackButton || true
+    let className:string=form.className || ""
+    let userConfig:{}=form.userConfig || {}
+    
+    if(mode==='edit'){
+      alias=form.updateAlias
+      submitText=form.updateTitle
+      successMessage=form.updateSuccessMessage
+      errorMessage=form.updateErrorMessage
+      title=form.updateTitle
+
+    }else{
+      alias=form.createAlias
+      submitText=form.createTitle
+      successMessage=form.createSuccessMessage
+      errorMessage=form.createErrorMessage
+      title=form.createTitle
+    }
 
 
   const isIframe = useIsIframe();

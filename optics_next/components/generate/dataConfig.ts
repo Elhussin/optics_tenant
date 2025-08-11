@@ -45,7 +45,7 @@ export const defaultConfig: GeneratorConfig = {
       labelField: 'username',
       valueField: 'id',
       searchField: 'username',
-      createPage: '/users/create'
+      createPage: '/dashboard/user?action=create'
     },
     category_id: {
       endpoint: 'hrm_categories_list',
@@ -67,7 +67,15 @@ export const defaultConfig: GeneratorConfig = {
       valueField: 'id',
       searchField: 'name',
       createPage: '/users/create'
-    }
+    },
+    page_id: {
+      endpoint: 'pages_pages_list',
+      labelField: 'slug',
+      valueField: 'id',
+      searchField: 'title',
+      createPage: '/pages/create'
+    },
+  
   };
 
 export const ignoredFields : string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_active', 'is_deleted', 'deleted_at' , 'branch_code'];

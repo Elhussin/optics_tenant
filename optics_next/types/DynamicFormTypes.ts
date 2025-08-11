@@ -19,23 +19,29 @@ export interface GeneratorConfig {
   containerClasses: string;
 }
 
-
-export interface DynamicFormProps<T> {
-  schemaName: string;
-  onSuccess?: () => void;
-  className?: string;
-  submitText?: string;
-  showCancelButton?: boolean;
-  showResetButton?: boolean;
-  showBackButton?: boolean;
+export interface DynamicFormProps{
+  entity?: string;
   mode?: 'create' | 'edit';
-  config?: Partial<GeneratorConfig>;
-  alias?: string;
-  fetchAlias?: string;
   id?: string | number;
-  title?: string;
-  successMessage?: string;
-  errorMessage?: string;
+}
+// export interface DynamicFormProps<T> {
+//   entity?: string;
+
+//   schemaName: string;
+//   onSuccess?: () => void;
+//   className?: string;
+//   submitText?: string;
+//   showCancelButton?: boolean;
+//   showResetButton?: boolean;
+//   showBackButton?: boolean;
+//   mode?: 'create' | 'edit';
+//   config?: Partial<GeneratorConfig>;
+//   alias?: string;
+//   fetchAlias?: string;
+//   id?: string | number;
+//   title?: string;
+//   successMessage?: string;
+//   errorMessage?: string;
   
 }
 

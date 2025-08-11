@@ -1,4 +1,4 @@
-"use client"
+// "use client"
 import { z } from 'zod';
 import { detectFieldType, unwrapSchema } from './detectFieldType';
 import { getFieldLabel, isFieldRequired } from './DynamicFormhelper';
@@ -87,7 +87,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config , mode }: any
         rules={{ required: required ? `${label} is required` : false }}
         render={({ field }) => (
           <ReactSelect
-              menuPortalTarget={document.body}
+              // menuPortalTarget={document.body}
             id={fieldName}
             options={unwrappedSchema.options.map((opt: string) => ({
               label: getFieldLabel(opt, unwrappedSchema),

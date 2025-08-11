@@ -37,30 +37,19 @@ export default function DynamicFormPage() {
   if (action === 'edit' && id) {
     return (
     <DynamicFormGenerator
-
-        schemaName={form.schemaName}
-        alias={form.updateAlias}
-        fetchAlias={form.retrieveAlias}
-        submitText={form.title}
-        successMessage={form.updateSuccessMessage}
-        errorMessage={form.updateErrorMessage}
-        title={form.updateTitle}
+        entity={pagyName}
         id={id}
+        mode="edit"
     />
     )
     
-  }
-
-  if (action === 'create') {
+  }else{
     return (
       <DynamicFormGenerator
-          schemaName={form.schemaName}
-          alias={form.createAlias}
-          submitText={form.createTitle}
-          successMessage={form.createSuccessMessage}
-          errorMessage={form.createErrorMessage}
-          title={form.createTitle}
+          entity={pagyName}
+          mode="create"
       />
     )
   }
+
 }

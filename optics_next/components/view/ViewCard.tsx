@@ -8,6 +8,7 @@ import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFiel
 import { SearchFilterForm } from "@/components/Search/SearchFilterForm";
 import { CreateButton, EditButton, ViewButton } from "@/components/ui/buttons/Button";
 import { formsConfig } from "@/config/formsConfig";
+import { BackButton } from "@/components/ui/buttons/Button";
 
 export default function ViewCard({ entity }: { entity: string }) {
   const router = useRouter();
@@ -30,6 +31,7 @@ export default function ViewCard({ entity }: { entity: string }) {
       <div className="head">
         <h2 className="title-1">{form.title}</h2>
         <CreateButton onClick={() => goTo({ action: "create" })} label={form.createTitle} />
+           <BackButton />
       </div>
 
       <div className="card-continear">

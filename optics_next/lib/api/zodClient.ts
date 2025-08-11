@@ -8346,6 +8346,10 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/users/pages/:slug/content/",
+    /**
+     * Retrieve page content for a specific language
+     */
+    alias: "users_pages_content_retrieve",
     alias: "users_pages_content_retrieve",
     description: `Get page content for a specific language`,
     requestFormat: "json",
