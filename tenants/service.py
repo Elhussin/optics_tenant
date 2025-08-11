@@ -13,7 +13,6 @@ paypalrestsdk.configure({
     "client_secret": config("PAYPAL_CLIENT_SECRET")
 })
 
-FRONTEND_URL=config("FRONTEND_URL")
 
 
 

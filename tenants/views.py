@@ -41,7 +41,6 @@ from optics_tenant.config_loader import config
 paymant_logger = logging.getLogger('paypal')
 tenant_logger = logging.getLogger('tenant')
 
-FRONTEND_URL = config("FRONTEND_URL")
 
 # ==============================================================
 # تسجيل العميل الجديد (trial فقط)
@@ -337,10 +336,13 @@ class PayPalWebhookView(APIView):
 
 class PayPalCancelView(APIView):
     permission_classes = [AllowAny]
-
+    # if config("DEBUG"):
+    #     base_url = f"{config("PROTOCOL")}://{client.schema_name}.{config("FRONTEND_DOMAIN")}:{config("FRONTEND_PORT")}/{lang}"
+    # else:
+    #     base_url = f"{config("PROTOCOL")}://{client.schema_name}.{config("FRONTEND_DOMAIN")}/{lang}"
     def get(self, request):
         from django.shortcuts import redirect
-        return redirect(FRONTEND_URL + "/api/tenant/paypal/cancel")
+        return redirect("base_url" + "/api/tenant/paypal/cancel")
 
 
 # ==============================================================

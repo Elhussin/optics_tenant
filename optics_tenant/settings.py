@@ -277,12 +277,6 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logs', 'paypal.log'),
             'formatter': 'verbose',
         },
-        'custom_file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'custom.log'),
-            'formatter': 'verbose',
-        },
         'tenant_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
@@ -295,11 +289,6 @@ LOGGING = {
     'loggers': {
         'paypal': {  # logger name
             'handlers': ['paypal_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'custom': {  # جديد
-            'handlers': ['custom_file'],
             'level': 'INFO',
             'propagate': False,
         },
