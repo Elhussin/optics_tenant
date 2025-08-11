@@ -30,7 +30,7 @@ export default function Profile() {
       : null;
 
     const statusColor =
-      clientData?.plans.name === 'trial'
+      clientData?.plans?.name === 'trial'
         ? 'bg-yellow-100 text-yellow-800'
         : daysLeft !== null && daysLeft <= 0
         ? 'bg-red-100 text-red-800'
@@ -39,7 +39,7 @@ export default function Profile() {
     const progressWidth =
       daysLeft !== null && daysLeft > 0
         ? `${Math.min((daysLeft / 30) * 100, 100)}%`
-        : '0%';
+        : '0%'; 
 
     return (
       <>
@@ -56,9 +56,9 @@ export default function Profile() {
             <Users className="w-5 h-5 text-blue-500" /> {t('userInformation')}
           </h2>
           <div className="grid sm:grid-cols-2 gap-4 capitalize">
-            <p><strong>{t('username')}:</strong> {user.username}</p>
-            <p><strong>{t('email')}:</strong> {user.email}</p>
-            <p><strong>{t('role')}:</strong> {user.role.name}</p>
+            <p><strong>{t('username')}:</strong> {user?.username}</p>
+            <p><strong>{t('email')}:</strong> {user?.email}</p>
+            <p><strong>{t('role')}:</strong> {user?.role.name}</p>
           </div>
         </section>
 
@@ -69,18 +69,18 @@ export default function Profile() {
               <Store className="w-5 h-5 text-purple-500" /> {t('clientInformation')}
             </h2>
             <div className="grid sm:grid-cols-2 gap-4 mb-4">
-              <p><strong>{t('clientName')}:</strong> {clientData.name}</p>
+              <p><strong>{t('clientName')}:</strong> {clientData?.name}</p>
               <p className="flex items-center gap-2">
                 <CreditCard className="w-4 h-4" /> <strong>{t('plan')}:</strong>
                 <span className={`px-2 py-0.5 rounded-full text-sm ${statusColor}`}>
-                  {clientData.plans.name}
+                  {clientData?.plans?.name}
                 </span>
               </p>
-              <p><strong>{t('maxUsers')}:</strong> {clientData.max_users}</p>
-              <p><strong>{t('maxProducts')}:</strong> {clientData.max_products}</p>
-              <p><strong>{t('maxBranches')}:</strong> {clientData.max_branches}</p>
+              <p><strong>{t('maxUsers')}:</strong> {clientData?.max_users}</p>
+              <p><strong>{t('maxProducts')}:</strong> {clientData?.max_products}</p>
+              <p><strong>{t('maxBranches')}:</strong> {clientData?.max_branches}</p>
               <p className="flex items-center gap-2">
-                <Calendar className="w-4 h-4" /> <strong>{t('paidUntil')}:</strong> {clientData.paid_until}
+                <Calendar className="w-4 h-4" /> <strong>{t('paidUntil')}:</strong> {clientData?.paid_until}
               </p>
             </div>
 
@@ -121,7 +121,7 @@ export default function Profile() {
         )}
 
         {/* عرض خطط الترقية إذا كانت الخطة trial أو الاشتراك منتهي */}
-        {user.role.name.toLowerCase() === 'owner' && clientData && (clientData.plans.name === 'trial' || daysLeft !== null && daysLeft <= 0) && (
+        {user.role.name?.toLowerCase() === 'owner' && clientData && (clientData.plans?.name === 'trial' || daysLeft !== null && daysLeft <= 0) && (
           <div id="pricingSectian">
           <PricingPlans clientId={String(clientData.uuid)} /> 
           </div>

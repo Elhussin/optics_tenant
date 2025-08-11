@@ -355,6 +355,9 @@ class ClientViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Get the client associated with the user
+        if self.request.user.role.name.lower() == 'owner':
+            return Client.objects.all()
+            
         user_client = self.request.user.client
         if not user_client:
             return Client.objects.none()
@@ -364,7 +367,8 @@ class ClientViewSet(viewsets.ModelViewSet):
         # Check if the user has permission to view the client
         instance = self.get_object()
         if not request.user.client or instance.id != request.user.client.id:
-            raise PermissionDenied("You do not have permission to view this client.")
+            if self.request.user.role.name.lower() != 'owner':
+                raise PermissionDenied("You do not have permission to view this client.")
         return super().retrieve(request, *args, **kwargs)
 
     def perform_create(self, serializer):
