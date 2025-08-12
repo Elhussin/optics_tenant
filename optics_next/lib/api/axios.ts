@@ -5,14 +5,7 @@ import { getBaseUrl } from "@/lib/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { getCookie } from "@/lib/utils/getCookie";
 import { apiConfig } from "./apiConfig";
-
-const CSRF_COOKIE_NAME = "optics_tenant_csrftoken";
-const CSRF_HEADER_NAME = "X-OPTICS-TENANT-CSRFToken";
-const LANGUAGE_COOKIE_NAME = "NEXT_LOCALE";
-const DEFAULT_LANGUAGE = 'en';
-const DEFAULT_COUNTRY = 'sa';
-const DEFAULT_CURRENCY = 'sar';
-
+import { parseCookies } from "nookies"; // مكتبة صغيرة لقراءة الكوكيز في server/client
 
 
 interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
@@ -27,6 +20,7 @@ const axiosInstance = axios.create({
   },
 });
 
+
 const setHeader = (
   config: InternalAxiosRequestConfig,
   key: string,
@@ -38,16 +32,23 @@ const setHeader = (
   }
 };
 
-axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const csrfToken = getCookie(CSRF_COOKIE_NAME);
-  const tenant = window.location.hostname.split(".")[0];
-  const language = getCookie(LANGUAGE_COOKIE_NAME) || DEFAULT_LANGUAGE;
-  const country = getCookie("country") || DEFAULT_COUNTRY;
-  const currency = getCookie("currency") || DEFAULT_CURRENCY;
-  // 🔄 url dynamic
-  config.baseURL = getBaseUrl(undefined, apiConfig.ignoreSubdomain); 
 
-  setHeader(config, CSRF_HEADER_NAME, csrfToken);
+
+axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const cookies = parseCookies();
+
+  const csrfToken = cookies['optics_tenant_csrftoken'];
+  const tenant = cookies["tenant"] || "public";
+  const language = cookies['django_language'] || process.env.DEFAULT_LANGUAGE;
+  const country = cookies["country"] || process.env.DEFAULT_COUNTRY;
+  const currency = cookies["currency"] || process.env.DEFAULT_CURRENCY;
+
+  // تحديد الـ baseURL بشكل ديناميكي
+  config.baseURL = getBaseUrl(undefined,false);
+  console.log("Base URL:", config.baseURL);
+
+  // ضبط الهيدرز
+  setHeader(config,"X-OPTICS-TENANT-CSRFToken", csrfToken);
   setHeader(config, "X-Tenant", tenant);
   setHeader(config, "Accept-Language", language);
   setHeader(config, "Accept-Country", country);
@@ -55,6 +56,8 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   return config;
 });
+
+
 
 let refreshTokenPromise: Promise<any> | null = null;
 
@@ -82,7 +85,7 @@ axiosInstance.interceptors.response.use(
 
     } catch (refreshError) {
       refreshTokenPromise = null;
-      window.location.href = '/auth/login';
+      // window.location.href = '/auth/login';
       return Promise.reject(refreshError);
     }
   }
