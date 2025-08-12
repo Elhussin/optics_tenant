@@ -57,7 +57,7 @@ SHARED_APPS = (
     'drf_spectacular_sidecar',
     'django_extensions',
     # Wagtail CMS
-   'modelcluster',
+    'modelcluster',
     'taggit',
     'wagtail.contrib.forms',
     'wagtail.contrib.redirects',
@@ -72,6 +72,8 @@ SHARED_APPS = (
     'wagtail',
     'wagtail.api.v2',
     'wagtail_localize',
+    # 'wagtail_localize.locales',   # لإدارة اللغات
+    # 'wagtail_localize.segments',  # لتجزئة الت
     'cms',  # app for wagtail
 
 )
@@ -113,6 +115,8 @@ TENANT_APPS = (
     'wagtail',
     'wagtail.api.v2',
     'wagtail_localize',
+    # 'wagtail_localize.locales',   # لإدارة اللغات
+    # 'wagtail_localize.segments',  # لتجزئة الت
     'cms',  # app for wagtail
 )
 
@@ -143,9 +147,9 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',  
     'core.middleware.CustomLanguageMiddleware.CustomLanguageMiddleware',    
     'core.middleware.PlanValidationMiddleware.PlanValidationMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
-
-
+# pip install wagtail wagtail-localize wagtail.api.v2 djangorestframework django-cors-headers
 # ===============================
 # Templates
 # ===============================

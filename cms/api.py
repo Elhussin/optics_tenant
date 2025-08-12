@@ -10,3 +10,12 @@ def page_detail(request, slug):
         })
     except Page.DoesNotExist:
         return JsonResponse({"error": "Page not found"}, status=404)
+
+
+
+# cms/api.py
+from wagtail.api.v2.views import PagesAPIViewSet
+from rest_framework.permissions import AllowAny
+
+class PublicPagesAPIViewSet(PagesAPIViewSet):
+    permission_classes = [AllowAny]
