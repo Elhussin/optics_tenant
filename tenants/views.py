@@ -43,7 +43,7 @@ tenant_logger = logging.getLogger('tenant')
 
 
 # ==============================================================
-# تسجيل العميل الجديد (trial فقط)
+# Register Tenant View
 # ==============================================================
 
 class RegisterTenantView(APIView):
@@ -61,7 +61,6 @@ class RegisterTenantView(APIView):
             return Response({"detail": _("Activation email sent.")}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class ActivateTenantView(APIView):
@@ -178,8 +177,6 @@ class ActivateTenantView(APIView):
                 "detail": _("Account activation failed. Please try again or contact support.")
             }, status=500)
 
-
-
 # ==============================================================
 # Create PayPal order
 # ==============================================================
@@ -213,10 +210,6 @@ class CreatePaymentOrderView(APIView):
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
 
 # ==============================================================
 # Complete payment after user returns from PayPal    
@@ -344,6 +337,17 @@ class PayPalCancelView(APIView):
         from django.shortcuts import redirect
         return redirect("base_url" + "/api/tenant/paypal/cancel")
 
+# ==============================================================
+# View Domain
+# =============================================================
+class DomainView(APIView):
+    def get(self, request):
+        tenant = get_tenant(request)
+        if tenant.schema_name != 'public':
+            return HttpResponseForbidden("Not allowed on tenant domains.")
+        
+        serializer = DomainSerializer(tenant)
+        return Response(serializer.data)
 
 # ==============================================================
 # ClientViewSet
@@ -376,21 +380,6 @@ class ClientViewSet(viewsets.ModelViewSet):
         if not self.request.user.client:
             raise PermissionDenied("You do not have permission to create a client.")
         serializer.save(id=self.request.user.client.id)
-
-
-# ==============================================================
-# View Domain
-# =============================================================
-class DomainView(APIView):
-    def get(self, request):
-        tenant = get_tenant(request)
-        if tenant.schema_name != 'public':
-            return HttpResponseForbidden("Not allowed on tenant domains.")
-        
-        serializer = DomainSerializer(tenant)
-        return Response(serializer.data)
-
-
 
 
 class SubscriptionPlanViewSet(viewsets.ModelViewSet):

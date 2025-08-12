@@ -9,38 +9,23 @@ from django.contrib.auth import get_user_model
 from drf_spectacular.utils import extend_schema , inline_serializer
 from django.db import connection
 from core.utils.set_token import set_token_cookies
-from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 from core.permissions.permissions import ROLE_PERMISSIONS
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_str, force_bytes
-from .models import Permission, RolePermission ,Role, Page, PageContent, ContactUs,TenantSettings
-from django.core.exceptions import PermissionDenied
-from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,TenantSettingsSerializer,
-RegisterSerializer, LoginSerializer,UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,TenantSettings)
+from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
+from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,
+                          TenantSettingsSerializer,RegisterSerializer, LoginSerializer,
+                          UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,
+                          TenantSettings)
 
+from rest_framework import permissions
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
 from rest_framework.decorators import action
 User = get_user_model()
-
-# @method_decorator(role_required(['ADMIN']), name='dispatch')
-class PermissionViewSet(viewsets.ModelViewSet):
-    queryset = Permission.objects.all()
-    serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated]
-
-class RolePermissionViewSet(viewsets.ModelViewSet):
-    queryset = RolePermission.objects.all()
-    serializer_class = RolePermissionSerializer
-    permission_classes = [IsAuthenticated]
-
-class RoleViewSet(viewsets.ModelViewSet):
-    queryset = Role.objects.all()
-    serializer_class = RoleSerializer
-    permission_classes = [IsAuthenticated]
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -60,7 +45,6 @@ class RegisterView(APIView):
             response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -156,7 +140,6 @@ class RefreshTokenView(APIView):
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -183,21 +166,9 @@ class ProfileView(APIView):
         else:
             return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
         
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(is_deleted=False)
-    serializer_class = UserSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = UserFilter
-    permission_classes = [IsAuthenticated] 
-
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_superuser:
-            return User.objects.all()
-        return User.objects.filter(id=user.id)
-
 class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
+    from tenants.models import Client
     @extend_schema(
         request=serializers.EmailField(),
         responses={
@@ -284,31 +255,47 @@ class LogoutView(APIView):
         print("Logged out")
         return response
 
-    
-class ContactViewSet(viewsets.ModelViewSet):
+
+# @method_decorator(role_required(['ADMIN']), name='dispatch')
+class PermissionViewSet(viewsets.ModelViewSet):
+    queryset = Permission.objects.all()
+    serializer_class = PermissionSerializer
+    permission_classes = [IsAuthenticated]
+
+class RolePermissionViewSet(viewsets.ModelViewSet):
+    queryset = RolePermission.objects.all()
+    serializer_class = RolePermissionSerializer
+    permission_classes = [IsAuthenticated]
+
+class RoleViewSet(viewsets.ModelViewSet):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.filter(is_deleted=False)
+    serializer_class = UserSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = UserFilter
+    permission_classes = [IsAuthenticated] 
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_superuser:
+            return User.objects.all()
+        return User.objects.filter(id=user.id)
+
+class ContactUsViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     queryset = ContactUs.objects.all()
     serializer_class = ContactUsSerializer
-
-
 
 class TenantSettingsViewset(viewsets.ModelViewSet):
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
 
 
-from rest_framework import permissions
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission to only allow owners to edit their pages.
-    """
-    def has_object_permission(self, request, view, obj):
-        # Read permissions for any request
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        # Write permissions only to the owner
-        return obj.author == request.user
-    
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
@@ -398,3 +385,15 @@ class PageContentViewSet(viewsets.ModelViewSet):
         if page.author != self.request.user:
             raise serializers.ValidationError("You can only update content of your own pages.")
         serializer.save()
+
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Custom permission to only allow owners to edit their pages.
+    """
+    def has_object_permission(self, request, view, obj):
+        # Read permissions for any request
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        # Write permissions only to the owner
+        return obj.author == request.user
+    

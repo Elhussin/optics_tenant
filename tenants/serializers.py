@@ -87,9 +87,6 @@ class DomainSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
-
-
 class CreatePaymentOrderSerializer(serializers.Serializer):
     client_id = serializers.UUIDField()
 

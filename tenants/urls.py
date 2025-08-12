@@ -24,7 +24,6 @@ urlpatterns = [
     path("domain/", DomainView.as_view(), name="domain"),
     # Create payment order
     path('create-payment-order/', CreatePaymentOrderView.as_view(), name="create-payment-order"),
-
     # PayPal specific
     path('paypal/execute/', PayPalExecuteView.as_view(), name="execute-paypal-order"),
     path('paypal/cancel/', PayPalCancelView.as_view(), name="paypal-cancel"),

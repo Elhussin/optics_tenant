@@ -56,6 +56,24 @@ SHARED_APPS = (
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'django_extensions',
+    # Wagtail CMS
+   'modelcluster',
+    'taggit',
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail',
+    'wagtail.api.v2',
+    'wagtail_localize',
+    'cms',  # app for wagtail
+
 )
 
 # ===============================
@@ -79,6 +97,23 @@ TENANT_APPS = (
     'branches',
     'accounting',
     'sales',
+    # app for wagtail
+    'modelcluster',
+    'taggit',
+    'wagtail.contrib.forms',
+    'wagtail.contrib.redirects',
+    'wagtail.embeds',
+    'wagtail.sites',
+    'wagtail.users',
+    'wagtail.snippets',
+    'wagtail.documents',
+    'wagtail.images',
+    'wagtail.search',
+    'wagtail.admin',
+    'wagtail',
+    'wagtail.api.v2',
+    'wagtail_localize',
+    'cms',  # app for wagtail
 )
 
 AUTH_USER_MODEL = 'users.User'
@@ -155,7 +190,7 @@ CORS_ALLOWED_ORIGIN_REGEXES = config("CORS_ALLOWED_ORIGIN_REGEXES", default=r"^h
 
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'
 ROOT_URLCONF = 'optics_tenant.urls'
-PUBLIC_SCHEMA_URLCONF = 'optics_tenant.public_urls'
+# PUBLIC_SCHEMA_URLCONF = 'optics_tenant.public_urls'
 TENANT_MODEL = 'tenants.Client'
 TENANT_DOMAIN_MODEL = 'tenants.Domain'
 
@@ -299,3 +334,7 @@ LOGGING = {
         },
     },
 }
+
+
+WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
+WAGTAIL_SITE_NAME = config('WAGTAIL_SITE_NAME', default='Optics Tenant')

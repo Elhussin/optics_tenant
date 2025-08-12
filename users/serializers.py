@@ -4,20 +4,19 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from slugify import slugify
-from core.permissions.roles import Role
+# from core.permissions.roles import Role
 from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
-from .models import Permission, RolePermission ,Role, Page, PageContent ,ContactUs,TenantSettings
+from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
 from django.utils.text import slugify
 
 User = get_user_model()
 
-
+# Role and Permission Serializers
 class RolePermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RolePermission
         fields = '__all__'
-
 
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -31,7 +30,7 @@ class RoleSerializer(serializers.ModelSerializer):
         model = Role
         fields = ['id', 'name', 'permissions']
 
-
+# User Serializers
 class UserSerializer(serializers.ModelSerializer):
     username = ReusableFields.username()
     email = ReusableFields.email()
@@ -68,8 +67,6 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         return check_unique_field(User, 'email', value, self.instance)
 
-
-
 class RegisterSerializer(serializers.ModelSerializer):
     username = ReusableFields.username()
     email = ReusableFields.email()
@@ -98,7 +95,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate_email(self, value):
         return check_unique_field(User, 'email', value, self.instance)
 
-
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
@@ -121,8 +117,7 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
-
-
+# Page and Content and tenant settings 
 class PageContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageContent
@@ -132,7 +127,6 @@ class PageContentSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
-
 
 class PageSerializer(serializers.ModelSerializer):
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
@@ -162,21 +156,11 @@ class PageSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({'slug': 'Page with this slug already exists.'})
         return attrs
 
-
-
-
-
-
-
-
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs  
 
         fields = ['email', 'phone', 'name', 'message']
-
-
-
 
 class TenantSettingsSerializer(serializers.ModelSerializer):
     class Meta:

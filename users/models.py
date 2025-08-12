@@ -7,7 +7,6 @@ from  core.models import BaseModel
 from django.conf import settings
 from django.utils.text import slugify
 
-
 class Role(models.Model):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
@@ -16,6 +15,12 @@ class Role(models.Model):
         through='RolePermission',
         related_name='roles'
     )
+
+    class Meta:
+        verbose_name = "Role"
+        verbose_name_plural = "Roles"
+        ordering = ['name']
+
 
 class Permission(models.Model):
     code = models.CharField(max_length=100, unique=True)  # مثل create_prescription
@@ -49,14 +54,11 @@ class User(AbstractUser):
         super().save(*args, **kwargs)
 
 
-
-
 class ContactUs(BaseModel):
     email = models.EmailField()
     phone = models.CharField(max_length=20)
     name = models.CharField(max_length=100)
     message = models.TextField(max_length=500)
-
 
 class TenantSettings(BaseModel):
     business_name = models.CharField(max_length=255 , default="Optics Tenant")
@@ -144,12 +146,14 @@ class Page(BaseModel):
 
 class PageContent(BaseModel):
     page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="translations")
-    language = models.CharField(max_length=10, choices=settings.LANGUAGES)
+    language = models.CharField(max_length=10, choices=settings.LANGUAGES )
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True, null=True)
     seo_title = models.CharField(max_length=255, blank=True, null=True)
     meta_description = models.TextField(blank=True, null=True)
     meta_keywords = models.CharField(max_length=255, blank=True, null=True)
+    sectian_id = models.CharField(max_length=100, blank=True, null=True)
+
 
     class Meta:
         unique_together = ('page', 'language')
@@ -161,4 +165,12 @@ class PageContent(BaseModel):
         # Auto-generate SEO title if not provided
         if not self.seo_title:
             self.seo_title = self.title
+        if not self.meta_description:
+            self.meta_description = self.content[:160]
+        if not self.meta_keywords:
+            self.meta_keywords = ', '.join(self.title.split()[:5])
+
+        if not self.sectian_id:
+            self.sectian_id = slugify(self.title)[:100]
+
         super().save(*args, **kwargs)
