@@ -2857,6 +2857,119 @@ const PatchedRoleRequest = z
   .object({ name: z.string().min(1).max(50) })
   .partial()
   .passthrough();
+const TenantSettings = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    business_name: z.string().max(255).optional(),
+    logo: z.string().url().nullish(),
+    description: z.string().optional(),
+    facebook: z.string().max(200).url().optional(),
+    instagram: z.string().max(200).url().optional(),
+    whatsapp: z.string().max(20).optional(),
+    twitter: z.string().max(200).url().optional(),
+    tiktok: z.string().max(200).url().optional(),
+    linkedin: z.string().max(200).url().optional(),
+    phone: z.string().max(20).optional(),
+    email: z.string().max(254).email().optional(),
+    website: z.string().max(200).url().optional(),
+    primary_color: z.string().max(7).optional(),
+    secondary_color: z.string().max(7).optional(),
+    seo_title: z.string().max(255).optional(),
+    seo_description: z.string().optional(),
+    seo_keywords: z.string().max(255).optional(),
+    timezone: z.string().max(50).optional(),
+    currency: z.string().max(10).optional(),
+    date_format: z.string().max(20).optional(),
+    time_format: z.string().max(20).optional(),
+    address: z.string().max(255).optional(),
+    city: z.string().max(100).optional(),
+    state: z.string().max(100).optional(),
+    postal_code: z.string().max(20).optional(),
+    country: z.string().max(100).optional(),
+    bank_name: z.string().max(100).optional(),
+    account_number: z.string().max(100).optional(),
+    iban: z.string().max(100).optional(),
+    swift_code: z.string().max(100).optional(),
+  })
+  .passthrough();
+const TenantSettingsRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    business_name: z.string().min(1).max(255),
+    logo: z.instanceof(File).nullable(),
+    description: z.string(),
+    facebook: z.string().max(200).url(),
+    instagram: z.string().max(200).url(),
+    whatsapp: z.string().max(20),
+    twitter: z.string().max(200).url(),
+    tiktok: z.string().max(200).url(),
+    linkedin: z.string().max(200).url(),
+    phone: z.string().max(20),
+    email: z.string().max(254).email(),
+    website: z.string().max(200).url(),
+    primary_color: z.string().max(7),
+    secondary_color: z.string().max(7),
+    seo_title: z.string().max(255),
+    seo_description: z.string(),
+    seo_keywords: z.string().max(255),
+    timezone: z.string().max(50),
+    currency: z.string().max(10),
+    date_format: z.string().max(20),
+    time_format: z.string().max(20),
+    address: z.string().max(255),
+    city: z.string().max(100),
+    state: z.string().max(100),
+    postal_code: z.string().max(20),
+    country: z.string().max(100),
+    bank_name: z.string().max(100),
+    account_number: z.string().max(100),
+    iban: z.string().max(100),
+    swift_code: z.string().max(100),
+  })
+  .partial()
+  .passthrough();
+const PatchedTenantSettingsRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    business_name: z.string().min(1).max(255),
+    logo: z.instanceof(File).nullable(),
+    description: z.string(),
+    facebook: z.string().max(200).url(),
+    instagram: z.string().max(200).url(),
+    whatsapp: z.string().max(20),
+    twitter: z.string().max(200).url(),
+    tiktok: z.string().max(200).url(),
+    linkedin: z.string().max(200).url(),
+    phone: z.string().max(20),
+    email: z.string().max(254).email(),
+    website: z.string().max(200).url(),
+    primary_color: z.string().max(7),
+    secondary_color: z.string().max(7),
+    seo_title: z.string().max(255),
+    seo_description: z.string(),
+    seo_keywords: z.string().max(255),
+    timezone: z.string().max(50),
+    currency: z.string().max(10),
+    date_format: z.string().max(20),
+    time_format: z.string().max(20),
+    address: z.string().max(255),
+    city: z.string().max(100),
+    state: z.string().max(100),
+    postal_code: z.string().max(20),
+    country: z.string().max(100),
+    bank_name: z.string().max(100),
+    account_number: z.string().max(100),
+    iban: z.string().max(100),
+    swift_code: z.string().max(100),
+  })
+  .partial()
+  .passthrough();
 const RefreshTokenResponse = z
   .object({ msg: z.string(), access: z.string() })
   .passthrough();
@@ -3127,6 +3240,9 @@ export const schemas = {
   PatchedRolePermissionRequest,
   RoleRequest,
   PatchedRoleRequest,
+  TenantSettings,
+  TenantSettingsRequest,
+  PatchedTenantSettingsRequest,
   RefreshTokenResponse,
   UserRequest,
   PatchedUserRequest,
@@ -8346,10 +8462,6 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/users/pages/:slug/content/",
-    /**
-     * Retrieve page content for a specific language
-     */
-    alias: "users_pages_content_retrieve",
     alias: "users_pages_content_retrieve",
     description: `Get page content for a specific language`,
     requestFormat: "json",
@@ -8684,6 +8796,93 @@ export const endpoints = makeApi([
     response: z.void(),
   },
   {
+    method: "get",
+    path: "/api/users/tenant-settings/",
+    alias: "users_tenant_settings_list",
+    requestFormat: "json",
+    response: z.array(TenantSettings),
+  },
+  {
+    method: "post",
+    path: "/api/users/tenant-settings/",
+    alias: "users_tenant_settings_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: TenantSettingsRequest,
+      },
+    ],
+    response: TenantSettings,
+  },
+  {
+    method: "get",
+    path: "/api/users/tenant-settings/:id/",
+    alias: "users_tenant_settings_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: TenantSettings,
+  },
+  {
+    method: "put",
+    path: "/api/users/tenant-settings/:id/",
+    alias: "users_tenant_settings_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: TenantSettingsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: TenantSettings,
+  },
+  {
+    method: "patch",
+    path: "/api/users/tenant-settings/:id/",
+    alias: "users_tenant_settings_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedTenantSettingsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: TenantSettings,
+  },
+  {
+    method: "delete",
+    path: "/api/users/tenant-settings/:id/",
+    alias: "users_tenant_settings_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
     method: "post",
     path: "/api/users/token/refresh/",
     alias: "users_token_refresh_create",
@@ -8803,6 +9002,256 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/documents/",
+    alias: "cms_admin_api_main_documents_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/documents/:id/",
+    alias: "cms_admin_api_main_documents_retrieve_2",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/documents/find/",
+    alias: "cms_admin_api_main_documents_find_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/images/",
+    alias: "cms_admin_api_main_images_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/images/:id/",
+    alias: "cms_admin_api_main_images_retrieve_2",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/images/find/",
+    alias: "cms_admin_api_main_images_find_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/pages/",
+    alias: "cms_admin_api_main_pages_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/pages/:id/",
+    alias: "cms_admin_api_main_pages_retrieve_2",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/cms-admin/api/main/pages/:id/action/:action_name/",
+    alias: "cms_admin_api_main_pages_action_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "action_name",
+        type: "Path",
+        schema: z.string(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/api/main/pages/find/",
+    alias: "cms_admin_api_main_pages_find_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/localize/api/snippets/:app_label/:model_name/",
+    alias: "cms_admin_localize_api_snippets_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "app_label",
+        type: "Path",
+        schema: z.string(),
+      },
+      {
+        name: "model_name",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/cms-admin/localize/api/snippets/:app_label/:model_name/:id/",
+    alias: "cms_admin_localize_api_snippets_retrieve_2",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "app_label",
+        type: "Path",
+        schema: z.string(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+      {
+        name: "model_name",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "put",
+    path: "/cms-admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
+    alias: "cms_admin_localize_translate_overrides_edit_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "overridable_segment_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "translation_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "delete",
+    path: "/cms-admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
+    alias: "cms_admin_localize_translate_overrides_edit_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "overridable_segment_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "translation_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "put",
+    path: "/cms-admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
+    alias: "cms_admin_localize_translate_strings_edit_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "string_segment_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "translation_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "delete",
+    path: "/cms-admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
+    alias: "cms_admin_localize_translate_strings_edit_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "string_segment_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "translation_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/public-api/pages/",
+    alias: "public_api_pages_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/public-api/pages/:id/",
+    alias: "public_api_pages_retrieve_2",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/public-api/pages/find/",
+    alias: "public_api_pages_find_retrieve",
+    requestFormat: "json",
     response: z.void(),
   },
 ]);

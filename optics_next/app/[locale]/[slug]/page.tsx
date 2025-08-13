@@ -1,65 +1,153 @@
-import { axiosInstance } from "@/lib/api/axios";
-import { getBaseUrl } from "@/lib/utils/getBaseUrl";
-import { apiConfig } from "@/lib/api/apiConfig";
-import {FetchData} from "@/lib/api/api";
+// "use client";
 
+// import { useEffect, useState } from "react";
+// import { toast } from "sonner";
+// import { useParams } from "next/navigation";
+// import { useFormRequest } from "@/lib/hooks/useFormRequest";
 
-      // try {
-      //   apiConfig.ignoreSubdomain = true;
-      //   const baseUrl = getBaseUrl(undefined, apiConfig.ignoreSubdomain);
+// export default function DynamicPage() {
+//   const [page, setPage] = useState<any>(null);
+//   const params = useParams();
+//   const pageName = params?.slug as string;
+// // cms_api_public_pages_retrieve
+// // cms_api_pages_retrieve
+//   const fetchPage = useFormRequest({ alias: `public_api_pages_retrieve` });
 
-      //   const res = await axiosInstance.post(
-      //     `${baseUrl}/api/tenants/paypal/execute/`,
-      //     {
-      //       order_id: orderId,
-      //       client_id: clientId,
-      //       plan_id: planID,
-      //       direction: direction,
-      //       duration: duration,
-      //     }
-      //   );
-
-// async function getPageData(slug: string, req?: any) {
-//     // apiConfig.ignoreSubdomain = true;
-    
-    
-
-//   try {
-//     const baseUrl = getBaseUrl(undefined, apiConfig.ignoreSubdomain);
-//     // getBaseUrl()
-
-//     const res = await axiosInstance.get(`${baseUrl}/pages/${slug}/`);
-
-//     if (res.status === 403) {
-//       throw new Error("Unauthorized access");
+//   useEffect(() => {
+//     if (!pageName) {
+//       toast.error("No page slug provided");
+//       return;
 //     }
 
-//     if (res.status === 404) return null; // Not Found
-//     if (!res || !res.data) throw new Error("Page not found");
+//     const fetchData = async () => {
+//       try {
 
-//     return res.data;
-//   } catch (error) {
-//     console.error("Error fetching page data:", error);
-//     throw error;
+//         // جلب الصفحة المحددة
+//         const result = await fetchPage.submitForm({slug:pageName });
+    
+
+//         if (!result?.success) {
+//           toast.error(result?.message || "Failed to fetch page data");
+//           return;
+//         }
+
+//         if (!result.data) {
+//           toast.error("Page not found");
+//           return;
+//         }
+//        console.log("Fetched page:", result.data);
+//         setPage(result.data);
+
+//       } catch (error) {
+//         console.error("Error fetching data:", error);
+//         toast.error("An error occurred while fetching page");
+//       }
+//     };
+
+//     fetchData();
+//   }, [pageName]);
+
+//   if (!page) {
+//     return <div className="container mx-auto p-6">Page not found</div>;
 //   }
 
-
+//   return (
+//     <main className="container mx-auto p-6">
+//       <h1 className="text-3xl font-bold mb-4">{page?.title}</h1>
+//       <div dangerouslySetInnerHTML={{ __html: page?.body }} />
+//     </main>
+//   );
 // }
-export default async function DynamicPage({ params }: { params: { locale: string; slug: string } }) {
-  const proms = await params;
-  const slug: string = proms.slug;
-  const ignoreSubdomain: boolean = apiConfig.ignoreSubdomain;
-  const baseUrl = getBaseUrl(undefined, apiConfig.ignoreSubdomain);
-  console.log("Base URL dynamic:", baseUrl);
+// app/[slug]/page.js (server component)
+// export default async function Page({ params }: { params: { locale: string; slug: string } }) {
+//   const res = await fetch(`http:localhost:8000/cms-api/pages/?slug=${params.slug}`, { cache: 'no-store' });
+//   console.log("Fetching page with slug:", params.slug);
+//   const data = await res.json();
 
-  const page = await FetchData({ ignoreSubdomain: false, url: `/${baseUrl}/pages/${slug}/` });
+//   if (!data) {
+      
+//     return <div className="container mx-auto p-6">Page not found</div>;
+//   }
+//   if (data.length === 0) {
+//     return <div className="container mx-auto p-6">Page not found</div>;
+//   }
+//   const page = data[0];
+//   if (!page) {
+//     return <div className="container mx-auto p-6">Page not found</div>;
+//   }
+//   return (
+//     <main className="container mx-auto p-6">
+//       <h1 className="text-3xl font-bold mb-4">{page.title}</h1>
+//       <div dangerouslySetInnerHTML={{ __html: page.body }} />
+//       </main>
+//   )
+// }
+// app/[slug]/page.tsx
+interface PageData {
+  title: string;
+  intro?: string;
+  body?: string;
+  meta: { slug: string };
+}
 
-  // const page = await getPageData(proms.slug);  
-  console.log("Fetched Page Data:", page);
+// جلب المسارات من Wagtail
+export async function generateStaticParams() {
+  const res = await fetch('http://localhost:8000/cms-api/pages/?type=home.HomePage&fields=title,slug', {
+    next: { revalidate: 60 },
+  });
+  const data = await res.json();
 
-  if (!page) {
-    return <div className="container mx-auto p-6">Page not found</div>;
-  }
+  return data.items.map((p: any) => ({
+    slug: p.meta.slug,
+  }));
+}
+
+// جلب بيانات الصفحة
+// export default async function Page({ params }: { params: { slug: string } }) {
+//   const res = await fetch(`http://localhost:8000/cms-api/pages/?slug=${params.slug}`, {
+//     next: { revalidate: 60 },
+//   });
+//   const data = await res.json();
+//   const page: PageData = data.items[0];
+
+//   if (!page) {
+//     return <h1>Page not found</h1>;
+//   }
+
+//   return (
+//     <main>
+//       <h1>{page.title}</h1>
+//       {page.intro && <p>{page.intro}</p>}
+//       {page.body && (
+//         <div dangerouslySetInnerHTML={{ __html: page.body }} />
+//       )}
+//     </main>
+//   );
+// }
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  const res = await fetch(`http://localhost:8000/cms-api/pages/?slug=${params.slug}`);
+  const data = await res.json();
+  const page = data.items[0];
+
+  if (!page) return {};
+
+  return {
+    title: page.seo_title || page.title,
+    description: page.search_description || '',
+  };
+}
+import React from "react";
+
+async function getPageData(slug: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cms/pages/${slug}/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Page not found");
+  return res.json();
+}
+
+export default async function DynamicPage({ params }: { params: { slug: string } }) {
+  const page = await getPageData(params.slug);
 
   return (
     <main className="container mx-auto p-6">
@@ -68,4 +156,3 @@ export default async function DynamicPage({ params }: { params: { locale: string
     </main>
   );
 }
-

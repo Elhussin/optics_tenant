@@ -14,6 +14,4 @@ urlpatterns = [
     path('prescriptions/', include('prescriptions.urls')),
     path('tenants/', include('tenants.urls')),
 
-    # path('cms/', include('cms.urls')),  # Include CMS URLs
-
 ]
