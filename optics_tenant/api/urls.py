@@ -13,5 +13,4 @@ urlpatterns = [
     path('crm/', include('CRM.urls')),
     path('prescriptions/', include('prescriptions.urls')),
     path('tenants/', include('tenants.urls')),
-
 ]

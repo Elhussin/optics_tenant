@@ -1,158 +1,121 @@
-// "use client";
+"use client";
 
-// import { useEffect, useState } from "react";
-// import { toast } from "sonner";
-// import { useParams } from "next/navigation";
-// import { useFormRequest } from "@/lib/hooks/useFormRequest";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useParams } from "next/navigation";
+import { useFormRequest } from "@/lib/hooks/useFormRequest";
 
-// export default function DynamicPage() {
-//   const [page, setPage] = useState<any>(null);
-//   const params = useParams();
-//   const pageName = params?.slug as string;
-// // cms_api_public_pages_retrieve
-// // cms_api_pages_retrieve
-//   const fetchPage = useFormRequest({ alias: `public_api_pages_retrieve` });
+export default function DynamicPage() {
+  const [page, setPage] = useState<any>(null);
+  const params = useParams();
+  const pageName = params?.slug as string;
+  const fetchPage = useFormRequest({ alias: `cms_api_v2_pages_retrieve` });
+  const fetchPageDetiles = useFormRequest({ alias: `cms_api_v2_pages_retrieve_2` });
 
-//   useEffect(() => {
-//     if (!pageName) {
-//       toast.error("No page slug provided");
-//       return;
-//     }
+  useEffect(() => {
+    if (!pageName) {
+      toast.error("No page slug provided");
+      return;
+    }
 
-//     const fetchData = async () => {
-//       try {
+    const fetchData = async () => {
+      try {
 
-//         // جلب الصفحة المحددة
-//         const result = await fetchPage.submitForm({slug:pageName });
-    
+        // جلب الصفحة المحددة
+        const result = await fetchPage.submitForm({slug:pageName });
+        if (result?.success) {
+          if (result.data.items.length === 0 || !result.data.items[0]) {
+            return <div>Page not found</div>;
+          }
+          const pageId = result.data.items[0].id;
+          const pageResult = await fetchPageDetiles.submitForm({ id: pageId });
+          if (pageResult?.success) {
+            setPage(pageResult.data);
+          } else {
+            return <div>Page not found</div>;
+          }
+          return;
+        }
+        
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        toast.error("An error occurred while fetching page");
+      }
+    };
 
-//         if (!result?.success) {
-//           toast.error(result?.message || "Failed to fetch page data");
-//           return;
-//         }
+    fetchData();
+  }, [pageName]);
 
-//         if (!result.data) {
-//           toast.error("Page not found");
-//           return;
-//         }
-//        console.log("Fetched page:", result.data);
-//         setPage(result.data);
-
-//       } catch (error) {
-//         console.error("Error fetching data:", error);
-//         toast.error("An error occurred while fetching page");
-//       }
-//     };
-
-//     fetchData();
-//   }, [pageName]);
-
-//   if (!page) {
-//     return <div className="container mx-auto p-6">Page not found</div>;
-//   }
-
-//   return (
-//     <main className="container mx-auto p-6">
-//       <h1 className="text-3xl font-bold mb-4">{page?.title}</h1>
-//       <div dangerouslySetInnerHTML={{ __html: page?.body }} />
-//     </main>
-//   );
-// }
-// app/[slug]/page.js (server component)
-// export default async function Page({ params }: { params: { locale: string; slug: string } }) {
-//   const res = await fetch(`http:localhost:8000/cms-api/pages/?slug=${params.slug}`, { cache: 'no-store' });
-//   console.log("Fetching page with slug:", params.slug);
-//   const data = await res.json();
-
-//   if (!data) {
-      
-//     return <div className="container mx-auto p-6">Page not found</div>;
-//   }
-//   if (data.length === 0) {
-//     return <div className="container mx-auto p-6">Page not found</div>;
-//   }
-//   const page = data[0];
-//   if (!page) {
-//     return <div className="container mx-auto p-6">Page not found</div>;
-//   }
-//   return (
-//     <main className="container mx-auto p-6">
-//       <h1 className="text-3xl font-bold mb-4">{page.title}</h1>
-//       <div dangerouslySetInnerHTML={{ __html: page.body }} />
-//       </main>
-//   )
-// }
-// app/[slug]/page.tsx
-interface PageData {
-  title: string;
-  intro?: string;
-  body?: string;
-  meta: { slug: string };
+  if (!page) {
+    return <div className="container mx-auto p-6">Page not found</div>;
+  }
+   console.log("Fetched page data:", page);
+  return <View page={page} />;
 }
 
-// جلب المسارات من Wagtail
-export async function generateStaticParams() {
-  const res = await fetch('http://localhost:8000/cms-api/pages/?type=home.HomePage&fields=title,slug', {
-    next: { revalidate: 60 },
-  });
-  const data = await res.json();
+function renderField(key: string, value: any) {
+  // لو الحقل نص HTML زي body أو intro
+  if (typeof value === "string" && value.includes("<")) {
+    return (
+      <div
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: value }}
+      />
+    );
+  }
 
-  return data.items.map((p: any) => ({
-    slug: p.meta.slug,
-  }));
+  // لو الحقل صورة واحدة من Wagtail API
+  if (value && typeof value === "object" && value.meta && value.meta.download_url) {
+    return (
+      <div className="my-4">
+        <img
+          src={value.meta.download_url}
+          alt={value.title || key}
+          className="rounded-lg shadow-md max-w-full"
+        />
+      </div>
+    );
+  }
+
+  // لو الحقل عبارة عن StreamField
+  if (Array.isArray(value)) {
+    return value.map((block) => {
+      if (block.type === "feature") {
+        return (
+          <div
+            key={block.id}
+            className="p-4 border rounded-lg shadow-sm bg-gray-50 mb-3"
+          >
+            <h3 className="text-lg font-bold">{block.value.key}</h3>
+            <p className="text-gray-700">{block.value.text}</p>
+          </div>
+        );
+      }
+      return (
+        <div key={block.id} className="p-4 border rounded-lg mb-3">
+          <strong>{block.type}</strong>: {JSON.stringify(block.value)}
+        </div>
+      );
+    });
+  }
+
+  // أي نص أو قيمة عادية
+  return <p className="text-gray-700">{String(value)}</p>;
 }
 
-// جلب بيانات الصفحة
-// export default async function Page({ params }: { params: { slug: string } }) {
-//   const res = await fetch(`http://localhost:8000/cms-api/pages/?slug=${params.slug}`, {
-//     next: { revalidate: 60 },
-//   });
-//   const data = await res.json();
-//   const page: PageData = data.items[0];
-
-//   if (!page) {
-//     return <h1>Page not found</h1>;
-//   }
-
-//   return (
-//     <main>
-//       <h1>{page.title}</h1>
-//       {page.intro && <p>{page.intro}</p>}
-//       {page.body && (
-//         <div dangerouslySetInnerHTML={{ __html: page.body }} />
-//       )}
-//     </main>
-//   );
-// }
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const res = await fetch(`http://localhost:8000/cms-api/pages/?slug=${params.slug}`);
-  const data = await res.json();
-  const page = data.items[0];
-
-  if (!page) return {};
-
-  return {
-    title: page.seo_title || page.title,
-    description: page.search_description || '',
-  };
-}
-import React from "react";
-
-async function getPageData(slug: string) {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/cms/pages/${slug}/`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error("Page not found");
-  return res.json();
-}
-
-export default async function DynamicPage({ params }: { params: { slug: string } }) {
-  const page = await getPageData(params.slug);
-
+export function View({ page }: { page: any }) {
   return (
-    <main className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">{page.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: page.body }} />
-    </main>
+    <div className="max-w-4xl mx-auto p-6 font-sans">
+      <h1 className="text-3xl font-bold mb-6">{page.title}</h1>
+      {Object.keys(page).map((key) => {
+        if (["id", "title", "meta"].includes(key)) return null;
+        return (
+          <section key={key} className="mb-6">
+            <h2 className="text-xl font-semibold mb-2 capitalize">{key}</h2>
+            {renderField(key, page[key])}
+          </section>
+        );
+      })}
+    </div>
   );
 }

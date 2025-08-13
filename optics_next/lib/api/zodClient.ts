@@ -9006,14 +9006,14 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/documents/",
+    path: "/cms/admin/api/main/documents/",
     alias: "cms_admin_api_main_documents_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/documents/:id/",
+    path: "/cms/admin/api/main/documents/:id/",
     alias: "cms_admin_api_main_documents_retrieve_2",
     requestFormat: "json",
     parameters: [
@@ -9027,21 +9027,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/documents/find/",
+    path: "/cms/admin/api/main/documents/find/",
     alias: "cms_admin_api_main_documents_find_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/images/",
+    path: "/cms/admin/api/main/images/",
     alias: "cms_admin_api_main_images_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/images/:id/",
+    path: "/cms/admin/api/main/images/:id/",
     alias: "cms_admin_api_main_images_retrieve_2",
     requestFormat: "json",
     parameters: [
@@ -9055,21 +9055,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/images/find/",
+    path: "/cms/admin/api/main/images/find/",
     alias: "cms_admin_api_main_images_find_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/pages/",
+    path: "/cms/admin/api/main/pages/",
     alias: "cms_admin_api_main_pages_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/pages/:id/",
+    path: "/cms/admin/api/main/pages/:id/",
     alias: "cms_admin_api_main_pages_retrieve_2",
     requestFormat: "json",
     parameters: [
@@ -9083,7 +9083,7 @@ export const endpoints = makeApi([
   },
   {
     method: "post",
-    path: "/cms-admin/api/main/pages/:id/action/:action_name/",
+    path: "/cms/admin/api/main/pages/:id/action/:action_name/",
     alias: "cms_admin_api_main_pages_action_create",
     requestFormat: "json",
     parameters: [
@@ -9102,14 +9102,14 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/cms-admin/api/main/pages/find/",
+    path: "/cms/admin/api/main/pages/find/",
     alias: "cms_admin_api_main_pages_find_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/cms-admin/localize/api/snippets/:app_label/:model_name/",
+    path: "/cms/admin/localize/api/snippets/:app_label/:model_name/",
     alias: "cms_admin_localize_api_snippets_retrieve",
     requestFormat: "json",
     parameters: [
@@ -9128,7 +9128,7 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/cms-admin/localize/api/snippets/:app_label/:model_name/:id/",
+    path: "/cms/admin/localize/api/snippets/:app_label/:model_name/:id/",
     alias: "cms_admin_localize_api_snippets_retrieve_2",
     requestFormat: "json",
     parameters: [
@@ -9152,7 +9152,7 @@ export const endpoints = makeApi([
   },
   {
     method: "put",
-    path: "/cms-admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
+    path: "/cms/admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
     alias: "cms_admin_localize_translate_overrides_edit_update",
     requestFormat: "json",
     parameters: [
@@ -9171,7 +9171,7 @@ export const endpoints = makeApi([
   },
   {
     method: "delete",
-    path: "/cms-admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
+    path: "/cms/admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
     alias: "cms_admin_localize_translate_overrides_edit_destroy",
     requestFormat: "json",
     parameters: [
@@ -9190,7 +9190,7 @@ export const endpoints = makeApi([
   },
   {
     method: "put",
-    path: "/cms-admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
+    path: "/cms/admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
     alias: "cms_admin_localize_translate_strings_edit_update",
     requestFormat: "json",
     parameters: [
@@ -9209,7 +9209,7 @@ export const endpoints = makeApi([
   },
   {
     method: "delete",
-    path: "/cms-admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
+    path: "/cms/admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
     alias: "cms_admin_localize_translate_strings_edit_destroy",
     requestFormat: "json",
     parameters: [
@@ -9228,15 +9228,15 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/public-api/pages/",
-    alias: "public_api_pages_retrieve",
+    path: "/cms/api/v2/pages/",
+    alias: "cms_api_v2_pages_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
   {
     method: "get",
-    path: "/public-api/pages/:id/",
-    alias: "public_api_pages_retrieve_2",
+    path: "/cms/api/v2/pages/:id/",
+    alias: "cms_api_v2_pages_retrieve_2",
     requestFormat: "json",
     parameters: [
       {
@@ -9249,8 +9249,8 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/public-api/pages/find/",
-    alias: "public_api_pages_find_retrieve",
+    path: "/cms/api/v2/pages/find/",
+    alias: "cms_api_v2_pages_find_retrieve",
     requestFormat: "json",
     response: z.void(),
   },
