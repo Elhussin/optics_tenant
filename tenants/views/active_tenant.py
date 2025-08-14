@@ -1,193 +1,3 @@
-from decimal import Decimal
-import logging
-from django.http import HttpResponseForbidden
-from django.utils import timezone
-from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as T
-from django.db import transaction
-from rest_framework.response import Response
-from rest_framework import status, viewsets, permissions
-from rest_framework.exceptions import PermissionDenied
-from rest_framework.permissions import AllowAny
-from rest_framework.views import APIView
-from django_tenants.utils import schema_context, get_tenant
-import requests
-from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
-from tenants.models import (
-    PendingTenantRequest,
-    Client,
-    Domain,
-    Payment,
-    SubscriptionPlan
-)
-from tenants.serializers import (
-    RegisterTenantSerializer,
-    CreatePaymentOrderSerializer,
-    ClientSerializer,
-    DomainSerializer,
-    SubscriptionPlanSerializer
-)
-from tenants.service import (
-    create_paypal_order,
-    get_paypal_access_token,
-
-)
-from core.utils.email import send_activation_email, send_message_acount_activated
-from core.utils.expiration_date import expiration_date
-from optics_tenant.config_loader import config
-
-paymant_logger = logging.getLogger('paypal')
-tenant_logger = logging.getLogger('tenant')
-
-
-
-# myapp/
-#     views/
-#         __init__.py
-#         auth_views.py
-#         product_views.py
-#         tenant_views.py
-
-# ==============================================================
-# Register Tenant View
-# ==============================================================
-
-
-
-
-# class ActivateTenantView(APIView):
-#     permission_classes = [AllowAny]
-    
-#     def get(self, request):
-#         token = request.query_params.get("token")
-        
-#         # Validate token exists
-#         if not token:
-#             return Response({"detail": T("Token is required.")}, status=400)
-        
-#         try:
-#             pending = PendingTenantRequest.objects.get(token=token)
-#         except PendingTenantRequest.DoesNotExist:
-#             return Response({"detail": T("Invalid or expired activation link.")}, status=400)
-        
-#         # Check if already activated
-#         if pending.is_activated:
-#             return Response({"detail": T("Your account is already activated. Please login.")}, status=400)
-        
-#         # Check token expiration
-#         if pending.token_expires_at < timezone.now():
-#             try:
-#                 pending.token_expires_at = expiration_date(1)
-#                 pending.save()
-#                 send_activation_email(pending.email, pending.token)
-#                 return Response({"detail": T("Activation link expired. New activation email sent.")}, status=400)
-#             except Exception as e:
-#                 tenant_logger.error(f"Failed to resend activation email: {str(e)}")
-#                 return Response({"detail": T("Failed to resend activation email.")}, status=500)
-        
-#         # Use database transaction to ensure atomicity
-#         try:
-#             with transaction.atomic():
-#                 # Get trial plan
-#                 try:
-#                     trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
-#                 except SubscriptionPlan.DoesNotExist:
-#                     tenant_logger.error("Trial plan not found")
-#                     return Response({"detail": T("System configuration error. Please contact support.")}, status=500)
-                
-#                 # Create Client with trial plan
-#                 tenant = Client.objects.create(
-#                     schema_name=pending.schema_name,
-#                     name=pending.name,
-#                     plan=trial_plan,
-#                     max_users=trial_plan.max_users,
-#                     max_products=trial_plan.max_products,
-#                     max_branches=trial_plan.max_branches,
-#                     paid_until=expiration_date(trial_plan.duration_months),
-#                     on_trial=True,
-#                 )
-                
-#                 # Create domain
-#                 domain = f"{slugify(pending.schema_name)}.{settings.TENANT_BASE_DOMAIN}"
-#                 Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
-                
-#                 # Create superuser inside tenant schema
-#                 # owner_role = Role.objects.get(name__iexact="owner")
-
-#                 with schema_context(pending.schema_name):
-#                     from django.contrib.auth import get_user_model
-#                     from users.models import Role,Permission,RolePermission
-                    
-#                     try:
-#                         owner_role=Role.objects.create(name="owner",description="Owner role")
-#                         all_permission=Permission.objects.create(code="__all__",description="All permissions")
-#                         RolePermission.objects.create(role=owner_role,permission=all_permission)
-#                         # owner_role = Role.objects.get(name__iexact="owner")
-#                     except Role.DoesNotExist as e:
-#                         tenant_logger.error("Owner role not found in tenant schema", e)
-#                         raise Exception("Owner role not found")
-
-
-#                     User = get_user_model()
-#                     User.objects.create_superuser(
-#                         username=pending.name,
-#                         email=pending.email,
-#                         password=pending.password,
-#                         role=owner_role,
-#                         client=tenant
-#                     )
-                
-#                 # Mark as activated
-#                 pending.is_activated = True
-#                 pending.save()
-#                 return Response({
-#                             "detail": T("Account activated successfully Plasse wait we will creat your store ."),
-#                             "tenant_domain": domain
-#                         })
-
-#         except Exception as e:
-#             tenant_logger.error(f"Tenant activation failed: {str(e)}")
-
-#         # Send success notification (outside transaction if it fails, activation still succeeds)
-#         try:
-#             send_message_acount_activated(pending.email, pending.schema_name, pending.name)
-#             return Response({
-#                             "detail": T("You will receive an email with login details."),
-#                             "tenant_domain": domain
-#                         })
-#         except Exception as e:
-#             tenant_logger.warning(f"Failed to send activation email: {str(e)}")
-
-
-#         try:
-#             call_command(
-#                 "import_csv_with_foreign",
-#                 config="data/csv_config.json",
-#                 schema=pending.schema_name
-#             )
-#             return Response({
-#                             "detail": T("Deafulte data imported successfully"),
-#                             "tenant_domain": domain
-#                         })
-#         except Exception as e:
-#             tenant_logger.error(f"Failed to import CSV data: {str(e)}")
-
-#         try:             
-#             call_command(
-#                 "import_pages",
-#                 config="data/csv_config.json",
-#                 schema=pending.schema_name
-#             )
-#             return Response({
-#                             "detail": T("Pages imported successfully"),
-#                             "tenant_domain": domain
-#                         })
-#         except Exception as e:
-#             tenant_logger.error(f"Failed to import pages: {str(e)}")
-
-
 # ALGORITHM ANALYSIS: Tenant Activation Flow
 # ==========================================
 
@@ -213,7 +23,7 @@ COMPLEXITY ANALYSIS:
 # IMPROVED VERSION WITH BETTER ALGORITHM STRUCTURE
 # ===============================================
 
-from django.http import JsonResponse
+
 from django.db import transaction
 from django.core.management import call_command
 from django.utils import timezone
@@ -222,6 +32,33 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 import logging
 from enum import Enum
+from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as T
+from django_tenants.utils import schema_context
+
+from django.conf import settings
+from tenants.models import (
+    PendingTenantRequest,
+    Client,
+    Domain,
+    SubscriptionPlan
+)
+# from tenants.serializers import (
+#     RegisterTenantSerializer,
+#     ClientSerializer,
+#     DomainSerializer,
+#         SubscriptionPlanSerializer
+# )
+
+from core.utils.email import send_activation_email, send_message_acount_activated
+from core.utils.expiration_date import expiration_date
+
+paymant_logger = logging.getLogger('paypal')
+tenant_logger = logging.getLogger('tenant')
+
+
+
+
 
 class ActivationStatus(Enum):
     SUCCESS = "success"

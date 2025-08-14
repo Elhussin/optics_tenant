@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 from django_tenants.utils import get_tenant_model, get_tenant_domain_model
-import datetime
+
 
 class Command(BaseCommand):
     help = "Create the public tenant with custom data"

@@ -81,7 +81,8 @@ class Client(TenantMixin):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
 
-    auto_create_schema = True
+    # auto_create_schema = True
+    auto_create_schema = False
 
     class Meta:
         verbose_name = _("Client")
