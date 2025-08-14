@@ -14,7 +14,7 @@ interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
 
 const axiosInstance = axios.create({
   withCredentials: true,
-  timeout: 15000,
+  timeout: 30000,
   headers: {
     "Content-Type": "application/json",
   },

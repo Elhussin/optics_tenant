@@ -3,7 +3,7 @@ import logging
 from django.http import HttpResponseForbidden
 from django.utils import timezone
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as T
 from django.db import transaction
 from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions
@@ -58,52 +58,168 @@ class RegisterTenantView(APIView):
         if serializer.is_valid():
             pending = serializer.save()
             send_activation_email(pending.email, pending.token)
-            return Response({"detail": _("Activation email sent.")}, status=status.HTTP_201_CREATED)
+            return Response({"detail": T("Activation email sent.")}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
+# class ActivateTenantView(APIView):
+#     permission_classes = [AllowAny]
+    
+#     def get(self, request):
+#         token = request.query_params.get("token")
+        
+#         # Validate token exists
+#         if not token:
+#             return Response({"detail": T("Token is required.")}, status=400)
+        
+#         try:
+#             pending = PendingTenantRequest.objects.get(token=token)
+#         except PendingTenantRequest.DoesNotExist:
+#             return Response({"detail": T("Invalid or expired activation link.")}, status=400)
+        
+#         # Check if already activated
+#         if pending.is_activated:
+#             return Response({"detail": T("Your account is already activated. Please login.")}, status=400)
+        
+#         # Check token expiration
+#         if pending.token_expires_at < timezone.now():
+#             try:
+#                 pending.token_expires_at = expiration_date(1)
+#                 pending.save()
+#                 send_activation_email(pending.email, pending.token)
+#                 return Response({"detail": T("Activation link expired. New activation email sent.")}, status=400)
+#             except Exception as e:
+#                 tenant_logger.error(f"Failed to resend activation email: {str(e)}")
+#                 return Response({"detail": T("Failed to resend activation email.")}, status=500)
+        
+#         # Use database transaction to ensure atomicity
+#         try:
+#             with transaction.atomic():
+#                 # Get trial plan
+#                 try:
+#                     trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
+#                 except SubscriptionPlan.DoesNotExist:
+#                     tenant_logger.error("Trial plan not found")
+#                     return Response({"detail": T("System configuration error. Please contact support.")}, status=500)
+                
+#                 # Create Client with trial plan
+#                 tenant = Client.objects.create(
+#                     schema_name=pending.schema_name,
+#                     name=pending.name,
+#                     plan=trial_plan,
+#                     max_users=trial_plan.max_users,
+#                     max_products=trial_plan.max_products,
+#                     max_branches=trial_plan.max_branches,
+#                     paid_until=expiration_date(trial_plan.duration_months),
+#                     on_trial=True,
+#                 )
+                
+#                 # Create domain
+#                 domain = f"{slugify(pending.schema_name)}.{settings.TENANT_BASE_DOMAIN}"
+#                 Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
+                
+#                 # Create superuser inside tenant schema
+#                 # owner_role = Role.objects.get(name__iexact="owner")
+
+#                 with schema_context(pending.schema_name):
+#                     from django.contrib.auth import get_user_model
+#                     from users.models import Role,Permission,RolePermission
+                    
+#                     try:
+#                         owner_role=Role.objects.create(name="owner",description="Owner role")
+#                         all_permission=Permission.objects.create(code="__all__",description="All permissions")
+#                         RolePermission.objects.create(role=owner_role,permission=all_permission)
+#                         # owner_role = Role.objects.get(name__iexact="owner")
+#                     except Role.DoesNotExist as e:
+#                         tenant_logger.error("Owner role not found in tenant schema", e)
+#                         raise Exception("Owner role not found")
+
+
+#                     User = get_user_model()
+#                     User.objects.create_superuser(
+#                         username=pending.name,
+#                         email=pending.email,
+#                         password=pending.password,
+#                         role=owner_role,
+#                         client=tenant
+#                     )
+                
+#                 # Mark as activated
+#                 pending.is_activated = True
+#                 pending.save()
+#                 return Response({
+#                             "detail": T("Account activated successfully Plasse wait we will creat your store ."),
+#                             "tenant_domain": domain
+#                         })
+
+#         except Exception as e:
+#             tenant_logger.error(f"Tenant activation failed: {str(e)}")
+
+#         # Send success notification (outside transaction if it fails, activation still succeeds)
+#         try:
+#             send_message_acount_activated(pending.email, pending.schema_name, pending.name)
+#             return Response({
+#                             "detail": T("You will receive an email with login details."),
+#                             "tenant_domain": domain
+#                         })
+#         except Exception as e:
+#             tenant_logger.warning(f"Failed to send activation email: {str(e)}")
+
+
+#         try:
+#             call_command(
+#                 "import_csv_with_foreign",
+#                 config="data/csv_config.json",
+#                 schema=pending.schema_name
+#             )
+#             return Response({
+#                             "detail": T("Deafulte data imported successfully"),
+#                             "tenant_domain": domain
+#                         })
+#         except Exception as e:
+#             tenant_logger.error(f"Failed to import CSV data: {str(e)}")
+
+#         try:             
+#             call_command(
+#                 "import_pages",
+#                 config="data/csv_config.json",
+#                 schema=pending.schema_name
+#             )
+#             return Response({
+#                             "detail": T("Pages imported successfully"),
+#                             "tenant_domain": domain
+#                         })
+#         except Exception as e:
+#             tenant_logger.error(f"Failed to import pages: {str(e)}")
+
 class ActivateTenantView(APIView):
     permission_classes = [AllowAny]
-    
+
     def get(self, request):
         token = request.query_params.get("token")
-        
-        # Validate token exists
         if not token:
-            return Response({"detail": _("Token is required.")}, status=400)
-        
+            return Response({"detail": T("Token is required.")}, status=400)
+
         try:
             pending = PendingTenantRequest.objects.get(token=token)
         except PendingTenantRequest.DoesNotExist:
-            return Response({"detail": _("Invalid or expired activation link.")}, status=400)
-        
-        # Check if already activated
+            return Response({"detail": T("Invalid or expired activation link.")}, status=400)
+
         if pending.is_activated:
-            return Response({"detail": _("Your account is already activated. Please login.")}, status=400)
-        
-        # Check token expiration
+            return Response({"detail": T("Your account is already activated. Please login.")}, status=400)
+
         if pending.token_expires_at < timezone.now():
-            try:
-                pending.token_expires_at = expiration_date(1)
-                pending.save()
-                send_activation_email(pending.email, pending.token)
-                return Response({"detail": _("Activation link expired. New activation email sent.")}, status=400)
-            except Exception as e:
-                tenant_logger.error(f"Failed to resend activation email: {str(e)}")
-                return Response({"detail": _("Failed to resend activation email.")}, status=500)
-        
-        # Use database transaction to ensure atomicity
+            pending.token_expires_at = expiration_date(1)
+            pending.save()
+            send_activation_email(pending.email, pending.token)
+            return Response({"detail": T("Activation link expired. New activation email sent.")}, status=400)
+
         try:
             with transaction.atomic():
-                # Get trial plan
-                try:
-                    trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
-                except SubscriptionPlan.DoesNotExist:
-                    tenant_logger.error("Trial plan not found")
-                    return Response({"detail": _("System configuration error. Please contact support.")}, status=500)
-                
-                # Create Client with trial plan
+                trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
                 tenant = Client.objects.create(
                     schema_name=pending.schema_name,
                     name=pending.name,
@@ -114,27 +230,17 @@ class ActivateTenantView(APIView):
                     paid_until=expiration_date(trial_plan.duration_months),
                     on_trial=True,
                 )
-                
-                # Create domain
+
                 domain = f"{slugify(pending.schema_name)}.{settings.TENANT_BASE_DOMAIN}"
                 Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
-                
-                # Create superuser inside tenant schema
-                # owner_role = Role.objects.get(name__iexact="owner")
 
                 with schema_context(pending.schema_name):
                     from django.contrib.auth import get_user_model
-                    from users.models import Role,Permission,RolePermission
+                    from users.models import Role, Permission, RolePermission
                     
-                    try:
-                        owner_role=Role.objects.create(name="owner",description="Owner role")
-                        all_permission=Permission.objects.create(code="__all__",description="All permissions")
-                        RolePermission.objects.create(role=owner_role,permission=all_permission)
-                        # owner_role = Role.objects.get(name__iexact="owner")
-                    except Role.DoesNotExist as e:
-                        tenant_logger.error("Owner role not found in tenant schema", e)
-                        raise Exception("Owner role not found")
-
+                    owner_role, _ = Role.objects.get_or_create(name="owner", defaults={"description": "Owner role"})
+                    all_permission, _ = Permission.objects.get_or_create(code="__all__", defaults={"description": "All permissions"})
+                    RolePermission.objects.get_or_create(role=owner_role, permission=all_permission)
 
                     User = get_user_model()
                     User.objects.create_superuser(
@@ -144,38 +250,28 @@ class ActivateTenantView(APIView):
                         role=owner_role,
                         client=tenant
                     )
-                
-                # Mark as activated
+
                 pending.is_activated = True
                 pending.save()
-                
-                from django.core.management import call_command
 
-                try:
-                    call_command(
-                        "import_csv_with_foreign",
-                        config="data/csv_config.json",
-                        schema=pending.schema_name
-                    )
-                except Exception as e:
-                    tenant_logger.error(f"Failed to import CSV data: {str(e)}")
-                # Send success notification (outside transaction if it fails, activation still succeeds)
-                try:
-                    send_message_acount_activated(pending.email, pending.schema_name, pending.name)
-                except Exception as e:
-                    tenant_logger.warning(f"Failed to send activation email: {str(e)}")
-                    # Don't fail the whole process for email issues
-                
-                return Response({
-                    "detail": _("Account activated successfully. You can now log in."),
-                    "tenant_domain": domain
-                })
-                
         except Exception as e:
             tenant_logger.error(f"Tenant activation failed: {str(e)}")
-            return Response({
-                "detail": _("Account activation failed. Please try again or contact support.")
-            }, status=500)
+            return Response({"detail": T("Failed to activate account.")}, status=500)
+
+        # خارج الترانزاكشن: استيراد البيانات + إرسال الإيميل
+        try:
+            call_command("import_csv_with_foreign", config="data/csv_config.json", schema=pending.schema_name)
+            call_command("import_pages", config="data/csv/pages1.csv", schema=pending.schema_name)
+            send_message_acount_activated(pending.email, pending.schema_name, pending.name)
+        except Exception as e:
+            tenant_logger.warning(f"Post-activation step failed: {str(e)}")
+
+        return Response({
+            "detail": ("Account activated successfully. Please wait while we create your store."),
+            "tenant_domain": domain
+        })
+
+ 
 
 # ==============================================================
 # Create PayPal order
@@ -201,7 +297,7 @@ class CreatePaymentOrderView(APIView):
                     })
                 else:
                     return Response(
-                        {"detail": _("Payment method not supported yet.")},
+                        {"detail": T("Payment method not supported yet.")},
                         status=400
                     )
 
@@ -224,7 +320,7 @@ class PayPalExecuteView(APIView):
 
         # تحقق من المدخلات
         if not all([order_id, plan_id, client_uuid]):
-            return Response({"error": _("Missing PayPal payment information")}, status=400)
+            return Response({"error": T("Missing PayPal payment information")}, status=400)
 
         try:
             with transaction.atomic():
@@ -233,13 +329,13 @@ class PayPalExecuteView(APIView):
                     client = Client.objects.get(uuid=client_uuid)
                     plan = SubscriptionPlan.objects.get(id=plan_id)
                 except (Client.DoesNotExist, SubscriptionPlan.DoesNotExist):
-                    return Response({"error": _("Client or plan not found")}, status=400)
+                    return Response({"error": T("Client or plan not found")}, status=400)
 
                 # احصل على Access Token
                 access_token = get_paypal_access_token()
                 if not access_token:
                     paymant_logger.error("Failed to get PayPal access token")
-                    return Response({"error": _("Payment verification failed")}, status=500)
+                    return Response({"error": T("Payment verification failed")}, status=500)
                 print("getToken")
                 # Capture الدفع في PayPal
                 capture_url = f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture"
@@ -254,7 +350,7 @@ class PayPalExecuteView(APIView):
                 # تحقق من أن العملية ناجحة
                 if capture_data.get("status") != "COMPLETED":
                     paymant_logger.error("Payment not completed", extra={"order_id": order_id})
-                    return Response({"error": _("Payment verification failed")}, status=400)
+                    return Response({"error": T("Payment verification failed")}, status=400)
 
                 # إنشاء سجل الدفع في قاعدة البيانات
                 payment = Payment.objects.create(
@@ -274,13 +370,13 @@ class PayPalExecuteView(APIView):
 
                 paymant_logger.info(f"PayPal payment executed successfully: {order_id}")
                 return Response({
-                    "detail": _("Payment executed successfully"),
+                    "detail": T("Payment executed successfully"),
                     "payment_id": payment.pk
                 }, status=200)
 
         except Exception as e:
             paymant_logger.error(f"Error executing PayPal payment: {str(e)}")
-            return Response({"error": _("Payment processing failed")}, status=500)
+            return Response({"error": T("Payment processing failed")}, status=500)
 
 
 # ==============================================================

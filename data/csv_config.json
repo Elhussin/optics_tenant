@@ -146,17 +146,6 @@
     "app": "users",
     "model": "User",
     "csv": "csv/Users.csv"
-  },{
-    "schema": "store6",
-    "app": "users",
-    "model": "Page",
-    "csv": "csv/pages.csv",
-    "foreign_keys": {
-      "author": {
-        "related_model": "users.User",
-        "lookup_field": "username",
-        "create_if_missing": true
-      }
-    }
   }
+
 ]

@@ -72,8 +72,6 @@ SHARED_APPS = (
     'wagtail',
     'wagtail.api.v2',
     'wagtail_localize',
-    # 'wagtail_localize.locales',   # لإدارة اللغات
-    # 'wagtail_localize.segments',  # لتجزئة الت
     'cms',  # app for wagtail
 
 )
@@ -115,8 +113,7 @@ TENANT_APPS = (
     'wagtail',
     'wagtail.api.v2',
     'wagtail_localize',
-    # 'wagtail_localize.locales',   # لإدارة اللغات
-    # 'wagtail_localize.segments',  # لتجزئة الت
+
     'cms',  # app for wagtail
 )
 

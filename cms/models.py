@@ -14,8 +14,18 @@ from wagtail.fields import RichTextField
 class FeatureBlock(blocks.StructBlock):
     key = blocks.CharBlock()
     text = blocks.TextBlock()
+
+class SectionBlock(blocks.StructBlock):
+    title = blocks.CharBlock()
+    content = blocks.TextBlock()
+
+
 class GenericPage(Page):
     body = RichTextField(blank=True)
+    sections = StreamField([
+        ('section', SectionBlock())
+    ], blank=True)
+
     main_image = models.ForeignKey(
         "wagtailimages.Image",
         null=True,
@@ -26,6 +36,7 @@ class GenericPage(Page):
 
     api_fields = [
         APIField("body"),
+        APIField("sections"),
         APIField("main_image"),  # لو عايز كل بيانات الصورة
         # أو لو عايز مقاسات جاهزة:
         # APIField("main_image", serializer=ImageRenditionField("fill-800x600")),
@@ -33,6 +44,7 @@ class GenericPage(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel("body"),
+        FieldPanel("sections"),
         FieldPanel("main_image"),
     ]
 
@@ -41,10 +53,11 @@ class BasePage(Page):
         'wagtailimages.Image',
         null=True, blank=True, on_delete=models.SET_NULL, related_name='+'
     )
-
+    body = RichTextField(blank=True)
     content_panels = Page.content_panels + [
         FieldPanel('seo_title'),
         FieldPanel('banner_image'),
+        FieldPanel('body'),
     ]
 
     class Meta:

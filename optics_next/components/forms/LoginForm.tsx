@@ -52,7 +52,7 @@ export default function LoginForm(props: formRequestProps) {
           console.error("Failed to fetch user data after login");
         }
       } else if (mode === "create") {
-        router.replace('/auth/login');
+        router.replace('/en/auth/login');
       }
     }
   };
