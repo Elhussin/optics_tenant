@@ -9,7 +9,9 @@ from core.utils.update_client_plan import update_client_plan
 from core.utils.expiration_date import expiration_date
 from core.models import BaseModel
 import logging
-
+from django.core.exceptions import ValidationError
+from django.db import connection
+from django.core.management import call_command
 paymant_logger = logging.getLogger('paypal')
 
 class SubscriptionPlan(BaseModel):
@@ -81,8 +83,7 @@ class Client(TenantMixin):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
 
-    # auto_create_schema = True
-    auto_create_schema = False
+    auto_create_schema = True
 
     class Meta:
         verbose_name = _("Client")

@@ -35,7 +35,8 @@ from enum import Enum
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as T
 from django_tenants.utils import schema_context
-
+import subprocess
+import sys
 from django.conf import settings
 from tenants.models import (
     PendingTenantRequest,
@@ -69,13 +70,13 @@ class ActivationStatus(Enum):
     CREATION_FAILED = "creation_failed"
     POST_SETUP_FAILED = "post_setup_failed"
 
-class TenantActivationAlgorithm:
+class TenantActivation:
     """
     Improved algorithm with better error handling and separation of concerns
     """
     
     def __init__(self, logger=None):
-        self.logger = logger or logging.getLogger(__name__)
+        self.logger = logger or logging.getLogger('tenant')
     
     def validate_token(self, token):
         """
@@ -130,15 +131,9 @@ class TenantActivationAlgorithm:
                 # Step 2: Create domain
                 domain = f"{slugify(pending.schema_name)}.{settings.TENANT_BASE_DOMAIN}"
                 Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
-                
-                # Step 3: Database migration (bottleneck operation)
-                self.logger.info(f"Creating tenant and migrating: {pending.schema_name}")
-                call_command("create_tenant_and_migrate", 
-                           schema=pending.schema_name, 
-                           name=pending.name)
-                
-                # Step 4: Mark as activated
+
                 pending.is_activated = True
+                pending.is_deleted= True
                 pending.save()
                 
                 return tenant, domain, ActivationStatus.SUCCESS
@@ -180,7 +175,8 @@ class TenantActivationAlgorithm:
                     role=owner_role,
                     client=tenant
                 )
-                
+                call_command('import_csv_with_foreign', schema=pending.schema_name, config="data/csv_config.json")
+                # call_command()
             return ActivationStatus.SUCCESS
             
         except Exception as e:
@@ -195,7 +191,7 @@ class ActivateTenantView(APIView):
     
     def __init__(self):
         super().__init__()
-        self.algorithm = TenantActivationAlgorithm()
+        self.algorithm = TenantActivation()
     
     def get(self, request):
         """

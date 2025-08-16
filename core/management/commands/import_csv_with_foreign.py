@@ -132,4 +132,4 @@ class Command(BaseCommand):
 
 
 # 
-# python manage.py import_csv_with_foreign --config data/csv_config.json
+# python manage.py import_csv_with_foreign --config data/csv_config.json --schema public

@@ -175,4 +175,4 @@ class Command(BaseCommand):
 # python manage.py import_pages "data/csv/pages.csv"
 
 # مع تحديد schema (multi-tenant)
-# python manage.py import_pages --config "data/csv/pages1.csv" --schema=store6
+# python manage.py import_pages --config "data/csv/pages1.csv" --schema=public

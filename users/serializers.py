@@ -129,8 +129,8 @@ class PageContentSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 class PageSerializer(serializers.ModelSerializer):
-    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    translations = PageContentSerializer(many=True, read_only=True)
+    # author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # translations = PageContentSerializer(many=True, read_only=True)
     slug = serializers.SlugField(
         max_length=50,
         error_messages={
@@ -141,14 +141,14 @@ class PageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Page
-        fields = ['id', 'slug', 'author', 'status', 'translations', 'created_at', 'updated_at']
+        fields = '__all__'
+        # fields = ['id', 'tenant', 'title', 'slug', 'content', 'created_at', 'updated_at','seo_title',  'meta_description',  'meta_keywords']
         read_only_fields = ['id', 'author', 'created_at', 'updated_at']
 
     def validate_slug(self, value):
         return slugify(value)
 
     def validate(self, attrs):
-        # Ensure slug is unique
         slug = attrs.get('slug')
         if slug:
             instance_id = self.instance.id if self.instance else None

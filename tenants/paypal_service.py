@@ -1,7 +1,7 @@
 # tenants/paypal_service.py
 import paypalrestsdk
 from django.conf import settings
-from optics_tenant.config_loader import config
+from optics_tenant.optics_tenant.config_loader import config
 import requests
 from tenants.models import Payment
 from django.utils.timezone import now

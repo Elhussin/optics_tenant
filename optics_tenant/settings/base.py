@@ -1,10 +1,14 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-from .config_loader import config
+from ..config_loader import config
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# .parent
+# BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print(BASE_DIR)
 SECRET_KEY = config("SECRET_KEY")
 DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="localhost").split(",")
@@ -97,24 +101,24 @@ TENANT_APPS = (
     'branches',
     'accounting',
     'sales',
-    # app for wagtail
-    'modelcluster',
-    'taggit',
-    'wagtail.contrib.forms',
-    'wagtail.contrib.redirects',
-    'wagtail.embeds',
-    'wagtail.sites',
-    'wagtail.users',
-    'wagtail.snippets',
-    'wagtail.documents',
-    'wagtail.images',
-    'wagtail.search',
-    'wagtail.admin',
-    'wagtail',
-    'wagtail.api.v2',
-    'wagtail_localize',
+#     # app for wagtail
+#     # 'modelcluster',
+#     # 'taggit',
+#     # 'wagtail.contrib.forms',
+#     # 'wagtail.contrib.redirects',
+#     # 'wagtail.embeds',
+#     # 'wagtail.sites',
+#     # 'wagtail.users',
+#     # 'wagtail.snippets',
+#     # 'wagtail.documents',
+#     # 'wagtail.images',
+#     # 'wagtail.search',
+#     # 'wagtail.admin',
+#     # 'wagtail',
+#     # 'wagtail.api.v2',
+#     # 'wagtail_localize',
 
-    'cms',  # app for wagtail
+#     # 'cms',  # app for wagtail
 )
 
 AUTH_USER_MODEL = 'users.User'

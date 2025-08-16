@@ -46,11 +46,11 @@ class Command(BaseCommand):
         # Step 3: Run migrations on the new schema
         self.stdout.write(self.style.WARNING('Applying migrations to new tenant...'))
         with schema_context(schema_name):
-            call_command('migrate', interactive=False)
+
             call_command('import_csv_with_foreign', schema=schema_name, config="data/csv_config.json")
             call_command('import_pages', schema=schema_name, config="data/csv/pages1.csv")
             call_command('create_tenant_superuser', schema_name=schema_name, username='admin', email='admin@public.com')
 
         self.stdout.write(self.style.SUCCESS(f'Tenant "{name}" created and migrated successfully!'))
 
-# python manage.py create_tenant_and_migrate "My Store" store1
+# python manage.py create_tenant_and_migrate "My Store" store2

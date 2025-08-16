@@ -5,8 +5,9 @@ from django.utils.text import slugify
 from dateutil.relativedelta import relativedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _ # for translation
-from optics_tenant.config_loader import config
+# from optics_tenant.optics_tenant.config_loader import config
 from django.utils.translation import gettext_lazy as _
+from optics_tenant.config_loader import config
 
 FRONTEND_DOMAIN =config("FRONTEND_DOMAIN")
 FRONTEND_PORT =config("FRONTEND_PORT")

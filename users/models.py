@@ -107,6 +107,26 @@ class TenantSettings(BaseModel):
 
     def __str__(self):
         return self.business_name if self.business_name else "Tenant Settings"
+from django.contrib.postgres.fields import JSONField
+
+
+block={
+  "ar": [ 
+    {"type": "heading", "level": 1, "value": "عنوان رئيسي"},
+    {"type": "paragraph", "value": "نص عربي هنا"},
+    {"type": "image", "url": "/media/example.jpg", "alt": "صورة توضيحية"},
+    {"type": "list", "style": "ul", "items": ["عنصر 1", "عنصر 2"]},
+    {"type": "video", "url": "https://youtu.be/example"}
+  ],
+  "en": [ 
+    {"type": "heading", "level": 1, "value": "Main Title"},
+    {"type": "paragraph", "value": "English text here"},
+    {"type": "image", "url": "/media/example.jpg", "alt": "Illustrative image"},
+    {"type": "list", "style": "ul", "items": ["Item 1", "Item 2"]},
+    {"type": "video", "url": "https://youtu.be/example"}
+  ]
+}
+
 
 class Page(BaseModel):
     DRAFT = 'draft'
@@ -119,7 +139,16 @@ class Page(BaseModel):
     slug = models.SlugField(max_length=50, unique=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=DRAFT)
-    
+
+    content = JSONField(default=dict)  # يدعم كل اللغات والبلوكات
+    title = models.CharField(max_length=255)
+    content = models.TextField(blank=True, null=True)
+    seo_title = models.CharField(max_length=255, blank=True, null=True)
+    meta_description = models.TextField(blank=True, null=True)
+    meta_keywords = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.tenant.name} - {self.title}"
     def __str__(self):
         # Get the title from default language or first available
         content = self.translations.filter(
@@ -134,6 +163,7 @@ class Page(BaseModel):
             # Auto-generate slug if not provided
             base_slug = slugify(self.title) if hasattr(self, 'title') else 'page'
             self.slug = self._generate_unique_slug(base_slug)
+            # self.author = reques
         super().save(*args, **kwargs)
     
     def _generate_unique_slug(self, base_slug):
