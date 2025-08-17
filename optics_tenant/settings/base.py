@@ -76,7 +76,7 @@ SHARED_APPS = (
     'wagtail',
     'wagtail.api.v2',
     'wagtail_localize',
-    'cms',  # app for wagtail
+    # 'cms',  # app for wagtail
 
 )
 

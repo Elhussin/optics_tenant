@@ -53,4 +53,4 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f'Tenant "{name}" created and migrated successfully!'))
 
-# python manage.py create_tenant_and_migrate "My Store" store2
+# python manage.py create_tenant_and_migrate "My Store" store1

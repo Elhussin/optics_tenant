@@ -5,11 +5,16 @@ import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
 import { PageData, CreatePageData } from './types';
 import { apiService } from './api';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
+
+  // const fetchPage = useFormRequest({ alias: `cms_api_v2_pages_retrieve` });
+  // const fetchPageDetiles = useFormRequest({ alias: `cms_api_v2_pages_retrieve_2` });
 
 interface PageEditorProps {
   pageId?: number;
   tenant: string;
 }
+
 
 const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
   const router = useRouter();
@@ -78,7 +83,7 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
         await apiService.updatePage(pageId, formData);
         alert('Page updated successfully!');
       } else {
-        console.l
+        console.log(formData)
         const newPage = await apiService.createPage(formData);
         alert('Page created successfully!');
         router.push(`/admin/pages/${newPage.id}`);
