@@ -15,6 +15,7 @@ export function getRequiredPermission(pathname: string): string | null {
     '/pricing',
     '/faq',
     '/terms',
+    '/views',
     '/privacy',
     '/support',
     '/careers',

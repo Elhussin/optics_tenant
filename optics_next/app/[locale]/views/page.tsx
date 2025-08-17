@@ -25,7 +25,8 @@
 import { useState } from "react";
 import Editor from "./Editor";
 import { OutputData } from "@editorjs/editorjs";
-import PageEditor from './PageEditor'
+// import PageEditor from './PageEditor'
+import PageEditor from './Try'
 export default function DashboardPage() {
   const [content, setContent] = useState<OutputData | null>(null);
 
@@ -33,7 +34,7 @@ export default function DashboardPage() {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Creat Page</h1>
 
-      <Editor onChange={setContent} />
+      {/* <Editor onChange={setContent} /> */}
       <PageEditor
               onSave={(json) => {
           console.log("Saved JSON:", json);

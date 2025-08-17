@@ -1,0 +1,278 @@
+// 'use client';
+
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Link from '@tiptap/extension-link';
+import Image from '@tiptap/extension-image';
+import {Table} from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableHeader from '@tiptap/extension-table-header';
+import TableCell from '@tiptap/extension-table-cell';
+import TextAlign from '@tiptap/extension-text-align';
+import Color from '@tiptap/extension-color';
+import Highlight from '@tiptap/extension-highlight';
+// import TextStyle from '@tiptap/extension-text-style';
+import { useCallback } from 'react';
+import { useState } from 'react';
+import { useEffect } from 'react';
+interface RichTextEditorProps {
+  content: string;
+  onChange: (content: string) => void;
+  placeholder?: string;
+  editable?: boolean;
+}
+
+const RichTextEditor: React.FC<RichTextEditorProps> = ({
+  content,
+  onChange,
+  placeholder = 'Start writing...',
+  editable = true,
+}) => {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: 'text-blue-600 underline',
+        },
+      }),
+      Image.configure({
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded-lg',
+        },
+      }),
+      Table.configure({
+        resizable: true,
+      }),
+      TableRow,
+      TableHeader,
+      TableCell,
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+    //   Color.configure({ types: [TextStyle.name] }),
+    //   Highlight.configure({ multicolor: true }),
+    //   TextStyle,
+    ],
+    content,
+    editable,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    immediatelyRender: false,
+  });
+  // const [mounted, setMounted] = useState(false);
+  // useEffect(() => setMounted(true), []);
+  // if (!mounted) return <div className="min-h-[200px] border rounded-lg p-4">{placeholder}</div>;
+  const addImage = useCallback(() => {
+    const url = window.prompt('Enter image URL:');
+    if (url && editor) {
+      editor.chain().focus().setImage({ src: url }).run();
+    }
+  }, [editor]);
+
+  const setLink = useCallback(() => {
+    const previousUrl = editor?.getAttributes('link').href;
+    const url = window.prompt('Enter URL:', previousUrl);
+
+    if (url === null) {
+      return;
+    }
+
+    if (url === '') {
+      editor?.chain().focus().extendMarkRange('link').unsetLink().run();
+      return;
+    }
+
+    editor?.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
+  }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
+
+  return (
+    <div className="border border-gray-300 rounded-lg overflow-hidden">
+      {/* Toolbar */}
+      <div className="border-b border-gray-200 p-3 bg-gray-50 flex flex-wrap gap-2">
+        {/* Text Formatting */}
+        <button
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('bold')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Bold
+        </button>
+        
+        <button
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('italic')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Italic
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('strike')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Strike
+        </button>
+
+        {/* Headings */}
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('heading', { level: 1 })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          H1
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('heading', { level: 2 })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          H2
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('heading', { level: 3 })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          H3
+        </button>
+
+        {/* Lists */}
+        <button
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('bulletList')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          • List
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('orderedList')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          1. List
+        </button>
+
+        {/* Quote */}
+        <button
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('blockquote')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Quote
+        </button>
+
+        {/* Code */}
+        <button
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('codeBlock')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Code
+        </button>
+
+        {/* Link */}
+        <button
+          onClick={setLink}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('link')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Link
+        </button>
+
+        {/* Image */}
+        <button
+          onClick={addImage}
+          className="px-3 py-1 text-sm font-medium rounded bg-white text-gray-700 hover:bg-gray-100"
+        >
+          Image
+        </button>
+
+        {/* Alignment */}
+        <button
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive({ textAlign: 'left' })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          ←
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive({ textAlign: 'center' })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          ↔
+        </button>
+
+        <button
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive({ textAlign: 'right' })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          →
+        </button>
+      </div>
+
+      {/* Editor */}
+      <EditorContent
+        editor={editor}
+        className="prose max-w-none p-4 min-h-[300px] focus:outline-none"
+      />
+    </div>
+  );
+};
+
+export default RichTextEditor;
