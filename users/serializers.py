@@ -129,7 +129,7 @@ class PageContentSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 class PageSerializer(serializers.ModelSerializer):
-    # author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
     # translations = PageContentSerializer(many=True, read_only=True)
     slug = serializers.SlugField(
         max_length=50,

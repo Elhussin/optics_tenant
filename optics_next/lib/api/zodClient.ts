@@ -2750,10 +2750,17 @@ const Page = z
       .string()
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
-    status: PageStatusEnum.optional(),
-    translations: z.array(PageContent),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    status: PageStatusEnum.optional(),
+    title: z.string().max(255),
+    content: z.string().nullish(),
+    seo_title: z.string().max(255).nullish(),
+    meta_description: z.string().nullish(),
+    meta_keywords: z.string().max(255).nullish(),
+    author: z.number().int(),
   })
   .passthrough();
 const PageRequest = z
@@ -2763,7 +2770,14 @@ const PageRequest = z
       .min(1)
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     status: PageStatusEnum.optional(),
+    title: z.string().min(1).max(255),
+    content: z.string().nullish(),
+    seo_title: z.string().max(255).nullish(),
+    meta_description: z.string().nullish(),
+    meta_keywords: z.string().max(255).nullish(),
   })
   .passthrough();
 const PatchedPageRequest = z
@@ -2773,7 +2787,14 @@ const PatchedPageRequest = z
       .min(1)
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     status: PageStatusEnum,
+    title: z.string().min(1).max(255),
+    content: z.string().nullable(),
+    seo_title: z.string().max(255).nullable(),
+    meta_description: z.string().nullable(),
+    meta_keywords: z.string().max(255).nullable(),
   })
   .partial()
   .passthrough();
@@ -7913,6 +7934,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/tenants/activate/",
     alias: "tenants_activate_retrieve",
+    description: `Main algorithm execution with improved flow control`,
     requestFormat: "json",
     response: z.void(),
   },
@@ -8438,41 +8460,6 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
-  },
-  {
-    method: "post",
-    path: "/api/users/pages/:slug/add_translation/",
-    alias: "users_pages_add_translation_create",
-    description: `Add translation for a page`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PageRequest,
-      },
-      {
-        name: "slug",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: Page,
-  },
-  {
-    method: "get",
-    path: "/api/users/pages/:slug/content/",
-    alias: "users_pages_content_retrieve",
-    description: `Get page content for a specific language`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "slug",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: Page,
   },
   {
     method: "post",
@@ -9002,256 +8989,6 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/documents/",
-    alias: "cms_admin_api_main_documents_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/documents/:id/",
-    alias: "cms_admin_api_main_documents_retrieve_2",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/documents/find/",
-    alias: "cms_admin_api_main_documents_find_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/images/",
-    alias: "cms_admin_api_main_images_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/images/:id/",
-    alias: "cms_admin_api_main_images_retrieve_2",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/images/find/",
-    alias: "cms_admin_api_main_images_find_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/pages/",
-    alias: "cms_admin_api_main_pages_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/pages/:id/",
-    alias: "cms_admin_api_main_pages_retrieve_2",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "post",
-    path: "/cms/admin/api/main/pages/:id/action/:action_name/",
-    alias: "cms_admin_api_main_pages_action_create",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "action_name",
-        type: "Path",
-        schema: z.string(),
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/api/main/pages/find/",
-    alias: "cms_admin_api_main_pages_find_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/localize/api/snippets/:app_label/:model_name/",
-    alias: "cms_admin_localize_api_snippets_retrieve",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "app_label",
-        type: "Path",
-        schema: z.string(),
-      },
-      {
-        name: "model_name",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/admin/localize/api/snippets/:app_label/:model_name/:id/",
-    alias: "cms_admin_localize_api_snippets_retrieve_2",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "app_label",
-        type: "Path",
-        schema: z.string(),
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.string(),
-      },
-      {
-        name: "model_name",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "put",
-    path: "/cms/admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
-    alias: "cms_admin_localize_translate_overrides_edit_update",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "overridable_segment_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-      {
-        name: "translation_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "delete",
-    path: "/cms/admin/localize/translate/:translation_id/overrides/:overridable_segment_id/edit/",
-    alias: "cms_admin_localize_translate_overrides_edit_destroy",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "overridable_segment_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-      {
-        name: "translation_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "put",
-    path: "/cms/admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
-    alias: "cms_admin_localize_translate_strings_edit_update",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "string_segment_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-      {
-        name: "translation_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "delete",
-    path: "/cms/admin/localize/translate/:translation_id/strings/:string_segment_id/edit/",
-    alias: "cms_admin_localize_translate_strings_edit_destroy",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "string_segment_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-      {
-        name: "translation_id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/api/v2/pages/",
-    alias: "cms_api_v2_pages_retrieve",
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/api/v2/pages/:id/",
-    alias: "cms_api_v2_pages_retrieve_2",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/cms/api/v2/pages/find/",
-    alias: "cms_api_v2_pages_find_retrieve",
-    requestFormat: "json",
     response: z.void(),
   },
 ]);

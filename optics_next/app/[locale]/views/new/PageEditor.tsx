@@ -3,25 +3,20 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
-import { PageData, CreatePageData } from './types';
-import { apiService } from './api';
+import { CreatePageData } from './types';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 
-  // const fetchPage = useFormRequest({ alias: `cms_api_v2_pages_retrieve` });
-  // const fetchPageDetiles = useFormRequest({ alias: `cms_api_v2_pages_retrieve_2` });
-
 interface PageEditorProps {
-  pageId?: number;
-  tenant: string;
+  pageSlug?: string;
 }
 
-
-const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
+const PageEditor: React.FC<PageEditorProps> = ({ pageSlug }) => {
+  console.log(pageSlug)
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+
   const [formData, setFormData] = useState<CreatePageData>({
-    tenant,
     title: '',
     slug: '',
     content: '',
@@ -30,32 +25,41 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
     meta_keywords: '',
   });
 
-  useEffect(() => {
-    if (pageId) {
-      loadPage();
-    }
-  }, [pageId]);
+  // ✅ استدعاء hook مرة واحدة في الأعلى
+  const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
+  const createRequest = useFormRequest({ alias: `users_pages_create` });
+  const updateRequest = useFormRequest({ alias: `users_pages_update` });
 
-  const loadPage = async () => {
-    try {
-      setLoading(true);
-      const page = await apiService.getPage(pageId!);
-      setFormData({
-        tenant: page.tenant,
-        title: page.title,
-        slug: page.slug,
-        content: page.content,
-        seo_title: page.seo_title,
-        meta_description: page.meta_description,
-        meta_keywords: page.meta_keywords,
-      });
-    } catch (error) {
-      console.error('Error loading page:', error);
-      alert('Error loading page');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // ✅ تحميل البيانات لو pageSlug موجود
+  useEffect(() => {
+    if (!pageSlug) return;
+
+    const loadPage = async () => {
+      try {
+        setLoading(true);
+        const result = await pageRequest.submitForm({ slug: pageSlug });
+        console.log(result)
+        if (result?.success) {
+          setFormData({
+            title: result.data.title,
+            slug: result.data.slug,
+            content: result.data.content,
+            seo_title: result.data.seo_title,
+            meta_description: result.data.meta_description,
+            meta_keywords: result.data.meta_keywords,
+          });
+        } else {
+          console.log('Page not found');
+        }
+      } catch (err) {
+        console.log('Error loading page');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadPage();
+  }, [pageSlug]);
 
   const generateSlug = (title: string) => {
     return title
@@ -78,15 +82,22 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      
-      if (pageId) {
-        await apiService.updatePage(pageId, formData);
-        alert('Page updated successfully!');
-      } else {
+
+      if (pageSlug) {
         console.log(formData)
-        const newPage = await apiService.createPage(formData);
-        alert('Page created successfully!');
-        router.push(`/admin/pages/${newPage.id}`);
+        const result = await updateRequest.submitForm({ slug: pageSlug,formData });
+        console.log(result)
+        if (result?.success) {
+          alert('Page updated successfully!');
+          // router.push(`/admin/pages/${pageSlug}`);
+        }
+      } else {
+
+        const result = await createRequest.submitForm(formData );
+        if (result?.success) {
+          alert('Page created successfully!');
+          router.push(`/admin/pages/${result.data.slug}`);
+        }
       }
     } catch (error) {
       console.error('Error saving page:', error);
@@ -100,11 +111,12 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
     return <div className="flex justify-center p-8">Loading...</div>;
   }
 
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h1 className="text-2xl font-bold mb-6">
-          {pageId ? 'Edit Page' : 'Create New Page'}
+          {pageSlug ? 'Edit Page' : 'Create New Page'}
         </h1>
 
         <div className="space-y-6">
@@ -151,7 +163,7 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
           {/* SEO Fields */}
           <div className="border-t pt-6">
             <h3 className="text-lg font-semibold mb-4">SEO Settings</h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -208,7 +220,7 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageId, tenant }) => {
               disabled={saving || !formData.title.trim()}
               className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
-              {saving ? 'Saving...' : pageId ? 'Update Page' : 'Create Page'}
+              {saving ? 'Saving...' : pageSlug ? 'Update Page' : 'Create Page'}
             </button>
           </div>
         </div>

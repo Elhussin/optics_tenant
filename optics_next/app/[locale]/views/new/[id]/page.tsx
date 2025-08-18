@@ -1,15 +1,14 @@
-
+'use client';
 import PageEditor from '../PageEditor';
+import { useParams } from "next/navigation";
 
-interface EditPagePageProps {
-  params: {
-    id: string;
-  };
-}
 
-export default function EditPagePage({ params }: EditPagePageProps) {
-  const tenant = 'store6'; // Get from context/auth
+export default function EditPagePage() {
   
-  return <PageEditor pageId={parseInt(params.id)} tenant={tenant} />;
+  const params = useParams();
+  const slug = params?.id as string;
+
+  
+  return <PageEditor pageSlug={slug}/>;
 }
 

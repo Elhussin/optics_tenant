@@ -12,7 +12,7 @@ export interface PageData {
 }
 
 export interface CreatePageData {
-  tenant: string;
+  // tenant: string;
   title: string;
   slug: string;
   content: string;
