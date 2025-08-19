@@ -309,7 +309,7 @@ const PageEditor: React.FC<PageEditorProps> = ({ pageSlug }) => {
   const handleSave = async () => {
     try {
       setSaving(true);
-
+      
       if (pageSlug) {
         const result = await updateRequest.submitForm({
           slug: pageSlug,
