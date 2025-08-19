@@ -3,7 +3,7 @@ import React from 'react';
 import { toast } from 'sonner';
 import { formRequestProps } from '@/types';
 import { cn } from '@/lib/utils/cn';
-import { useCrudHandlers } from '@/lib/hooks/useCrudHandlers';
+import { useCrudHandlers } from '@/lib/hooks/usePageActions';
 import { useCrudFormRequest } from "@/lib/hooks/useCrudFormRequest";
 import { createFetcher } from '@/lib/hooks/useCrudFormRequest';
 import { useEffect , useState } from 'react';

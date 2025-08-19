@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 import { isValidDate, formatDate, isImageUrl, handleDownloadPDF, handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
-import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
+import { usePageActions } from "@/lib/hooks/usePageActions";
 import { ViewCardProps } from "@/types";
 import {
   EditButton, DeleteButton, RestoreButton, HardDeleteButton,
@@ -27,7 +27,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
 
   const printRef = useRef<HTMLElement>(null);
 
-  const { handleEdit, handleSoftDelete, handleRestore, handleActivate, handleDeactivate } = useCrudHandlers(entity, {
+  const { handleEdit, handleSoftDelete, handleRestore, handleActivate, handleDeactivate } = usePageActions(entity, {
     softDeleteAlias: form.updateAlias,
     restoreAlias: form.updateAlias,
     onSuccessRefresh: () => fetchUser({ id }),

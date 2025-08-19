@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useFormRequest } from './useFormRequest';
 import { useRouter } from 'next/navigation';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { ConfirmDialog } from '@/components/ui/dialogs/ConfirmDialog';
 
 type UseHardDeleteWithDialogProps = {
   alias: string;

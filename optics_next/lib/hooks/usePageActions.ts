@@ -1,4 +1,4 @@
-// lib/hooks/useCrudHandlers.ts
+// lib/hooks/usePageActions.ts
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -11,7 +11,7 @@ type CrudOptions = {
   onSuccessRefresh?: () => void;
 };
 
-export function useCrudHandlers(basePath: string, options?: CrudOptions) {
+export function usePageActions(basePath: string, options?: CrudOptions) {
   const router = useRouter();
   const {
     softDeleteAlias,

@@ -3,7 +3,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { isValidDate, formatDate, isImageUrl, handleDownloadPDF } from "@/lib/utils/cardViewHelper";
 import { handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
-import { useCrudHandlers } from "@/lib/hooks/useCrudHandlers";
+import { useCrudHandlers } from "@/lib/hooks/usePageActions";
 import { ViewCardProps } from "@/types";
 import {
   EditButton, DeleteButton, RestoreButton, HardDeleteButton,

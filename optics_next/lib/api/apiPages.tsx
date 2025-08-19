@@ -1,5 +1,5 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
-import { PageData, CreatePageData } from './types';
+import { PageData, CreatePageData } from '@/types/pages';
 class ApiService {
   private async request<T>(
     endpoint: string,

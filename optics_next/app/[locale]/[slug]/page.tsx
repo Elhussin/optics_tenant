@@ -1,6 +1,6 @@
 "use client";
 import { notFound } from 'next/navigation';
-import PageDisplay from '../new/PageDisplay';
+import PageDisplay from '../../../components/pages/PageDisplay';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useEffect, useState } from 'react';
 import { useParams } from "next/navigation";

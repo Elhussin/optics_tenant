@@ -1,5 +1,5 @@
 'use client';
-import PageEditor from '../PageEditor';
+import PageEditor from '@/components/pages/PageEditor';
 import { useParams } from "next/navigation";
 
 
