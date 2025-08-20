@@ -1,6 +1,6 @@
 'use client';
 
-import { PageData } from '../../types/pages';
+import { PageData } from '../../../types/pages';
 import Head from 'next/head';
 
 interface PageDisplayProps {

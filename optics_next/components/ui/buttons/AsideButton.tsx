@@ -1,5 +1,5 @@
 'use client';
-import { useAside } from '@/lib/context/AsideContext';
+import { useAside } from '@/lib/contexts/AsideContext';
 import { Menu ,X} from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 

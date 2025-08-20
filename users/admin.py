@@ -26,7 +26,7 @@ class RolePermissionAdmin(admin.ModelAdmin):
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
-    list_display = ['slug', 'author']
+    list_display = ['author']
 
 @admin.register(PageContent)
 class PageContentAdmin(admin.ModelAdmin):

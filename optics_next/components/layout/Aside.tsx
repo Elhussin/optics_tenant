@@ -1,9 +1,9 @@
 'use client';
-import { useAside } from '@/lib/context/AsideContext';
+import { useAside } from '@/lib/contexts/AsideContext';
 import React from 'react';
 import { Link } from '@/app/i18n/navigation';
 import { motion } from "framer-motion";
-import { useUser } from '@/lib/context/userContext';
+import { useUser } from '@/lib/contexts/userContext';
 import { X } from 'lucide-react';
 import { URLDATA, navUrl } from '@/constants/url';
 import Image from 'next/image';

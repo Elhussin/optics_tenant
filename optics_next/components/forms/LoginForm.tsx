@@ -1,6 +1,6 @@
 'use client';
 
-import { useUser } from "@/lib/context/userContext";
+import { useUser } from "@/lib/contexts/userContext";
 import { formRequestProps, UseFormRequestReturn } from "@/types";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { useEffect, useState } from 'react';

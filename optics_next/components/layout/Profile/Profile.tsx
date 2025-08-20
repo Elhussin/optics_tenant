@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useUser } from '@/lib/context/userContext';
+import { useUser } from '@/lib/contexts/userContext';
 import { FetchData } from '@/lib/api/api';
 import PricingPlans from '@/components/layout/paymant/PricingPlans';
 import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';

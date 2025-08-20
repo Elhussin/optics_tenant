@@ -2,7 +2,7 @@
 
 // import { useState, useEffect } from 'react';
 // import { useRouter } from 'next/navigation';
-// import RichTextEditor from './RichTextEditor';
+// import RichTextEditor from './page/RichTextEditor0';
 // import { CreatePageData } from '@types/pages';
 // import { useFormRequest } from '@/lib/hooks/useFormRequest';
 // import { toast } from 'sonner';
@@ -233,7 +233,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import RichTextEditor from './RichTextEditor';
+import RichTextEditor from './page/RichTextEditor0';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { toast } from 'sonner';
 

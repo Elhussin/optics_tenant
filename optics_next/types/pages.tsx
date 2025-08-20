@@ -43,8 +43,22 @@ export interface PageData {
 }
 
 export interface CreatePageData {
-  tenant: string;
   default_language: Language;
   translations: PageTranslation[];
   is_published?: boolean;
 }
+
+
+export const getTranslation = (page: PageData, language: Language): PageTranslation | undefined => {
+  return page.translations.find(t => t.language === language);
+};
+
+export const getCurrentTranslation = (page: PageData, language: Language): PageTranslation => {
+  return getTranslation(page, language) || getTranslation(page, page.default_language) || page.translations[0];
+};
+
+export const LANGUAGES = {
+  en: { name: 'English', dir: 'ltr', flag: '🇺🇸' },
+  ar: { name: 'العربية', dir: 'rtl', flag: '🇸🇦' }
+} as const;
+

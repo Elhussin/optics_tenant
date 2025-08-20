@@ -129,78 +129,106 @@ block={
 
 
 class Page(BaseModel):
-    DRAFT = 'draft'
-    PUBLISHED = 'published'
-    STATUS_CHOICES = [
-        (DRAFT, 'Draft'),
-        (PUBLISHED, 'Published'),
+
+    LANGUAGE_CHOICES = [
+        ('en', 'English'),
+        ('ar', 'Arabic'),
     ]
     
-    slug = models.SlugField(max_length=50, unique=True)
+    # slug = models.SlugField(max_length=50, unique=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
-    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default=DRAFT)
-
-    content = JSONField(default=dict)  # يدعم كل اللغات والبلوكات
-    title = models.CharField(max_length=255)
-    content = models.TextField(blank=True, null=True)
-    seo_title = models.CharField(max_length=255, blank=True, null=True)
-    meta_description = models.TextField(blank=True, null=True)
-    meta_keywords = models.CharField(max_length=255, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.tenant.name} - {self.title}"
-    def __str__(self):
-        # Get the title from default language or first available
-        content = self.translations.filter(
-            language=settings.LANGUAGE_CODE
-        ).first()
-        if not content:
-            content = self.translations.first()
-        return content.title if content else self.slug
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            # Auto-generate slug if not provided
-            base_slug = slugify(self.title) if hasattr(self, 'title') else 'page'
-            self.slug = self._generate_unique_slug(base_slug)
-            # self.author = reques
-        super().save(*args, **kwargs)
-    
-    def _generate_unique_slug(self, base_slug):
-        slug = base_slug
-        counter = 1
-        while Page.objects.filter(slug=slug).exists():
-            slug = f"{base_slug}-{counter}"
-            counter += 1
-        return slug
-
-class PageContent(BaseModel):
-    page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="translations")
-    language = models.CharField(max_length=10, choices=settings.LANGUAGES )
-    title = models.CharField(max_length=255)
-    content = models.TextField(blank=True, null=True)
-    seo_title = models.CharField(max_length=255, blank=True, null=True)
-    meta_description = models.TextField(blank=True, null=True)
-    meta_keywords = models.CharField(max_length=255, blank=True, null=True)
-    sectian_id = models.CharField(max_length=100, blank=True, null=True)
-
+    default_language = models.CharField(
+        max_length=2, 
+        choices=LANGUAGE_CHOICES, 
+        default='en'
+    )
+    is_published = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = ('page', 'language')
+        db_table = 'pages'
+        ordering = ['-updated_at']
+    # content = JSONField(default=dict)  # يدعم كل اللغات والبلوكات
+    # title = models.CharField(max_length=255)
+    # content = models.TextField(blank=True, null=True)
+    # seo_title = models.CharField(max_length=255, blank=True, null=True)
+    # meta_description = models.TextField(blank=True, null=True)
+    # meta_keywords = models.CharField(max_length=255, blank=True, null=True)
 
-    def __str__(self):
-        return f"{self.page.slug} ({self.language})"
+    # def __str__(self):
+    #     return f"{self.tenant.name} - {self.title}"
+    # def __str__(self):
+    #     # Get the title from default language or first available
+    #     content = self.translations.filter(
+    #         language=settings.LANGUAGE_CODE
+    #     ).first()
+    #     if not content:
+    #         content = self.translations.first()
+    #     return content.title if content else self.slug
 
-    def save(self, *args, **kwargs):
-        # Auto-generate SEO title if not provided
-        if not self.seo_title:
-            self.seo_title = self.title
-        if not self.meta_description:
-            self.meta_description = self.content[:160]
-        if not self.meta_keywords:
-            self.meta_keywords = ', '.join(self.title.split()[:5])
+    # def save(self, *args, **kwargs):
+    #     if not self.slug:
+    #         # Auto-generate slug if not provided
+    #         base_slug = slugify(self.title) if hasattr(self, 'title') else 'page'
+    #         self.slug = self._generate_unique_slug(base_slug)
+    #         # self.author = reques
+    #     super().save(*args, **kwargs)
+    
+    # def _generate_unique_slug(self, base_slug):
+    #     slug = base_slug
+    #     counter = 1
+    #     while Page.objects.filter(slug=slug).exists():
+    #         slug = f"{base_slug}-{counter}"
+    #         counter += 1
+    #     return slug
 
-        if not self.sectian_id:
-            self.sectian_id = slugify(self.title)[:100]
+class PageContent(BaseModel):
 
-        super().save(*args, **kwargs)
+    page = models.ForeignKey(
+        Page, 
+        related_name='pagecontent', 
+        on_delete=models.CASCADE
+    )
+    language = models.CharField(max_length=2, choices=Page.LANGUAGE_CHOICES)
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200)
+    content = models.TextField(blank=True)
+    seo_title = models.CharField(max_length=200, blank=True)
+    meta_description = models.TextField(max_length=500, blank=True)
+    meta_keywords = models.TextField(blank=True)
+    
+    class Meta:
+        db_table = 'page_translations'
+        unique_together = ['page', 'language']
+        unique_together = ['slug', 'language']  # Unique slug per language
+
+
+
+    # page = models.ForeignKey(Page, on_delete=models.CASCADE, related_name="translations")
+    # language = models.CharField(max_length=10, choices=settings.LANGUAGES )
+    # title = models.CharField(max_length=255)
+    # content = models.TextField(blank=True, null=True)
+    # seo_title = models.CharField(max_length=255, blank=True, null=True)
+    # meta_description = models.TextField(blank=True, null=True)
+    # meta_keywords = models.CharField(max_length=255, blank=True, null=True)
+    # sectian_id = models.CharField(max_length=100, blank=True, null=True)
+
+
+    # class Meta:
+    #     unique_together = ('page', 'language')
+
+    # def __str__(self):
+    #     return f"{self.page.slug} ({self.language})"
+
+    # def save(self, *args, **kwargs):
+    #     # Auto-generate SEO title if not provided
+    #     if not self.seo_title:
+    #         self.seo_title = self.title
+    #     if not self.meta_description:
+    #         self.meta_description = self.content[:160]
+    #     if not self.meta_keywords:
+    #         self.meta_keywords = ', '.join(self.title.split()[:5])
+
+    #     if not self.sectian_id:
+    #         self.sectian_id = slugify(self.title)[:100]
+
+    #     super().save(*args, **kwargs)

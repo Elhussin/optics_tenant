@@ -7,7 +7,7 @@ import GlobalAlert from '@/components/ui/GlobalAlert';
 import { usePathname } from 'next/navigation';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import Aside  from "@/components/layout/Aside";
-import { useAside } from '@/lib/context/AsideContext';
+import { useAside } from '@/lib/contexts/AsideContext';
 import clsx from 'clsx';
 import { useLocale } from 'next-intl';
 interface Props {

@@ -1,4 +1,4 @@
-import { useUser } from "@/lib/context/userContext";
+import { useUser } from "@/lib/contexts/userContext";
 import { useEffect ,useState} from "react";
 import PayPalButton from "./PayPalButton";
 import { useTranslations } from "next-intl";

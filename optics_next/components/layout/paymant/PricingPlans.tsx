@@ -5,7 +5,7 @@ import PayPalButton from '@/components/layout/paymant/PayPalButton';
 import { Users, Store, Package, Check, Link as LinkIcon } from 'lucide-react';
 import {FetchData} from '@/lib/api/api';
 import { useEffect, useState } from 'react';
-import { useUser } from '@/lib/context/userContext';
+import { useUser } from '@/lib/contexts/userContext';
 import { Link } from '@/app/i18n/navigation';
 type PricingPlansProps = {
   clientId?: string;

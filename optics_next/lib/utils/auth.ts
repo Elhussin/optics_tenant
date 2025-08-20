@@ -10,7 +10,7 @@ export function hasPermission(user: any, permission: string) {
 
   
   // lib/hooks/usePermission.ts
-  import { useUser } from '../context/userContext';
+  import { useUser } from '../contexts/userContext';
   
   const ROLE_PERMISSIONS: Record<string, string[] | '__all__'> = {
     ADMIN: '__all__',

@@ -1,6 +1,6 @@
 'use client';
 import { Link } from '@/app/i18n/navigation';
-import { useUser } from '@/lib/context/userContext';
+import { useUser } from '@/lib/contexts/userContext';
 import LogoutButton from '../ui/buttons/logout';
 import { useTranslations } from 'next-intl';
 
