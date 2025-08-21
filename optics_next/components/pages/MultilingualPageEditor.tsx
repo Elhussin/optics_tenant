@@ -22,7 +22,6 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
       {
         language: 'en',
         title: '',
-        slug: '',
         content: '',
         seo_title: '',
         meta_description: '',
@@ -31,7 +30,6 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
       {
         language: 'ar',
         title: '',
-        slug: '',
         content: '',
         seo_title: '',
         meta_description: '',
@@ -39,6 +37,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
       },
     ],
     is_published: false,
+    slug: ''
   });
 
    const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
@@ -59,11 +58,12 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
       const page = await pageRequest.submitForm({ slug: pageId });
       setFormData({
         default_language: page.default_language,
+
         translations: page.translations.length > 0 ? page.translations : [
           {
             language: 'en',
             title: '',
-            slug: '',
+
             content: '',
             seo_title: '',
             meta_description: '',
@@ -72,13 +72,13 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
           {
             language: 'ar',
             title: '',
-            slug: '',
             content: '',
             seo_title: '',
             meta_description: '',
             meta_keywords: '',
           },
         ],
+        slug: page.slug,
         is_published: page.is_published,
       });
       setActiveLanguage(page.default_language);
@@ -118,7 +118,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
           
           // Auto-generate slug and SEO title when title changes
           if (field === 'title') {
-            updated.slug = generateSlug(value, language);
+            // updated.slug = generateSlug(value, language);
             updated.seo_title = value;
           }
           
@@ -259,8 +259,21 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
                   dir={currentLangInfo.dir}
                 />
               </div>
-              
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Slug ({currentLangInfo.name})
+                </label>
+                  <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="page-url-slug"
+                  dir="ltr"
+                />
+              </div>
+                          </div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Slug ({currentLangInfo.name})
                 </label>
@@ -280,15 +293,26 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
                   value={formData.translations.find(t => t.language === 'en')?.slug}
                   onChange={(e) => updateTranslation(activeLanguage, 'slug', e.target.value)}
                   disabled
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent opacity-50"
                   dir="ltr"
                 />
 
               )}
-              </div>
+              </div> */}
+                {/* <label className="block mb-2 text-sm font-medium text-gray-700">
+                  Slug
+                </label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="page-url-slug"
+                  dir="ltr"
+                />
 
  
-                 </div>
+                 </div> */}
             {/* Content Editor */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

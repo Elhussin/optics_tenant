@@ -306,46 +306,8 @@ class PageViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
-#     def get_queryset(self):
-#         queryset = super().get_queryset()
-#         # Show only published pages to anonymous users
-#         if not self.request.user.is_authenticated:
-#             queryset = queryset.filter(status=Page.is_active)
-#         # Show own pages + published pages to authenticated users
-#         elif not self.request.user.is_staff:
-#             queryset = queryset.filter(
-#                 models.Q(status=Page.is_active) | 
-#                 models.Q(author=self.request.user)
-#             )
-#         return queryset
-
-#     @action(detail=True, methods=['get'])
-#     def content(self, request, slug=None):
-#         """Get page content for a specific language"""
-#         page = self.get_object()
-#         language = request.query_params.get('lang', settings.LANGUAGE_CODE)
-        
-#         try:
-#             content = page.translations.get(language=language)
-#             serializer = PageContentSerializer(content)
-#             return Response(serializer.data)
-#         except PageContent.DoesNotExist:
-#             return Response(
-#                 {'error': f'Content not available in language: {language}'}, 
-#                 status=status.HTTP_404_NOT_FOUND
-#             )
-
-#     @action(detail=True, methods=['post'])
-#     def add_translation(self, request, slug=None):
-#         """Add translation for a page"""
-#         page = self.get_object()
-#         self.check_object_permissions(request, page)
-        
-#         serializer = PageContentSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save(page=page)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)  # ضمان إضافة الـ author
 
 class PageContentViewSet(viewsets.ModelViewSet):
     queryset = PageContent.objects.all()

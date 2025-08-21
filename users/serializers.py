@@ -117,83 +117,42 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
-# Page and Content and tenant settings 
-# class PageContentSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PageContent
-#         fields = [
-#             'id', 'page', 'language', 'title', 'content',
-#             'seo_title', 'meta_description', 'meta_keywords',
-#             'created_at', 'updated_at'
-#         ]
-#         read_only_fields = ['id', 'created_at', 'updated_at']
-
-# class PageSerializer(serializers.ModelSerializer):
-#     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-#     # translations = PageContentSerializer(many=True, read_only=True)
-#     slug = serializers.SlugField(
-#         max_length=50,
-#         error_messages={
-#             'blank': 'This field may not be blank.',
-#             'max_length': 'Ensure this field has no more than 50 characters.'
-#         }
-#     )
-
-#     class Meta:
-#         model = Page
-#         fields = '__all__'
-#         # fields = ['id', 'tenant', 'title', 'slug', 'content', 'created_at', 'updated_at','seo_title',  'meta_description',  'meta_keywords']
-#         read_only_fields = ['id', 'author', 'created_at', 'updated_at']
-
-#     def validate_slug(self, value):
-#         return slugify(value)
-
-#     def validate(self, attrs):
-#         slug = attrs.get('slug')
-#         if slug:
-#             instance_id = self.instance.id if self.instance else None
-#             if Page.objects.filter(slug=slug).exclude(id=instance_id).exists():
-#                 raise serializers.ValidationError({'slug': 'Page with this slug already exists.'})
-#         return attrs
-# 
-
-
 class PageContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageContent
         fields = [
-            'language', 'title', 'slug', 'content',
+            'language', 'title',  'content',
             'seo_title', 'meta_description', 'meta_keywords'
         ]
 
 
 class PageSerializer(serializers.ModelSerializer):
     translations = PageContentSerializer(many=True)
-    
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Page
         fields = [
-            'id', 'tenant', 'default_language', 'is_published',
-            'created_at', 'updated_at', 'translations'
+            'id', 'default_language', 'is_published','slug',
+            'created_at', 'updated_at', 'translations', 'author'
         ]
-    
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
     def create(self, validated_data):
         translations_data = validated_data.pop('translations')
-        page = Page.objects.create(**validated_data)
-        
+        page = Page.objects.create(**validated_data)  # author بيتضاف أوتوماتيك
         for translation_data in translations_data:
             PageContent.objects.create(page=page, **translation_data)
-        
         return page
-    
+
     def update(self, instance, validated_data):
         translations_data = validated_data.pop('translations', [])
-        
+
         # Update page fields
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
-        
+
         # Update translations
         for translation_data in translations_data:
             language = translation_data.get('language')
@@ -204,11 +163,11 @@ class PageSerializer(serializers.ModelSerializer):
             )
             if not created:
                 for attr, value in translation_data.items():
-                    setattr(translation, attr, value)
+                    if value is not None:  # ما نكتبش قيم فاضية فوق القديمة
+                        setattr(translation, attr, value)
                 translation.save()
-        
-        return instance
 
+        return instance
 
 
 

@@ -43,10 +43,6 @@ class Migration(migrations.Migration):
             model_name='page',
             name='title',
         ),
-        migrations.AlterUniqueTogether(
-            name='pagecontent',
-            unique_together={('slug', 'language')},
-        ),
         migrations.AddField(
             model_name='page',
             name='default_language',
@@ -73,6 +69,10 @@ class Migration(migrations.Migration):
             model_name='pagecontent',
             name='language',
             field=models.CharField(choices=[('en', 'English'), ('ar', 'Arabic')], max_length=2),
+        ),
+        migrations.AlterUniqueTogether(
+            name='pagecontent',
+            unique_together={('slug', 'language')},
         ),
         migrations.AlterField(
             model_name='pagecontent',

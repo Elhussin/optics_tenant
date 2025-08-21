@@ -2704,97 +2704,59 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ msg: z.string() }).passthrough();
 const TokenRefreshError = z.object({ error: z.string() }).passthrough();
+const DefaultLanguageEnum = z.enum(["en", "ar"]);
 const LanguageEnum = z.enum(["en", "ar"]);
 const PageContent = z
   .object({
-    id: z.number().int(),
-    page: z.number().int(),
     language: LanguageEnum,
-    title: z.string().max(255),
-    content: z.string().nullish(),
-    seo_title: z.string().max(255).nullish(),
-    meta_description: z.string().nullish(),
-    meta_keywords: z.string().max(255).nullish(),
+    title: z.string().max(200),
+    slug: z
+      .string()
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    content: z.string().optional(),
+    seo_title: z.string().max(200).optional(),
+    meta_description: z.string().max(500).optional(),
+    meta_keywords: z.string().optional(),
+  })
+  .passthrough();
+const Page = z
+  .object({
+    id: z.number().int(),
+    default_language: DefaultLanguageEnum.optional(),
+    is_published: z.boolean().optional(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
+    translations: z.array(PageContent),
   })
   .passthrough();
 const PageContentRequest = z
   .object({
-    page: z.number().int(),
     language: LanguageEnum,
-    title: z.string().min(1).max(255),
-    content: z.string().nullish(),
-    seo_title: z.string().max(255).nullish(),
-    meta_description: z.string().nullish(),
-    meta_keywords: z.string().max(255).nullish(),
-  })
-  .passthrough();
-const PatchedPageContentRequest = z
-  .object({
-    page: z.number().int(),
-    language: LanguageEnum,
-    title: z.string().min(1).max(255),
-    content: z.string().nullable(),
-    seo_title: z.string().max(255).nullable(),
-    meta_description: z.string().nullable(),
-    meta_keywords: z.string().max(255).nullable(),
-  })
-  .partial()
-  .passthrough();
-const PageStatusEnum = z.enum(["draft", "published"]);
-const Page = z
-  .object({
-    id: z.number().int(),
+    title: z.string().min(1).max(200),
     slug: z
       .string()
-      .max(50)
+      .min(1)
+      .max(200)
       .regex(/^[-a-zA-Z0-9_]+$/),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    status: PageStatusEnum.optional(),
-    title: z.string().max(255),
-    content: z.string().nullish(),
-    seo_title: z.string().max(255).nullish(),
-    meta_description: z.string().nullish(),
-    meta_keywords: z.string().max(255).nullish(),
-    author: z.number().int(),
+    content: z.string().optional(),
+    seo_title: z.string().max(200).optional(),
+    meta_description: z.string().max(500).optional(),
+    meta_keywords: z.string().optional(),
   })
   .passthrough();
 const PageRequest = z
   .object({
-    slug: z
-      .string()
-      .min(1)
-      .max(50)
-      .regex(/^[-a-zA-Z0-9_]+$/),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    status: PageStatusEnum.optional(),
-    title: z.string().min(1).max(255),
-    content: z.string().nullish(),
-    seo_title: z.string().max(255).nullish(),
-    meta_description: z.string().nullish(),
-    meta_keywords: z.string().max(255).nullish(),
+    default_language: DefaultLanguageEnum.optional(),
+    is_published: z.boolean().optional(),
+    translations: z.array(PageContentRequest),
   })
   .passthrough();
 const PatchedPageRequest = z
   .object({
-    slug: z
-      .string()
-      .min(1)
-      .max(50)
-      .regex(/^[-a-zA-Z0-9_]+$/),
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    status: PageStatusEnum,
-    title: z.string().min(1).max(255),
-    content: z.string().nullable(),
-    seo_title: z.string().max(255).nullable(),
-    meta_description: z.string().nullable(),
-    meta_keywords: z.string().max(255).nullable(),
+    default_language: DefaultLanguageEnum,
+    is_published: z.boolean(),
+    translations: z.array(PageContentRequest),
   })
   .partial()
   .passthrough();
@@ -3238,12 +3200,11 @@ export const schemas = {
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
+  DefaultLanguageEnum,
   LanguageEnum,
   PageContent,
-  PageContentRequest,
-  PatchedPageContentRequest,
-  PageStatusEnum,
   Page,
+  PageContentRequest,
   PageRequest,
   PatchedPageRequest,
   PasswordResetSuccessResponse,
@@ -8289,93 +8250,6 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/users/page-contents/",
-    alias: "users_page_contents_list",
-    requestFormat: "json",
-    response: z.array(PageContent),
-  },
-  {
-    method: "post",
-    path: "/api/users/page-contents/",
-    alias: "users_page_contents_create",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PageContentRequest,
-      },
-    ],
-    response: PageContent,
-  },
-  {
-    method: "get",
-    path: "/api/users/page-contents/:id/",
-    alias: "users_page_contents_retrieve",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PageContent,
-  },
-  {
-    method: "put",
-    path: "/api/users/page-contents/:id/",
-    alias: "users_page_contents_update",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PageContentRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PageContent,
-  },
-  {
-    method: "patch",
-    path: "/api/users/page-contents/:id/",
-    alias: "users_page_contents_partial_update",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedPageContentRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PageContent,
-  },
-  {
-    method: "delete",
-    path: "/api/users/page-contents/:id/",
-    alias: "users_page_contents_destroy",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
     path: "/api/users/pages/",
     alias: "users_pages_list",
     requestFormat: "json",
@@ -8397,21 +8271,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_retrieve",
     requestFormat: "json",
     parameters: [
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "put",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_update",
     requestFormat: "json",
     parameters: [
@@ -8421,16 +8295,16 @@ export const endpoints = makeApi([
         schema: PageRequest,
       },
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "patch",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_partial_update",
     requestFormat: "json",
     parameters: [
@@ -8440,23 +8314,23 @@ export const endpoints = makeApi([
         schema: PatchedPageRequest,
       },
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "delete",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_destroy",
     requestFormat: "json",
     parameters: [
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: z.void(),

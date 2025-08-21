@@ -25,7 +25,7 @@ export type Language = 'en' | 'ar';
 export interface PageTranslation {
   language: Language;
   title: string;
-  slug: string;
+  // slug: string;
   content: string;
   seo_title: string;
   meta_description: string;
@@ -46,6 +46,7 @@ export interface CreatePageData {
   default_language: Language;
   translations: PageTranslation[];
   is_published?: boolean;
+  slug: string;
 }
 
 
