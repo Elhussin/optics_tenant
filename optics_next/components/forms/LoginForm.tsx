@@ -59,14 +59,13 @@ export default function LoginForm(props: formRequestProps) {
 
   useEffect(() => {
     if (user) {
-      // If user is already logged in, redirect to profile
       router.replace(redirect);
     }
   }, [user, router]);
 
-  // if (!user) {
-  //   return <Loading4 />;
-  // }
+  if (!user) {
+    return <Loading4 />;
+  }
   return (
     <div className={cn("flex  justify-center px-4 py-8 bg")}>
       <div className={cn("max-w-5xl w-full grid grid-cols-1 bg-surface md:grid-cols-2 gap-8 rounded-2xl shadow-xl overflow-hidden")}>

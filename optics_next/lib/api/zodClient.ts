@@ -2710,10 +2710,6 @@ const PageContent = z
   .object({
     language: LanguageEnum,
     title: z.string().max(200),
-    slug: z
-      .string()
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
     content: z.string().optional(),
     seo_title: z.string().max(200).optional(),
     meta_description: z.string().max(500).optional(),
@@ -2725,6 +2721,10 @@ const Page = z
     id: z.number().int(),
     default_language: DefaultLanguageEnum.optional(),
     is_published: z.boolean().optional(),
+    slug: z
+      .string()
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     translations: z.array(PageContent),
@@ -2734,11 +2734,6 @@ const PageContentRequest = z
   .object({
     language: LanguageEnum,
     title: z.string().min(1).max(200),
-    slug: z
-      .string()
-      .min(1)
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
     content: z.string().optional(),
     seo_title: z.string().max(200).optional(),
     meta_description: z.string().max(500).optional(),
@@ -2749,6 +2744,11 @@ const PageRequest = z
   .object({
     default_language: DefaultLanguageEnum.optional(),
     is_published: z.boolean().optional(),
+    slug: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
     translations: z.array(PageContentRequest),
   })
   .passthrough();
@@ -2756,6 +2756,11 @@ const PatchedPageRequest = z
   .object({
     default_language: DefaultLanguageEnum,
     is_published: z.boolean(),
+    slug: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
     translations: z.array(PageContentRequest),
   })
   .partial()
@@ -8271,21 +8276,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/users/pages/:id/",
+    path: "/api/users/pages/:slug/",
     alias: "users_pages_retrieve",
     requestFormat: "json",
     parameters: [
       {
-        name: "id",
+        name: "slug",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Page,
   },
   {
     method: "put",
-    path: "/api/users/pages/:id/",
+    path: "/api/users/pages/:slug/",
     alias: "users_pages_update",
     requestFormat: "json",
     parameters: [
@@ -8295,16 +8300,16 @@ export const endpoints = makeApi([
         schema: PageRequest,
       },
       {
-        name: "id",
+        name: "slug",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Page,
   },
   {
     method: "patch",
-    path: "/api/users/pages/:id/",
+    path: "/api/users/pages/:slug/",
     alias: "users_pages_partial_update",
     requestFormat: "json",
     parameters: [
@@ -8314,23 +8319,23 @@ export const endpoints = makeApi([
         schema: PatchedPageRequest,
       },
       {
-        name: "id",
+        name: "slug",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Page,
   },
   {
     method: "delete",
-    path: "/api/users/pages/:id/",
+    path: "/api/users/pages/:slug/",
     alias: "users_pages_destroy",
     requestFormat: "json",
     parameters: [
       {
-        name: "id",
+        name: "slug",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: z.void(),

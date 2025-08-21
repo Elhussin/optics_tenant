@@ -15,6 +15,9 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<Language>('en');
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+  const [isEditing, setIsEditing] = useState(false);
+
   const [formData, setFormData] = useState<CreatePageData>({
 
     default_language: 'en',
@@ -43,8 +46,6 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
    const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
    const createRequest = useFormRequest({ alias: `users_pages_create` });
    const updateRequest = useFormRequest({ alias: `users_pages_update` });
-
-
   useEffect(() => {
     if (pageId) {
       loadPage();
@@ -54,8 +55,12 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
   const loadPage = async () => {
     try {
       setLoading(true);
+      setIsEditing(true);
     //   const page = await apiService.getPage(pageId!);
-      const page = await pageRequest.submitForm({ slug: pageId });
+      const res = await pageRequest.submitForm({ slug: pageId });
+
+      const page = res.data;
+
       setFormData({
         default_language: page.default_language,
 
@@ -87,6 +92,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
       toast('Error loading page');
     } finally {
       setLoading(false);
+      setIsEditing(false);
     }
   };
 
@@ -117,8 +123,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
           const updated = { ...t, [field]: value };
           
           // Auto-generate slug and SEO title when title changes
-          if (field === 'title') {
-            // updated.slug = generateSlug(value, language);
+          if (field === 'title' ) {
+            // formData.slug = generateSlug(value, language);
             updated.seo_title = value;
           }
           
@@ -143,7 +149,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
   };
 
   const handleSave = async () => {
-    console.log(formData)
+
     try {
       setSaving(true);
       
@@ -157,6 +163,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
       if (pageId) {
         const result = await updateRequest.submitForm({ slug: pageId,formData,onSuccess: () => {          toast('Page updated successfully!');
         },onError: () => {
+          setFormErrors(updateRequest.errors);
           toast('Error updating page');
         } });
 
@@ -164,8 +171,9 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
         const result = await createRequest.submitForm(formData );
         if (result?.success) {
           toast('Page created successfully!');
-          router.push(`/admin/pages/${result.data.slug}`);
+
         }
+        setFormErrors(createRequest.errors);
       }
     } catch (error) {
       console.error('Error saving page:', error);
@@ -239,6 +247,24 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
               );
             })}
           </div>
+                        <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Page URL
+                </label>
+                
+                  <input
+                  type="text"
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  value={formData.slug}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+                  placeholder="page-url-slug"
+                  dir="ltr"
+                  disabled={isEditing}
+                />
+                <p className='error-text'>
+                  {formErrors.slug?.message as string}
+               </p>
+              </div>
         </div>
 
         {/* Content for active language */}
@@ -258,73 +284,34 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
                   placeholder={`Enter page title in ${currentLangInfo.name}`}
                   dir={currentLangInfo.dir}
                 />
+                <p className='error-text'>
+                  {formErrors.title?.message as string}
+                </p>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug ({currentLangInfo.name})
-                </label>
-                  <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="page-url-slug"
-                  dir="ltr"
-                />
-              </div>
+
                           </div>
-              {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Slug ({currentLangInfo.name})
-                </label>
-                {activeLanguage === 'en' ?(
-                <input
-                  type="text"
-                  value={currentTranslation.slug}
-                  onChange={(e) => updateTranslation(activeLanguage, 'slug', e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="page-url-slug"
-                  dir="ltr"
-                />
-            ):
-            (
-                <input
-                  type="text"
-                  value={formData.translations.find(t => t.language === 'en')?.slug}
-                  onChange={(e) => updateTranslation(activeLanguage, 'slug', e.target.value)}
-                  disabled
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent opacity-50"
-                  dir="ltr"
-                />
-
-              )}
-              </div> */}
-                {/* <label className="block mb-2 text-sm font-medium text-gray-700">
-                  Slug
-                </label>
-                <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="page-url-slug"
-                  dir="ltr"
-                />
-
- 
-                 </div> */}
             {/* Content Editor */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Content ({currentLangInfo.name})
               </label>
-              
+               {activeLanguage ==='en'&&(
+           
               <RichTextEditor
                 content={currentTranslation.content}
                 onChange={(content) => updateTranslation(activeLanguage, 'content', content)}
                 language={activeLanguage}
                 placeholder={`Start writing in ${currentLangInfo.name}...`}
               />
+                  )}
+              {activeLanguage ==='ar'&&(
+                <RichTextEditor
+                  content={currentTranslation.content}
+                  onChange={(content) => updateTranslation(activeLanguage, 'content', content)}
+                  language={activeLanguage}
+                  placeholder={`Start writing in ${currentLangInfo.name}...`}
+                />
+              )}
             </div>
 
             {/* SEO Fields */}
@@ -344,6 +331,9 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId 
                     placeholder="SEO optimized title"
                     dir={currentLangInfo.dir}
                   />
+                  <p className='error-text'>
+                    {formErrors.seo_title?.message as string}
+                  </p>
                 </div>
 
                 <div>
