@@ -295,19 +295,67 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
 
+# class PageViewSet(viewsets.ModelViewSet):
+#     queryset = Page.objects.all()
+#     serializer_class = PageSerializer
+#     lookup_field = 'id'  # Default للـ CRUD (PUT, PATCH, DELETE)
+    
+#     def get_permissions(self):
+#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+#             return [AllowAny()]
+#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
+
+#     def get_object(self):
+#         """
+#         GET requests use slug, other CRUD by id
+#         """
+#         queryset = self.get_queryset()
+#         if self.request.method == 'GET':
+#             # Lookup by slug
+#             slug = self.kwargs.get('slug')  # لازم يكون param اسمه slug في url
+#             obj = get_object_or_404(queryset, slug=slug)
+#         else:
+#             # CRUD by id
+#             id_ = self.kwargs.get('pk')  # Default DRF lookup_field
+#             obj = get_object_or_404(queryset, id=id_)
+#         self.check_object_permissions(self.request, obj)
+#         return obj
+
+#     def perform_create(self, serializer):
+#         serializer.save(author=self.request.user)
+
+# class PageViewSet(viewsets.ModelViewSet):
+#     queryset = Page.objects.all()
+#     serializer_class = PageSerializer
+#     lookup_field = 'slug'
+
+#     def get_permissions(self):
+#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+#             return [AllowAny()]
+#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
+
+#     def perform_create(self, serializer):
+#         serializer.save(author=self.request.user) 
 
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
-    lookup_field = 'slug'
 
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
+    def get_object(self):
+        if self.request.method == 'GET':
+            lookup_field = 'slug'
+            lookup_value = self.kwargs.get(lookup_field)
+            return self.get_queryset().get(**{lookup_field: lookup_value})
+        return super().get_object()
+
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)  # ضمان إضافة الـ author
+        serializer.save(author=self.request.user)
+
 
 class PageContentViewSet(viewsets.ModelViewSet):
     queryset = PageContent.objects.all()

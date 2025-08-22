@@ -8276,21 +8276,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_retrieve",
     requestFormat: "json",
     parameters: [
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "put",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_update",
     requestFormat: "json",
     parameters: [
@@ -8300,16 +8300,16 @@ export const endpoints = makeApi([
         schema: PageRequest,
       },
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "patch",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_partial_update",
     requestFormat: "json",
     parameters: [
@@ -8319,23 +8319,23 @@ export const endpoints = makeApi([
         schema: PatchedPageRequest,
       },
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "delete",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_destroy",
     requestFormat: "json",
     parameters: [
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: z.void(),

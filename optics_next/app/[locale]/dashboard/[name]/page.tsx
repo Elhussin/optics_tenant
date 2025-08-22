@@ -5,6 +5,20 @@ import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
 import ViewDetailsCard from '@/components/view/ViewDetailsCard';
 import ViewCard from '@/components/view/ViewCard';
 
+/**
+ * DynamicFormPage is a dynamic page component that renders different views based on URL parameters.
+ * 
+ * - Uses `useParams` to extract the page name from the route.
+ * - Uses `useSearchParams` to determine the action (`viewAll`, `view`, `edit`, or default to create) and entity ID.
+ * - Validates the page name against `formsConfig`.
+ * - Renders:
+ *   - `<ViewCard />` for viewing all entities.
+ *   - `<ViewDetailsCard />` for viewing details of a specific entity.
+ *   - `<DynamicFormGenerator />` for editing or creating an entity.
+ * 
+ * @returns {JSX.Element} The appropriate component based on the current action and parameters.
+ */
+
 export default function DynamicFormPage() {
   const params = useParams();
   const pagyName = params.name as string || '';
@@ -15,10 +29,7 @@ export default function DynamicFormPage() {
   if (!pagyName ||  !(pagyName in formsConfig)) {
     return <div>Invalid page name</div>;
   }
-  const form = formsConfig[pagyName];
-
-
-  //   const {alias,viewFields,title = "View Items",createButton,updateButton,viewButton} = props;
+  
   if (action==='viewAll') {
     return (
       <ViewCard entity={pagyName} />

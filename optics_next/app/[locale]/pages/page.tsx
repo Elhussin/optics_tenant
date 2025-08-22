@@ -4,13 +4,26 @@ import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { useEffect, useState } from "react";
 import { Link } from "@/app/i18n/navigation";
 import { useRouter } from "@/app/i18n/navigation";
-import { EditButton, DeleteButton, CreateButton,RestoreButton, HardDeleteButton, DeactivateButton, ActivateButton } from "@/components/ui/buttons/Button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams,useParams } from "next/navigation";
 import { useHardDeleteWithDialog } from "@/lib/hooks/useHardDeleteWithDialog";
 import { ConfirmDialog } from '@/components/ui/dialogs/ConfirmDialog';
-import {usePageActions} from "@/lib/hooks/usePageActions";
+// // import {usePageActions} from "@/lib/hooks/usePageActions";
+// import { DeleteButton, EditButton } from '@/components/ui/buttons/Button';
+import { useCrudActions } from '@/lib/hooks/useCrudActions';
+import { usePageRouting } from '@/lib/hooks/usePageRouting';
+import {ActionButton } from "@/components/ui/buttons";
+
 export default function AllPages() {
+  // this can routeing for pages 
+  const routing = usePageRouting();
+
+  const crud = useCrudActions({ onSuccessRefresh: () => routing.refresh() });
+
+  const params = useParams();
+  const locale = params.locale;
+  console.log("Current Locale:", locale);
   const searchParams = useSearchParams();
   const pageSlug = searchParams.get("slug"); 
 
@@ -21,8 +34,7 @@ export default function AllPages() {
 
   const pageRequest = useFormRequest({ alias: `users_pages_list` });
   const pageDetailRequest = useFormRequest({ alias: `users_pages_retrieve` });
-  // const pageDeleteRequest = useFormRequest({ alias: `users_pages_destroy` });
-  // const pageUpdateRequest = useFormRequest({ alias: `users_pages_partial_update` });
+
   const router = useRouter();
 
  
@@ -31,6 +43,7 @@ export default function AllPages() {
       const fetchPages = async () => {
         try {
           const result = await pageRequest.submitForm();
+          console.log("Pages List Result:", result);
           if (result?.success) {
             setPagesData(result.data);
           } else {
@@ -44,7 +57,7 @@ export default function AllPages() {
       };
       fetchPages();
     }
-  }, [pageSlug]);
+  }, []);
   useEffect(() => {
     if (pageSlug) {
       const fetchPageDetail = async () => {
@@ -70,7 +83,7 @@ export default function AllPages() {
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
-        <CreateButton onClick={() => router.push("/pages/new")} />
+        <ActionButton label="Create Page" variant="secondary" navigateTo={"/pages/new"} />
       </div>
       {pageSlug ? (
         <PageDetail pageData={pageData} />
@@ -83,92 +96,100 @@ export default function AllPages() {
 }
 
 
+
+
 export const PageDetail = ({ pageData }: { pageData: any }) => {
-    // const { confirmHardDelete, ConfirmDialogComponent } = useHardDeleteWithDialog({
-    //   alias: `users_pages_list`,
-    //   // onSuccess: () => fetchUser({ id })
-    // });
-  
-    
+  const params = useParams();
+  const local = params?.local as string;
   const [showDialog, setShowDialog] = useState(false);
-  const router = useRouter();
-  const {handleRestore,handleSoftDelete,handleEdit,handleDeactivate,handleActivate} = usePageActions("users_pages_list");
-  
-  const handleConfirm = () => {
-    setShowDialog(false);
-    // handleHardDelete(pageData.id);
-  };
-    const renderButtons = () => (
-      <>
-        {pageData.is_deleted ? (
-          <>
-            <RestoreButton onClick={() => handleRestore(pageData.id)} />
-            {/* <HardDeleteButton onClick={() => confirmHardDelete(pageData.id)} /> */}
-          </>
-        ) : (
-          <>
-            <EditButton onClick={() => handleEdit(pageData.id )} />
-            
-            <DeleteButton onClick={() => handleSoftDelete(pageData.id)} />
-          </>
-        )}
-        {pageData.is_active ? !pageData.is_deleted && (
-          <DeactivateButton onClick={() => handleDeactivate(pageData.id)} />
-        ) : !pageData.is_deleted && (
-          <ActivateButton onClick={() => handleActivate(pageData.id)} />
-        )}
-      </>
-    );
-  
+  if (!pageData) return <div>No Page Found</div>;
+
+  const translation = pageData?.translations?.find((t: any) => t.language === local) 
+                      || pageData?.translations?.find((t: any) => t.language === pageData.default_language);
+  console.log("Page Translation:", translation);
+  const handleConfirm = () => setShowDialog(false);
+
+
   return (
     <Card className="shadow-md rounded-2xl border">
-    <CardHeader>
-      <CardTitle>{pageData?.title}</CardTitle>
-    </CardHeader>
-    <CardContent className="space-y-2 text-sm">
-      <p>Slug: {pageData?.slug}</p>
-      <p>Status: {pageData?.status}</p>
-      <p>SEO Title: {pageData?.seo_title}</p>
-      <p>Active: {String(pageData?.is_active)}</p>
-      <div className="flex gap-2 mt-4">
-        {renderButtons()}
-      </div>
-    </CardContent>
-   
-        <ConfirmDialog
-          open={showDialog}
-          title={"Do You Wont Delete e PAge"}
-          message={"Are You Sure You Want To Delete This Page"}
-          onCancel={() => setShowDialog(false)}
-          onConfirm={handleConfirm}
+      <CardHeader>
+        <CardTitle>{translation?.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4 text-sm">
+        <p><b>Slug:</b> {pageData?.slug}</p>
+        <p><b>Status:</b> {pageData?.is_published ? "Published" : "Draft"}</p>
+        <p><b>SEO Title:</b> {translation?.seo_title}</p>
+
+
+        {/* محتوى الصفحة */}
+        <div 
+          className="prose max-w-none border-t pt-4" 
+          dangerouslySetInnerHTML={{ __html: translation?.content ?? "" }} 
         />
-  </Card>
-  )
-}
+
+        <div className="flex gap-2 mt-4">
+          {/* {pageData.is_deleted ? (
+            <RestoreButton onClick={() => handleRestore(pageData.id)} />
+          ) : (
+            <>
+              <EditButton onClick={() => handleEdit(pageData.id)} />
+              <DeleteButton onClick={() => handleSoftDelete(pageData.id)} />
+            </>
+          )}
+          {pageData.is_active ? (
+            !pageData.is_deleted && <DeactivateButton onClick={() => handleDeactivate(pageData.id)} />
+          ) : (
+            !pageData.is_deleted && <ActivateButton onClick={() => handleActivate(pageData.id)} />
+          )} */}
+        </div>
+      </CardContent>
+
+      <ConfirmDialog
+        open={showDialog}
+        title={"Do You Want Delete Page"}
+        message={"Are You Sure You Want To Delete This Page"}
+        onCancel={() => setShowDialog(false)}
+        onConfirm={handleConfirm}
+      />
+    </Card>
+  );
+};
+
 
 export const PagesList = ({ pagesData }: { pagesData: any[] }) => {
+
+  const params = useParams();
+  const locale = params?.locale as string;
+  console.log("Current Locale:", locale);
   const router = useRouter();
+
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    {pagesData.map((p: any) => (
-      <Card key={p.id ?? p.slug} className="shadow-md rounded-2xl border">
-        <CardHeader>
-          <CardTitle className="text-lg font-semibold">{p.title}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p><span className="font-medium">Slug:</span> {p.slug}</p>
-          <p><span className="font-medium">Status:</span> {p.status}</p>
-          <p><span className="font-medium">SEO Title:</span> {p.seo_title}</p>
-          <p><span className="font-medium">Active:</span> {String(p.is_active)}</p>
-          <div className="flex gap-2 mt-4">
-            <EditButton onClick={() => router.push(`/pages/${p.slug}/`)} />
-            <Link href={`/pages?slug=${p.slug}`} className="text-blue-500 underline">
-              View
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
-    ))}
-  </div>
-  )
-}
+      {pagesData.map((p: any) => {
+        // اختيار الترجمة المناسبة
+        const translation = p.translations?.find((t: any) => t.language === locale)
+                          || p.translations?.find((t: any) => t.language === p.default_language);
+                  console.log("Page Translation:", translation);
+
+        return (
+          <Card key={p.id ?? p.slug} className="shadow-md rounded-2xl border">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">{translation?.title}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2 text-sm">
+              <p><span className="font-medium">Slug:</span> {p.slug}</p>
+              <p><span className="font-medium">Status:</span> {p.is_published ? "Published" : "Draft"}</p>
+              <p><span className="font-medium">SEO Title:</span> {translation?.seo_title}</p>
+              <div className="flex gap-2 mt-4">
+                <ActionButton label="Edit" onClick={() => router.push(`/pages/${p.slug}/`)} />
+                <Link href={`/pages?slug=${p.slug}`} className="text-blue-500 underline">
+                  View
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })}
+    </div>
+  );
+};

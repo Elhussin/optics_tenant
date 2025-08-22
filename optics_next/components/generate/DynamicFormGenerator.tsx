@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { z } from 'zod';
 import { schemas } from '@/lib/api/zodClient';
-import { createFetcher } from '@/lib/hooks/useCrudFormRequest';
 
 import { Loading4 } from '@/components/ui/loding';
 import { DynamicFormProps } from '@/types/DynamicFormTypes';
@@ -114,7 +113,6 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
   const visibleFields = config.fieldOrder || allFields;
 
-  // const fetchData = createFetcher(`${fetchAlias}/${id}`!, setDefaultValues);
   const formRequest=useFormRequest({alias:alias!,defaultValues});
 
   const fetchDefaultData= useFormRequest({alias:fetchAlias!});

@@ -89,23 +89,12 @@ export interface ViewCardProps {
 
   entity?: string;
   id?: string | number | undefined;
-  // alias?: string;
-  // fieldsAlias?: string;
-  // restoreAlias: string;
-  // hardDeleteAlias?: string;
-  // path?: string;
-  // viewFields?: string[]; 
-  // title?: string;
-  // fields?: string[];
-  // createButton?: React.ReactNode;
-  // updateButton?: (id: string) => React.ReactNode;
-  // viewButton?: (id: string) => React.ReactNode;
 }
 
 
 
 export interface BaseButtonProps {
-  onClick: (e?: React.MouseEvent) => void ;
+  onClick?: (e?: React.MouseEvent) => void ;
   label?: string;
 
 };
@@ -120,6 +109,8 @@ export interface ButtonProps extends BaseButtonProps  {
   type?: "button" | "submit" | "reset" 
   title?: string;
   disabled?: boolean;
+  onCrud?: () => void;
+  navigateTo?: string;
 };
 
 
