@@ -324,37 +324,37 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
 #     def perform_create(self, serializer):
 #         serializer.save(author=self.request.user)
 
-# class PageViewSet(viewsets.ModelViewSet):
-#     queryset = Page.objects.all()
-#     serializer_class = PageSerializer
-#     lookup_field = 'slug'
-
-#     def get_permissions(self):
-#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-#             return [AllowAny()]
-#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
-
-#     def perform_create(self, serializer):
-#         serializer.save(author=self.request.user) 
-
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
+    lookup_field = 'slug'
 
     def get_permissions(self):
         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
             return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
-    def get_object(self):
-        if self.request.method == 'GET':
-            lookup_field = 'slug'
-            lookup_value = self.kwargs.get(lookup_field)
-            return self.get_queryset().get(**{lookup_field: lookup_value})
-        return super().get_object()
-
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(author=self.request.user) 
+
+# class PageViewSet(viewsets.ModelViewSet):
+#     queryset = Page.objects.all()
+#     serializer_class = PageSerializer
+
+#     def get_permissions(self):
+#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+#             return [AllowAny()]
+#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
+
+#     def get_object(self):
+#         if self.request.method == 'GET':
+#             lookup_field = 'slug'
+#             lookup_value = self.kwargs.get(lookup_field)
+#             return self.get_queryset().get(**{lookup_field: lookup_value})
+#         return super().get_object()
+
+#     def perform_create(self, serializer):
+#         serializer.save(author=self.request.user)
 
 
 class PageContentViewSet(viewsets.ModelViewSet):
@@ -415,3 +415,5 @@ class TenantPageViewSet(viewsets.ModelViewSet):
     serializer_class = PageSerializer
 
     
+
+   
