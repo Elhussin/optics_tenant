@@ -324,6 +324,27 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
 #     def perform_create(self, serializer):
 #         serializer.save(author=self.request.user)
 
+# class PageViewSet(viewsets.ModelViewSet):
+#     queryset = Page.objects.all()
+#     serializer_class = PageSerializer
+#     lookup_field = 'slug'
+
+#     def get_permissions(self):
+#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+#             return [AllowAny()]
+#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
+
+#     def perform_create(self, serializer):
+#         # إضافة المؤلف تلقائياً عند الإنشاء
+#         serializer.save(author=self.request.user)
+
+#     def perform_update(self, serializer):
+#         # منع تعديل slug عند التحديث
+#         validated_data = serializer.validated_data.copy()
+#         if 'slug' in validated_data:
+#             validated_data.pop('slug')
+#         serializer.save(**validated_data)
+# في ViewSet
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
@@ -335,7 +356,7 @@ class PageViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user) 
+        serializer.save(author=self.request.user)
 
 # class PageViewSet(viewsets.ModelViewSet):
 #     queryset = Page.objects.all()

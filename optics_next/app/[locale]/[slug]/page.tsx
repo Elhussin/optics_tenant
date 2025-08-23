@@ -1,23 +1,25 @@
 "use client";
-import { notFound } from 'next/navigation';
-import PageDisplay from '../../../components/pages/page/PageDisplay';
-import { useFormRequest } from '@/lib/hooks/useFormRequest';
+import { notFound, useParams } from 'next/navigation';
+import MultilingualPageDisplay from '@/components/pages/MultilingualPageDisplay';
 import { useEffect, useState } from 'react';
-import { useParams } from "next/navigation";
+import { Language, LANGUAGES } from '@/types/pages';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
+import { Loading4 } from '@/components/ui/loding';
 
-
-export default function PublicPage() {
+export default  function MultilingualPublicPage() {
+  const params = useParams();
+  const locale = params?.locale as string;
+  const slug = params?.slug as string;
+  const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
   const [pageData, setPageData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const params = useParams();
-  const pageName = params?.slug as string;
-  const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
 
   useEffect(() => {
     const fetchPage = async () => {
       try {
-        const result = await pageRequest.submitForm({ slug: pageName });
+        const result = await pageRequest.submitForm({ slug: slug });
+        console.log(result)
         if (result?.success) {
           setPageData(result.data);
         } else {
@@ -30,12 +32,12 @@ export default function PublicPage() {
       }
     };
     fetchPage();
-  }, [pageName]);
+  }, [slug]);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loading4/>;
   if (error) {
-    // notFound(); // Uncomment if you want to use Next.js notFound
     return <div>{error}</div>;
   }
-  return <PageDisplay page={pageData} />;
+  
+  return <MultilingualPageDisplay page={pageData} defaultLanguage={locale as Language} />;
 }

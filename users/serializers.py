@@ -117,60 +117,111 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
+# class PageContentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PageContent
+#         fields = [
+#             'language', 'title',  'content',
+#             'seo_title', 'meta_description', 'meta_keywords'
+#         ]
+
+
+
+# class PageSerializer(serializers.ModelSerializer):
+#     translations = PageContentSerializer(many=True)
+#     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+#     class Meta:
+#         model = Page
+#         fields = [
+#             'id', 'default_language', 'is_published', 'slug',
+#             'created_at', 'updated_at', 'translations', 'author',
+#             'is_active', 'is_deleted'
+#         ]
+#         read_only_fields = ['id', 'created_at', 'updated_at']
+
+#     def create(self, validated_data):
+#         translations_data = validated_data.pop('translations', [])
+#         page = Page.objects.create(**validated_data)
+#         for translation_data in translations_data:
+#             PageContent.objects.create(page=page, **translation_data)
+#         return page
+
+#     def update(self, instance, validated_data):
+#         translations_data = validated_data.pop('translations', [])
+
+#         # تحديث بيانات الصفحة الأساسية، باستثناء slug
+#         for attr, value in validated_data.items():
+#             if attr == 'slug':
+#                 continue
+#             setattr(instance, attr, value)
+#         instance.save()
+
+#         # تحديث الترجمات
+#         for translation_data in translations_data:
+#             language = translation_data.get('language')
+#             if not language:
+#                 continue
+
+#             try:
+#                 translation = PageContent.objects.get(page=instance, language=language)
+#                 # تحديث كل حقل إذا كان موجودًا وغير فارغ
+#                 for field, value in translation_data.items():
+#                     if value is not None:
+#                         setattr(translation, field, value)
+#                 translation.save()
+#             except PageContent.DoesNotExist:
+#                 # إنشاء ترجمة جديدة إذا لم توجد
+#                 PageContent.objects.create(page=instance, **translation_data)
+
+#         return instance
+
 class PageContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageContent
         fields = [
-            'language', 'title',  'content',
+            'language', 'title', 'content',
             'seo_title', 'meta_description', 'meta_keywords'
         ]
-
 
 class PageSerializer(serializers.ModelSerializer):
     translations = PageContentSerializer(many=True)
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
     class Meta:
         model = Page
         fields = [
-            'id', 'default_language', 'is_published','slug',
-            'created_at', 'updated_at', 'translations', 'author'
+            'id', 'default_language', 'is_published', 'slug',
+            'created_at', 'updated_at', 'translations', 'author',
+            'is_active', 'is_deleted'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'slug']  # إضافة slug للحقول المقروءة فقط
 
     def create(self, validated_data):
-        translations_data = validated_data.pop('translations')
-        page = Page.objects.create(**validated_data)  # author بيتضاف أوتوماتيك
+        translations_data = validated_data.pop('translations', [])
+        page = Page.objects.create(**validated_data)
         for translation_data in translations_data:
             PageContent.objects.create(page=page, **translation_data)
         return page
+    
+    # def update(self, instance, validated_data):
+    #     translations_data = validated_data.pop('translations', [])
+        
+    #     # تحديث الحقول الأساسية
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+    #     instance.save()
 
-    def update(self, instance, validated_data):
-        translations_data = validated_data.pop('translations', [])
-
-        # Update page fields
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-
-        # Update translations
-        for translation_data in translations_data:
-            language = translation_data.get('language')
-            translation, created = PageContent.objects.get_or_create(
-                page=instance,
-                language=language,
-                defaults=translation_data
-            )
-            if not created:
-                for attr, value in translation_data.items():
-                    if value is not None:  # ما نكتبش قيم فاضية فوق القديمة
-                        setattr(translation, attr, value)
-                translation.save()
-
-        return instance
-
-
-
+    #     # تحديث الترجمات - هذه هي الطريقة الأكثر موثوقية
+    #     for translation_data in translations_data:
+    #         language = translation_data.get('language')
+    #         if language:
+    #             PageContent.objects.update_or_create(
+    #                 page=instance,
+    #                 language=language,
+    #                 defaults=translation_data
+    #             )
+        
+    #     return instance
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs  

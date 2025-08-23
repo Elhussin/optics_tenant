@@ -107,25 +107,8 @@ class TenantSettings(BaseModel):
 
     def __str__(self):
         return self.business_name if self.business_name else "Tenant Settings"
-from django.contrib.postgres.fields import JSONField
 
 
-block={
-  "ar": [ 
-    {"type": "heading", "level": 1, "value": "عنوان رئيسي"},
-    {"type": "paragraph", "value": "نص عربي هنا"},
-    {"type": "image", "url": "/media/example.jpg", "alt": "صورة توضيحية"},
-    {"type": "list", "style": "ul", "items": ["عنصر 1", "عنصر 2"]},
-    {"type": "video", "url": "https://youtu.be/example"}
-  ],
-  "en": [ 
-    {"type": "heading", "level": 1, "value": "Main Title"},
-    {"type": "paragraph", "value": "English text here"},
-    {"type": "image", "url": "/media/example.jpg", "alt": "Illustrative image"},
-    {"type": "list", "style": "ul", "items": ["Item 1", "Item 2"]},
-    {"type": "video", "url": "https://youtu.be/example"}
-  ]
-}
 
 
 class Page(BaseModel):

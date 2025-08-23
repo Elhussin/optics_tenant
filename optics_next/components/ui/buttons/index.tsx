@@ -2,7 +2,7 @@
 import React from "react";
 import { cn } from "@/lib/utils/cn"; 
 import { ButtonProps } from "@/types";
-
+import { useRouter } from "@/app/i18n/navigation";
 /**
  * Renders a customizable action button that can perform CRUD operations or navigation.
  *
@@ -69,9 +69,10 @@ export function ActionButton({
   onCrud?: () => void;
   navigateTo?: string;
 }) {
+  const router = useRouter();
   const handleClick = async () => {
     if (onCrud) await onCrud();
-    if (navigateTo) window.location.href = navigateTo; // أو router.push إذا داخل Next.js
+    if (navigateTo) router.push(navigateTo);
   };
 
   return (

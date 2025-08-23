@@ -2728,6 +2728,8 @@ const Page = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     translations: z.array(PageContent),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const PageContentRequest = z
@@ -2750,6 +2752,8 @@ const PageRequest = z
       .max(200)
       .regex(/^[-a-zA-Z0-9_]+$/),
     translations: z.array(PageContentRequest),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const PatchedPageRequest = z
@@ -2762,6 +2766,8 @@ const PatchedPageRequest = z
       .max(200)
       .regex(/^[-a-zA-Z0-9_]+$/),
     translations: z.array(PageContentRequest),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();

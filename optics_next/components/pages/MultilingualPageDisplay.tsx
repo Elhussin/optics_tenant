@@ -45,7 +45,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
 
       <div className="max-w-4xl mx-auto p-6" dir={currentLangInfo.dir}>
         {/* Language Switcher */}
-        {availableLanguages.length > 1 && (
+        {/* {availableLanguages.length > 1 && (
           <div className={`mb-6 flex gap-2 ${currentLangInfo.dir === 'rtl' ? 'justify-start' : 'justify-end'}`}>
             <div className="flex bg-gray-100 rounded-lg p-1">
               {availableLanguages.map(translation => {
@@ -68,7 +68,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
               })}
             </div>
           </div>
-        )}
+        )} */}
 
         <article className="bg-white rounded-lg shadow-lg p-8">
           <header className="mb-8">
