@@ -69,6 +69,7 @@
   .ProseMirror[dir="rtl"] h5,
   .ProseMirror[dir="rtl"] h6 {
     text-align: right;
+    font-weight: bold;
   }
   
   .ProseMirror[dir="rtl"] p {

@@ -99,7 +99,7 @@ export interface BaseButtonProps {
 
 };
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close'| 'warning';
 
 export interface ButtonProps extends BaseButtonProps  {
   label: string;

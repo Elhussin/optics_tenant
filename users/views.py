@@ -297,6 +297,7 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
 
 import logging
 logger = logging.getLogger(__name__)
+
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
@@ -308,28 +309,45 @@ class PageViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
     def perform_create(self, serializer):
+        print("Incoming data1:", self.request.data)
         serializer.save(author=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        # تسجيل البيانات الواردة للتحقق
-        logger.info(f"Incoming data: {request.data}")
-        logger.info(f"Request method: {request.method}")
-        logger.info(f"User: {request.user}")
-        
+        print("Incoming data 2:", request.data)
         try:
             return super().create(request, *args, **kwargs)
         except Exception as e:
             logger.error(f"Error processing request: {str(e)}")
             logger.error(f"Request data: {request.data}")
             raise
-    
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        logger.info(f"Updating page {instance.slug}")
-        logger.info(f"Update data: {request.data}")
-        
-        return super().update(request, *args, **kwargs)
 
+    def update(self, request, *args, **kwargs):
+        print("Incoming data:", request.data)
+        
+        # Extract the actual data from formData wrapper if it exists
+        data = request.data
+        if 'formData' in data:
+            data = data['formData']
+        
+        # Remove read-only fields that shouldn't be in update
+        read_only_fields = ['id', 'created_at', 'updated_at', 'slug', 'author']
+        clean_data = {k: v for k, v in data.items() if k not in read_only_fields}
+        
+        print("Clean data for serializer:", clean_data)
+        
+        # Create a new request data object with clean data
+        request._full_data = clean_data
+        
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=clean_data, partial=kwargs.get('partial', False))
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
+    
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """

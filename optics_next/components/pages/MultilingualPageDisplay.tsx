@@ -16,6 +16,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
   const [currentLanguage, setCurrentLanguage] = useState<Language>(defaultLanguage);
   const currentTranslation = getCurrentTranslation(page, currentLanguage);
   const currentLangInfo = LANGUAGES[currentLanguage];
+  console.log("Current Language Info:", currentTranslation);
 
   // Get available languages for this page
   const availableLanguages = page.translations.filter(t => 
@@ -30,7 +31,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
         <meta name="keywords" content={currentTranslation.meta_keywords} />
         <meta property="og:title" content={currentTranslation.seo_title || currentTranslation.title} />
         <meta property="og:description" content={currentTranslation.meta_description} />
-        <link rel="canonical" href={`/${currentLanguage}/${currentTranslation.slug}`} />
+        <link rel="canonical" href={`/${currentLanguage}/${page.slug}`} />
         
         {/* Language alternates for SEO */}
         {availableLanguages.map(translation => (
@@ -38,37 +39,12 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
             key={translation.language}
             rel="alternate"
             hrefLang={translation.language}
-            href={`/${translation.language}/${translation.slug}`}
+            href={`/${translation.language}/${page.slug}`}
           />
         ))}
       </Head>
 
       <div className="max-w-4xl mx-auto p-6" dir={currentLangInfo.dir}>
-        {/* Language Switcher */}
-        {/* {availableLanguages.length > 1 && (
-          <div className={`mb-6 flex gap-2 ${currentLangInfo.dir === 'rtl' ? 'justify-start' : 'justify-end'}`}>
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              {availableLanguages.map(translation => {
-                const langInfo = LANGUAGES[translation.language];
-                const isActive = currentLanguage === translation.language;
-                
-                return (
-                  <button
-                    key={translation.language}
-                    onClick={() => setCurrentLanguage(translation.language)}
-                    className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
-                      isActive
-                        ? 'bg-white text-blue-600 shadow-sm'
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    {langInfo.flag} {langInfo.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )} */}
 
         <article className="bg-white rounded-lg shadow-lg p-8">
           <header className="mb-8">
@@ -81,7 +57,8 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
               currentLangInfo.dir === 'rtl' ? 'text-right' : 'text-left'
             }`}>
               {currentLangInfo.dir === 'rtl' 
-                ? `آخر تحديث: ${new Date(page.updated_at).toLocaleDateString('ar-SA')}`
+                // ? `آخر تحديث: ${new Date(page.updated_at).toLocaleDateString('ar-SA')}`
+                ? `آخر تحديث: ${new Date(page.updated_at).toLocaleDateString()}`
                 : `Last updated: ${new Date(page.updated_at).toLocaleDateString()}`
               }
             </div>

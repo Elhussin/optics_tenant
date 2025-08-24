@@ -53,6 +53,7 @@ import { useRouter } from "@/app/i18n/navigation";
     reset: "btn-reset",
     cancel: "btn-cancel",
     close: "btn-close",
+    warning: "btn-warning",
 
   };
 export function ActionButton({

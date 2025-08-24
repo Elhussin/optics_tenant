@@ -1,5 +1,6 @@
 // app/layout.tsx
 import '@/styles/globals.css';
+import '@/styles/pages.css';
 import { ReactNode } from 'react';
 
 export default function RootLayout({ children }: { children: ReactNode }) {

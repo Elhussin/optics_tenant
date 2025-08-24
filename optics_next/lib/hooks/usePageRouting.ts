@@ -1,8 +1,8 @@
 // lib/hooks/usePageRouting.ts
 'use client';
 
+// import { useRouter } from '@/app/i18n/navigation';
 import { useRouter } from 'next/navigation';
-
 
 /**
  * usePageRouting hook

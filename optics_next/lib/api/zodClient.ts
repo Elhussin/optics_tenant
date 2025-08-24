@@ -2721,10 +2721,7 @@ const Page = z
     id: z.number().int(),
     default_language: DefaultLanguageEnum.optional(),
     is_published: z.boolean().optional(),
-    slug: z
-      .string()
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
+    slug: z.string().regex(/^[-a-zA-Z0-9_]+$/),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     translations: z.array(PageContent),
@@ -2746,11 +2743,6 @@ const PageRequest = z
   .object({
     default_language: DefaultLanguageEnum.optional(),
     is_published: z.boolean().optional(),
-    slug: z
-      .string()
-      .min(1)
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
     translations: z.array(PageContentRequest),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
@@ -2760,11 +2752,6 @@ const PatchedPageRequest = z
   .object({
     default_language: DefaultLanguageEnum,
     is_published: z.boolean(),
-    slug: z
-      .string()
-      .min(1)
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
     translations: z.array(PageContentRequest),
     is_active: z.boolean(),
     is_deleted: z.boolean(),
