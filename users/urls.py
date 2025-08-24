@@ -2,20 +2,18 @@
 from django.urls import path
 from .views import( LoginView, RegisterView, LogoutView, RefreshTokenView,
 ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView,PageViewSet,
-PageContentViewSet, ContactUsViewSet,TenantSettingsViewset,
+ContactUsViewSet,TenantSettingsViewset,
 PermissionViewSet, RolePermissionViewSet, RoleViewSet)
 from rest_framework.routers import DefaultRouter
 from django.urls import include
 
 
-# Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
 router.register(r'permissions', PermissionViewSet, basename='permissions')
 router.register(r'role-permissions', RolePermissionViewSet, basename='role-permissions')
 router.register(r'roles', RoleViewSet, basename='roles')
-router.register(r'pages', PageViewSet, basename='pages')
-# router.register(r'page-contents', PageContentViewSet)                                                                                                                                                                                                                                  
+router.register(r'pages', PageViewSet, basename='pages')                                                                                                                                                                                                                     
 router.register(r'contact-us', ContactUsViewSet, basename='contact-us')
 router.register(r'tenant-settings', TenantSettingsViewset, basename='tenant-settings')
 

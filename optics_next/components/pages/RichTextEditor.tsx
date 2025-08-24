@@ -132,6 +132,26 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         >
           Italic
         </button>
+        <button
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('underline')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Underline
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleHighlight().run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('highlight')
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          Highlight
+        </button>
 
         <button
           onClick={() => editor.chain().focus().toggleStrike().run()}
@@ -177,7 +197,26 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         >
           H3
         </button>
-
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('heading', { level: 4 })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          H4
+        </button>
+        <button
+          onClick={() => editor.chain().focus().toggleHeading({ level: 5 }).run()}
+          className={`px-3 py-1 text-sm font-medium rounded ${
+            editor.isActive('heading', { level: 5 })
+              ? 'bg-blue-500 text-white'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+        >
+          H5
+        </button>
         {/* Lists */}
         <button
           onClick={() => editor.chain().focus().toggleBulletList().run()}

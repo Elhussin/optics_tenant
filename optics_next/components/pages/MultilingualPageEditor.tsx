@@ -819,15 +819,26 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Content ({currentLangInfo.name})
               </label>
+              {activeLanguage==='en' && (
               <RichTextEditor
                 content={currentTranslation.content}
                 onChange={(content) => updateTranslation(activeLanguage, 'content', content)}
                 language={activeLanguage}
                 placeholder={`Start writing in ${currentLangInfo.name}...`}
               />
+              )}
+              {activeLanguage==='ar' && (
+                <RichTextEditor
+                  content={currentTranslation.content}
+                  onChange={(content) => updateTranslation(activeLanguage, 'content', content)}
+                  language={activeLanguage}
+                  placeholder={`Start writing in ${currentLangInfo.name}...`}
+                />
+              )}
               {formErrors.content && (
                 <p className="text-red-500 text-sm mt-1">{formErrors.content}</p>
               )}
+
             </div>
 
             {/* SEO Fields */}

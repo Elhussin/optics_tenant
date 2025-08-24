@@ -37,7 +37,8 @@ paymant_logger = logging.getLogger('paypal')
 # ==============================================================
 class CreatePaymentOrderView(APIView):
     def post(self, request):
-        lang = request.headers.get("Accept-Language", "en")
+        # lang = request.headers.get("Accept-Language", "en")
+        lang = "en"
         serializer = CreatePaymentOrderSerializer(data=request.data)
         if serializer.is_valid():
             client = serializer.validated_data["client"]

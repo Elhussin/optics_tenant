@@ -295,56 +295,8 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
 
-# class PageViewSet(viewsets.ModelViewSet):
-#     queryset = Page.objects.all()
-#     serializer_class = PageSerializer
-#     lookup_field = 'id'  # Default للـ CRUD (PUT, PATCH, DELETE)
-    
-#     def get_permissions(self):
-#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-#             return [AllowAny()]
-#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
-
-#     def get_object(self):
-#         """
-#         GET requests use slug, other CRUD by id
-#         """
-#         queryset = self.get_queryset()
-#         if self.request.method == 'GET':
-#             # Lookup by slug
-#             slug = self.kwargs.get('slug')  # لازم يكون param اسمه slug في url
-#             obj = get_object_or_404(queryset, slug=slug)
-#         else:
-#             # CRUD by id
-#             id_ = self.kwargs.get('pk')  # Default DRF lookup_field
-#             obj = get_object_or_404(queryset, id=id_)
-#         self.check_object_permissions(self.request, obj)
-#         return obj
-
-#     def perform_create(self, serializer):
-#         serializer.save(author=self.request.user)
-
-# class PageViewSet(viewsets.ModelViewSet):
-#     queryset = Page.objects.all()
-#     serializer_class = PageSerializer
-#     lookup_field = 'slug'
-
-#     def get_permissions(self):
-#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-#             return [AllowAny()]
-#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
-
-#     def perform_create(self, serializer):
-#         # إضافة المؤلف تلقائياً عند الإنشاء
-#         serializer.save(author=self.request.user)
-
-#     def perform_update(self, serializer):
-#         # منع تعديل slug عند التحديث
-#         validated_data = serializer.validated_data.copy()
-#         if 'slug' in validated_data:
-#             validated_data.pop('slug')
-#         serializer.save(**validated_data)
-# في ViewSet
+import logging
+logger = logging.getLogger(__name__)
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
@@ -358,64 +310,26 @@ class PageViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
 
-# class PageViewSet(viewsets.ModelViewSet):
-#     queryset = Page.objects.all()
-#     serializer_class = PageSerializer
+    def create(self, request, *args, **kwargs):
+        # تسجيل البيانات الواردة للتحقق
+        logger.info(f"Incoming data: {request.data}")
+        logger.info(f"Request method: {request.method}")
+        logger.info(f"User: {request.user}")
+        
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error processing request: {str(e)}")
+            logger.error(f"Request data: {request.data}")
+            raise
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        logger.info(f"Updating page {instance.slug}")
+        logger.info(f"Update data: {request.data}")
+        
+        return super().update(request, *args, **kwargs)
 
-#     def get_permissions(self):
-#         if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-#             return [AllowAny()]
-#         return [IsAuthenticated(), IsOwnerOrReadOnly()]
-
-#     def get_object(self):
-#         if self.request.method == 'GET':
-#             lookup_field = 'slug'
-#             lookup_value = self.kwargs.get(lookup_field)
-#             return self.get_queryset().get(**{lookup_field: lookup_value})
-#         return super().get_object()
-
-#     def perform_create(self, serializer):
-#         serializer.save(author=self.request.user)
-
-
-class PageContentViewSet(viewsets.ModelViewSet):
-    queryset = PageContent.objects.all()
-    serializer_class = PageContentSerializer
-
-    def get_permissions(self):
-        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return [AllowAny()]
-        return [IsAuthenticated()]
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        slug = self.request.query_params.get('slug')
-        lang = self.request.query_params.get('lang')
-
-        # Filter by published pages for anonymous users
-        if not self.request.user.is_authenticated:
-            queryset = queryset.filter(page__status=Page.PUBLISHED)
-
-        if slug:
-            queryset = queryset.filter(page__slug=slug)
-        if lang:
-            queryset = queryset.filter(language=lang)
-
-        return queryset
-
-    def perform_create(self, serializer):
-        # Ensure user owns the page they're adding content to
-        page = serializer.validated_data['page']
-        if page.author != self.request.user:
-            raise serializers.ValidationError("You can only add content to your own pages.")
-        serializer.save()
-
-    def perform_update(self, serializer):
-        # Ensure user owns the page they're updating content for
-        page = serializer.validated_data.get('page', serializer.instance.page)
-        if page.author != self.request.user:
-            raise serializers.ValidationError("You can only update content of your own pages.")
-        serializer.save()
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """

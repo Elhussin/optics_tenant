@@ -1,8 +1,8 @@
 {
   "userContext": {
     "title": "Logout",
-    "success": "Logged out successfully",
-    "error": "Failed to log out",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Failed to log out",
     "fetchError": "Failed to fetch user data"
   },
   "login": {
