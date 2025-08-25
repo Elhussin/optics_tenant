@@ -118,34 +118,118 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
+# class PageContentSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = PageContent
+#         fields = [
+#             'language', 'title', 'content',
+#             'seo_title', 'meta_description', 'meta_keywords'
+#         ]
+
+# class PageSerializer(serializers.ModelSerializer):
+#     translations = PageContentSerializer(many=True)
+#     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    
+#     class Meta:
+#         model = Page
+#         fields = [
+#             'id', 'default_language', 'is_published', 'slug',
+#             'created_at', 'updated_at', 'translations', 'author',
+#             'is_active', 'is_deleted'
+#         ]
+#         read_only_fields = ['id', 'created_at', 'updated_at', 'slug']
+
+#     def create(self, validated_data):
+#         print("Incoming validated_data 1:", validated_data)
+#         translations_data = validated_data.pop('translations', [])
+#         page = Page.objects.create(**validated_data)
+#         for translation_data in translations_data:
+#             PageContent.objects.create(page=page, **translation_data)
+#         return page
+
+#     def update(self, instance, validated_data):
+#         print("Incoming validated_data2:", validated_data)
+#         translations_data = validated_data.pop('translations', [])
+        
+#         # تحديث الحقول الأساسية - exclude read-only fields
+#         updatable_fields = ['default_language', 'is_published', 'is_active', 'is_deleted']
+#         for attr in updatable_fields:
+#             if attr in validated_data:
+#                 setattr(instance, attr, validated_data[attr])
+        
+#         instance.save()
+
+#         # تحديث أو إنشاء الترجمات
+#         if translations_data:
+#             # الحصول على اللغات الموجودة في البيانات الجديدة
+#             new_languages = {t.get('language') for t in translations_data if t.get('language')}
+            
+#             # حذف الترجمات للغات غير موجودة في البيانات الجديدة
+#             instance.translations.exclude(language__in=new_languages).delete()
+            
+#             # تحديث أو إنشاء الترجمات الجديدة
+#             for translation_data in translations_data:
+#                 language = translation_data.get('language')
+#                 if language:
+#                     PageContent.objects.update_or_create(
+#                         page=instance,
+#                         language=language,
+#                         defaults=translation_data
+#                     )
+        
+#         # إعادة تحميل الترجمات المحدثة
+#         instance.refresh_from_db()
+#         return instance
+
 class PageContentSerializer(serializers.ModelSerializer):
     class Meta:
         model = PageContent
         fields = [
-            'language', 'title', 'content',
+            'language', 'title','content',
             'seo_title', 'meta_description', 'meta_keywords'
         ]
 
 class PageSerializer(serializers.ModelSerializer):
     translations = PageContentSerializer(many=True)
     author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    
     class Meta:
         model = Page
         fields = [
-            'id', 'default_language', 'is_published', 'slug',
-            'created_at', 'updated_at', 'translations', 'author',
-            'is_active', 'is_deleted'
+            'id','default_language', 'is_published','slug','is_deleted','is_active',
+             'created_at', 'updated_at', 'translations','author'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at', 'slug']
-
+    
     def create(self, validated_data):
-        print("Incoming validated_data 1:", validated_data)
-        translations_data = validated_data.pop('translations', [])
+        translations_data = validated_data.pop('translations')
         page = Page.objects.create(**validated_data)
+        
         for translation_data in translations_data:
             PageContent.objects.create(page=page, **translation_data)
+        
         return page
+    
+    # def update(self, instance, validated_data):
+    #     translations_data = validated_data.pop('translations', [])
+        
+    #     # Update page fields
+    #     for attr, value in validated_data.items():
+    #         setattr(instance, attr, value)
+    #     instance.save()
+        
+    #     # Update translations
+    #     for translation_data in translations_data:
+    #         language = translation_data.get('language')
+    #         translation, created = PageContent.objects.get_or_create(
+    #             page=instance,
+    #             language=language,
+    #             defaults=translation_data
+    #         )
+    #         if not created:
+    #             for attr, value in translation_data.items():
+    #                 setattr(translation, attr, value)
+    #             translation.save()
+        
+    #     return instance
 
     def update(self, instance, validated_data):
         print("Incoming validated_data2:", validated_data)

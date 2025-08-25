@@ -308,18 +308,18 @@ class PageViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
-    def perform_create(self, serializer):
-        print("Incoming data1:", self.request.data)
-        serializer.save(author=self.request.user)
+    # def perform_create(self, serializer):
+    #     print("Incoming data1:", self.request.data)
+    #     serializer.save(author=self.request.user)
 
-    def create(self, request, *args, **kwargs):
-        print("Incoming data 2:", request.data)
-        try:
-            return super().create(request, *args, **kwargs)
-        except Exception as e:
-            logger.error(f"Error processing request: {str(e)}")
-            logger.error(f"Request data: {request.data}")
-            raise
+    # def create(self, request, *args, **kwargs):
+    #     print("Incoming data 2:", request.data)
+    #     try:
+    #         return super().create(request, *args, **kwargs)
+    #     except Exception as e:
+    #         logger.error(f"Error processing request: {str(e)}")
+    #         logger.error(f"Request data: {request.data}")
+    #         raise
 
     def update(self, request, *args, **kwargs):
         print("Incoming data:", request.data)

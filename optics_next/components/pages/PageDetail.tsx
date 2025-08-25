@@ -155,7 +155,8 @@ type RenderButtonsProps = {
 
 export const RenderButtons = ({ data, alias }: RenderButtonsProps) => {
   const routing = useRouter();
-
+  // const fetchUser = createFetcher(form.retrieveAlias, setData);
+  // useEffect(() => { if (id) { fetchUser({ id: id }); } }, [id]);
   const editRequest = useFormRequest({ 
     alias: alias.editAlias,
     onSuccess: () => routing.refresh()
