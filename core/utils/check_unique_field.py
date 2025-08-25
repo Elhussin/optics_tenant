@@ -6,6 +6,6 @@ def check_unique_field(model, field_name, value, instance=None):
         queryset = queryset.exclude(pk=instance.pk)
     if queryset.filter(**{field_name: value}).exists():
         raise serializers.ValidationError(
-            f"A user with this {field_name} already exists."
+            f"A {model.__name__} with this {field_name} already exists."
         )
     return value

@@ -109,7 +109,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       </div>
       
       {/* Toolbar */}
-      <div className={`border-b border-gray-200 p-3 bg-gray-50 flex flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
+      <div className={`border-b border-gray-200 p-3 bg-surface flex flex-wrap gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
         {/* Text Formatting */}
         <button
           onClick={() => editor.chain().focus().toggleBold().run()}

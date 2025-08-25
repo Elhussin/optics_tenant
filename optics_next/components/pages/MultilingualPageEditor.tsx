@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
 import { CreatePageData, Language, PageTranslation, LANGUAGES } from '@/types/pages';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
-import { toast } from 'sonner';
+import { safeToast } from '@/lib/utils/toastService';
 import { Loading4 } from '../ui/loding';
 import { defaultPublicPages } from '@/constants/defaultPublicPages';
 
@@ -147,8 +147,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       });
       setActiveLanguage(page.default_language);
     } catch (error) {
-      console.error('Error loading page:', error);
-      toast.error('Error loading page');
+      safeToast('Error loading page',{type:"error"});
     } finally {
       setLoading(false);
     }
@@ -159,14 +158,14 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       setSaving(true);
       
       if (!formData) {
-        toast.error('Form data is not initialized');
+        safeToast('Form data is not initialized',{type:"error"});
         return;
       }
 
       // التحقق من وجود عنوان للغة الافتراضية
       const defaultTranslation = formData.translations.find(t => t.language === formData.default_language);
       if (!defaultTranslation?.title.trim()) {
-        toast.error(`Please provide a title for the default language (${LANGUAGES[formData.default_language].name})`);
+        safeToast(`Please provide a title for the default language (${LANGUAGES[formData.default_language].name})`, { type: "error" });
         return;
       }
 
@@ -182,7 +181,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
         result = await updateRequest.submitForm({ slug: pageId, formData: finalFormData });
         console.log('updateRequest result', result);
         if (result?.success) {
-          toast.success('Page updated successfully!');
+          safeToast('Page updated successfully!', { type: "success" });
           setFormData(result.data);
         } else {
           setFormErrors(updateRequest.errors || {});
@@ -190,15 +189,14 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       } else {
         result = await createRequest.submitForm(finalFormData);
         if (result?.success) {
-          toast.success('Page created successfully!');
+          safeToast('Page created successfully!', { type: "success" } );
 
         } else {
           setFormErrors(createRequest.errors || {});
         }
       }
     } catch (error) {
-      console.error('Error saving page:', error);
-      toast.error('Error saving page');
+      safeToast('Error saving page', { type: "error" });
     } finally {
       setSaving(false);
     }
@@ -217,7 +215,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg">
+      <div className="bg-surface rounded-lg shadow-lg">
         {/* Header with language tabs */}
         <div className="border-b border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
@@ -234,7 +232,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                 className="px-3 py-1 border border-gray-300 rounded-md text-sm"
               >
                 {Object.entries(LANGUAGES).map(([code, lang]) => (
-                  <option key={code} value={code}>
+                  <option className='bg-surface' key={code} value={code}>
                     {lang.flag} {lang.name}
                   </option>
                 ))}
@@ -440,5 +438,6 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     </div>
   );
 };
+
 
 export default MultilingualPageEditor;
