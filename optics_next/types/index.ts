@@ -101,7 +101,7 @@ export interface BaseButtonProps {
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close'| 'warning';
 
-export interface ButtonProps extends BaseButtonProps  {
+export interface ButtonProps  {
   label: string;
   variant?: ButtonVariant;
   icon?: React.ReactNode;
@@ -109,7 +109,8 @@ export interface ButtonProps extends BaseButtonProps  {
   type?: "button" | "submit" | "reset" 
   title?: string;
   disabled?: boolean;
-  onCrud?: () => void;
+  // onCrud?: () => void;
+  onCrud?: (e?: React.MouseEvent) => void ;
   navigateTo?: string;
 };
 

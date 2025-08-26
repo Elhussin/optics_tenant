@@ -16,7 +16,6 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
   const [currentLanguage, setCurrentLanguage] = useState<Language>(defaultLanguage);
   const currentTranslation = getCurrentTranslation(page, currentLanguage);
   const currentLangInfo = LANGUAGES[currentLanguage];
-  console.log("Current Language Info:", currentTranslation);
 
   // Get available languages for this page
   const availableLanguages = page.translations.filter(t => 

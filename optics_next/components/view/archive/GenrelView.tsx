@@ -5,6 +5,8 @@ import { isValidDate, formatDate, isImageUrl, handleDownloadPDF } from "@/lib/ut
 import { handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
 import { useCrudHandlers } from "@/lib/hooks/usePageActions";
 import { ViewCardProps } from "@/types";
+import { ActionButton } from "../../ui/buttons";
+import { RenderButtons } from "../../ui/buttons/RenderButtons";
 import {
   EditButton, DeleteButton, RestoreButton, HardDeleteButton,
   ActivateButton, DeactivateButton, BackButton, PDFButton, PrintButton, CopyButton

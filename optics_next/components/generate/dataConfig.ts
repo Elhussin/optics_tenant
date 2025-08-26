@@ -78,7 +78,7 @@ export const defaultConfig: GeneratorConfig = {
   
   };
 
-export const ignoredFields : string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_active', 'is_deleted', 'deleted_at' , 'branch_code'];
+export const ignoredFields : string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_active', 'is_deleted', 'deleted_at' , 'branch_code','logo','primary_color','secondary_color'];
 
 
 export const customConfig = {

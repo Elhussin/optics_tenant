@@ -20,8 +20,6 @@ export default function DynamicPage() {
 
     const fetchData = async () => {
       try {
-
-        // جلب الصفحة المحددة
         const result = await fetchPage.submitForm({slug:pageName });
         if (result?.success) {
           if (result.data.items.length === 0 || !result.data.items[0]) {

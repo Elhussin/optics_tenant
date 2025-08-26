@@ -62,9 +62,7 @@ class ContactUs(BaseModel):
 
 class TenantSettings(BaseModel):
     business_name = models.CharField(max_length=255 , default="Optics Tenant")
-    logo = models.ImageField(upload_to='logos/', null=True, blank=True, default='logo.png')
     description = models.TextField(blank=True, default="This is a default description for the tenant settings.")
-
     # Social Media
     facebook = models.URLField(blank=True, default='https://www.facebook.com')
     instagram = models.URLField(blank=True, default='https://www.instagram.com')
@@ -78,20 +76,22 @@ class TenantSettings(BaseModel):
     email = models.EmailField(blank=True, default='email@example.com')
     website = models.URLField(blank=True, default='https://www.example.com')
 
-    # UI Preferences
-    primary_color = models.CharField(max_length=7, blank=True, default='#0000FF')  # Default to blue
-    secondary_color = models.CharField(max_length=7, blank=True, default='#FFFFFF')  # Default to white
 
     # SEO Settings
     seo_title = models.CharField(max_length=255, blank=True, default='Default SEO Title')
     seo_description = models.TextField(blank=True, default='Default SEO Description')
     seo_keywords = models.CharField(max_length=255, blank=True, default='keyword1, keyword2')
 
+    # UI Preferences
+    # primary_color = models.CharField(max_length=7, blank=True, default='#0000FF')  # Default to blue
+    # secondary_color = models.CharField(max_length=7, blank=True, default='#FFFFFF')  # Default to white
+    # logo = models.ImageField(upload_to='logos/', null=True, blank=True, default='logo.png')
+    
     # Other Settings
-    timezone = models.CharField(max_length=50, blank=True, default='UTC')
-    currency = models.CharField(max_length=10, blank=True, default='USD')
-    date_format = models.CharField(max_length=20, blank=True, default='YYYY-MM-DD')
-    time_format = models.CharField(max_length=20, blank=True, default='24')
+    # timezone = models.CharField(max_length=50, blank=True, default='UTC')
+    # currency = models.CharField(max_length=10, blank=True, default='USD')
+    # date_format = models.CharField(max_length=20, blank=True, default='YYYY-MM-DD')
+    # time_format = models.CharField(max_length=20, blank=True, default='24')
 
     address = models.CharField(max_length=255, blank=True, default='123 Default St, Default City, Default Country')
     city = models.CharField(max_length=100, blank=True, default='Default City')

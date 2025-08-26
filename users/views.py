@@ -294,9 +294,8 @@ class ContactUsViewSet(viewsets.ModelViewSet):
 class TenantSettingsViewset(viewsets.ModelViewSet):
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
+    permission_classes = [IsAuthenticated]
 
-import logging
-logger = logging.getLogger(__name__)
 
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
@@ -308,18 +307,6 @@ class PageViewSet(viewsets.ModelViewSet):
             return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
-    # def perform_create(self, serializer):
-    #     print("Incoming data1:", self.request.data)
-    #     serializer.save(author=self.request.user)
-
-    # def create(self, request, *args, **kwargs):
-    #     print("Incoming data 2:", request.data)
-    #     try:
-    #         return super().create(request, *args, **kwargs)
-    #     except Exception as e:
-    #         logger.error(f"Error processing request: {str(e)}")
-    #         logger.error(f"Request data: {request.data}")
-    #         raise
 
     def update(self, request, *args, **kwargs):
         print("Incoming data:", request.data)
@@ -360,12 +347,6 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions only to the owner
         return obj.author == request.user
 
-
-class TenantPageViewSet(viewsets.ModelViewSet):
-    serializer_class = PageSerializer
-    permission_classes = [AllowAny]
-    queryset = Page.objects.all()
-    serializer_class = PageSerializer
 
     
 

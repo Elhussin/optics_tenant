@@ -5,7 +5,7 @@ import { FetchData } from '@/lib/api/api';
 import PricingPlans from '@/components/layout/paymant/PricingPlans';
 import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';
 import { useTranslations, useLocale } from 'next-intl';
-
+import Link from 'next/link';
 export default function Profile() {
     const { user } = useUser();
     const [clientData, setClientData] = useState<any>(null);
@@ -59,6 +59,12 @@ export default function Profile() {
             <p><strong>{t('username')}:</strong> {user?.username}</p>
             <p><strong>{t('email')}:</strong> {user?.email}</p>
             <p><strong>{t('role')}:</strong> {user?.role.name}</p>
+            {user?.role.name.toLowerCase() === 'owner' && (
+              <>
+              <Link href={`/dashboard/tenant_settings?action=viewAll`} className="text-blue-600 hover:underline"> Setting</Link>
+              <p><strong>Client ID:</strong> {user?.client}</p>
+              </>
+            )}
           </div>
         </section>
 

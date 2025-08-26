@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Language, LANGUAGES } from '@/types/pages';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { Loading4 } from '@/components/ui/loding';
+import { NotFoundPage } from '@/components/NotFound';
 
 export default  function MultilingualPublicPage() {
   const params = useParams();
@@ -24,6 +25,8 @@ export default  function MultilingualPublicPage() {
           setPageData(result.data);
         } else {
           setError('Page not found');
+
+         
         }
       } catch (err) {
         setError('Error loading page');
@@ -36,7 +39,12 @@ export default  function MultilingualPublicPage() {
 
   if (loading) return <Loading4/>;
   if (error) {
-    return <div>{error}</div>;
+    return (
+      <>
+
+      <NotFoundPage error={error} />;
+      </>
+    )
   }
   
   return <MultilingualPageDisplay page={pageData} defaultLanguage={locale as Language} />;

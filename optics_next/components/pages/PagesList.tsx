@@ -52,6 +52,7 @@ export const PagesList = () => {
                 <div className="flex gap-2 mt-4">
                   <ActionButton label="Edit " icon={<Pencil size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.slug}/`} />
                   <ActionButton label="View " icon={<Eye size={16} />} variant="link" navigateTo={`/dashboard/pages?view=${p.slug}`} />
+               
                 </div>
               </CardContent>
             </Card>

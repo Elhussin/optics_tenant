@@ -1,14 +1,11 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
-from slugify import slugify
-# from core.permissions.roles import Role
 from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
 from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
-from django.utils.text import slugify
+
 
 User = get_user_model()
 
@@ -198,7 +195,8 @@ class ContactUsSerializer(serializers.ModelSerializer):
         fields = ['email', 'phone', 'name', 'message']
 
 class TenantSettingsSerializer(serializers.ModelSerializer):
+    logo = serializers.ImageField(required=False, allow_null=True)
     class Meta:
         model = TenantSettings 
-        
+
         fields = '__all__'

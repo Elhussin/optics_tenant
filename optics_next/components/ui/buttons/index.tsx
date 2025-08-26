@@ -66,10 +66,7 @@ export function ActionButton({
   disabled,
   onCrud,      // دالة CRUD
   navigateTo,  // path للـ navigation
-}: ButtonProps & {
-  onCrud?: () => void;
-  navigateTo?: string;
-}) {
+}: ButtonProps ) {
   const router = useRouter();
   const handleClick = async () => {
     if (onCrud) await onCrud();

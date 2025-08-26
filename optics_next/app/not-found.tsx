@@ -1,3 +1,13 @@
+
+// 'use client';
+// import {NotFoundPage} from "@/components/NotFound";
+// export default function NotFound(){
+//   return(
+//     <NotFoundPage/>
+//   )
+// }
+
+
 import { getTranslations, getLocale } from 'next-intl/server';
 // import {Link} from '@/app/i18n/navigation'
 import Link from 'next/link';

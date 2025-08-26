@@ -9,7 +9,7 @@ import { SearchFilterForm } from "@/components/Search/SearchFilterForm";
 import { CreateButton, EditButton, ViewButton } from "@/components/ui/buttons/Button";
 import { formsConfig } from "@/config/formsConfig";
 import { BackButton } from "@/components/ui/buttons/Button";
-
+import { ActionButton } from "@/components/ui/buttons";
 export default function ViewCard({ entity }: { entity: string }) {
   const router = useRouter();
   const form = formsConfig[entity];
@@ -27,7 +27,6 @@ export default function ViewCard({ entity }: { entity: string }) {
   return (
     <>
       <SearchFilterForm fields={SearchFields} />
-
       <div className="head">
         <h2 className="title-1">{form.title}</h2>
         <CreateButton onClick={() => goTo({ action: "create" })} label={form.createTitle} />

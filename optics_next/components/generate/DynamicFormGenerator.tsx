@@ -47,16 +47,6 @@ import { formsConfig } from '@/config/formsConfig';
  */
 
 export default function DynamicFormGenerator(props: DynamicFormProps) {
-  // const { title, schemaName, onSuccess, className = "", 
-  //     submitText, showCancelButton = true,
-  //    mode = 'create', config: userConfig = {}, alias, id, 
-  //   showResetButton=true, showBackButton=true,
-  //     successMessage,
-  //     errorMessage,
-  //     fetchAlias,
-  //   } = props;
-
-
 
       const {entity,id,mode='create'}=props
     if(!entity || mode==='edit' && !id){

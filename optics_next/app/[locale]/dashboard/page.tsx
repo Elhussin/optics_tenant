@@ -19,6 +19,8 @@ export default function DashboardLinks() {
 
     // user
     { href: "/dashboard/user?action=viewAll", label: "Users" },
+    { href: "/dashboard/tenant_settings?action=viewAll", label: "Tenant Setting" },
+
 
     // subscription
     { href: "/dashboard/subscription?action=viewAll", label: "Subscription Plans" },

@@ -347,5 +347,32 @@ export const formsConfig: Record<string, FormConfig> = {
     showBackButton:true,
     className:"",
     userConfig:{}
+  },
+  tenant_settings:{
+    schemaName: 'TenantSettingsRequest',
+    listAlias: 'users_tenant_settings_list',
+    createAlias: 'users_tenant_settings_create',
+    retrieveAlias: 'users_tenant_settings_retrieve',
+    updateAlias: 'users_tenant_settings_partial_update',
+    hardDeleteAlias: 'users_tenant_settings_destroy',
+    createSuccessMessage: 'Tenant Settings created successfully',
+    createErrorMessage: 'Failed to create tenant settings',
+    updateSuccessMessage: 'Tenant Settings updated successfully',
+    updateErrorMessage: 'Failed to update tenant settings',
+    title: 'Tenant Settings',
+    detailsTitle: 'Tenant Settings Details',
+    createTitle: 'Add Tenant Settings',
+    updateTitle: 'Update Tenant Settings',
+    fields:["business_name","phone","email"],
+    DetailsField:{
+      business_name: "Settings Key",
+      phone: "Settings Value",
+      is_active: "Settings Is Active",
+      is_deleted: "Settings Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{}
   }
 };
