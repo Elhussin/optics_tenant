@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import { ConfirmDialog } from '@/components/ui/dialogs/ConfirmDialog';
 import { useRouter } from "@/app/i18n/navigation";
-import { X, Trash2, Pencil, ArrowLeft, Eye, Check,TimerReset,
-   Plus, Copy, Printer, FileText } from "lucide-react";
+import { X, Trash2, Pencil, ArrowLeft, Check,TimerReset } from "lucide-react";
+import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 
 import { PageData } from "@/types/pages";
 import {ActionButton } from "@/components/ui/buttons";
@@ -58,27 +58,31 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath,id }: RenderB
   });
 
   const handleHardDelete = () =>
-    deleteRequest.submitForm({ slug: data.slug });
+    deleteRequest.submitForm({ id: data.id });
 
   const handleDelete = () =>
-    editRequest.submitForm({ slug: data.slug, is_deleted: true, is_active: false,   ...("is_published" in data ? { is_published: false } : {}) });
+    editRequest.submitForm({ id: data.id, is_deleted: true, is_active: false,   ...("is_published" in data ? { is_published: false } : {}) });
 
   const handleRestore = () =>
-    editRequest.submitForm({ 
-      slug: data.slug, 
-      is_deleted: false, 
-      is_active: true, 
-        ...("is_published" in data ? { is_published: true } : {})
+    editRequest.submitForm({ id: data.id,
+      is_deleted: false,
+      is_active: true,
+      ...("is_published" in data ? { is_published: true } : {})
     });
 
   const handleActivate = () =>
-    editRequest.submitForm({ slug: data.slug, is_active: true,  ...("is_published" in data ? { is_published: true } : {}) });
+    editRequest.submitForm({ id: data.id, is_active: true,  ...("is_published" in data ? { is_published: true } : {}) });
 
   const handleDeactivate = () =>
-    editRequest.submitForm({ slug: data.slug, is_active: false, ...("is_published" in data ? { is_published: false } : {}) });
+    editRequest.submitForm({ id: data.id, is_active: false, ...("is_published" in data ? { is_published: false } : {}) });
 
+
+    const { confirmHardDelete, ConfirmDialogComponent } = useHardDeleteWithDialog({
+      alias: alias.deleteAlias!,
+    });
+{/* <HardDeleteButton onClick={() => confirmHardDelete(item.id)} /> */}
     const deleteButton = <ActionButton label="Delete" icon={<Trash2 size={16} />} variant="danger" title="Delete Item" onCrud={handleDelete} />;
-    const hardDeleteButton = <ActionButton label="Delete Permanently" icon={<Trash2 size={16} />} variant="danger" title="Delete Permanently" onCrud={handleHardDelete} />;
+    const hardDeleteButton = <ActionButton label="Delete Permanently" icon={<Trash2 size={16} />} variant="danger" title="Delete Permanently"  onClick={() => confirmHardDelete(id)} />;
     const editButton = <ActionButton label="Edit" icon={<Pencil size={16} />} variant="info" title="Edit Item" navigateTo={`${navigatePath}${id}/`} />;
     const activateButton = <ActionButton label="Activate" icon={<Check size={16} />} variant="success" title="Activate Item" onCrud={handleActivate} />;
     const deactivateButton = <ActionButton label="Deactivate" icon={<X size={16} />} variant="warning" title="Deactivate Item" onCrud={handleDeactivate} />;
@@ -108,7 +112,7 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath,id }: RenderB
           {deleteButton}
         </>
       )}
-
+            {ConfirmDialogComponent}
       {backButton}
     </div>
   );

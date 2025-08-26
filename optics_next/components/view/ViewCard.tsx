@@ -6,10 +6,9 @@ import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { formatLabel } from "@/lib/utils/cardViewHelper";
 import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFields";
 import { SearchFilterForm } from "@/components/Search/SearchFilterForm";
-import { CreateButton, EditButton, ViewButton } from "@/components/ui/buttons/Button";
 import { formsConfig } from "@/config/formsConfig";
-import { BackButton } from "@/components/ui/buttons/Button";
 import { ActionButton } from "@/components/ui/buttons";
+import {ArrowLeft, Eye, Pencil, Plus} from "lucide-react";
 export default function ViewCard({ entity }: { entity: string }) {
   const router = useRouter();
   const form = formsConfig[entity];
@@ -29,8 +28,10 @@ export default function ViewCard({ entity }: { entity: string }) {
       <SearchFilterForm fields={SearchFields} />
       <div className="head">
         <h2 className="title-1">{form.title}</h2>
-        <CreateButton onClick={() => goTo({ action: "create" })} label={form.createTitle} />
-           <BackButton />
+        <div className="flex justify-end gap-2">
+          <ActionButton label="Back" icon={<ArrowLeft size={16} />} variant="info" navigateTo={`/dashboard/`} />
+          <ActionButton variant="info" icon={<Plus size={16} />} onClick={() => goTo({ action: "create" })} label={form.createTitle} title={form.createTitle} />
+        </div>
       </div>
 
       <div className="card-continear">
@@ -42,8 +43,8 @@ export default function ViewCard({ entity }: { entity: string }) {
               </p>
             ))}
             <div className="btn-card">
-              <EditButton onClick={() => goTo({ id: item.id, action: "edit" })} label={form.updateTitle} />
-              <ViewButton onClick={() => goTo({ id: item.id, action: "view" })} label={`View ${form.title}`} />
+              <ActionButton onClick={() => goTo({ id: item.id, action: "view" })} icon={<Eye size={16}/>} label={`View ${form.title}`}  />
+              <ActionButton onClick={() => goTo({ id: item.id, action: "edit" })} icon={<Pencil size={16} />} label={`${form.updateTitle}`}  />
             </div>
           </div>
         ))}

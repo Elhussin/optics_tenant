@@ -31,9 +31,7 @@ export default function AllPages() {
 
             {publicPages.map((page) => (
               <div className="card btn" key={page}>
-
-                <ActionButton key={page} label={` Add ${page.charAt(0).toUpperCase() + page.slice(1)} Page `} icon={<Plus size={16} />} variant="outline" title={`Create a new ${page.charAt(0).toUpperCase() + page.slice(1)} Page`} navigateTo={`/dashboard/pages/create?add=${page}`} />
-
+                <ActionButton key={page} label={` Add ${page.charAt(0).toUpperCase() + page.slice(1)} Page `} icon={<Plus size={16} />} variant="outline" title={`Create a new ${page.charAt(0).toUpperCase() + page.slice(1)} Page`} navigateTo={`/dashboard/pages/create?default=${page}`} />
               </div>
             ))}
           </div>

@@ -11,7 +11,7 @@ export default  function MultilingualPublicPage() {
   const params = useParams();
   const locale = params?.locale as string;
   const slug = params?.slug as string;
-  const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
+  const pageRequest = useFormRequest({ alias: `users_public_pages_retrieve` });
   const [pageData, setPageData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

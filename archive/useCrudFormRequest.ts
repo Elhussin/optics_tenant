@@ -42,12 +42,3 @@ export function useCrudFormRequest({
 }
 
 
-export function createFetcher(alias: string, onSuccess?: (res: any) => void, onError?: (err: any) => void) {
-  return useFormRequest({
-    alias,
-    onSuccess,
-    onError: (err: any) => {
-      onError?.(err);
-    },
-  }).submitForm;
-}

@@ -2,17 +2,20 @@
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 import { isValidDate, formatDate, isImageUrl, handleDownloadPDF, handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
-import { usePageActions } from "@/lib/hooks/usePageActions";
+// import { usePageActions } from "@/lib/hooks/usePageActions";
 import { ViewCardProps } from "@/types";
-import {
-  EditButton, DeleteButton, RestoreButton, HardDeleteButton,
-  ActivateButton, DeactivateButton, BackButton, PDFButton, PrintButton, CopyButton
-} from "@/components/ui/buttons/Button";
+import { RenderButtons } from "../ui/buttons/RenderButtons";
+// import {
+//   EditButton, DeleteButton, RestoreButton, HardDeleteButton,
+//   ActivateButton, DeactivateButton, BackButton, PDFButton, PrintButton, CopyButton
+// } from "@/components/ui/buttons/Button";
 import { Loading4 } from "@/components/ui/loding";
-import { createFetcher } from "@/lib/hooks/useCrudFormRequest";
+import { fetchData } from "@/lib/hooks/useCrudActions";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { formsConfig } from "@/config/formsConfig";
+import { ActionButton } from "../ui/buttons";
 
+import { Copy, Printer, FileText } from "lucide-react";
 export default function ViewDetailsCard(props: ViewCardProps) {
   const { entity, id } = props;
   const [data, setData] = useState<any | null>(null);
@@ -22,44 +25,11 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const form = formsConfig[entity];
   if (!form) return <div>Invalid entity</div>;
 
-  const fetchUser = createFetcher(form.retrieveAlias, setData);
-  useEffect(() => { if (id) { fetchUser({ id: id }); } }, [id]);
+  const getData = fetchData(form.retrieveAlias, setData);
+  useEffect(() => { if (id) { getData({ id: id }); } }, [id]);
 
-  const printRef = useRef<HTMLElement>(null);
-
-  const { handleEdit, handleSoftDelete, handleRestore, handleActivate, handleDeactivate } = usePageActions(entity, {
-    softDeleteAlias: form.updateAlias,
-    restoreAlias: form.updateAlias,
-    onSuccessRefresh: () => fetchUser({ id }),
-  });
-
-  const { confirmHardDelete, ConfirmDialogComponent } = useHardDeleteWithDialog({
-    alias: form.hardDeleteAlias!,
-    onSuccess: () => fetchUser({ id })
-  });
-
-  const renderButtons = (item: any) => (
-    <>
-      {item.is_deleted ? (
-        <>
-          <RestoreButton onClick={() => handleRestore(item.id)} />
-          <HardDeleteButton onClick={() => confirmHardDelete(item.id)} />
-        </>
-      ) : (
-        <>
-          <EditButton onClick={() => handleEdit(item.id )} />
-          
-          <DeleteButton onClick={() => handleSoftDelete(item.id)} />
-        </>
-      )}
-      {item.is_active ? !item.is_deleted && (
-        <DeactivateButton onClick={() => handleDeactivate(item.id)} />
-      ) : !item.is_deleted && (
-        <ActivateButton onClick={() => handleActivate(item.id)} />
-      )}
-    </>
-  );
-
+  // const printRef = useRef<HTMLElement>(null!) as React.RefObject<HTMLElement>;
+  const printRef = useRef<HTMLDivElement>(null);
   if (!data) return <Loading4 />;
 
   return (
@@ -105,14 +75,18 @@ export default function ViewDetailsCard(props: ViewCardProps) {
             </p>
           </div>
 
-          <div className="btn-card">
-            {renderButtons(data)}
-            {ConfirmDialogComponent}
-            <CopyButton onClick={() => handleCopy(data, form.DetailsField)} />
-          {/* <PrintButton onClick={() => handlePrint()} /> */}
-          <PrintButton onClick={() => handlePrint(printRef )} />
-          <PDFButton onClick={() => handleDownloadPDF(printRef, `${form.title}-${data.id}`)} />
-          <BackButton />
+          <div className="btn-card flex flex-col gap-2">
+            {/* data, alias, refetch, navigatePath,id */}
+              {/* const aliases = { deleteAlias:'users_pages_destroy', editAlias:'users_pages_partial_update' }; */}
+              <div>
+            <RenderButtons data={data} alias={{ editAlias: form.updateAlias, deleteAlias: form.hardDeleteAlias }} navigatePath={`/dashboard/${entity}?action=viewAll`} id={data.id} refetch={getData} />
+         </div>
+           <div className="flex gap-2">
+           
+            <ActionButton variant="info" label="Copy" title="Copy Details" icon={<Copy size={16} />} onClick={() => handleCopy(data, form.DetailsField)} />
+            <ActionButton variant="info" label="Print" title="Print Details" icon={<Printer size={16} />} onClick={() => handlePrint(printRef as React.RefObject<HTMLDivElement>)} />
+            <ActionButton variant="info" label="PDF" title="Download PDF" icon={<FileText size={16} />} onClick={() => handleDownloadPDF(printRef, `${form.title}-${data.id}`)} />
+          </div>
           </div>
         </div>
       </div>

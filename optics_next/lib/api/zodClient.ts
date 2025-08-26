@@ -8264,21 +8264,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_retrieve",
     requestFormat: "json",
     parameters: [
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "put",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_update",
     requestFormat: "json",
     parameters: [
@@ -8288,16 +8288,16 @@ export const endpoints = makeApi([
         schema: PageRequest,
       },
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "patch",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_partial_update",
     requestFormat: "json",
     parameters: [
@@ -8307,23 +8307,23 @@ export const endpoints = makeApi([
         schema: PatchedPageRequest,
       },
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Page,
   },
   {
     method: "delete",
-    path: "/api/users/pages/:slug/",
+    path: "/api/users/pages/:id/",
     alias: "users_pages_destroy",
     requestFormat: "json",
     parameters: [
       {
-        name: "slug",
+        name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: z.void(),
@@ -8456,6 +8456,29 @@ export const endpoints = makeApi([
         schema: z.object({ error: z.string() }).passthrough(),
       },
     ],
+  },
+  {
+    method: "get",
+    path: "/api/users/public/pages/",
+    alias: "users_public_pages_list",
+    description: `API عامة للقراءة فقط بالـ slug`,
+    requestFormat: "json",
+    response: z.array(Page),
+  },
+  {
+    method: "get",
+    path: "/api/users/public/pages/:slug/",
+    alias: "users_public_pages_retrieve",
+    description: `API عامة للقراءة فقط بالـ slug`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
   },
   {
     method: "post",

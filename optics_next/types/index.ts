@@ -101,22 +101,19 @@ export interface BaseButtonProps {
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close'| 'warning';
 
-export interface ButtonProps  {
+
+export interface ButtonProps {
   label: string;
   variant?: ButtonVariant;
   icon?: React.ReactNode;
   className?: string;
-  type?: "button" | "submit" | "reset" 
+  type?: "button" | "submit" | "reset";
   title?: string;
   disabled?: boolean;
-  // onCrud?: () => void;
-  onCrud?: (e?: React.MouseEvent) => void ;
+  onCrud?: (e?: React.SyntheticEvent) => void | Promise<void>; // يقبل أي event
   navigateTo?: string;
-};
-
-
-
-
+  onClick?: (e?: React.SyntheticEvent) => void | Promise<void>; // يقبل أي event
+}
 // use in payment page
 export interface PayPalButtonProps {
   clientId?: string;

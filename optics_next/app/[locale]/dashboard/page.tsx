@@ -1,8 +1,4 @@
-// 'use client';
-// import { useRouter } from '@/app/i18n/navigation';
-
-import {Link} from "@/app/i18n/navigation";
-
+import { ActionButton } from "@/components/ui/buttons";
 export default function DashboardLinks() {
   const links = [
     // Produact
@@ -49,11 +45,12 @@ export default function DashboardLinks() {
   ];
 
   return (
-    <div className="flex flex-wrap gap-2">
+
+    <div className="flex flex-wrap gap-2 p-4 ">
       {links.map(({ href, label }) => (
-        <Link key={href} href={href} className="btn">
-          {label}
-        </Link>
+        <div className="flex flex-wrap gap-2 p-4 card" key={href}>
+          <ActionButton  label={label} navigateTo={href} variant="outline" />
+        </div>
       ))}
     </div>
   );

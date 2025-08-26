@@ -22,6 +22,7 @@ export  function Button(props: ButtonProps) {
     reset: "btn-reset",
     cancel: "btn-cancel",
     close: "btn-close",
+    warning: "btn-warning",
 
   };
 
@@ -31,11 +32,7 @@ export  function Button(props: ButtonProps) {
       type={type}
       title={title}
       disabled={disabled}
-      className={cn(
-        "btn cursor-pointer",
-        variantClasses[variant],
-        className
-      )}
+      className={cn("btn cursor-pointer", variantClasses[variant], className)}
     >
       {icon}
       {label}

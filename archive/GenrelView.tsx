@@ -12,7 +12,7 @@ import {
   ActivateButton, DeactivateButton, BackButton, PDFButton, PrintButton, CopyButton
 } from "@/components/ui/buttons/Button";
 import { Loading4 } from "@/components/ui/loding";
-import { createFetcher } from "@/lib/hooks/useCrudFormRequest";
+import { createFetcher } from "@/lib/hooks/useCrudActions";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { useEffect, useState } from "react";
 

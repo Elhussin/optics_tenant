@@ -62,24 +62,14 @@ export function useCrudActions(options?: CrudOptions) {
 
   return { submit };
 }
-// export function useCrudActions(options?: CrudOptions) {
-//   const { onSuccessRefresh } = options || {};
 
-//   const withFeedback = (successMsg: string, errorMsg: string, cb?: () => void) => ({
-//     onSuccess: () => {
-//       toast.success(successMsg);
-//       cb?.();
-//     },
-//     onError: () => {
-//       toast.error(errorMsg);
-//     },
-//   });
 
-//   const getRequest = (alias: string, success: string, error: string) =>
-//     useFormRequest({
-//       alias,
-//       ...withFeedback(success, error, onSuccessRefresh),
-//     });
-
-//   return { getRequest };
-// }
+export function fetchData(alias: string, onSuccess?: (res: any) => void, onError?: (err: any) => void) {
+  return useFormRequest({
+    alias,
+    onSuccess,
+    onError: (err: any) => {
+      onError?.(err);
+    },
+  }).submitForm;
+}

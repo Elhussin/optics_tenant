@@ -125,7 +125,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
   const loadPage = async () => {
     try {
       setLoading(true);
-      const res = await pageRequest.submitForm({ slug: pageId });
+      const res = await pageRequest.submitForm({ id: pageId });
       const page = res.data;
 
       // تأكد من وجود جميع اللغات المطلوبة
@@ -178,7 +178,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       let result;
       if (pageId) {
         console.log("Updating Page:", finalFormData);
-        result = await updateRequest.submitForm({ slug: pageId, formData: finalFormData });
+        result = await updateRequest.submitForm({ id: pageId, formData: finalFormData });
         console.log('updateRequest result', result);
         if (result?.success) {
           safeToast('Page updated successfully!', { type: "success" });

@@ -50,9 +50,9 @@ export const PagesList = () => {
                 <p><span className="font-medium">Status:</span> {p.is_published ? "Published" : "Draft"}</p>
                 <p><span className="font-medium">SEO Title:</span> {translation?.seo_title}</p>
                 <div className="flex gap-2 mt-4">
-                  <ActionButton label="Edit " icon={<Pencil size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.slug}/`} />
-                  <ActionButton label="View " icon={<Eye size={16} />} variant="link" navigateTo={`/dashboard/pages?view=${p.slug}`} />
-               
+                  <ActionButton label="Edit " icon={<Pencil size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.id}/`} />
+                  <ActionButton label="View " icon={<Eye size={16} />} variant="link" navigateTo={`/dashboard/pages?view=${p.id}`} />
+
                 </div>
               </CardContent>
             </Card>

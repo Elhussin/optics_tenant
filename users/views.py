@@ -274,7 +274,8 @@ class RoleViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.filter(is_deleted=False)
+    # is_deleted=False
+    queryset = User.objects.filter()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
@@ -296,15 +297,26 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
     serializer_class = TenantSettingsSerializer
     permission_classes = [IsAuthenticated]
 
+class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API عامة للقراءة فقط بالـ slug
+    """
+    queryset = Page.objects.filter(is_published=True, is_deleted=False)
+    serializer_class = PageSerializer
+    lookup_field = "slug"
+    permission_classes = [AllowAny]
+
+
+
 
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
-    lookup_field = 'slug'
+
 
     def get_permissions(self):
-        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-            return [AllowAny()]
+        # if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+        #     return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
 
