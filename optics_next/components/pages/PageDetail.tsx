@@ -13,7 +13,7 @@ import { PageData } from "@/types/pages";
 import {ActionButton } from "@/components/ui/buttons";
 import { safeToast } from '@/lib/utils/toastService';
 import { RenderButtons } from "@/components/ui/buttons/RenderButtons";
-export const PageDetail = ({ pageSlug }: { pageSlug: any }) => {
+export const PageDetail = ({ pageId }: { pageId: any }) => {
   const params = useParams();
   const locale = params?.locale as string;
   const [showDialog, setShowDialog] = useState(false);
@@ -23,13 +23,13 @@ export const PageDetail = ({ pageSlug }: { pageSlug: any }) => {
   const pageDetailRequest = useFormRequest({ alias: `users_pages_retrieve` });
 
   const aliases = { deleteAlias:'users_pages_destroy', editAlias:'users_pages_partial_update' };
-  if (!pageSlug) return <div>No Page Found</div>;
+  if (!pageId) return <div>No Page Found</div>;
 
   // 🔑 تعريف refetch
   const fetchPageDetail = async () => {
     setLoading(true);
     try {
-      const result = await pageDetailRequest.submitForm({ slug: pageSlug });
+      const result = await pageDetailRequest.submitForm({ id: pageId });
       if (result?.success) {
         setPageData(result.data);
       } else {
@@ -43,8 +43,8 @@ export const PageDetail = ({ pageSlug }: { pageSlug: any }) => {
   };
 
   useEffect(() => {
-    if (pageSlug) fetchPageDetail();
-  }, [pageSlug]);
+    if (pageId) fetchPageDetail();
+  }, [pageId]);
 
   const translation = pageData?.translations?.find((t: any) => t.language === locale) 
     || pageData?.translations?.find((t: any) => t.language === pageData.default_language);
@@ -75,17 +75,8 @@ export const PageDetail = ({ pageSlug }: { pageSlug: any }) => {
           dangerouslySetInnerHTML={{ __html: translation?.content ?? "" }} 
         />
 
-        {/* تمرير دالة refetch للأزرار */}
-        <RenderButtons data={pageData} alias={aliases} refetch={fetchPageDetail} navigatePath={`/dashboard/pages/`} id={pageData?.slug} />
+        <RenderButtons data={pageData} alias={aliases} refetch={fetchPageDetail} navigatePath={`/dashboard/pages/`}/>
       </CardContent>
-
-      <ConfirmDialog
-        open={showDialog}
-        title={"Do You Want Delete Page"}
-        message={"Are You Sure You Want To Delete This Page"}
-        onCancel={() => setShowDialog(false)}
-        onConfirm={handleConfirm}
-      />
     </Card>
   );
 };

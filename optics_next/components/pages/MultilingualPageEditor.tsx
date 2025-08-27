@@ -185,6 +185,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
           setFormData(result.data);
         } else {
           setFormErrors(updateRequest.errors || {});
+          safeToast('Error updating page', { type: "error" });
+
         }
       } else {
         result = await createRequest.submitForm(finalFormData);
@@ -193,6 +195,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
         } else {
           setFormErrors(createRequest.errors || {});
+          safeToast('Error creating page', { type: "error" });
         }
       }
     } catch (error) {
@@ -285,8 +288,9 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               placeholder="Page URL will be generated from title"
             />
-            {formErrors.slug && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.slug}</p>
+            {formErrors?.slug && (
+              <p className="text-red-500 text-sm mt-1">{formErrors.slug.message as string}</p>
+  
             )}
           </div>
         </div>
@@ -308,8 +312,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                   placeholder={`Enter page title in ${currentLangInfo.name}`}
                   dir={currentLangInfo.dir}
                 />
-                {formErrors.title && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
+                {formErrors?.title && (
+                  <p className="text-red-500 text-sm mt-1">{formErrors.title.message as string}</p>
                 )}
               </div>
             </div>
@@ -335,8 +339,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                   placeholder={`Start writing in ${currentLangInfo.name}...`}
                 />
               )}
-              {formErrors.content && (
-                <p className="text-red-500 text-sm mt-1">{formErrors.content}</p>
+              {formErrors?.content && (
+                <p className="text-red-500 text-sm mt-1">{formErrors.content.message as string}</p>
               )}
 
             </div>
@@ -358,8 +362,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                     placeholder="SEO optimized title"
                     dir={currentLangInfo.dir}
                   />
-                  {formErrors.seo_title && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.seo_title}</p>
+                  {formErrors?.seo_title && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.seo_title.message as string}</p>
                   )}
                 </div>
 
@@ -375,8 +379,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                     placeholder="Brief description for search engines"
                     dir={currentLangInfo.dir}
                   />
-                  {formErrors.meta_description && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.meta_description}</p>
+                  {formErrors?.meta_description && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.meta_description.message as string}</p>
                   )}
                 </div>
 
@@ -393,7 +397,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                     dir={currentLangInfo.dir}
                   />
                   {formErrors.meta_keywords && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.meta_keywords}</p>
+                    <p className="text-red-500 text-sm mt-1">{formErrors.meta_keywords.message as string}</p>
                   )}
                 </div>
               </div>
@@ -413,6 +417,9 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                   Publish this page
                 </label>
               </div>
+              {formErrors.root && (
+              <p className="error-text">{formErrors.root.message as string}</p>
+            )}
             </div>
 
             {/* Actions */}

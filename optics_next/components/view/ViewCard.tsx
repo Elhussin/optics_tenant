@@ -10,8 +10,10 @@ import { formsConfig } from "@/config/formsConfig";
 import { ActionButton } from "@/components/ui/buttons";
 import {ArrowLeft, Eye, Pencil, Plus} from "lucide-react";
 export default function ViewCard({ entity }: { entity: string }) {
+
   const router = useRouter();
   const form = formsConfig[entity];
+  console.log("form", form);
 
   if (!form) return <div>Invalid entity</div>;
 
@@ -30,7 +32,7 @@ export default function ViewCard({ entity }: { entity: string }) {
         <h2 className="title-1">{form.title}</h2>
         <div className="flex justify-end gap-2">
           <ActionButton label="Back" icon={<ArrowLeft size={16} />} variant="info" navigateTo={`/dashboard/`} />
-          <ActionButton variant="info" icon={<Plus size={16} />} onClick={() => goTo({ action: "create" })} label={form.createTitle} title={form.createTitle} />
+          <ActionButton variant="info" icon={<Plus size={16} />} navigateTo={`/dashboard/${entity}/create`} label={form.createTitle} title={form.createTitle} />
         </div>
       </div>
 
@@ -43,7 +45,7 @@ export default function ViewCard({ entity }: { entity: string }) {
               </p>
             ))}
             <div className="btn-card">
-              <ActionButton onClick={() => goTo({ id: item.id, action: "view" })} icon={<Eye size={16}/>} label={`View ${form.title}`}  />
+              <ActionButton navigateTo={`/dashboard/${entity}/${item.id}`} icon={<Eye size={16}/>} label={`View ${form.title}`}  />
               <ActionButton onClick={() => goTo({ id: item.id, action: "edit" })} icon={<Pencil size={16} />} label={`${form.updateTitle}`}  />
             </div>
           </div>

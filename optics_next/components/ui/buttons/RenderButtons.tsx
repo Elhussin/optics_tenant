@@ -1,14 +1,8 @@
 'use client';
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
-import { useEffect, useState } from "react";
-import { Loading4 } from "@/components/ui/loding";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useParams } from "next/navigation";
-import { ConfirmDialog } from '@/components/ui/dialogs/ConfirmDialog';
 import { useRouter } from "@/app/i18n/navigation";
 import { X, Trash2, Pencil, ArrowLeft, Check,TimerReset } from "lucide-react";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
-
 import { PageData } from "@/types/pages";
 import {ActionButton } from "@/components/ui/buttons";
 import { safeToast } from '@/lib/utils/toastService';
@@ -24,10 +18,9 @@ type RenderButtonsProps = {
   alias: Alias;
   refetch: () => void;   // ✅ إضافة refetch
   navigatePath:string;
-  id:string;
 };
 
-export const RenderButtons = ({ data, alias, refetch, navigatePath,id }: RenderButtonsProps) => {
+export const RenderButtons = ({ data, alias, refetch, navigatePath}: RenderButtonsProps) => {
   const routing = useRouter();
 
   const editRequest = useFormRequest({ 
@@ -40,25 +33,6 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath,id }: RenderB
       safeToast("Error Updating ",{type:"error"});
     }
   });
-
-  const deleteRequest = useFormRequest({ 
-    alias: alias.deleteAlias,
-    onSuccess: () =>{
-      safeToast("Deleted Successfully",{type:"success"}); 
-      routing.back();
-        if (window.history.length > 1) {
-          routing.back();
-        } else {
-          routing.push(navigatePath);
-        }
-    },
-    onError: () => {
-      safeToast("Error Deleting ",{type:"error"});
-    }
-  });
-
-  const handleHardDelete = () =>
-    deleteRequest.submitForm({ id: data.id });
 
   const handleDelete = () =>
     editRequest.submitForm({ id: data.id, is_deleted: true, is_active: false,   ...("is_published" in data ? { is_published: false } : {}) });
@@ -79,11 +53,12 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath,id }: RenderB
 
     const { confirmHardDelete, ConfirmDialogComponent } = useHardDeleteWithDialog({
       alias: alias.deleteAlias!,
+      redirectPath:navigatePath,
     });
 {/* <HardDeleteButton onClick={() => confirmHardDelete(item.id)} /> */}
     const deleteButton = <ActionButton label="Delete" icon={<Trash2 size={16} />} variant="danger" title="Delete Item" onCrud={handleDelete} />;
-    const hardDeleteButton = <ActionButton label="Delete Permanently" icon={<Trash2 size={16} />} variant="danger" title="Delete Permanently"  onClick={() => confirmHardDelete(id)} />;
-    const editButton = <ActionButton label="Edit" icon={<Pencil size={16} />} variant="info" title="Edit Item" navigateTo={`${navigatePath}${id}/`} />;
+    const hardDeleteButton = <ActionButton label="Delete Permanently" icon={<Trash2 size={16} />} variant="danger" title="Delete Permanently"  onClick={() => confirmHardDelete(data.id)} />;
+    const editButton = <ActionButton label="Edit" icon={<Pencil size={16} />} variant="info" title="Edit Item" navigateTo={`${navigatePath}edit?id=${data.id}`} />;
     const activateButton = <ActionButton label="Activate" icon={<Check size={16} />} variant="success" title="Activate Item" onCrud={handleActivate} />;
     const deactivateButton = <ActionButton label="Deactivate" icon={<X size={16} />} variant="warning" title="Deactivate Item" onCrud={handleDeactivate} />;
     const restoreButton = <ActionButton label="Restore" icon={<TimerReset size={16} />} variant="info" title="Restore Item" onCrud={handleRestore} />;

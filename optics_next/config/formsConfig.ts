@@ -374,5 +374,32 @@ export const formsConfig: Record<string, FormConfig> = {
     showBackButton:true,
     className:"",
     userConfig:{}
-  }
+  },
+  role:{
+    schemaName: 'RoleRequest',
+    listAlias: 'tenants_roles_list',
+    createAlias: 'tenants_roles_create',
+    retrieveAlias: 'tenants_roles_retrieve',
+    updateAlias: 'tenants_roles_partial_update',
+    hardDeleteAlias: 'tenants_roles_destroy',
+    createSuccessMessage: 'Role created successfully',
+    createErrorMessage: 'Failed to create role',
+    updateSuccessMessage: 'Role updated successfully',
+    updateErrorMessage: 'Failed to update role',
+    title: 'Role',
+    detailsTitle: 'Role Details',
+    createTitle: 'Add Role',
+    updateTitle: 'Update Role',
+    fields:["name","description"],
+    DetailsField:{
+      name: "Role Name",
+      description: "Role Description",
+      is_active: "Role Is Active",
+      is_deleted: "Role Is Deleted",
+    },
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{}
+  },
 };

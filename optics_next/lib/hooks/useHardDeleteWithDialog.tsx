@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { toast } from 'sonner';
+import {safeToast} from '@/lib/utils/toastService';
 import { useFormRequest } from './useFormRequest';
 import { useRouter } from 'next/navigation';
 import { ConfirmDialog } from '@/components/ui/dialogs/ConfirmDialog';
@@ -11,6 +11,7 @@ type UseHardDeleteWithDialogProps = {
   message?: string;
   title?: string;
   redirectAfter?: boolean;
+  redirectPath?: string;
 };
 
 export function useHardDeleteWithDialog({
@@ -19,19 +20,16 @@ export function useHardDeleteWithDialog({
   title = 'Confirm Deletion',
   message = 'Are you sure you want to permanently delete this item?',
   redirectAfter = true,
+  redirectPath = '/',
+
 }: UseHardDeleteWithDialogProps) {
   const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
   const hardDeleteRequest = useFormRequest({
     alias,
-    onSuccess: () => {
-      toast.success('Item permanently deleted');
-      onSuccess?.();
-      if (redirectAfter) router.back();
-    },
     onError: (err: any) => {
-      toast.error(err.response?.data?.detail);
+     safeToast(err.response?.data?.detail,{type:"error"});
     },
   });
 
@@ -41,12 +39,29 @@ export function useHardDeleteWithDialog({
     setShowDialog(true);
   };
 
-  const handleConfirm = () => {
+  const  handleConfirm = async () => {
     if (selectedId) {
-      hardDeleteRequest.submitForm({ id: selectedId });
+      const resualt = await hardDeleteRequest.submitForm({ id: selectedId });
+      if (!resualt?.success) {
+        safeToast("Failed to delete item",{type:"error"});
+
+      }
+      onSuccess?.();
+      safeToast("Item permanently deleted  Successfully",{type:"success"}); 
+              if (window.history.length > 1) {
+                // router.back();
+                      if (redirectAfter) router.back();
+              } else {
+                router.push(redirectPath);
+              }
+        
+
+    }
+
+
       setShowDialog(false);
     }
-  };
+  
 
   const ConfirmDialogComponent = (
     <>
