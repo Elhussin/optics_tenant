@@ -16,7 +16,6 @@ export default function ActivatePage() {
   const formRquest= useFormRequest({
     alias,
     onSuccess: async (res) => {
-      console.log(res);
       setStatus("success");
       setMessage(
         "Your account has been successfully activated. Login details and access link have been sent to your registered email."
@@ -38,7 +37,7 @@ export default function ActivatePage() {
     }
 
     formRquest.submitForm({ token });
-    }, []);
+    }, [token,formRquest]);
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">

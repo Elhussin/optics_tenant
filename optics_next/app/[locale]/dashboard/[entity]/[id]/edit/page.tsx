@@ -3,7 +3,7 @@
 import { formsConfig } from '@/config/formsConfig';
 import DynamicFormGenerator from '@/components/generate/DynamicFormGenerator';
 import { useParams } from 'next/navigation';
-
+import {NotFound} from '@/components/NotFound'
 export default function EntityEditPage() {
     const params = useParams();
    const entity = params.entity as string || '';
@@ -11,7 +11,7 @@ export default function EntityEditPage() {
 
  
   if (!(entity in formsConfig)) {
-    return <div>Invalid entity</div>;
+    return <NotFound error="Invalid entity" />;
   }
 
   return <DynamicFormGenerator entity={entity} id={id} mode="edit" />;

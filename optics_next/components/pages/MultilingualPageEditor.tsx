@@ -115,19 +115,45 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     }
   }, [pageId, defaultPage]);
 
-  // تحميل بيانات الصفحة إذا كان هناك pageId
-  useEffect(() => {
-    if (pageId) {
-      loadPage();
-    }
-  }, [pageId]);
+  // const loadPage = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const res = await pageRequest.submitForm({ id: pageId });
+  //     const page = res.data;
 
-  const loadPage = async () => {
+  //     // تأكد من وجود جميع اللغات المطلوبة
+  //     const translations = Object.entries(LANGUAGES).map(([code]) => {
+  //       const existing = page.translations.find((t: PageTranslation) => t.language === code);
+  //       return existing || {
+  //         language: code as Language,
+  //         title: '',
+  //         content: '',
+  //         seo_title: '',
+  //         meta_description: '',
+  //         meta_keywords: '',
+  //       };
+  //     });
+
+  //     setFormData({
+  //       ...page,
+  //       translations
+  //     });
+  //     setActiveLanguage(page.default_language);
+  //   } catch (error) {
+  //     safeToast('Error loading page',{type:"error"});
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  // const loadPage = useCallback(() => {
+  //   // منطق تحميل الصفحة هنا
+  // }, [/* أي dependencies بتحتاجها */]);
+  const loadPage = useCallback(async () => {
     try {
       setLoading(true);
       const res = await pageRequest.submitForm({ id: pageId });
       const page = res.data;
-
+  
       // تأكد من وجود جميع اللغات المطلوبة
       const translations = Object.entries(LANGUAGES).map(([code]) => {
         const existing = page.translations.find((t: PageTranslation) => t.language === code);
@@ -140,18 +166,28 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
           meta_keywords: '',
         };
       });
-
+  
       setFormData({
         ...page,
-        translations
+        translations,
       });
       setActiveLanguage(page.default_language);
     } catch (error) {
-      safeToast('Error loading page',{type:"error"});
+      safeToast('Error loading page', { type: "error" });
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageId, pageRequest]); // ← ضيف كل الديبندنسيز اللي بتستخدمها
+
+  
+  
+  useEffect(() => {
+    if (pageId) {
+      loadPage();
+    }
+  }, [pageId,loadPage]);
+
+
 
   const handleSave = async () => {
     try {
@@ -170,7 +206,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       }
 
       // توليد slug للصفحات الجديدة فقط
-      let finalFormData = { ...formData };
+      const finalFormData = { ...formData };
       if (!pageId && !finalFormData.slug.trim()) {
         finalFormData.slug = generateSlug(defaultTranslation.title);
       }

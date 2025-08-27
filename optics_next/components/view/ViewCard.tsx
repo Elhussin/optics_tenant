@@ -1,29 +1,21 @@
 
 
 "use client";
-import { useRouter } from "next/navigation";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { formatLabel } from "@/lib/utils/cardViewHelper";
 import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFields";
 import { SearchFilterForm } from "@/components/Search/SearchFilterForm";
 import { formsConfig } from "@/config/formsConfig";
 import { ActionButton } from "@/components/ui/buttons";
-import {ArrowLeft, Eye, Pencil, Plus} from "lucide-react";
+import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
+import { NotFound } from '@/components/NotFound';
 export default function ViewCard({ entity }: { entity: string }) {
-
-  const router = useRouter();
   const form = formsConfig[entity];
-  console.log("form", form);
-
-  if (!form) return <div>Invalid entity</div>;
 
   const data = useFilteredListRequest(form.listAlias);
   const SearchFields = generateSearchFieldsFromEndpoint(form.listAlias);
-
-  const goTo = (params: Record<string, string>) => {
-    const searchParams = new URLSearchParams(params);
-    router.push(`/dashboard/${entity}?${searchParams.toString()}`);
-  };
+  
+  if (!form) return <NotFound error="Invalid entity Detected" />;
 
   return (
     <>
@@ -45,8 +37,8 @@ export default function ViewCard({ entity }: { entity: string }) {
               </p>
             ))}
             <div className="btn-card">
-              <ActionButton navigateTo={`/dashboard/${entity}/${item.id}`} icon={<Eye size={16}/>} label={`View ${form.title}`}  />
-              <ActionButton onClick={() => goTo({ id: item.id, action: "edit" })} icon={<Pencil size={16} />} label={`${form.updateTitle}`}  />
+              <ActionButton navigateTo={`/dashboard/${entity}/${item.id}`} icon={<Eye size={16} />} label={`View ${form.title}`} />
+              <ActionButton navigateTo={`/dashboard/${entity}/${item.id}/edit`} icon={<Pencil size={16} />} label={`${form.updateTitle}`} />
             </div>
           </div>
         ))}

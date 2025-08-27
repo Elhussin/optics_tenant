@@ -35,41 +35,57 @@ type CrudOptions = {
  * @hint
  * Use this hook to centralize CRUD operations and feedback handling in your components.
  */
-export function useCrudActions(options?: CrudOptions) {
-  const { onSuccessRefresh } = options || {};
+// export function useCrudActions(options?: CrudOptions) {
+//   const { onSuccessRefresh } = options || {};
 
-  const withFeedback = (successMsg: string, errorMsg: string, cb?: () => void) => ({
-    onSuccess: () => {
-      toast.success(successMsg);
-      cb?.();
+//   const withFeedback = (successMsg: string, errorMsg: string, cb?: () => void) => ({
+//     onSuccess: () => {
+//       toast.success(successMsg);
+//       cb?.();
       
-    },
-    onError: () => {
-      toast.error(errorMsg);
-    },
-  });
+//     },
+//     onError: () => {
+//       toast.error(errorMsg);
+//     },
+//   });
 
-  const createRequest = (alias: string, success: string, error: string) =>
-    useFormRequest({
-      alias,
-      ...withFeedback(success, error, onSuccessRefresh),
-    });
+//   const createRequest = (alias: string, success: string, error: string) =>
+//     useFormRequest({
+//       alias,
+//       ...withFeedback(success, error, onSuccessRefresh),
+//     });
 
-  const submit = (alias: string, success: string, error: string, data: any) => {
-    const request = createRequest(alias, success, error);
-    request.submitForm(data);
-  };
+//   const submit = (alias: string, success: string, error: string, data: any) => {
+//     const request = createRequest(alias, success, error);
+//     request.submitForm(data);
+//   };
 
-  return { submit };
-}
+//   return { submit };
+// }
+//  function useCreateRequest() { const formRequest = useFormRequest(); return formRequest; }
+
+// export function fetchData(alias: string, onSuccess?: (res: any) => void, onError?: (err: any) => void) {
+  
+//   return useFormRequest({
+//     alias,
+//     onSuccess,
+//     onError: (err: any) => {
+//       onError?.(err);
+//     },
+//   }).submitForm;
+// }
 
 
-export function fetchData(alias: string, onSuccess?: (res: any) => void, onError?: (err: any) => void) {
-  return useFormRequest({
+export function useFetchData(alias: string, onSuccess?: (res: any) => void, onError?: (err: any) => void) {
+  const formRequest = useFormRequest({
     alias,
     onSuccess,
     onError: (err: any) => {
       onError?.(err);
     },
-  }).submitForm;
+  });
+
+  const submitForm = (data?: any) => formRequest.submitForm(data);
+
+  return { submitForm, reset: formRequest.reset, data: formRequest.data };
 }

@@ -30,7 +30,9 @@ export const PagesList = () => {
         };
         fetchPages();
       
-    }, []);
+    }, [pageRequest]);
+
+    
     if (loading) return <Loading4 />
     if (error) return <div className="text-red-500">{error}</div>;
     return (

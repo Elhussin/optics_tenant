@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
+import Image from 'next/image';
 
 export default function DynamicPage() {
   const [page, setPage] = useState<any>(null);
@@ -42,7 +43,7 @@ export default function DynamicPage() {
     };
 
     fetchData();
-  }, [pageName]);
+  }, [pageName,fetchPage,fetchPageDetiles]);
 
   if (!page) {
     return <div className="container mx-auto p-6">Page not found</div>;
@@ -66,7 +67,7 @@ function renderField(key: string, value: any) {
   if (value && typeof value === "object" && value.meta && value.meta.download_url) {
     return (
       <div className="my-4">
-        <img
+        <Image
           src={value.meta.download_url}
           alt={value.title || key}
           className="rounded-lg shadow-md max-w-full"

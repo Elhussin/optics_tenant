@@ -1,7 +1,5 @@
 "use client";
 import { useTranslations } from 'next-intl';
-import { PLAN_LIMITS } from '@/constants/plans';
-import PayPalButton from '@/components/layout/paymant/PayPalButton';
 import { Users, Store, Package, Check, Link as LinkIcon } from 'lucide-react';
 import {FetchData} from '@/lib/api/api';
 import { useEffect, useState } from 'react';
@@ -24,7 +22,7 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
           setPlans(data)
         })();
 
-    }, []);
+    }, [user]);
 
   return (
     <section className="py-20 bg-gray-50 dark:bg-gray-900" id="pricing">

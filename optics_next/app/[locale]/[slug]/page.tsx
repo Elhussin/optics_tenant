@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Language, LANGUAGES } from '@/types/pages';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { Loading4 } from '@/components/ui/loding';
-import { NotFoundPage } from '@/components/NotFound';
+import { NotFound} from '@/components/NotFound';
 
 export default  function MultilingualPublicPage() {
   const params = useParams();
@@ -35,14 +35,14 @@ export default  function MultilingualPublicPage() {
       }
     };
     fetchPage();
-  }, [slug]);
+  }, [slug,pageRequest]);
 
   if (loading) return <Loading4/>;
   if (error) {
     return (
       <>
 
-      <NotFoundPage error={error} />;
+      <NotFound error={error} />;
       </>
     )
   }

@@ -1,5 +1,5 @@
 
-interface FormConfig {
+export interface FormConfig {
   schemaName: string;
   createAlias: string;
   retrieveAlias: string;

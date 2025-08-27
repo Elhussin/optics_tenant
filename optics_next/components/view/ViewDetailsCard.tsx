@@ -2,34 +2,41 @@
 import Image from "next/image";
 import { useRef, useEffect, useState } from "react";
 import { isValidDate, formatDate, isImageUrl, handleDownloadPDF, handleCopy, handlePrint } from "@/lib/utils/cardViewHelper";
-// import { usePageActions } from "@/lib/hooks/usePageActions";
 import { ViewCardProps } from "@/types";
-import { RenderButtons } from "../ui/buttons/RenderButtons";
-// import {
-//   EditButton, DeleteButton, RestoreButton, HardDeleteButton,
-//   ActivateButton, DeactivateButton, BackButton, PDFButton, PrintButton, CopyButton
-// } from "@/components/ui/buttons/Button";
+import { RenderButtons } from "@/components/ui/buttons/RenderButtons";
 import { Loading4 } from "@/components/ui/loding";
-import { fetchData } from "@/lib/hooks/useCrudActions";
-import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
-import { formsConfig } from "@/config/formsConfig";
-import { ActionButton } from "../ui/buttons";
 
+import { formsConfig } from "@/config/formsConfig";
+import { ActionButton } from "@/components/ui/buttons";
+import { useCallback } from "react";
+import { NotFound } from "@/components/NotFound";
 import { Copy, Printer, FileText } from "lucide-react";
+import { useFetchData } from '@/lib/hooks/useCrudActions';
+
 export default function ViewDetailsCard(props: ViewCardProps) {
   const { entity, id } = props;
+  const form = entity ? formsConfig[entity] : null;
   const [data, setData] = useState<any | null>(null);
-
-  if (!entity || !id) return <div>Invalid entity or ID</div>;
-
-  const form = formsConfig[entity];
-  if (!form) return <div>Invalid entity</div>;
-
-  const getData = fetchData(form.retrieveAlias, setData);
-  useEffect(() => { if (id) { getData({ id: id }); } }, [id]);
-
-  // const printRef = useRef<HTMLElement>(null!) as React.RefObject<HTMLElement>;
   const printRef = useRef<HTMLDivElement>(null);
+
+  const { submitForm: getData } = useFetchData(
+    "users_pages_retrieve",
+    setData
+  );
+  
+  const refetch = useCallback(() => {
+    if (id == null) return;
+    getData({ id: id });
+  }, [getData, id]);
+  
+  useEffect(() => {
+    refetch();
+  }, [refetch]);
+  
+
+
+  if (!entity || !id) return <NotFound error="Invalid entity or ID" />;
+  if (!form) return <NotFound error="Invalid entity No config Detected" />;
   if (!data) return <Loading4 />;
 
   return (
@@ -76,10 +83,9 @@ export default function ViewDetailsCard(props: ViewCardProps) {
           </div>
 
           <div className="btn-card flex flex-col gap-2">
-            {/* data, alias, refetch, navigatePath,id */}
-              {/* const aliases = { deleteAlias:'users_pages_destroy', editAlias:'users_pages_partial_update' }; */}
+
               <div>
-            <RenderButtons data={data} alias={{ editAlias: form.updateAlias, deleteAlias: form.hardDeleteAlias }} navigatePath={`/dashboard/${entity}?action=viewAll`} id={data.id} refetch={getData} />
+            <RenderButtons data={data} alias={{ editAlias: form.updateAlias, deleteAlias: form.hardDeleteAlias }} navigatePath={`/dashboard/${entity}`} refetch={refetch} />
          </div>
            <div className="flex gap-2">
            

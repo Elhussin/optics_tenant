@@ -101,7 +101,7 @@ export function useForeignKeyData(fieldName: string, fieldType: string) {
       setLoading(true);
       fetchForeignKeyData.submitForm(); 
     }
-  }, [fieldName, fieldType]);
+  }, [fieldName, fieldType,fetchForeignKeyData]);
 
 
   return { data, loading };

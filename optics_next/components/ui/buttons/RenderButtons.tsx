@@ -1,7 +1,7 @@
 'use client';
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { useRouter } from "@/app/i18n/navigation";
-import { X, Trash2, Pencil, ArrowLeft, Check,TimerReset } from "lucide-react";
+import { X, Trash2, Pencil, ArrowLeft, Check,RotateCcw  } from "lucide-react";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { PageData } from "@/types/pages";
 import {ActionButton } from "@/components/ui/buttons";
@@ -21,7 +21,6 @@ type RenderButtonsProps = {
 };
 
 export const RenderButtons = ({ data, alias, refetch, navigatePath}: RenderButtonsProps) => {
-  const routing = useRouter();
 
   const editRequest = useFormRequest({ 
     alias: alias.editAlias,
@@ -58,29 +57,29 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath}: RenderButto
 {/* <HardDeleteButton onClick={() => confirmHardDelete(item.id)} /> */}
     const deleteButton = <ActionButton label="Delete" icon={<Trash2 size={16} />} variant="danger" title="Delete Item" onCrud={handleDelete} />;
     const hardDeleteButton = <ActionButton label="Delete Permanently" icon={<Trash2 size={16} />} variant="danger" title="Delete Permanently"  onClick={() => confirmHardDelete(data.id)} />;
-    const editButton = <ActionButton label="Edit" icon={<Pencil size={16} />} variant="info" title="Edit Item" navigateTo={`${navigatePath}edit?id=${data.id}`} />;
+    const editButton = <ActionButton label="Edit" icon={<Pencil size={16} />} variant="info" title="Edit Item" navigateTo={`${navigatePath}/${data?.id}/edit`} />;
     const activateButton = <ActionButton label="Activate" icon={<Check size={16} />} variant="success" title="Activate Item" onCrud={handleActivate} />;
     const deactivateButton = <ActionButton label="Deactivate" icon={<X size={16} />} variant="warning" title="Deactivate Item" onCrud={handleDeactivate} />;
-    const restoreButton = <ActionButton label="Restore" icon={<TimerReset size={16} />} variant="info" title="Restore Item" onCrud={handleRestore} />;
+    const restoreButton = <ActionButton label="Restore" icon={<RotateCcw  size={16} />} variant="info" title="Restore Item" onCrud={handleRestore} />;
     const backButton = <ActionButton label="Back" icon={<ArrowLeft size={16} />} variant="info" navigateTo={`${navigatePath}`} />;
 
   return (
     <div className="flex gap-2 mt-4">
-      {data.is_deleted && (
+      {data?.is_deleted && (
         <>
           {hardDeleteButton}
           {restoreButton}
         </>
       )}
 
-      {!data.is_deleted && !data.is_active && (
+      {!data?.is_deleted && !data?.is_active && (
         <>
           {deleteButton}
           {activateButton}
         </>
       )}
 
-      {data.is_active && !data.is_deleted && (
+      {data?.is_active && !data?.is_deleted && (
         <>
           {editButton}
           {deactivateButton}

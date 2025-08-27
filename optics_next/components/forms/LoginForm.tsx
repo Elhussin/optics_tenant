@@ -8,6 +8,7 @@ import { useSearchParams,useRouter,useParams } from 'next/navigation';
 import { safeToast } from "@/lib/utils/toastService";
 import { cn } from '@/lib/utils/cn';
 import { useEffect } from "react";
+import Image from 'next/image';
 export default function LoginForm(props: formRequestProps) {
   const {
     title,
@@ -161,7 +162,7 @@ export default function LoginForm(props: formRequestProps) {
         {/* الجانب الأيمن (صورة + رسالة ترحيب) */}
         <div className={cn("hidden md:flex items-center justify-center bg-info p-1")}>
           <div className="relative w-full h-[400px] text-white text-center flex items-center justify-center">
-            <img
+            <Image 
               src="/media/start.jpg"
               alt="Start APP"
               className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
