@@ -27,7 +27,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const refetch = useCallback(() => {
     if (id == null) return;
     getData({ id: id });
-  }, [getData, id]);
+  }, []);
   
   useEffect(() => {
     refetch();

@@ -35,8 +35,8 @@ export default  function MultilingualPublicPage() {
       }
     };
     fetchPage();
-  }, [slug,pageRequest]);
-
+  }, [slug]);
+// pageRequest
   if (loading) return <Loading4/>;
   if (error) {
     return (

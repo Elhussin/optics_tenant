@@ -118,8 +118,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
         slug: ''
       });
     }
-  }, [pageId, defaultPage]);
-
+  }, [pageId, ]);
+// defaultPage
   
   const loadPage = useCallback(async () => {
     try {

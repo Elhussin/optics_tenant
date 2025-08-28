@@ -4,7 +4,7 @@ import { Loading4 } from "@/components/ui/loding";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import {ActionButton } from "@/components/ui/buttons";
-import { Pencil, Eye,Plus } from "lucide-react";
+import { Pencil, Eye } from "lucide-react";
 export const PagesList = () => {
     const [pagesData, setPagesData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -12,6 +12,7 @@ export const PagesList = () => {
     const params = useParams();
     const locale = params?.locale as string;
     const pageRequest = useFormRequest({ alias: `users_pages_list` });
+    
     useEffect(() => {
   
         const fetchPages = async () => {
@@ -30,9 +31,9 @@ export const PagesList = () => {
         };
         fetchPages();
       
-    }, [pageRequest]);
+    }, []);
 
-    
+    // pageRequest
     if (loading) return <Loading4 />
     if (error) return <div className="text-red-500">{error}</div>;
     return (

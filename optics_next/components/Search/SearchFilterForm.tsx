@@ -3,10 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { SearchField } from '@/types/search';
 import { useState } from 'react';
-import {Button} from '@/components/ui/buttons/Button';
 import {ActionButton} from '@/components/ui/buttons';
-import { Search } from 'lucide-react';
-
 interface Props {
   fields: SearchField[];
   actionPath?: string; // يمكن تمرير مسار مخصص (افتراضي '')
@@ -17,6 +14,7 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [form, setForm] = useState<Record<string, string>>({});
+  const [resetKey, setResetKey] = useState<number>(0);
 
   const handleChange = (name: string, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -30,13 +28,17 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
     }
     router.push(`${actionPath}?${params.toString()}`);
   };
-  // const asideBase = "fixed top-0 left-0 h-screen bg-surface w-80 border-r border-gray-200 dark:border-gray-700 shadow-md z-40 transform transition-transform duration-700 ease-in-out";
+
+  const handleClear = () => {
+    setForm({});
+    setResetKey((k) => k + 1);
+    router.replace(actionPath + '?'); 
+  };
 
   return (
-
     <div>
-    <form className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {/* ame="grid grid-row gap-4 mb-6  mt-32 w-4/5 px-4 */}
+    <form key={resetKey} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4" onSubmit={handleSubmit}>
+
       {fields.map((field) => (
         <div key={field.name} className="flex items-center">
           <label className="block text-sm font-medium mr-2 capitalize w-24">{field.label}</label>
@@ -62,18 +64,24 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
           )}
         </div>
       ))}
+            <div className="flex flex-row ">
+      
+      <ActionButton
+    label="Search"
+    type="submit"
+    className="col-span-full bg-blue-600 text-white py-2 rounded"
+  />
+  <ActionButton
+    label="Clear"
+    type="button"
+    variant="secondary"
+    className="ml-2 col-span-full"
+    onClick={handleClear}
+  />
+
       <div>
-        
-      {/* <ActionButton label='Search' icon={<Lens size={16} />} onCrud={(e: React.FormEvent) => handleSubmit(e)} />
-       */}
 
-          {/* <ActionButton
-
-        label="Search"
-        type="submit"
-        className="col-span-full bg-blue-600 text-white py-2 rounded"
-        onClick={(e: React.FormEvent) => handleSubmit(e)}
-      /> */}
+      </div>
       </div>
 
     </form>

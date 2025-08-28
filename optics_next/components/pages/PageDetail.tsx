@@ -21,19 +21,6 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   const aliases = { deleteAlias: 'users_pages_destroy', editAlias: 'users_pages_partial_update' };
 
-  // const getData = useCallback(
-  //   fetchData('users_pages_retrieve', setPageData),
-  //   []
-  // );
-  // const refetch = useCallback(() => {
-
-  //   if (pageId == null) return;    
-  //   getData({  id:pageId });              
-  // }, [getData, pageId]);
-
-  // useEffect(() => {
-  //   refetch();
-  // }, [refetch]);
   const { submitForm: getData } = useFetchData(
     "users_pages_retrieve",
     setPageData
