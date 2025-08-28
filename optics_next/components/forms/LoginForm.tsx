@@ -39,28 +39,76 @@ export default function LoginForm(props: formRequestProps) {
     register,
   }: UseFormRequestReturn = useFormRequest({ alias });
 
-  const onSubmit = async (data: any) => {
-    try {
-      const result = await submitForm(data);
-      if (!result?.success) return;
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     const result = await submitForm(data);
+  //     if (!result?.success) return;
 
-      safeToast(message || t("successMessage"), { type: "success" });
+  //     safeToast(message || t("successMessage"), { type: "success" });
 
-      if (mode === "login") {
-        const userResult = await fetchUser.submitForm();
-        if (userResult?.success) {
-          setUser(userResult.data);
-          router.replace(redirect);
-        } else {
-          safeToast(t("errorMessage"), { type: "error" });
-        }
-      } else if (mode === "create") {
-        router.replace(`/${locale}/auth/login`);
+  //     if (mode === "login") {
+  //       const userResult = await fetchUser.submitForm();
+  //       if (userResult?.success) {
+  //         setUser(userResult.data);
+  //         router.replace(redirect);
+  //       } else {
+  //         safeToast(t("errorMessage"), { type: "error" });
+  //       }
+  //     } else if (mode === "create") {
+  //       router.replace(`/${locale}/auth/login`);
+  //     }
+  //   } catch (error) {
+  //     safeToast(t("errorMessage"), { type: "error" });
+  //   }
+  // };
+
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     const result = await submitForm(data);
+  //     if (!result?.success) return;
+  
+  //     safeToast(message || t("successMessage"), { type: "success" });
+  
+  //     if (mode === "login") {
+
+  //       console.log(result.data)
+  //       setUser(result.data);
+  //       router.replace(redirect);
+  
+  //     } else if (mode === "create") {
+  //       router.replace(`/${locale}/auth/login`);
+  //     }
+  //   } catch {
+  //     safeToast(t("errorMessage"), { type: "error" });
+  //   }
+  // };
+  
+const onSubmit = async (data: any) => {
+  try {
+    const result = await submitForm(data);
+    if (!result?.success) return;
+
+
+
+    if (mode === "login") {
+      const userResult = await fetchUser.submitForm();
+      if (userResult?.success) {
+        setUser(userResult.data); // الآن عندك بيانات كاملة
+        router.replace(redirect);
+      } else {
+        safeToast(t("errorMessage"), { type: "error" });
       }
-    } catch (error) {
-      safeToast(t("errorMessage"), { type: "error" });
+
+    } else if (mode === "create") {
+      router.replace(`/${locale}/auth/login`);
     }
-  };
+
+    safeToast(message || t("successMessage"), { type: "success" });
+  } catch {
+    safeToast(t("errorMessage"), { type: "error" });
+  }
+};
+
 
   useEffect(() => {
     if (user) {
@@ -166,6 +214,8 @@ export default function LoginForm(props: formRequestProps) {
               src="/media/start.jpg"
               alt="Start APP"
               className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
+              width={400}
+              height={400}
             />
             <div className="absolute bottom-3 z-10 space-y-4">
               <h2 className="text-3xl font-bold">{t("welcomeTitle")}</h2>

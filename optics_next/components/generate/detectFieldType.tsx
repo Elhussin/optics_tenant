@@ -62,7 +62,22 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
 }
 
 
-// استخراج خيارات Union
+// // استخراج خيارات Union
+// export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
+//   const options: string[] = [];
+
+//   schema._def.options.forEach((option: any) => {
+//     if (option instanceof z.ZodLiteral) {
+//       options.push(option.value);
+//     } else if (option instanceof z.ZodString) {
+//       // يمكن إضافة logic إضافي هنا للتعامل مع string enums
+//       options.push(option._def.value || 'string');
+//     }
+//   });
+
+//   return options;
+// }
+
 export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
   const options: string[] = [];
 
@@ -71,13 +86,12 @@ export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
       options.push(option.value);
     } else if (option instanceof z.ZodString) {
       // يمكن إضافة logic إضافي هنا للتعامل مع string enums
-      options.push(option._def.value || 'string');
+      options.push('string');
     }
   });
 
   return options;
 }
-
 
 export function useForeignKeyData(fieldName: string, fieldType: string) {
   const [data, setData] = useState<any[]>([]);
@@ -196,7 +210,14 @@ export function UnionField({
   errors
 }: any) {
   const unwrappedSchema = unwrapSchema(fieldSchema);
-  const options = getUnionOptions(unwrappedSchema);
+  // const options = getUnionOptions(unwrappedSchema);
+    const options =
+    unwrappedSchema instanceof z.ZodUnion
+      ? getUnionOptions(unwrappedSchema)
+      : [];
+
+
+
 
   return (
     <div className={config.spacing}>

@@ -38,7 +38,7 @@ export default  function ContactPage() {
 
         {/* Right Column: Contact Form */}
         <div>
-                <DynamicFormGenerator
+                {/* <DynamicFormGenerator
                   schemaName="ContactRequest"
                   alias="crm_contact_us_create"
                   onSuccess={() => toast.success(t("successMessage"))}
@@ -46,7 +46,7 @@ export default  function ContactPage() {
                   title={t("title")}
                   showResetButton={false}
                   showBackButton={false}
-                />
+                /> */}
           {/* <ContactForm /> */}
         </div>
       </div>

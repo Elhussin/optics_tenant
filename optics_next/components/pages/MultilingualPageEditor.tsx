@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
 import { CreatePageData, Language, PageTranslation, LANGUAGES } from '@/types/pages';
@@ -13,13 +13,18 @@ interface MultilingualPageEditorProps {
   pageId?: string;
   defaultPage?: string | null;
 }
+type FormError = {
+  message: string;
+};
 
 const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId, defaultPage }) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<Language>('en');
-  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+  const [formErrors, setFormErrors] = useState<{ [key: string]: FormError }>({});
+
   const [formData, setFormData] = useState<CreatePageData | null>(null);
   
   const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
@@ -115,39 +120,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     }
   }, [pageId, defaultPage]);
 
-  // const loadPage = async () => {
-  //   try {
-  //     setLoading(true);
-  //     const res = await pageRequest.submitForm({ id: pageId });
-  //     const page = res.data;
-
-  //     // تأكد من وجود جميع اللغات المطلوبة
-  //     const translations = Object.entries(LANGUAGES).map(([code]) => {
-  //       const existing = page.translations.find((t: PageTranslation) => t.language === code);
-  //       return existing || {
-  //         language: code as Language,
-  //         title: '',
-  //         content: '',
-  //         seo_title: '',
-  //         meta_description: '',
-  //         meta_keywords: '',
-  //       };
-  //     });
-
-  //     setFormData({
-  //       ...page,
-  //       translations
-  //     });
-  //     setActiveLanguage(page.default_language);
-  //   } catch (error) {
-  //     safeToast('Error loading page',{type:"error"});
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  // const loadPage = useCallback(() => {
-  //   // منطق تحميل الصفحة هنا
-  // }, [/* أي dependencies بتحتاجها */]);
+  
   const loadPage = useCallback(async () => {
     try {
       setLoading(true);
@@ -324,10 +297,12 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
               placeholder="Page URL will be generated from title"
             />
-            {formErrors?.slug && (
-              <p className="text-red-500 text-sm mt-1">{formErrors.slug.message as string}</p>
-  
-            )}
+              {formErrors?.slug?.message && (
+                <p className="text-red-500 text-sm mt-1">
+                  {formErrors.slug.message}
+                </p>
+              )}
+
           </div>
         </div>
 

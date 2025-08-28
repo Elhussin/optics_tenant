@@ -67,13 +67,13 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
       {/* <ActionButton label='Search' icon={<Lens size={16} />} onCrud={(e: React.FormEvent) => handleSubmit(e)} />
        */}
 
-          <Button
+          {/* <ActionButton
 
         label="Search"
         type="submit"
         className="col-span-full bg-blue-600 text-white py-2 rounded"
         onClick={(e: React.FormEvent) => handleSubmit(e)}
-      />
+      /> */}
       </div>
 
     </form>

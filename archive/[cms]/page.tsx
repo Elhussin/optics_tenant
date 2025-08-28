@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useParams } from "next/navigation";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
-import Image from 'next/image';
+import Image from "next/image";
 
 export default function DynamicPage() {
   const [page, setPage] = useState<any>(null);
   const params = useParams();
   const pageName = params?.slug as string;
   const fetchPage = useFormRequest({ alias: `cms_api_v2_pages_retrieve` });
-  const fetchPageDetiles = useFormRequest({ alias: `cms_api_v2_pages_retrieve_2` });
+  const fetchPageDetiles = useFormRequest({
+    alias: `cms_api_v2_pages_retrieve_2`,
+  });
 
   useEffect(() => {
     if (!pageName) {
@@ -21,7 +23,7 @@ export default function DynamicPage() {
 
     const fetchData = async () => {
       try {
-        const result = await fetchPage.submitForm({slug:pageName });
+        const result = await fetchPage.submitForm({ slug: pageName });
         if (result?.success) {
           if (result.data.items.length === 0 || !result.data.items[0]) {
             return <div>Page not found</div>;
@@ -35,7 +37,6 @@ export default function DynamicPage() {
           }
           return;
         }
-        
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("An error occurred while fetching page");
@@ -43,12 +44,12 @@ export default function DynamicPage() {
     };
 
     fetchData();
-  }, [pageName,fetchPage,fetchPageDetiles]);
+  }, [pageName, fetchPage, fetchPageDetiles]);
 
   if (!page) {
     return <div className="container mx-auto p-6">Page not found</div>;
   }
-   console.log("Fetched page data:", page);
+  console.log("Fetched page data:", page);
   return <View page={page} />;
 }
 
@@ -64,7 +65,12 @@ function renderField(key: string, value: any) {
   }
 
   // لو الحقل صورة واحدة من Wagtail API
-  if (value && typeof value === "object" && value.meta && value.meta.download_url) {
+  if (
+    value &&
+    typeof value === "object" &&
+    value.meta &&
+    value.meta.download_url
+  ) {
     return (
       <div className="my-4">
         <Image
@@ -102,7 +108,7 @@ function renderField(key: string, value: any) {
   return <p className="text-gray-700">{String(value)}</p>;
 }
 
-export function View({ page }: { page: any }) {
+function View({ page }: { page: any }) {
   return (
     <div className="max-w-4xl mx-auto p-6 font-sans">
       <h1 className="text-3xl font-bold mb-6">{page.title}</h1>

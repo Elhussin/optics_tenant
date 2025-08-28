@@ -25,7 +25,7 @@ export function AsideProvider({ children }: { children: ReactNode }) {
     >
       <MainLayout
         mainContent={children}
-        asideContent={ isVisible ? asideContent || <Aside /> : null}
+        // asideContent={ isVisible ? asideContent || <Aside /> : null}
       />
     </AsideContext.Provider>
   );
