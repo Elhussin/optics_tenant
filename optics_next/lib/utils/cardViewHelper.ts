@@ -10,7 +10,6 @@ export function formatLabel(field: string): string {
     .join(' ');
 }
 
-
 export function isImageUrl(value: string): boolean {
   return typeof value === "string" && /\.(jpeg|jpg|png|gif|webp|svg)$/.test(value);
 }
@@ -56,22 +55,6 @@ export const handleDownloadPDF = async (printRef: any, title: string) => {
   pdf.save(`${title}.pdf`);
 };
 
-
-// export const handleCopy = (item: any, fields: any) => {
-//   const text = fields.map(({ key, label }: any) => {
-//     const value = item[key];
-//     const formatted =
-//       typeof value === "boolean"
-//         ? value ? "✅" : "❌"
-//         : isValidDate(value)
-//           ? formatDate(value)
-//           : value;
-//     return `${label}: ${formatted}`;
-//   }).join("\n");
-
-//   navigator.clipboard.writeText(text);
-//   alert("✅ Copied to clipboard");
-// };
 export const handleCopy = (item: any, fields: Record<string, string>) => {
   const text = Object.entries(fields)
     .map(([key, label]) => {
@@ -91,11 +74,6 @@ export const handleCopy = (item: any, fields: Record<string, string>) => {
   navigator.clipboard.writeText(text);
   alert("✅ Copied to clipboard");
 };
-
-
-// export const handlePrint = () => {
-//   window.print();
-// };
 
 export const handlePrint = (printRef: React.RefObject<HTMLElement>) => {
   if (!printRef.current) {

@@ -35,9 +35,6 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const userConfig: Record<string, any> = form.userConfig || {};
 
   const config = { ...defaultConfig, ...userConfig };
-
-
-
   const schema = (schemas as any)[form.schemaName] as z.ZodObject<any>;
   const shape = schema.shape;
 
@@ -49,7 +46,6 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const onSubmit = async (data: any) => {
     const result = await formRequest.submitForm(data);
     if (result?.success) {
-      // toast.success(successMessage || 'Submitted successfully');
       safeToast(successMessage || 'Submitted successfully',{type:"success"})
       formRequest.reset();
     } else if (errorMessage) {
@@ -65,14 +61,14 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
       };
       fetchData();
     }
-  }, [mode, id, fetchDefaultData]);
+  }, [mode, id]);
 
 
   useEffect(() => {
     if (defaultValues) {
       formRequest.reset(defaultValues);
     }
-  }, [defaultValues, formRequest]);
+  }, []);
 
   if (mode === 'edit' && !defaultValues) {
     return <Loading4 message="Loading form data..." />;

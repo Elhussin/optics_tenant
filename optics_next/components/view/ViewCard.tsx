@@ -9,13 +9,15 @@ import { formsConfig } from "@/config/formsConfig";
 import { ActionButton } from "@/components/ui/buttons";
 import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
 import { NotFound } from '@/components/NotFound';
+import { Loading4 } from "@/components/ui/loding";
 export default function ViewCard({ entity }: { entity: string }) {
   const form = formsConfig[entity];
 
-  const data = useFilteredListRequest(form.listAlias);
+  const {data,isLoading,errors} = useFilteredListRequest(form.listAlias);
   const SearchFields = generateSearchFieldsFromEndpoint(form.listAlias);
   
   if (!form) return <NotFound error="Invalid entity Detected" />;
+  if (isLoading || !data ) return <Loading4 />;
 
   return (
     <>
@@ -29,7 +31,7 @@ export default function ViewCard({ entity }: { entity: string }) {
       </div>
 
       <div className="card-continear">
-        {data.data?.map((item: any) => (
+        {data?.map((item: any) => (
           <div key={item.id} className="card">
             {form.fields?.map((field) => (
               <p key={field} className="card-body">

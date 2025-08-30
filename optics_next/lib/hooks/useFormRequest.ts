@@ -27,6 +27,7 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     const endpoint = useMemo(() => {
     const found = api.api.find((e) => e.alias === alias);
     if (!found) {
+
       throw new Error(`Endpoint with alias "${alias}" not found.`);
     }
     return found;

@@ -87,7 +87,7 @@ interface FieldMeta {
 // ues in view card
 export interface ViewCardProps {
 
-  entity?: string;
+  entity: string;
   id?: string | number | undefined;
 }
 

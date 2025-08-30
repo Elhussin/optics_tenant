@@ -54,7 +54,7 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath}: RenderButto
       alias: alias.deleteAlias!,
       redirectPath:navigatePath,
     });
-{/* <HardDeleteButton onClick={() => confirmHardDelete(item.id)} /> */}
+
     const deleteButton = <ActionButton label="Delete" icon={<Trash2 size={16} />} variant="danger" title="Delete Item" onCrud={handleDelete} />;
     const hardDeleteButton = <ActionButton label="Delete Permanently" icon={<Trash2 size={16} />} variant="danger" title="Delete Permanently"  onClick={() => confirmHardDelete(data.id)} />;
     const editButton = <ActionButton label="Edit" icon={<Pencil size={16} />} variant="info" title="Edit Item" navigateTo={`${navigatePath}/${data?.id}/edit`} />;
