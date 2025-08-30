@@ -114,7 +114,6 @@ api.customRequest = async function (alias: string, data: any = {}) {
 
   const method = endpoint.method.toUpperCase();
   let url : string = endpoint.path;
-  
   const pathParams: Record<string, any> = {};
   const otherParams: Record<string, any> = {};
   

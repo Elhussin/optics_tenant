@@ -59,7 +59,6 @@ export interface useFormRequestProps {
 
 
 export type UseFormRequestReturn = {
-  isLoading: boolean;
   isSubmitting: boolean;
   errors: any;
   formErrors: any;
