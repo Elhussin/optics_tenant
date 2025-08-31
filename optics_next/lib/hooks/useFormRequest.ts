@@ -1,14 +1,13 @@
 "use client"
-import { useState,useMemo, useRef } from "react";
+import { useState,useMemo, useRef, useCallback } from "react";
 import { ZodType, ZodObject } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/lib/api/axios";
 import { useFormRequestProps } from "@/types";
 import { UseFormRequestReturn } from "@/types";
-import { handleServerErrors } from "@/lib/utils/error";
-// import { formatError } from "@/lib/utils";
-
+import { handleServerErrors ,handleErrorStatus} from "@/lib/utils/error";
+import { safeToast } from "@/lib/utils/toastService";
 function hasParameters(
   endpoint: any
 ): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
@@ -20,7 +19,7 @@ function hasParameters(
 
 
 export function useFormRequest(options: useFormRequestProps): UseFormRequestReturn {
-  const { alias, defaultValues, onSuccess, onError, transform } = options;
+  const { alias, defaultValues, onSuccess, onError, transform,showToast = true } = options;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const lastPayloadRef = useRef<any>(null);
@@ -29,6 +28,7 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     const found = api.api.find((e) => e.alias === alias);
     if (!found) {
       console.error(`❌ Endpoint with alias "${alias}" not found.`);
+      safeToast(`Endpoint with alias "${alias}" not found.`, { type: "error" });    
       return null;
     }
     return found;
@@ -44,7 +44,7 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     console.warn(`⚠️ No schema defined for endpoint "${alias}". Validation skipped.`);
   }
 
-  // if schema  
+
   const resolver =
     schema instanceof ZodObject
       ? zodResolver(schema)
@@ -55,8 +55,7 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     defaultValues,
     mode: "onChange",
   });
-
-  const submitForm = async (data: any = undefined) => {
+  const submitForm = useCallback(async (data: any = undefined) => {
     if (!endpoint) {
       return { success: false, error: `Endpoint "${alias}" not found.` };
     }
@@ -87,6 +86,10 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
 
       const response = await api.customRequest(endpoint.alias, payload);
 
+      // if (!response.ok) {
+      //     // 🔴 فيه خطأ من السيرفر
+      //     throw { response, status: response.status };
+      //   }
 
 
       if (response && onSuccess) {
@@ -96,22 +99,24 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
 
 
     } catch (error: any) {
-      handleServerErrors(error, methods.setError);
-      if (onError) {
-        onError(error);
-      }
 
-      console.error("❌ API Request Error:", error);
-      return { success: false, error: formatError(error) };
+
+      console.log("Error in useFormRequest:", error);
+      handleServerErrors(error, methods.setError, { showToast });
+    const normalized = handleErrorStatus(error);
+      onError?.(normalized);
+      return { success: false, error: normalized };
     } finally {
       setIsLoading(false);
     }
-  };
+  
+  }, [endpoint, alias, methods, onSuccess, onError, transform]);
 
-  // const retry = () => submitForm(methods.getValues());
-  // console.log("retry", retry);
-  const retry = () =>
-    lastPayloadRef.current && submitForm(lastPayloadRef.current);
+
+  const retry = () => {
+  if (!lastPayloadRef.current) return { success: false, error: "No previous payload to retry" };
+  return submitForm(lastPayloadRef.current);
+};
 
   const isSubmitting = methods.formState.isSubmitting || isLoading;
   
