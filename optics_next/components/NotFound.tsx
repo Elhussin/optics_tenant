@@ -1,17 +1,15 @@
 "use client";
 import { useParams } from 'next/navigation';
-import {useTranslations} from 'next-intl';
-// import {Link} from '@/app/i18n/navigation'
+import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 
 
 
 
-export   function NotFound({error}: {error?: string}) {
-      // const t = useTranslations('NotFound');
-        const t = useTranslations('NotFound');
-      const paramsData = useParams();
-      const locale = paramsData?.locale as string;
+export function NotFound({ error }: { error?: string }) {
+  const t = useTranslations('NotFound');
+  const paramsData = useParams();
+  const locale = paramsData?.locale as string;
 
   const rtl = locale === 'ar';
   const dir = rtl ? 'rtl' : 'ltr';

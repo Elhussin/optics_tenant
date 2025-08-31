@@ -39,50 +39,6 @@ export default function LoginForm(props: formRequestProps) {
     register,
   }: UseFormRequestReturn = useFormRequest({ alias });
 
-  // const onSubmit = async (data: any) => {
-  //   try {
-  //     const result = await submitForm(data);
-  //     if (!result?.success) return;
-
-  //     safeToast(message || t("successMessage"), { type: "success" });
-
-  //     if (mode === "login") {
-  //       const userResult = await fetchUser.submitForm();
-  //       if (userResult?.success) {
-  //         setUser(userResult.data);
-  //         router.replace(redirect);
-  //       } else {
-  //         safeToast(t("errorMessage"), { type: "error" });
-  //       }
-  //     } else if (mode === "create") {
-  //       router.replace(`/${locale}/auth/login`);
-  //     }
-  //   } catch (error) {
-  //     safeToast(t("errorMessage"), { type: "error" });
-  //   }
-  // };
-
-  // const onSubmit = async (data: any) => {
-  //   try {
-  //     const result = await submitForm(data);
-  //     if (!result?.success) return;
-  
-  //     safeToast(message || t("successMessage"), { type: "success" });
-  
-  //     if (mode === "login") {
-
-  //       console.log(result.data)
-  //       setUser(result.data);
-  //       router.replace(redirect);
-  
-  //     } else if (mode === "create") {
-  //       router.replace(`/${locale}/auth/login`);
-  //     }
-  //   } catch {
-  //     safeToast(t("errorMessage"), { type: "error" });
-  //   }
-  // };
-  
 const onSubmit = async (data: any) => {
   try {
     const result = await submitForm(data);

@@ -20,7 +20,7 @@ from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSe
                           TenantSettingsSerializer,RegisterSerializer, LoginSerializer,
                           UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,
                           TenantSettings)
-
+from tenants.models import Client
 from rest_framework import permissions
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
