@@ -8,7 +8,9 @@ import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { safeToast } from '@/lib/utils/toastService';
 import { Loading4 } from '../ui/loding';
 import { defaultPublicPages } from '@/constants/defaultPublicPages';
-
+import {useTranslations} from 'next-intl';
+import {useLocale} from 'next-intl';
+import {getBaseUrl} from '@/lib/utils/getBaseUrl';
 interface MultilingualPageEditorProps {
   pageId?: string;
   defaultPage?: string | null;
@@ -22,7 +24,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [activeLanguage, setActiveLanguage] = useState<Language>('en');
-
+  const t = useTranslations("MultilingualPageEditor");
+  const locale = useLocale();
   const [formErrors, setFormErrors] = useState<{ [key: string]: FormError }>({});
 
   const [formData, setFormData] = useState<CreatePageData | null>(null);
@@ -80,7 +83,6 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     return Math.round((completedFields.length / fields.length) * 100);
   };
 
-  // تحميل البيانات من الصفحة الافتراضية إذا تم توفيرها
   useEffect(() => {
     if (defaultPage) {
       const def = defaultPublicPages[defaultPage];
@@ -146,11 +148,11 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       });
       setActiveLanguage(page.default_language);
     } catch (error) {
-      safeToast('Error loading page', { type: "error" });
+      safeToast(t('errorLoading'), { type: "error" });
     } finally {
       setLoading(false);
     }
-  }, [pageId]); // ← ضيف كل الديبندنسيز اللي بتستخدمها
+  }, [pageId]);
 
   
   
@@ -167,14 +169,14 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
       setSaving(true);
       
       if (!formData) {
-        safeToast('Form data is not initialized',{type:"error"});
+        safeToast(t('errorGetFormData'),{type:"error"});
         return;
       }
 
       // التحقق من وجود عنوان للغة الافتراضية
       const defaultTranslation = formData.translations.find(t => t.language === formData.default_language);
       if (!defaultTranslation?.title.trim()) {
-        safeToast(`Please provide a title for the default language (${LANGUAGES[formData.default_language].name})`, { type: "error" });
+        safeToast(`${t('pleaseProvideTitle')} (${LANGUAGES[formData.default_language].name})`, { type: "error" });
         return;
       }
 
@@ -186,34 +188,34 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
       let result;
       if (pageId) {
-        console.log("Updating Page:", finalFormData);
         result = await updateRequest.submitForm({ id: pageId, formData: finalFormData });
-        console.log('updateRequest result', result);
         if (result?.success) {
-          safeToast('Page updated successfully!', { type: "success" });
+          safeToast(t('PageUpdated'), { type: "success" });
           setFormData(result.data);
         } else {
           setFormErrors(updateRequest.errors || {});
-          safeToast('Error updating page', { type: "error" });
+          safeToast(t('errorUpdatingPage'), { type: "error" });
 
         }
       } else {
         result = await createRequest.submitForm(finalFormData);
         if (result?.success) {
-          safeToast('Page created successfully!', { type: "success" } );
+          safeToast(t('PageCreated'), { type: "success" } );
 
         } else {
           setFormErrors(createRequest.errors || {});
-          safeToast('Error creating page', { type: "error" });
+          safeToast(t('errorCreatingPage'), { type: "error" });
         }
       }
     } catch (error) {
-      safeToast('Error saving page', { type: "error" });
+      safeToast(t('errorSavingPage'), { type: "error" });
     } finally {
       setSaving(false);
     }
   };
 
+
+  const baseUrl = getBaseUrl();
   if (loading || !formData) {
     return <Loading4 />;
   }
@@ -222,22 +224,22 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
   const currentLangInfo = LANGUAGES[activeLanguage];
 
   if (!currentTranslation) {
-    return <div>Error: No translation found for active language</div>;
+    return <div>{t('noTranslationFound')}</div>;
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
+    <div className="max-w-6xl mx-auto p-6" >
       <div className="bg-surface rounded-lg shadow-lg">
         {/* Header with language tabs */}
         <div className="border-b border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold">
-              {pageId ? 'Edit Page' : 'Create New Page'}
+              {pageId ? t('editPage') : t('createNewPage')}
             </h1>
 
             {/* Default Language Selector */}
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Default Language:</label>
+              <label className="text-sm font-medium text-gray-700">{t('defaultLanguage')}:</label>
               <select
                 value={formData.default_language}
                 onChange={(e) => setFormData(prev => prev ? { ...prev, default_language: e.target.value as Language } : prev)}
@@ -247,6 +249,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                   <option className='bg-surface' key={code} value={code}>
                     {lang.flag} {lang.name}
                   </option>
+
                 ))}
               </select>
             </div>
@@ -257,7 +260,6 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
             {Object.entries(LANGUAGES).map(([code, lang]) => {
               const completeness = getTranslationCompleteness(code as Language);
               const isActive = activeLanguage === code;
-
               return (
                 <button
                   key={code}
@@ -271,11 +273,11 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                     <span>{lang.flag}</span>
                     <span>{lang.name}</span>
                     {formData.default_language === code && (
-                      <span className="text-xs bg-green-100 text-green-800 px-1 rounded">DEFAULT</span>
+                      <span className="text-xs bg-green-100 text-green-800 px-1 rounded">{t('default')}</span>
                     )}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    {completeness}% complete
+                    {completeness}% {t('complete')}
                   </div>
                 </button>
               );
@@ -284,10 +286,12 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
           
           {/* Page URL Field */}
           <div className="mt-4">
-            <label className="block font-medium">Page URL</label>
+            <label className="block font-medium">{t('pageURL')}</label><span className="text-xs text-gray-500 mt-1">{t('pageURLDesc')}</span>
+
             <input
               type="text"
-              value={formData.slug}
+              title={t('pageURLDesc')}
+              value={pageId ? `${baseUrl}/${formData.slug}` : formData.slug}
               onChange={(e) => {
                 if (!pageId) {
                   setFormData(prev => prev ? { ...prev, slug: e.target.value } : prev);
@@ -295,7 +299,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
               }}
               disabled={!!pageId}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-              placeholder="Page URL will be generated from title"
+              placeholder={t('pageURLDesc')}
+              dir = {currentLangInfo.dir}
             />
               {formErrors?.slug?.message && (
                 <p className="text-red-500 text-sm mt-1">
@@ -307,21 +312,25 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
         </div>
 
         {/* Content for active language */}
-        <div className={`p-6 ${currentLangInfo.dir === 'rtl' ? 'text-right' : 'text-left'}`} dir={currentLangInfo.dir}>
+        <div className={`p-6 ${locale=== 'ar' ? 'text-right' : 'text-left'}`}
+         dir={locale=== 'ar' ? 'rtl' : 'ltr'}
+         >
           <div className="space-y-6">
             {/* Basic Info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Title ({currentLangInfo.name})
+                  {t('pageTitle')} ({currentLangInfo.name})
                 </label>
                 <input
                   type="text"
+                  title={t('pageTitleDesc')}
                   value={currentTranslation.title}
                   onChange={(e) => updateTranslation(activeLanguage, 'title', e.target.value)}
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={`Enter page title in ${currentLangInfo.name}`}
-                  dir={currentLangInfo.dir}
+                  placeholder={`${t('pageTitleDesc')} ${currentLangInfo.name}`}
+                  
+                  dir = {currentLangInfo.dir}
                 />
                 {formErrors?.title && (
                   <p className="text-red-500 text-sm mt-1">{formErrors.title.message as string}</p>
@@ -332,14 +341,16 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
             {/* Content Editor */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Content ({currentLangInfo.name})
+                {t('content')} ({currentLangInfo.name})
               </label>
               {activeLanguage==='en' && (
               <RichTextEditor
                 content={currentTranslation.content}
                 onChange={(content) => updateTranslation(activeLanguage, 'content', content)}
                 language={activeLanguage}
-                placeholder={`Start writing in ${currentLangInfo.name}...`}
+                placeholder={`${t('contentDesc')} ${currentLangInfo.name}...`}
+                
+                
               />
               )}
               {activeLanguage==='ar' && (
@@ -347,7 +358,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                   content={currentTranslation.content}
                   onChange={(content) => updateTranslation(activeLanguage, 'content', content)}
                   language={activeLanguage}
-                  placeholder={`Start writing in ${currentLangInfo.name}...`}
+                  placeholder={`${t('contentDesc')} ${currentLangInfo.name}...`}
                 />
               )}
               {formErrors?.content && (
@@ -355,23 +366,25 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
               )}
 
             </div>
-
+          
             {/* SEO Fields */}
             <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4">SEO Settings ({currentLangInfo.name})</h3>
+              <h3 className="text-lg font-semibold mb-4">{t('seoSettings')} ({currentLangInfo.name})</h3>
 
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    SEO Title
+                    {t('seoTitle')}
                   </label>
                   <input
                     type="text"
+                    title={t('seoTitleDesc')}
                     value={currentTranslation.seo_title}
                     onChange={(e) => updateTranslation(activeLanguage, 'seo_title', e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="SEO optimized title"
-                    dir={currentLangInfo.dir}
+                    placeholder={`${t('seoTitleDesc')} ${currentLangInfo.name}`}
+                    
+                    dir = {currentLangInfo.dir}
                   />
                   {formErrors?.seo_title && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.seo_title.message as string}</p>
@@ -380,15 +393,17 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meta Description
+                    {t('metaDescription')}
                   </label>
                   <textarea
+                    title={t('metaDescriptionDesc')}
                     value={currentTranslation.meta_description}
                     onChange={(e) => updateTranslation(activeLanguage, 'meta_description', e.target.value)}
                     rows={3}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Brief description for search engines"
-                    dir={currentLangInfo.dir}
+                    placeholder= {t('metaDescription')}
+                    
+                    dir = {currentLangInfo.dir}
                   />
                   {formErrors?.meta_description && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.meta_description.message as string}</p>
@@ -397,15 +412,17 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Meta Keywords
+                    {t('metaKeywords')}
                   </label>
                   <input
                     type="text"
+                    title={t('metaKeywordsDesc')}
                     value={currentTranslation.meta_keywords}
                     onChange={(e) => updateTranslation(activeLanguage, 'meta_keywords', e.target.value)}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="keyword1, keyword2, keyword3"
-                    dir={currentLangInfo.dir}
+                    placeholder={`keyword1, keyword2, keyword3, ${t('metaKeywordsDesc')}`}
+                    
+                    dir = {currentLangInfo.dir}
                   />
                   {formErrors.meta_keywords && (
                     <p className="text-red-500 text-sm mt-1">{formErrors.meta_keywords.message as string}</p>
@@ -425,7 +442,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="is_published" className="ml-2 text-sm font-medium text-gray-700">
-                  Publish this page
+                 {t("publish")}
                 </label>
               </div>
               {formErrors.root && (
@@ -439,7 +456,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                 onClick={() => router.back()}
                 className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t("cancel")}
               </button>
 
               <button
@@ -447,7 +464,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
                 disabled={saving || !currentTranslation.title.trim()}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
               >
-                {saving ? 'Saving...' : pageId ? 'Update Page' : 'Create Page'}
+                {saving ? `${t("save")}... `: pageId ? `${t("update")}` : `${t("create")}`}
               </button>
             </div>
           </div>

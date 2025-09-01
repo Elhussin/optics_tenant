@@ -1,24 +1,13 @@
 from decimal import Decimal
 import logging
-from django.http import HttpResponseForbidden
-from django.utils import timezone
-from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as T
 from django.db import transaction
 from rest_framework.response import Response
-from rest_framework import status, viewsets, permissions
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
-from django_tenants.utils import schema_context, get_tenant
 import requests
-from django.core.management import call_command
-from django.core.management.base import BaseCommand, CommandError
-from django.conf import settings
 from tenants.models import (
-    PendingTenantRequest,
     Client,
-    Domain,
     Payment,
     SubscriptionPlan
 )
@@ -37,8 +26,7 @@ paymant_logger = logging.getLogger('paypal')
 # ==============================================================
 class CreatePaymentOrderView(APIView):
     def post(self, request):
-        # lang = request.headers.get("Accept-Language", "en")
-        lang = "en"
+        lang=request.headers.get('accept-language')or 'en'
         serializer = CreatePaymentOrderSerializer(data=request.data)
         if serializer.is_valid():
             client = serializer.validated_data["client"]
@@ -182,7 +170,7 @@ class PayPalWebhookView(APIView):
 # ==============================================================
 # Cancel Payment
 # ==============================================================
-
+# from optics_tenant.config_loader import config
 class PayPalCancelView(APIView):
     permission_classes = [AllowAny]
     # if config("DEBUG"):

@@ -45,12 +45,9 @@ export default function DashboardLinks() {
   ];
 
   return (
-
-    <div className="flex flex-wrap gap-2 p-4 ">
+      <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {links.map(({ href, label }) => (
-        <div className="flex flex-wrap gap-2 p-4 card" key={href}>
-          <ActionButton  label={label} navigateTo={href} variant="outline" />
-        </div>
+          <ActionButton  label={label} navigateTo={href} variant="outline" title={label} className=" card" key={href} />
       ))}
     </div>
   );

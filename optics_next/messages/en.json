@@ -376,29 +376,8 @@
     "allPages": "All Pages",
     "createNewPage": "Create Page",
     "publicPages": "Public Pages",
-    "publicPagesDesc": "You can add public pages with default data like (About Us, Contact Us, Privacy Policy, Terms of Service, FAQ, Support, Careers, Blog) in the sidebar.",
-    "editPage": "Edit Page",
-    "viewPage": "View Page",
-    "pageTitle": "Page Title",
-    "pageSlug": "Page Slug",
-    "pageContent": "Page Content",
-    "pageStatus": "Page Status",
-    "isPublished": "Is Published",
-    "isDraft": "Is Draft",
-    "seoTitle": "SEO Title",
-    "seoDescription": "SEO Description",
-    "language": "Language",
-    "selectLanguage": "Select Language",
-    "saveChanges": "Save Changes",
-    "deletePage": "Delete Page",
-    "confirmDelete": "Are you sure you want to delete this page?",
-    "pageCreated": "Page created successfully!",
-    "pageUpdated":"daPage updated successfully!",
-    "pageDeleted": "Page deleted successfully!",
-    "loading": "Loading...",
-    "errorLoading": "Error loading page data.",
-    "noPagesFound": "No pages found.",
-    "backToPages": "Back to Pages"
+    "publicPagesDesc": "You can add public pages with default data like (About Us, Contact Us, Privacy Policy, Terms of Service, FAQ, Support, Careers, Blog) in the sidebar."
+  
   },
   "publicPagesList": {
     "about": "About Us",
@@ -409,7 +388,50 @@
     "support": "Support",
     "careers": "Careers",
     "blog": "Blog"
-  }
+  },
+  "MultilingualPageEditor": {
+    "editPage": "Edit Page",
+    "createNewPage": "Create New Page",
+    "errorLoading": "Error when loading pages",
+    "errorGetFormData": "Error when getting form data",
+    "pleaseProvideTitle": "Please provide a title for the page",
+    "PageUpdated": "Page updated successfully.",
+    "errorUpdatingPage": "Error updating page.",
+    "PageCreated": "Page created successfully.",
+    "errorCreatingPage": "Error creating page.",
+    "errorSavingPage": "Error saving page.",
+    "noTranslationFound": "No translation found for the active language.",
+    "defaultLanguage": "Default Language",
+    "default": "Default",
+    "complete": "Complete",
+    "pageURL": "Page URL",
+    "pageURLDesc": "Should not contain spaces or special characters only can use '_' or '-' or  for separating words.",
+    "pageTitle": "Page Title",
+    "pageTitleDesc": "Represents the main title of the page.",
+    "content": "Page Content",
+    "contentDesc": "Represents the content of the page.",
+    "seoSettings": "SEO Settings",
+    "seoTitle": "SEO Title",
+    "seoTitleDesc": "Represents the main title of the page for search engines.",
+    "metaDescription": "Description SEO",
+    "metaDescriptionDesc": "Represents the description of the page for search engines.",
+    "metaKeywords": "Meta Keywords",
+    "metaKeywordsDesc": "Represents the keywords of the page for search engines.",
+    "publish": "Publish Page",
+    "cancel": "Cancel",
+    "update":"Update Page",
+    "create":"Create Page",
+    "save" :"Saving"
 
-
+},"MultilingualPageDisplay":{
+},
+"pagesList":{
+    "title": "Pages List",
+    "description": "List of all pages",
+    "slug": "Slug",
+    "status": "Status",
+    "seoTitle": "SEO Title",
+    "edit":"Edit",
+    "view":"View"
+}
 }

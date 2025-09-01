@@ -220,33 +220,6 @@ class RequestPasswordResetView(APIView):
 
         return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
 
-# class PasswordResetConfirmView(APIView):
-#     permission_classes = [AllowAny]
-#     def post(self, request):
-#         uidb64 = request.data.get('uid')
-#         token = request.data.get('token')
-#         password = request.data.get('password')
-
-#         try:
-#             uid = force_str(urlsafe_base64_decode(uidb64))
-#             user = User.objects.get(pk=uid)
-#             print(uidb64, token, password,uid,user)  
-#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-#             return Response({"detail": "Invalid UID"}, status=400)
-
-#         if not default_token_generator.check_token(user, token):
-#             return Response({"detail": "Invalid or expired token"}, status=400)
-
-#         password = ReusableFields.password()
-#         if not password or len(password) < 8:
-#             return Response({"detail": "Password must be at least 8 characters long"}, status=400)
-
-#         user.set_password(password)
-#         user.save()
-#         return Response({"detail": "Password has been reset successfully"}, status=200)
-
-# views.py
-
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
@@ -331,7 +304,7 @@ class TenantSettingsViewset(viewsets.ModelViewSet):
 
 class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API عامة للقراءة فقط بالـ slug
+    For public pages only
     """
     queryset = Page.objects.filter(is_published=True, is_deleted=False)
     serializer_class = PageSerializer
@@ -344,15 +317,10 @@ class PageViewSet(viewsets.ModelViewSet):
 
 
     def get_permissions(self):
-        # if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
-        #     return [AllowAny()]
         return [IsAuthenticated(), IsOwnerOrReadOnly()]
 
 
     def update(self, request, *args, **kwargs):
-        print("Incoming data:", request.data)
-
-        # Extract the actual data from formData wrapper if it exists
         data = request.data
         if 'formData' in data:
             data = data['formData']

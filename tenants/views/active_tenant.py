@@ -1,29 +1,3 @@
-# ALGORITHM ANALYSIS: Tenant Activation Flow
-# ==========================================
-
-"""
-CURRENT ALGORITHM FLOW:
-1. Extract token from request parameters
-2. Validate token exists in database
-3. Check if already activated
-4. Handle token expiration (renew if expired)
-5. Create tenant with atomic transaction
-6. Create domain for tenant
-7. Run database migrations
-8. Mark as activated
-9. Create user roles and permissions
-10. Send confirmation email
-
-COMPLEXITY ANALYSIS:
-- Time Complexity: O(1) for most operations, O(n) for migrations
-- Space Complexity: O(1) for data operations
-- Critical Path: Database migration is the bottleneck
-"""
-
-# IMPROVED VERSION WITH BETTER ALGORITHM STRUCTURE
-# ===============================================
-
-
 from django.db import transaction
 from django.core.management import call_command
 from django.utils import timezone
@@ -35,8 +9,6 @@ from enum import Enum
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as T
 from django_tenants.utils import schema_context
-import subprocess
-import sys
 from django.conf import settings
 from tenants.models import (
     PendingTenantRequest,
@@ -44,12 +16,6 @@ from tenants.models import (
     Domain,
     SubscriptionPlan
 )
-# from tenants.serializers import (
-#     RegisterTenantSerializer,
-#     ClientSerializer,
-#     DomainSerializer,
-#         SubscriptionPlanSerializer
-# )
 
 from core.utils.email import send_activation_email, send_message_acount_activated
 from core.utils.expiration_date import expiration_date
@@ -238,54 +204,3 @@ class ActivateTenantView(APIView):
         }
         return Response({"detail": error_messages[status]}, status=400)
 
-# PERFORMANCE OPTIMIZATIONS TO CONSIDER:
-# =====================================
-
-"""
-1. ASYNC PROCESSING:
-   - Move database migrations to background task (Celery)
-   - Make user permission setup asynchronous
-   - Send emails asynchronously
-
-2. CACHING:
-   - Cache trial plan lookup
-   - Cache domain generation logic
-
-3. DATABASE OPTIMIZATIONS:
-   - Use select_for_update() for pending request to prevent race conditions
-   - Add database indexes on token field
-   - Consider connection pooling for migrations
-
-4. MONITORING:
-   - Add metrics for activation success/failure rates
-   - Monitor migration execution time
-   - Track token expiration patterns
-
-5. SCALING CONSIDERATIONS:
-   - Use distributed locks for concurrent activations
-   - Consider database sharding for high volume
-   - Implement circuit breaker for migration failures
-"""
-
-# ALGORITHM COMPLEXITY SUMMARY:
-# ============================
-"""
-Current Implementation:
-- Best Case: O(1) - token valid, tenant creation succeeds
-- Worst Case: O(n) - where n is migration complexity
-- Average Case: O(1) + O(migration_time)
-
-Space Complexity: O(1) - constant space usage
-
-Critical Performance Points:
-1. Database migration: O(n) - most expensive operation
-2. Token lookup: O(1) with proper indexing
-3. Tenant creation: O(1)
-4. User setup: O(1)
-
-Recommended Improvements:
-1. Move migrations to background processing
-2. Add proper error recovery mechanisms  
-3. Implement retry logic for failed operations
-4. Add comprehensive logging and monitoring
-"""

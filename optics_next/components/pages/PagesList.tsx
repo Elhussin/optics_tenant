@@ -1,43 +1,17 @@
-import { useFormRequest } from "@/lib/hooks/useFormRequest";
-import { useEffect, useState } from "react";
+
 import { Loading4 } from "@/components/ui/loding";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useParams } from "next/navigation";
 import {ActionButton } from "@/components/ui/buttons";
 import { Pencil, Eye } from "lucide-react";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
+import {useTranslations} from 'next-intl';
+import {useLocale} from 'next-intl';
 export const PagesList = () => {
-    // const [pagesData, setPagesData] = useState<any>(null);
-    // const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState<string | null>(null);
-    const params = useParams();
-    const locale = params?.locale as string;
-    const pageRequest = useFormRequest({ alias: `users_pages_list` });
-
+    const t = useTranslations("pagesList");
+      const locale = useLocale();
     const {data,isLoading} = useFilteredListRequest("users_pages_list");
-    // useEffect(() => {
-  
-    //     const fetchPages = async () => {
-    //       try {
-    //         const result = await pageRequest.submitForm();
-    //         if (result?.success) {
-    //           setPagesData(result.data);
-    //         } else {
-    //           setError("No pages found");
-    //         }
-    //       } catch {
-    //         setError("Error loading pages");
-    //       } finally {
-    //         setLoading(false);
-    //       }
-    //     };
-    //     fetchPages();
-      
-    // }, []);
-
 
     if (isLoading || !data ) return <Loading4 />;
-    // if (errors) return <div className="text-red-500">{errors}</div>;
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {data?.map((p: any) => {
@@ -51,12 +25,12 @@ export const PagesList = () => {
                 <CardTitle className="text-lg font-semibold">{translation?.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-2 text-sm">
-                <p><span className="font-medium">Slug:</span> {p.slug}</p>
-                <p><span className="font-medium">Status:</span> {p.is_published ? "Published" : "Draft"}</p>
-                <p><span className="font-medium">SEO Title:</span> {translation?.seo_title}</p>
+                <p><span className="font-medium">{t('slug')}:</span> {p.slug}</p>
+                <p><span className="font-medium">{t('status')}:</span> {p.is_published ? "Published" : "Draft"}</p>
+                <p><span className="font-medium">{t('seoTitle')}:</span> {translation?.seo_title}</p>
                 <div className="flex gap-2 mt-4">
-                  <ActionButton label="Edit " icon={<Pencil size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.id}/edit`} />
-                  <ActionButton label="View " icon={<Eye size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.id}`} />
+                  <ActionButton label={t('edit')} icon={<Pencil size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.id}/edit`} />
+                  <ActionButton label={t('view')} icon={<Eye size={16} />} variant="link" navigateTo={`/dashboard/pages/${p.id}`} />
 
                 </div>
               </CardContent>
