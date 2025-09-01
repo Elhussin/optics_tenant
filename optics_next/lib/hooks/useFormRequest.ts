@@ -27,8 +27,8 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     const endpoint = useMemo(() => {
     const found = api.api.find((e) => e.alias === alias);
     if (!found) {
-      console.error(`❌ Endpoint with alias "${alias}" not found.`);
-      safeToast(`Endpoint with alias "${alias}" not found.`, { type: "error" });    
+      // console.error(`❌ Endpoint with alias "${alias}" not found.`);
+      // safeToast(`Endpoint with alias "${alias}" not found.`, { type: "error" });    
       return null;
     }
     return found;
@@ -40,9 +40,9 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
   ? endpoint.parameters?.body ?? endpoint.parameters?.query
   : undefined;
 
-  if (!schema) {
-    console.warn(`⚠️ No schema defined for endpoint "${alias}". Validation skipped.`);
-  }
+  // if (!schema) {
+  //   console.warn(`⚠️ No schema defined for endpoint "${alias}". Validation skipped.`);
+  // }
 
 
   const resolver =

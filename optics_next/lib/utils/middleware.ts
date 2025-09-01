@@ -1,83 +1,85 @@
-import { NextResponse,NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from "next/server";
 
 export function getRequiredPermission(pathname: string): string | null {
   // Clean the path by removing the language prefix
-  const cleanPath = pathname.replace(/^\/(ar|en)/, '') || '/';
-  
+  const cleanPath = pathname.replace(/^\/(ar|en)/, "") || "/";
+
   // The root path does not require permission
-  if (cleanPath === '/') return null;
-  
+  if (cleanPath === "/") return null;
+
   // Public paths that do not require special permissions
   const publicPaths = [
-    '/about',
-    '/contact', 
-    '/services',
-    '/pricing',
-    '/faq',
-    '/terms',
-    '/views',
-    '/privacy',
-    '/support',
-    '/careers',
-    '/blog',
-    '/unauthorized',
-    '/auth/login',
-    '/auth/register',
-    '/auth/activate',
-    '/auth/forget-password',
-    '/auth/reset-password'
+    "/about",
+    "/contact",
+    "/services",
+    "/pricing",
+    "/faq",
+    "/terms",
+    "/views",
+    "/privacy",
+    "/support",
+    "/careers",
+    "/blog",
+    "/unauthorized",
+    "/auth/login",
+    "/auth/register",
+    "/auth/activate",
+    "/auth/forgot-password",
+    "/auth/reset-password",
   ];
-  
-  
-  if (publicPaths.includes(cleanPath)) return null;
-  
-  const routeMap: [RegExp, string][] = [
 
-    [/^\/admin/, 'admin_access'],
-    [/^\/dashboard/, 'view_dashboard'],
+  if (publicPaths.includes(cleanPath)) return null;
+
+  const routeMap: [RegExp, string][] = [
+    [/^\/admin/, "admin_access"],
+    [/^\/dashboard/, "view_dashboard"],
     // [/^\/profile/, 'view_profile'],
-    [/^\/reports/, 'view_reports'],
-    [/^\/users/, 'view_users'],
-    [/\/prescriptions\/(create|new)/, 'create_prescription'],
-    [/\/prescriptions\/edit/, 'edit_prescription'],
-    [/^\/prescriptions/, 'view_prescriptions'],
-    [/\/invoices\/(create|new)/, 'create_invoice'],
-    [/\/invoices\/edit/, 'edit_invoice'],
-    [/^\/invoices/, 'view_invoices'],
+    [/^\/reports/, "view_reports"],
+    [/^\/users/, "view_users"],
+    [/\/prescriptions\/(create|new)/, "create_prescription"],
+    [/\/prescriptions\/edit/, "edit_prescription"],
+    [/^\/prescriptions/, "view_prescriptions"],
+    [/\/invoices\/(create|new)/, "create_invoice"],
+    [/\/invoices\/edit/, "edit_invoice"],
+    [/^\/invoices/, "view_invoices"],
   ];
 
   for (const [regex, permission] of routeMap) {
     if (regex.test(cleanPath)) return permission;
   }
-  
+
   // By default, unknown paths require login but without special permissions
-  return 'authenticated_user';
+  return "authenticated_user";
 }
 
-export function unauthorizedResponse(request: NextRequest, target: string, message: string) {
+export function unauthorizedResponse(
+  request: NextRequest,
+  target: string,
+  message: string
+) {
   // Using the request to get the correct URL
   const redirectUrl = new URL(target, request.url);
-  
+
   // Add redirect information
-  redirectUrl.searchParams.set('redirect', request.nextUrl.pathname);
+  redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
   // redirectUrl.searchParams.set('message', encodeURIComponent(message));
-  
+
   const response = NextResponse.redirect(redirectUrl);
-  
+
   // Set cookies with better options
-  response.cookies.set('alert_message', message, { 
-    path: '/', 
+  response.cookies.set("alert_message", message, {
+    path: "/",
     maxAge: 30, // 30 seconds
     httpOnly: false, // allow JavaScript to read it
-    secure: process.env.NODE_ENV === 'production' 
+    secure: process.env.NODE_ENV === "production",
   });
-  
-  response.cookies.set('alert_type', 'error', { 
-    path: '/', 
+
+  response.cookies.set("alert_type", "error", {
+    path: "/",
     maxAge: 30,
     httpOnly: false,
-    secure: process.env.NODE_ENV === 'production'
+    secure: process.env.NODE_ENV === "production",
   });
-  
+
   return response;
 }

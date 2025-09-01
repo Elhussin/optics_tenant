@@ -7,12 +7,6 @@ import { RenderButtons } from "@/components/ui/buttons/RenderButtons";
 import { useFetchData } from '@/lib/hooks/useCrudActions';
 import { useCallback } from "react";
 
-// const { submitForm: getData } = useFetchData('myAlias', (res) => console.log(res));
-
-// useEffect(() => {
-//   getData({ id: 123 });
-// }, [getData]);
-
 export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   const params = useParams();
@@ -25,11 +19,12 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
     "users_pages_retrieve",
     setPageData
   );
-  
+
+
   const refetch = useCallback(() => {
     if (pageId == null) return;
     getData({ id: pageId });
-  }, [getData, pageId]);
+  }, [pageId]);
   
   useEffect(() => {
     refetch();
@@ -51,9 +46,9 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
         <p><b>Slug:</b> {pageData?.slug}</p>
         <p><b>Status:</b> {pageData?.is_published ? "Published" : "Draft"}</p>
         <p><b>SEO Title:</b> {translation?.seo_title}</p>
-        <p>Is Deleted: {pageData?.is_deleted ? <span>✅</span> : <span>❌</span>}</p>
-        <p>Is Published: {pageData?.is_published ? <span>✅</span> : <span>❌</span>}</p>
-        <p>Is Active: {pageData?.is_active ? <span>✅</span> : <span>❌</span>}</p>
+        <p>Is Deleted: {pageData?.is_deleted ? <span>✅</span> : <span className="text-red-700">❌</span>}</p>
+        <p>Is Published: {pageData?.is_published ? <span>✅</span> : <span  className="text-red-700">❌</span>}</p>
+        <p>Is Active: {pageData?.is_active ? <span>✅</span> : <span  className="text-red-700">❌</span>}</p>
 
 
         <p className="text-red-500 text-sm bg-red-50">

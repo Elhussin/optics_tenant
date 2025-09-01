@@ -200,3 +200,31 @@ class TenantSettingsSerializer(serializers.ModelSerializer):
         model = TenantSettings 
 
         fields = '__all__'
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField(write_only=True)
+    token = serializers.CharField(write_only=True)
+    password = ReusableFields.password()
+
+    def validate(self, data):
+        uid = data.get("uid")
+        token = data.get("token")
+        password = data.get("password")
+
+        try:
+            from django.utils.encoding import force_str
+            from django.utils.http import urlsafe_base64_decode
+            from django.contrib.auth.tokens import default_token_generator
+
+            uid = force_str(urlsafe_base64_decode(uid))
+            user = User.objects.get(pk=uid)
+        except Exception:
+            raise serializers.ValidationError({"uid": _("Invalid UID")})
+
+        if not default_token_generator.check_token(user, token):
+            raise serializers.ValidationError({"token": _("Invalid or expired token")})
+
+        # Attach user for later use in view
+        data["user"] = user
+        return data

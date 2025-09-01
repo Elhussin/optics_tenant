@@ -1,42 +1,52 @@
-'use client';
-import { useState } from 'react';
-import { useFormRequest } from '@/lib/hooks/useFormRequest';
-
+"use client";
+import { useState } from "react";
+import { useFormRequest } from "@/lib/hooks/useFormRequest";
+import { useTranslations } from "next-intl";
 export default function ForgotPasswordPage() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "invalid">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error" | "invalid"
+  >("idle");
   const [message, setMessage] = useState<string>("");
-
+  const t = useTranslations("forgotPassword");
   const alias = "users_password_reset_create";
 
   const formRequest = useFormRequest({
     alias,
     onSuccess: async (res) => {
       setStatus("success");
-      setMessage("Password reset link has been sent to your email.");
+      setMessage(t("SuccessMessage"));
     },
     onError: async (err) => {
-      const detail = err.response?.data?.detail || "Password reset failed. Please try again.";
+      const detail =
+        err.response?.data?.detail ||
+        "Password reset failed. Please try again.";
       setStatus("error");
-      setMessage(detail);
+      setMessage(t("ErrorMessage"));
     },
   });
 
   const onSubmit = async (data: any) => {
     if (!data.email) {
       setStatus("invalid");
-      setMessage("Email is required.");
+      setMessage(t("emailRequired"));
       return;
     }
     setStatus("loading");
-    setMessage("Resetting your password...");
+    setMessage(t("Resetting"));
     formRequest.submitForm({ data });
   };
 
   return (
-    <div>
+    <div className="h-screen">
+      <header className="">
+        <h1 className="title">{t("title")}</h1>
+        <p className="subtitle">{t("description")}</p>
+      </header>
       <form onSubmit={formRequest.handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="label" htmlFor="email">Email</label>
+          <label className="label" htmlFor="email">
+            {t("email")}
+          </label>
           <input
             type="email"
             required
@@ -45,7 +55,9 @@ export default function ForgotPasswordPage() {
             placeholder="Enter email"
           />
           {formRequest.errors.email && (
-            <p className="error-text">{formRequest.errors.email.message as string}</p>
+            <p className="error-text">
+              {formRequest.errors.email.message as string}
+            </p>
           )}
         </div>
 
@@ -54,13 +66,13 @@ export default function ForgotPasswordPage() {
           disabled={formRequest.isSubmitting || formRequest.isLoading}
           className="btn btn-primary"
         >
-          {formRequest.isSubmitting || formRequest.isLoading ? "Sending Reset Link..." : "Send Reset Link"}
+          {formRequest.isSubmitting || formRequest.isLoading
+            ? t("sending")
+            : t("button")}
         </button>
 
         {status !== "idle" && (
-          <div className={`status-text ${status}`}>
-            {message}
-          </div>
+          <div className={`status-text ${status}`}>{message}</div>
         )}
       </form>
     </div>

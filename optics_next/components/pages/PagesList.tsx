@@ -5,40 +5,42 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useParams } from "next/navigation";
 import {ActionButton } from "@/components/ui/buttons";
 import { Pencil, Eye } from "lucide-react";
+import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 export const PagesList = () => {
-    const [pagesData, setPagesData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    // const [pagesData, setPagesData] = useState<any>(null);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState<string | null>(null);
     const params = useParams();
     const locale = params?.locale as string;
     const pageRequest = useFormRequest({ alias: `users_pages_list` });
-    
-    useEffect(() => {
-  
-        const fetchPages = async () => {
-          try {
-            const result = await pageRequest.submitForm();
-            if (result?.success) {
-              setPagesData(result.data);
-            } else {
-              setError("No pages found");
-            }
-          } catch {
-            setError("Error loading pages");
-          } finally {
-            setLoading(false);
-          }
-        };
-        fetchPages();
-      
-    }, []);
 
-    // pageRequest
-    if (loading) return <Loading4 />
-    if (error) return <div className="text-red-500">{error}</div>;
+    const {data,isLoading} = useFilteredListRequest("users_pages_list");
+    // useEffect(() => {
+  
+    //     const fetchPages = async () => {
+    //       try {
+    //         const result = await pageRequest.submitForm();
+    //         if (result?.success) {
+    //           setPagesData(result.data);
+    //         } else {
+    //           setError("No pages found");
+    //         }
+    //       } catch {
+    //         setError("Error loading pages");
+    //       } finally {
+    //         setLoading(false);
+    //       }
+    //     };
+    //     fetchPages();
+      
+    // }, []);
+
+
+    if (isLoading || !data ) return <Loading4 />;
+    // if (errors) return <div className="text-red-500">{errors}</div>;
     return (
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {pagesData.map((p: any) => {
+        {data?.map((p: any) => {
           // اختيار الترجمة المناسبة
           const translation = p.translations?.find((t: any) => t.language === locale)
                             || p.translations?.find((t: any) => t.language === p.default_language);

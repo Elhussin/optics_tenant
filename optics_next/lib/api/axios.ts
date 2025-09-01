@@ -7,7 +7,6 @@ import { getCookie } from "@/lib/utils/getCookie";
 import { apiConfig } from "./apiConfig";
 import { parseCookies } from "nookies"; // مكتبة صغيرة لقراءة الكوكيز في server/client
 
-
 interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
   customRequest: (alias: string, data?: any) => Promise<any>;
 }
@@ -20,7 +19,6 @@ const axiosInstance = axios.create({
   },
 });
 
-
 const setHeader = (
   config: InternalAxiosRequestConfig,
   key: string,
@@ -32,23 +30,21 @@ const setHeader = (
   }
 };
 
-
-
 axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const cookies = parseCookies();
 
-  const csrfToken = cookies['optics_tenant_csrftoken'];
+  const csrfToken = cookies["optics_tenant_csrftoken"];
   const tenant = cookies["tenant"] || "public";
-  const language = cookies['django_language'] || process.env.DEFAULT_LANGUAGE;
+  const language = cookies["NEXT_LOCALE"] || process.env.DEFAULT_LANGUAGE;
   const country = cookies["country"] || process.env.DEFAULT_COUNTRY;
   const currency = cookies["currency"] || process.env.DEFAULT_CURRENCY;
 
   // تحديد الـ baseURL بشكل ديناميكي
-  config.baseURL = getBaseUrl(undefined,false);
+  config.baseURL = getBaseUrl(undefined, false);
   console.log("Base URL:", config.baseURL);
 
   // ضبط الهيدرز
-  setHeader(config,"X-OPTICS-TENANT-CSRFToken", csrfToken);
+  setHeader(config, "X-OPTICS-TENANT-CSRFToken", csrfToken);
   setHeader(config, "X-Tenant", tenant);
   setHeader(config, "Accept-Language", language);
   setHeader(config, "Accept-Country", country);
@@ -57,14 +53,14 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-
-
 let refreshTokenPromise: Promise<any> | null = null;
 
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);
@@ -82,7 +78,6 @@ axiosInstance.interceptors.response.use(
       }
 
       return axiosInstance(originalRequest);
-
     } catch (refreshError) {
       refreshTokenPromise = null;
       // window.location.href = '/auth/login';
@@ -90,8 +85,6 @@ axiosInstance.interceptors.response.use(
     }
   }
 );
-
- 
 
 export const api: CustomZodiosInstance = new Zodios(endpoints, {
   axiosInstance,
@@ -105,27 +98,26 @@ function replacePathParams(url: string, params: Record<string, any>): string {
   return processedUrl;
 }
 
-
 api.customRequest = async function (alias: string, data: any = {}) {
-  const endpoint : any = endpoints.find(e => e.alias === alias);
+  const endpoint: any = endpoints.find((e) => e.alias === alias);
   if (!endpoint) {
     throw new Error(`Endpoint with alias "${alias}" not found.`);
   }
 
   const method = endpoint.method.toUpperCase();
-  let url : string = endpoint.path;
+  let url: string = endpoint.path;
   const pathParams: Record<string, any> = {};
   const otherParams: Record<string, any> = {};
-  
-  const pathParamPattern : RegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
-  const pathParamNames : any[] = [];
-  let match : any;
-  
+
+  const pathParamPattern: RegExp = /:([a-zA-Z_][a-zA-Z0-9_]*)/g;
+  const pathParamNames: any[] = [];
+  let match: any;
+
   while ((match = pathParamPattern.exec(url)) !== null) {
     pathParamNames.push(match[1]);
   }
-  
-  if (data && typeof data === 'object') {
+
+  if (data && typeof data === "object") {
     Object.entries(data).forEach(([key, value]) => {
       if (pathParamNames.includes(key)) {
         pathParams[key] = value;
@@ -134,29 +126,26 @@ api.customRequest = async function (alias: string, data: any = {}) {
       }
     });
   }
-  
 
   url = replacePathParams(url, pathParams);
-  
+
   const config: any = {
     method: method,
     url: url,
   };
-  
-  if (method === 'GET' || method === 'DELETE') {
+
+  if (method === "GET" || method === "DELETE") {
     if (Object.keys(otherParams).length > 0) {
       config.params = otherParams;
     }
   } else {
     config.data = otherParams;
   }
-  
+
   try {
     const response = await axiosInstance(config);
-      return response.data;
-
+    return response.data;
   } catch (error) {
-
     throw error;
   }
 };
@@ -167,7 +156,6 @@ declare module "@zodios/core" {
   }
 }
 
-
 export default api;
 
-export {axiosInstance}
+export { axiosInstance };

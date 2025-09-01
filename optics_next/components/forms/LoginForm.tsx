@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
 import { useUser } from "@/lib/contexts/userContext";
 import { formRequestProps, UseFormRequestReturn } from "@/types";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
-import { useTranslations } from 'next-intl';
-import { useSearchParams,useRouter,useParams } from 'next/navigation';
+import { useTranslations } from "next-intl";
+import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { safeToast } from "@/lib/utils/toastService";
-import { cn } from '@/lib/utils/cn';
+import { cn } from "@/lib/utils/cn";
 import { useEffect } from "react";
-import Image from 'next/image';
+import Image from "next/image";
+import { Link } from "@/app/i18n/navigation";
 export default function LoginForm(props: formRequestProps) {
   const {
     title,
@@ -20,7 +21,7 @@ export default function LoginForm(props: formRequestProps) {
   } = props;
 
   const t = useTranslations("login");
-  const { fetchUser, setUser,user } = useUser();
+  const { fetchUser, setUser, user } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -39,32 +40,28 @@ export default function LoginForm(props: formRequestProps) {
     register,
   }: UseFormRequestReturn = useFormRequest({ alias });
 
-const onSubmit = async (data: any) => {
-  try {
-    const result = await submitForm(data);
-    if (!result?.success) return;
+  const onSubmit = async (data: any) => {
+    try {
+      const result = await submitForm(data);
+      if (!result?.success) return;
 
-
-
-    if (mode === "login") {
-      const userResult = await fetchUser.submitForm();
-      if (userResult?.success) {
-        setUser(userResult.data); // الآن عندك بيانات كاملة
-        router.replace(redirect);
-      } else {
-        safeToast(t("errorMessage"), { type: "error" });
+      if (mode === "login") {
+        const userResult = await fetchUser.submitForm();
+        if (userResult?.success) {
+          setUser(userResult.data); // الآن عندك بيانات كاملة
+          router.replace(redirect);
+        } else {
+          safeToast(t("errorMessage"), { type: "error" });
+        }
+      } else if (mode === "create") {
+        router.replace(`/${locale}/auth/login`);
       }
 
-    } else if (mode === "create") {
-      router.replace(`/${locale}/auth/login`);
+      safeToast(message || t("successMessage"), { type: "success" });
+    } catch {
+      safeToast(t("errorMessage"), { type: "error" });
     }
-
-    safeToast(message || t("successMessage"), { type: "success" });
-  } catch {
-    safeToast(t("errorMessage"), { type: "error" });
-  }
-};
-
+  };
 
   useEffect(() => {
     if (user) {
@@ -74,7 +71,11 @@ const onSubmit = async (data: any) => {
 
   return (
     <div className={cn("flex justify-center px-4 py-8 bg")}>
-      <div className={cn("max-w-5xl w-full grid grid-cols-1 bg-surface md:grid-cols-2 gap-8 rounded-2xl shadow-xl overflow-hidden")}>
+      <div
+        className={cn(
+          "max-w-5xl w-full grid grid-cols-1 bg-surface md:grid-cols-2 gap-8 rounded-2xl shadow-xl overflow-hidden"
+        )}
+      >
         {/* الفورم */}
         <div className="p-6 md:p-10">
           <h1 className="text-center text-2xl font-semibold mb-6">{title}</h1>
@@ -120,7 +121,9 @@ const onSubmit = async (data: any) => {
                 placeholder={t("passwordPlaceholder")}
               />
               {errors.password && (
-                <p className="error-text">{errors.password.message as string}</p>
+                <p className="error-text">
+                  {errors.password.message as string}
+                </p>
               )}
             </div>
 
@@ -137,7 +140,9 @@ const onSubmit = async (data: any) => {
                   <option value="trial">{t("planOption.trial")}</option>
                   <option value="basic">{t("planOption.basic")}</option>
                   <option value="premium">{t("planOption.pro")}</option>
-                  <option value="enterprise">{t("planOption.enterprise")}</option>
+                  <option value="enterprise">
+                    {t("planOption.enterprise")}
+                  </option>
                 </select>
                 {errors.requested_plan && (
                   <p className="error-text">
@@ -160,13 +165,42 @@ const onSubmit = async (data: any) => {
             >
               {isSubmitting || isLoading ? submitText + "..." : submitText}
             </button>
+            <div className="flex flex-col gap-2">
+              {mode === "login" ? (
+                <>
+                  <Link
+                    href="./register"
+                    className="btn btn-outline w-full text-primary underline"
+                  >
+                    {t("register")}
+                  </Link>
+                  <Link
+                    href="./forgot-password"
+                    className="btn btn-outline w-full text-primary underline"
+                  >
+                    {t("forgotPassword")}
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href="./login"
+                  className="btn btn-outline w-full text-primary underline"
+                >
+                  {t("button")}
+                </Link>
+              )}
+            </div>
           </form>
         </div>
 
         {/* الجانب الأيمن (صورة + رسالة ترحيب) */}
-        <div className={cn("hidden md:flex items-center justify-center bg-info p-1")}>
+        <div
+          className={cn(
+            "hidden md:flex items-center justify-center bg-info p-1"
+          )}
+        >
           <div className="relative w-full h-[400px] text-white text-center flex items-center justify-center">
-            <Image 
+            <Image
               src="/media/start.jpg"
               alt="Start APP"
               className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"

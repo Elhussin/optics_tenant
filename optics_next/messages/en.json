@@ -20,6 +20,9 @@
     "passwordPlaceholder": "Enter Password",
     "planLabel": "Plan",
     "planPlaceholder": "Select Plan",
+    "forgotPassword": "Forgot Password",
+    "register": "Register",
+
     "planOption": {
       "trial": "Trial",
       "basic": "Basic",
@@ -33,29 +36,42 @@
     "button": "Register",
     "message": "Register successfully"
   },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "description": "Please enter your email address below to reset your password.",
+    "button": "Send Reset Email",
+    "sending": "Sending Reset Link...",
+    "Resetting": "Resetting your password...",
+    "SuccessMessage": "If the email is valid, a password reset link will be sent to your email.",
+    "ErrorMessage": "Sorry, we cannot send the email. Please try again later.",
+    "emailRequired": "Email is required",
+    "email": "Email"
+  },
+  "resetPassword": {},
   "profilePage": {
     "title": "Profile",
     "description": "Profile to O-S-M",
     "button": "Profile",
     "message": "Profile successfully",
     "welcomeMessage": "Start Your Journey with O-S-M MR/S",
-    "userInformation":"User Information",
-    "username":"Username",
-    "email":"Email",
-    "role":"Role",
-    "clientInformation":" Client Information",
-    "clientName":"Name",
-    "plan":"Plan",
-    "maxUsers":"Max Users",
-    "maxProducts":"Max Products",
-    "maxBranches":"Max Branches",
-    "daysLeft":"Days Left",
-    "status":"Status",
-    "paidUntil":"Paid Until",
-    "subscriptionAboutToExpire":"Subscription About To Expire",
-    "subscriptionActive":"Subscription Active",
-    "subscriptionExpiresIn":"Subscription Expires In",
-    "subscriptionExpired":"Subscription Expired"
+    "userInformation": "User Information",
+    "username": "Username",
+    "email": "Email",
+    "role": "Role",
+    "clientInformation": " Client Information",
+    "clientName": "Name",
+    "plan": "Plan",
+    "maxUsers": "Max Users",
+    "maxProducts": "Max Products",
+    "maxBranches": "Max Branches",
+    "daysLeft": "Days Left",
+    "status": "Status",
+    "paidUntil": "Paid Until",
+    "subscriptionAboutToExpire": "Subscription About To Expire",
+    "subscriptionActive": "Subscription Active",
+    "subscriptionExpiresIn": "Subscription Expires In",
+    "subscriptionExpired": "Subscription Expired",
+    "failedToLoad": "Failed to load profile data"
   },
   "tenants": {
     "title": "Start Now",
@@ -156,7 +172,7 @@
     "startTrial": "Start Free Trial",
     "contactUs": "Contact Us"
   },
-  
+
   "error": {
     "title": "Error",
     "message": "An error occurred. Please try again later.",
@@ -165,19 +181,18 @@
     "redirectMessage": "You will be redirected to the home page in 3 seconds..."
   },
   "contact": {
-      "title": "Contact Us",
-      "description": "Need help? Have feedback or suggestions? We'd love to hear from you.",
-      "company": "Company",
-      "email": "Email",
-      "phone": "Phone",
-      "address": "Address",
-      "name": "Your Name",
-      "message": "Your Message",
-      "image": "Upload Image (optional)",
-      "submit": "Send Message",
-      "successMessage": "Message sent successfully!",
-      "errorMessage": "Something went wrong. Please try again later."
-      
+    "title": "Contact Us",
+    "description": "Need help? Have feedback or suggestions? We'd love to hear from you.",
+    "company": "Company",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "name": "Your Name",
+    "message": "Your Message",
+    "image": "Upload Image (optional)",
+    "submit": "Send Message",
+    "successMessage": "Message sent successfully!",
+    "errorMessage": "Something went wrong. Please try again later."
   },
   "NotFound": {
     "title": "Page Not Found",
@@ -250,7 +265,7 @@
       "enterprise": {
         "name": "Enterprise",
         "description": "For large enterprises",
-        "features": [ "Custom Features", "Priority Support"]
+        "features": ["Custom Features", "Priority Support"]
       }
     }
   },
@@ -282,72 +297,69 @@
     "description": "You have cancelled the payment process. You can try again anytime to complete your subscription.",
     "tryAgain": "Try Again"
   },
-  "privacy": 
-  {
-    
-  "title": "Privacy Policy",
-  "description": "We value your privacy and commit to protecting your personal data.",
-  "section1": {
-    "title": "Information Collection",
-    "content": "We collect minimal personal data necessary to operate the platform."
+  "privacy": {
+    "title": "Privacy Policy",
+    "description": "We value your privacy and commit to protecting your personal data.",
+    "section1": {
+      "title": "Information Collection",
+      "content": "We collect minimal personal data necessary to operate the platform."
+    },
+    "section2": {
+      "title": "Data Protection",
+      "content": "Your data is encrypted and not shared with third parties."
+    }
   },
-  "section2": {
-    "title": "Data Protection",
-    "content": "Your data is encrypted and not shared with third parties."
-  }
-},
- "terms": {
-   "title": "Terms of Service",
-  "description": "Please read these terms before using our services.",
-  "section1": {
-    "title": "Usage Terms",
-    "content": "You agree to use the platform lawfully and responsibly."
+  "terms": {
+    "title": "Terms of Service",
+    "description": "Please read these terms before using our services.",
+    "section1": {
+      "title": "Usage Terms",
+      "content": "You agree to use the platform lawfully and responsibly."
+    },
+    "section2": {
+      "title": "Liability",
+      "content": "We are not responsible for data loss due to misuse."
+    }
   },
-  "section2": {
-    "title": "Liability",
-    "content": "We are not responsible for data loss due to misuse."
-  }
-},
-"faq" :
-{
-  "title": "Frequently Asked Questions",
-  "q1": {
-    "question": "How do I register?",
-    "answer": "Go to the registration page and fill out your details."
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "q1": {
+      "question": "How do I register?",
+      "answer": "Go to the registration page and fill out your details."
+    },
+    "q2": {
+      "question": "How can I contact support?",
+      "answer": "You can use the contact form or email us directly."
+    },
+    "q3": {
+      "question": "Is there a free trial?",
+      "answer": "Yes, we offer a free trial for 30 days."
+    }
   },
-  "q2": {
-    "question": "How can I contact support?",
-    "answer": "You can use the contact form or email us directly."
+  "support": {
+    "title": "Support",
+    "description": "Need help? Our support team is here to assist you anytime.",
+    "section1": {
+      "title": "How to Get Support",
+      "content": "You can reach out via the contact form or email support@osm.com."
+    },
+    "section2": {
+      "title": "Response Time",
+      "content": "We aim to respond to all queries within 24 hours."
+    }
   },
-  "q3": {
-    "question": "Is there a free trial?",
-    "answer": "Yes, we offer a free trial for 30 days."
-  }
-},
-"support":{
-  "title": "Support",
-  "description": "Need help? Our support team is here to assist you anytime.",
-  "section1": {
-    "title": "How to Get Support",
-    "content": "You can reach out via the contact form or email support@osm.com."
+  "careers": {
+    "title": "Careers",
+    "description": "Join our growing team and shape the future of optical retail software.",
+    "section1": {
+      "title": "Why Work With Us?",
+      "content": "We offer a collaborative environment, growth opportunities, and meaningful work."
+    },
+    "section2": {
+      "title": "Open Positions",
+      "content": "Currently, we are hiring developers, designers, and sales representatives."
+    }
   },
-  "section2": {
-    "title": "Response Time",
-    "content": "We aim to respond to all queries within 24 hours."
-  }
-},
-"careers":{
-  "title": "Careers",
-  "description": "Join our growing team and shape the future of optical retail software.",
-  "section1": {
-    "title": "Why Work With Us?",
-    "content": "We offer a collaborative environment, growth opportunities, and meaningful work."
-  },
-  "section2": {
-    "title": "Open Positions",
-    "content": "Currently, we are hiring developers, designers, and sales representatives."
-  }
-},
   "blog": {
     "title": "Blog",
     "description": "Stay updated with the latest news, tips, and insights from the O-S-M team.",
@@ -359,7 +371,45 @@
       "title": "Subscribe",
       "content": "Subscribe to our newsletter for regular updates."
     }
+  },
+  "pages": {
+    "allPages": "All Pages",
+    "createNewPage": "Create Page",
+    "publicPages": "Public Pages",
+    "publicPagesDesc": "You can add public pages with default data like (About Us, Contact Us, Privacy Policy, Terms of Service, FAQ, Support, Careers, Blog) in the sidebar.",
+    "editPage": "Edit Page",
+    "viewPage": "View Page",
+    "pageTitle": "Page Title",
+    "pageSlug": "Page Slug",
+    "pageContent": "Page Content",
+    "pageStatus": "Page Status",
+    "isPublished": "Is Published",
+    "isDraft": "Is Draft",
+    "seoTitle": "SEO Title",
+    "seoDescription": "SEO Description",
+    "language": "Language",
+    "selectLanguage": "Select Language",
+    "saveChanges": "Save Changes",
+    "deletePage": "Delete Page",
+    "confirmDelete": "Are you sure you want to delete this page?",
+    "pageCreated": "Page created successfully!",
+    "pageUpdated":"daPage updated successfully!",
+    "pageDeleted": "Page deleted successfully!",
+    "loading": "Loading...",
+    "errorLoading": "Error loading page data.",
+    "noPagesFound": "No pages found.",
+    "backToPages": "Back to Pages"
+  },
+  "publicPagesList": {
+    "about": "About Us",
+    "contact": "Contact Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "faq": "Frequently Asked Questions",
+    "support": "Support",
+    "careers": "Careers",
+    "blog": "Blog"
   }
+
+
 }
-
-

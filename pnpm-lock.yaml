@@ -183,6 +183,12 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.1.7(@types/react@19.1.11)
+      ajv:
+        specifier: ^8.17.1
+        version: 8.17.1
+      ajv-draft-04:
+        specifier: ^1.0.0
+        version: 1.0.0(ajv@8.17.1)
       autoprefixer:
         specifier: ^10.4.21
         version: 10.4.21(postcss@8.5.6)

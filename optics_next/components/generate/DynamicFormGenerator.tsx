@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { schemas } from '@/lib/api/zodClient';
-
 import { Loading4 } from '@/components/ui/loding';
 import { DynamicFormProps } from '@/types/DynamicFormTypes';
 import { defaultConfig, ignoredFields } from './dataConfig';
@@ -12,10 +11,10 @@ import { BackButton, RestButton, Button } from '@/components/ui/buttons/Button';
 import { CirclePlus } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
-import { toast } from 'sonner';
-import { formsConfig,FormConfig } from '@/config/formsConfig';
+import { formsConfig } from '@/config/formsConfig';
 import { useMemo } from 'react';
 import { safeToast } from '@/lib/utils/toastService';
+
 export default function DynamicFormGenerator(props: DynamicFormProps) {
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
@@ -73,6 +72,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   if (mode === 'edit' && !defaultValues) {
     return <Loading4 message="Loading form data..." />;
   }
+  console.log(defaultValues)
   return (
     <div className={cn(className) + ' container'}>
       <div className="head">

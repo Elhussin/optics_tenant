@@ -18,13 +18,14 @@ from django.utils.encoding import force_str, force_bytes
 from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
 from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,
                           TenantSettingsSerializer,RegisterSerializer, LoginSerializer,
-                          UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,
-                          TenantSettings)
+                          UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,PasswordResetConfirmSerializer,
+                         TenantSettings)
 from tenants.models import Client
 from rest_framework import permissions
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
 from rest_framework.decorators import action
+
 User = get_user_model()
 
 class RegisterView(APIView):
@@ -110,7 +111,7 @@ class RefreshTokenView(APIView):
             )
         }
     )
-    
+
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
@@ -134,7 +135,7 @@ class RefreshTokenView(APIView):
             access["permissions"] = list(permissions.values_list('code', flat=True))
 
             response = Response({"msg": "Token refreshed", "access": str(access)})
-            set_token_cookies(response, access=str(access)) 
+            set_token_cookies(response, access=str(access))
             return response
 
         except TokenError:
@@ -165,7 +166,7 @@ class ProfileView(APIView):
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
             return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
-        
+
 class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
     from tenants.models import Client
@@ -186,47 +187,80 @@ class RequestPasswordResetView(APIView):
 
 
     def post(self, request):
-        email = request.data.get('email')
+        email = request.data.get('data', {}).get('email')
+
+        if not email:
+            return Response({"detail": "Email is required."}, status=400)
+
         tenant = request.headers.get('X-Tenant')
+        leng=request.headers.get('accept-language')or 'en'
+
+
 
         if not tenant:
             return Response({"detail": "Missing X-Tenant header."}, status=400)
 
         # تحقق من صحة tenant إذا لزم الأمر (اختياري)
         try:
-            tenant_obj = Client.objects.get(schema_name=tenant)
+            tenant_obj = Client.objects.get(schema_name=tenant,is_active=True)
         except Client.DoesNotExist:
             return Response({"detail": "Invalid tenant."}, status=400)
 
         user = User.objects.filter(email=email).first()
+
         if user:
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
             protocol = "https" if not settings.DEBUG else "http"
             port = ":3000" if settings.DEBUG else ""
-            reset_url = f"{protocol}://{tenant}.{settings.TENANT_BASE_DOMAIN}{port}/auth/forgot-password/?uid={uid}&token={token}"
-            send_password_reset_email(email, reset_url)
+            addTenant=f"{tenant}." if tenant !="public" else ""
+            if user.is_active:
+                reset_url = f"{protocol}://{addTenant}{settings.TENANT_BASE_DOMAIN}{port}/{leng}/auth/reset-password/?uid={uid}&token={token}"
+                send_password_reset_email(email, reset_url)
 
         return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
 
+# class PasswordResetConfirmView(APIView):
+#     permission_classes = [AllowAny]
+#     def post(self, request):
+#         uidb64 = request.data.get('uid')
+#         token = request.data.get('token')
+#         password = request.data.get('password')
+
+#         try:
+#             uid = force_str(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(pk=uid)
+#             print(uidb64, token, password,uid,user)  
+#         except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+#             return Response({"detail": "Invalid UID"}, status=400)
+
+#         if not default_token_generator.check_token(user, token):
+#             return Response({"detail": "Invalid or expired token"}, status=400)
+
+#         password = ReusableFields.password()
+#         if not password or len(password) < 8:
+#             return Response({"detail": "Password must be at least 8 characters long"}, status=400)
+
+#         user.set_password(password)
+#         user.save()
+#         return Response({"detail": "Password has been reset successfully"}, status=200)
+
+# views.py
+
+
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+
     def post(self, request):
-        uidb64 = request.data.get('uid')
-        token = request.data.get('token')
-        password = request.data.get('password')
+        serializer = PasswordResetConfirmSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        try:
-            uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            return Response({"detail": "Invalid UID"}, status=400)
-
-        if not default_token_generator.check_token(user, token):
-            return Response({"detail": "Invalid or expired token"}, status=400)
+        user = serializer.validated_data["user"]
+        password = serializer.validated_data["password"]
 
         user.set_password(password)
         user.save()
+
         return Response({"detail": "Password has been reset successfully"}, status=200)
 
 class LogoutView(APIView):
@@ -255,7 +289,6 @@ class LogoutView(APIView):
         print("Logged out")
         return response
 
-
 # @method_decorator(role_required(['ADMIN']), name='dispatch')
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
@@ -272,14 +305,13 @@ class RoleViewSet(viewsets.ModelViewSet):
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated]
 
-
 class UserViewSet(viewsets.ModelViewSet):
     # is_deleted=False
     queryset = User.objects.filter()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         user = self.request.user
@@ -306,9 +338,6 @@ class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "slug"
     permission_classes = [AllowAny]
 
-
-
-
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
@@ -322,21 +351,21 @@ class PageViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         print("Incoming data:", request.data)
-        
+
         # Extract the actual data from formData wrapper if it exists
         data = request.data
         if 'formData' in data:
             data = data['formData']
-        
+
         # Remove read-only fields that shouldn't be in update
         read_only_fields = ['id', 'created_at', 'updated_at', 'slug', 'author']
         clean_data = {k: v for k, v in data.items() if k not in read_only_fields}
-        
+
         print("Clean data for serializer:", clean_data)
-        
+
         # Create a new request data object with clean data
         request._full_data = clean_data
-        
+
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=clean_data, partial=kwargs.get('partial', False))
         serializer.is_valid(raise_exception=True)
@@ -346,7 +375,6 @@ class PageViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
-    
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
@@ -358,8 +386,3 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
             return True
         # Write permissions only to the owner
         return obj.author == request.user
-
-
-    
-
-   

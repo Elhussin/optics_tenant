@@ -150,7 +150,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     } finally {
       setLoading(false);
     }
-  }, [pageId, pageRequest]); // ← ضيف كل الديبندنسيز اللي بتستخدمها
+  }, [pageId]); // ← ضيف كل الديبندنسيز اللي بتستخدمها
 
   
   
@@ -158,7 +158,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     if (pageId) {
       loadPage();
     }
-  }, [pageId,loadPage]);
+  }, [pageId]);
 
 
 
