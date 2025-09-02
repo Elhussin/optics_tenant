@@ -4,7 +4,7 @@ import { relationshipConfigs } from './dataConfig';
 import { useState, useEffect } from 'react';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import Modal from "@/components/view/Modal";
-import {Button} from "@/components/ui/buttons/Button";
+import { Button } from "@/components/ui/buttons/Button";
 import { CirclePlus } from 'lucide-react';
 import ReactSelect from 'react-select';
 import { Controller } from 'react-hook-form';
@@ -93,12 +93,44 @@ export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
   return options;
 }
 
+// export function useForeignKeyData(fieldName: string, fieldType: string) {
+//   const [data, setData] = useState<any[]>([]);
+//   const [loading, setLoading] = useState(false);
+//   if (fieldType !== 'foreignkey') throw new Error('Invalid field type');
+//   const alies = relationshipConfigs[fieldName].endpoint;
+
+//   const fetchForeignKeyData = useFormRequest({
+//     alias: alies,
+//     onSuccess: (res) => {
+//       setData(Array.isArray(res) ? res : res.data || []);
+//       setLoading(false);
+//     },
+//     onError: (err) => {
+//       console.error("Error", err);
+//       setLoading(false);
+//     },
+//   });
+
+
+//   useEffect(() => {
+//     if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
+//       setLoading(true);
+//       fetchForeignKeyData.submitForm();
+//     }
+//   }, [fieldName, fieldType]);
+
+
+//   return { data, loading };
+// }
 export function useForeignKeyData(fieldName: string, fieldType: string) {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const alies = relationshipConfigs[fieldName].endpoint;
+
+  // خد config لو موجود
+  const alias = relationshipConfigs[fieldName]?.endpoint;
+
   const fetchForeignKeyData = useFormRequest({
-    alias: alies,
+    alias,
     onSuccess: (res) => {
       setData(Array.isArray(res) ? res : res.data || []);
       setLoading(false);
@@ -109,14 +141,13 @@ export function useForeignKeyData(fieldName: string, fieldType: string) {
     },
   });
 
-  
   useEffect(() => {
-    if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
+    // ✅ الشرط هنا: مفيش API request إلا لو النوع فعلاً foreignkey
+    if (fieldType === "foreignkey" && alias) {
       setLoading(true);
-      fetchForeignKeyData.submitForm(); 
+      fetchForeignKeyData.submitForm();
     }
-  }, [fieldName, fieldType,fetchForeignKeyData]);
-
+  }, [fieldType, fieldName, alias]);
 
   return { data, loading };
 }
@@ -147,33 +178,34 @@ export function ForeignKeyField({
 
       </label>
       <div className="flex items-center w-full">
-<Controller
-  name={fieldName}
-  control={form.control}
-  render={({ field }) => (
-    <ReactSelect
-    menuPortalTarget={document.body}
+        <Controller
+          name={fieldName}
+          control={form.control}
+          render={({ field }) => (
+            <ReactSelect
 
-      {...field}
-      options={data.map((item) => ({
-        value: item[relationConfig.valueField],
-        label: item[relationConfig.labelField],
-      }))}
-      onChange={(selected) => field.onChange(selected?.value)}
-      value={data
-        .map((item) => ({
-          value: item[relationConfig.valueField],
-          label: item[relationConfig.labelField],
-        }))
-        .find((opt) => opt.value === field.value) || null}
-      placeholder="Select..."
-      isClearable
-      classNamePrefix="rs"
-      className="w-full"
+              menuPortalTarget={document.body}
 
-    />
-  )}
-/>
+              {...field}
+              options={data.map((item) => ({
+                value: item[relationConfig.valueField],
+                label: item[relationConfig.labelField],
+              }))}
+              onChange={(selected) => field.onChange(selected?.value)}
+              value={data
+                .map((item) => ({
+                  value: item[relationConfig.valueField],
+                  label: item[relationConfig.labelField],
+                }))
+                .find((opt) => opt.value === field.value) || null}
+              placeholder="Select..."
+              isClearable
+              classNamePrefix="rs"
+              className="w-full"
+
+            />
+          )}
+        />
 
 
 
@@ -185,7 +217,7 @@ export function ForeignKeyField({
           label="Add"
 
         />
-    </div>
+      </div>
       {showModal && (
         <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
       )}
@@ -210,8 +242,7 @@ export function UnionField({
   errors
 }: any) {
   const unwrappedSchema = unwrapSchema(fieldSchema);
-  // const options = getUnionOptions(unwrappedSchema);
-    const options =
+  const options =
     unwrappedSchema instanceof z.ZodUnion
       ? getUnionOptions(unwrappedSchema)
       : [];
@@ -243,4 +274,28 @@ export function UnionField({
       )}
     </div>
   );
+}
+
+
+export function useFieldOptions(fieldName: string, fieldType: string, schema?: z.ZodEnum<any>) {
+  const foreignKeyData = useForeignKeyData(fieldName, fieldType);
+
+  if (fieldType === "foreignkey") {
+    return {
+      data: foreignKeyData.data.map((opt: any) => ({
+        label: opt.label || opt.name || String(opt.id),
+        value: opt.value || opt.id,
+      })),
+      loading: foreignKeyData.loading,
+    };
+  }
+
+  if (fieldType === "select" && schema) {
+    return {
+      data: schema.options.map((opt) => ({ label: opt, value: opt })),
+      loading: false,
+    };
+  }
+
+  return { data: [], loading: false };
 }
