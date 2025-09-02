@@ -18,16 +18,15 @@ import { safeToast } from '@/lib/utils/toastService';
 export default function DynamicFormGenerator(props: DynamicFormProps) {
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
-  const { entity, id, mode = 'create' } = props
+  const { entity, id } = props
   if (!entity) throw new Error('entity is required');
-  if (mode === 'edit' && !id) throw new Error('id is required in edit mode');
   const form = formsConfig[entity];
-  const alias = useMemo(() => (mode === 'edit' ? form.updateAlias : form.createAlias), [mode, form]);
+  const alias = useMemo(() => (id ? form.updateAlias : form.createAlias), [id, form]);
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);
-  const submitText = useMemo(() => (mode === 'edit' ? form.updateTitle : form.createTitle), [mode, form]);
-  const successMessage = useMemo(() => (mode === 'edit' ? form.updateSuccessMessage : form.createSuccessMessage), [mode, form]);
-  const errorMessage = useMemo(() => (mode === 'edit' ? form.updateErrorMessage : form.createErrorMessage), [mode, form]);
-  const title = useMemo(() => (mode === 'edit' ? form.updateTitle : form.createTitle), [mode, form]);
+  const submitText = useMemo(() => (id ? form.updateTitle : form.createTitle), [id, form]);
+  const successMessage = useMemo(() => (id ? form.updateSuccessMessage : form.createSuccessMessage), [id, form]);
+  const errorMessage = useMemo(() => (id ? form.updateErrorMessage : form.createErrorMessage), [id, form]);
+  const title = useMemo(() => (id ? form.updateTitle : form.createTitle), [id, form]);
   const showResetButton = form.showResetButton ?? true;
   const showBackButton = form.showBackButton ?? true;
   const className = form.className || '';
@@ -38,9 +37,9 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const shape = schema.shape;
 
   const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
-  const effectiveIgnoredFields = useMemo(() => (mode === 'edit' ? [...ignoredFields, 'password'] : ignoredFields), [mode]);
+  const effectiveIgnoredFields = useMemo(() => (id ? [...ignoredFields, 'password'] : ignoredFields), [id]);
   const visibleFields = config.fieldOrder || allFields;
-  const formRequest = useFormRequest({ alias, defaultValues });
+  const formRequest = useFormRequest({ alias });
   const fetchDefaultData = useFormRequest({ alias: fetchAlias });
   const onSubmit = async (data: any) => {
     const result = await formRequest.submitForm(data);
@@ -53,30 +52,32 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   };
 
   useEffect(() => {
-    if (mode === 'edit' && id) {
+    if (id) {
       const fetchData = async () => {
         const result = await fetchDefaultData.submitForm({ id });
         setDefaultValues(result.data);
       };
       fetchData();
     }
-  }, [mode, id]);
-
-
+  }, [id]);
+  
   useEffect(() => {
-    if (defaultValues) {
-      formRequest.reset(defaultValues);
-    }
-  }, []);
+  if (defaultValues) {
+    formRequest.reset(defaultValues);
+  }
+  }, [defaultValues]);
 
-  if (mode === 'edit' && !defaultValues) {
+  if (id && !defaultValues) {
     return <Loading4 message="Loading form data..." />;
   }
-  console.log(defaultValues)
+
+
+
+    console.log(defaultValues,)
   return (
     <div className={cn(className) + ' container'}>
       <div className="head">
-        {/* <h2 className="title" >{mode === 'edit' ? 'Edit ' : ''}{title?title:schemaName}</h2> */}
+
         <h2 className="title" >{title ? title : form.schemaName}</h2>
 
         {showBackButton && <BackButton />}
@@ -91,7 +92,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
             fieldSchema={shape[fieldName]}
             form={formRequest}
             config={config}
-            mode={mode}
+            mode={id ? 'edit' : 'create'}
           />
         ))}
 
@@ -99,7 +100,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
           <Button
             type="submit"
             label={formRequest.formState.isSubmitting ? 'Saving...' : (submitText || config.submitButtonText)}
-            onClick={() => formRequest.handleSubmit(onSubmit)}
+            // onClick={() => formRequest.handleSubmit(onSubmit)}
             className={`${config.submitButtonClasses} ${formRequest.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             disabled={formRequest.formState.isSubmitting}

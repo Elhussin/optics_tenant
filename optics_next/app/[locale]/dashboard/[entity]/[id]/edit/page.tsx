@@ -14,5 +14,5 @@ export default function EntityEditPage() {
     return <NotFound error="Invalid entity" />;
   }
 
-  return <DynamicFormGenerator entity={entity} id={id} mode="edit" />;
+  return <DynamicFormGenerator entity={entity} id={id} />;
 }

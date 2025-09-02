@@ -27,8 +27,6 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     const endpoint = useMemo(() => {
     const found = api.api.find((e) => e.alias === alias);
     if (!found) {
-      // console.error(`❌ Endpoint with alias "${alias}" not found.`);
-      // safeToast(`Endpoint with alias "${alias}" not found.`, { type: "error" });    
       return null;
     }
     return found;
@@ -40,11 +38,6 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
   ? endpoint.parameters?.body ?? endpoint.parameters?.query
   : undefined;
 
-  // if (!schema) {
-  //   console.warn(`⚠️ No schema defined for endpoint "${alias}". Validation skipped.`);
-  // }
-
-
   const resolver =
     schema instanceof ZodObject
       ? zodResolver(schema)
@@ -55,7 +48,8 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
     defaultValues,
     mode: "onChange",
   });
-  const submitForm = useCallback(async (data: any = undefined) => {
+
+  const submitForm = useCallback(async (data: any  ) => {
     if (!endpoint) {
       return { success: false, error: `Endpoint "${alias}" not found.` };
     }
@@ -68,68 +62,46 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
 
       if (!isValid) {
         setIsLoading(false);
-
-        // ترجع كل الأخطاء بشكل واضح
-        const fieldErrors = Object.values(methods.formState.errors).map(
-          (err: any) => err?.message
-        );
-        return {
-          success: false,
-          error: fieldErrors.join(", ") || "Validation failed",
-        };
+        const fieldErrors = Object.values(methods.formState.errors).map((err: any) => err?.message );
+        return { success: false, error: fieldErrors.join(", ") || "Validation failed",};
       }
-      // if transform  applay
+  
       const payload = transform ? transform(values) : values;
-      // save current payload
       lastPayloadRef.current = payload;
-
 
       const response = await api.customRequest(endpoint.alias, payload);
 
-      // if (!response.ok) {
-      //     // 🔴 فيه خطأ من السيرفر
-      //     throw { response, status: response.status };
-      //   }
 
-
-      if (response && onSuccess) {
-        onSuccess(response);
-      }
+      onSuccess?.(response);
       return { success: true, data: response };
 
-
     } catch (error: any) {
-
-
-      console.log("Error in useFormRequest:", error);
       handleServerErrors(error, methods.setError, { showToast });
-    const normalized = handleErrorStatus(error);
+      const normalized = handleErrorStatus(error);
       onError?.(normalized);
       return { success: false, error: normalized };
     } finally {
       setIsLoading(false);
     }
   
-  }, [endpoint, alias, methods, onSuccess, onError, transform]);
+  }, [endpoint, alias, transform, onSuccess, onError, methods]);
 
 
-  const retry = () => {
-  if (!lastPayloadRef.current) return { success: false, error: "No previous payload to retry" };
-  return submitForm(lastPayloadRef.current);
-};
+  const retry = useCallback(() => {
+    if (!lastPayloadRef.current) return { success: false, error: "No previous payload to retry" };
+    return submitForm(lastPayloadRef.current);
+  }, [submitForm]);
 
   const isSubmitting = methods.formState.isSubmitting || isLoading;
   
-  return {
+  return useMemo(() => ({
     ...methods,
     submitForm,
     retry,
     errors: methods.formState.errors,
-    formErrors: {
-      ...methods.formState.errors,
-      root: methods.formState.errors.root?.message,
-    },
+    formErrors: { ...methods.formState.errors, root: methods.formState.errors.root?.message },
     reset: methods.reset,
     isSubmitting
-  };
+  }), [methods, submitForm, retry, isSubmitting]);
 }
+

@@ -99,7 +99,8 @@
     "close": "اغلاق",
     "deactivate": "الغاء تنشيط",
     "delete": "مسح",
-    "deleteTitle": "اسرجاع عنصر محذوف",
+    "deleteTitle": " حذف العنصر نهائيا ",
+    "restoreTitle":"استرجاع العنصر",
     "edit": "تعديل",
     "hardDelete": "حذف",
     "restore": "استرجاع",
@@ -110,7 +111,9 @@
     "create": "إنشاء",
     "copy": "نسخ",
     "print": "طباعة",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "updatedSuccessfully": "تم التحديث بنجاح",
+    "errorUpdating": "حدث خطأ أثناء التحديث"
   },
   "aside": {
     "Home": "الرئيسية",
@@ -429,6 +432,13 @@
     "status": "الحالة",
     "seoTitle": "عنوان SEO",
     "edit":"تعديل",
-    "view":"عرض"
+    "view":"عرض",
+    "isDeleted":"تم الحذف",
+    "isPublished":"تم النشر",
+    "isActive":"نشط",
+    "deletedMessage":"تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي.",
+    "draft":"مسودة",
+    "published":"تم النشر"
 }
 }
+

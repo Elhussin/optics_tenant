@@ -101,7 +101,8 @@
     "close": "Close",
     "deactivate": "Deactivate",
     "delete": "Delete",
-    "delatetitle": "This action will restore the item",
+    "deleteTitle": "This action will delete the item",
+    "restoreTitle": "This action will restore the item",
     "edit": "Edit",
     "hardDelete": "Remove",
     "restore": "Restore",
@@ -112,7 +113,9 @@
     "create": "Create",
     "copy": "Copy",
     "print": "Print",
-    "pdf": "PDF"
+    "pdf": "PDF",
+    "updatedSuccessfully": "Updated Successfully",
+    "errorUpdating": "Error Updating"
   },
   "aside": {
     "Home": "Home",
@@ -432,6 +435,12 @@
     "status": "Status",
     "seoTitle": "SEO Title",
     "edit":"Edit",
-    "view":"View"
-}
+    "view":"View",
+    "isDeleted":"Is Deleted",
+    "isPublished":"Is Published",
+    "isActive":"Is Active",
+    "deletedMessage":"This item is deleted. You can restore it or delete it permanently.",
+    "draft":"Draft",
+    "published":"Published"
+  }
 }
