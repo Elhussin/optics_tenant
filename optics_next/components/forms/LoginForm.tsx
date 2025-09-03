@@ -10,6 +10,9 @@ import { cn } from "@/lib/utils/cn";
 import { useEffect } from "react";
 import Image from "next/image";
 import { Link } from "@/app/i18n/navigation";
+import {useLocale} from "next-intl";
+import { Loading4 } from "@/components/ui/loding";
+import { User } from '@/types';
 export default function LoginForm(props: formRequestProps) {
   const {
     title,
@@ -21,22 +24,18 @@ export default function LoginForm(props: formRequestProps) {
   } = props;
 
   const t = useTranslations("login");
-  const { fetchUser, setUser, user } = useUser();
+  const { refetchUser, setUser, user,loading } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // قيم الـ query params مباشرة
   const redirect = searchParams.get("redirect") || "/profile";
-  const defaultPlan = searchParams.get("plan") || "basic";
-  const params = useParams();
-  const locale = params.locale || "en";
-  // react-hook-form من خلال useFormRequest
+  const locale = useLocale() || "en";
+
   const {
     handleSubmit,
     submitForm,
     errors,
     isSubmitting,
-    isLoading,
     register,
   }: UseFormRequestReturn = useFormRequest({ alias });
 
@@ -46,9 +45,9 @@ export default function LoginForm(props: formRequestProps) {
       if (!result?.success) return;
 
       if (mode === "login") {
-        const userResult = await fetchUser.submitForm();
+        const userResult = await refetchUser();
         if (userResult?.success) {
-          setUser(userResult.data); // الآن عندك بيانات كاملة
+          setUser(userResult.data as User);
           router.replace(redirect);
         } else {
           safeToast(t("errorMessage"), { type: "error" });
@@ -63,11 +62,14 @@ export default function LoginForm(props: formRequestProps) {
     }
   };
 
+
   useEffect(() => {
-    if (user) {
+    if (!loading && user) {
       router.replace(redirect);
     }
-  }, [user, redirect, router]);
+  }, [user, loading, redirect, router]);
+  
+    // if( isSubmitting || loading ) return <Loading4 />;
 
   return (
     <div className={cn("flex justify-center px-4 py-8 bg")}>
@@ -134,7 +136,7 @@ export default function LoginForm(props: formRequestProps) {
                 <select
                   {...register("requested_plan")}
                   className="select"
-                  defaultValue={defaultPlan}
+                  // defaultValue={defaultPlan}
                 >
                   <option value="">{t("planPlaceholder")}</option>
                   <option value="trial">{t("planOption.trial")}</option>
@@ -160,10 +162,10 @@ export default function LoginForm(props: formRequestProps) {
             {/* زر الإرسال */}
             <button
               type="submit"
-              disabled={isSubmitting || isLoading}
+              disabled={isSubmitting }
               className="btn btn-primary w-full text-white"
             >
-              {isSubmitting || isLoading ? submitText + "..." : submitText}
+              {isSubmitting ? submitText + "..." : submitText}
             </button>
             <div className="flex flex-col gap-2">
               {mode === "login" ? (
@@ -204,7 +206,7 @@ export default function LoginForm(props: formRequestProps) {
               src="/media/start.jpg"
               alt="Start APP"
               className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
-              width={400}
+              width={500}
               height={400}
             />
             <div className="absolute bottom-3 z-10 space-y-4">

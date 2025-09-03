@@ -22,7 +22,11 @@
     "planPlaceholder": "Select Plan",
     "forgotPassword": "Forgot Password",
     "register": "Register",
-
+    "successMessage": "Login successfully",
+    "errorMessage": "Error during login",
+    "logoutSuccess": "Logged out successfully",
+    "logoutError": "Failed to log out",
+    "useUserError": "useUser must be used within a UserProvider",
     "planOption": {
       "trial": "Trial",
       "basic": "Basic",

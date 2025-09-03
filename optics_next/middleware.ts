@@ -17,9 +17,15 @@ export const config = {
 
 const intl = createIntlMiddleware(routing);
 
-function extractLocale(pathname: string): string {
+// function extractLocale(pathname: string): string {
+//   const match = pathname.match(/^\/(ar|en)(?=\/|$)/);
+//   return match ? match[1] : DEFAULT_LOCALE;
+// }
+
+
+function extractLocale(pathname: string): string | null {
   const match = pathname.match(/^\/(ar|en)(?=\/|$)/);
-  return match ? match[1] : DEFAULT_LOCALE;
+  return match ? match[1] : null; // null لو مش مدعوم
 }
 
 export async function middleware(request: NextRequest) {
@@ -46,6 +52,12 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const hasLocalePrefix = LOCALE_REGEX.test(pathname);
   const locale = extractLocale(pathname);
+  // const locale = extractLocale(pathname);
+
+  if (!locale) {
+    return NextResponse.redirect(new URL(`/${DEFAULT_LOCALE}${pathname}`, request.url));
+
+  }
 
   // تخطي بعض المسارات
   if (

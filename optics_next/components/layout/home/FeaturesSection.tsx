@@ -20,9 +20,20 @@ export default function FeaturesSection() {
         ))}
         </ul>
       </div>
-      <div className="flex justify-center p-6">
-      <Image src="/media/FeaturesSection.png" alt="FeaturesSection" width={500} height={200} priority={true} />
+      {/* <div className="flex justify-center p-6">
+      <Image src="/media/FeaturesSection.png" alt="FeaturesSection" width={500} height={auto} priority={true} className="rounded-2xl" />
+      </div> */}
+      <div className="relative w-[700px] h-[400px]">
+        <Image
+          src="/media/FeaturesSection.png"
+          alt="FeaturesSection"
+          fill
+          className="rounded-2xl object-contain"
+          priority
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
       </div>
+
 
 
     </section>

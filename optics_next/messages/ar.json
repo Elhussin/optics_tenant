@@ -27,7 +27,12 @@
       "basic": "أساسية",
       "pro": "احترافية",
       "enterprise": "مؤسسات"
-    }
+    },
+    "errorMessage": "حدث خطأ أثناء تسجيل الدخول",
+    "successMessage": "تم تسجيل الدخول بنجاح",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح",
+    "logoutError": "فشل تسجيل الخروج",
+    "useUserError": "يجب استخدام useUser داخل UserProvider"
   },
   "register": {
     "title": "تسجيل",

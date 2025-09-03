@@ -74,10 +74,41 @@ export type UseFormRequestReturn = {
 export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;
-  fetchUser:UseFormRequestReturn;
+  // fetchUser:UseFormRequestReturn;
+  refetchUser: () => Promise<{ success: boolean; error?: any }>;
   loading: boolean;
   logout: () => Promise<void>;
 };
+
+export interface Permission {
+  id: number;
+  code: string;
+  description: string;
+}
+
+export interface Role {
+  id: number;
+  name: string;
+  permissions: Permission[];
+}
+
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  is_active: boolean;
+  is_staff: boolean;
+  role: Role;
+  is_deleted: boolean;
+  deleted_at: string | null;
+  phone: string;
+  client: number;
+}
+
+
+
 
 interface FieldMeta {
   key: string;

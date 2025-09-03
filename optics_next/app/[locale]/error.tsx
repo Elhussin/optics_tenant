@@ -10,17 +10,18 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
   const routuer =useRouter();
     
   useEffect(() => {
-    // setTimeout(() => {
-    //   routuer.push(redirectPath);
-    // }, 3000);
+    setTimeout(() => {
+      routuer.push(redirectPath);
+    }, 3000);
     console.error('Error:', error);
-  }, [error]);
+  }, []);
 
   return (
     <div className="text-center p-10">
       <h1 className="text-3xl font-bold text-red-500">{t('title')}</h1>
-      <p>{t('message')}</p>
-      <p>{t('redirectMessage')}</p>
+      <span className="text-red-500 text-xl">{error.message}</span>
+      <p className="mt-4">{t('message')}</p>
+      <p className="mt-2">{t('redirectMessage')}</p>
 
       <button
         className="mt-4 px-4 py-2 rounded"

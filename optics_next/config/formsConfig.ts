@@ -376,12 +376,12 @@ export const formsConfig: Record<string, FormConfig> = {
     userConfig:{}
   },
   role:{
-    schemaName: 'RoleRequest',
-    listAlias: 'tenants_roles_list',
-    createAlias: 'tenants_roles_create',
-    retrieveAlias: 'tenants_roles_retrieve',
-    updateAlias: 'tenants_roles_partial_update',
-    hardDeleteAlias: 'tenants_roles_destroy',
+    schemaName: 'PatchedRoleRequest',
+    listAlias: 'users_roles_list',
+    createAlias: 'users_roles_create',
+    retrieveAlias: 'users_roles_retrieve',
+    updateAlias: 'users_roles_partial_update',
+    hardDeleteAlias: 'users_roles_destroy',
     createSuccessMessage: 'Role created successfully',
     createErrorMessage: 'Failed to create role',
     updateSuccessMessage: 'Role updated successfully',

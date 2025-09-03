@@ -20,6 +20,7 @@ function hasParameters(
 
 export function useFormRequest(options: useFormRequestProps): UseFormRequestReturn {
   const { alias, defaultValues, onSuccess, onError, transform,showToast = true } = options;
+  console.log("defaultValues",defaultValues);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const lastPayloadRef = useRef<any>(null);

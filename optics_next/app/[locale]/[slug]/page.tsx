@@ -20,7 +20,6 @@ export default  function MultilingualPublicPage() {
     const fetchPage = async () => {
       try {
         const result = await pageRequest.submitForm({ slug: slug });
-        console.log(result)
         if (result?.success) {
           setPageData(result.data);
         } else {
