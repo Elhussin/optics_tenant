@@ -446,5 +446,42 @@
     "deletedMessage":"This item is deleted. You can restore it or delete it permanently.",
     "draft":"Draft",
     "published":"Published"
-  }
+  },
+  "viewCard":{
+    "view":"View",
+    "edit":"Edit",
+    "createTitle":"Create",
+    "updateTitle":"Update",
+    "back":"Back"
+  },
+  "user": {
+      "title": "User",
+      "detailsTitle": "User Details",
+      "createTitle": "Add User",
+      "updateTitle": "Update User",
+      "name": "User Name",
+      "email": "User Email",
+      "phone": "User Phone",
+      "address": "User Address",
+      "website": "User Website",
+      "is_active": "Active",
+      "is_deleted": "Deleted",
+      "values": {
+        "is_active": {
+          "true": "Active",
+          "false": "Inactive"
+        },
+        "is_deleted": {
+          "true": "Deleted",
+          "false": "Not Deleted"
+        },
+        "role": {
+          "admin": "Administrator",
+          "user": "User",
+          "editor": "Editor"
+        }
+      }
+    }
+
+  
 }

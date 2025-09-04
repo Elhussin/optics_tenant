@@ -198,17 +198,28 @@ export default function LoginForm(props: formRequestProps) {
         {/* الجانب الأيمن (صورة + رسالة ترحيب) */}
         <div
           className={cn(
-            "hidden md:flex items-center justify-center bg-info p-1"
+            "hidden md:flex items-center justify-center p-2"
           )}
         >
-          <div className="relative w-full h-[400px] text-white text-center flex items-center justify-center">
-            <Image
+          <div className="relative w-full h-[400px] text-white text-center flex items-center justify-center  bg-primary rounded-2xl ">
+            {/* <Image
               src="/media/start.jpg"
               alt="Start APP"
               className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
               width={500}
-              height={400}
-            />
+              height="auto"
+            /> */}
+     
+                    <Image
+                      src="/media/start.jpg"
+                      alt="Start APP"
+                      fill
+                      // className="rounded-2xl object-contain"
+                      className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
+                      priority
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    />
+    
             <div className="absolute bottom-3 z-10 space-y-4">
               <h2 className="text-3xl font-bold">{t("welcomeTitle")}</h2>
               <p className="text-lg">{t("welcomeMessage")}</p>

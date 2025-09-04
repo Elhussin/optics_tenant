@@ -444,6 +444,41 @@
     "deletedMessage":"تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي.",
     "draft":"مسودة",
     "published":"تم النشر"
-}
+},
+"viewCard":{
+  "view":"عرض",
+  "edit":"تحديث",
+  "createTitle":"إنشاء",
+  "updateTitle":"تحديث",
+  "back":"الرجوع"
+},
+  "user": {
+    "title": "المستخدم",
+    "detailsTitle": "تفاصيل المستخدم",
+    "createTitle": "إضافة مستخدم",
+    "updateTitle": "تحديث مستخدم",
+    "name": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "website": "الموقع الإلكتروني",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      },
+      "role": {
+        "admin": "مدير",
+        "user": "مستخدم",
+        "editor": "محرر"
+      }
+    }
+  }
 }
 

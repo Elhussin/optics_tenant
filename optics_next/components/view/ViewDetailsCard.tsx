@@ -1,6 +1,5 @@
 "use client";
-
-import Image from "next/image";
+import {formatRelatedValue,formatTranslatedValue} from "@/lib/utils/formatRelatedValue";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { 
   isValidDate, 
@@ -8,8 +7,10 @@ import {
   isImageUrl, 
   handleDownloadPDF, 
   handleCopy, 
-  handlePrint 
+  handlePrint,
+  formatLabel 
 } from "@/lib/utils/cardViewHelper";
+import { useTranslations } from "next-intl";
 
 import { ViewCardProps } from "@/types";
 import { RenderButtons } from "@/components/ui/buttons/RenderButtons";
@@ -25,6 +26,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const form = formsConfig[entity] 
   const [data, setData] = useState<any | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
+  const t = useTranslations(entity);
 
   // hook لجلب البيانات
   const formRequest = useFormRequest({
@@ -38,8 +40,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
     if (id == null) return;
     formRequest.submitForm({ id });
   }, [id]);
-// formRequest
-  // اجلب البيانات أول ما يفتح الكومبوننت أو يتغير id
+
   useEffect(() => {
     refetch();
   }, [refetch]);
@@ -58,32 +59,20 @@ export default function ViewDetailsCard(props: ViewCardProps) {
       <div ref={printRef}>
         <div className="cards">
 
-          {/* عرض الحقول */}
-          {Object.entries(form.DetailsField || {}).map(([key, label]) => {
-            const value = data?.[key];
-            return (
-              <div key={key} className="card-body">
-                <strong>{label}:</strong>{" "}
-                {typeof value === "boolean" ? (
-                  <span>{value ? "✅" : "❌"}</span>
-                ) : typeof value === "string" && isImageUrl(value) ? (
-                  <div className="mt-2">
-                    <Image
-                      src={value}
-                      alt={key}
-                      width={120}
-                      height={120}
-                      className="rounded-md border"
-                    />
-                  </div>
-                ) : isValidDate(value) ? (
-                  <span>{formatDate(value)}</span>
-                ) : (
-                  <span>{value ?? "N/A"}</span>
-                )}
-              </div>
-            );
-          })}
+
+          {Object.entries(form.DetailsField || {}).map(([key]) => {
+                  const value = data?.[key];
+                  return (
+                    <p key={key} className="card-body flex">
+                      <strong className="mr-2 w-1/3 text-right">
+                        {t(key)} :
+                      </strong>
+                      <span className="ml-2 w-2/3">
+                        {formatTranslatedValue(key, value, t)}
+                      </span>
+                    </p>
+                  );
+                })}
 
           {/* حالة الحذف */}
           {data?.is_deleted && (
@@ -136,3 +125,33 @@ export default function ViewDetailsCard(props: ViewCardProps) {
     </div>
   );
 }
+
+
+
+
+          {/* عرض الحقول */}
+          {/* {Object.entries(form.DetailsField || {}).map(([key, label]) => {
+            const value = data?.[key];
+            return (
+              <div key={key} className="card-body">
+                <strong>{label}:</strong>{" "}
+                {typeof value === "boolean" ? (
+                  <span>{value ? "✅" : "❌"}</span>
+                ) : typeof value === "string" && isImageUrl(value) ? (
+                  <div className="mt-2">
+                    <Image
+                      src={value}
+                      alt={key}
+                      width={120}
+                      height={120}
+                      className="rounded-md border"
+                    />
+                  </div>
+                ) : isValidDate(value) ? (
+                  <span>{formatDate(value)}</span>
+                ) : (
+                  <span>{value ?? "N/A"}</span>
+                )}
+              </div>
+            );
+          })} */}

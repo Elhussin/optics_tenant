@@ -1,3 +1,6 @@
+import { useTranslations } from 'next-intl';
+
+// const T = useTranslations('formsConfig');
 
 export interface FormConfig {
   schemaName: string;
@@ -25,6 +28,7 @@ export interface FormConfig {
 }
 
 export const formsConfig: Record<string, FormConfig> = {
+
   department: {
     schemaName: 'Department',
     createAlias: 'hrm_departments_create',
@@ -127,7 +131,7 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsTitle: 'User Details',
     createTitle: 'Add User',
     updateTitle: 'Update User',
-    fields:["name","email","phone"],
+    fields:["username","email","phone","role","is_active"],
     DetailsField:{
       name: "User Name",
       email: "User Email",
@@ -136,6 +140,7 @@ export const formsConfig: Record<string, FormConfig> = {
       website: "User Website",
       is_active: "User Is Active",
       is_deleted: "User Is Deleted",
+    
     },
     showResetButton:true,
     showBackButton:true,

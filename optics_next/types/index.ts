@@ -136,7 +136,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'in
 
 
 export interface ButtonProps {
-  label: string;
+  label?: string;
   variant?: ButtonVariant;
   icon?: React.ReactNode;
   className?: string;
