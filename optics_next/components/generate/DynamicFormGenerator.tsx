@@ -36,15 +36,28 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const schema = (schemas as any)[form.schemaName] as z.ZodObject<any>;
   const shape = schema.shape;
 
-  const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
-  const effectiveIgnoredFields = useMemo(() => (id ? [...ignoredFields, 'password'] : ignoredFields), [id]);
-  const visibleFields = config.fieldOrder || allFields;
+  // const allFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
+  // const effectiveIgnoredFields = useMemo(() => (id ? [...ignoredFields, 'password'] : ignoredFields), [id]);
+  // const visibleFields = config.fieldOrder || allFields;
+  const effectiveIgnoredFields = useMemo(
+  () => (id ? [...ignoredFields, "password"] : ignoredFields),
+  [id, ignoredFields]
+  );
+
+  const allFields = useMemo(
+    () => Object.keys(shape).filter((f) => !effectiveIgnoredFields.includes(f)),
+    [shape, effectiveIgnoredFields]
+  );
+
+const visibleFields = config.fieldOrder || allFields;
+
   const formRequest = useFormRequest({ alias,defaultValues });
   const fetchDefaultData = useFormRequest({ alias: fetchAlias });
   const onSubmit = async (data: any) => {
     const result = await formRequest.submitForm(data);
     if (result?.success) {
       safeToast(successMessage || 'Submitted successfully',{type:"success"})
+      setDefaultValues(result.data);
       formRequest.reset();
     } else if (errorMessage) {
       safeToast(errorMessage ,{type:"error"})

@@ -51,9 +51,11 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
   });
 
   const submitForm = useCallback(async (data: any  ) => {
+
     if (!endpoint) {
       return { success: false, error: `Endpoint "${alias}" not found.` };
     }
+    if (isLoading) return { success: false, error: "Already submitting" };
 
     setIsLoading(true);
     try {
@@ -85,7 +87,7 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
       setIsLoading(false);
     }
   
-  }, [endpoint, alias, transform, onSuccess, onError, methods]);
+  }, [endpoint, alias, transform, onSuccess, onError, methods, isLoading]);
 
 
   const retry = useCallback(() => {
