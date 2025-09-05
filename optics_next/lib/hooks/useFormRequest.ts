@@ -7,21 +7,14 @@ import api from "@/lib/api/axios";
 import { useFormRequestProps } from "@/types";
 import { UseFormRequestReturn } from "@/types";
 import { handleServerErrors ,handleErrorStatus} from "@/lib/utils/error";
-import { safeToast } from "@/lib/utils/toastService";
 function hasParameters(
   endpoint: any
 ): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
   return 'parameters' in endpoint;
 }
 
-
-
-
-
 export function useFormRequest(options: useFormRequestProps): UseFormRequestReturn {
   const { alias, defaultValues, onSuccess, onError, transform,showToast = true } = options;
-  console.log("defaultValues",defaultValues);
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const lastPayloadRef = useRef<any>(null);
 

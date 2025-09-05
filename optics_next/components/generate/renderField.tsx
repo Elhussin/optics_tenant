@@ -343,6 +343,7 @@ import { z } from "zod";
 import { Controller } from "react-hook-form";
 import ReactSelect from "react-select";
 import { useEffect } from "react";
+import { ControlledSelect } from "./ControlledSelect";
 import {
   detectFieldType,
   unwrapSchema,
@@ -353,7 +354,7 @@ import {
 import {
   getFieldLabel,
   isFieldRequired,
-} from "./DynamicFormhelper";
+} from "../../lib/utils/DynamicFormhelper";
 import { fieldTemplates } from "./dataConfig";
 
 // ============================
@@ -378,21 +379,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode }: any)
     unwrappedSchema as z.ZodEnum<any>
   );
 
-  // Sync default value if not present in options
-  // useEffect(() => {
-  //   if (!loading && options.length > 0) {
-  //     const currentValue = form.getValues(fieldName);
-  //     if (currentValue && !options.some((opt: any) => opt.value === currentValue)) {
-  //       const matched = options.find((opt: any) => opt.value === currentValue);
-  //       if (matched) {
-  //         form.setValue(fieldName, matched.value, { shouldValidate: true });
-  //       }
-  //     }
-  //   }
-  // }, [loading, options, fieldName, form]);
-  // const { data: options, loading } = useFieldOptions(fieldName);
 
-  // ⬅️ اعمل sync للـ defaultValue لما options تتحمل
   useEffect(() => {
     if (!loading && options?.length) {
       const currentValue = form.getValues(fieldName);
@@ -467,6 +454,18 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode }: any)
     );
   }
 
+  if (fieldType === "select" || fieldType === "foreignkey"){
+    return <ControlledSelect
+    name={fieldName}
+    control={form.control}
+    options={options} 
+    label={label} 
+    required={required}
+  
+    />;
+
+  }
+
   // if (fieldType === "select" || fieldType === "foreignkey") {
   //   return (
   //     <Controller
@@ -501,30 +500,30 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode }: any)
   //   );
   // }
 
-  <Controller
-  name={fieldName}
-  control={form.control}
-  rules={{ required: required ? `${label} is required` : false }}
-  render={({ field }) => {
-    // اختار option المطابق للقيمة الحالية
-    const selectedOption =
-      options.find((opt) => opt.value === field.value) || null;
+//   <Controller
+//   name={fieldName}
+//   control={form.control}
+//   rules={{ required: required ? `${label} is required` : false }}
+//   render={({ field }) => {
+//     // اختار option المطابق للقيمة الحالية
+//     const selectedOption =
+//       options.find((opt) => opt.value === field.value) || null;
 
-    return (
-      <ReactSelect
-        id={fieldName}
-        options={options}
-        value={selectedOption}
-        isLoading={loading}
-        onChange={(opt) => field.onChange(opt?.value)}
-        onBlur={field.onBlur}
-        isClearable
-        placeholder={`Select ${label}...`}
-        classNamePrefix="rs"
-      />
-    );
-  }}
-/>
+//     return (
+//       <ReactSelect
+//         id={fieldName}
+//         options={options}
+//         value={selectedOption}
+//         isLoading={loading}
+//         onChange={(opt) => field.onChange(opt?.value)}
+//         onBlur={field.onBlur}
+//         isClearable
+//         placeholder={`Select ${label}...`}
+//         classNamePrefix="rs"
+//       />
+//     );
+//   }}
+// />
 
   if (fieldType === "textarea") {
     return (

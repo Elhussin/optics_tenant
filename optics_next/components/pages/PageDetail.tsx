@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loading4 } from "@/components/ui/loding";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { RenderButtons } from "@/components/ui/buttons/RenderButtons";
-import { useFetchData } from '@/lib/hooks/useCrudActions';
+import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { useCallback } from "react";
 import {useTranslations} from 'next-intl';
 import {useLocale} from 'next-intl';
@@ -17,15 +17,18 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   const aliases = { deleteAlias: 'users_pages_destroy', editAlias: 'users_pages_partial_update' };
 
-  const { submitForm: getData } = useFetchData(
-    "users_pages_retrieve",
-    setPageData
-  );
 
+  
+
+     const {submitForm} = useFormRequest({
+      alias: "users_pages_retrieve",
+      onSuccess: (res) => {setPageData(res);},
+    });
+  
 
   const refetch = useCallback(() => {
     if (pageId == null) return;
-    getData({ id: pageId });
+     submitForm({ id: pageId });
   }, [pageId]);
   
   useEffect(() => {

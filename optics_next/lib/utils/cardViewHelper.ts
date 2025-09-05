@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-
+import { safeToast } from "./toastService";
 export function formatLabel(field: string): string {
   return field
     .replace(/[_\-]+/g, ' ')
@@ -55,10 +55,9 @@ export const handleDownloadPDF = async (printRef: any, title: string) => {
   pdf.save(`${title}.pdf`);
 };
 
-export const handleCopy = (item: any, fields: Record<string, string>) => {
-  const text = Object.entries(fields)
-    .map(([key, label]) => {
-      const value = item[key];
+export const handleCopy = (item: any, fields: string[]) => {
+  const text = fields.map((field) => {
+      const value = item[field];
       const formatted =
         typeof value === "boolean"
           ? value
@@ -67,17 +66,18 @@ export const handleCopy = (item: any, fields: Record<string, string>) => {
           : isValidDate(value)
           ? formatDate(value)
           : value ?? "N/A";
-      return `${label}: ${formatted}`;
+      return `${formatLabel(field)}: ${formatted}`;
     })
     .join("\n");
 
   navigator.clipboard.writeText(text);
-  alert("✅ Copied to clipboard");
+  safeToast("✅ Copied to clipboard", { type: "success" });
+  
 };
 
-export const handlePrint = (printRef: React.RefObject<HTMLElement>) => {
+export const handlePrint = (printRef: React.RefObject<HTMLElement>, title: string) => {
   if (!printRef.current) {
-    alert("Nothing to print");
+    safeToast("Nothing to print", { type: "error" });
     return;
   }
 
@@ -91,7 +91,7 @@ export const handlePrint = (printRef: React.RefObject<HTMLElement>) => {
   printWindow.document.write(`
     <html>
       <head>
-        <title>Print Preview</title>
+        <title>${title}</title>
         <style>
           /* أضف هنا CSS خاص بالطباعة */
           body {
@@ -100,10 +100,15 @@ export const handlePrint = (printRef: React.RefObject<HTMLElement>) => {
           }
           @media print {
             /* يمكن إضافة المزيد من التنسيقات الخاصة */
+            .btn-card{
+              display: none;
+            }
           }
         </style>
       </head>
-      <body>${printContents}</body>
+      <body>
+      ${title}
+      ${printContents}</body>
     </html>
   `);
 

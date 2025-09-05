@@ -452,20 +452,32 @@
     "edit":"Edit",
     "createTitle":"Create",
     "updateTitle":"Update",
-    "back":"Back"
+    "back":"Back",
+    "errorGetFormData":"Invalid entity Detected"
+  },
+  "viewDetailsCard":{
+    "print":"Print Details",
+    "copy":"Copy Details",
+    "pdf":"PDF Details",
+    "entityError":"Invalid entity Or ID",
+    "noConfigError":"Invalid entity - No config Detected",
+    "errorLoadingData":"Error loading data",
+    "deletedItem":"This item is deleted. You can restore it or delete it permanently."
+
   },
   "user": {
-      "title": "User",
+      "title": "Users",
       "detailsTitle": "User Details",
       "createTitle": "Add User",
       "updateTitle": "Update User",
-      "name": "User Name",
+      "username": "User Name",
       "email": "User Email",
       "phone": "User Phone",
       "address": "User Address",
       "website": "User Website",
       "is_active": "Active",
       "is_deleted": "Deleted",
+      "role": "Role",
       "values": {
         "is_active": {
           "true": "Active",
@@ -481,7 +493,13 @@
           "editor": "Editor"
         }
       }
-    }
+    },
+  "useHardDeleteWithDialog":{
+    "title":"Confirm Deletion",
+    "message":"Are you sure you want to permanently delete this item?",
+    "successMessage":"Item permanently deleted Successfully",
+    "failedMessage":"Failed to delete item"
+  }
 
   
 }

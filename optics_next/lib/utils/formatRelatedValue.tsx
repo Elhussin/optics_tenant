@@ -9,12 +9,16 @@ import {
   handlePrint 
 } from "@/lib/utils/cardViewHelper";
 
-export function formatRelatedValue(value: any): React.ReactNode {
+export function formatRelatedValue(value: any, key: string, t: (key: string) => string): React.ReactNode {
     if (value == null) return "N/A";
   
-    // boolean
     if (typeof value === "boolean") {
-      return value ? "✅" : "❌";
+      // return value ? "✅" : "❌";
+      try {
+        return `${t(`values.${key}.${value}`)} ${value ? "✅" : "❌"}`;
+      } catch {
+        return value ? "✅" : "❌";
+      }
     }
   
     // string
@@ -43,7 +47,7 @@ export function formatRelatedValue(value: any): React.ReactNode {
     if (Array.isArray(value)) {
       return value.map((v, i) => (
         <span key={i} className="mr-1">
-          {formatRelatedValue(v)}
+          {formatRelatedValue(v, key, t)}
           {i < value.length - 1 && ", "}
         </span>
       ));

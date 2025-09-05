@@ -1,9 +1,10 @@
-'use client';
-import { useState } from 'react';
-import {safeToast} from '@/lib/utils/toastService';
-import { useFormRequest } from './useFormRequest';
-import { useRouter } from 'next/navigation';
-import { ConfirmDialog } from '@/components/ui/dialogs/ConfirmDialog';
+"use client";
+import { useState } from "react";
+import { safeToast } from "@/lib/utils/toastService";
+import { useFormRequest } from "./useFormRequest";
+import { useRouter } from "next/navigation";
+import { ConfirmDialog } from "@/components/ui/dialogs/ConfirmDialog";
+import { useTranslations } from "next-intl";
 
 type UseHardDeleteWithDialogProps = {
   alias: string;
@@ -17,11 +18,10 @@ type UseHardDeleteWithDialogProps = {
 export function useHardDeleteWithDialog({
   alias,
   onSuccess,
-  title = 'Confirm Deletion',
-  message = 'Are you sure you want to permanently delete this item?',
+  title = "Confirm Deletion",
+  message = "Are you sure you want to permanently delete this item?",
   redirectAfter = true,
-  redirectPath = '/',
-
+  redirectPath = "/",
 }: UseHardDeleteWithDialogProps) {
   const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
@@ -29,52 +29,46 @@ export function useHardDeleteWithDialog({
   const hardDeleteRequest = useFormRequest({
     alias,
     onError: (err: any) => {
-     safeToast(err.response?.data?.detail,{type:"error"});
+      safeToast(err.response?.data?.detail, { type: "error" });
     },
   });
-
+  const t = useTranslations("useHardDeleteWithDialog");
 
   const confirmHardDelete = (id: string | number) => {
     setSelectedId(id);
     setShowDialog(true);
   };
 
-  const  handleConfirm = async () => {
+  const handleConfirm = async () => {
     if (selectedId) {
       const resualt = await hardDeleteRequest.submitForm({ id: selectedId });
       if (!resualt?.success) {
-        safeToast("Failed to delete item",{type:"error"});
-
+        safeToast(t("failedMessage"), { type: "error" });
       }
       onSuccess?.();
-      safeToast("Item permanently deleted  Successfully",{type:"success"}); 
-              if (window.history.length > 1) {
-                // router.back();
-                      if (redirectAfter) router.back();
-              } else {
-                router.push(redirectPath);
-              }
-        
-
+      safeToast(t("successMessage"), { type: "success" });
+      if (window.history.length > 1) {
+        // router.back();
+        if (redirectAfter) router.back();
+      } else {
+        router.push(redirectPath);
+      }
     }
 
-
-      setShowDialog(false);
-    }
-  
+    setShowDialog(false);
+  };
 
   const ConfirmDialogComponent = (
     <>
-    <ConfirmDialog
-      open={showDialog}
-      title={title}
-      message={message}
-      onCancel={() => setShowDialog(false)}
-      onConfirm={handleConfirm}
-    />
+      <ConfirmDialog
+        open={showDialog}
+        title={t("title")}
+        message={t("message")}
+        onCancel={() => setShowDialog(false)}
+        onConfirm={handleConfirm}
+      />
     </>
   );
-
 
   return {
     confirmHardDelete,

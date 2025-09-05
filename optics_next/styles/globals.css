@@ -112,6 +112,9 @@
     @apply lg:w-3/4  w-full md:p-4 space-y-4 mx-auto
   }
 
+  .hr {
+    @apply my-4 text-primary dark:text-button-text w-3/4;
+  }
 /* .aside {
   @apply bg-border-main fixed top-[120px] left-0 h-[calc(100vh-120px)] w-80 
          border-r border-gray-200 dark:border-gray-700 
@@ -157,6 +160,9 @@
   }
 }
 
+
+
+
 @layer input {
   .input-text {
     @apply w-full px-3 py-2 border border-border-main  rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
@@ -181,7 +187,7 @@
 
 @layer card {
   .main-container{
-    @apply flex flex-col md:flex-row gap-4 w-full;
+    @apply flex flex-col md:flex-row gap-4 w-full ;
   }
 
   .container-h {
@@ -201,7 +207,7 @@
     @apply w-full text-secondary
   }
   .btn-card{
-    @apply flex space-x-2 text-sm mt-4;
+    @apply flex flex-row gap-2 text-sm mt-4;
   }
 
 }
@@ -214,7 +220,7 @@
     @apply text-xl font-bold text-primary capitalize;
   }
   .title-1 {
-    @apply text-lg font-bold capitalize text-main;
+    @apply text-lg font-bold capitalize text-main mb-2;
   }
   .label {
     @apply block mb-1 text-sm font-medium text-main;
@@ -272,12 +278,16 @@
     .container,
     .container * {
       visibility: visible;
+
     }
     .container {
       position: absolute;
       left: 0;
       top: 0;
       width: 100%;
+    }
+    .btn-card {
+      visibility: hidden;
     }
   }
 }

@@ -54,6 +54,7 @@ export function ControlledSelect<T extends FieldValues>({
               onChange={(opt) => field.onChange((opt as Option)?.value)}
               onBlur={field.onBlur}
               value={parsedOptions.find((o) => o.value === field.value) || null}
+
               className={className}
               classNamePrefix={classNamePrefix}
               placeholder={placeholder}

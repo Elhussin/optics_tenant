@@ -2,13 +2,9 @@
 import {formatRelatedValue,formatTranslatedValue} from "@/lib/utils/formatRelatedValue";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { 
-  isValidDate, 
-  formatDate, 
-  isImageUrl, 
   handleDownloadPDF, 
   handleCopy, 
   handlePrint,
-  formatLabel 
 } from "@/lib/utils/cardViewHelper";
 import { useTranslations } from "next-intl";
 
@@ -26,7 +22,8 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const form = formsConfig[entity] 
   const [data, setData] = useState<any | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
-  const t = useTranslations(entity);
+  const t = useTranslations('viewDetailsCard');
+  const t2 = useTranslations(entity);
 
   // hook لجلب البيانات
   const formRequest = useFormRequest({
@@ -46,112 +43,79 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   }, [refetch]);
 
   // حالات الخطأ واللودنج
-  if (!entity || !id) return <NotFound error="Invalid entity or ID" />;
-  if (!form) return <NotFound error="Invalid entity - No config Detected" />;
+  if (!entity || !id) return <NotFound error={t('entityError')} />;
+  if (!form) return <NotFound error={t('noConfigError')} />;
   if (formRequest.isLoading || !data) return <Loading4 />;
-  if (formRequest.error) return <NotFound error="Error loading data" />;
+  if (formRequest.error) return <NotFound error={t('errorLoadingData')} />;
   return (
-    <div className="container">
+    <div className="container-h">
       <div className="main-header">
-        <h2 className="title-1">{form.detailsTitle}</h2>
+        <h2 className="title-1 ">{t2('detailsTitle')}</h2>
+        <hr className="hr" />
       </div>
 
       <div ref={printRef}>
         <div className="cards">
 
-
-          {Object.entries(form.DetailsField || {}).map(([key]) => {
-                  const value = data?.[key];
-                  return (
-                    <p key={key} className="card-body flex">
-                      <strong className="mr-2 w-1/3 text-right">
-                        {t(key)} :
-                      </strong>
-                      <span className="ml-2 w-2/3">
-                        {formatTranslatedValue(key, value, t)}
-                      </span>
-                    </p>
-                  );
-                })}
+        {form.detailsField?.map((field: string) => {
+        const value = data?.[field];
+        return (
+          <p key={field} className="card-body flex">
+            <strong className="mr-2 w-1/3 ">
+              {t2(field)} :
+            </strong>
+            <span className="ml-2 w-2/3">
+            {formatRelatedValue(value, field, t2)}
+            </span>
+          </p>
+        );
+      })}
 
           {/* حالة الحذف */}
           {data?.is_deleted && (
             <p className="text-red-500 text-sm bg-red-50">
-              This item is deleted. You can restore it or delete it permanently.
+              {t('deletedItem')}
             </p>
           )}
 
           {/* الأزرار */}
-          <div className="btn-card flex flex-col gap-2">
-            <RenderButtons
-              data={data}
-              alias={{
-                editAlias: form.updateAlias,
-                deleteAlias: form.hardDeleteAlias,
-              }}
-              navigatePath={`/dashboard/${entity}`}
-              refetch={refetch}
-            />
-
-            <div className="flex gap-2">
+          <div className="btn-card">
+          <RenderButtons
+                data={data}
+                alias={{
+                  editAlias: form.updateAlias,
+                  deleteAlias: form.hardDeleteAlias,
+                }}
+                navigatePath={`/dashboard/${entity}`}
+                refetch={refetch}
+             />
+            <div className="flex gap-2 mt-4">
               <ActionButton
                 variant="info"
-                label="Copy"
-                title="Copy Details"
+                title={t('copy')}
                 icon={<Copy size={16} />}
-                onClick={() => handleCopy(data, form.DetailsField)}
+                onClick={() => handleCopy(data, form.detailsField)}
               />
               <ActionButton
                 variant="info"
-                label="Print"
-                title="Print Details"
+                title={t('print')}
                 icon={<Printer size={16} />}
-                onClick={() => handlePrint(printRef as React.RefObject<HTMLDivElement>)}
+                onClick={() => handlePrint(printRef as React.RefObject<HTMLDivElement>,t2('detailsTitle'))}
               />
               <ActionButton
                 variant="info"
-                label="PDF"
-                title="Download PDF"
+                title={t('pdf')}
                 icon={<FileText size={16} />}
                 onClick={() =>
                   handleDownloadPDF(printRef, `${form.title}-${data.id}`)
                 }
               />
-            </div>
-          </div>
+              
+            </div >
 
+          </div>
         </div>
       </div>
     </div>
   );
 }
-
-
-
-
-          {/* عرض الحقول */}
-          {/* {Object.entries(form.DetailsField || {}).map(([key, label]) => {
-            const value = data?.[key];
-            return (
-              <div key={key} className="card-body">
-                <strong>{label}:</strong>{" "}
-                {typeof value === "boolean" ? (
-                  <span>{value ? "✅" : "❌"}</span>
-                ) : typeof value === "string" && isImageUrl(value) ? (
-                  <div className="mt-2">
-                    <Image
-                      src={value}
-                      alt={key}
-                      width={120}
-                      height={120}
-                      className="rounded-md border"
-                    />
-                  </div>
-                ) : isValidDate(value) ? (
-                  <span>{formatDate(value)}</span>
-                ) : (
-                  <span>{value ?? "N/A"}</span>
-                )}
-              </div>
-            );
-          })} */}

@@ -450,18 +450,29 @@
   "edit":"تحديث",
   "createTitle":"إنشاء",
   "updateTitle":"تحديث",
-  "back":"الرجوع"
+  "back":"الرجوع",
+  "errorGetFormData":"حدث خطأ أثناء الحصول على بيانات الصفحة."
+},
+"viewDetailsCard":{
+  "print":"طباعة",
+  "copy":"نسخ",
+  "pdf":"pdf",
+  "entityError":"العنصر غير صحيح أو ID",
+  "noConfigError":"العنصر غير صحيح - تم اكتشاف الـ config",
+  "errorLoadingData":"حدث خطأ أثناء تحميل البيانات",
+  "deletedItem":"تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي."
 },
   "user": {
-    "title": "المستخدم",
+    "title": "المستخدمين",
     "detailsTitle": "تفاصيل المستخدم",
     "createTitle": "إضافة مستخدم",
     "updateTitle": "تحديث مستخدم",
-    "name": "اسم المستخدم",
+    "username": "اسم المستخدم",
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "address": "العنوان",
     "website": "الموقع الإلكتروني",
+    "role": "الدور",
     "is_active": "الحالة",
     "is_deleted": "الحذف",
     "values": {
@@ -479,6 +490,12 @@
         "editor": "محرر"
       }
     }
+  },
+  "useHardDeleteWithDialog":{
+    "title":"تأكيد الحذف",
+    "message":"هل أنت متأكد من حذف هذا العنصر بشكل نهائي؟",
+    "successMessage":"تم حذف العنصر بشكل نهائي بنجاح",
+    "failedMessage":"فشل حذف العنصر"
   }
 }
 
