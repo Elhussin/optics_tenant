@@ -5,6 +5,10 @@
     "logoutError": "Failed to log out",
     "fetchError": "Failed to fetch user data"
   },
+  "loading":{
+    "loading":"Loading",
+    "message":"Please wait..."
+  },
   "login": {
     "title": "Login",
     "description": "Login to O-S-M",
@@ -462,14 +466,28 @@
     "entityError":"Invalid entity Or ID",
     "noConfigError":"Invalid entity - No config Detected",
     "errorLoadingData":"Error loading data",
-    "deletedItem":"This item is deleted. You can restore it or delete it permanently."
-
+      "deletedItem":"This item is deleted. You can restore it or delete it permanently."
   },
-  "user": {
+  "formsConfig":{
+    "create":"Create",
+    "update":"Update",
+    "back":"Back",
+    "reset":"Reset",
+    "submit":"Submit",
+    "successMessage":"Success",
+    "errorMessage":"Error",
+    "saving":"Saving"
+  
+  },
+    "user": {
       "title": "Users",
       "detailsTitle": "User Details",
       "createTitle": "Add User",
       "updateTitle": "Update User",
+      "updateSuccessMessage":"Updated User Successfully",
+      "createSuccessMessage":"Created User Successfully",
+      "updateErrorMessage":"Failed to update User",
+      "createErrorMessage":"Failed to create User",
       "username": "User Name",
       "email": "User Email",
       "phone": "User Phone",
@@ -478,6 +496,7 @@
       "is_active": "Active",
       "is_deleted": "Deleted",
       "role": "Role",
+
       "values": {
         "is_active": {
           "true": "Active",

@@ -1,7 +1,7 @@
 import { Loader2, Clock, RotateCw, RefreshCw,Hourglass } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils/cn"; // دالة لدمج الكلاسات إن كنت تستخدمها
-
+import {useTranslations} from 'next-intl';
 const Loading = () => {
     return (
         <div className={cn("flex flex-col items-center justify-center min-h-[300px] gap-4 bg-gray-50 rounded-lg p-8")}>
@@ -32,6 +32,7 @@ const Loading2 = () => {
 
 const Loading3 = () => {
   const [progress, setProgress] = useState(0);
+  const t = useTranslations('loading');
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,13 +55,15 @@ const Loading3 = () => {
           style={{ width: `${progress}%` }}
         ></div>
       </div>
-      
-      <p className={cn("text-gray-700")}>{progress} Loading...%</p>
+       
+      <p className={cn("text-gray-700")}> {t('loading')} {progress}%</p>
+      <p className={cn("text-gray-700")}> {t('message')}</p>
+
     </div>
   );
 } 
 
-const Loading4 = ({ message }: { message?: string }) => {
+const Loading4 = ({ message }: { message?: string }) => { 
  return (
       <div className={cn("flex items-center justify-center p-8")}>
         <div className={cn("flex flex-col items-center gap-4 bg-white p-8 rounded-xl shadow-lg")}>
@@ -74,15 +77,15 @@ const Loading4 = ({ message }: { message?: string }) => {
     );
 }
 
-const LoadingSpinner = () => {
+const LoadingSpinner = ({ message }: { message?: string }) => {
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 py-8">
+    <div className="flex items-center justify-center px-4 py-8">
       <div className="flex flex-col items-center gap-4 bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 transition-all">
         <Loader2 className="animate-spin h-10 w-10 text-indigo-600 dark:text-indigo-400" />
         <div className="text-center">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Loading</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            We’re getting things ready for you...
+            {message || 'We’re getting things ready for you...'}
           </p>
         </div>
       </div>

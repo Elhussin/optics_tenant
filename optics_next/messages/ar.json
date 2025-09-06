@@ -5,6 +5,10 @@
     "logoutError": "فشل تسجيل الخروج",
     "fetchError": "فشل احضار بيانات المستخدم"
   },
+  "loading":{
+    "loading":"جاري التحميل",
+    "message":"الرجاء الانتظار..."
+  },
   "login": {
     "title": "تسجيل الدخول",
     "description": "Login to O-S-M",
@@ -461,12 +465,26 @@
   "noConfigError":"العنصر غير صحيح - تم اكتشاف الـ config",
   "errorLoadingData":"حدث خطأ أثناء تحميل البيانات",
   "deletedItem":"تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي."
-},
+},  "formsConfig":{
+    "create":"إنشاء",
+    "update":"تحديث",
+    "back":"الرجوع",
+    "reset":"إعادة تعيين",
+    "submit":"إرسال",
+    "successMessage":"نجاح",
+    "errorMessage":"خطأ",
+    "saving":"جاري الحفظ"
+  
+  },
   "user": {
     "title": "المستخدمين",
     "detailsTitle": "تفاصيل المستخدم",
     "createTitle": "إضافة مستخدم",
     "updateTitle": "تحديث مستخدم",
+    "updateSuccessMessage":"تم تحديث المستخدم بنجاح",
+    "createSuccessMessage":"تم إضافة المستخدم بنجاح",
+    "updateErrorMessage":"فشل تحديث المستخدم",
+    "createErrorMessage":"فشل إضافة المستخدم",
     "username": "اسم المستخدم",
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",

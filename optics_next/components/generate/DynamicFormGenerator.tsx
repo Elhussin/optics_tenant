@@ -2,34 +2,41 @@
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { schemas } from '@/lib/api/zodClient';
-import { Loading4 } from '@/components/ui/loding';
+import { Loading3 } from '@/components/ui/loding';
 import { DynamicFormProps } from '@/types/DynamicFormTypes';
 import { defaultConfig, ignoredFields } from './dataConfig';
 import { RenderField } from './renderField';
 import { cn } from '@/lib/utils/cn';
 import { BackButton, RestButton, Button } from '@/components/ui/buttons/Button';
-import { CirclePlus } from 'lucide-react';
+import { CirclePlus, RefreshCw } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { formsConfig } from '@/config/formsConfig';
 import { useMemo } from 'react';
 import { safeToast } from '@/lib/utils/toastService';
-
+import {useTranslations} from 'next-intl';
+import { ActionButton } from '../ui/buttons';
 export default function DynamicFormGenerator(props: DynamicFormProps) {
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
+
   const { entity, id } = props
   if (!entity) throw new Error('entity is required');
+  const f = useTranslations(entity);
+  const t = useTranslations('formsConfig');
   const form = formsConfig[entity];
   const alias = useMemo(() => (id ? form.updateAlias : form.createAlias), [id, form]);
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);
-  const submitText = useMemo(() => (id ? form.updateTitle : form.createTitle), [id, form]);
-  const successMessage = useMemo(() => (id ? form.updateSuccessMessage : form.createSuccessMessage), [id, form]);
-  const errorMessage = useMemo(() => (id ? form.updateErrorMessage : form.createErrorMessage), [id, form]);
-  const title = useMemo(() => (id ? form.updateTitle : form.createTitle), [id, form]);
   const showResetButton = form.showResetButton ?? true;
   const showBackButton = form.showBackButton ?? true;
   const className = form.className || '';
+
+  const submitText = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id]);
+  const successMessage = useMemo(() => (id ? f('updateSuccessMessage') : f('createSuccessMessage')), [id]);
+  const errorMessage = useMemo(() => (id ? f('updateErrorMessage') : f('createErrorMessage')), [id]);
+  const title = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id]);
+
+
   const userConfig: Record<string, any> = form.userConfig || {};
 
   const config = { ...defaultConfig, ...userConfig };
@@ -77,7 +84,7 @@ const visibleFields = config.fieldOrder || allFields;
   }, [defaultValues,formRequest]);
 
   if (id && !defaultValues) {
-    return <Loading4 message="Loading form data..." />;
+    return <Loading3/>;
   }
 
   return (
@@ -103,9 +110,9 @@ const visibleFields = config.fieldOrder || allFields;
         ))}
 
         <div className="flex gap-3 pt-4">
-          <Button
+          <ActionButton
             type="submit"
-            label={formRequest.formState.isSubmitting ? 'Saving...' : (submitText || config.submitButtonText)}
+            label={formRequest.formState.isSubmitting ? `${t('saving')}...` : (submitText || t('create'))}
             className={`${config.submitButtonClasses} ${formRequest.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             disabled={formRequest.formState.isSubmitting}
@@ -114,8 +121,11 @@ const visibleFields = config.fieldOrder || allFields;
           />
 
           {!isIframe && config.includeResetButton && showResetButton && (
-            <RestButton
+            <ActionButton
               onClick={() => formRequest.reset()}
+              label={t('reset')}
+              icon={<RefreshCw size={16} />}
+              variant="outline"
             />
           )}
 
