@@ -468,17 +468,7 @@
     "errorLoadingData":"Error loading data",
       "deletedItem":"This item is deleted. You can restore it or delete it permanently."
   },
-  "formsConfig":{
-    "create":"Create",
-    "update":"Update",
-    "back":"Back",
-    "reset":"Reset",
-    "submit":"Submit",
-    "successMessage":"Success",
-    "errorMessage":"Error",
-    "saving":"Saving"
-  
-  },
+
   "useHardDeleteWithDialog":{
     "title":"Confirm Deletion",
     "message":"Are you sure you want to permanently delete this item?",

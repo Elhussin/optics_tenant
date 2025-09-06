@@ -33,19 +33,12 @@ export const defaultConfig: GeneratorConfig = {
   };
   
   export const relationshipConfigs: RelationshipConfig = {
-    // employee_id: {
-    //   endpoint: 'hrm_employees_list',
-    //   labelField: 'name',
-    //   valueField: 'id',
-    //   searchField: 'name',
-    //   createPage: '/hrm/employees/create'
-    // },
     user_id: {
       endpoint: 'users_users_list',
       labelField: 'username',
       valueField: 'id',
       searchField: 'username',
-      createPage: '/dashboard/user?action=create'
+      createPage: '/dashboard/user/create'
     },
     category_id: {
       endpoint: 'hrm_categories_list',

@@ -1,0 +1,12 @@
+{"formsConfig":{
+    "create":"إنشاء",
+    "update":"تحديث",
+    "back":"الرجوع",
+    "reset":"إعادة تعيين",
+    "submit":"إرسال",
+    "successMessage":"نجاح",
+    "errorMessage":"خطأ",
+    "saving":"جاري الحفظ"
+  
+  }
+}

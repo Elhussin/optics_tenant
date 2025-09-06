@@ -16,7 +16,7 @@ import { useMemo } from 'react';
 import { safeToast } from '@/lib/utils/toastService';
 import {useTranslations} from 'next-intl';
 import { ActionButton } from '../ui/buttons';
-export default function DynamicFormGenerator(props: DynamicFormProps) {
+export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
 
@@ -31,10 +31,10 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const showBackButton = form.showBackButton ?? true;
   const className = form.className || '';
 
-  const submitText = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id]);
-  const successMessage = useMemo(() => (id ? f('updateSuccessMessage') : f('createSuccessMessage')), [id]);
-  const errorMessage = useMemo(() => (id ? f('updateErrorMessage') : f('createErrorMessage')), [id]);
-  const title = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id]);
+  const submitText = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id,f]);
+  const successMessage = useMemo(() => (id ? f('updateSuccessMessage') : f('createSuccessMessage')), [id,f]);
+  const errorMessage = useMemo(() => (id ? f('updateErrorMessage') : f('createErrorMessage')), [id,f]);
+  const title = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id,f]);
 
 
   const userConfig: Record<string, any> = form.userConfig || {};
@@ -44,7 +44,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const shape = schema.shape;
   const effectiveIgnoredFields = useMemo(
   () => (id ? [...ignoredFields, "password"] : ignoredFields),
-  [id, ignoredFields]
+  [id]
   );
 
   const allFields = useMemo(

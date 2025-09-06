@@ -8,25 +8,66 @@ export interface FormConfig {
   retrieveAlias: string;
   updateAlias: string;
   hardDeleteAlias: string;
-  createSuccessMessage: string;
-  createErrorMessage: string;
-  updateSuccessMessage: string;
-  updateErrorMessage: string;
-  title: string;
-  detailsTitle: string;
-  createTitle: string;
-  updateTitle: string;
+  createSuccessMessage?: string;
+  createErrorMessage?: string;
+  updateSuccessMessage?: string;
+  updateErrorMessage?: string;
+  title?: string;
+  detailsTitle?: string;
+  createTitle?: string;
+  updateTitle?: string;
   fields: string[];
   detailsField: string[];
   listAlias: string;
-  userConfig:object,
-  showResetButton:boolean,
-  showBackButton:boolean,
-  className:string
+  userConfig?:object,
+  showResetButton?:boolean,
+  showBackButton?:boolean,
+  className?:string
 }
 
 export const formsConfig: Record<string, FormConfig> = {
-
+  user: {
+    schemaName: 'UserRequest',
+    listAlias: 'users_users_list',
+    createAlias: 'users_users_create',
+    retrieveAlias: 'users_users_retrieve',
+    updateAlias: 'users_users_partial_update',
+    hardDeleteAlias: 'users_users_destroy',
+    createSuccessMessage: 'User created successfully',
+    createErrorMessage: 'Failed to create user',
+    fields:["username","email","phone","role","is_active"],
+    detailsField:["username","email","phone","role","is_active","address","website"],
+  },
+  tenant:{
+    schemaName: 'ClientRequest',
+    listAlias: 'tenants_clients_list',
+    createAlias: 'tenants_register_create',
+    retrieveAlias: 'tenants_clients_retrieve',
+    updateAlias: 'tenants_clients_partial_update',
+    hardDeleteAlias: 'tenants_clients_destroy',
+    createSuccessMessage: 'Tenant created successfully',
+    createErrorMessage: 'Failed to create tenant',
+    updateSuccessMessage: 'Tenant updated successfully',
+    updateErrorMessage: 'Failed to update tenant',
+    title: 'Tenant',
+    detailsTitle: 'Tenant Details',
+    createTitle: 'Add Tenant',
+    updateTitle: 'Update Tenant',
+    fields:["name","subdomain","max_branches","max_users"],
+    detailsField:[
+      "name",
+      "subdomain",
+      "max_branches",
+      "max_users",
+      "website",
+      "is_active",
+      "is_deleted",
+    ],
+    showResetButton:true,
+    showBackButton:true,
+    className:"",
+    userConfig:{ }
+  },
   department: {
     schemaName: 'Department',
     createAlias: 'hrm_departments_create',
@@ -67,10 +108,6 @@ export const formsConfig: Record<string, FormConfig> = {
     updateTitle: 'Update Supplier',
     fields:["name","email","phone"],
     detailsField:["name","email","phone","address","website","is_active","is_deleted"],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{},
 
   },
   branch: {
@@ -95,29 +132,6 @@ export const formsConfig: Record<string, FormConfig> = {
     className:"",
     userConfig:{},
 
-  },
-  user: {
-    schemaName: 'UserRequest',
-    listAlias: 'users_users_list',
-    createAlias: 'users_users_create',
-    retrieveAlias: 'users_users_retrieve',
-    updateAlias: 'users_users_partial_update',
-    hardDeleteAlias: 'users_users_destroy',
-    createSuccessMessage: 'User created successfully',
-    createErrorMessage: 'Failed to create user',
-    updateSuccessMessage: 'User updated successfully',
-    updateErrorMessage: 'Failed to update user',
-
-    title: 'user',
-    detailsTitle: 'User Details',
-    createTitle: 'Add User',
-    updateTitle: 'Update User',
-    fields:["username","email","phone","role","is_active"],
-    detailsField:["username","email","phone","role","is_active","address","website"],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{},
   },
   employees:{
     schemaName: 'EmployeeRequest',
@@ -215,36 +229,7 @@ export const formsConfig: Record<string, FormConfig> = {
     className:"",
     userConfig:{ }
   },
-  tenant:{
-    schemaName: 'ClientRequest',
-    listAlias: 'tenants_clients_list',
-    createAlias: 'tenants_register_create',
-    retrieveAlias: 'tenants_clients_retrieve',
-    updateAlias: 'tenants_clients_partial_update',
-    hardDeleteAlias: 'tenants_clients_destroy',
-    createSuccessMessage: 'Tenant created successfully',
-    createErrorMessage: 'Failed to create tenant',
-    updateSuccessMessage: 'Tenant updated successfully',
-    updateErrorMessage: 'Failed to update tenant',
-    title: 'Tenant',
-    detailsTitle: 'Tenant Details',
-    createTitle: 'Add Tenant',
-    updateTitle: 'Update Tenant',
-    fields:["name","subdomain","max_branches","max_users"],
-    detailsField:[
-      "name",
-      "subdomain",
-      "max_branches",
-      "max_users",
-      "website",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{ }
-  },
+
   page:{
     schemaName: 'PageRequest',
     listAlias: 'users_pages_list',

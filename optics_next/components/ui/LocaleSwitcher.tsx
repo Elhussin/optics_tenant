@@ -5,7 +5,7 @@ import { useTransition } from 'react';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { languages, countries, currencies, currencyMap } from '@/constants';
-
+import { Loader2 } from 'lucide-react';
 export default function LocaleSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
@@ -131,9 +131,10 @@ export default function LocaleSwitcher() {
       
       {/* Loading indicator */}
       {isPending && (
-        <div className="text-sm text-gray-500">
-          Switching language...
-        </div>
+        // <div className="text-sm text-gray-500">
+        //   Switching language...
+        // </div>
+        <Loader2 className="animate-spin" />
       )}
     </div>
   );

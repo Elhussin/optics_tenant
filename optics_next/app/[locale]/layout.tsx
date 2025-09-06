@@ -7,7 +7,7 @@ import { routing } from "@/app/i18n/routing";
 import { AsideProvider } from "@/lib/contexts/AsideContext";
 import { UserProvider } from "@/lib/contexts/userContext";
 import { notFound } from "next/navigation";
-import MainLayout from '@/components/layout/MainLayout';
+import  {getTrenMessages} from "@/lib/utils/getTrenMessages";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -34,7 +34,14 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const messages = await getMessages({ locale });
+
+  let messages;
+  try {
+   messages = await getTrenMessages(locale);
+  } catch (error) {
+    notFound();
+  }
+
   const dir = locale === "ar" ? "rtl" : "ltr";
 
   return (
