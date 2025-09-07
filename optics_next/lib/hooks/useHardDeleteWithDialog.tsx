@@ -62,8 +62,8 @@ export function useHardDeleteWithDialog({
     <>
       <ConfirmDialog
         open={showDialog}
-        title={t("title")}
-        message={t("message")}
+        title={t("title") ?? title}
+        message={t("message") ?? message}
         onCancel={() => setShowDialog(false)}
         onConfirm={handleConfirm}
       />

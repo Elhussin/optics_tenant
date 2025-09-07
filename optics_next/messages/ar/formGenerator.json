@@ -1,12 +1,44 @@
 {"formsConfig":{
-    "create":"إنشاء",
+    "create":"إضافة",
     "update":"تحديث",
     "back":"الرجوع",
     "reset":"إعادة تعيين",
     "submit":"إرسال",
-    "successMessage":"نجاح",
-    "errorMessage":"خطأ",
-    "saving":"جاري الحفظ"
-  
+    "saving":"جاري الحفظ",
+    "users":"المستخدمين",
+    "user":"المستخدم",
+    "loading":"جاري التحميل...",
+    "noData":"لم يتم العثور على بيانات",
+    "success":"تم بنجاح",
+    "failed":"فشل في"
+  },
+  "user": {
+    "title": "المستخدمين",
+    "detailsTitle": "تفاصيل المستخدم",
+    "createTitle": "إضافة مستخدم",
+    "updateTitle": "تحديث مستخدم",
+    "updateSuccessMessage":"تم تحديث المستخدم بنجاح",
+    "createSuccessMessage":"تم إضافة المستخدم بنجاح",
+    "updateErrorMessage":"فشل تحديث المستخدم",
+    "createErrorMessage":"فشل إضافة المستخدم",
+   
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "website": "الموقع الإلكتروني",
+    "role": "الدور",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
   }
 }

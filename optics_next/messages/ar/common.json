@@ -466,39 +466,7 @@
   "errorLoadingData":"حدث خطأ أثناء تحميل البيانات",
   "deletedItem":"تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي."
 },
-  "user": {
-    "title": "المستخدمين",
-    "detailsTitle": "تفاصيل المستخدم",
-    "createTitle": "إضافة مستخدم",
-    "updateTitle": "تحديث مستخدم",
-    "updateSuccessMessage":"تم تحديث المستخدم بنجاح",
-    "createSuccessMessage":"تم إضافة المستخدم بنجاح",
-    "updateErrorMessage":"فشل تحديث المستخدم",
-    "createErrorMessage":"فشل إضافة المستخدم",
-    "username": "اسم المستخدم",
-    "email": "البريد الإلكتروني",
-    "phone": "رقم الهاتف",
-    "address": "العنوان",
-    "website": "الموقع الإلكتروني",
-    "role": "الدور",
-    "is_active": "الحالة",
-    "is_deleted": "الحذف",
-    "values": {
-      "is_active": {
-        "true": "مفعل",
-        "false": "غير مفعل"
-      },
-      "is_deleted": {
-        "true": "محذوف",
-        "false": "غير محذوف"
-      },
-      "role": {
-        "admin": "مدير",
-        "user": "مستخدم",
-        "editor": "محرر"
-      }
-    }
-  },
+
   "useHardDeleteWithDialog":{
     "title":"تأكيد الحذف",
     "message":"هل أنت متأكد من حذف هذا العنصر بشكل نهائي؟",

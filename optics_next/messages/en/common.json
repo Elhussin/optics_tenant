@@ -474,35 +474,6 @@
     "message":"Are you sure you want to permanently delete this item?",
     "successMessage":"Item permanently deleted Successfully",
     "failedMessage":"Failed to delete item"
-  },
-    "user": {
-      "title": "Users",
-      "detailsTitle": "User Details",
-      "createTitle": "Add User",
-      "updateTitle": "Update User",
-      "updateSuccessMessage":"Updated User Successfully",
-      "createSuccessMessage":"Created User Successfully",
-      "updateErrorMessage":"Failed to update User",
-      "createErrorMessage":"Failed to create User",
-      "username": "User Name",
-      "email": "User Email",
-      "phone": "User Phone",
-      "address": "User Address",
-      "website": "User Website",
-      "is_active": "Active",
-      "is_deleted": "Deleted",
-      "role": "Role",
-      "values": {
-        "is_active": {
-          "true": "Active",
-          "false": "Inactive"
-        },
-        "is_deleted": {
-          "true": "Deleted",
-          "false": "Not Deleted"
-        }
-      }
-    }
+  }
 
-  
 }

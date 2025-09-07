@@ -31,10 +31,24 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const showBackButton = form.showBackButton ?? true;
   const className = form.className || '';
 
-  const submitText = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id,f]);
-  const successMessage = useMemo(() => (id ? f('updateSuccessMessage') : f('createSuccessMessage')), [id,f]);
-  const errorMessage = useMemo(() => (id ? f('updateErrorMessage') : f('createErrorMessage')), [id,f]);
-  const title = useMemo(() => (id ? f('updateTitle') : f('createTitle')), [id,f]);
+  const action = id ? 'update' : 'create';
+
+  const submitText = useMemo(
+    () => `${t(action)} ${t(entity)}`,
+    [id, t, entity]
+  );
+
+  const successMessage = useMemo(
+    () => `${t('success')} ${t(action)} ${t(entity)}`,
+    [id, t, entity]
+  );
+
+  const errorMessage = useMemo(
+    () => `${t('failed')} ${t(action)} ${t(entity)}`,
+    [id,t,entity]
+  );
+
+  const title = useMemo(() => `${t(action)} ${t(entity)}`, [id,t,entity]);
 
 
   const userConfig: Record<string, any> = form.userConfig || {};
