@@ -1,6 +1,7 @@
 'use client';
 
-import { PageData, Language, getCurrentTranslation, LANGUAGES } from '@/types/pages';
+import { PageData, Language, LANGUAGES } from '@/types/pages';
+import { getCurrentTranslation } from '@/lib/utils/getCurrentTranslation';
 import Head from 'next/head';
 import { useState } from 'react';
 

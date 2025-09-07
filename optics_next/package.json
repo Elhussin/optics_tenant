@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "gen-zod": "openapi-zod-client http://store1.localhost:8000/api/schema -o lib/api/zodClient.ts",
+    "gen-ts": "openapi-typescript APIfILE.yaml -o lib/api/types.ts",
+    "gen-ts1": "openapi-zod-client APIfILE.yaml -o lib/api/zodClient.ts",
+    "gen-zod": "openapi-zod-client http://store6.localhost:8000/api/schema -o lib/api/zodClient.ts",
     "run": "next dev --turbopack",
     "dev": "next dev",
     "build": "next build",

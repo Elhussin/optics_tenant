@@ -7,7 +7,7 @@ from  core.models import BaseModel
 from django.conf import settings
 from django.utils.text import slugify
 
-class Role(models.Model):
+class Role(BaseModel):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
     permissions = models.ManyToManyField(
@@ -21,13 +21,11 @@ class Role(models.Model):
         verbose_name_plural = "Roles"
         ordering = ['name']
 
-
-class Permission(models.Model):
+class Permission(BaseModel):
     code = models.CharField(max_length=100, unique=True)  # مثل create_prescription
     description = models.TextField(blank=True)
 
-
-class RolePermission(models.Model):
+class RolePermission(BaseModel):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
     
@@ -108,9 +106,6 @@ class TenantSettings(BaseModel):
     def __str__(self):
         return self.business_name if self.business_name else "Tenant Settings"
 
-
-
-
 class Page(BaseModel):
     LANGUAGE_CHOICES = [
         ('en', 'English'),
@@ -128,7 +123,6 @@ class Page(BaseModel):
     class Meta:
         db_table = 'pages'
         ordering = ['-updated_at']
-
 
 class PageContent(BaseModel):
     page = models.ForeignKey(
@@ -149,4 +143,3 @@ class PageContent(BaseModel):
         unique_together = [
             ['page', 'language'],
         ]
-

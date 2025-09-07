@@ -4,11 +4,10 @@ import { z } from 'zod';
 import { schemas } from '@/lib/api/zodClient';
 import { Loading3 } from '@/components/ui/loding';
 import { DynamicFormProps } from '@/types/DynamicFormTypes';
-import { defaultConfig, ignoredFields } from './dataConfig';
+import { defaultConfig, ignoredFields } from '../../config/dataConfig';
 import { RenderField } from './renderField';
 import { cn } from '@/lib/utils/cn';
-import { BackButton, RestButton, Button } from '@/components/ui/buttons/Button';
-import { CirclePlus, RefreshCw } from 'lucide-react';
+import { CirclePlus, RefreshCw,ArrowLeft } from 'lucide-react';
 import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { formsConfig } from '@/config/formsConfig';
@@ -16,13 +15,15 @@ import { useMemo } from 'react';
 import { safeToast } from '@/lib/utils/toastService';
 import {useTranslations} from 'next-intl';
 import { ActionButton } from '../ui/buttons';
+import { useRouter } from '@/app/i18n/navigation';
+
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues] = useState<any>(null);
+  const router = useRouter();
 
   const { entity, id } = props
   if (!entity) throw new Error('entity is required');
-  const f = useTranslations(entity);
   const t = useTranslations('formsConfig');
   const form = formsConfig[entity];
   const alias = useMemo(() => (id ? form.updateAlias : form.createAlias), [id, form]);
@@ -107,7 +108,8 @@ const visibleFields = config.fieldOrder || allFields;
 
         <h2 className="title" >{title ? title : form.schemaName}</h2>
 
-        {showBackButton && <BackButton />}
+        {showBackButton &&
+          <ActionButton icon={<ArrowLeft size={16} />} variant="success" title={t("back")} onClick={() => router.back()}/>}
 
       </div>
 

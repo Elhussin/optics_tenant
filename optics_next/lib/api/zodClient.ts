@@ -2630,6 +2630,30 @@ const PatchedClientRequest = z
   })
   .partial()
   .passthrough();
+const RegisterTenant = z
+  .object({ name: z.string().max(25), email: z.string().email() })
+  .passthrough();
+const RegisterTenantRequest = z
+  .object({
+    name: z.string().min(1).max(25),
+    email: z.string().min(1).email(),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+  })
+  .passthrough();
+const PatchedRegisterTenantRequest = z
+  .object({
+    name: z.string().min(1).max(25),
+    email: z.string().min(1).email(),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+  })
+  .partial()
+  .passthrough();
 const SubscriptionPlanRequest = z
   .object({
     name: z.string().min(1).max(50),
@@ -3182,6 +3206,9 @@ export const schemas = {
   Client,
   ClientRequest,
   PatchedClientRequest,
+  RegisterTenant,
+  RegisterTenantRequest,
+  PatchedRegisterTenantRequest,
   SubscriptionPlanRequest,
   PatchedSubscriptionPlanRequest,
   ContactUs,
@@ -7995,6 +8022,13 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/tenants/payments/",
+    alias: "tenants_payments_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/tenants/paypal/cancel/",
     alias: "tenants_paypal_cancel_retrieve",
     requestFormat: "json",
@@ -8015,10 +8049,90 @@ export const endpoints = makeApi([
     response: z.void(),
   },
   {
+    method: "get",
+    path: "/api/tenants/register/",
+    alias: "tenants_register_list",
+    requestFormat: "json",
+    response: z.array(RegisterTenant),
+  },
+  {
     method: "post",
     path: "/api/tenants/register/",
     alias: "tenants_register_create",
     requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "get",
+    path: "/api/tenants/register/:id/",
+    alias: "tenants_register_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "put",
+    path: "/api/tenants/register/:id/",
+    alias: "tenants_register_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "patch",
+    path: "/api/tenants/register/:id/",
+    alias: "tenants_register_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedRegisterTenantRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "delete",
+    path: "/api/tenants/register/:id/",
+    alias: "tenants_register_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
     response: z.void(),
   },
   {
@@ -8461,7 +8575,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/public/pages/",
     alias: "users_public_pages_list",
-    description: `API عامة للقراءة فقط بالـ slug`,
+    description: `For public pages only`,
     requestFormat: "json",
     response: z.array(Page),
   },
@@ -8469,7 +8583,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/public/pages/:slug/",
     alias: "users_public_pages_retrieve",
-    description: `API عامة للقراءة فقط بالـ slug`,
+    description: `For public pages only`,
     requestFormat: "json",
     parameters: [
       {

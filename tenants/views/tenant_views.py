@@ -8,7 +8,8 @@ from rest_framework.views import APIView
 from django_tenants.utils import  get_tenant
 from tenants.models import (
     Client,
-    SubscriptionPlan
+    SubscriptionPlan,
+    PendingTenantRequest
 )
 from tenants.serializers import (
     RegisterTenantSerializer,
@@ -86,3 +87,8 @@ class SubscriptionPlanViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny] 
     queryset = SubscriptionPlan.objects.all()
     serializer_class = SubscriptionPlanSerializer
+
+class RegisterTenantViewSet(viewsets.ModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = PendingTenantRequest.objects.all()
+    serializer_class = RegisterTenantSerializer

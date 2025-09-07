@@ -1,18 +1,16 @@
 "use client";
 
 import { useUser } from "@/lib/contexts/userContext";
-import { formRequestProps, UseFormRequestReturn } from "@/types";
+import { formRequestProps, UseFormRequestReturn, User } from "@/types";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { useTranslations } from "next-intl";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { safeToast } from "@/lib/utils/toastService";
 import { cn } from "@/lib/utils/cn";
 import { useEffect } from "react";
 import Image from "next/image";
 import { Link } from "@/app/i18n/navigation";
 import {useLocale} from "next-intl";
-import { Loading4 } from "@/components/ui/loding";
-import { User } from '@/types';
 export default function LoginForm(props: formRequestProps) {
   const {
     title,
@@ -47,7 +45,7 @@ export default function LoginForm(props: formRequestProps) {
       if (mode === "login") {
         const userResult = await refetchUser();
         if (userResult?.success) {
-          setUser(userResult.data as User);
+          // setUser(userResult?.data as User);
           router.replace(redirect);
         } else {
           safeToast(t("errorMessage"), { type: "error" });
@@ -202,19 +200,10 @@ export default function LoginForm(props: formRequestProps) {
           )}
         >
           <div className="relative w-full h-[400px] text-white text-center flex items-center justify-center  bg-primary rounded-2xl ">
-            {/* <Image
-              src="/media/start.jpg"
-              alt="Start APP"
-              className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
-              width={500}
-              height="auto"
-            /> */}
-     
                     <Image
                       src="/media/start.jpg"
                       alt="Start APP"
                       fill
-                      // className="rounded-2xl object-contain"
                       className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
                       priority
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -1,10 +1,10 @@
 "use client"
 import { z } from 'zod';
-import { relationshipConfigs } from './dataConfig';
+import { relationshipConfigs } from '../../config/dataConfig';
 import { useState, useEffect } from 'react';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import Modal from "@/components/view/Modal";
-import { Button } from "@/components/ui/buttons/Button";
+import { ActionButton } from "@/components/ui/buttons";
 import { CirclePlus } from 'lucide-react';
 import ReactSelect from 'react-select';
 import { Controller } from 'react-hook-form';
@@ -209,13 +209,12 @@ export function ForeignKeyField({
 
 
 
-        <Button
+        <ActionButton
           onClick={() => setShowModal(true)}
-          variant="info"
-          className="ml-2"
-          icon={<CirclePlus size={16} />}
-          label="Add"
-
+          variant="outline"
+          className="ml-2 p-4"
+          icon={<CirclePlus size={18} color="green" />}
+          title="Add"
         />
       </div>
       {showModal && (
@@ -292,7 +291,7 @@ export function useFieldOptions(fieldName: string, fieldType: string, schema?: z
 
   if (fieldType === "select" && schema) {
     return {
-      data: schema.options.map((opt) => ({ label: opt, value: opt })),
+      data: schema.options.map((opt: any) => ({ label: opt, value: opt })),
       loading: false,
     };
   }

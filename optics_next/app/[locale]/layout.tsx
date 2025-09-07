@@ -1,7 +1,6 @@
 
 import { Cairo, Inter } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server"; // server import
 import "@/styles/globals.css";
 import { routing } from "@/app/i18n/routing";
 import { AsideProvider } from "@/lib/contexts/AsideContext";
@@ -50,7 +49,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <UserProvider>
           <AsideProvider>
-
+            
            {children}
 
           </AsideProvider>

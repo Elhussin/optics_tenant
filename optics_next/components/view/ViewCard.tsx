@@ -32,7 +32,7 @@ export default function ViewCard({ entity }: { entity: string }) {
       <div className="head">
         <h2 className="title-1">{t2("title")}</h2>
         <div className="flex justify-end gap-1">
-          <ActionButton variant="success" icon={<Plus size={16} />} navigateTo={`/dashboard/${entity}/create`}  title={t('createTitle')} />
+          <ActionButton variant="success" icon={<Plus size={16} />} navigateTo={`/dashboard/${entity}/create`}  title={`${t('createTitle') } ${entity}`}/>
           <ActionButton  variant="success"  icon={<ArrowLeft size={16} />} navigateTo={`/dashboard/`} title={t('back')}/>
         </div>
       </div>
@@ -49,8 +49,8 @@ export default function ViewCard({ entity }: { entity: string }) {
             );
           })}
           <div className="btn-card">
-            <ActionButton variant="info" navigateTo={`/dashboard/${entity}/${item.id}`} icon={<Eye size={16} />} title={t('view')}/> 
-            <ActionButton variant="warning" navigateTo={`/dashboard/${entity}/${item.id}/edit`} icon={<Pencil size={16} />} title={t('edit')}/> 
+            <ActionButton variant="info" navigateTo={`/dashboard/${entity}/${item.id}`} icon={<Eye size={16} />} title={`${t('view')} ${entity}`}/> 
+            <ActionButton variant="warning" navigateTo={`/dashboard/${entity}/${item.id}/edit`} icon={<Pencil size={16} />} title={`${t('edit')} ${entity}`}/> 
           </div>
         </div>
       ))}

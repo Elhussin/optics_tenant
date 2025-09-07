@@ -183,3 +183,7 @@ class PayPalCancelView(APIView):
 
 
 
+class PaymentListView(APIView):
+    def get(self, request):
+        payments = Payment.objects.all()
+        return Response(PaymentSerializer(payments, many=True).data)

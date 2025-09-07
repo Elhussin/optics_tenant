@@ -53,8 +53,6 @@ export const navUrl=[
 ]
 
 
-
-
 export const socialLinks = [
   { url: "https://www.linkedin.com/in/osm-store-management/", icon: FaLinkedin, name: "LinkedIn" },
   { url: "https://www.github.com/osm-optics-store-management/", icon: FaGithub, name: "GitHub" },
@@ -66,8 +64,6 @@ export const socialLinks = [
   { url: "https://www.twitter.com/hasin.taha/", icon: FaXTwitter, name: "X (Twitter)" },
   { url: "mailto:hasin3112@gmail.com", icon: FiMail, name: "Email" },
 ];
-
-
 
 export const otherLinks = [
   { path: "/support", name: "Support" },

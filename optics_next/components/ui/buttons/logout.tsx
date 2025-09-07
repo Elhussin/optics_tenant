@@ -1,12 +1,12 @@
 "use client";
-import {Button} from "./Button";
+import {ActionButton} from "./";
 import { useTranslations } from 'next-intl';
 export default function LogoutButton({logout}: {logout: () => void}) {
 
   const t = useTranslations('userContext');
   return (
     <>
-    <Button
+    <ActionButton
       label={t('title')}
       onClick={logout}
       variant="danger"

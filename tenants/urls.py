@@ -9,14 +9,16 @@ from .views import (
     PayPalWebhookView,
     ClientViewSet,
     DomainView,
-    SubscriptionPlanViewSet
+    SubscriptionPlanViewSet,
+    PaymentListView,
+    RegisterTenantViewSet
 )
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'clients', ClientViewSet, basename='clients')
 router.register(r'subscription-plans', SubscriptionPlanViewSet, basename='subscription-plans')
-
+router.register(r'register', RegisterTenantViewSet, basename='register-tenant')
 urlpatterns = [
     path("", include(router.urls)),
     path('register/', RegisterTenantView.as_view()),
@@ -28,4 +30,5 @@ urlpatterns = [
     path('paypal/execute/', PayPalExecuteView.as_view(), name="execute-paypal-order"),
     path('paypal/cancel/', PayPalCancelView.as_view(), name="paypal-cancel"),
     path('paypal/webhook/', PayPalWebhookView.as_view(), name="paypal-webhook"),
+    path('payments/', PaymentListView.as_view(), name="payments-list"),
 ]

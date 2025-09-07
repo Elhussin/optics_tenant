@@ -1,13 +1,9 @@
-import { useTranslations } from 'next-intl';
-
-// const T = useTranslations('formsConfig');
-
 export interface FormConfig {
-  schemaName: string;
-  createAlias: string;
-  retrieveAlias: string;
-  updateAlias: string;
-  hardDeleteAlias: string;
+  schemaName?: string;
+  createAlias?: string;
+  retrieveAlias?: string;
+  updateAlias?: string;
+  hardDeleteAlias?: string;
   createSuccessMessage?: string;
   createErrorMessage?: string;
   updateSuccessMessage?: string;
@@ -18,7 +14,7 @@ export interface FormConfig {
   updateTitle?: string;
   fields: string[];
   detailsField: string[];
-  listAlias: string;
+  listAlias?: string;
   userConfig?:object,
   showResetButton?:boolean,
   showBackButton?:boolean,
@@ -26,6 +22,58 @@ export interface FormConfig {
 }
 
 export const formsConfig: Record<string, FormConfig> = {
+
+  client:{
+    schemaName: 'ClientRequest',
+    listAlias: 'tenants_clients_list',
+    createAlias: 'tenants_register_create',
+    retrieveAlias: 'tenants_clients_retrieve',
+    updateAlias: 'tenants_clients_partial_update',
+    hardDeleteAlias: 'tenants_clients_destroy',
+    fields:["name","max_branches","max_users"],
+    detailsField:[ "name","max_branches","max_users","website","is_active","paid_until", ],
+  },
+  registerTenant:{
+    schemaName: 'RegisterTenantRequest',
+    listAlias: 'tenants_register_list',
+    createAlias: 'tenants_register_create',
+    retrieveAlias: 'tenants_register_retrieve',
+    updateAlias: 'tenants_register_partial_update',
+    hardDeleteAlias: 'tenants_register_destroy',
+    fields:["name","email"],
+    detailsField:["name","email","password"],
+  },
+  domain:{
+    retrieveAlias: 'tenants_domain_retrieve',
+    fields:["domain"],
+    detailsField:["domain","is_active"],
+  },
+  payment:{
+    retrieveAlias: 'tenants_payments_retrieve',
+    fields:["amount","transaction_id","status","client"],
+    detailsField:["amount","transaction_id","status","client","created_at","updated_at","method","currency"],
+  },
+  subscriptionPlan:{
+    schemaName: 'SubscriptionPlanRequest',
+    listAlias: 'tenants_subscription_plans_list',
+    createAlias: 'tenants_subscription_plans_create',
+    updateAlias: 'tenants_subscription_plans_update',
+    retrieveAlias: 'tenants_subscription_plans_retrieve',
+    hardDeleteAlias: 'tenants_subscription_plans_destroy',
+    fields:["name","max_users","max_branches","description"],
+    detailsField:["name","max_users","max_branches","description","month_price","year_price","currency","discount"],
+  },
+
+  role:{
+    schemaName: 'PatchedRoleRequest',
+    listAlias: 'users_roles_list',
+    createAlias: 'users_roles_create',
+    retrieveAlias: 'users_roles_retrieve',
+    updateAlias: 'users_roles_partial_update',
+    hardDeleteAlias: 'users_roles_destroy',
+    fields:["name","description"],
+    detailsField:["name","description","is_active","is_deleted"],
+  },
   user: {
     schemaName: 'UserRequest',
     listAlias: 'users_users_list',
@@ -33,40 +81,48 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'users_users_retrieve',
     updateAlias: 'users_users_partial_update',
     hardDeleteAlias: 'users_users_destroy',
-    createSuccessMessage: 'User created successfully',
-    createErrorMessage: 'Failed to create user',
     fields:["username","email","phone","role","is_active"],
     detailsField:["username","email","phone","role","is_active","address","website"],
   },
-  tenant:{
-    schemaName: 'ClientRequest',
-    listAlias: 'tenants_clients_list',
-    createAlias: 'tenants_register_create',
-    retrieveAlias: 'tenants_clients_retrieve',
-    updateAlias: 'tenants_clients_partial_update',
-    hardDeleteAlias: 'tenants_clients_destroy',
-    createSuccessMessage: 'Tenant created successfully',
-    createErrorMessage: 'Failed to create tenant',
-    updateSuccessMessage: 'Tenant updated successfully',
-    updateErrorMessage: 'Failed to update tenant',
-    title: 'Tenant',
-    detailsTitle: 'Tenant Details',
-    createTitle: 'Add Tenant',
-    updateTitle: 'Update Tenant',
-    fields:["name","subdomain","max_branches","max_users"],
-    detailsField:[
-      "name",
-      "subdomain",
-      "max_branches",
-      "max_users",
-      "website",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{ }
+  permissions:{
+    schemaName: 'PermissionRequest',
+    listAlias: 'users_permissions_list',
+    createAlias: 'users_permissions_create',
+    retrieveAlias: 'users_permissions_retrieve',
+    updateAlias: 'users_permissions_partial_update',
+    hardDeleteAlias: 'users_permissions_destroy',
+    fields:["code","description"],
+    detailsField:["code","description"],
+  },
+  rolePermission:{
+    schemaName: 'RolePermissionRequest',
+    listAlias: 'users_role_permissions_list',
+    createAlias: 'users_role_permissions_create',
+    retrieveAlias: 'users_role_permissions_retrieve',
+    updateAlias: 'users_role_permissions_partial_update',
+    hardDeleteAlias: 'users_role_permissions_destroy',
+    fields:["role","permission"],
+    detailsField:["role","permission"],
+  },
+  contactUs:{
+    schemaName: 'ContactUsRequest',
+    listAlias: 'users_contact_us_list',
+    createAlias: 'users_contact_us_create',
+    retrieveAlias: 'users_contact_us_retrieve',
+    updateAlias: 'users_contact_us_partial_update',
+    hardDeleteAlias: 'users_contact_us_destroy',
+    fields:["name","email","phone","message"],
+    detailsField:["name","email","phone","message","created_at","updated_at","is_deleted","is_active"],
+  },
+  tenant_settings:{
+    schemaName: 'TenantSettingsRequest',
+    listAlias: 'users_tenant_settings_list',
+    createAlias: 'users_tenant_settings_create',
+    retrieveAlias: 'users_tenant_settings_retrieve',
+    updateAlias: 'users_tenant_settings_partial_update',
+    hardDeleteAlias: 'users_tenant_settings_destroy',
+    fields:["business_name","phone","email"],
+    detailsField:["business_name","phone","email","facebook","instagram","twitter","linkedin","description","is_active","is_deleted"],
   },
   department: {
     schemaName: 'Department',
@@ -117,14 +173,6 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'branches_branches_retrieve',
     updateAlias: 'branches_branches_partial_update',
     hardDeleteAlias: 'branches_branches_destroy',
-    createSuccessMessage: 'Branch created successfully',
-    createErrorMessage: 'Failed to create branch',
-    updateSuccessMessage: 'Branch updated successfully',
-    updateErrorMessage: 'Failed to update branch',
-    title: 'Branch',
-    detailsTitle: 'Branch Details',
-    createTitle: 'Add Branch',
-    updateTitle: 'Update Branch',
     fields:["name","description"],
     detailsField:["name","description","is_active","is_deleted"],
     showResetButton:true,
@@ -228,117 +276,5 @@ export const formsConfig: Record<string, FormConfig> = {
     showBackButton:true,
     className:"",
     userConfig:{ }
-  },
-
-  page:{
-    schemaName: 'PageRequest',
-    listAlias: 'users_pages_list',
-    createAlias: 'users_pages_create',
-    retrieveAlias: 'users_pages_retrieve',
-    updateAlias: 'users_pages_partial_update',
-    hardDeleteAlias: 'users_pages_destroy',
-    createSuccessMessage: 'User Page created successfully',
-    createErrorMessage: 'Failed to create user page',
-    updateSuccessMessage: 'User Page updated successfully',
-    updateErrorMessage: 'Failed to update user page',
-    title: 'Page',
-    detailsTitle: 'Page Details',
-    createTitle: 'Add Page',
-    updateTitle: 'Update Page',
-    fields:["slug","author","status"],
-    detailsField:[
-      "slug",
-      "author",
-      "status",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{}
-  },
-  pagecontent:{
-    schemaName: 'PageContentRequest',
-    listAlias: 'users_page_contents_list',
-    createAlias: 'users_page_contents_create',
-    retrieveAlias: 'users_page_contents_retrieve',
-    updateAlias: 'users_page_contents_partial_update',
-    hardDeleteAlias: 'users_page_contents_destroy',
-    createSuccessMessage: 'Page Content created successfully',
-    createErrorMessage: 'Failed to create page content',
-    updateSuccessMessage: 'Page Content updated successfully',
-    updateErrorMessage: 'Failed to update page content',
-    title: 'Page Content',
-    detailsTitle: 'Page Content Details',
-    createTitle: 'Add Page Content',
-    updateTitle: 'Update Page Content',
-    fields:["slug","author","status"],
-    detailsField:[
-      "slug",
-      "author",
-      "status",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{}
-  },
-  tenant_settings:{
-    schemaName: 'TenantSettingsRequest',
-    listAlias: 'users_tenant_settings_list',
-    createAlias: 'users_tenant_settings_create',
-    retrieveAlias: 'users_tenant_settings_retrieve',
-    updateAlias: 'users_tenant_settings_partial_update',
-    hardDeleteAlias: 'users_tenant_settings_destroy',
-    createSuccessMessage: 'Tenant Settings created successfully',
-    createErrorMessage: 'Failed to create tenant settings',
-    updateSuccessMessage: 'Tenant Settings updated successfully',
-    updateErrorMessage: 'Failed to update tenant settings',
-    title: 'Tenant Settings',
-    detailsTitle: 'Tenant Settings Details',
-    createTitle: 'Add Tenant Settings',
-    updateTitle: 'Update Tenant Settings',
-    fields:["business_name","phone","email"],
-    detailsField:[
-      "business_name",
-      "phone",
-      "email",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{}
-  },
-  role:{
-    schemaName: 'PatchedRoleRequest',
-    listAlias: 'users_roles_list',
-    createAlias: 'users_roles_create',
-    retrieveAlias: 'users_roles_retrieve',
-    updateAlias: 'users_roles_partial_update',
-    hardDeleteAlias: 'users_roles_destroy',
-    createSuccessMessage: 'Role created successfully',
-    createErrorMessage: 'Failed to create role',
-    updateSuccessMessage: 'Role updated successfully',
-    updateErrorMessage: 'Failed to update role',
-    title: 'Role',
-    detailsTitle: 'Role Details',
-    createTitle: 'Add Role',
-    updateTitle: 'Update Role',
-    fields:["name","description"],
-    detailsField:[
-      "name",
-      "description",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{}
   },
 };

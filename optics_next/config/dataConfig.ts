@@ -59,19 +59,19 @@ export const defaultConfig: GeneratorConfig = {
       labelField: 'name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/users/create'
+      createPage: '/dashboard/role/create'
     },
     page_id: {
       endpoint: 'pages_pages_list',
       labelField: 'slug',
       valueField: 'id',
       searchField: 'title',
-      createPage: '/pages/create'
+      createPage: '/dashboard/pages/create'
     },
   
   };
 
-export const ignoredFields : string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_active', 'is_deleted', 'deleted_at' , 'branch_code','logo','primary_color','secondary_color'];
+export const ignoredFields : string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_active', 'is_deleted', 'deleted_at' , 'branch_code','logo','primary_color','secondary_color','paid_until'];
 
 
 export const customConfig = {

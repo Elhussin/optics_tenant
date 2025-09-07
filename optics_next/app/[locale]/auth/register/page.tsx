@@ -2,29 +2,14 @@
 
 "use client";
 import LoginForm from '@/components/forms/LoginForm';
-// import { getSubdomainServer } from '@/lib/utils/getSubdomainServer';
 import { getSubdomain} from '@/lib/utils/getSubdomain';
 import {useTranslations} from 'next-intl';
-// import { Metadata } from 'next';
-// import { generateMetadata } from '@/lib/utils/metadata';
 import {formRequestProps} from '@/types';
-
-// export const metadata: Metadata = generateMetadata({
-//   title: 'Register',
-//   description: 'Register to O-S-M',
-//   keywords: ['optical', 'system', 'management', 'O-S-M','Register',"بصريات","ادارة"],
-//   openGraphType: 'website',
-//   twitterCardType: 'summary',
-// });
-
 
 
 export default  function RegisterPage(){
 const t = useTranslations('register');
 const t2 = useTranslations('tenants');
-  // const t = await getTranslations({ locale, namespace: 'register' });
-  // const t2 = await getTranslations({ locale, namespace: 'tenants' });
-  // const subdomain = await getSubdomainServer();
 const subdomain = getSubdomain();
 
   const props: formRequestProps = {

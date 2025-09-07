@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-
+import { safeToast } from "@/lib/utils/toastService";
 type GlobalAlertType = "info" | "warning" | "error" | "success";
 
 interface GlobalAlertProps {
@@ -54,9 +54,10 @@ export default function GlobalAlert({ message: propMessage, type: propType = "in
   };
 
   return (
-    <div className={`fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-md shadow-md ${alertStyles[type]}`}>
-      {message}
-      <button onClick={() => setShow(false)} className="ml-2 font-bold">×</button>
-    </div>
+    // <div className={`fixed left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-4 rounded-md shadow-md ${alertStyles[type]}`}>
+    //   {message}
+    //   <button onClick={() => setShow(false)} className="ml-2 font-bold">×</button>
+    // </div>
+    safeToast(message, {type: type})
   );
 }

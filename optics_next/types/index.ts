@@ -46,9 +46,6 @@ export interface formRequestProps extends CrudFormOptions  {
   
 }
 
-
-
-
 export interface useFormRequestProps {
   alias: string;
   defaultValues?: any;
@@ -57,7 +54,6 @@ export interface useFormRequestProps {
   transform?: (data: any) => any;
   showToast?: boolean;
 }
-
 
 export type UseFormRequestReturn = {
   isSubmitting: boolean;
@@ -108,29 +104,10 @@ export interface User {
 }
 
 
-
-
-interface FieldMeta {
-  key: string;
-  label: string;
-  zodType: any;
-}
-// ues in view card
 export interface ViewCardProps {
-
   entity: string;
   id?: string | number | undefined;
 }
-
-
-
-export interface BaseButtonProps {
-  // onClick?: (e?: React.MouseEvent) => void ;
-    onClick?: (e?: React.SyntheticEvent) => void | Promise<void>;
-
-  label?: string;
-
-};
 
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close'| 'warning';
 

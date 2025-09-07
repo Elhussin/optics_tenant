@@ -355,7 +355,7 @@ import {
   getFieldLabel,
   isFieldRequired,
 } from "../../lib/utils/DynamicFormhelper";
-import { fieldTemplates } from "./dataConfig";
+import { fieldTemplates } from "../../config/dataConfig";
 
 // ============================
 // RenderField Component

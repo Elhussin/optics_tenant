@@ -1,33 +1,86 @@
-{"formsConfig":{
+{
+"viewCard":{
+  "view":"عرض",
+  "edit":"تحديث",
+  "createTitle":"إضافة",
+  "updateTitle":"تحديث",
+  "back":"الرجوع",
+  "errorGetFormData":"حدث خطأ أثناء الحصول على بيانات الصفحة."
+},
+"viewDetailsCard":{
+  "print":"طباعة",
+  "copy":"نسخ",
+  "pdf":"pdf",
+  "entityError":"العنصر غير صحيح أو ID",
+  "noConfigError":"العنصر غير صحيح - تم اكتشاف الـ config",
+  "errorLoadingData":"حدث خطأ أثناء تحميل البيانات",
+  "deletedItem":"تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي."
+},
+  "formsConfig":{
     "create":"إضافة",
     "update":"تحديث",
     "back":"الرجوع",
     "reset":"إعادة تعيين",
     "submit":"إرسال",
     "saving":"جاري الحفظ",
-    "users":"المستخدمين",
-    "user":"المستخدم",
     "loading":"جاري التحميل...",
     "noData":"لم يتم العثور على بيانات",
     "success":"تم بنجاح",
-    "failed":"فشل في"
+    "failed":"فشل في",
+    "user":"المستخدم",
+    "tenant":"المستأجر",
+    "role":"الصلاحية"
+
   },
   "user": {
     "title": "المستخدمين",
     "detailsTitle": "تفاصيل المستخدم",
-    "createTitle": "إضافة مستخدم",
-    "updateTitle": "تحديث مستخدم",
-    "updateSuccessMessage":"تم تحديث المستخدم بنجاح",
-    "createSuccessMessage":"تم إضافة المستخدم بنجاح",
-    "updateErrorMessage":"فشل تحديث المستخدم",
-    "createErrorMessage":"فشل إضافة المستخدم",
-   
     "username": "اسم المستخدم",
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "address": "العنوان",
     "website": "الموقع الإلكتروني",
     "role": "الدور",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  },
+  "tenant": {
+    "title": "المستاجرين",
+    "detailsTitle": "تفاصيل المستأجر",
+    "name": "اسم المستأجر",
+    "subdomain": "النطاق الفرعي",
+    "max_branches": "الفروع",
+    "max_users": "المستخدمين",
+    "website": "الموقع الإلكتروني",
+    "paid_until": "تاريخ الانتهاء",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  } ,
+  "role":{
+    "title": "الصلاحيات",
+    "detailsTitle": "تفاصيل الصلاحية",
+    "name": "الاسم",
+    "description": "الوصف",
     "is_active": "الحالة",
     "is_deleted": "الحذف",
     "values": {

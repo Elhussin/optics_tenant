@@ -17,12 +17,6 @@ export const config = {
 
 const intl = createIntlMiddleware(routing);
 
-// function extractLocale(pathname: string): string {
-//   const match = pathname.match(/^\/(ar|en)(?=\/|$)/);
-//   return match ? match[1] : DEFAULT_LOCALE;
-// }
-
-
 function extractLocale(pathname: string): string | null {
   const match = pathname.match(/^\/(ar|en)(?=\/|$)/);
   return match ? match[1] : null; // null لو مش مدعوم

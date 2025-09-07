@@ -451,23 +451,6 @@
     "draft":"Draft",
     "published":"Published"
   },
-  "viewCard":{
-    "view":"View",
-    "edit":"Edit",
-    "createTitle":"Create",
-    "updateTitle":"Update",
-    "back":"Back",
-    "errorGetFormData":"Invalid entity Detected"
-  },
-  "viewDetailsCard":{
-    "print":"Print Details",
-    "copy":"Copy Details",
-    "pdf":"PDF Details",
-    "entityError":"Invalid entity Or ID",
-    "noConfigError":"Invalid entity - No config Detected",
-    "errorLoadingData":"Error loading data",
-      "deletedItem":"This item is deleted. You can restore it or delete it permanently."
-  },
 
   "useHardDeleteWithDialog":{
     "title":"Confirm Deletion",

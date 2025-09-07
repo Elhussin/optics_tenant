@@ -36,7 +36,7 @@ class SubscriptionPlan(BaseModel):
     def __str__(self):
         return f"{self.name} ({self.month_price} {self.currency})"
 
-class PendingTenantRequest(models.Model):
+class PendingTenantRequest(BaseModel):
     """Pending tenant requests"""
     plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True,)
     schema_name = models.CharField(max_length=63, unique=True, verbose_name=_("Schema Name"))
@@ -46,10 +46,8 @@ class PendingTenantRequest(models.Model):
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     token_expires_at = models.DateTimeField(verbose_name=_("Token Expires At"))
     is_activated = models.BooleanField(default=False, verbose_name=_("Activated"))
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
+   
     expires_at = models.DateTimeField(blank=True, null=True, verbose_name=_("Expires At"))
-    is_deleted = models.BooleanField(default=False, verbose_name=_("Deleted"))
-
     class Meta:
         verbose_name = _("Pending Tenant Request")
         verbose_name_plural = _("Pending Tenant Requests")
@@ -69,7 +67,7 @@ class PendingTenantRequest(models.Model):
             self.plan = "SubscriptionPlan".objects.get(name="trial")
         super().save(*args, **kwargs)
 
-class Client(TenantMixin):
+class Client(TenantMixin,BaseModel):
     """Tenants (Clients) """
     plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True )
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
@@ -78,10 +76,7 @@ class Client(TenantMixin):
     max_branches = models.IntegerField(default=1, verbose_name=_("Max Branches"))
     paid_until = models.DateField(null=True, blank=True, verbose_name=_("Paid Until"))
     on_trial = models.BooleanField(default=True, verbose_name=_("On Trial"))
-    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
-    is_deleted = models.BooleanField(default=False, verbose_name=_("Deleted"))
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
 
     auto_create_schema = True
 
@@ -116,7 +111,7 @@ class Domain(DomainMixin):
     def __str__(self):
         return self.domain
 
-class Payment(models.Model):
+class Payment(BaseModel):
     """سجل المدفوعات"""
     client = models.ForeignKey("Client", on_delete=models.CASCADE, related_name="payments")
     plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True)
@@ -126,9 +121,6 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     direction = models.CharField(max_length=10, choices=[('month', 'Monthly'), ('year', 'Yearly')], default='monthly')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
