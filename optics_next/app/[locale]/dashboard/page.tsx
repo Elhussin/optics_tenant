@@ -1,53 +1,44 @@
+"use client";
+import { useTranslations } from "next-intl";
 import { ActionButton } from "@/components/ui/buttons";
+
 export default function DashboardLinks() {
+  const t = useTranslations("hrefs");
+  console.log(t)
   const links = [
     // Produact
-    { href: "/dashboard/supplier", label: "Suppliers" },
-    { href: "/dashboard/category", label: "Categories" },
-    { href: "/dashboard/product", label: "Products" },
+    { href: "client", role: "Suppliers" },
+    { href: "register_tenant", role: "Categories" },
+
 
     // Hrm
-    { href: "/dashboard/department", label: "Departments" },
-    { href: "/dashboard/employees", label: "Employees" },
+    { href: "domain", role: "Departments" },
+    { href: "payment", role: "Employees" },
 
     // branch
-    { href: "/dashboard/branch", label: "Branches" },
-
+    { href: "subscription_plan", role: "Branches" },
+    { href: "roles", role: "Tenant Setting" },
     // user
-    { href: "/dashboard/user", label: "Users" },
-    { href: "/dashboard/tenant_settings", label: "Tenant Setting" },
-
+    { href: "users", role: "Users" },
 
     // subscription
-    { href: "/dashboard/subscription", label: "Subscription Plans" },
-
-    // manufacturer
-    { href: "/dashboard/manufacturer", label: "Manufacturers" },
+    { href: "permissions", role: "Manufacturers" },
 
     // CRM
-    { href: "/dashboard/customer", label: "Customers" },
+    { href: "role_permission", role: "Customers" },
 
     // Sales
-    { href: "/dashboard/order", label: "Orders" },
-  
-    { href: "/dashboard/invoice", label: "Invoices" },
-
-    // Tenant
-    { href: "/dashboard/tenant", label: "Tenants" },
-    { href: "/dashboard/role", label: "Roles" },
-
-
-    // Content
-    { href: "/dashboard/page", label: "Pages" },
-    { href: "/dashboard/pagecontent", label: "Page Content" },
-
-    { href: "/dashboard/setting", label: "Settings" }
+    { href: "tenant_settings", role: "Orders" },
+    { href: "contact_us", role: "Invoices" },
   ];
+
+
 
   return (
       <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {links.map(({ href, label }) => (
-          <ActionButton  label={label} navigateTo={href} variant="outline" title={label} className=" card" key={href} />
+      {links.map(({ href, role }) => (
+
+          <ActionButton  label={t(href)} navigateTo={`/dashboard/${href}/`} variant="outline" title={t(href)} className=" card" key={href} />
       ))}
     </div>
   );

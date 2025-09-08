@@ -272,12 +272,12 @@
         "name": "Premium",
         "description": "For growing businesses",
         "features": ["Advanced Inventory", "Reports & Analytics"]
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "description": "For large enterprises",
-        "features": ["Custom Features", "Priority Support"]
-      }
+    },
+    "enterprise": {
+      "name": "Enterprise",
+      "description": "For large enterprises",
+      "features": ["Custom Features", "Priority Support"]
+    }
     }
   },
   "paymantPage": {
@@ -457,6 +457,20 @@
     "message":"Are you sure you want to permanently delete this item?",
     "successMessage":"Item permanently deleted Successfully",
     "failedMessage":"Failed to delete item"
+  },
+  "hrefs" :{
+    "client":"Clients",
+    "register_tenant":"Register Tenant",
+    "domain":"Domains",
+    "payment":"Payments",
+    "subscription_plan":"Subscription Plans",
+    "roles":"Roles",
+    "users":"Users",
+    "permissions":"Permissions",
+    "role_permission":"Role & Permissions",
+    "contact_us":"Contact Us",
+    "tenant_settings":"Tenant Settings"
   }
+
 
 }

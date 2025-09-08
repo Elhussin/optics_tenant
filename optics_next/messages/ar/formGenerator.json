@@ -1,4 +1,4 @@
-{
+{ 
 "viewCard":{
   "view":"عرض",
   "edit":"تحديث",
@@ -32,7 +32,104 @@
     "role":"الصلاحية"
 
   },
-  "user": {
+  "client":{
+    "title": "العملاء",
+    "detailsTitle": "تفاصيل العميل",
+    "name": "اسم العميل",
+    "max_branches": "عدد الفروع",
+    "max_users": "عدد المستخدمين",
+    "website": "الموقع الإلكتروني",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  },
+  "register_tenant":{
+    "title": "تسجيل مستأجر جديد",
+    "detailsTitle": "تفاصيل المستأجر",
+    "name": "اسم المستأجر",
+    "email": "النطاق الفرعي",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  },
+  "domain":{
+    "title": "النطاقات",
+    "detailsTitle": "تفاصيل النطاق",
+    "domain": "النطاق",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  },
+  "subscription_plan":{
+    "title": "خطط الاشتراك",
+    "detailsTitle": "تفاصيل خطة الاشتراك",
+    "name": "اسم الخطة",
+    "description": "الوصف",
+    "maxBranches": "عدد الفروع",
+    "maxUsers": "عدد المستخدمين",
+    "month_price": "السعر الشهري",
+    "year_price": "السعر السنوي",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "currency": "العملة",
+    "discount": "الخصم",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  },
+  "roles":{
+    "title": "الادوار",
+    "detailsTitle": "تفاصيل الدور",
+    "name": "الاسم",
+    "description": "الوصف",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  },
+  "users": {
     "title": "المستخدمين",
     "detailsTitle": "تفاصيل المستخدم",
     "username": "اسم المستخدم",
@@ -54,15 +151,11 @@
       }
     }
   },
-  "tenant": {
-    "title": "المستاجرين",
-    "detailsTitle": "تفاصيل المستأجر",
-    "name": "اسم المستأجر",
-    "subdomain": "النطاق الفرعي",
-    "max_branches": "الفروع",
-    "max_users": "المستخدمين",
-    "website": "الموقع الإلكتروني",
-    "paid_until": "تاريخ الانتهاء",
+  "permissions" : {
+    "title" : "الصلاحيات",
+    "detailsTitle" :"تفاصيل الصلاحية",
+    "code" : "الكود",
+    "description" :"الوصف",
     "is_active": "الحالة",
     "is_deleted": "الحذف",
     "values": {
@@ -74,24 +167,47 @@
         "true": "محذوف",
         "false": "غير محذوف"
       }
-    }
-  } ,
-  "role":{
-    "title": "الصلاحيات",
-    "detailsTitle": "تفاصيل الصلاحية",
-    "name": "الاسم",
-    "description": "الوصف",
-    "is_active": "الحالة",
-    "is_deleted": "الحذف",
-    "values": {
-      "is_active": {
-        "true": "مفعل",
-        "false": "غير مفعل"
-      },
-      "is_deleted": {
-        "true": "محذوف",
-        "false": "غير محذوف"
-      }
-    }
   }
+},
+"role_permission" : {
+      "title" : " الصلاحيات والادوار",
+    "detailsTitle" :"تفاصيل الصلاحيات والادوار",
+    "role" : "الدور",
+    "permission" :"الصلاحية",
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+  }
+},
+"contact_us": {
+        "title" : "تواصل",
+    "detailsTitle" :"تفاصيل الرسالة",
+    "name": "اسم المرسل",
+    "email" : "البريد الإلكتروني",
+    "phone" :"رقم الهاتف",
+    "message" : "الرسالة",
+    "created_at" :"تاريخ الاستلام",
+    "updated_at" : "اخر تحديث" ,
+    "is_active": "الحالة",
+    "is_deleted": "الحذف",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+  }
+
+}
 }

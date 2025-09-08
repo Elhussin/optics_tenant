@@ -33,7 +33,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","max_branches","max_users"],
     detailsField:[ "name","max_branches","max_users","website","is_active","paid_until", ],
   },
-  registerTenant:{
+  register_tenant:{
     schemaName: 'RegisterTenantRequest',
     listAlias: 'tenants_register_list',
     createAlias: 'tenants_register_create',
@@ -41,7 +41,7 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'tenants_register_partial_update',
     hardDeleteAlias: 'tenants_register_destroy',
     fields:["name","email"],
-    detailsField:["name","email","password"],
+    detailsField:["name","email",],
   },
   domain:{
     retrieveAlias: 'tenants_domain_retrieve',
@@ -53,7 +53,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["amount","transaction_id","status","client"],
     detailsField:["amount","transaction_id","status","client","created_at","updated_at","method","currency"],
   },
-  subscriptionPlan:{
+  subscription_plan:{
     schemaName: 'SubscriptionPlanRequest',
     listAlias: 'tenants_subscription_plans_list',
     createAlias: 'tenants_subscription_plans_create',
@@ -63,8 +63,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","max_users","max_branches","description"],
     detailsField:["name","max_users","max_branches","description","month_price","year_price","currency","discount"],
   },
-
-  role:{
+  roles:{
     schemaName: 'PatchedRoleRequest',
     listAlias: 'users_roles_list',
     createAlias: 'users_roles_create',
@@ -74,7 +73,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","description"],
     detailsField:["name","description","is_active","is_deleted"],
   },
-  user: {
+  users: {
     schemaName: 'UserRequest',
     listAlias: 'users_users_list',
     createAlias: 'users_users_create',
@@ -92,9 +91,9 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_permissions_partial_update',
     hardDeleteAlias: 'users_permissions_destroy',
     fields:["code","description"],
-    detailsField:["code","description"],
+    detailsField:["code","description","is_active"],
   },
-  rolePermission:{
+  role_permission:{
     schemaName: 'RolePermissionRequest',
     listAlias: 'users_role_permissions_list',
     createAlias: 'users_role_permissions_create',
@@ -102,9 +101,9 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_role_permissions_partial_update',
     hardDeleteAlias: 'users_role_permissions_destroy',
     fields:["role","permission"],
-    detailsField:["role","permission"],
+    detailsField:["role","permission","is_active"],
   },
-  contactUs:{
+  contact_us:{
     schemaName: 'ContactUsRequest',
     listAlias: 'users_contact_us_list',
     createAlias: 'users_contact_us_create',
@@ -246,35 +245,5 @@ export const formsConfig: Record<string, FormConfig> = {
     showBackButton:true,
     className:"",
     userConfig:{},
-  },
-  subscription:{
-    schemaName: 'SubscriptionPlanRequest',
-    listAlias: 'tenants_subscription_plans_list',
-    createAlias: 'tenants_subscription_plans_create',
-    retrieveAlias: 'tenants_subscription_plans_retrieve',
-    updateAlias: 'tenants_subscription_plans_partial_update',
-    hardDeleteAlias: 'tenants_subscription_plans_destroy',
-    createSuccessMessage: 'Subscription Plan created successfully',
-    createErrorMessage: 'Failed to create subscription plan',
-    updateSuccessMessage: 'Subscription Plan updated successfully',
-    updateErrorMessage: 'Failed to update subscription plan',
-    title: 'Subscription Plan',
-    detailsTitle: 'Subscription Plan Details',
-    createTitle: 'Add Subscription Plan',
-    updateTitle: 'Update Subscription Plan',
-    fields:["name","email","phone"],
-    detailsField:[
-      "name",
-      "email",
-      "phone",
-      "address",
-      "website",
-      "is_active",
-      "is_deleted",
-    ],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{ }
   },
 };
