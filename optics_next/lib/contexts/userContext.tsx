@@ -51,6 +51,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       await logoutRequest.submitForm();
+      
     } catch {
       safeToast(t('logoutError'), { type: "error" });
     }

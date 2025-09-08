@@ -133,6 +133,7 @@ const visibleFields = config.fieldOrder || allFields;
               }`}
             disabled={formRequest.formState.isSubmitting}
             variant="info"
+            title={submitText || t('create')}
             icon={<CirclePlus size={16} />}
           />
 

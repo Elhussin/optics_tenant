@@ -55,6 +55,17 @@
     "emailRequired": "البريد الإلكتروني مطلوب",
     "email": "البريد الإلكتروني"
   },
+  "resetPassword": {
+    "title": "تعيين كلمة المرور",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "passwordRequired": "كلمة المرور مطلوبة",
+    "description": "يرجى إدخال كلمة المرور الجديدة",
+    "button": "تعيين كلمة المرور",
+    "sending": "جاري تعيين كلمة المرور...",
+    "SuccessMessage": "تم إعادة تعيين كلمة المرور بنجاح",
+    "loginMessage": "يمكنك الآن تسجيل الدخول باستخدام كلمة المرور الجديدة."
+  },
   "profilePage": {
     "title": "الملف الشخصي",
     "description": "Profile to O-S-M",

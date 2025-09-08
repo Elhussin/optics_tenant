@@ -55,7 +55,17 @@
     "emailRequired": "Email is required",
     "email": "Email"
   },
-  "resetPassword": {},
+  "resetPassword": {
+    "title": "Reset Password",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Enter Password",
+    "passwordRequired": "Password is required",
+    "description": "Enter your new password",
+    "button": "Reset Password",
+    "sending": "Resetting your password...",
+    "SuccessMessage": "Password reset successfully",
+    "loginMessage": "You can now login using your new password."
+  },
   "profilePage": {
     "title": "Profile",
     "description": "Profile to O-S-M",

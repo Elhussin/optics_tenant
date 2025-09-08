@@ -14,7 +14,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
       routuer.push(redirectPath);
     }, 3000);
     console.error('Error:', error);
-  }, []);
+  }, [error, routuer]);
 
   return (
     <div className="text-center p-10">

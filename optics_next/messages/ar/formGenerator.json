@@ -27,9 +27,17 @@
     "noData":"لم يتم العثور على بيانات",
     "success":"تم بنجاح",
     "failed":"فشل في",
-    "user":"المستخدم",
-    "tenant":"المستأجر",
-    "role":"الصلاحية"
+    "client":"العميل",
+    "register_tenant":"مستأجر جديد",
+    "domain":"النطاق",
+    "payment":"الدفع",
+    "subscription_plan":"خطة الاشتراك",
+    "roles":"الصلاحيات",
+    "users":"المستخدمين",
+    "permission":"الصلاحيات",
+    "role_permission":"صلاحيات الدور",
+    "contact_us":"تواصل",
+    "tenant_settings":"إعدادات المستأجر"
 
   },
   "client":{
@@ -41,6 +49,7 @@
     "website": "الموقع الإلكتروني",
     "is_active": "الحالة",
     "is_deleted": "الحذف",
+    "paid_until" : "تاريخ الانتهاء",
     "values": {
       "is_active": {
         "true": "مفعل",
@@ -86,6 +95,22 @@
         "false": "غير محذوف"
       }
     }
+  },
+  "payment" : {
+    "title": "الدفعات",
+    "detailsTitle": "تفاصيل الدفع",
+    "amount": "المبلغ",
+    "transaction_id" : "رقم الحركة",
+    "status" :"الحالة",
+    "client" : "العميل",
+    "created_at" :  "تاريخ الاستلام ",
+    "updated_at" : "اخر تحديث",
+    "method" : "نوع العملية",
+    "currency" : "العملة"    
+
+
+
+
   },
   "subscription_plan":{
     "title": "خطط الاشتراك",
@@ -188,7 +213,7 @@
   }
 },
 "contact_us": {
-        "title" : "تواصل",
+    "title" : "تواصل",
     "detailsTitle" :"تفاصيل الرسالة",
     "name": "اسم المرسل",
     "email" : "البريد الإلكتروني",
@@ -209,5 +234,30 @@
       }
   }
 
+},
+"tenant_settings" :{
+  "title" :"الأعدادت الأساسية",
+  "detailsTitle" :"تفاصيل الأعدادت الأساسية",
+  "business_name" : "الاسم",
+  "phone" : "الهاتف",
+  "email" : "البريد الإلكتروني",
+  "facebook" : "الفيسبوك",
+  "twitter" : "تويتر",
+  "instagram" : "الانستغرام",
+  "linkedin" : "لينكدإن",
+  "description" : "الوصف",
+  "website" : "الموقع الإلكتروني",
+  "is_active": "الحالة",
+  "is_deleted": "الحذف",
+  "values": {
+    "is_active": {
+      "true": "مفعل",
+      "false": "غير مفعل"
+    },
+    "is_deleted": {
+      "true": "محذوف",
+      "false": "غير محذوف"
+    }
+}
 }
 }

@@ -100,6 +100,7 @@ export async function middleware(request: NextRequest) {
       new TextEncoder().encode(secret)
     );
     const userTenant = payload.tenant as string;
+    console.log(payload);
     const permissions = (payload.permissions as string[]) || [];
 
     // تحقق من التينانت

@@ -28,21 +28,28 @@
     "noData":"No Data Found",
     "success":"Successfully",
     "failed":"Failed to",
-    "user": "User",
-    "tenant": "Tenant",
-    "role": "Role"
+    "client":"Client",
+    "register_tenant":"New Client ",
+    "domain":"Domain",
+    "payment":"Paymant",
+    "subscription_plan":"Subscription Plan",
+    "roles":"Roles",
+    "users":"Users",
+    "permission":"Permissions",
+    "role_permission" : "Role & Permission",
+    "contact_us":"Contact Us",
+    "tenant_settings":"Tenant Settings"
   },
-  "users": {
-    "title": "Users",
-    "detailsTitle": "User Details",
-    "username": "User Name",
-    "email": "User Email",
-    "phone": "User Phone",
-    "address": "User Address",
-    "website": "User Website",
-    "is_active": "Active",
+  "client":{
+    "title": "Clients",
+    "detailsTitle": "Client Details",
+    "name": "Client Name",
+    "max_branches": "Max Branches",
+    "max_users": "Max Users",
+    "website": "Website",
+    "is_active": "Status",
     "is_deleted": "Deleted",
-    "role": "Role",
+    "paid_until": "Paid Until",
     "values": {
       "is_active": {
         "true": "Active",
@@ -54,17 +61,70 @@
       }
     }
   },
-  "tenant": {
-    "title": "Tenants",
+  "register_tenant":{
+    "title": "Register New Tenant",
     "detailsTitle": "Tenant Details",
-    "name": "Name",
-    "subdomain": "Subdomain",
-    "max_branches": "Max Branches",
-    "max_users": "Max Users",
-    "website": "Website",
-    "paid_until": "Paid Until",
-    "is_active": "Active",
+    "name": "Tenant Name",
+    "email": "Subdomain",
+    "is_active": "Status",
     "is_deleted": "Deleted",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+    }
+  },
+  "domain":{
+    "title": "Domains",
+    "detailsTitle": "Domain Details",
+    "domain": "Domain",
+    "is_active": "Status",
+    "is_deleted": "Deleted",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+    }
+  },
+  "payment" : {
+    "title": "Payments",
+    "detailsTitle": "Payment Details",
+    "amount": "Amount",
+    "transaction_id" : "Transaction ID",
+    "status" :"Status",
+    "client" : "Client",
+    "created_at" :  "Received Date",
+    "updated_at" : "Last Updated",
+    "method" : "Payment Method",
+    "currency" : "Currency"    
+
+
+
+
+  },
+  "subscription_plan":{
+    "title": "Subscription Plans",
+    "detailsTitle": "Subscription Plan Details",
+    "name": "Plan Name",
+    "description": "Description",
+    "maxBranches": "Max Branches",
+    "maxUsers": "Max Users",
+    "month_price": "Monthly Price",
+    "year_price": "Yearly Price",
+    "is_active": "Status",
+    "is_deleted": "Deleted",
+    "currency": "Currency",
+    "discount": "Discount",
     "values": {
       "is_active": {
         "true": "Active",
@@ -93,5 +153,111 @@
         "false": "Not Deleted"
       }
     }
+  },
+  "users": {
+    "title": "Users",
+    "detailsTitle": "User Details",
+    "username": "User Name",
+    "email": "User Email",
+    "phone": "User Phone",
+    "address": "User Address",
+    "website": "User Website",
+    "is_active": "Active",
+    "is_deleted": "Deleted",
+    "role": "Role",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+    }
+  },
+  "permissions" : {
+    "title" : "Permissions",
+    "detailsTitle" :"Permission Details",
+    "code" : "Code",
+    "description" :"Description",
+    "is_active": "Status",
+    "is_deleted": "Deleted",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
   }
+},
+"role_permission" : {
+      "title" : "Permissions and Roles",
+    "detailsTitle" :"Role Permission Details",
+    "role" : "Role",
+    "permission" :"Permission",
+    "is_active": "Status",
+    "is_deleted": "Deleted",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+  }
+},
+"contact_us": {
+    "title" : "Contact Us",
+    "detailsTitle" :"Message Details",
+    "name": "Sender Name",
+    "email" : "Email",
+    "phone" :"Phone",
+    "message" : "Message",
+    "created_at" :"Received Date",
+    "updated_at" : "Last Updated" ,
+    "is_active": "Status",
+    "is_deleted": "Deleted",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+  }
+
+},
+"tenant_settings" :{
+  "title" :"Basic Settings",
+  "detailsTitle" :"Basic Settings Details",
+  "business_name" : "Name",
+  "phone" : "Phone",
+  "email" : "Email",
+  "facebook" : "Facebook",
+  "twitter" : "Twitter",
+  "instagram" : "Instagram",
+  "linkedin" : "LinkedIn",
+  "description" : "Description",
+  "website" : "Website",
+  "is_active": "Status",
+  "is_deleted": "Deleted",
+  "values": {
+    "is_active": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "is_deleted": {
+      "true": "Deleted",
+      "false": "Not Deleted"
+    }
+}
+}
 }
