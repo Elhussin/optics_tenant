@@ -59,12 +59,12 @@
 //   return (
 //     <div className={`${className}`}>
 //       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        
+
 
 //     <div className="flex flex-row space-x-4">
 //     <h3 className="text-lg font-medium text-gray-900">R</h3>
 //      <div className="mb-4">
-    
+
 //     <label htmlFor="right_sphere" className="block text-sm font-medium text-gray-700 mb-1">
 //       SPH
 //     </label>
@@ -74,14 +74,14 @@
 //       {...register("right_sphere")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Right sphere..."
-      
+
 //     />
-    
+
 //     {errors.right_sphere && <p className="text-red-500 text-sm mt-1">{errors.right_sphere?.message}</p>}
 //       </div>
 
 //       <div className="mb-4">
-        
+
 //         <label htmlFor="right_cylinder" className="block text-sm font-medium text-gray-700 mb-1">
 //           CYL
 //         </label>
@@ -91,14 +91,14 @@
 //           {...register("right_cylinder")} 
 //           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //           placeholder="Right cylinder..."
-          
+
 //         />
-        
+
 //         {errors.right_cylinder && <p className="text-red-500 text-sm mt-1">{errors.right_cylinder?.message}</p>}
 //       </div>
 
 //       <div className="mb-4">
-        
+
 //         <label htmlFor="right_axis" className="block text-sm font-medium text-gray-700 mb-1">
 //           AXI
 //         </label>
@@ -108,13 +108,13 @@
 //           {...register("right_axis")} 
 //           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //           placeholder="Right axis..."
-          
+
 //         />
-        
+
 //         {errors.right_axis && <p className="text-red-500 text-sm mt-1">{errors.right_axis?.message}</p>}
 //       </div>
 //       <div className="mb-4">
-    
+
 //     <label htmlFor="right_reading_add" className="block text-sm font-medium text-gray-700 mb-1">
 //       ADD
 //     </label>
@@ -124,15 +124,15 @@
 //       {...register("right_reading_add")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Right reading add..."
-      
+
 //     />
-    
+
 //     {errors.right_reading_add && <p className="text-red-500 text-sm mt-1">{errors.right_reading_add?.message}</p>}
 //   </div>
 
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="right_pupillary_distance" className="block text-sm font-medium text-gray-700 mb-1">
 //       PD
 //     </label>
@@ -142,15 +142,15 @@
 //       {...register("right_pupillary_distance")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Right pupillary distance..."
-      
+
 //     />
-    
+
 //     {errors.right_pupillary_distance && <p className="text-red-500 text-sm mt-1">{errors.right_pupillary_distance?.message}</p>}
 //   </div>
 
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="sigmant_right" className="block text-sm font-medium text-gray-700 mb-1">
 //       SG
 //     </label>
@@ -160,36 +160,36 @@
 //       {...register("sigmant_right")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Sigmant right..."
-      
+
 //     />
-    
+
 //     {errors.sigmant_right && <p className="text-red-500 text-sm mt-1">{errors.sigmant_right?.message}</p>}
 //   </div>
 
 
-//   <div className="mb-4">
-    
-//     <label htmlFor="a_v_right" className="block text-sm font-medium text-gray-700 mb-1">
-//       AV
-//     </label>
-//     <input 
-//       id="a_v_right" 
-//       type="text" 
-//       {...register("a_v_right")} 
-//       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
-//       placeholder="A v right..."
-      
-//     />
-    
-//     {errors.a_v_right && <p className="text-red-500 text-sm mt-1">{errors.a_v_right?.message}</p>}
-//   </div>
+// <div className="mb-4">
+
+//   <label htmlFor="a_v_right" className="block text-sm font-medium text-gray-700 mb-1">
+//     AV
+//   </label>
+//   <input 
+//     id="a_v_right" 
+//     type="text" 
+//     {...register("a_v_right")} 
+//     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
+//     placeholder="A v right..."
+
+//   />
+
+//   {errors.a_v_right && <p className="text-red-500 text-sm mt-1">{errors.a_v_right?.message}</p>}
+// </div>
 
 //     </div>
 
 //   <div className="flex flex-row space-x-4">
 //   <h3 className="text-lg font-medium text-gray-900">L</h3>
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="left_sphere" className="block text-sm font-medium text-gray-700 mb-1">
 //       SPH
 //     </label>
@@ -199,14 +199,14 @@
 //       {...register("left_sphere")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Left sphere..."
-      
+
 //     />
-    
+
 //     {errors.left_sphere && <p className="text-red-500 text-sm mt-1">{errors.left_sphere?.message}</p>}
 //   </div>
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="left_cylinder" className="block text-sm font-medium text-gray-700 mb-1">
 //       CYL
 //     </label>
@@ -216,14 +216,14 @@
 //       {...register("left_cylinder")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Left cylinder..."
-      
+
 //     />
-    
+
 //     {errors.left_cylinder && <p className="text-red-500 text-sm mt-1">{errors.left_cylinder?.message}</p>}
 //   </div>
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="left_axis" className="block text-sm font-medium text-gray-700 mb-1">
 //       AXI
 //     </label>
@@ -233,13 +233,13 @@
 //       {...register("left_axis")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Left axis..."
-      
+
 //     />
-    
+
 //     {errors.left_axis && <p className="text-red-500 text-sm mt-1">{errors.left_axis?.message}</p>}
 //   </div>
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="left_reading_add" className="block text-sm font-medium text-gray-700 mb-1">
 //       ADD
 //     </label>
@@ -249,13 +249,13 @@
 //       {...register("left_reading_add")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Left reading add..."
-      
+
 //     />
-    
+
 //     {errors.left_reading_add && <p className="text-red-500 text-sm mt-1">{errors.left_reading_add?.message}</p>}
 //   </div>
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="left_pupillary_distance" className="block text-sm font-medium text-gray-700 mb-1">
 //       P.D
 //     </label>
@@ -265,14 +265,14 @@
 //       {...register("left_pupillary_distance")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Left pupillary distance..."
-      
+
 //     />
-    
+
 //     {errors.left_pupillary_distance && <p className="text-red-500 text-sm mt-1">{errors.left_pupillary_distance?.message}</p>}
 //   </div>
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="sigmant_left" className="block text-sm font-medium text-gray-700 mb-1">
 //     SG
 //       </label>
@@ -282,13 +282,13 @@
 //       {...register("sigmant_left")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Sigmant left..."
-      
+
 //     />
-    
+
 //     {errors.sigmant_left && <p className="text-red-500 text-sm mt-1">{errors.sigmant_left?.message}</p>}
 //   </div>
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="a_v_left" className="block text-sm font-medium text-gray-700 mb-1">
 //       A v
 //     </label>
@@ -298,19 +298,19 @@
 //       {...register("a_v_left")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="A v left..."
-      
+
 //     />
-    
+
 //     {errors.a_v_left && <p className="text-red-500 text-sm mt-1">{errors.a_v_left?.message}</p>}
 //   </div>
 
 
 //   </div>
-  
+
 
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="doctor_name" className="block text-sm font-medium text-gray-700 mb-1">
 //       Doctor name
 //     </label>
@@ -320,12 +320,12 @@
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Doctor name..."
 //     />
-    
+
 //     {errors.doctor_name && <p className="text-red-500 text-sm mt-1">{errors.doctor_name?.message}</p>}
 //   </div>
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="prescription_date" className="block text-sm font-medium text-gray-700 mb-1">
 //       Prescription date *
 //     </label>
@@ -335,14 +335,14 @@
 //       {...register("prescription_date")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Prescription date..."
-      
+
 //     />
-    
+
 //     {errors.prescription_date && <p className="text-red-500 text-sm mt-1">{errors.prescription_date?.message}</p>}
 //   </div>
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
 //       Notes
 //     </label>
@@ -353,12 +353,12 @@
 //       rows={3}
 //       placeholder="Notes..."
 //     />
-    
+
 //     {errors.notes && <p className="text-red-500 text-sm mt-1">{errors.notes?.message}</p>}
 //   </div>
 
 //   <div className="mb-4">
-    
+
 //     <label htmlFor="customer" className="block text-sm font-medium text-gray-700 mb-1">
 //       Customer *
 //     </label>
@@ -368,25 +368,25 @@
 //       {...register("customer")} 
 //       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" 
 //       placeholder="Customer..."
-      
+
 //     />
-    
+
 //     {errors.customer && <p className="text-red-500 text-sm mt-1">{errors.customer?.message}</p>}
 //   </div>
-        
+
 //         <div className="flex gap-3 pt-4">
 //           <button 
 //             type="submit" 
 //             disabled={isSubmitting}
 //             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
 //             // disabled={mode === 'edit' && fieldName === 'email'||mode === 'edit' && fieldName === 'username'||mode === 'edit' && fieldName === 'password'}
-            
+
 //             >
 //             {isSubmitting ? 'Saving...' : submitText}
 //           </button>
 //             <div className="mb-4">
 //     <div className="flex items-center space-x-2">
-    
+
 //       <input 
 //         id="is_active" 
 //         type="checkbox" 
@@ -400,7 +400,7 @@
 
 //   <div className="mb-4">
 //     <div className="flex items-center space-x-2">
-    
+
 //       <input 
 //         id="is_deleted" 
 //         type="checkbox" 
@@ -412,8 +412,8 @@
 //     {errors.is_deleted && <p className="text-red-500 text-sm mt-1">{errors.is_deleted?.message}</p>}
 //   </div>
 
-          
-     
+
+
 //             <button 
 //               type="button" 
 //               // onClick={onCancel}
@@ -477,9 +477,9 @@ export default function PrescriptionForm() {
     if ((field as string).includes("sphere") || (field as string).includes("cylinder")) {
       formatted = validator.formatEyeTestPower(value) || null;
     } else if ((field as string).includes("axis")) {
-      formatted = validator.checkAxis(value) ? value.toString() : null;
+      formatted = validator.checkAxis(Number(value)) ? value.toString() : null;
     } else if ((field as string).includes("reading_add")) {
-      formatted = validator.checkAdd(value) ? value.toString() : null;
+      formatted = validator.checkAdd(Number(value)) ? value.toString() : null;
     }
 
     if (formatted !== null) {
@@ -490,181 +490,268 @@ export default function PrescriptionForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* 👁 Right Eye */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Right Eye (R)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div>
-            <label>SPH</label>
-            <input
-              type="text"
-              {...register("right_sphere")}
-              onBlur={(e) => handleFormat("right_sphere", e.target.value)}
-              className="input"
-              placeholder="+0.00"
-            />
-            {errors.right_sphere && <p className="error">{errors.right_sphere.message}</p>}
-          </div>
+        {/* mian continear */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-1 ">
+          {/*first block */}
+          <div className="grid grid-cols-1 gap-1 ">
+            {/* label row */}
+            <div className="grid grid-cols-5 gap-1 ">
+              <label className="w-1 flex items-center justify-center"></label>
+              <label>SPH</label>
+              <label>CYL</label>
+              <label>AXIS</label>
+              <label>ADD</label>
+            </div>
+            {/* right row */}
+            <div className="grid grid-cols-5 gap-1">
+              {/* Eye R */}
+              <div className="flex items-center justify-center">
+                <h3 className="text-lg font-semibold text-gray-900 ">R</h3>
+              </div>
+              {/* SPH r */}
+              <div>
+                <input
+                  type="text"
+                  {...register("right_sphere")}
+                  onBlur={(e) => handleFormat("right_sphere", e.target.value)}
+                  className="input-text"
+                  placeholder="-00.00"
+                />
+                {errors.right_sphere && <p className="error">{errors.right_sphere.message}</p>}
+              </div>
+              {/* CYL r */}
+              <div>
+                <input
+                  type="text"
+                  {...register("right_cylinder")}
+                  onBlur={(e) => handleFormat("right_cylinder", e.target.value)}
+                  className="input-text"
+                  placeholder="-00.25"
+                />
+                {errors.right_cylinder && <p className="error">{errors.right_cylinder.message}</p>}
+              </div>
+              {/* AXIS r */}
+              <div>
+                <input
+                  type="number"
+                  {...register("right_axis")}
+                  onBlur={(e) => handleFormat("right_axis", e.target.value)}
+                  className="input-text"
+                  placeholder="0:180"
+                />
+                {errors.right_axis && <p className="error">{errors.right_axis.message}</p>}
+              </div>
+              {/* ADD r */}
+              <div>
+                <input
+                  type="text"
+                  {...register("right_reading_add")}
+                  onBlur={(e) => handleFormat("right_reading_add", e.target.value)}
+                  className="input-text"
+                  placeholder="+1.00"
+                />
+                {errors.right_reading_add && <p className="error">{errors.right_reading_add.message}</p>}
+              </div>
+            </div>
 
-          <div>
-            <label>CYL</label>
-            <input
-              type="text"
-              {...register("right_cylinder")}
-              onBlur={(e) => handleFormat("right_cylinder", e.target.value)}
-              className="input"
-              placeholder="-0.25"
-            />
-            {errors.right_cylinder && <p className="error">{errors.right_cylinder.message}</p>}
-          </div>
+            {/* left row */}
+            <div className="grid grid-cols-5 gap-1">
+              {/* Eye L */}
+              <div className="flex items-center justify-center">
+              <h3 className="text-lg font-semibold text-gray-900">L</h3>
+              </div>
+              {/* SPH l */}
+              <div>
+                <input
+                  type="text"
+                  {...register("left_sphere")}
+                  onBlur={(e) => handleFormat("left_sphere", e.target.value)}
+                  className="input-text"
+                  placeholder="+0.00"
+                />
+                {errors.left_sphere && <p className="error">{errors.left_sphere.message}</p>}
+              </div>
+              {/* CYL l */}
+              <div>
+                <input
+                  type="text"
+                  {...register("left_cylinder")}
+                  onBlur={(e) => handleFormat("left_cylinder", e.target.value)}
+                  className="input-text"
+                  placeholder="-0.25"
+                />
+                {errors.left_cylinder && <p className="error">{errors.left_cylinder.message}</p>}
+              </div>
 
-          <div>
-            <label>AXIS</label>
-            <input
-              type="number"
-              {...register("right_axis")}
-              onBlur={(e) => handleFormat("right_axis", e.target.value)}
-              className="input"
-              placeholder="0-180"
-            />
-            {errors.right_axis && <p className="error">{errors.right_axis.message}</p>}
-          </div>
+              {/* AXIS l */}
+              <div>
+                <input
+                  type="number"
+                  {...register("left_axis")}
+                  onBlur={(e) => handleFormat("left_axis", e.target.value)}
+                  className="input-text"
+                  placeholder="0-180"
+                />
+                {errors.left_axis && <p className="error">{errors.left_axis.message}</p>}
+              </div>
 
-          <div>
-            <label>ADD</label>
-            <input
-              type="text"
-              {...register("right_reading_add")}
-              onBlur={(e) => handleFormat("right_reading_add", e.target.value)}
-              className="input"
-              placeholder="+1.00"
-            />
-            {errors.right_reading_add && <p className="error">{errors.right_reading_add.message}</p>}
+              {/* ADD l */}
+              <div>
+                <input
+                  type="text"
+                  {...register("left_reading_add")}
+                  onBlur={(e) => handleFormat("left_reading_add", e.target.value)}
+                  className="input-text"
+                  placeholder="+1.00"
+                />
+                {errors.left_reading_add && <p className="error">{errors.left_reading_add.message}</p>}
+              </div>
+            </div>
           </div>
+          {/*second block */}
+          
+          <div className="grid grid-cols-1 gap-1 ">
+            {/* label row */}
+            <div className="grid grid-cols-5 gap-1 ">
+              <label className="block md:hidden"></label>
+              <label>PD</label>
+              <label>SG</label>
+              <label>VA</label>
+            </div>
+            {/* right row */}
+            <div className="grid grid-cols-5 gap-1 ">
+              {/* Eye R */}
+              <div className="flex  items-center justify-center md:hidden ">
+                <h3 className="text-lg font-semibold text-gray-900 ">R</h3>
+              </div>
+              {/* PD r */}
+              <div>
+                <input
+                  type="number"
+                  {...register("right_pupillary_distance")}
+                  className="input-text"
+                  placeholder="64"
+                />
+                {errors.right_pupillary_distance && (
+                  <p className="error">{errors.right_pupillary_distance.message}</p>
+                )}
+              </div>
+              {/* SG r */}
+              <div >
+                <input
+                  id="sigmant_right"
+                  type="number"
+                  {...register("sigmant_right")}
+                  className="input-text"
+                  step="0.25"
+                  min="8"
+                  max="55"
+                  placeholder="8:55"
+                />
+                {errors.sigmant_right && <p className="error">{errors.sigmant_right.message}</p>}
+              </div>
+              {/* AV r */}
+              <div>
+                <input
+                  id="a_v_right"
+                  type="text"
+                  {...register("a_v_right")}
+                  className="input-text"
+                  placeholder="A v right..."
 
-          <div>
-            <label>PD</label>
-            <input
-              type="number"
-              {...register("right_pupillary_distance")}
-              className="input"
-              placeholder="64"
-            />
-            {errors.right_pupillary_distance && (
-              <p className="error">{errors.right_pupillary_distance.message}</p>
-            )}
+                />
+
+                {errors.a_v_right && <p className="error">{errors.a_v_right?.message}</p>}
+              </div>
+            </div>
+            {/* left row */}
+            <div className="grid grid-cols-5 gap-1 "> 
+              {/* PD l */}
+              {/* Eye L */}
+              <div className="flex  items-center justify-center md:hidden">
+                <h3 className="text-lg font-semibold text-gray-900">L</h3>
+              </div>
+            <div>
+              <input
+                type="number"
+                {...register("left_pupillary_distance")}
+                className="input-text"
+                placeholder="64"
+              />
+              {errors.left_pupillary_distance && (
+                <p className="error">{errors.left_pupillary_distance.message}</p>
+              )}
+            </div>  
+            {/* SG l */}
+            <div>
+              <input
+                type="text"
+                {...register("sigmant_left")}
+                className="input-text"
+                placeholder="8:55"
+              />
+              {errors.sigmant_left && <p className="error">{errors.sigmant_left.message}</p>}
+            </div>
+            {/* AV l */}
+            <div>
+              <input
+                type="text"
+                {...register("a_v_left")}
+                className="input-text"
+                placeholder="A v left..."
+              />
+              {errors.a_v_left && <p className="error">{errors.a_v_left.message}</p>}
+            </div>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* 👁 Left Eye */}
-      <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Left Eye (L)</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div>
-            <label>SPH</label>
-            <input
-              type="text"
-              {...register("left_sphere")}
-              onBlur={(e) => handleFormat("left_sphere", e.target.value)}
-              className="input"
-              placeholder="+0.00"
-            />
-            {errors.left_sphere && <p className="error">{errors.left_sphere.message}</p>}
-          </div>
 
-          <div>
-            <label>CYL</label>
-            <input
-              type="text"
-              {...register("left_cylinder")}
-              onBlur={(e) => handleFormat("left_cylinder", e.target.value)}
-              className="input"
-              placeholder="-0.25"
-            />
-            {errors.left_cylinder && <p className="error">{errors.left_cylinder.message}</p>}
-          </div>
-
-          <div>
-            <label>AXIS</label>
-            <input
-              type="number"
-              {...register("left_axis")}
-              onBlur={(e) => handleFormat("left_axis", e.target.value)}
-              className="input"
-              placeholder="0-180"
-            />
-            {errors.left_axis && <p className="error">{errors.left_axis.message}</p>}
-          </div>
-
-          <div>
-            <label>ADD</label>
-            <input
-              type="text"
-              {...register("left_reading_add")}
-              onBlur={(e) => handleFormat("left_reading_add", e.target.value)}
-              className="input"
-              placeholder="+1.00"
-            />
-            {errors.left_reading_add && <p className="error">{errors.left_reading_add.message}</p>}
-          </div>
-
-          <div>
-            <label>PD</label>
-            <input
-              type="number"
-              {...register("left_pupillary_distance")}
-              className="input"
-              placeholder="64"
-            />
-            {errors.left_pupillary_distance && (
-              <p className="error">{errors.left_pupillary_distance.message}</p>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* باقي الحقول */}
+  {/* باقي الحقول */ }
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        
       <div>
         <label>Doctor Name</label>
-        <input {...register("doctor_name")} className="input" placeholder="Dr. Ahmed" />
+        <input {...register("doctor_name")} className="input-text" placeholder="Dr. Ahmed" />
         {errors.doctor_name && <p className="error">{errors.doctor_name.message}</p>}
       </div>
 
       <div>
         <label>Prescription Date *</label>
-        <input type="date" {...register("prescription_date")} className="input" />
+        <input type="date" {...register("prescription_date")} className="input-text" />
         {errors.prescription_date && <p className="error">{errors.prescription_date.message}</p>}
       </div>
-
-      <div>
-        <label>Notes</label>
-        <textarea {...register("notes")} className="input" rows={3} placeholder="Notes..." />
-      </div>
-
+      
       <div>
         <label>Customer *</label>
-        <input type="number" {...register("customer")} className="input" />
+        <input type="number" {...register("customer")} className="input-text" />
         {errors.customer && <p className="error">{errors.customer.message}</p>}
       </div>
-
-      {/* Actions */}
-      <div className="flex gap-3 pt-4">
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
-        >
-          {isSubmitting ? "Saving..." : "Save"}
-        </button>
-        <button
-          type="button"
-          onClick={() => reset()}
-          className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md"
-        >
-          Cancel
-        </button>
+      <div>
+        <label>Notes</label>
+        <textarea {...register("notes")} className="input-text" rows={1} placeholder="Notes..." />
       </div>
-    </form>
+      </div>
+
+
+  {/* Actions */ }
+  <div className="flex gap-3 pt-4">
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
+    >
+      {isSubmitting ? "Saving..." : "Save"}
+    </button>
+    <button
+      type="button"
+      onClick={() => reset()}
+      className="bg-gray-300 hover:bg-gray-400 text-gray-700 px-6 py-2 rounded-md"
+    >
+      Cancel
+    </button>
+  </div>
+    </form >
   );
 }
 
