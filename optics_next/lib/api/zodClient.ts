@@ -1324,7 +1324,8 @@ const PrescriptionRecord = z
     customer: z.number().int(),
   })
   .passthrough();
-const PrescriptionRecordRequest = z
+
+export const PrescriptionRecordRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
@@ -1358,6 +1359,7 @@ const PrescriptionRecordRequest = z
     customer: z.number().int(),
   })
   .passthrough();
+
 const PatchedPrescriptionRecordRequest = z
   .object({
     is_active: z.boolean(),

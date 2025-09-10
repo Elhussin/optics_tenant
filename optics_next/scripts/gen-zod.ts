@@ -370,4 +370,4 @@ console.log(`✅ ${pascal}Form created successfully:
 // npx ts-node scripts/generate-zod-form.ts user_schema users/login
 // npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
 // npx tsx scripts/generate-zod-form.ts LogoutResponse users/logout ./config/custom-form.json
-// npx tsx scripts/gen-zod.ts UserRequest users/register ./config/custom-form.json
+// npx tsx scripts/gen-zod.ts PrescriptionRecordRequest prescriptions ./config/custom-form.json

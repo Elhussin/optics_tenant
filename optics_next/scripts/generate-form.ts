@@ -159,6 +159,7 @@ console.log(`✅ ${pascal}Form created successfully :
 - ${hookFile}`);
 
 
-// npx ts-node scripts/generate-zod-form.ts UserRequest
+// npx ts-node scripts/generate-zod-form.ts PrescriptionRecordRequest prescriptions
 //  npx tsx scripts/generate-form.ts UserRequest users/register
 // npx tsx scripts/generate-form.ts LoginRequest users/login
+// npx tsx scripts/generate-form.ts PrescriptionRecordRequest prescriptions

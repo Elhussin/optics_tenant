@@ -12,6 +12,7 @@ import Image from "next/image";
 import { Link } from "@/app/i18n/navigation";
 import {useLocale} from "next-intl";
 export default function LoginForm(props: formRequestProps) {
+  
   const {
     title,
     message,
