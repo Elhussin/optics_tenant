@@ -46,7 +46,6 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("access_token")?.value;
   const hasLocalePrefix = LOCALE_REGEX.test(pathname);
   const locale = extractLocale(pathname);
-  // const locale = extractLocale(pathname);
 
   if (!locale) {
     return NextResponse.redirect(new URL(`/${DEFAULT_LOCALE}${pathname}`, request.url));
@@ -100,7 +99,6 @@ export async function middleware(request: NextRequest) {
       new TextEncoder().encode(secret)
     );
     const userTenant = payload.tenant as string;
-    console.log(payload);
     const permissions = (payload.permissions as string[]) || [];
 
     // تحقق من التينانت

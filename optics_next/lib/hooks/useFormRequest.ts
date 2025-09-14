@@ -83,10 +83,6 @@ export function useFormRequest(options: useFormRequestProps): UseFormRequestRetu
   }, [endpoint, alias, transform, onSuccess, onError, methods, isLoading]);
 
 
-  // const retry = useCallback(() => {
-  //   if (!lastPayloadRef.current) return { success: false, error: "No previous payload to retry" };
-  //   return submitForm(lastPayloadRef.current);
-  // }, [submitForm]);
 
   const retry = useCallback(async () => {
     if (!lastPayloadRef.current) {

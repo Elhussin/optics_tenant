@@ -10,28 +10,19 @@ import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { formRequestProps } from "@/types";
 import { useState } from "react";
 import { useEffect } from "react";
-
+import { safeToast } from "@/lib/utils/toastService";
 type PrescriptionFormData = z.infer<typeof PrescriptionRecordRequest>;
 const validator = new EyeTestValidator();
 
 
 export default function PrescriptionForm(props: formRequestProps) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+  const {alias, title, message, submitText } = props
 
-  const {
-    register,
-    watch,
-    setValue,
-    handleSubmit,
-    reset,
-    formState: { errors,isSubmitting },
-  } = useForm<PrescriptionFormData>();
-
+  const {register, handleSubmit, setValue, watch, reset,submitForm, errors, isSubmitting} = useFormRequest({alias:alias})
 
   const handleFormat = (field: string, value: string) => {
     const num = parseFloat(value);
-  
-    // خريطة لكل validator حسب نوع الحقل
     const validatorMap: Record<string, (n: number) => number | string | null> = {
       sphere: (n: number) => validator.validateSPH(n),
       cylinder: (n: number) => validator.validateCYL(n),
@@ -40,24 +31,18 @@ export default function PrescriptionForm(props: formRequestProps) {
       pupillary_distance: (n: number) => validator.validatePD(n),
       sigmant: (n: number) => validator.validateSG(n),
     };
-  
-    // ابحث عن أي مفتاح يطابق اسم الحقل
+
     const validatorKey = Object.keys(validatorMap).find((k) =>
       field.includes(k)
     );
-    console.log("validatorKey", validatorKey);
 
     const formatted = validatorKey ? validatorMap[validatorKey](num) : null;
-    console.log("formatted", formatted);
-  
-    // دالة مختصرة لتحديث القيمة + إزالة الخطأ
     const applyValue = (targetField: string, val: string | number) => {
       setValue(targetField, val);
       setFieldErrors((prev) => ({ ...prev, [targetField]: false }));
     };
   
     if (formatted !== null) {
-      // الحقول المترابطة
       const mirrorFields: Record<string, string> = {
         right_pupillary_distance: "left_pupillary_distance",
         right_reading_add: "left_reading_add",
@@ -82,13 +67,46 @@ export default function PrescriptionForm(props: formRequestProps) {
     }
   };
   
+  
+    const validateEye = (eye: "right" | "left", data: any) => {
+      return validator.validatePrescription({
+        sphere: data[`${eye}_sphere`],
+        cylinder: data[`${eye}_cylinder`],
+        axis: data[`${eye}_axis`]
+      });
+    };
+    
+    const onSubmit = async (data: any) => {
 
-  const onSubmit = (data: any) => {
-    console.log("onSubmit", data);
-  };
+      const right = validateEye("right", data);
+      if (!right.valid) {
+        right.errors.forEach(err => safeToast("Right eye: " + err, { type: "error" }));
+        return;
+      }
+    
+      const left = validateEye("left", data);
+      if (!left.valid) {
+        left.errors.forEach(err => safeToast("Left eye: " + err, { type: "error" }));
+        return;
+      }
+      console.log("right", right);
+      console.log("left", left);
+      console.log("data", data);
 
+    
+      try {
+        const result = await submitForm(data);
+        if (!result?.success) return;
+        safeToast(message || "", { type: "success" });
+      } catch {
+        console.log("catch");
+      }
+    };
+    
+
+    
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" >
+    <form onSubmit={e => e.preventDefault()} className="space-y-6" >
       {/* 👁 Right Eye */}
         {/* mian continear */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-1" dir="ltr">
@@ -345,7 +363,7 @@ export default function PrescriptionForm(props: formRequestProps) {
 
 
   {/* باقي الحقول */ }
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-center align-center">
         
       <div>
         <label>Doctor Name</label>
@@ -355,7 +373,12 @@ export default function PrescriptionForm(props: formRequestProps) {
 
       <div>
         <label>Prescription Date *</label>
-        <input type="date" {...register("prescription_date")} className="input-text" />
+        <input 
+          type="date" 
+          defaultValue={new Date().toISOString().split('T')[0]}
+          {...register("prescription_date")} 
+          className="input-text"
+        />
         {errors.prescription_date && <p className="error">{errors.prescription_date.message}</p>}
       </div>
       
@@ -364,17 +387,19 @@ export default function PrescriptionForm(props: formRequestProps) {
         <input type="number" {...register("customer")} className="input-text" />
         {errors.customer && <p className="error">{errors.customer.message}</p>}
       </div>
+
+      </div>
       <div>
         <label>Notes</label>
         <textarea {...register("notes")} className="input-text" rows={1} placeholder="Notes..." />
-      </div>
       </div>
 
 
   {/* Actions */ }
   <div className="flex gap-3 pt-4">
     <button
-      type="submit"
+      type="button"
+      onClick={handleSubmit(onSubmit)}
       disabled={isSubmitting}
       className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
     >
