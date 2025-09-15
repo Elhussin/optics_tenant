@@ -1,166 +1,19 @@
-// // eyeTestValidator.ts
-
-// export class EyeTestValidator {
-//   isMultipleOfQuarter(value: number): boolean {
-//     return Math.round(value * 100) % 25 === 0;
-//   }
-//   formatPower(value: number): string {
-//     const fixed = Math.abs(value).toFixed(2);
-//     const sign = value > 0 ? "+" : "-";
-//     if (Math.abs(value) < 10) {
-//       return `${sign}0${fixed}`;
-//     }
-//     return `${sign}${fixed}`;
-//   }
-  
-//   validateSPH(value: number): string | null {
-//     if (!this.isMultipleOfQuarter(value)) return null;
-//     if (value >= -60 && value <= 60) {
-//       return this.formatPower(value);
-//     }
-//     return null;
-//   }
-
-//   validateCYL(value: number): string | null {
-//     if (!this.isMultipleOfQuarter(value)) return null;
-//     if (value >= -15 && value <= 15) {
-//       return this.formatPower(value);
-//     }
-//     return null;
-//   }
-
-//   validateAxis(value: number): number | null {
-//     // if (!this.isMultipleOfQuarter(value)) return null;
-//     if (value >= 0 && value <= 180) {
-//       return value;
-//     }
-//     return null;
-//   }
-//   validatePD(value: number): number | null {
-//     if (!this.isMultipleOfQuarter(value)) return null;
-//     if (value >= 19 && value <= 85) {
-//       return value;
-//     }
-//     return null;
-//   }
-//   validateADD(value: number): string | null {
-//     if (!this.isMultipleOfQuarter(value)) return null;
-//     if (value >= 0.25 && value <= 6) {
-//       return this.formatPower(value);
-//     }
-//     return null;
-//   }
-
-//   validateSG(value: string | number): number | null {
-//       const num = parseFloat(value as string);
-//       return !isNaN(num) && num >= 7 && num <= 50 ?num : null;
-//     }
-  
-//     checkVertexDistance(value: string | number): number | null {
-//       const num = parseFloat(value as string);
-//       return !isNaN(num) && num >= 10 && num <= 14 ?num : null;
-//     }
-
-//   transformSphCylAxis(sph: number, cyl: number, axis: number) {
-//     const sphNum = Number(sph);
-//     const cylNum = Number(cyl);
-//     const axisNum = Number(axis);
-    
-//     if (!cylNum || cylNum == 0) return null; // لو مفيش CYL → ما نعدلش
-
-//     // CYL دايما بالسالب
-//     let newCyl:number = cylNum;
-//     if (cylNum > 0) newCyl = -cylNum;
-
-//     // حساب SPH الجديد
-//     const newSph = sphNum + cylNum;
-//     console.log("newSph", newSph);
-
-//     // تعديل AXIS
-//     let newAxis = axisNum;
-//     if (axisNum > 90) {
-//       newAxis = axisNum - 90;
-//     } else {
-//       newAxis = axisNum + 90;
-//     }
-
-//     return {
-//       sph: this.formatPower(newSph).toString(),
-//       cyl: this.formatPower(newCyl).toString(),
-//       axis: newAxis,
-//     };
-//   }
-
-
-//   checkSphCylAxisCombo(
-//     sph: number | string | null | undefined,
-//     cyl: number | string | null | undefined,
-//     axis: number | string | null | undefined
-//   ): boolean {
-//     const hasSph = sph !== null && sph !== undefined && sph !== "";
-//     const hasCyl = cyl !== null && cyl !== undefined && cyl !== "" && parseFloat(cyl as string) !== 0;
-//     const hasAxis = axis !== null && axis !== undefined && axis !== "" && parseFloat(axis as string) !== 0;
-
-//     if (!hasSph) return true;
-
-//     if ((hasCyl && !hasAxis) || (!hasCyl && hasAxis)) {
-//       return false;
-//     }
-//     return true;
-//   }
-
-//   validatePrescription(data: {
-//     sphere?: number | string | null;
-//     cylinder?: number | string | null;
-//     axis?: number | string | null;
-//   }): { valid: boolean; errors: string[]; formatted: any } {
-//     const errors: string[] = [];
-//     const formatted: any = {};
-//     // تحقق من علاقة SPH / CYL / AXIS
-//     if (!this.checkSphCylAxisCombo(data.sphere, data.cylinder, data.axis)) {
-//       errors.push("CYL and AXIS required together or both empty when SPH exists");
-//     }
-//     // تحقق SPH
-//     if (data.sphere !== null && data.sphere !== undefined && data.sphere !== "") {
-//       const sph = this.validateSPH(Number(data.sphere));
-//       if (!sph) errors.push("SPH not valid");
-//       else formatted.sphere = sph;
-//     }
-
-//     // تحقق CYL
-//     if (data.cylinder !== null && data.cylinder !== undefined && data.cylinder !== "") {
-//       const cyl = this.validateCYL(Number(data.cylinder));
-//       if (!cyl) errors.push("CYL not valid");
-//       else formatted.cylinder = cyl;
-//     }
-
-//     // تحقق AXIS
-//     if (data.axis !== null && data.axis !== undefined && data.axis !== "") {
-//       const axis = this.validateAxis(Number(data.axis));
-//       if (!axis) errors.push("AXIS not valid");
-//       else formatted.axis = axis;
-//     }
-
-
-
-//     return { valid: errors.length === 0, errors, formatted };
-//   }
-// }
-
 
 export class EyeTestValidator {
-  // التحقق من مضاعفات 0.25
+  // isMultipleOfQuarter
   isMultipleOfQuarter(value: number): boolean {
     return Math.round(value * 100) % 25 === 0;
   }
 
-  // تنسيق الأرقام للعرض
+// format power
   formatPower(value: number): string {
     const fixed = Math.abs(value).toFixed(2);
-    const sign = value > 0 ? "+" : value < 0 ? "-" : "";
-    if (Math.abs(value) < 10 && value !== 0) {
+    const sign = value > 0 ? "+" : value <= 0 ? "-" : "";
+    // if (Math.abs(value) < 10  && value !== 0) {
+      if (Math.abs(value) < 10 ) {
       return `${sign}0${fixed}`;
     }
+    // if (value === 0) return "-00.00";
     return `${sign}${fixed}`;
   }
 
@@ -178,14 +31,12 @@ export class EyeTestValidator {
 
   validateAxis(value: number): number | null {
     if (value < 0 || value > 180) return null;
-    return Math.round(value); // axis لازم يكون عدد صحيح
+    return Math.round(value); // return rounded value integer
   }
 
   validatePD(value: number): number | null {
-    // PD عادة بيكون integer
-    if (!Number.isInteger(value)) return null;
-    if (value < 19 || value > 85) return null;
-    return value;
+    const num = Number(value);
+    return !isNaN(num) && num >= 19 && num <= 85 ? num : null;
   }
 
   validateADD(value: number): string | null {
@@ -199,6 +50,7 @@ export class EyeTestValidator {
     return !isNaN(num) && num >= 7 && num <= 50 ? num : null;
   }
 
+
   checkVertexDistance(value: string | number): number | null {
     const num = Number(value);
     return !isNaN(num) && num >= 10 && num <= 14 ? num : null;
@@ -210,10 +62,10 @@ export class EyeTestValidator {
     const cylNum = Number(cyl);
     const axisNum = Number(axis);
 
-    if (!cylNum || cylNum === 0) return null; // لو مفيش CYL → ما نعدلش
+    if (!cylNum || cylNum <= 0) return null; // لو مفيش CYL → ما نعدلش
 
     // CYL دايمًا بالسالب
-    let newCyl: number = cylNum > 0 ? -cylNum : cylNum;
+    const newCyl: number =  -cylNum;
 
     // حساب SPH الجديد
     const newSph = sphNum + cylNum;
@@ -229,30 +81,22 @@ export class EyeTestValidator {
     };
   }
 
-  // تحقق من علاقة SPH / CYL / AXIS
+
   checkSphCylAxisCombo(
     sph: number | string | null | undefined,
     cyl: number | string | null | undefined,
     axis: number | string | null | undefined
   ): boolean {
-    const hasSph = sph !== null && sph !== undefined && sph !== "";
-    const hasCyl =
-      cyl !== null &&
-      cyl !== undefined &&
-      cyl !== "" &&
-      Number(cyl) !== 0;
-    const hasAxis =
-      axis !== null &&
-      axis !== undefined &&
-      axis !== "" &&
-      Number(axis) !== 0;
-
-    if (!hasSph) return true;
-    if ((hasCyl && !hasAxis) || (!hasCyl && hasAxis)) {
-      return false;
-    }
-    return true;
+    const hasSph = !!sph
+    const hasCyl = !!cyl && Number(cyl) !== 0;
+    const hasAxis = !!axis && Number(axis) !== 0;
+  
+    if (hasSph && !hasCyl && !hasAxis) return true;
+    if (hasSph && hasCyl && hasAxis) return true;
+    if (!hasSph && hasCyl && hasAxis) return true;
+    return false;
   }
+  
   validatePrescription(data: {
     sphere?: number | string | null;
     cylinder?: number | string | null;

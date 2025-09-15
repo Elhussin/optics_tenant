@@ -11,36 +11,56 @@ import { formRequestProps } from "@/types";
 import { useState } from "react";
 import { useEffect } from "react";
 import { safeToast } from "@/lib/utils/toastService";
+import Modal from "@/components/view/Modal";
+import { ActionButton } from "@/components/ui/buttons";
+import { CirclePlus } from "lucide-react";
+
 type PrescriptionFormData = z.infer<typeof PrescriptionRecordRequest>;
 const validator = new EyeTestValidator();
+const validatorMap: Record<string, (n: number) => number | string | null> = {
+  sphere: (n: number) => validator.validateSPH(n),
+  cylinder: (n: number) => validator.validateCYL(n),
+  axis: (n: number) => validator.validateAxis(n),
+  add: (n: number) => validator.validateADD(n),
+  pupillary_distance: (n: number) => validator.validatePD(n),
+  sigmant: (n: number) => validator.validateSG(n),
+};
 
 
 export default function PrescriptionForm(props: formRequestProps) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
+  const [customers, setCustomers] = useState<any[]>([]);
   const {alias, title, message, submitText } = props
-
+  const [showModal, setShowModal] = useState(false);
+  const fetchCustomers = useFormRequest({ alias: "crm_customers_list" });
   const {register, handleSubmit, setValue, watch, reset,submitForm, errors, isSubmitting} = useFormRequest({alias:alias})
 
+
+  useEffect(() => {
+      const fetchData = async () => {
+        const result = await fetchCustomers.submitForm();
+        setCustomers(result.data);
+      };
+      fetchData();
+    
+  },[]);
+  
   const handleFormat = (field: string, value: string) => {
     const num = parseFloat(value);
-    const validatorMap: Record<string, (n: number) => number | string | null> = {
-      sphere: (n: number) => validator.validateSPH(n),
-      cylinder: (n: number) => validator.validateCYL(n),
-      axis: (n: number) => validator.validateAxis(n),
-      add: (n: number) => validator.validateADD(n),
-      pupillary_distance: (n: number) => validator.validatePD(n),
-      sigmant: (n: number) => validator.validateSG(n),
-    };
 
     const validatorKey = Object.keys(validatorMap).find((k) =>
       field.includes(k)
     );
+    
+    if (!validatorKey) return;
 
-    const formatted = validatorKey ? validatorMap[validatorKey](num) : null;
+    const formatted = validatorMap[validatorKey](num);
+
     const applyValue = (targetField: string, val: string | number) => {
       setValue(targetField, val);
       setFieldErrors((prev) => ({ ...prev, [targetField]: false }));
     };
+
   
     if (formatted !== null) {
       const mirrorFields: Record<string, string> = {
@@ -52,11 +72,9 @@ export default function PrescriptionForm(props: formRequestProps) {
       if (field in mirrorFields) {
         let val = formatted as number;
   
-        // معالجة خاصة لـ pupillary_distance
         if (field === "right_pupillary_distance" && val >= 45) {
           val = val / 2;
         }
-  
         applyValue(field, val);
         applyValue(mirrorFields[field], val);
       } else {
@@ -67,35 +85,70 @@ export default function PrescriptionForm(props: formRequestProps) {
     }
   };
   
-  
-    const validateEye = (eye: "right" | "left", data: any) => {
-      return validator.validatePrescription({
-        sphere: data[`${eye}_sphere`],
-        cylinder: data[`${eye}_cylinder`],
-        axis: data[`${eye}_axis`]
-      });
-    };
-    
     const onSubmit = async (data: any) => {
-
-      const right = validateEye("right", data);
+      const right = validator.validatePrescription({
+        sphere: data.right_sphere,
+        cylinder: data.right_cylinder,
+        axis: data.right_axis,
+        add: data.right_reading_add,
+        pd: data.right_pupillary_distance,
+        sg: data.sigmant_right,
+      });
+    
       if (!right.valid) {
         right.errors.forEach(err => safeToast("Right eye: " + err, { type: "error" }));
         return;
       }
     
-      const left = validateEye("left", data);
+      const transformedRight = validator.transformSphCylAxis(
+        parseFloat(data.right_sphere),
+        parseFloat(data.right_cylinder),
+        parseFloat(data.right_axis),
+
+      );
+    
+      if (transformedRight) {
+        data.right_sphere = transformedRight.sph;
+        data.right_cylinder = transformedRight.cyl;
+        data.right_axis = transformedRight.axis;
+        setValue("right_sphere", transformedRight.sph);
+        setValue("right_cylinder", transformedRight.cyl);
+        setValue("right_axis", transformedRight.axis);
+      }
+
+      const left = validator.validatePrescription({
+        sphere: data.left_sphere,
+        cylinder: data.left_cylinder,
+        axis: data.left_axis,
+        add: data.left_reading_add,
+        pd: data.left_pupillary_distance,
+        sg: data.sigmant_left,
+      });
+    
       if (!left.valid) {
         left.errors.forEach(err => safeToast("Left eye: " + err, { type: "error" }));
         return;
       }
-      console.log("right", right);
-      console.log("left", left);
-      console.log("data", data);
-
     
+      const transformedLeft = validator.transformSphCylAxis(
+        parseFloat(data.left_sphere),
+        parseFloat(data.left_cylinder),
+        parseFloat(data.left_axis)
+
+      );
+    
+      if (transformedLeft) {
+        data.left_sphere = transformedLeft.sph;
+        data.left_cylinder = transformedLeft.cyl;
+        data.left_axis = transformedLeft.axis;
+        setValue("left_sphere", transformedLeft.sph);
+        setValue("left_cylinder", transformedLeft.cyl);
+        setValue("left_axis", transformedLeft.axis);
+      }
+
       try {
         const result = await submitForm(data);
+        console.log(result);
         if (!result?.success) return;
         safeToast(message || "", { type: "success" });
       } catch {
@@ -276,7 +329,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                   placeholder="00"
                   min="19"
                   max="85"
-                  step="1"
+                  step="0.25"
                   title="Pupillary distance must be between 19 and 85"
                 />
               </div>
@@ -325,14 +378,14 @@ export default function PrescriptionForm(props: formRequestProps) {
                 title="Pupillary distance must be between 19 and 85"
                 min="19"
                 max="85"
-                step="1"
+                step="0.25"
 
               />
             </div>  
             {/* SG l */}
             <div>
               <input
-                type="text"
+                type="number"
                 {...register("sigmant_left")}
                 onBlur={(e) => handleFormat("sigmant_left", e.target.value)}
                 className={`input-text ${fieldErrors["sigmant_left"] ? errorClass : successClass}`}
@@ -382,16 +435,52 @@ export default function PrescriptionForm(props: formRequestProps) {
         {errors.prescription_date && <p className="error">{errors.prescription_date.message}</p>}
       </div>
       
-      <div>
+      {/* <div>
         <label>Customer *</label>
         <input type="number" {...register("customer")} className="input-text" />
         {errors.customer && <p className="error">{errors.customer.message}</p>}
+      </div> */}
+
+            <div>
+        <label>Customer *</label>
+        <select {...register("customer")} className="input-text">
+          <option value="">Select Customer</option>
+          {customers.map((customer) => (
+            <option key={customer.id} value={customer.id}>
+              {customer.name}
+            </option>
+          ))}
+        </select>
+        {errors.customer && <p className="error">{errors.customer.message}</p>}
+        <ActionButton
+          onClick={() => setShowModal(true)}
+          variant="outline"
+          className="ml-2 p-4"
+          icon={<CirclePlus size={18} color="green" />}
+          title="Add"
+        />
+              {showModal && (
+                <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
+              )}
+        
       </div>
 
       </div>
       <div>
         <label>Notes</label>
         <textarea {...register("notes")} className="input-text" rows={1} placeholder="Notes..." />
+
+      </div>
+      <div>
+        {errors && Object.values(errors).map((errorGroup: any) => (
+          <div key={errorGroup.type}>
+            <p className="error">
+              {Object.values(errorGroup.message).map((error: any) => (
+                <span key={error}>{error}</span>
+              ))}
+            </p>
+          </div>
+        ))}
       </div>
 
 
