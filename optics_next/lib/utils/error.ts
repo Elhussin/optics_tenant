@@ -49,7 +49,7 @@ export function handleServerErrors(
   options: { showToast?: boolean } = { showToast: true }
 ) {
   const serverErrors = error?.response?.data;
-
+  let message = '';
   if (serverErrors && typeof serverErrors === "object") {
     // أخطاء مرتبطة بالحقول
     for (const [field, messages] of Object.entries(serverErrors)) {
@@ -74,16 +74,22 @@ export function handleServerErrors(
       });
 
       if (options.showToast) {
+        
         safeToast(nonFieldError, { type: "error" });
       }
     }
   } else {
     // fallback error
     const normalized = handleErrorStatus(error);
+    message = normalized.message + " " + normalized.code + " " + normalized.details;
+    
+    if (normalized.code === "NETWORK_ERROR") {
+      message = "Network error. Please check your internet connection.";
+    }
 
     setError("root", {
       type: "server",
-      message: normalized.message,
+      message: message,
     });
 
     if (options.showToast) {

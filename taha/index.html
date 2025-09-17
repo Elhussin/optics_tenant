@@ -2,29 +2,349 @@
 <html lang="ar" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<title>قائمة أسعار العدسات — اليسر للبصريات</title>
+<title>  مصنع اليسر للبصريات</title>
+<meta name="description" content="اليسر للبصريات | قائمة اسعار عدسات التصنيع اليسر للبصريات">
+<link rel="icon" href="https://www.alyosseroptical.com/images/logo_ar.png" type="image/x-icon" alt="EyeYosser">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="style.css">
+<!-- styles  -->
+<style>
+  
+* { box-sizing: border-box; margin:0; padding:0; }
+body {
+  font-family: Arial, sans-serif,Tahoma ;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 1rem;
+  line-height:1.4;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+/* الحاويات العامة */
+.container {
+  background:#fff;
+  border-radius:10px;
+  border:1px solid #ddd;
+  margin-bottom:15px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  overflow:auto;
+  max-width:100%;
+}
+
+/* رؤوس الحاويات */
+.container h2 {
+  cursor:pointer;
+  background:#355e1bce;
+  color:#fff;
+  padding:0.8rem;
+  border-radius:8px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:1.1rem;
+  margin-bottom:5px;
+}
+.container h2:hover { background:#113821; }
+
+/* المحتوى القابل للطي */
+.content {
+  max-height:0;
+  overflow:auto;
+  transition:max-height 0.5s ease;
+  margin-top:0.5rem;
+}
+
+/* الجداول */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  display:auto;
+  overflow:auto;
+
+}
+th, td {
+  border:1px solid #ddd;
+  padding:0.5rem 0.7rem;
+  text-align:center;
+  white-space: nowrap;
+  font-size:01.1rem;
+}
+th {
+  background:#355e1bce;
+  color:#fff;
+  /* position:sticky;
+  top:0;
+  z-index:10; */
+}
+thead th {
+  /* position: sticky; */
+  /* top: 0;                 تثبيت من الأعلى */
+  background: #355e1bce;    /* لون الخلفية */
+  color: #fff;             /* لون الخط */
+  /* z-index: 10;             أعلى من باقي الخلايا */
+}
+td:first-child, th:first-child { 
+  /* position: sticky;
+  left: 0; */
+  background: #355e1bce; 
+  color: #fff;/* يمكن تغييره حسب خلفية الجدول */
+  text-align: left;
+  margin-left: 10px;
+  max-width: 200px;
+  text-wrap: wrap;
+  word-wrap: break-word;
+  /* max-width: calc(100% - 80px * 3); */
+}
+
+button {
+  padding:0.4rem 0.6rem;
+  font-size:0.9rem;
+  cursor:pointer;
+  border:none;
+  border-radius:5px;
+  background:#355e1bce;
+  color:#fff;
+  transition: background 0.3s;
+}
+button:hover { background:#113821; }
+
+tbody tr:hover { background:#f3f4f6; }
+button.price-btn {
+  padding:0.4rem 0.6rem;
+  font-size:0.9rem;
+  cursor:pointer;
+  border:none;
+  border-radius:5px;
+  background:#355e1bce;
+  color:#fff;
+  transition: background 0.3s;
+}
+button.price-btn:hover { background:#113821; }
+#ordersContainer th:last-child button {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.85rem;
+  background: #355e1bce;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#ordersContainer th:last-child button:hover {
+  background: #113821;
+}
+
+/* الطلبات */
+#ordersContainer {
+  max-height:150px;
+  overflow:auto;
+}
+#ordersContainer table { width:100%; }
+#ordersContainer th, #ordersContainer td { font-size:0.9rem; padding:0.4rem; }
+#ordersContainer thead {background:#355e1bce; z-index:10; }
+
+/* البحث */
+#searchContainer {
+  margin-bottom:10px;
+}
+#searchBox {
+  width:100%;
+  padding:0.5rem 0.7rem;
+  font-size:1rem;
+  border:1px solid #ccc;
+  border-radius:6px;
+
+}
+.input-section{
+  background-color: #355e1bce;
+}
+#searchBox :focus{
+  border-color:#f5f5f5ce;
+
+}
+/* نافذة الإضافات */
+.overlay {
+  display:none;
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background:rgba(0,0,0,0.4);
+  z-index:1001;
+}
+.modal {
+  display:none;
+  position: fixed;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  background:#fff;
+  border-radius:10px;
+  width:90%;
+  max-width:550px;
+  max-height:80vh;
+  overflow:auto;
+  z-index:1002;
+  padding:0.5rem 1rem 3rem 1rem;
+  box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.modal h3 { margin-bottom:10px; font-size:1.1rem; color:#355e1bce; }
+
+/* المجموعات داخل نافذة الإضافات */
+.group-section h4 {
+  margin:0; 
+  padding:1rem 0.8rem; /* ارتفاع أكبر عند الطي */
+  background:#355e1bce;
+  cursor:pointer;
+  border-bottom:1px solid #ddd;
+  border-radius:6px 6px 0 0;
+  transition: all 0.3s;
+  color:#fff;
+}
+.group-section h4:hover { background:#113821; }
+.checkbox-group {
+  max-height:0;
+  overflow:hidden;
+  transition:max-height 0.5s ease;
+  border-top:1px solid #ddd;
+  padding:0 0.5rem;
+  display:flex; flex-direction:column;
+}
+.checkbox-group label { margin-bottom:4px; font-size:0.95rem;  
+/* color:#fff; */
+
+}
+
+/* أزرار الإضافة والإغلاق مثبتة أسفل */
+.modal-footer {
+  /* position: sticky; */
+  bottom:0;
+  background:#fff;
+  padding:0.5rem 0;
+  display:flex; justify-content:flex-end;
+  gap:5px;
+  border-top:1px solid #ddd;
+  /* z-index:10; */
+}
+.modal-footer button {
+  padding:0.5rem 0.8rem;
+  font-size:1.1rem;
+  border:none;
+  border-radius:5px;
+  background:#355e1bce;
+  color:#fff;
+  cursor:pointer;
+}
+.modal-footer button:hover { background:#113821; }
+
+/* استجابة الشاشة */
+@media(max-width:768px){
+  body { font-size:0.9rem; }
+  #searchBox{ font-size:0.85rem; padding:0.4rem; }
+  th, td{ font-size:0.8rem; padding:0.3rem; }
+  button.price-btn{ font-size:0.8rem; padding:0.3rem; }
+  #ordersContainer { max-height:200px; }
+}
+
+
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#355e1bce;
+  color:#fff;
+  padding:0.2rem;
+  border-radius: 10px;
+  margin: 10px 5px;
+}
+
+.nav img{
+  width:100px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+}
+.nav h1{
+  margin:0;
+  padding: 0 10px;
+}
+
+
+.content2{
+  display:flex;
+  flex-direction:row ;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+
+}
+.section{
+  flex:1;
+  /* overflow:auto; */
+  /* max-height:200px; */
+}
+#printBtn{
+  padding: 5px 20px;
+  font-size:1.5rem;
+  cursor:pointer;
+  background:#555401ce;
+  border: none;
+  border-radius:5px;
+  color:#fff;
+}
+#printBtn:hover{
+  background:#113821;
+}
+
+@media(max-width:768px){
+  .content2{
+    flex-direction:column;
+  }
+}
+
+@media print {
+  body * { visibility: hidden; }
+  #ordersContainer, #ordersContainer * { visibility: visible; }
+  #ordersContainer { position: absolute; left: 0; top: 0; }
+}
+
+.extra{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+</style>
 </head>
 
 <body dir="rtl">
 <nav class="nav">
 
-  <h1>قائمة اسعار عدسات التصنيع اليسر للبصريات</h1>
-  <img src="logo.png" alt="">
+  <h1 style="font-size: 2rem; ">مصنع اليسر للبصريات</h1>
+  <img src="https://www.alyosseroptical.com/images/logo_ar.png" title="EyeYosser" alt="EyeYosser">
 </nav>
 <!-- حاوية الطلبات -->
-<div class="container" id="ordersContainer">
-  <div class="nav">
+<div>
+  <h2 style="display: flex; justify-content: center; "> قائمة اسعار عدسات التصنيع </h2>
+  
+</div>
+<div class="nav">
 
-    <h2>الطلبات المختارة</h2>
-    <button id="printBtn">طباعة</button>
-  </div>
-  <table>
+  <h3>الطلبات المختارة</h3>
+  <button id="printBtn" title="طباعة الطلبات">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer-icon lucide-printer"><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+  </button>
+</div>
+
+<div class="container" id="ordersContainer">
+
+  <table dir="ltr">
 <thead>
   <tr>
-    <th>النوع</th>
-    <th>Index</th>
+    <th style="text-align: center;">النوع</th>
+    <!-- <th>Index</th> -->
     <th>السعر الأساسي</th>
     <th>الإضافات</th>
     <th>السعر النهائي</th>
@@ -37,27 +357,426 @@
 </div>
 
 <!-- حاوية البحث -->
-<div class="container" id="searchContainer">
+<div class="container input-section" id="searchContainer">
   <input type="text" id="searchBox" placeholder="ابحث عن أي Index أو نوع عدسة..." onkeyup="filterTable()">
 </div>
 
 <!-- حاوية العدسات -->
-<div class="container" id="lensSectionsContainer" style="max-height:600px;">
+<div class="container" id="lensSectionsContainer" style="max-height:600px;" dir="ltr">
   
-  <div id="lensSections" class="content2" ></div>
+  <div id="lensSections" ></div>
 </div>
 
 <!-- نافذة الإضافات -->
 <div class="overlay" id="overlay"></div>
-<div class="modal" id="extrasModal">
+<div class="modal" id="extrasModal" dir="ltr">
   <h3 id="modalTitle"></h3>
-  <div id="extrasContainer"></div>
   <div class="modal-footer">
-    <button onclick="addOrder()">إضافة الطلب</button>
     <button onclick="closeModal()">إغلاق</button>
+
+    <button onclick="resetModal()">إعادة تعيين</button>
+    <button onclick="addOrder()">إضافة الطلب</button>
   </div>
+  <div id="extrasContainer"></div>
+</div>
+<div class="container"  style="display: flex; justify-content: end; padding: 0.7rem; " dir="ltr">
+  <h2  id="extraorderHeader">Extra Order</h2>
+
+  <div id="extraorder" style="display: none;" dir="ltr"></div>
 </div>
 
-<script src="script.js"></script>
+
+</div>
+
+
+<!-- JavaScript Section -->
+<script>
+  
+function toggleGroup(header, content){
+  const isOpen = content.style.maxHeight && content.style.maxHeight!=='0px';
+  document.querySelectorAll('.checkbox-group').forEach(c=>{
+    c.style.maxHeight='0';
+    c.previousElementSibling.style.padding='1rem 0.8rem'; // إعادة الطي للارتفاع الكبير
+  });
+  if(!isOpen){
+    content.style.maxHeight = content.scrollHeight + 'px';
+    header.style.padding='0.5rem 0.8rem'; // عند الفتح أصغر ارتفاع
+  }
+}
+const lensData =   [
+  {section:'Single Vision', type:'Single', products:[
+    {index:'1.5 70 MM', price:304},{index:'1.50 75 MM', price:320},{index:'1.50 80 MM', price:344},{index:'1.50 B.CUT', price:520},{index:'1.61', price:640},{index:'1.67', price:880},{index:'1.74', price:1520},{index:'1.59 POLY', price:640},{index:'1.56 SUPERVEX', price:640},{index:'1.56 B.CUT', price:440},{index:'1.56 B.CUT 75 MM', price:480},{index:'1.61 B.CUT', price:720},{index:'1.67 B.CUT', price:960},{index:'1.50 TRANSMISSION GRAY', price:760},{index:'1.56 PHOTO GRAY & BROWN', price:520},{index:'1.56 PHOTO GRAY 75 M', price:640},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:850},{index:'1.61 TRANSMISSION GRAY', price:1120},{index:'1.67 TRANSMISSION GRAY', price:1440},{index:'1.56 B.CUT GRAY', price:880},{index:'1.61 B.CUT GRAY', price:1200},{index:'MIRROR', price:700},{index:'1.50 POLORIZED', price:640},{index:'LENTICULAR', price:440},{index:'MYOPIA CONTROL', price:1950},{index:'BEST 1.50', price:400}
+  ]},
+  {section:'Single Vision', type:'Sport', products:[
+    {index:'1.5 70 MM', price:360},{index:'1.50 75 MM', price:376},{index:'1.50 80 MM', price:400},{index:'1.50 B.CUT', price:720},{index:'1.61', price:792},{index:'1.67', price:1024},{index:'1.74', price:1680},{index:'1.59 POLY', price:720},{index:'1.56 SUPERVEX', price:800},{index:'1.56 B.CUT', price:960},{index:'1.56 B.CUT 75 MM', price:640},{index:'1.61 B.CUT', price:840},{index:'1.67 B.CUT', price:1104},{index:'1.50 TRANSMISSION GRAY', price:984},{index:'1.56 PHOTO GRAY & BROWN', price:840},{index:'1.56 PHOTO GRAY 75 M', price:800},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1050},{index:'1.61 TRANSMISSION GRAY', price:1240},{index:'1.67 TRANSMISSION GRAY', price:1560},{index:'1.56 B.CUT GRAY', price:1120},{index:'1.61 B.CUT GRAY', price:1320},{index:'MIRROR', price:800},{index:'1.50 POLORIZED', price:800},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+  ]},
+  {section:'Bi Focal', type:'INVISABEL', products:[
+    {index:'1.5 70 MM', price:360},{index:'1.50 75 MM', price:376},{index:'1.50 80 MM', price:400},{index:'1.50 B.CUT', price:656},{index:'1.61', price:760},{index:'1.67', price:992},{index:'1.74', price:1656},{index:'1.59 POLY', price:736},{index:'1.56 SUPERVEX', price:720},{index:'1.56 B.CUT', price:576},{index:'1.56 B.CUT 75 MM', price:616},{index:'1.61 B.CUT', price:856},{index:'1.67 B.CUT', price:1072},{index:'1.50 TRANSMISSION GRAY', price:888},{index:'1.56 PHOTO GRAY & BROWN', price:648},{index:'1.56 PHOTO GRAY 75 M', price:768},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:'-'},{index:'1.61 TRANSMISSION GRAY', price:1200},{index:'1.67 TRANSMISSION GRAY', price:1520},{index:'1.56 B.CUT GRAY', price:976},{index:'1.61 B.CUT GRAY', price:1280},{index:'MIRROR', price:840},{index:'1.50 POLORIZED', price:776},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+  ]},
+  {section:'Bi Focal', type:'Flat Top', products:[
+    {index:'1.5 70 MM', price:336},{index:'1.50 75 MM', price:'-'},{index:'1.50 80 MM', price:'-'},{index:'1.50 B.CUT', price:'-'},{index:'1.61', price:'-'},{index:'1.67', price:'-'},{index:'1.74', price:'-'},{index:'1.59 POLY', price:'-'},{index:'1.56 SUPERVEX', price:'-'},{index:'1.56 B.CUT', price:560},{index:'1.56 B.CUT 75 MM', price:'-'},{index:'1.61 B.CUT', price:'-'},{index:'1.67 B.CUT', price:'-'},{index:'1.50 TRANSMISSION GRAY', price:'-'},{index:'1.56 PHOTO GRAY & BROWN', price:576},{index:'1.56 PHOTO GRAY 75 M', price:768},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:'-'},{index:'1.61 TRANSMISSION GRAY', price:'-'},{index:'1.67 TRANSMISSION GRAY', price:'-'},{index:'1.56 B.CUT GRAY', price:'-'},{index:'1.61 B.CUT GRAY', price:'-'},{index:'MIRROR', price:'-'},{index:'1.50 POLORIZED', price:'-'},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'450'}
+]},
+
+
+{section:'Progressive', type:'Top', products:[
+    {index:'1.5 70 MM', price:360},{index:'1.50 75 MM', price:376},{index:'1.50 80 MM', price:400},{index:'1.50 B.CUT', price:656},{index:'1.61', price:760},{index:'1.67', price:992},{index:'1.74', price:1656},{index:'1.59 POLY', price:736},{index:'1.56 SUPERVEX', price:720},{index:'1.56 B.CUT', price:576},{index:'1.56 B.CUT 75 MM', price:616},{index:'1.61 B.CUT', price:856},{index:'1.67 B.CUT', price:1072},{index:'1.50 TRANSMISSION GRAY', price:888},{index:'1.56 PHOTO GRAY & BROWN', price:648},{index:'1.56 PHOTO GRAY 75 M', price:'768'},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1010},{index:'1.61 TRANSMISSION GRAY', price:1200},{index:'1.67 TRANSMISSION GRAY', price:1520},{index:'1.56 B.CUT GRAY', price:976},{index:'1.61 B.CUT GRAY', price:1280},{index:'MIRROR', price:840},{index:'1.50 POLORIZED', price:776},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:480}
+]},
+{section:'Progressive', type:'Magic', products:[
+    {index:'1.5 70 MM', price:440},{index:'1.50 75 MM', price:456},{index:'1.50 80 MM', price:480},{index:'1.50 B.CUT', price:736},{index:'1.61', price:840},{index:'1.67', price:1072},{index:'1.74', price:1736},{index:'1.59 POLY', price:816},{index:'1.56 SUPERVEX', price:800},{index:'1.56 B.CUT', price:656},{index:'1.56 B.CUT 75 MM', price:696},{index:'1.61 B.CUT', price:936},{index:'1.67 B.CUT', price:1152},{index:'1.50 TRANSMISSION GRAY', price:968},{index:'1.56 PHOTO GRAY & BROWN', price:728},{index:'1.56 PHOTO GRAY 75 M', price:848},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1110},{index:'1.61 TRANSMISSION GRAY', price:1280},{index:'1.67 TRANSMISSION GRAY', price:1600},{index:'1.56 B.CUT GRAY', price:1056},{index:'1.61 B.CUT GRAY', price:1360},{index:'MIRROR', price:940},{index:'1.50 POLORIZED', price:856},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]},
+{section:'Progressive', type:'Nice', products:[
+    {index:'1.5 70 MM', price:376},{index:'1.50 75 MM', price:392},{index:'1.50 80 MM', price:416},{index:'1.50 B.CUT', price:672},{index:'1.61', price:776},{index:'1.67', price:1008},{index:'1.74', price:1672},{index:'1.59 POLY', price:752},{index:'1.56 SUPERVEX', price:736},{index:'1.56 B.CUT', price:592},{index:'1.56 B.CUT 75 MM', price:632},{index:'1.61 B.CUT', price:872},{index:'1.67 B.CUT', price:1088},{index:'1.50 TRANSMISSION GRAY', price:904},{index:'1.56 PHOTO GRAY & BROWN', price:664},{index:'1.56 PHOTO GRAY 75 M', price:784},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1030},{index:'1.61 TRANSMISSION GRAY', price:1216},{index:'1.67 TRANSMISSION GRAY', price:1536},{index:'1.56 B.CUT GRAY', price:992},{index:'1.61 B.CUT GRAY', price:1296},{index:'MIRROR', price:860},{index:'1.50 POLORIZED', price:792},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]},
+{section:'Progressive', type:'Nice Pro', products:[
+    {index:'1.5 70 MM', price:440},{index:'1.50 75 MM', price:456},{index:'1.50 80 MM', price:480},{index:'1.50 B.CUT', price:736},{index:'1.61', price:840},{index:'1.67', price:1072},{index:'1.74', price:1736},{index:'1.59 POLY', price:816},{index:'1.56 SUPERVEX', price:800},{index:'1.56 B.CUT', price:656},{index:'1.56 B.CUT 75 MM', price:696},{index:'1.61 B.CUT', price:936},{index:'1.67 B.CUT', price:1152},{index:'1.50 TRANSMISSION GRAY', price:968},{index:'1.56 PHOTO GRAY & BROWN', price:728},{index:'1.56 PHOTO GRAY 75 M', price:848},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1110},{index:'1.61 TRANSMISSION GRAY', price:1280},{index:'1.67 TRANSMISSION GRAY', price:1600},{index:'1.56 B.CUT GRAY', price:1056},{index:'1.61 B.CUT GRAY', price:1360},{index:'MIRROR', price:940},{index:'1.50 POLORIZED', price:856},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]},
+{section:'Life Style', type:'Computer', products:[
+    {index:'1.5 70 MM', price:480},{index:'1.50 75 MM', price:496},{index:'1.50 80 MM', price:520},{index:'1.50 B.CUT', price:776},{index:'1.61', price:880},{index:'1.67', price:1072},{index:'1.74', price:1776},{index:'1.59 POLY', price:856},{index:'1.56 SUPERVEX', price:840},{index:'1.56 B.CUT', price:1096},{index:'1.56 B.CUT 75 MM', price:696},{index:'1.61 B.CUT', price:976},{index:'1.67 B.CUT', price:1192},{index:'1.50 TRANSMISSION GRAY', price:1072},{index:'1.56 PHOTO GRAY & BROWN', price:1008},{index:'1.56 PHOTO GRAY 75 M', price:888},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1160},{index:'1.61 TRANSMISSION GRAY', price:1240},{index:'1.67 TRANSMISSION GRAY', price:1560},{index:'1.56 B.CUT GRAY', price:1120},{index:'1.61 B.CUT GRAY', price:1320},{index:'MIRROR', price:900},{index:'1.50 POLORIZED', price:896},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]},
+{section:'Life Style', type:'Relife', products:[
+    {index:'1.5 70 MM', price:360},{index:'1.50 75 MM', price:376},{index:'1.50 80 MM', price:400},{index:'1.50 B.CUT', price:672},{index:'1.61', price:760},{index:'1.67', price:992},{index:'1.74', price:1656},{index:'1.59 POLY', price:736},{index:'1.56 SUPERVEX', price:720},{index:'1.56 B.CUT', price:576},{index:'1.56 B.CUT 75 MM', price:616},{index:'1.61 B.CUT', price:856},{index:'1.67 B.CUT', price:1072},{index:'1.50 TRANSMISSION GRAY', price:888},{index:'1.56 PHOTO GRAY & BROWN', price:648},{index:'1.56 PHOTO GRAY 75 M', price:768},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1010},{index:'1.61 TRANSMISSION GRAY', price:1200},{index:'1.67 TRANSMISSION GRAY', price:1520},{index:'1.56 B.CUT GRAY', price:976},{index:'1.61 B.CUT GRAY', price:1280},{index:'MIRROR', price:840},{index:'1.50 POLORIZED', price:776},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]},
+{section:'Life Style', type:'Driving', products:[
+    {index:'1.5 70 MM', price:360},{index:'1.50 75 MM', price:376},{index:'1.50 80 MM', price:400},{index:'1.50 B.CUT', price:672},{index:'1.61', price:760},{index:'1.67', price:992},{index:'1.74', price:1656},{index:'1.59 POLY', price:736},{index:'1.56 SUPERVEX', price:720},{index:'1.56 B.CUT', price:576},{index:'1.56 B.CUT 75 MM', price:616},{index:'1.61 B.CUT', price:856},{index:'1.67 B.CUT', price:1072},{index:'1.50 TRANSMISSION GRAY', price:888},{index:'1.56 PHOTO GRAY & BROWN', price:648},{index:'1.56 PHOTO GRAY 75 M', price:768},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1010},{index:'1.61 TRANSMISSION GRAY', price:1200},{index:'1.67 TRANSMISSION GRAY', price:1520},{index:'1.56 B.CUT GRAY', price:976},{index:'1.61 B.CUT GRAY', price:1280},{index:'MIRROR', price:840},{index:'1.50 POLORIZED', price:776},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]},
+{section:'Life Style', type:'Kids', products:[
+    {index:'1.5 70 MM', price:360},{index:'1.50 75 MM', price:376},{index:'1.50 80 MM', price:400},{index:'1.50 B.CUT', price:672},{index:'1.61', price:760},{index:'1.67', price:992},{index:'1.74', price:1656},{index:'1.59 POLY', price:736},{index:'1.56 SUPERVEX', price:720},{index:'1.56 B.CUT', price:576},{index:'1.56 B.CUT 75 MM', price:616},{index:'1.61 B.CUT', price:856},{index:'1.67 B.CUT', price:1072},{index:'1.50 TRANSMISSION GRAY', price:888},{index:'1.56 PHOTO GRAY & BROWN', price:648},{index:'1.56 PHOTO GRAY 75 M', price:768},{index:'1.56 PHOTO (BLUE-GREEN-PINK-PURPLE)', price:1010},{index:'1.61 TRANSMISSION GRAY', price:1200},{index:'1.67 TRANSMISSION GRAY', price:1520},{index:'1.56 B.CUT GRAY', price:976},{index:'1.61 B.CUT GRAY', price:1280},{index:'MIRROR', price:840},{index:'1.50 POLORIZED', price:776},{index:'LENTICULAR', price:'-'},{index:'MYOPIA CONTROL', price:'-'},{index:'BEST 1.50', price:'-'}
+]}
+
+  // ... تابع إدخال باقي الأنواع Progressive و Life Style بنفس الشكل ...
+];
+
+const extrasGroups = [
+  [{name:'HC', price:120},{name:'Bright', price:200},{name:'Bright PLUS', price:280},{name:'Bright BLUE', price:480},{name:'Bright Drive HMC', price:400}],
+  [{name:'Watercolor', price:50},{name:'Watercolor-HI INDEX', price:70}],
+  [{name:'Plus Double Base TOTAL +12', price:80},{name:'Plus Double Base TOTAL > +12', price:160},{name:'ADD Base', price:40}],
+  [{name:'Prism <= 6', price:40},{name:'Prism > 6', price:120},{name:'Decentering', price:40}],
+  [{name:'Edge Blending ', price:120},{name:'PLUS Blending', price:80},{name:'More Edge Blending', price:160},{name:'OVAL', price:80}],
+  [{name:'Higher than 4 cylinders ', price:40},{name:'Higher than 6 cylinders', price:120}]
+];
+
+const extrasGroupNames = ['Coating','Water color','Base','Prism','Edge Blending','HIGH CYL'];
+
+let currentLens = {section:'', type:'', price:0, index:''};
+
+// إنشاء أقسام العدسات
+function createLensSections(){
+  const container = document.getElementById('lensSections');
+  container.innerHTML = '';
+  const sectionsMap = {};
+  lensData.forEach(item=>{ if(!sectionsMap[item.section]) sectionsMap[item.section]=[]; sectionsMap[item.section].push(item); });
+
+  for(let sec in sectionsMap){
+    const divSection = document.createElement('div'); 
+    divSection.className='section';
+    divSection.style.marginBottom='10px';
+
+    const header = document.createElement('h2');
+    header.textContent = sec;
+    header.className='section-header';
+
+    const content = document.createElement('div'); 
+    content.className='content';
+
+    let tableHTML = `<table><thead><tr><th>Index</th>`;
+    sectionsMap[sec].forEach(typeObj=>{ tableHTML+=`<th>${typeObj.type}</th>`; });
+    tableHTML += `</tr></thead><tbody></tbody></table>`;
+    content.innerHTML = tableHTML;
+
+    const tbody = content.querySelector('tbody');
+    const indices = sectionsMap[sec][0].products.map(p=>p.index);
+    indices.forEach(index=>{
+      const tr = document.createElement('tr'); tr.innerHTML=`<td>${index}</td>`;
+      sectionsMap[sec].forEach(typeObj=>{
+        const prod = typeObj.products.find(p=>p.index===index);
+        const price = prod ? prod.price : '-';
+        tr.innerHTML += `<td>${price!=='-' ? `<button class="price-btn" onclick="openExtras('${sec}','${typeObj.type}',${price},'${index}')">${price}</button>` : '<span style="color:red">-</span>'}</td>`;
+      });
+      tbody.appendChild(tr);
+    });
+
+    header.addEventListener('click', ()=>{
+      if(content.style.maxHeight && content.style.maxHeight !== '0px'){
+        content.style.maxHeight = '0';
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    });
+
+    divSection.appendChild(header);
+    divSection.appendChild(content);
+    container.appendChild(divSection);
+  }
+}
+
+// البحث
+function filterTable(){
+  const filter = document.getElementById("searchBox").value.toUpperCase();
+  document.querySelectorAll("table").forEach(table=>{
+    const trs = table.getElementsByTagName("tr");
+    for(let i=1;i<trs.length;i++){
+      const tds = trs[i].getElementsByTagName("td"); let show=false;
+      for(let j=0;j<tds.length;j++){ if(tds[j].textContent.toUpperCase().indexOf(filter)>-1){show=true; break;} }
+      trs[i].style.display=show?"":"none";
+    }
+  });
+}
+
+// نافذة الإضافات
+function openExtras(section, type, price, index){
+  currentLens = {section:type, type:section, price:price, index:index};
+  const modalTitle= document.getElementById('modalTitle');
+  // modalTitle.textContent = `${section} - ${type} - ${index}`;
+  modalTitle.innerHTML = '';
+  modalTitle.style.textAlign='center';
+  modalTitle.style.fontSize='1.2rem';
+  modalTitle.style.color='#355e1bce';
+  modalTitle.innerHTML = "<h3>اختر الإضافات للعدسة</h3>";
+  modalTitle.innerHTML += `<strong>${section}</strong> - <strong>${type}</strong> - <strong>${index}</strong>`;
+  const container = document.getElementById('extrasContainer');
+  container.innerHTML = '';
+
+  extrasGroups.forEach((group,i)=>{
+    const divGroup = document.createElement('div');
+    divGroup.className='group-section';
+
+    const header = document.createElement('h4');
+    header.textContent = extrasGroupNames[i];
+
+    const content = document.createElement('div');
+    content.className='checkbox-group';
+    content.style.maxHeight='0';
+
+    group.forEach(extra=>{
+      const label = document.createElement('label');
+      label.innerHTML = `<input style='margin:15px;' type="radio" name="group${i}" value="${extra.name}" data-price="${extra.price}"> ${extra.name} +${extra.price}`;
+      label.innerHTML +="<hr style='width:85%;'>";
+      content.appendChild(label);
+    });
+
+
+    header.addEventListener('click', ()=>{
+      if(content.style.maxHeight && content.style.maxHeight !== '0px'){
+        content.style.maxHeight='0';
+      } else{
+        document.querySelectorAll('.checkbox-group').forEach(c=>c.style.maxHeight='0');
+        content.style.maxHeight = content.scrollHeight + 'px';
+      }
+    });
+
+    divGroup.appendChild(header);
+    divGroup.appendChild(content);
+    container.appendChild(divGroup);
+  });
+
+  document.getElementById('overlay').style.display='block';
+  document.getElementById('extrasModal').style.display='block';
+}
+
+function closeModal(){
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('extrasModal').style.display='none';
+}
+
+function resetModal(){
+  document.querySelectorAll('#extrasContainer input:checked').forEach(inp=>inp.checked=false);
+}
+
+function addOrder(){
+  const extrasSelected=[];
+  document.querySelectorAll('#extrasContainer input:checked').forEach(inp=>{
+    extrasSelected.push({name:inp.value, price:Number(inp.dataset.price)});
+  });
+
+  const totalExtras = extrasSelected.reduce((sum,e)=>sum+e.price,0);
+  const totalPrice = currentLens.price + totalExtras;
+
+  const tbody = document.getElementById('ordersBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${currentLens.type} ${currentLens.section} ${currentLens.index} </td><td>${currentLens.price}</td><td>${extrasSelected.map(e=>e.name).join(', ')} (${extrasSelected.map(e=>e.price).join(', ')})</td><td>${totalPrice}</td><td><button onclick="this.closest('tr').remove()" style="background:red;color:#fff;padding:2px 6px;border:none;border-radius:3px;cursor:pointer">حذف</button></td>`;
+  tbody.appendChild(tr);
+  closeModal();
+}
+
+// تشغيل عند التحميل
+createLensSections();
+// فقط استبدال toggleGroup في حدث الضغط على h4:
+document.addEventListener("DOMContentLoaded", function(){
+  document.querySelectorAll('.group-section header').forEach(header=>{
+    const content = header.nextElementSibling;
+    header.addEventListener('click', ()=>toggleGroup(H4, content));
+  });
+});
+document.getElementById('printBtn').addEventListener('click', printOrders);
+
+function printOrders() {
+  const table = document.getElementById('ordersContainer').querySelector('table');
+  const clonedTable = table.cloneNode(true);
+
+  // تحديد الأعمدة المطلوب إخفاؤها
+  const removeHeaders = ['حذف', 'طباعة'];
+
+  // تحديد فهارس الأعمدة
+  const ths = clonedTable.querySelectorAll('thead th');
+  let removeIndexes = [];
+  ths.forEach((th, idx) => {
+    if(removeHeaders.includes(th.textContent.trim())) {
+      removeIndexes.push(idx);
+    }
+    // لو العمود فيه زر (بدون نص واضح) نعتبره "طباعة"
+    if(th.querySelector('button')) {
+      removeIndexes.push(idx);
+    }
+  });
+
+  // ترتيب الفهارس تنازليًا علشان الحذف ما يبوظش الترتيب
+  removeIndexes = [...new Set(removeIndexes)].sort((a, b) => b - a);
+
+  // إزالة الأعمدة المحددة من الرأس
+  clonedTable.querySelectorAll('thead tr').forEach(tr => {
+    removeIndexes.forEach(idx => {
+      if(tr.children[idx]) tr.removeChild(tr.children[idx]);
+    });
+  });
+
+  // إزالة الأعمدة المحددة من كل صف في الجسم
+  clonedTable.querySelectorAll('tbody tr').forEach(tr => {
+    removeIndexes.forEach(idx => {
+      if(tr.children[idx]) tr.removeChild(tr.children[idx]);
+    });
+  });
+
+  // إنشاء نافذة الطباعة
+  const printWindow = window.open('', '', 'width=900,height=600');
+  printWindow.document.write('<html><head><title>طباعة الطلبات</title>');
+  printWindow.document.write('<style>table {border-collapse: collapse; width:100%;} th, td {border:1px solid #000; padding:5px; text-align:center;} th {background:#4f46e5; color:#fff;}</style>');
+  printWindow.document.write('</head><body>');
+  printWindow.document.write('<h2>الطلبات المختارة</h2>');
+  printWindow.document.write(clonedTable.outerHTML);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+  printWindow.print();
+}
+function printOrders() {
+  const table = document.getElementById('ordersContainer').querySelector('table');
+  const clonedTable = table.cloneNode(true);
+
+  const removeHeaders = ['حذف', 'طباعة'];
+  const ths = clonedTable.querySelectorAll('thead th');
+  let removeIndexes = [];
+  ths.forEach((th, idx) => {
+    if(removeHeaders.includes(th.textContent.trim())) removeIndexes.push(idx);
+  });
+
+  removeIndexes = [...new Set(removeIndexes)].sort((a,b)=>b-a);
+
+  clonedTable.querySelectorAll('thead tr').forEach(tr => {
+    removeIndexes.forEach(idx => {
+      if(tr.children[idx]) tr.removeChild(tr.children[idx]);
+    });
+  });
+  clonedTable.querySelectorAll('tbody tr').forEach(tr => {
+    removeIndexes.forEach(idx => {
+      if(tr.children[idx]) tr.removeChild(tr.children[idx]);
+    });
+  });
+
+  const printWindow = window.open('', '', 'width=900,height=600');
+  // printWindow.document.write('<html><head><title>طباعة الطلبات</title>');
+  printWindow.document.write('<style>table {border-collapse: collapse; width:100%;} th, td {border:1px solid #000; padding:5px; text-align:center;} th {background:#4f46e5; color:#fff;} button.close-btn {margin-bottom:10px; padding:5px 10px; cursor:pointer; background:red; color:#fff; border:none; border-radius:4px;}</style>');
+  printWindow.document.write('</head><body>');
+
+  printWindow.document.write('<button class="close-btn" onclick="window.close()">إغلاق</button>');
+  printWindow.document.write('<h2 style="text-align:center;"> اليسر للبصريات </h2>');
+  printWindow.document.write('<h2 style="text-align:center;">الطلبات المختارة</h2>');
+  printWindow.document.write(clonedTable.outerHTML);
+  printWindow.document.write('</body></html>');
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+}
+
+
+const tableExtra =[
+  {
+    type:"HighPower 1.5 upTo:15",
+    price:580,
+
+  },
+  {
+    type:"HighPower 1.6 upTo:16",
+    price:1080,
+
+  },
+  {
+    type:"HighPower 1.67 upTo:20",
+    price:1320,
+    upTo:20,
+  },
+  {
+    type:"HighPower 1.74 upTo:20",
+    price:1960,
+    upTo:20,
+  },
+  {
+    type:"Double Aspheric 1.6",
+    price:760,
+
+  },
+  {
+    type:"Double Aspheric 1.67",
+    price:1000,
+
+  },
+  {
+    type:"Double Aspheric 1.74",
+    price:1960,
+
+  }
+]
+
+
+// view tableExtra
+// console.log(tableExtra);
+const tableExtraContainer = document.getElementById('extraorder');
+tableExtraContainer.innerHTML = '';
+const table = document.createElement('table');
+tableExtraContainer.appendChild(table);
+table.innerHTML = `<thead><tr><th>Type</th><th>Price</th></tr></thead><tbody></tbody>`;
+const tbody = table.querySelector('tbody');
+
+tableExtra.forEach(extra=>{
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${extra.type}</td><td><button title="Add Extra" onclick="addExtraOrder('${extra.type}', ${extra.price})">${extra.price}</button></td>`;
+  tbody.appendChild(tr);
+});
+function addExtraOrder(type, price) {
+    console.log(type, price);
+    const tbody = document.getElementById('ordersBody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${type}</td><td>${price}</td> 
+    <td>-</td>
+    <td>${price}</td>
+    <td><button style="background:red;color:#fff;padding:2px 6px;border:none;border-radius:3px;cursor:pointer" onclick="this.closest('tr').remove()">حذف</button></td>`;
+
+    tbody.appendChild(tr);
+}
+    
+  
+
+
+const extraorderHeader = document.getElementById('extraorderHeader');
+extraorderHeader.addEventListener('click', function(e){
+  if (e.target === this) {
+    const extraorder = document.getElementById('extraorder');
+    if(extraorder.style.display === 'block'){
+      extraorder.style.display = 'none';
+    }else{
+      extraorder.style.display = 'block';
+    }
+  }
+});
+
+</script>
 </body>
 </html>

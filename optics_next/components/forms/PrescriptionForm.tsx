@@ -435,11 +435,6 @@ export default function PrescriptionForm(props: formRequestProps) {
         {errors.prescription_date && <p className="error">{errors.prescription_date.message}</p>}
       </div>
       
-      {/* <div>
-        <label>Customer *</label>
-        <input type="number" {...register("customer")} className="input-text" />
-        {errors.customer && <p className="error">{errors.customer.message}</p>}
-      </div> */}
 
             <div>
         <label>Customer *</label>
@@ -463,6 +458,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
               )}
         
+        
       </div>
 
       </div>
@@ -472,11 +468,11 @@ export default function PrescriptionForm(props: formRequestProps) {
 
       </div>
       <div>
-        {errors && Object.values(errors).map((errorGroup: any) => (
-          <div key={errorGroup.type}>
+        {errors && Object.entries(errors).map(([fieldName, errorGroup]: [string, any]) => (
+          <div key={fieldName}>
             <p className="error">
               {Object.values(errorGroup.message).map((error: any) => (
-                <span key={error}>{error}</span>
+                <span key={error}>{`${fieldName}: ${error}`}</span>
               ))}
             </p>
           </div>
