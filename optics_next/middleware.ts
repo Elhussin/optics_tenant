@@ -112,7 +112,9 @@ export async function middleware(request: NextRequest) {
           : "Tenant mismatch, access denied"
       );
     }
-
+    // console.log(requiredPermission);
+    console.log("requiredPermission",payload);
+    console.log("permissions",permissions);
     // تحقق من الصلاحيات
     const hasPermission =
       permissions.includes("__all__") ||

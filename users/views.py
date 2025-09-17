@@ -25,6 +25,8 @@ from rest_framework import permissions
 from .filters import UserFilter
 from core.utils.email import send_password_reset_email
 from rest_framework.decorators import action
+from core.permissions.decorators import permission_required,role_required
+from django.utils.decorators import method_decorator
 
 User = get_user_model()
 
@@ -194,8 +196,7 @@ class RequestPasswordResetView(APIView):
 
         tenant = request.headers.get('X-Tenant')
         leng=request.headers.get('accept-language')or 'en'
-
-
+        print(tenant,leng)
 
         if not tenant:
             return Response({"detail": "Missing X-Tenant header."}, status=400)
@@ -263,6 +264,8 @@ class LogoutView(APIView):
         return response
 
 # @method_decorator(role_required(['ADMIN']), name='dispatch')
+@method_decorator(permission_required('create_permission'), name='dispatch')
+@method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER']), name='dispatch')
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
@@ -311,6 +314,10 @@ class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "slug"
     permission_classes = [AllowAny]
 
+
+
+@method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER']), name='dispatch')
+@method_decorator(permission_required(['create_page']), name='dispatch')
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
