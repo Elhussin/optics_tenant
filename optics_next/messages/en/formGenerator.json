@@ -35,10 +35,11 @@
     "subscription_plan":"Subscription Plan",
     "roles":"Roles",
     "users":"Users",
-    "permission":"Permissions",
+    "permissions":"Permissions",
     "role_permission" : "Role & Permission",
     "contact_us":"Contact Us",
-    "tenant_settings":"Tenant Settings"
+    "tenant_settings":"Tenant Settings",
+    "customer":"Customer"
   },
   "client":{
     "title": "Clients",
@@ -248,6 +249,26 @@
   "description" : "Description",
   "website" : "Website",
   "is_active": "Status",
+  "is_deleted": "Deleted",
+  "values": {
+    "is_active": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "is_deleted": {
+      "true": "Deleted",
+      "false": "Not Deleted"
+    }
+}
+},"customer":{
+  "title": "Customers",
+  "detailsTitle": "Customer Details",
+  "name": "Customer Name",
+  "email": "Customer Email",
+  "phone": "Customer Phone",
+  "address": "Customer Address",
+  "website": "Customer Website",
+  "is_active": "Active",
   "is_deleted": "Deleted",
   "values": {
     "is_active": {

@@ -477,7 +477,8 @@
     "permissions":"الصلاحيات",
     "role_permission":"امتيازات الصلاحيات",
     "tenant_settings":"اعدادات المستأجر",
-    "contact_us":"تواصل معنا"
+    "contact_us":"تواصل معنا",
+    "customer":"العملاء"
 
   }
 }

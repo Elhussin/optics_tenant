@@ -1,45 +1,3 @@
-// "use client";
-// import { useTranslations } from "next-intl";
-// import { ActionButton } from "@/components/ui/buttons";
-// import {Link} from "@/app/i18n/navigation";
-// import { useUser } from "@/lib/contexts/userContext";
-
-// export default function DashboardLinks() {
-//   const {user} =useUser()
-//   console.log(user)
-//   const t = useTranslations("hrefs");
-//   const links = [
-//     { href: "client", role: "OWNER" },
-//     { href: "register_tenant", role: "OWNER" },
-//     { href: "domain", role: "OWNER" },
-//     { href: "payment", role: "OWNER" },
-//     { href: "subscription_plan", role: "OWNER" },
-//     { href: "roles", role: "OWNER" },
-//     { href: "users", role: "OWNER" },
-//     { href: "permissions", role: "OWNER" },
-//     { href: "role_permission", role: "OWNER" },
-//     { href: "tenant_settings", role: "OWNER" },
-//     { href: "contact_us", role: "OWNER" },
-//   ];
-
-
-
-//   return (
-//       <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-//       {links.map(({ href, role }) => (
-//         <Link href={`/dashboard/${href}/`} key={href} className="card">
-//           {t(href)}
-//         </Link>
-//       ))}
-//     </div>
-//   );
-// }
-
-
-
-          // <ActionButton  label={t(href)} navigateTo={`/dashboard/${href}/`} variant="outline" title={t(href)} className=" card" key={href} />
-
-
 "use client";
 import { useTranslations } from "next-intl";
 import { ActionButton } from "@/components/ui/buttons";
@@ -65,6 +23,7 @@ export default function DashboardLinks() {
     
     { href: "tenant_settings", roles: ["OWNER"], group: "Settings" },
     { href: "contact_us", roles: ["OWNER"], group: "Support" },
+    { href: "customer", roles: ["OWNER"], group: "Customer" },
   ];
   
   const userRole = user?.role?.name?.toUpperCase(); // "OWNER"

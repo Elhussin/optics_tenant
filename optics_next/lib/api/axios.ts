@@ -146,6 +146,8 @@ api.customRequest = async function (alias: string, data: any = {}) {
     const response = await axiosInstance(config);
     return response.data;
   } catch (error) {
+    console.log(error);
+    
     throw error;
   }
 };

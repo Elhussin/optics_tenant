@@ -34,10 +34,11 @@
     "subscription_plan":"خطة الاشتراك",
     "roles":"الصلاحيات",
     "users":"المستخدمين",
-    "permission":"الصلاحيات",
+    "permissions":"الصلاحيات",
     "role_permission":"صلاحيات الدور",
     "contact_us":"تواصل",
-    "tenant_settings":"إعدادات المستأجر"
+    "tenant_settings":"إعدادات المستأجر",
+    "customer":"العملاء"
 
   },
   "client":{
@@ -247,6 +248,27 @@
   "linkedin" : "لينكدإن",
   "description" : "الوصف",
   "website" : "الموقع الإلكتروني",
+  "is_active": "الحالة",
+  "is_deleted": "الحذف",
+  "values": {
+    "is_active": {
+      "true": "مفعل",
+      "false": "غير مفعل"
+    },
+    "is_deleted": {
+      "true": "محذوف",
+      "false": "غير محذوف"
+    }
+}
+},
+"customer":{
+  "title": "العملاء",
+  "detailsTitle": "تفاصيل العميل",
+  "name": "اسم العميل",
+  "email": "البريد الإلكتروني",
+  "phone": "رقم الهاتف",
+  "address": "العنوان",
+  "website": "الموقع الإلكتروني",
   "is_active": "الحالة",
   "is_deleted": "الحذف",
   "values": {

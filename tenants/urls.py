@@ -18,7 +18,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'clients', ClientViewSet, basename='clients')
 router.register(r'subscription-plans', SubscriptionPlanViewSet, basename='subscription-plans')
-router.register(r'register', RegisterTenantViewSet, basename='register-tenant')
+router.register(r'registers', RegisterTenantViewSet, basename='register-tenant')
 urlpatterns = [
     path("", include(router.urls)),
     path('register/', RegisterTenantView.as_view()),
