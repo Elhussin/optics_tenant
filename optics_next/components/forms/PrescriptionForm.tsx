@@ -26,14 +26,19 @@ const validatorMap: Record<string, (n: number) => number | string | null> = {
   sigmant: (n: number) => validator.validateSG(n),
 };
 
-
-export default function PrescriptionForm(props: formRequestProps) {
+interface PrescriptionFormProps extends formRequestProps {
+  isView?: boolean;
+}
+export default function PrescriptionForm(props: PrescriptionFormProps) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
   const [customers, setCustomers] = useState<any[]>([]);
-  const { alias, title, message, submitText } = props
+  const { alias, title, message, submitText,isView=false } = props
   const [showModal, setShowModal] = useState(false);
   const fetchCustomers = useFormRequest({ alias: "crm_customers_list" });
   const { register, handleSubmit, setValue, watch, reset, submitForm, errors, isSubmitting } = useFormRequest({ alias: alias })
+  const fetchPrescriptions = useFormRequest({ alias: "prescriptions_list" });
+  // const [isView, setIsView] = useState(false);
+  // setIsView(true);
 
 
   useEffect(() => {
@@ -147,6 +152,8 @@ export default function PrescriptionForm(props: formRequestProps) {
       setValue("left_axis", transformedLeft.axis);
     }
 
+    console.log(data)
+
     try {
       const result = await submitForm(data);
       console.log(result);
@@ -163,6 +170,38 @@ export default function PrescriptionForm(props: formRequestProps) {
     <form onSubmit={e => e.preventDefault()} className="space-y-6" >
       {/* 👁 Right Eye */}
       {/* mian continear */}
+      <div className="grid grid-cols-1  justify-center align-center ">
+        <div>
+          <label>Customer *</label>
+
+          <div className="flex items-center">
+          <select {...register("customer")} className="input-text">
+            <option value="">Select Customer</option>
+            {customers.map((customer) => (
+              <option key={customer.id} value={customer.id}>
+                {customer.first_name} {customer.last_name}
+              </option>
+            ))}
+          </select>
+
+          <ActionButton
+            onClick={() => setShowModal(true)}
+            variant="outline"
+            className="ml-2 p-4"
+            icon={<CirclePlus size={18} color="green" />}
+            title="Add"
+          />
+          {showModal && (
+            <Modal url={'dashboard/customer/create'} onClose={() => setShowModal(false)} />
+          )}
+          </div>
+          {errors.customer && <p className="text-red-500">{errors.customer.message}</p>}
+
+
+        </div>
+
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-1" dir="ltr">
         {/*first block */}
         <div className="grid grid-cols-1 gap-1 ">
@@ -192,6 +231,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="-60"
                 max="60"
                 step="0.25"
+                disabled={isView}
               />
             </div>
             {/* CYL r */}
@@ -206,6 +246,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="-15"
                 max="15"
                 step="0.25"
+                disabled={isView}
               />
             </div>
             {/* AXIS r */}
@@ -220,6 +261,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="1"
                 max="180"
                 step="1"
+                disabled={isView}
               />
             </div>
             {/* ADD r */}
@@ -234,6 +276,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="0.25"
                 max="4"
                 step="0.25"
+                disabled={isView}
               />
             </div>
           </div>
@@ -256,6 +299,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="-60"
                 max="60"
                 step="0.25"
+                disabled={isView}
               />
             </div>
             {/* CYL l */}
@@ -270,6 +314,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="-15"
                 max="15"
                 step="0.25"
+                disabled={isView}
               />
             </div>
 
@@ -285,6 +330,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="1"
                 max="180"
                 step="1"
+                disabled={isView}
               />
             </div>
 
@@ -300,6 +346,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="0.25"
                 max="4"
                 step="0.25"
+                disabled={isView}
               />
             </div>
           </div>
@@ -332,6 +379,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 max="85"
                 step="0.25"
                 title="Pupillary distance must be between 19 and 85"
+                disabled={isView}
               />
             </div>
             {/* SG r */}
@@ -347,6 +395,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 max="55"
                 placeholder="00"
                 title="SG must be between 8 and 55"
+                disabled={isView}
               />
             </div>
             {/* AV r */}
@@ -358,7 +407,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 className={`input-text ${fieldErrors["a_v_right"] ? errorClass : successClass}`}
                 placeholder="V/A"
                 title="Vision Acuity"
-
+                disabled={isView} 
               />
             </div>
           </div>
@@ -380,6 +429,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="19"
                 max="85"
                 step="0.25"
+                disabled={isView}
 
               />
             </div>
@@ -395,6 +445,7 @@ export default function PrescriptionForm(props: formRequestProps) {
                 min="8"
                 max="55"
                 step="1"
+                disabled={isView}
 
               />
             </div>
@@ -406,71 +457,33 @@ export default function PrescriptionForm(props: formRequestProps) {
                 className={`input-text ${fieldErrors["a_v_left"] ? errorClass : successClass}`}
                 placeholder="V/A"
                 title="Vision Acuity"
+                disabled={isView}
 
               />
             </div>
           </div>
         </div>
-        {/* { errors } */}
-        {/* <p>{JSON.stringify(errors)}</p> */}
-      </div>
+
+        {/* third block */}
+        {/* <div className="grid grid-cols-6 gap-5 justify-center align-center ">
+          <label className="col-span-1 justify-center align-center">Notes</label>
+
+          <textarea {...register("notes")} className="input-text col-span-5 justify-center align-center" rows={2} placeholder="Notes..." />
+
+        </div> */}
+          <div className="grid grid-cols-5 gap-1">
+            {/* Eye R */}
+            <div className="flex items-center justify-center">
+              <h3 className="text-lg font-semibold text-gray-900 ">Notes</h3>
+            </div>
+            <div className="col-span-4">
+            <textarea {...register("notes")} className="input-text  justify-center align-center" rows={2} placeholder="Notes..." />
+            </div>
+          </div>
+      </div> 
 
 
       {/* باقي الحقول */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 justify-center align-center ">
-
-        <div>
-          <label>Doctor Name</label>
-          <input {...register("doctor_name")} className="input-text" placeholder="Dr. Ahmed" />
-          {errors.doctor_name && <p className="error">{errors.doctor_name.message}</p>}
-        </div>
-
-        <div>
-          <label>Prescription Date *</label>
-          <input
-            type="date"
-            defaultValue={new Date().toISOString().split('T')[0]}
-            {...register("prescription_date")}
-            className="input-text"
-          />
-          {errors.prescription_date && <p className="error">{errors.prescription_date.message}</p>}
-        </div>
-
-
-        <div>
-          <label>Customer *</label>
-
-          <div className="flex items-center">
-          <select {...register("customer")} className="input-text">
-            <option value="">Select Customer</option>
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.first_name} {customer.last_name}
-              </option>
-            ))}
-          </select>
-          {errors.customer && <p className="error">{errors.customer.message}</p>}
-          <ActionButton
-            onClick={() => setShowModal(true)}
-            variant="outline"
-            className="ml-2 p-4"
-            icon={<CirclePlus size={18} color="green" />}
-            title="Add"
-          />
-          {showModal && (
-            <Modal url={'dashboard/customer/create'} onClose={() => setShowModal(false)} />
-          )}
-          </div>
-
-
-        </div>
-
-      </div>
-      <div>
-        <label>Notes</label>
-        <textarea {...register("notes")} className="input-text" rows={1} placeholder="Notes..." />
-
-      </div>
 
 
       {/* Actions */}
@@ -491,6 +504,7 @@ export default function PrescriptionForm(props: formRequestProps) {
           Cancel
         </button>
       </div>
+
     </form >
   );
 }

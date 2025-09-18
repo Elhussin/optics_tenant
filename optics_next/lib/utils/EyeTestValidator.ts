@@ -157,11 +157,11 @@ export class EyeTestValidator {
     }
   
     // Vertex Distance
-    if (data.vertexDistance !== null && data.vertexDistance !== undefined && data.vertexDistance !== "") {
-      const vd = this.checkVertexDistance(data.vertexDistance);
-      if (vd === null) errors.push("Vertex Distance must be between 10 and 14.");
-      else formatted.vertexDistance = vd;
-    }
+    // if (data.vertexDistance !== null && data.vertexDistance !== undefined && data.vertexDistance !== "") {
+    //   const vd = this.checkVertexDistance(data.vertexDistance);
+    //   if (vd === null) errors.push("Vertex Distance must be between 10 and 14.");
+    //   else formatted.vertexDistance = vd;
+    // }
   
     return { valid: errors.length === 0, errors, formatted };
   }
