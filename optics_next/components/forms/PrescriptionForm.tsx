@@ -1,10 +1,5 @@
 "use client";
 import React from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { z } from "zod";
-import { PrescriptionRecordRequest } from "@/lib/api/zodClient"; // schema اللي عندك
 import { EyeTestValidator } from "@/lib/utils/EyeTestValidator"; // الكلاس اللي كتبناه
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { formRequestProps } from "@/types";
@@ -15,7 +10,6 @@ import Modal from "@/components/view/Modal";
 import { ActionButton } from "@/components/ui/buttons";
 import { CirclePlus } from "lucide-react";
 
-type PrescriptionFormData = z.infer<typeof PrescriptionRecordRequest>;
 const validator = new EyeTestValidator();
 const validatorMap: Record<string, (n: number) => number | string | null> = {
   sphere: (n: number) => validator.validateSPH(n),
@@ -32,15 +26,37 @@ interface PrescriptionFormProps extends formRequestProps {
 export default function PrescriptionForm(props: PrescriptionFormProps) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
   const [customers, setCustomers] = useState<any[]>([]);
-  const { alias, title, message, submitText,isView=false } = props
+  const { alias, title, message, submitText,id, isView = false } = props
   const [showModal, setShowModal] = useState(false);
   const fetchCustomers = useFormRequest({ alias: "crm_customers_list" });
-  const { register, handleSubmit, setValue, watch, reset, submitForm, errors, isSubmitting } = useFormRequest({ alias: alias })
-  const fetchPrescriptions = useFormRequest({ alias: "prescriptions_list" });
-  // const [isView, setIsView] = useState(false);
-  // setIsView(true);
+  const { register, handleSubmit, setValue, watch, reset, submitForm, errors, isSubmitting } = useFormRequest({ alias })
 
+  const fetchPrescriptions = useFormRequest({ alias: "prescriptions_prescription_retrieve"});
+  const updatePrescriptions = useFormRequest({ alias: "prescriptions_prescription_update"});
 
+  useEffect(() => {
+    if (id) {
+      const fetchData = async () => {
+        const result = await fetchPrescriptions.submitForm({ id });
+        for (const [key, value] of Object.entries(result.data)) {
+          setValue(key, value);
+        }
+        const customer: any = (result as any)?.data?.customer;
+        if (customer !== undefined && customer !== null) {
+          const customerId = typeof customer === "object" ? customer.id : customer;
+          if (customerId !== undefined && customerId !== null) {
+            // HTML select values are strings; set as string to match option values
+            setValue("customer", String(customerId));
+          }
+        }
+
+      };
+      fetchData();
+    }
+  }, [id,reset]);
+  
+
+  
   useEffect(() => {
     const fetchData = async () => {
       const result = await fetchCustomers.submitForm();
@@ -52,7 +68,10 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
   }, [showModal]);
 
   const handleFormat = (field: string, value: string) => {
-    const num = parseFloat(value);
+
+    console.log("Number(value)", Number(value))
+    const num = Number(value)
+    if (num === 0) return;
 
     const validatorKey = Object.keys(validatorMap).find((k) =>
       field.includes(k)
@@ -61,13 +80,14 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
     if (!validatorKey) return;
 
     const formatted = validatorMap[validatorKey](num);
+    console.log(formatted)
 
     const applyValue = (targetField: string, val: string | number) => {
       setValue(targetField, val);
       setFieldErrors((prev) => ({ ...prev, [targetField]: false }));
     };
 
-
+    console.log(formatted)
     if (formatted !== null) {
       const mirrorFields: Record<string, string> = {
         right_pupillary_distance: "left_pupillary_distance",
@@ -153,7 +173,14 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
     }
 
     console.log(data)
-
+    if(id){
+      const result = await updatePrescriptions.submitForm(data);
+      console.log(result);
+      if (!result?.success) return;
+      safeToast(message || "", { type: "success" });
+    }else{
+      
+    }
     try {
       const result = await submitForm(data);
       console.log(result);
@@ -170,54 +197,26 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
     <form onSubmit={e => e.preventDefault()} className="space-y-6" >
       {/* 👁 Right Eye */}
       {/* mian continear */}
-      <div className="grid grid-cols-1  justify-center align-center ">
-        <div>
-          <label>Customer *</label>
-
-          <div className="flex items-center">
-          <select {...register("customer")} className="input-text">
-            <option value="">Select Customer</option>
-            {customers.map((customer) => (
-              <option key={customer.id} value={customer.id}>
-                {customer.first_name} {customer.last_name}
-              </option>
-            ))}
-          </select>
-
-          <ActionButton
-            onClick={() => setShowModal(true)}
-            variant="outline"
-            className="ml-2 p-4"
-            icon={<CirclePlus size={18} color="green" />}
-            title="Add"
-          />
-          {showModal && (
-            <Modal url={'dashboard/customer/create'} onClose={() => setShowModal(false)} />
-          )}
-          </div>
-          {errors.customer && <p className="text-red-500">{errors.customer.message}</p>}
 
 
-        </div>
-
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-1" dir="ltr">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2" dir="ltr">
         {/*first block */}
-        <div className="grid grid-cols-1 gap-1 ">
+        <div className="grid grid-cols-1 gap-2 ">
           {/* label row */}
-          <div className="grid grid-cols-5 gap-1 ">
-            <label className="w-1 flex items-center justify-center"></label>
+          {/* <div className="grid grid-cols-5 gap-1 justify-start"> */}
+          <div className="grid grid-cols-[80px_repeat(4,1fr)]  gap-2">
+
+            <label></label>
             <label>SPH</label>
             <label>CYL</label>
             <label>AXIS</label>
             <label>ADD</label>
           </div>
           {/* right row */}
-          <div className="grid grid-cols-5 gap-1">
+          <div className="grid grid-cols-[80px_repeat(4,1fr)] gap-2">
             {/* Eye R */}
-            <div className="flex items-center justify-center">
-              <h3 className="text-lg font-semibold text-gray-900 ">R</h3>
+            <div className="flex items-center">
+              <h3 className="text-lg font-semibold  ">R</h3>
             </div>
             {/* SPH r */}
             <div>
@@ -282,10 +281,11 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
           </div>
 
           {/* left row */}
-          <div className="grid grid-cols-5 gap-1">
+          <div className="grid grid-cols-[80px_repeat(4,1fr)] gap-2">
+
             {/* Eye L */}
-            <div className="flex items-center justify-center">
-              <h3 className="text-lg font-semibold text-gray-900">L</h3>
+            <div className="flex items-center">
+              <h3 className="text-lg font-semibold ">L</h3>
             </div>
             {/* SPH l */}
             <div>
@@ -353,19 +353,21 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
         </div>
         {/*second block */}
 
-        <div className="grid grid-cols-1 gap-1 ">
+        <div className="grid grid-cols-1 gap-2 mt-4 md:mt-0">
           {/* label row */}
-          <div className="grid grid-cols-5 gap-1 ">
+          <div className="grid grid-cols-[80px_repeat(4,1fr)] md:grid-cols-5  gap-2">
             <label className="block md:hidden"></label>
             <label>PD</label>
             <label>SG</label>
             <label>VA</label>
           </div>
           {/* right row */}
-          <div className="grid grid-cols-5 gap-1 ">
+          <div className="grid grid-cols-[80px_repeat(4,1fr)] md:grid-cols-5  gap-2">
+
             {/* Eye R */}
-            <div className="flex  items-center justify-center md:hidden ">
-              <h3 className="text-lg font-semibold text-gray-900 ">R</h3>
+            <div className="flex  items-center md:hidden ">
+
+              <h3 className="text-lg font-semibold  ">R</h3>
             </div>
             {/* PD r */}
             <div>
@@ -407,16 +409,17 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
                 className={`input-text ${fieldErrors["a_v_right"] ? errorClass : successClass}`}
                 placeholder="V/A"
                 title="Vision Acuity"
-                disabled={isView} 
+                disabled={isView}
               />
             </div>
           </div>
           {/* left row */}
-          <div className="grid grid-cols-5 gap-1 ">
+          <div className="grid grid-cols-[80px_repeat(4,1fr)] md:grid-cols-5  gap-2">
+
             {/* PD l */}
             {/* Eye L */}
-            <div className="flex  items-center justify-center md:hidden">
-              <h3 className="text-lg font-semibold text-gray-900">L</h3>
+            <div className="flex  items-center md:hidden">
+              <h3 className="text-lg font-semibold ">L</h3>
             </div>
             <div>
               <input
@@ -463,28 +466,64 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* third block */}
-        {/* <div className="grid grid-cols-6 gap-5 justify-center align-center ">
-          <label className="col-span-1 justify-center align-center">Notes</label>
 
-          <textarea {...register("notes")} className="input-text col-span-5 justify-center align-center" rows={2} placeholder="Notes..." />
+      {/* other fields */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+        {/* notes */}
+        <div className="grid grid-cols-[80px_repeat(4,1fr)] gap-2 mt-4">
 
-        </div> */}
-          <div className="grid grid-cols-5 gap-1">
-            {/* Eye R */}
-            <div className="flex items-center justify-center">
-              <h3 className="text-lg font-semibold text-gray-900 ">Notes</h3>
-            </div>
-            <div className="col-span-4">
-            <textarea {...register("notes")} className="input-text  justify-center align-center" rows={2} placeholder="Notes..." />
+          <div className="flex items-center">
+            <label className="">Notes</label>
+          </div>
+          <div className="col-span-3 md:col-span-4 " >
+
+            <div>
+              <textarea
+                {...register("notes")}
+                className="input-text resize-none p-2 rounded-md border border-gray-300 w-full"
+                rows={1}
+                placeholder="Notes..."
+              />
             </div>
           </div>
-      </div> 
 
+        </div>
+        {/* customer */}
+        <div className="grid grid-cols-[80px_repeat(4,1fr)] md:grid-cols-5  gap-2 mt-4">
 
-      {/* باقي الحقول */}
+          <div className="flex items-center">
+            <label className="">Customer<span className="text-red-500">*</span></label>
+          </div>
+          <div className="col-span-3 md:col-span-2">
+            <select
+              {...register("customer")}
+              className="input-text rounded-md border border-gray-300 w-full p-2 appearance-none"
+            >
+              <option className="option" value="">Select Customer</option>
+              {customers.map((customer) => (
+                <option className="option" key={customer.id} value={customer.id}>
+                  {customer.first_name} {customer.last_name}
+                </option>
+              ))}
+            </select>
 
+          </div>
+          <ActionButton
+              onClick={() => setShowModal(true)}
+              variant="outline"
+
+              icon={<CirclePlus size={18} color="green" />}
+              title="Add "
+            />
+          {showModal && (
+            <Modal url={'dashboard/customer/create'} onClose={() => setShowModal(false)} />
+          )}
+          {errors.customer && <p className="text-red-500 mt-1">{errors.customer.message}</p>}
+        </div>
+
+      </div>
 
       {/* Actions */}
       <div className="flex gap-3 pt-4">
@@ -503,6 +542,7 @@ export default function PrescriptionForm(props: PrescriptionFormProps) {
         >
           Cancel
         </button>
+
       </div>
 
     </form >

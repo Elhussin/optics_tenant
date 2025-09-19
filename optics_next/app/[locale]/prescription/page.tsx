@@ -1,11 +1,11 @@
 
 "use client";
-import PrescriptionForm from '@/components/forms/PrescriptionForm';
+import EyeTest from '@/components/forms/EyeTest';
 
 export default function Prescription() {
 
   return (
-          <PrescriptionForm
+          <EyeTest
             alias="prescriptions_prescription_create"
             className="container"
             title="create Prescription"
