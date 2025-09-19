@@ -38,6 +38,7 @@ interface EyeRowProps {
   handleFormat: (field: string, value: string) => void;
 }
 const EyeRow: React.FC<EyeRowProps> = ({ side, register, isView, fieldErrors, handleFormat }) => {
+  console
   const prefix = side === "right" ? "R" : "L";
   return (
     <div className="grid grid-cols-[80px_repeat(4,1fr)] gap-2">
@@ -204,8 +205,8 @@ export default function EyeTest(props: PrescriptionFormProps) {
       }
     };
     fetchData();
-  }, [id, reset, fetchPrescriptions, setValue]);
-
+  }, [id,]);
+  // fetchPrescriptions  reset, setValue
   /* Fetch customers once */
   useEffect(() => {
     const fetchData = async () => {
@@ -213,8 +214,8 @@ export default function EyeTest(props: PrescriptionFormProps) {
       setCustomers(result.data);
     };
     fetchData();
-  }, [fetchCustomers]);
-
+  }, []);
+  // fetchCustomers
   /* Handle input formatting */
   const handleFormat = (field: string, value: string) => {
     if (!value || isNaN(Number(value))) return;
@@ -379,8 +380,12 @@ export default function EyeTest(props: PrescriptionFormProps) {
           {showModal && (
             <Modal
               url={"dashboard/customer/create"}
-              onClose={() => setShowModal(false)}
-              onSuccess={(newCustomer) => setCustomers((prev) => [...prev, newCustomer])}
+              // onClose={() => setShowModal(false),(newCustomer: any) => setCustomers((prev) => [...prev, newCustomer])}
+              // onSuccess={(newCustomer) => setCustomers((prev) => [...prev, newCustomer])}
+              onClose={(newCustomer: any) => {
+                setShowModal(false);
+                setCustomers((prev) => [...prev, newCustomer]);
+              }}
             />
           )}
           {errors.customer && <p className="text-red-500 mt-1">{errors.customer.message}</p>}
