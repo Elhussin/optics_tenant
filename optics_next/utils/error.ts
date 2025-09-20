@@ -1,4 +1,4 @@
-import { safeToast } from "@/lib/utils/toastService";
+import { safeToast } from "@/utils/toastService";
 
 export interface NormalizedError {
   message: string;

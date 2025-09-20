@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { getSubdomain } from '@/lib/utils/getSubdomain';
+import { getSubdomain } from '@/utils/getSubdomain';
 import DesktopNavLinks from './DesktopNavLinks';
 import MobileNavMenu from './MobileNavMenu';
 

@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
-import { safeToast } from "@/lib/utils/toastService";
+import { safeToast } from "@/utils/toastService";
 import { useTranslations } from "next-intl";
 import { ActionButton } from "@/components/ui/buttons";
 export default function ResetPasswordPage() {

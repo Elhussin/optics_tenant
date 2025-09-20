@@ -1,7 +1,7 @@
 'use client';
 import { useAside } from '@/lib/contexts/AsideContext';
 import { Menu ,X} from 'lucide-react';
-import { cn } from '@/lib/utils/cn';
+import { cn } from '@/utils/cn';
 
 export const AsideButton = () => {
   const { isVisible, toggleAside } = useAside();

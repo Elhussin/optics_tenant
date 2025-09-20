@@ -4,7 +4,7 @@ import { ShieldX } from 'lucide-react';
 import { redirect, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { generateMetadata } from '@/lib/utils/metadata';
+import { generateMetadata } from '@/utils/metadata';
 generateMetadata({
   title: 'Unauthorized | O-S-M',
   description: 'You do not have permission to access this page.',

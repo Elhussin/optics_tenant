@@ -1,11 +1,11 @@
 "use client";
-import {formatRelatedValue,formatTranslatedValue} from "@/lib/utils/formatRelatedValue";
+import {formatRelatedValue,formatTranslatedValue} from "@/utils/formatRelatedValue";
 import { useRef, useEffect, useState, useCallback } from "react";
 import { 
   handleDownloadPDF, 
   handleCopy, 
   handlePrint,
-} from "@/lib/utils/cardViewHelper";
+} from "@/utils/cardViewHelper";
 import { useTranslations } from "next-intl";
 
 import { ViewCardProps } from "@/types";

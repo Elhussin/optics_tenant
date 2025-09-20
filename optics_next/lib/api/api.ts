@@ -1,7 +1,7 @@
 
 import { axiosInstance } from "./axios";
 import { apiConfig } from "./apiConfig";
-import { getBaseUrl } from "@/lib/utils/getBaseUrl";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 
 
 

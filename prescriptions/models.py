@@ -29,13 +29,14 @@ class PrescriptionRecord(BaseModel):
     # Additional Information
     right_pupillary_distance = models.FloatField(null=True, blank=True)
     left_pupillary_distance = models.FloatField(null=True, blank=True)
-    sigmant_right = models.CharField(max_length=20, blank=True)
-    sigmant_left = models.CharField(max_length=20, blank=True)
-    a_v_right = models.CharField(max_length=20, blank=True)
-    a_v_left = models.CharField(max_length=20, blank=True)
-    # doctor_name = models.CharField(max_length=200, blank=True)
-    # prescription_date = models.DateField()
-    notes = models.TextField(blank=True)
+    sigmant_right = models.CharField(max_length=20, blank=True ,null=True)
+    sigmant_left = models.CharField(max_length=20, blank=True ,null=True)
+    a_v_right = models.CharField(max_length=20, blank=True ,null=True)
+    a_v_left = models.CharField(max_length=20, blank=True ,null=True)
+    vertical_distance_right = models.CharField(max_length=20, blank=True ,null=True)
+    vertical_distance_left = models.CharField(max_length=20, blank=True ,null=True)
+
+    notes = models.TextField(blank=True,null=True)
     
     
     def __str__(self):

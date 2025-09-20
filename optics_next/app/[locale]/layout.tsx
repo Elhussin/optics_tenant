@@ -6,7 +6,7 @@ import { routing } from "@/app/i18n/routing";
 import { AsideProvider } from "@/lib/contexts/AsideContext";
 import { UserProvider } from "@/lib/contexts/userContext";
 import { notFound } from "next/navigation";
-import  {getTrenMessages} from "@/lib/utils/getTrenMessages";
+import  {getTrenMessages} from "@/utils/getTrenMessages";
 
 const cairo = Cairo({
   subsets: ["arabic"],

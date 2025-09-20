@@ -2,7 +2,7 @@
 
 "use client";
 import LoginForm from '@/components/forms/LoginForm';
-import { getSubdomain} from '@/lib/utils/getSubdomain';
+import { getSubdomain} from '@/utils/getSubdomain';
 import {useTranslations} from 'next-intl';
 import {formRequestProps} from '@/types';
 

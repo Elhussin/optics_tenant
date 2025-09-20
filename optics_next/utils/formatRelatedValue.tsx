@@ -7,7 +7,7 @@ import {
   handleDownloadPDF, 
   handleCopy, 
   handlePrint 
-} from "@/lib/utils/cardViewHelper";
+} from "@/utils/cardViewHelper";
 
 export function formatRelatedValue(value: any, key: string, t: (key: string) => string): React.ReactNode {
     if (value == null) return "N/A";

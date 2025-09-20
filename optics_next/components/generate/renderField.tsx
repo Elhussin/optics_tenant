@@ -354,7 +354,7 @@ import {
 import {
   getFieldLabel,
   isFieldRequired,
-} from "../../lib/utils/DynamicFormhelper";
+} from "../../utils/DynamicFormhelper";
 import { fieldTemplates } from "../../config/dataConfig";
 
 // ============================

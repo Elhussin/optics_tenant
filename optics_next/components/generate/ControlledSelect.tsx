@@ -2,7 +2,7 @@
 
 import { Controller, FieldValues, Control } from 'react-hook-form';
 import ReactSelect from 'react-select';
-import { getFieldLabel } from '@/lib/utils/DynamicFormhelper'; 
+import { getFieldLabel } from '@/utils/DynamicFormhelper'; 
 
 type Option = { label: string; value: string };
 

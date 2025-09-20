@@ -5,7 +5,7 @@ import { routing } from "./app/i18n/routing";
 import {
   getRequiredPermission,
   unauthorizedResponse,
-} from "./lib/utils/middleware";
+} from "./utils/middleware";
 
 const DEFAULT_LOCALE = "en";
 const LOCALE_REGEX = /^\/(ar|en)\//;

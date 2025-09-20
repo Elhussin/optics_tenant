@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { axiosInstance } from "@/lib/api/axios";
-import { getBaseUrl } from "@/lib/utils/getBaseUrl";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 import { apiConfig } from "@/lib/api/apiConfig";
 import { PayPalButtonProps } from "@/types";
 import PaymentProcessingModal from "./PaymentProcessingModal";

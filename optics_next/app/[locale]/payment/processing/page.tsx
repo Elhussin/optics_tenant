@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { axiosInstance } from "@/lib/api/axios";
-import { getBaseUrl } from "@/lib/utils/getBaseUrl";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 import { apiConfig } from "@/lib/api/apiConfig";
 
 export default function PayPalProcessingPage() {

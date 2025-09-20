@@ -1,5 +1,5 @@
 
-import { EyeTestValidator } from "@/lib/utils/EyeTestValidator"; // الكلاس اللي كتبناه
+import { EyeTestValidator } from "@/utils/EyeTestValidator"; // الكلاس اللي كتبناه
 
 const validator = new EyeTestValidator();
 

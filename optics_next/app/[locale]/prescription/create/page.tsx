@@ -1,6 +1,6 @@
 
 "use client";
-import PrescriptionForm from '@/components/forms/PrescriptionForm';
+import PrescriptionForm from '@/components/eyeTest/archive/PrescriptionForm0';
 
 export default function Prescription() {
 

@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { formRequestProps } from "@/types";
-import { safeToast } from "@/lib/utils/toastService";
+import { safeToast } from "@/utils/toastService";
 import { handleFormatField, transformBeforeSubmit } from "./prescriptionFormat";
 // import EyeRow from "./EyeRow";
-import EyeRow from "./EyeRow";
-import ExtraFields from "./ExtraFields";
+import EyeRow from "../EyeRow";
+import ExtraFields from "../EyeExtraRow";
 import {CustomerSelect} from "./CustomerSelect";
 
 interface PrescriptionFormProps extends formRequestProps {

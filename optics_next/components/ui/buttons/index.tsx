@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { cn } from "@/lib/utils/cn"; 
+import { cn } from "@/utils/cn"; 
 import { ButtonProps } from "@/types";
 import { useRouter } from "@/app/i18n/navigation";
   const variantClasses = {

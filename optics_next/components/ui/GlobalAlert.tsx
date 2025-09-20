@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { safeToast } from "@/lib/utils/toastService";
+import { safeToast } from "@/utils/toastService";
 type GlobalAlertType = "info" | "warning" | "error" | "success";
 
 interface GlobalAlertProps {

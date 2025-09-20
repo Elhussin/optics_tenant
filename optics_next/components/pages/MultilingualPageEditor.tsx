@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
 import { CreatePageData, Language, PageTranslation, LANGUAGES } from '@/types/pages';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
-import { safeToast } from '@/lib/utils/toastService';
+import { safeToast } from '@/utils/toastService';
 import { Loading4 } from '../ui/loding';
 import { defaultPublicPages } from '@/constants/defaultPublicPages';
 import {useTranslations} from 'next-intl';
 import {useLocale} from 'next-intl';
-import {getBaseUrl} from '@/lib/utils/getBaseUrl';
+import {getBaseUrl} from '@/utils/getBaseUrl';
 interface MultilingualPageEditorProps {
   pageId?: string;
   defaultPage?: string | null;

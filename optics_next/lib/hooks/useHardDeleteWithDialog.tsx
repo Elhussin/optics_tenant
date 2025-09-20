@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { safeToast } from "@/lib/utils/toastService";
+import { safeToast } from "@/utils/toastService";
 import { useFormRequest } from "./useFormRequest";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/components/ui/dialogs/ConfirmDialog";

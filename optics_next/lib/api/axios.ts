@@ -1,9 +1,9 @@
 // lib/axios.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { endpoints } from "./zodClient";
-import { getBaseUrl } from "@/lib/utils/getBaseUrl";
+import { getBaseUrl } from "@/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
-import { getCookie } from "@/lib/utils/getCookie";
+import { getCookie } from "@/utils/getCookie";
 import { apiConfig } from "./apiConfig";
 import { parseCookies } from "nookies"; // مكتبة صغيرة لقراءة الكوكيز في server/client
 

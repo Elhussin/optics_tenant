@@ -1,17 +1,25 @@
 
 "use client";
-import EyeTest from '@/components/forms/EyeTest';
+// import EyeTest from '@/components/eyeTest/EyeTest';
+import React, { Suspense } from 'react';
+import {LoadingSpinner} from '@/components/ui/loding';
+const EyeTest = React.lazy(() => import('@/components/eyeTest/EyeTest'));
+
 // import PrescriptionForm from '@/components/eyeTest/PrescriptionForm';
 export default function Prescription() {
 
   return (
-          <EyeTest
+        <Suspense fallback={<div><LoadingSpinner /></div>}>
+
+       <EyeTest
             alias="prescriptions_prescription_create"
-            className="container"
+            // className="container"
             title="create Prescription"
             message="Sucussfully created Prescription"
             submitText="Save Prescription"
           />
+          </Suspense>
+
           // <PrescriptionForm
           //   alias="prescriptions_prescription_create"
           //   className="container"
@@ -21,3 +29,5 @@ export default function Prescription() {
           // />
   );
 }
+
+

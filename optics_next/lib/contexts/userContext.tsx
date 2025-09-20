@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
 import { useFormRequest } from '../hooks/useFormRequest';
-import { safeToast } from '@/lib/utils/toastService';
+import { safeToast } from '@/utils/toastService';
 import { useRouter } from '@/app/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { UserContextType, User } from '@/types';

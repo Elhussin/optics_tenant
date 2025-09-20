@@ -2,8 +2,8 @@
 
 "use client";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
-import { formatLabel } from "@/lib/utils/cardViewHelper";
-import { generateSearchFieldsFromEndpoint } from "@/lib/utils/generateSearchFields";
+import { formatLabel } from "@/utils/cardViewHelper";
+import { generateSearchFieldsFromEndpoint } from "@/utils/generateSearchFields";
 import { SearchFilterForm } from "@/components/Search/SearchFilterForm";
 import { formsConfig } from "@/config/formsConfig";
 import { ActionButton } from "@/components/ui/buttons";
@@ -11,7 +11,7 @@ import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
 import { NotFound } from '@/components/NotFound';
 import { Loading4 } from "@/components/ui/loding";
 import {useTranslations} from 'next-intl';
-import {formatRelatedValue} from "@/lib/utils/formatRelatedValue";
+import {formatRelatedValue} from "@/utils/formatRelatedValue";
 
 export default function ViewCard({ entity }: { entity: string }) {
 

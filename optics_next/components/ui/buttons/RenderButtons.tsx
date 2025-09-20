@@ -5,7 +5,7 @@ import { X, Trash2, Pencil, ArrowLeft, Check, RotateCcw } from "lucide-react";
 import { useHardDeleteWithDialog } from '@/lib/hooks/useHardDeleteWithDialog';
 import { PageData } from "@/types/pages";
 import { ActionButton } from "@/components/ui/buttons";
-import { safeToast } from '@/lib/utils/toastService';
+import { safeToast } from '@/utils/toastService';
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 

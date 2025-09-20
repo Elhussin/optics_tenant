@@ -51,9 +51,9 @@ export class EyeTestValidator {
   }
 
 
-  checkVertexDistance(value: string | number): number | null {
+   validateVertexDistance(value: string | number): number | null {
     const num = Number(value);
-    return !isNaN(num) && num >= 10 && num <= 14 ? num : null;
+    return !isNaN(num) && num >= 10 && num <= 15 ? num : null;
   }
 
   // التحويل بين SPH/CYL/AXIS
@@ -157,11 +157,11 @@ export class EyeTestValidator {
     }
   
     // Vertex Distance
-    // if (data.vertexDistance !== null && data.vertexDistance !== undefined && data.vertexDistance !== "") {
-    //   const vd = this.checkVertexDistance(data.vertexDistance);
-    //   if (vd === null) errors.push("Vertex Distance must be between 10 and 14.");
-    //   else formatted.vertexDistance = vd;
-    // }
+    if (data.vertexDistance !== null && data.vertexDistance !== undefined && data.vertexDistance !== "") {
+      const vd = this. validateVertexDistance(data.vertexDistance);
+      if (vd === null) errors.push("Vertex Distance must be between 10 and 14.");
+      else formatted.vertexDistance = vd;
+    }
   
     return { valid: errors.length === 0, errors, formatted };
   }

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import api from "@/lib/api/axios";
 import { useFormRequestProps } from "@/types";
 import { UseFormRequestReturn } from "@/types";
-import { handleServerErrors ,handleErrorStatus} from "@/lib/utils/error";
+import { handleServerErrors ,handleErrorStatus} from "@/utils/error";
 function hasParameters(
   endpoint: any
 ): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
