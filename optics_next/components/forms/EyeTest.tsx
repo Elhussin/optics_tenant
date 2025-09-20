@@ -24,7 +24,7 @@ const validatorMap: Record<string, (n: number) => number | string | null> = {
 /* ======================
    🔹 UI Helpers
    ====================== */
-const errorInputClass = "border-red-500 focus:ring-red-500";
+const errorInputClass = "border-red-500 bg-red-50 text-red-500 focus:ring-red-500";
 const normalInputClass = "border-gray-300 focus:ring-blue-500";
 
 /* ======================
@@ -38,8 +38,8 @@ interface EyeRowProps {
   handleFormat: (field: string, value: string) => void;
 }
 const EyeRow: React.FC<EyeRowProps> = ({ side, register, isView, fieldErrors, handleFormat }) => {
-  console
   const prefix = side === "right" ? "R" : "L";
+  const errorClass = fieldErrors[`${side}_sphere`] ? errorInputClass : normalInputClass;
   return (
     <div className="grid grid-cols-[80px_repeat(4,1fr)] gap-2">
       <div className="flex items-center">
@@ -189,7 +189,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const fetchPrescriptions = useFormRequest({ alias: "prescriptions_prescription_retrieve" });
   const updatePrescriptions = useFormRequest({ alias: "prescriptions_prescription_update" });
 
-  const { register, handleSubmit, setValue, reset, submitForm, errors, isSubmitting } = useFormRequest({ alias });
+  const { register, handleSubmit, setValue,getValues, reset, submitForm, errors, isSubmitting } = useFormRequest({ alias });
 
   /* Fetch prescription if editing */
   useEffect(() => {
@@ -218,10 +218,18 @@ export default function EyeTest(props: PrescriptionFormProps) {
   // fetchCustomers
   /* Handle input formatting */
   const handleFormat = (field: string, value: string) => {
-    if (!value || isNaN(Number(value))) return;
-    const num = Number(value);
+    // if ( ) return;
 
+    if(isNaN(Number(value))){
+      setFieldErrors((prev) => ({ ...prev, [field]: true }));
+      return;
+    }else if(!value ){
+      setFieldErrors((prev) => ({ ...prev, [field]: false }));
+      return; 
+    }
+    const num = Number(value);
     const validatorKey = Object.keys(validatorMap).find((k) => field.includes(k));
+
     if (!validatorKey) return;
 
     const formatted = validatorMap[validatorKey](num);
@@ -246,7 +254,30 @@ export default function EyeTest(props: PrescriptionFormProps) {
       } else {
         applyValue(field, formatted);
       }
+
+      if (
+        field.includes("sphere") ||
+        field.includes("cylinder") ||
+        field.includes("axis")
+      ){
+        
+        const side = field.startsWith("right") ? "right" : "left";
+        const sph = parseFloat(getValues(`${side}_sphere`));
+        const cyl = parseFloat(getValues(`${side}_cylinder`));
+        const axis = parseFloat(getValues(`${side}_axis`));
+
+        if (!isNaN(sph) && !isNaN(cyl) && !isNaN(axis)) {
+          const transformed = validator.transformSphCylAxis(sph, cyl, axis);
+          if (transformed) {
+            applyValue(`${side}_sphere`, transformed.sph);
+            applyValue(`${side}_cylinder`, transformed.cyl);
+            applyValue(`${side}_axis`, transformed.axis);
+          }
+        }
+      }
     } else {
+      console.log("formatted", formatted);
+      console.log("fieldErrors", fieldErrors);
       setFieldErrors((prev) => ({ ...prev, [field]: true }));
     }
   };
