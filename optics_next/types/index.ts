@@ -47,7 +47,7 @@ export interface formRequestProps extends CrudFormOptions  {
 }
 
 export interface useFormRequestProps {
-  alias: string;
+    alias?: string;
   defaultValues?: any;
   onSuccess?: (res: any) => void;
   onError?: (err: any) => void;

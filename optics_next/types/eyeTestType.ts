@@ -21,7 +21,6 @@ export interface EyeRowProps {
   }
    
 
-
 /* ======================
    🔹 Main Form Component
    ====================== */
@@ -29,3 +28,9 @@ export interface PrescriptionFormProps extends formRequestProps {
   isView?: boolean;
 }
 
+export interface OtherFailedProps{
+   register:any;
+   customers:Record<string,any>[];
+   setShowModal:(value:boolean)=>void;
+   errors:any;
+ }

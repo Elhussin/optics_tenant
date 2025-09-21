@@ -38,7 +38,7 @@ export function ActionButton({
     // لو الزر submit → نسيب التحكم للفورم (preventDefault هيتعامل معه هناك)
     if (type === "submit") {
       if (onClick) await onClick(e); // لو حابب تضيف extra logic مع submit
-      return;
+      // return;
     }
 
     // لو onClick موجود → ننفذه

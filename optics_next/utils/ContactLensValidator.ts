@@ -1,4 +1,4 @@
-class ContactLensValidator {
+export class ContactLensValidator {
     /**
      * Convert an eyeglass prescription to a spherical equivalent.
      */

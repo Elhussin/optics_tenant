@@ -19,14 +19,15 @@ import { useRouter } from '@/app/i18n/navigation';
 
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const isIframe = useIsIframe();
-  const [defaultValues, setDefaultValues] = useState<any>(null);
+  const [defaultValues, setDefaultValues,] = useState<any>(null);
   const router = useRouter();
 
-  const { entity, id } = props
+  const { entity, id,setData} = props
+
   if (!entity) throw new Error('entity is required');
   const t = useTranslations('formsConfig');
   const form = formsConfig[entity];
-  const alias = useMemo(() => (id ? form.updateAlias : form.createAlias), [id, form]);
+  const alias = useMemo(() => (id ? form.updateAlias : form.createAlias ), [id, form]);
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);
   const showResetButton = form.showResetButton ?? true;
   const showBackButton = form.showBackButton ?? true;
@@ -55,8 +56,11 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const userConfig: Record<string, any> = form.userConfig || {};
 
   const config = { ...defaultConfig, ...userConfig };
-  const schema = (schemas as any)[form.schemaName] as z.ZodObject<any>;
-  const shape = schema.shape;
+  // Guard against optional schemaName being undefined in some forms
+  const schema = form.schemaName
+    ? ((schemas as any)[form.schemaName] as z.ZodObject<any> | undefined)
+    : undefined;
+  const shape = (schema as any)?.shape || {};
   const effectiveIgnoredFields = useMemo(
   () => (id ? [...ignoredFields, "password"] : ignoredFields),
   [id]
@@ -69,14 +73,29 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
 
 const visibleFields = config.fieldOrder || allFields;
 
-  const formRequest = useFormRequest({ alias,defaultValues });
-  const fetchDefaultData = useFormRequest({ alias: fetchAlias });
-  const onSubmit = async (data: any) => {
+  // Ensure alias and fetchAlias are always strings to satisfy type requirements
+  const safeAlias: string = alias ?? '';
+  const safeFetchAlias: string = fetchAlias ?? '';
+  const canSubmit = Boolean(safeAlias);
+
+  const formRequest = useFormRequest({ alias: safeAlias, defaultValues });
+  const fetchDefaultData = useFormRequest({ alias: safeFetchAlias });
+
+
+  const onSubmit = async (data: any, e?: React.BaseSyntheticEvent) => {
+    e?.preventDefault();
     const result = await formRequest.submitForm(data);
     if (result?.success) {
       safeToast(successMessage || 'Submitted successfully',{type:"success"})
+      if(setData){
+        setData(result.data);
+        return;
+      }else{
       setDefaultValues(result.data);
       formRequest.reset();
+      }
+        // to returen dat when cull from anothe mdule
+
     } else if (errorMessage) {
       safeToast(errorMessage ,{type:"error"})
     }
@@ -108,12 +127,13 @@ const visibleFields = config.fieldOrder || allFields;
 
         <h2 className="title" >{title ? title : form.schemaName}</h2>
 
-        {showBackButton &&
+        {showBackButton && !setData &&
           <ActionButton icon={<ArrowLeft size={16} />} variant="success" title={t("back")} onClick={() => router.back()}/>}
 
       </div>
 
-      <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
+        <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
+
         {visibleFields.map((fieldName) => (
           <RenderField
             key={fieldName}
@@ -129,9 +149,9 @@ const visibleFields = config.fieldOrder || allFields;
           <ActionButton
             type="submit"
             label={formRequest.formState.isSubmitting ? `${t('saving')}...` : (submitText || t('create'))}
-            className={`${config.submitButtonClasses} ${formRequest.formState.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+            className={`${config.submitButtonClasses} ${formRequest.formState.isSubmitting || !canSubmit ? 'opacity-50 cursor-not-allowed' : ''
               }`}
-            disabled={formRequest.formState.isSubmitting}
+            disabled={formRequest.formState.isSubmitting || !canSubmit}
             variant="info"
             title={submitText || t('create')}
             icon={<CirclePlus size={16} />}
