@@ -9,9 +9,10 @@ import { CirclePlus } from "lucide-react";
 import EyeRow from "./EyeRow";
 import EyeExtraRow from "./EyeExtraRow";
 import { EyeTestLabel, EyeTestLabelProps } from "./eyeTestLabel";
-import { validateEyeTest } from "@/utils/handleEyeTestFormat";
+import { validateEyeTest,validateContactLens } from "@/utils/handleEyeTestFormat";
 import { ContactLensValidator } from "@/utils/ContactLensValidator";
 import { OtherEyeTestFailed } from "./OtherEyeTestFailed";
+
 const contactLensValidator = new ContactLensValidator();
 export default function EyeTest(props: PrescriptionFormProps) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
@@ -33,20 +34,6 @@ export default function EyeTest(props: PrescriptionFormProps) {
     }
   };
 
-  // useEffect(() => {
-  //   if (!id) return;
-  //   const fetchData = async () => {
-  //     const result = await fetchPrescriptions.submitForm({ id });
-  //     setValues(result.data);
-  //     const customer: any = result?.data?.customer;
-  //         if (customer) {
-  //           setValue("customer", String(typeof customer === "object" ? customer.id : customer));
-  //         }
-  //   };
-  //   fetchData();
-  // }, [id,]);
-
-
   useEffect(() => {
     if (!id || !customers.length) return;
     (async () => {
@@ -58,7 +45,6 @@ export default function EyeTest(props: PrescriptionFormProps) {
       }
     })();
   }, [id, customers]);
-
 
 
   useEffect(() => {
@@ -86,6 +72,8 @@ export default function EyeTest(props: PrescriptionFormProps) {
     try {
 
       validateEyeTest(data);
+      const validateContactLensData = validateContactLens(data);
+      console.log(validateContactLensData);
       // submit
       const sphericalData = contactLensValidator.convertToSpheric(data);
       const toricData = contactLensValidator.convertToToric(data);
@@ -130,24 +118,13 @@ export default function EyeTest(props: PrescriptionFormProps) {
 
         {/* Notes + Customer */}
         <OtherEyeTestFailed {...{ register, customers, setShowModal, errors }} />
-        {/* {showModal && (
-        <AddModule
-          url={"/dashboard/customer/create"}
-          onClose={() => {
-            setShowModal(false);
-          }}
-          entity="customer"
-          setData={setValues}
-        />
-      )} */}
-
 
         <div className="flex gap-3 pt-4">
           <ActionButton
             onClick={handleSubmit(onSubmit)}
             label={isSubmitting ? title + "..." : (title)}
             disabled={isSubmitting}
-            variant="info"       
+            variant="info"
             title={submitText || "Save"}
             icon={<CirclePlus size={16} />}
           />
@@ -172,7 +149,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
         />
       )}
     </>
-        );
+  );
 }
 
 

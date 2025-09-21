@@ -1,11 +1,15 @@
 
 from rest_framework import serializers
 from .models import PrescriptionRecord
-
+from CRM.serializers import CustomerSerializer
+from users.serializers import UserSerializer
 
 class PrescriptionRecordSerializer(serializers.ModelSerializer):
 
-    created_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    customer = CustomerSerializer(read_only=True)
+    created_by = UserSerializer(read_only=True)
+    customer_name = serializers.CharField(source="customer.first_name", read_only=True)
+    created_by_username = serializers.CharField(source="created_by.username", read_only=True)
 
     class Meta:
         model = PrescriptionRecord

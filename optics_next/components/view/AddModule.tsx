@@ -13,16 +13,6 @@ interface AddModuleProps {
   title: string;
 }
 
-
-
-// {
-//   url: string;
-//   onClose: (e: any) => void;
-//   entity: string;
-//   setData: (data: any) => void;
-//   title: string;
-
-// }) {
 const AddModule: React.FC<AddModuleProps> = ({ onClose, entity, title }) => {
 
   const nodeRef = useRef(null);
