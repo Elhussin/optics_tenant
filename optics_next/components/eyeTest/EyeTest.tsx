@@ -50,7 +50,8 @@ export default function EyeTest(props: PrescriptionFormProps) {
   useEffect(() => {
     const fetchData = async () => {
       const result = await fetchCustomers.submitForm();
-      const list = result.data.reverse();
+      console.log(result);
+      const list = result.data.results.reverse();
       setCustomers(list);
 
       if (result.success) {
@@ -75,10 +76,12 @@ export default function EyeTest(props: PrescriptionFormProps) {
       const validateContactLensData = validateContactLens(data);
       console.log(validateContactLensData);
       // submit
+      
       const sphericalData = contactLensValidator.convertToSpheric(data);
       const toricData = contactLensValidator.convertToToric(data);
       console.log(sphericalData, toricData);
       let result;
+      console.log(data);
       if (id) {
         result = await updatePrescriptions.submitForm(data);
 

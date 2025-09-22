@@ -8,7 +8,6 @@ export function generateSearchFieldsFromEndpoint(alias: string, labels?: Record<
   if (!endpoint || !('parameters' in endpoint) || !Array.isArray(endpoint.parameters)) {
     return [];
   }
-  console.log(endpoint.parameters);
   return endpoint.parameters?.map((param: any) => {
     const schemaDef: any = param.schema._def;
     const isEnum = schemaDef.typeName === 'ZodEnum';

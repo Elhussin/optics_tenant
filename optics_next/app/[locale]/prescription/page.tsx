@@ -2,7 +2,7 @@
 "use client";
 import React, { Suspense } from 'react';
 import {LoadingSpinner} from '@/components/ui/loding';
-const ViewEyeTest = React.lazy(() => import('@/components/eyeTest/ViewEyeTest'));
+const ViewEyeTest = React.lazy(() => import('@/components/eyeTest/View'));
 export default function ViewPrescriptionPage() {
 
   return (

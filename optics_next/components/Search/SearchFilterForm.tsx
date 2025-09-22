@@ -7,10 +7,11 @@ import { ActionButton } from '@/components/ui/buttons';
 interface Props {
   fields: SearchField[];
   actionPath?: string; // يمكن تمرير مسار مخصص (افتراضي '')
+  setFilters?: (filters: Record<string, string>) => void;
 }
 
 
-export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
+export const SearchFilterForm = ({ fields, actionPath = '' ,setFilters}: Props) => {
   const router = useRouter();
   const [form, setForm] = useState<Record<string, string>>({});
   const [resetKey, setResetKey] = useState<number>(0);
@@ -25,7 +26,11 @@ export const SearchFilterForm = ({ fields, actionPath = '' }: Props) => {
     for (const key in form) {
       if (form[key]) params.set(key, form[key]);
     }
+
     router.push(`${actionPath}?${params.toString()}`);
+    if(setFilters){
+      setFilters(form);
+    }
   };
 
   const handleClear = () => {

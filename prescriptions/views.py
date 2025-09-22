@@ -8,13 +8,14 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .filters import PrescriptionRecordFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 # @method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER','owner']), name='dispatch')
 # @method_decorator(permission_required(['create_prescription','__all__']), name='dispatch')
 
 class PrescriptionViewSet(ModelViewSet):
     queryset = PrescriptionRecord.objects.all()
-    
+    permission_classes = [AllowAny]
     serializer_class = PrescriptionRecordSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = PrescriptionRecordFilter

@@ -10,15 +10,19 @@ import { generateSearchFieldsFromEndpoint } from "@/utils/generateSearchFields";
 import { Loading4 } from "@/components/ui/loding";
 import { useSearchFieldsFromOptions } from "@/components/Search/generateSearchFieldsFromOptions";
 import { usePaginatedListRequest } from "@/components/Search/usePaginatedListRequest";
+import { Pagination } from "@/components/view/Pagination";
+import { SearchFilterForm } from "./SearchFilterForm";
+
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {
     // const [data, setData] = useState<any>({});
     const [page, setPage] = useState(1);
+    const [filters, setFilters] = useState({});
     const alias = id ? "prescriptions_prescription_retrieve" : "prescriptions_prescription_list";
-    const filters = {}; // هنا يمكن ربطها بفورم الفلاتر
+    // const filters = {}; // هنا يمكن ربطها بفورم الفلاتر
     const { data, count, isLoading } = usePaginatedListRequest("prescriptions_prescription_list", page, filters);
     const totalPages = Math.ceil(count / 10);
 //   const {data,isLoading} = useFilteredListRequest(alias);
-    console.log(data, count, isLoading);
+    console.log(data, count, isLoading,filters);
 const serachLabel={
     "created_by__id": "Empolyee ID",
     "created_by__username__icontains": "Empolyee Name",
@@ -32,7 +36,7 @@ const serachLabel={
     );
   
     return (
-      <SearchFilterForm fields={fields} />
+      <SearchFilterForm fields={fields} setFilters={setFilters} />
     );
   }
 
@@ -101,11 +105,7 @@ const serachLabel={
                 ))
             )}
             </div>
-            <div className="pagination">
-                <button onClick={() => setPage((p) => Math.max(1, p-1))} disabled={page === 1}>Prev</button>
-                <span>{page} / {totalPages}</span>
-                <button onClick={() => setPage((p) => Math.min(totalPages, p+1))} disabled={page === totalPages}>Next</button>
-            </div>
+<Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </div>
     );
 };

@@ -6,7 +6,7 @@ from users.serializers import UserSerializer
 
 class PrescriptionRecordSerializer(serializers.ModelSerializer):
 
-    customer = CustomerSerializer(read_only=True)
+    # customer = CustomerSerializer(read_only=True)
     created_by = UserSerializer(read_only=True)
     customer_name = serializers.CharField(source="customer.first_name", read_only=True)
     created_by_username = serializers.CharField(source="created_by.username", read_only=True)
