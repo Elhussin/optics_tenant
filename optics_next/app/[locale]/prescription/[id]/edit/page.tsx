@@ -11,7 +11,7 @@ export default function EditPrescription() {
             className="container"
             title="Edit Prescription"
             message="Sucussfully edited Prescription"
-            submitText="Save Prescription"
+            submitText="Edit Prescription"
             id={pageId}
           />
   );

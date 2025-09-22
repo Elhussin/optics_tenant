@@ -12,6 +12,14 @@ const Account = z
     user: z.number().int(),
   })
   .passthrough();
+const PaginatedAccountList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Account),
+  })
+  .passthrough();
 const AccountRequest = z
   .object({
     name: z.string().min(1).max(255),
@@ -35,6 +43,14 @@ const Category = z
     category_type: TransactionTypeEnum,
     description: z.string().nullish(),
     parent: z.number().int().nullish(),
+  })
+  .passthrough();
+const PaginatedCategoryList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Category),
   })
   .passthrough();
 const CategoryRequest = z
@@ -63,6 +79,14 @@ const FinancialPeriod = z
     is_closed: z.boolean().optional(),
   })
   .passthrough();
+const PaginatedFinancialPeriodList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(FinancialPeriod),
+  })
+  .passthrough();
 const FinancialPeriodRequest = z
   .object({
     name: z.string().min(1).max(50),
@@ -89,6 +113,14 @@ const JournalEntry = z
     credit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     transaction: z.number().int(),
     account: z.number().int(),
+  })
+  .passthrough();
+const PaginatedJournalEntryList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(JournalEntry),
   })
   .passthrough();
 const JournalEntryRequest = z
@@ -120,6 +152,14 @@ const RecurringTransaction = z
     account: z.number().int(),
   })
   .passthrough();
+const PaginatedRecurringTransactionList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(RecurringTransaction),
+  })
+  .passthrough();
 const RecurringTransactionRequest = z
   .object({
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
@@ -147,6 +187,14 @@ const Tax = z
     effective_date: z.string(),
     is_active: z.boolean().optional(),
     description: z.string().nullish(),
+  })
+  .passthrough();
+const PaginatedTaxList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Tax),
   })
   .passthrough();
 const TaxRequest = z
@@ -182,6 +230,14 @@ const Transaction = z
     period: z.number().int(),
     category: z.number().int().nullish(),
     tax_rate: z.number().int().nullish(),
+  })
+  .passthrough();
+const PaginatedTransactionList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Transaction),
   })
   .passthrough();
 const TransactionRequest = z
@@ -220,6 +276,14 @@ const BranchUsers = z
     notes: z.string().nullish(),
     branch_id: z.number().int(),
     employee_id: z.number().int(),
+  })
+  .passthrough();
+const PaginatedBranchUsersList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(BranchUsers),
   })
   .passthrough();
 const BranchUsersRequest = z
@@ -262,6 +326,14 @@ const Branch = z
     is_main_branch: z.boolean().optional(),
     allows_online_orders: z.boolean().optional(),
     operating_hours: z.unknown().optional(),
+  })
+  .passthrough();
+const PaginatedBranchList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Branch),
   })
   .passthrough();
 const BranchRequest = z
@@ -311,6 +383,14 @@ const Campaign = z
     customers: z.array(z.number().int()).optional(),
   })
   .passthrough();
+const PaginatedCampaignList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Campaign),
+  })
+  .passthrough();
 const CampaignRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -347,6 +427,14 @@ const Complaint = z
     customer: z.number().int(),
   })
   .passthrough();
+const PaginatedComplaintList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Complaint),
+  })
+  .passthrough();
 const ComplaintRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -377,6 +465,14 @@ const Contact = z
     phone: z.string().max(20),
     name: z.string().max(100),
     message: z.string().max(500),
+  })
+  .passthrough();
+const PaginatedContactList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Contact),
   })
   .passthrough();
 const ContactRequest = z
@@ -410,6 +506,14 @@ const CustomerGroup = z
     name: z.string().max(100),
     description: z.string().optional(),
     customers: z.array(z.number().int()),
+  })
+  .passthrough();
+const PaginatedCustomerGroupList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(CustomerGroup),
   })
   .passthrough();
 const CustomerGroupRequest = z
@@ -455,6 +559,14 @@ const Customer = z
     postal_code: z.string().max(20).optional(),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
+  })
+  .passthrough();
+const PaginatedCustomerList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Customer),
   })
   .passthrough();
 const CustomerRequest = z
@@ -516,6 +628,14 @@ const Document = z
     customer: z.number().int().nullish(),
   })
   .passthrough();
+const PaginatedDocumentList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Document),
+  })
+  .passthrough();
 const DocumentRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -546,6 +666,14 @@ const Interaction = z
     interaction_type: InteractionTypeEnum,
     notes: z.string().nullish(),
     customer: z.number().int(),
+  })
+  .passthrough();
+const PaginatedInteractionList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Interaction),
   })
   .passthrough();
 const InteractionRequest = z
@@ -591,6 +719,14 @@ const Opportunity = z
     customer: z.number().int(),
   })
   .passthrough();
+const PaginatedOpportunityList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Opportunity),
+  })
+  .passthrough();
 const OpportunityRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -632,6 +768,14 @@ const Subscription = z
     customer: z.number().int(),
   })
   .passthrough();
+const PaginatedSubscriptionList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Subscription),
+  })
+  .passthrough();
 const SubscriptionRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -666,6 +810,14 @@ const Task = z
     completed: z.boolean().optional(),
     customer: z.number().int().nullish(),
     opportunity: z.number().int().nullish(),
+  })
+  .passthrough();
+const PaginatedTaskList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Task),
   })
   .passthrough();
 const TaskRequest = z
@@ -705,6 +857,14 @@ const Attendance = z
     employee: z.number().int(),
   })
   .passthrough();
+const PaginatedAttendanceList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Attendance),
+  })
+  .passthrough();
 const AttendanceRequest = z
   .object({
     date: z.string(),
@@ -734,6 +894,14 @@ const Department = z
     name: z.string().max(100),
     description: z.string().nullish(),
     location: z.string().max(100).nullish(),
+  })
+  .passthrough();
+const PaginatedDepartmentList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Department),
   })
   .passthrough();
 const DepartmentRequest = z
@@ -784,6 +952,14 @@ const Employee = z
     updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
+const PaginatedEmployeeList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Employee),
+  })
+  .passthrough();
 const EmployeeRequest = z
   .object({
     user_id: z.number().int(),
@@ -824,6 +1000,14 @@ const Leave = z
     employee: z.number().int(),
   })
   .passthrough();
+const PaginatedLeaveList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Leave),
+  })
+  .passthrough();
 const LeaveRequest = z
   .object({
     leave_type: LeaveTypeEnum,
@@ -850,6 +1034,14 @@ const Notification = z
     is_read: z.boolean().optional(),
     created_at: z.string().datetime({ offset: true }),
     employee: z.number().int(),
+  })
+  .passthrough();
+const PaginatedNotificationList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Notification),
   })
   .passthrough();
 const NotificationRequest = z
@@ -887,6 +1079,14 @@ const Payroll = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
     employee: z.number().int(),
+  })
+  .passthrough();
+const PaginatedPayrollList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Payroll),
   })
   .passthrough();
 const PayrollRequest = z
@@ -938,6 +1138,14 @@ const PerformanceReview = z
     employee: z.number().int(),
   })
   .passthrough();
+const PaginatedPerformanceReviewList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PerformanceReview),
+  })
+  .passthrough();
 const PerformanceReviewRequest = z
   .object({
     rating: RatingEnum,
@@ -952,6 +1160,36 @@ const PatchedPerformanceReviewRequest = z
     employee: z.number().int(),
   })
   .partial()
+  .passthrough();
+const Permission = z
+  .object({
+    id: z.number().int(),
+    code: z.string().max(100),
+    description: z.string().optional(),
+  })
+  .passthrough();
+const Role = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(50),
+    permissions: z.array(Permission),
+  })
+  .passthrough();
+const User = z
+  .object({
+    id: z.number().int(),
+    username: z.string().min(5).max(50),
+    email: z.string().email(),
+    first_name: z.string().max(30),
+    last_name: z.string().max(30),
+    is_active: z.boolean().optional(),
+    is_staff: z.boolean().optional(),
+    role: Role,
+    is_deleted: z.boolean().optional(),
+    deleted_at: z.string().datetime({ offset: true }).nullable(),
+    phone: z.string().regex(/^\+?\d{7,15}$/),
+    client: z.number().int().nullable(),
+  })
   .passthrough();
 const SphericalEnum = z.enum([
   "-30.00",
@@ -1290,108 +1528,86 @@ const AdditionEnum = z.enum([
 const PrescriptionRecord = z
   .object({
     id: z.number().int(),
+    customer: Customer,
+    created_by: User,
+    customer_name: z.string(),
+    created_by_username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     right_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
     right_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
-    right_axis: z.number().int().gte(0).lte(180).nullish(),
+    right_axis: z.number().gte(0).lte(180).nullish(),
     left_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
     left_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
-    left_axis: z.number().int().gte(0).lte(180).nullish(),
+    left_axis: z.number().gte(0).lte(180).nullish(),
     right_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
     left_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    right_pupillary_distance: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullish(),
-    left_pupillary_distance: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullish(),
-    sigmant_right: z.string().max(20).optional(),
-    sigmant_left: z.string().max(20).optional(),
-    a_v_right: z.string().max(20).optional(),
-    a_v_left: z.string().max(20).optional(),
-    doctor_name: z.string().max(200).optional(),
-    prescription_date: z.string(),
-    notes: z.string().optional(),
-    customer: z.number().int(),
+    right_pupillary_distance: z.number().nullish(),
+    left_pupillary_distance: z.number().nullish(),
+    sigmant_right: z.string().max(20).nullish(),
+    sigmant_left: z.string().max(20).nullish(),
+    a_v_right: z.string().max(20).nullish(),
+    a_v_left: z.string().max(20).nullish(),
+    vertical_distance_right: z.string().max(20).nullish(),
+    vertical_distance_left: z.string().max(20).nullish(),
+    notes: z.string().nullish(),
   })
   .passthrough();
-
-export const PrescriptionRecordRequest = z
+const PaginatedPrescriptionRecordList = z
   .object({
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    right_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
-    right_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
-    right_axis: z.number().int().gte(0).lte(180).nullish(),
-    left_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
-    left_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
-    left_axis: z.number().int().gte(0).lte(180).nullish(),
-    right_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    left_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    right_pupillary_distance: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullish(),
-    left_pupillary_distance: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullish(),
-    sigmant_right: z.string().max(20).optional(),
-    sigmant_left: z.string().max(20).optional(),
-    a_v_right: z.string().max(20).optional(),
-    a_v_left: z.string().max(20).optional(),
-    doctor_name: z.string().max(200).optional(),
-    prescription_date: z.string(),
-    notes: z.string().optional(),
-    customer: z.number().int(),
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PrescriptionRecord),
   })
   .passthrough();
-
+const PrescriptionRecordRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    right_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
+    right_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
+    right_axis: z.number().gte(0).lte(180).nullable(),
+    left_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
+    left_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
+    left_axis: z.number().gte(0).lte(180).nullable(),
+    right_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
+    left_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
+    right_pupillary_distance: z.number().nullable(),
+    left_pupillary_distance: z.number().nullable(),
+    sigmant_right: z.string().max(20).nullable(),
+    sigmant_left: z.string().max(20).nullable(),
+    a_v_right: z.string().max(20).nullable(),
+    a_v_left: z.string().max(20).nullable(),
+    vertical_distance_right: z.string().max(20).nullable(),
+    vertical_distance_left: z.string().max(20).nullable(),
+    notes: z.string().nullable(),
+  })
+  .partial()
+  .passthrough();
 const PatchedPrescriptionRecordRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     right_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
     right_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
-    right_axis: z.number().int().gte(0).lte(180).nullable(),
+    right_axis: z.number().gte(0).lte(180).nullable(),
     left_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
     left_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
-    left_axis: z.number().int().gte(0).lte(180).nullable(),
+    left_axis: z.number().gte(0).lte(180).nullable(),
     right_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
     left_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
-    right_pupillary_distance: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullable(),
-    left_pupillary_distance: z
-      .number()
-      .int()
-      .gte(-2147483648)
-      .lte(2147483647)
-      .nullable(),
-    sigmant_right: z.string().max(20),
-    sigmant_left: z.string().max(20),
-    a_v_right: z.string().max(20),
-    a_v_left: z.string().max(20),
-    doctor_name: z.string().max(200),
-    prescription_date: z.string(),
-    notes: z.string(),
-    customer: z.number().int(),
+    right_pupillary_distance: z.number().nullable(),
+    left_pupillary_distance: z.number().nullable(),
+    sigmant_right: z.string().max(20).nullable(),
+    sigmant_left: z.string().max(20).nullable(),
+    a_v_right: z.string().max(20).nullable(),
+    a_v_left: z.string().max(20).nullable(),
+    vertical_distance_right: z.string().max(20).nullable(),
+    vertical_distance_left: z.string().max(20).nullable(),
+    notes: z.string().nullable(),
   })
   .partial()
   .passthrough();
@@ -1405,6 +1621,14 @@ const ProductVariantAnswer = z
     answer: z.string(),
     question: z.number().int(),
     answered_by: z.number().int(),
+  })
+  .passthrough();
+const PaginatedProductVariantAnswerList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductVariantAnswer),
   })
   .passthrough();
 const ProductVariantAnswerRequest = z
@@ -1437,6 +1661,14 @@ const AttributeValue = z
     attribute: z.number().int(),
   })
   .passthrough();
+const PaginatedAttributeValueList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(AttributeValue),
+  })
+  .passthrough();
 const AttributeValueRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -1462,6 +1694,14 @@ const Attributes = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     name: z.string().max(100),
+  })
+  .passthrough();
+const PaginatedAttributesList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Attributes),
   })
   .passthrough();
 const AttributesRequest = z
@@ -1491,6 +1731,14 @@ const Brand = z
     website: z.string().max(200).url().optional(),
     description: z.string().optional(),
     logo: z.string().url().nullish(),
+  })
+  .passthrough();
+const PaginatedBrandList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Brand),
   })
   .passthrough();
 const BrandRequest = z
@@ -1529,6 +1777,14 @@ const FlexiblePrice = z
     min_quantity: z.number().int().gte(0).lte(2147483647).optional(),
     currency: z.string().max(10).optional(),
     priority: z.number().int().gte(0).lte(2147483647).optional(),
+  })
+  .passthrough();
+const PaginatedFlexiblePriceList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(FlexiblePrice),
   })
   .passthrough();
 const FlexiblePriceRequest = z
@@ -1570,6 +1826,14 @@ const LensCoating = z
     updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
+const PaginatedLensCoatingList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(LensCoating),
+  })
+  .passthrough();
 const LensCoatingRequest = z
   .object({
     name: z.string().min(1).max(100),
@@ -1597,6 +1861,14 @@ const Manufacturer = z
     website: z.string().max(200).url().optional(),
     email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
+  })
+  .passthrough();
+const PaginatedManufacturerList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Manufacturer),
   })
   .passthrough();
 const ManufacturerRequest = z
@@ -1645,6 +1917,14 @@ const ProductVariantMarketing = z
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
     variant: z.number().int(),
+  })
+  .passthrough();
+const PaginatedProductVariantMarketingList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductVariantMarketing),
   })
   .passthrough();
 const ProductVariantMarketingRequest = z
@@ -1699,6 +1979,14 @@ const ProductVariantOffer = z
     ProductVariant: z.number().int(),
   })
   .passthrough();
+const PaginatedProductVariantOfferList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductVariantOffer),
+  })
+  .passthrough();
 const ProductVariantOfferRequest = z
   .object({
     offer: z.string().min(1).max(100),
@@ -1724,6 +2012,14 @@ const ProductImage = z
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
     is_primary: z.boolean().optional(),
+  })
+  .passthrough();
+const PaginatedProductImageList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductImage),
   })
   .passthrough();
 const ProductImageRequest = z
@@ -1797,6 +2093,14 @@ const Product = z
     updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
+const PaginatedProductList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Product),
+  })
+  .passthrough();
 const ProductRequest = z
   .object({
     category_id: z.number().int(),
@@ -1838,6 +2142,14 @@ const ProductVariantQuestion = z
     asked_by: z.number().int(),
   })
   .passthrough();
+const PaginatedProductVariantQuestionList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductVariantQuestion),
+  })
+  .passthrough();
 const ProductVariantQuestionRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -1868,6 +2180,14 @@ const ProductVariantReview = z
     review: z.string(),
     ProductVariant: z.number().int(),
     reviewed_by: z.number().int(),
+  })
+  .passthrough();
+const PaginatedProductVariantReviewList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductVariantReview),
   })
   .passthrough();
 const ProductVariantReviewRequest = z
@@ -1923,6 +2243,14 @@ const StockMovements = z
     stocks: z.number().int(),
   })
   .passthrough();
+const PaginatedStockMovementsList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(StockMovements),
+  })
+  .passthrough();
 const StockMovementsRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -1972,6 +2300,14 @@ const StockTransferItem = z
     notes: z.string().optional(),
     transfer: z.number().int(),
     variant: z.number().int(),
+  })
+  .passthrough();
+const PaginatedStockTransferItemList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(StockTransferItem),
   })
   .passthrough();
 const StockTransferItemRequest = z
@@ -2030,6 +2366,14 @@ const StockTransfer = z
     to_branch: z.number().int(),
   })
   .passthrough();
+const PaginatedStockTransferList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(StockTransfer),
+  })
+  .passthrough();
 const StockTransferRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -2084,6 +2428,14 @@ const Stocks = z
     variant: z.number().int(),
   })
   .passthrough();
+const PaginatedStocksList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Stocks),
+  })
+  .passthrough();
 const StocksRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -2121,6 +2473,14 @@ const PatchedStocksRequest = z
     variant: z.number().int(),
   })
   .partial()
+  .passthrough();
+const PaginatedSupplierList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Supplier),
+  })
   .passthrough();
 const SupplierRequest = z
   .object({
@@ -2205,6 +2565,14 @@ const ProductVariant = z
     is_active: z.boolean().optional(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PaginatedProductVariantList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ProductVariant),
   })
   .passthrough();
 const ProductVariantRequest = z
@@ -2342,6 +2710,14 @@ const Invoice = z
     order: z.number().int().nullish(),
   })
   .passthrough();
+const PaginatedInvoiceList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Invoice),
+  })
+  .passthrough();
 const InvoiceItemRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -2463,6 +2839,14 @@ const Order = z
     sales_person: z.number().int().nullish(),
   })
   .passthrough();
+const PaginatedOrderList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Order),
+  })
+  .passthrough();
 const OrderItemRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -2537,6 +2921,14 @@ const Payment = z
     invoice: z.number().int(),
   })
   .passthrough();
+const PaginatedPaymentList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Payment),
+  })
+  .passthrough();
 const PaymentRequest = z
   .object({
     is_active: z.boolean().optional(),
@@ -2607,6 +2999,14 @@ const Client = z
     field_labels: z.string(),
   })
   .passthrough();
+const PaginatedClientList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Client),
+  })
+  .passthrough();
 const ClientRequest = z
   .object({
     name: z.string().min(1).max(100),
@@ -2635,6 +3035,14 @@ const PatchedClientRequest = z
 const RegisterTenant = z
   .object({ name: z.string().max(25), email: z.string().email() })
   .passthrough();
+const PaginatedRegisterTenantList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(RegisterTenant),
+  })
+  .passthrough();
 const RegisterTenantRequest = z
   .object({
     name: z.string().min(1).max(25),
@@ -2655,6 +3063,14 @@ const PatchedRegisterTenantRequest = z
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
   })
   .partial()
+  .passthrough();
+const PaginatedSubscriptionPlanList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(SubscriptionPlan),
+  })
   .passthrough();
 const SubscriptionPlanRequest = z
   .object({
@@ -2700,6 +3116,14 @@ const ContactUs = z
     phone: z.string().max(20),
     name: z.string().max(100),
     message: z.string().max(500),
+  })
+  .passthrough();
+const PaginatedContactUsList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ContactUs),
   })
   .passthrough();
 const ContactUsRequest = z
@@ -2758,6 +3182,14 @@ const Page = z
     translations: z.array(PageContent),
   })
   .passthrough();
+const PaginatedPageList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Page),
+  })
+  .passthrough();
 const PageContentRequest = z
   .object({
     language: LanguageEnum,
@@ -2804,11 +3236,12 @@ const PasswordResetBadRequest = z
   .object({ email: z.array(z.string()) })
   .partial()
   .passthrough();
-const Permission = z
+const PaginatedPermissionList = z
   .object({
-    id: z.number().int(),
-    code: z.string().max(100),
-    description: z.string().optional(),
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Permission),
   })
   .passthrough();
 const PermissionRequest = z
@@ -2820,29 +3253,6 @@ const PermissionRequest = z
 const PatchedPermissionRequest = z
   .object({ code: z.string().min(1).max(100), description: z.string() })
   .partial()
-  .passthrough();
-const Role = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(50),
-    permissions: z.array(Permission),
-  })
-  .passthrough();
-const User = z
-  .object({
-    id: z.number().int(),
-    username: z.string().min(5).max(50),
-    email: z.string().email(),
-    first_name: z.string().max(30),
-    last_name: z.string().max(30),
-    is_active: z.boolean().optional(),
-    is_staff: z.boolean().optional(),
-    role: Role,
-    is_deleted: z.boolean().optional(),
-    deleted_at: z.string().datetime({ offset: true }).nullable(),
-    phone: z.string().regex(/^\+?\d{7,15}$/),
-    client: z.number().int().nullable(),
-  })
   .passthrough();
 const Unauthorized = z.object({ error: z.string() }).passthrough();
 const RegisterRequest = z
@@ -2861,16 +3271,46 @@ const RegisterSuccessResponse = z
 const RolePermission = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     role: z.number().int(),
     permission: z.number().int(),
   })
   .passthrough();
+const PaginatedRolePermissionList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(RolePermission),
+  })
+  .passthrough();
 const RolePermissionRequest = z
-  .object({ role: z.number().int(), permission: z.number().int() })
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    role: z.number().int(),
+    permission: z.number().int(),
+  })
   .passthrough();
 const PatchedRolePermissionRequest = z
-  .object({ role: z.number().int(), permission: z.number().int() })
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    role: z.number().int(),
+    permission: z.number().int(),
+  })
   .partial()
+  .passthrough();
+const PaginatedRoleList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Role),
+  })
   .passthrough();
 const RoleRequest = z.object({ name: z.string().min(1).max(50) }).passthrough();
 const PatchedRoleRequest = z
@@ -2908,6 +3348,14 @@ const TenantSettings = z
     account_number: z.string().max(100).optional(),
     iban: z.string().max(100).optional(),
     swift_code: z.string().max(100).optional(),
+  })
+  .passthrough();
+const PaginatedTenantSettingsList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(TenantSettings),
   })
   .passthrough();
 const TenantSettingsRequest = z
@@ -2975,6 +3423,14 @@ const PatchedTenantSettingsRequest = z
 const RefreshTokenResponse = z
   .object({ msg: z.string(), access: z.string() })
   .passthrough();
+const PaginatedUserList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(User),
+  })
+  .passthrough();
 const UserRequest = z
   .object({
     username: z.string().min(5).max(50),
@@ -3020,173 +3476,223 @@ const PatchedUserRequest = z
 export const schemas = {
   AccountCurrencyEnum,
   Account,
+  PaginatedAccountList,
   AccountRequest,
   PatchedAccountRequest,
   TransactionTypeEnum,
   Category,
+  PaginatedCategoryList,
   CategoryRequest,
   PatchedCategoryRequest,
   FinancialPeriod,
+  PaginatedFinancialPeriodList,
   FinancialPeriodRequest,
   PatchedFinancialPeriodRequest,
   JournalEntry,
+  PaginatedJournalEntryList,
   JournalEntryRequest,
   PatchedJournalEntryRequest,
   IntervalEnum,
   RecurringTransaction,
+  PaginatedRecurringTransactionList,
   RecurringTransactionRequest,
   PatchedRecurringTransactionRequest,
   Tax,
+  PaginatedTaxList,
   TaxRequest,
   PatchedTaxRequest,
   Transaction,
+  PaginatedTransactionList,
   TransactionRequest,
   PatchedTransactionRequest,
   BranchUsers,
+  PaginatedBranchUsersList,
   BranchUsersRequest,
   PatchedBranchUsersRequest,
   BranchTypeEnum,
   Branch,
+  PaginatedBranchList,
   BranchRequest,
   PatchedBranchRequest,
   Campaign,
+  PaginatedCampaignList,
   CampaignRequest,
   PatchedCampaignRequest,
   ComplaintStatusEnum,
   Complaint,
+  PaginatedComplaintList,
   ComplaintRequest,
   PatchedComplaintRequest,
   Contact,
+  PaginatedContactList,
   ContactRequest,
   PatchedContactRequest,
   CustomerGroup,
+  PaginatedCustomerGroupList,
   CustomerGroupRequest,
   PatchedCustomerGroupRequest,
   CustomerTypeEnum,
   PreferredContactEnum,
   Customer,
+  PaginatedCustomerList,
   CustomerRequest,
   PatchedCustomerRequest,
   Document,
+  PaginatedDocumentList,
   DocumentRequest,
   PatchedDocumentRequest,
   InteractionTypeEnum,
   Interaction,
+  PaginatedInteractionList,
   InteractionRequest,
   PatchedInteractionRequest,
   StageEnum,
   Opportunity,
+  PaginatedOpportunityList,
   OpportunityRequest,
   PatchedOpportunityRequest,
   SubscriptionTypeEnum,
   Subscription,
+  PaginatedSubscriptionList,
   SubscriptionRequest,
   PatchedSubscriptionRequest,
   PriorityEnum,
   Task,
+  PaginatedTaskList,
   TaskRequest,
   PatchedTaskRequest,
   Attendance,
+  PaginatedAttendanceList,
   AttendanceRequest,
   PatchedAttendanceRequest,
   Department,
+  PaginatedDepartmentList,
   DepartmentRequest,
   PatchedDepartmentRequest,
   PositionEnum,
   Employee,
+  PaginatedEmployeeList,
   EmployeeRequest,
   PatchedEmployeeRequest,
   LeaveTypeEnum,
   LeaveStatusEnum,
   Leave,
+  PaginatedLeaveList,
   LeaveRequest,
   PatchedLeaveRequest,
   NotificationTypeEnum,
   Notification,
+  PaginatedNotificationList,
   NotificationRequest,
   PatchedNotificationRequest,
   Payroll,
+  PaginatedPayrollList,
   PayrollRequest,
   PatchedPayrollRequest,
   RatingEnum,
   PerformanceReview,
+  PaginatedPerformanceReviewList,
   PerformanceReviewRequest,
   PatchedPerformanceReviewRequest,
+  Permission,
+  Role,
+  User,
   SphericalEnum,
   BlankEnum,
   NullEnum,
   CylinderEnum,
   AdditionEnum,
   PrescriptionRecord,
+  PaginatedPrescriptionRecordList,
   PrescriptionRecordRequest,
   PatchedPrescriptionRecordRequest,
   ProductVariantAnswer,
+  PaginatedProductVariantAnswerList,
   ProductVariantAnswerRequest,
   PatchedProductVariantAnswerRequest,
   AttributeValue,
+  PaginatedAttributeValueList,
   AttributeValueRequest,
   PatchedAttributeValueRequest,
   Attributes,
+  PaginatedAttributesList,
   AttributesRequest,
   PatchedAttributesRequest,
   Brand,
+  PaginatedBrandList,
   BrandRequest,
   PatchedBrandRequest,
   FlexiblePrice,
+  PaginatedFlexiblePriceList,
   FlexiblePriceRequest,
   PatchedFlexiblePriceRequest,
   LensCoating,
+  PaginatedLensCoatingList,
   LensCoatingRequest,
   PatchedLensCoatingRequest,
   Manufacturer,
+  PaginatedManufacturerList,
   ManufacturerRequest,
   PatchedManufacturerRequest,
   GenderEnum,
   AgeGroupEnum,
   ProductVariantMarketing,
+  PaginatedProductVariantMarketingList,
   ProductVariantMarketingRequest,
   PatchedProductVariantMarketingRequest,
   ProductVariantOffer,
+  PaginatedProductVariantOfferList,
   ProductVariantOfferRequest,
   PatchedProductVariantOfferRequest,
   ProductImage,
+  PaginatedProductImageList,
   ProductImageRequest,
   PatchedProductImageRequest,
   Supplier,
   TypeEnum,
   ProductVariantList,
   Product,
+  PaginatedProductList,
   ProductRequest,
   PatchedProductRequest,
   ProductVariantQuestion,
+  PaginatedProductVariantQuestionList,
   ProductVariantQuestionRequest,
   PatchedProductVariantQuestionRequest,
   ProductVariantReview,
+  PaginatedProductVariantReviewList,
   ProductVariantReviewRequest,
   PatchedProductVariantReviewRequest,
   MovementTypeEnum,
   StockMovements,
+  PaginatedStockMovementsList,
   StockMovementsRequest,
   PatchedStockMovementsRequest,
   StockTransferItem,
+  PaginatedStockTransferItemList,
   StockTransferItemRequest,
   PatchedStockTransferItemRequest,
   StockTransferStatusEnum,
   StockTransfer,
+  PaginatedStockTransferList,
   StockTransferRequest,
   PatchedStockTransferRequest,
   Stocks,
+  PaginatedStocksList,
   StocksRequest,
   PatchedStocksRequest,
+  PaginatedSupplierList,
   SupplierRequest,
   PatchedSupplierRequest,
   ProductVariant,
+  PaginatedProductVariantList,
   ProductVariantRequest,
   PatchedProductVariantRequest,
   InvoiceItem,
   InvoiceTypeEnum,
   InvoiceStatusEnum,
   Invoice,
+  PaginatedInvoiceList,
   InvoiceItemRequest,
   InvoiceRequest,
   PatchedInvoiceRequest,
@@ -3196,24 +3702,30 @@ export const schemas = {
   PaymentStatusEnum,
   PaymentTypeEnum,
   Order,
+  PaginatedOrderList,
   OrderItemRequest,
   OrderRequest,
   PatchedOrderRequest,
   PaymentMethodEnum,
   Payment,
+  PaginatedPaymentList,
   PaymentRequest,
   PatchedPaymentRequest,
   SubscriptionPlanCurrencyEnum,
   SubscriptionPlan,
   Client,
+  PaginatedClientList,
   ClientRequest,
   PatchedClientRequest,
   RegisterTenant,
+  PaginatedRegisterTenantList,
   RegisterTenantRequest,
   PatchedRegisterTenantRequest,
+  PaginatedSubscriptionPlanList,
   SubscriptionPlanRequest,
   PatchedSubscriptionPlanRequest,
   ContactUs,
+  PaginatedContactUsList,
   ContactUsRequest,
   PatchedContactUsRequest,
   LoginRequest,
@@ -3226,28 +3738,31 @@ export const schemas = {
   LanguageEnum,
   PageContent,
   Page,
+  PaginatedPageList,
   PageContentRequest,
   PageRequest,
   PatchedPageRequest,
   PasswordResetSuccessResponse,
   PasswordResetBadRequest,
-  Permission,
+  PaginatedPermissionList,
   PermissionRequest,
   PatchedPermissionRequest,
-  Role,
-  User,
   Unauthorized,
   RegisterRequest,
   RegisterSuccessResponse,
   RolePermission,
+  PaginatedRolePermissionList,
   RolePermissionRequest,
   PatchedRolePermissionRequest,
+  PaginatedRoleList,
   RoleRequest,
   PatchedRoleRequest,
   TenantSettings,
+  PaginatedTenantSettingsList,
   TenantSettingsRequest,
   PatchedTenantSettingsRequest,
   RefreshTokenResponse,
+  PaginatedUserList,
   UserRequest,
   PatchedUserRequest,
 };
@@ -3258,7 +3773,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/accounts/",
     alias: "accounting_accounts_list",
     requestFormat: "json",
-    response: z.array(Account),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedAccountList,
   },
   {
     method: "post",
@@ -3345,7 +3867,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/categories/",
     alias: "accounting_categories_list",
     requestFormat: "json",
-    response: z.array(Category),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedCategoryList,
   },
   {
     method: "post",
@@ -3432,7 +3961,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_list",
     requestFormat: "json",
-    response: z.array(FinancialPeriod),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedFinancialPeriodList,
   },
   {
     method: "post",
@@ -3519,7 +4055,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_list",
     requestFormat: "json",
-    response: z.array(JournalEntry),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedJournalEntryList,
   },
   {
     method: "post",
@@ -3606,7 +4149,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/recurring-transactions/",
     alias: "accounting_recurring_transactions_list",
     requestFormat: "json",
-    response: z.array(RecurringTransaction),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedRecurringTransactionList,
   },
   {
     method: "post",
@@ -3693,7 +4243,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_list",
     requestFormat: "json",
-    response: z.array(Tax),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedTaxList,
   },
   {
     method: "post",
@@ -3780,7 +4337,14 @@ export const endpoints = makeApi([
     path: "/api/accounting/transactions/",
     alias: "accounting_transactions_list",
     requestFormat: "json",
-    response: z.array(Transaction),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedTransactionList,
   },
   {
     method: "post",
@@ -3867,7 +4431,14 @@ export const endpoints = makeApi([
     path: "/api/branches/branch-users/",
     alias: "branches_branch_users_list",
     requestFormat: "json",
-    response: z.array(BranchUsers),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedBranchUsersList,
   },
   {
     method: "post",
@@ -3954,7 +4525,14 @@ export const endpoints = makeApi([
     path: "/api/branches/branches/",
     alias: "branches_branches_list",
     requestFormat: "json",
-    response: z.array(Branch),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedBranchList,
   },
   {
     method: "post",
@@ -4048,7 +4626,14 @@ export const endpoints = makeApi([
     path: "/api/crm/campaigns/",
     alias: "crm_campaigns_list",
     requestFormat: "json",
-    response: z.array(Campaign),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedCampaignList,
   },
   {
     method: "post",
@@ -4135,7 +4720,14 @@ export const endpoints = makeApi([
     path: "/api/crm/complaints/",
     alias: "crm_complaints_list",
     requestFormat: "json",
-    response: z.array(Complaint),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedComplaintList,
   },
   {
     method: "post",
@@ -4222,7 +4814,14 @@ export const endpoints = makeApi([
     path: "/api/crm/contact-us/",
     alias: "crm_contact_us_list",
     requestFormat: "json",
-    response: z.array(Contact),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedContactList,
   },
   {
     method: "post",
@@ -4309,7 +4908,14 @@ export const endpoints = makeApi([
     path: "/api/crm/customer-groups/",
     alias: "crm_customer_groups_list",
     requestFormat: "json",
-    response: z.array(CustomerGroup),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedCustomerGroupList,
   },
   {
     method: "post",
@@ -4418,12 +5024,17 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
         name: "phone",
         type: "Query",
         schema: z.string().optional(),
       },
     ],
-    response: z.array(Customer),
+    response: PaginatedCustomerList,
   },
   {
     method: "post",
@@ -4510,7 +5121,14 @@ export const endpoints = makeApi([
     path: "/api/crm/documents/",
     alias: "crm_documents_list",
     requestFormat: "json",
-    response: z.array(Document),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedDocumentList,
   },
   {
     method: "post",
@@ -4597,7 +5215,14 @@ export const endpoints = makeApi([
     path: "/api/crm/interactions/",
     alias: "crm_interactions_list",
     requestFormat: "json",
-    response: z.array(Interaction),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedInteractionList,
   },
   {
     method: "post",
@@ -4684,7 +5309,14 @@ export const endpoints = makeApi([
     path: "/api/crm/opportunities/",
     alias: "crm_opportunities_list",
     requestFormat: "json",
-    response: z.array(Opportunity),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedOpportunityList,
   },
   {
     method: "post",
@@ -4771,7 +5403,14 @@ export const endpoints = makeApi([
     path: "/api/crm/subscriptions/",
     alias: "crm_subscriptions_list",
     requestFormat: "json",
-    response: z.array(Subscription),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedSubscriptionList,
   },
   {
     method: "post",
@@ -4858,7 +5497,14 @@ export const endpoints = makeApi([
     path: "/api/crm/tasks/",
     alias: "crm_tasks_list",
     requestFormat: "json",
-    response: z.array(Task),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedTaskList,
   },
   {
     method: "post",
@@ -4945,7 +5591,14 @@ export const endpoints = makeApi([
     path: "/api/hrm/attendances/",
     alias: "hrm_attendances_list",
     requestFormat: "json",
-    response: z.array(Attendance),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedAttendanceList,
   },
   {
     method: "post",
@@ -5048,8 +5701,13 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
-    response: z.array(Department),
+    response: PaginatedDepartmentList,
   },
   {
     method: "post",
@@ -5160,6 +5818,11 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
         name: "phone",
         type: "Query",
         schema: z.string().optional(),
@@ -5199,7 +5862,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
     ],
-    response: z.array(Employee),
+    response: PaginatedEmployeeList,
   },
   {
     method: "post",
@@ -5286,7 +5949,14 @@ export const endpoints = makeApi([
     path: "/api/hrm/leaves/",
     alias: "hrm_leaves_list",
     requestFormat: "json",
-    response: z.array(Leave),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedLeaveList,
   },
   {
     method: "post",
@@ -5373,7 +6043,14 @@ export const endpoints = makeApi([
     path: "/api/hrm/notifications/",
     alias: "hrm_notifications_list",
     requestFormat: "json",
-    response: z.array(Notification),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedNotificationList,
   },
   {
     method: "post",
@@ -5460,7 +6137,14 @@ export const endpoints = makeApi([
     path: "/api/hrm/payrolls/",
     alias: "hrm_payrolls_list",
     requestFormat: "json",
-    response: z.array(Payroll),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPayrollList,
   },
   {
     method: "post",
@@ -5547,7 +6231,14 @@ export const endpoints = makeApi([
     path: "/api/hrm/performance-reviews/",
     alias: "hrm_performance_reviews_list",
     requestFormat: "json",
-    response: z.array(PerformanceReview),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPerformanceReviewList,
   },
   {
     method: "post",
@@ -5634,7 +6325,14 @@ export const endpoints = makeApi([
     path: "/api/hrm/tasks/",
     alias: "hrm_tasks_list",
     requestFormat: "json",
-    response: z.array(Task),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedTaskList,
   },
   {
     method: "post",
@@ -5721,7 +6419,34 @@ export const endpoints = makeApi([
     path: "/api/prescriptions/prescription/",
     alias: "prescriptions_prescription_list",
     requestFormat: "json",
-    response: z.array(PrescriptionRecord),
+    parameters: [
+      {
+        name: "created_by__id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "created_by__username__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "customer__phone__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPrescriptionRecordList,
   },
   {
     method: "post",
@@ -5805,10 +6530,24 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/prescriptions/prescription/filter_options/",
+    alias: "prescriptions_prescription_filter_options_retrieve",
+    requestFormat: "json",
+    response: PrescriptionRecord,
+  },
+  {
+    method: "get",
     path: "/api/products/answers/",
     alias: "products_answers_list",
     requestFormat: "json",
-    response: z.array(ProductVariantAnswer),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductVariantAnswerList,
   },
   {
     method: "post",
@@ -5895,7 +6634,14 @@ export const endpoints = makeApi([
     path: "/api/products/attribute-values/",
     alias: "products_attribute_values_list",
     requestFormat: "json",
-    response: z.array(AttributeValue),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedAttributeValueList,
   },
   {
     method: "post",
@@ -5982,7 +6728,14 @@ export const endpoints = makeApi([
     path: "/api/products/attributes/",
     alias: "products_attributes_list",
     requestFormat: "json",
-    response: z.array(Attributes),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedAttributesList,
   },
   {
     method: "post",
@@ -6069,7 +6822,14 @@ export const endpoints = makeApi([
     path: "/api/products/brands/",
     alias: "products_brands_list",
     requestFormat: "json",
-    response: z.array(Brand),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedBrandList,
   },
   {
     method: "post",
@@ -6156,7 +6916,14 @@ export const endpoints = makeApi([
     path: "/api/products/categories/",
     alias: "products_categories_list",
     requestFormat: "json",
-    response: z.array(Category),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedCategoryList,
   },
   {
     method: "post",
@@ -6243,7 +7010,14 @@ export const endpoints = makeApi([
     path: "/api/products/flexible-prices/",
     alias: "products_flexible_prices_list",
     requestFormat: "json",
-    response: z.array(FlexiblePrice),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedFlexiblePriceList,
   },
   {
     method: "post",
@@ -6330,7 +7104,14 @@ export const endpoints = makeApi([
     path: "/api/products/lens-coatings/",
     alias: "products_lens_coatings_list",
     requestFormat: "json",
-    response: z.array(LensCoating),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedLensCoatingList,
   },
   {
     method: "post",
@@ -6417,7 +7198,14 @@ export const endpoints = makeApi([
     path: "/api/products/manufacturers/",
     alias: "products_manufacturers_list",
     requestFormat: "json",
-    response: z.array(Manufacturer),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedManufacturerList,
   },
   {
     method: "post",
@@ -6504,7 +7292,14 @@ export const endpoints = makeApi([
     path: "/api/products/marketing/",
     alias: "products_marketing_list",
     requestFormat: "json",
-    response: z.array(ProductVariantMarketing),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductVariantMarketingList,
   },
   {
     method: "post",
@@ -6591,7 +7386,14 @@ export const endpoints = makeApi([
     path: "/api/products/offers/",
     alias: "products_offers_list",
     requestFormat: "json",
-    response: z.array(ProductVariantOffer),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductVariantOfferList,
   },
   {
     method: "post",
@@ -6678,7 +7480,14 @@ export const endpoints = makeApi([
     path: "/api/products/product-images/",
     alias: "products_product_images_list",
     requestFormat: "json",
-    response: z.array(ProductImage),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductImageList,
   },
   {
     method: "post",
@@ -6765,7 +7574,14 @@ export const endpoints = makeApi([
     path: "/api/products/products/",
     alias: "products_products_list",
     requestFormat: "json",
-    response: z.array(Product),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductList,
   },
   {
     method: "post",
@@ -6852,7 +7668,14 @@ export const endpoints = makeApi([
     path: "/api/products/questions/",
     alias: "products_questions_list",
     requestFormat: "json",
-    response: z.array(ProductVariantQuestion),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductVariantQuestionList,
   },
   {
     method: "post",
@@ -6939,7 +7762,14 @@ export const endpoints = makeApi([
     path: "/api/products/reviews/",
     alias: "products_reviews_list",
     requestFormat: "json",
-    response: z.array(ProductVariantReview),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductVariantReviewList,
   },
   {
     method: "post",
@@ -7026,7 +7856,14 @@ export const endpoints = makeApi([
     path: "/api/products/stock-movements/",
     alias: "products_stock_movements_list",
     requestFormat: "json",
-    response: z.array(StockMovements),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockMovementsList,
   },
   {
     method: "post",
@@ -7113,7 +7950,14 @@ export const endpoints = makeApi([
     path: "/api/products/stock-transfer-items/",
     alias: "products_stock_transfer_items_list",
     requestFormat: "json",
-    response: z.array(StockTransferItem),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferItemList,
   },
   {
     method: "post",
@@ -7200,7 +8044,14 @@ export const endpoints = makeApi([
     path: "/api/products/stock-transfers/",
     alias: "products_stock_transfers_list",
     requestFormat: "json",
-    response: z.array(StockTransfer),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
   },
   {
     method: "post",
@@ -7287,7 +8138,14 @@ export const endpoints = makeApi([
     path: "/api/products/stocks/",
     alias: "products_stocks_list",
     requestFormat: "json",
-    response: z.array(Stocks),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStocksList,
   },
   {
     method: "post",
@@ -7374,7 +8232,14 @@ export const endpoints = makeApi([
     path: "/api/products/suppliers/",
     alias: "products_suppliers_list",
     requestFormat: "json",
-    response: z.array(Supplier),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedSupplierList,
   },
   {
     method: "post",
@@ -7461,7 +8326,14 @@ export const endpoints = makeApi([
     path: "/api/products/variants/",
     alias: "products_variants_list",
     requestFormat: "json",
-    response: z.array(ProductVariant),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedProductVariantList,
   },
   {
     method: "post",
@@ -7548,7 +8420,14 @@ export const endpoints = makeApi([
     path: "/api/sales/invoices/",
     alias: "sales_invoices_list",
     requestFormat: "json",
-    response: z.array(Invoice),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedInvoiceList,
   },
   {
     method: "post",
@@ -7680,7 +8559,14 @@ export const endpoints = makeApi([
     path: "/api/sales/orders/",
     alias: "sales_orders_list",
     requestFormat: "json",
-    response: z.array(Order),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedOrderList,
   },
   {
     method: "post",
@@ -7831,7 +8717,14 @@ export const endpoints = makeApi([
     path: "/api/sales/payments/",
     alias: "sales_payments_list",
     requestFormat: "json",
-    response: z.array(Payment),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPaymentList,
   },
   {
     method: "post",
@@ -7926,7 +8819,14 @@ export const endpoints = makeApi([
     path: "/api/tenants/clients/",
     alias: "tenants_clients_list",
     requestFormat: "json",
-    response: z.array(Client),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedClientList,
   },
   {
     method: "post",
@@ -8051,16 +8951,30 @@ export const endpoints = makeApi([
     response: z.void(),
   },
   {
-    method: "get",
-    path: "/api/tenants/register/",
-    alias: "tenants_register_list",
-    requestFormat: "json",
-    response: z.array(RegisterTenant),
-  },
-  {
     method: "post",
     path: "/api/tenants/register/",
     alias: "tenants_register_create",
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/registers/",
+    alias: "tenants_registers_list",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedRegisterTenantList,
+  },
+  {
+    method: "post",
+    path: "/api/tenants/registers/",
+    alias: "tenants_registers_create",
     requestFormat: "json",
     parameters: [
       {
@@ -8073,8 +8987,8 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/tenants/register/:id/",
-    alias: "tenants_register_retrieve",
+    path: "/api/tenants/registers/:id/",
+    alias: "tenants_registers_retrieve",
     requestFormat: "json",
     parameters: [
       {
@@ -8087,8 +9001,8 @@ export const endpoints = makeApi([
   },
   {
     method: "put",
-    path: "/api/tenants/register/:id/",
-    alias: "tenants_register_update",
+    path: "/api/tenants/registers/:id/",
+    alias: "tenants_registers_update",
     requestFormat: "json",
     parameters: [
       {
@@ -8106,8 +9020,8 @@ export const endpoints = makeApi([
   },
   {
     method: "patch",
-    path: "/api/tenants/register/:id/",
-    alias: "tenants_register_partial_update",
+    path: "/api/tenants/registers/:id/",
+    alias: "tenants_registers_partial_update",
     requestFormat: "json",
     parameters: [
       {
@@ -8125,8 +9039,8 @@ export const endpoints = makeApi([
   },
   {
     method: "delete",
-    path: "/api/tenants/register/:id/",
-    alias: "tenants_register_destroy",
+    path: "/api/tenants/registers/:id/",
+    alias: "tenants_registers_destroy",
     requestFormat: "json",
     parameters: [
       {
@@ -8142,7 +9056,14 @@ export const endpoints = makeApi([
     path: "/api/tenants/subscription-plans/",
     alias: "tenants_subscription_plans_list",
     requestFormat: "json",
-    response: z.array(SubscriptionPlan),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedSubscriptionPlanList,
   },
   {
     method: "post",
@@ -8229,7 +9150,14 @@ export const endpoints = makeApi([
     path: "/api/users/contact-us/",
     alias: "users_contact_us_list",
     requestFormat: "json",
-    response: z.array(ContactUs),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedContactUsList,
   },
   {
     method: "post",
@@ -8362,7 +9290,14 @@ export const endpoints = makeApi([
     path: "/api/users/pages/",
     alias: "users_pages_list",
     requestFormat: "json",
-    response: z.array(Page),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPageList,
   },
   {
     method: "post",
@@ -8477,7 +9412,14 @@ export const endpoints = makeApi([
     path: "/api/users/permissions/",
     alias: "users_permissions_list",
     requestFormat: "json",
-    response: z.array(Permission),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPermissionList,
   },
   {
     method: "post",
@@ -8579,7 +9521,14 @@ export const endpoints = makeApi([
     alias: "users_public_pages_list",
     description: `For public pages only`,
     requestFormat: "json",
-    response: z.array(Page),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPageList,
   },
   {
     method: "get",
@@ -8616,7 +9565,14 @@ export const endpoints = makeApi([
     path: "/api/users/role-permissions/",
     alias: "users_role_permissions_list",
     requestFormat: "json",
-    response: z.array(RolePermission),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedRolePermissionList,
   },
   {
     method: "post",
@@ -8703,7 +9659,14 @@ export const endpoints = makeApi([
     path: "/api/users/roles/",
     alias: "users_roles_list",
     requestFormat: "json",
-    response: z.array(Role),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedRoleList,
   },
   {
     method: "post",
@@ -8793,7 +9756,14 @@ export const endpoints = makeApi([
     path: "/api/users/tenant-settings/",
     alias: "users_tenant_settings_list",
     requestFormat: "json",
-    response: z.array(TenantSettings),
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedTenantSettingsList,
   },
   {
     method: "post",
@@ -8900,6 +9870,11 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
         name: "phone",
         type: "Query",
         schema: z.string().optional(),
@@ -8915,7 +9890,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
     ],
-    response: z.array(User),
+    response: PaginatedUserList,
   },
   {
     method: "post",
@@ -8996,6 +9971,13 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/users/users/filter_options/",
+    alias: "users_users_filter_options_retrieve",
+    requestFormat: "json",
+    response: User,
   },
 ]);
 

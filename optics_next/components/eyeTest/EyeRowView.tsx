@@ -1,3 +1,6 @@
+import React from "react";
+import { EyeTestLabel } from "./eyeTestLabel";
+
 const EyeRowView: React.FC<{ side: "right" | "left"; data: any }> = ({ side, data }) => {
     const prefix = side === "right" ? "R" : "L";
     return (
@@ -5,12 +8,14 @@ const EyeRowView: React.FC<{ side: "right" | "left"; data: any }> = ({ side, dat
         <div className="flex items-center">
           <h3 className="text-lg font-semibold">{prefix}</h3>
         </div>
-        <div>{data[`${side}_sphere`] ?? "-"}</div>
-        <div>{data[`${side}_cylinder`] ?? "-"}</div>
-        <div>{data[`${side}_axis`] ?? "-"}</div>
-        <div>{data[`${side}_reading_add`] ?? "-"}</div>
+
+        <div><p className="input-text" >{data[`${side}_sphere`] ?? "-"} </p></div>
+        <div><p className="input-text" >{data[`${side}_cylinder`] ?? "-"} </p> </div>
+        <div> <p className="input-text" >{data[`${side}_axis`] ?? "-"} </p> </div>
+        <div><p className="input-text" >{data[`${side}_reading_add`] ?? "-"} </p> </div>
+
       </div>
     );
   };
 
-  export default EyeRowView;
+  export default EyeRowView;  

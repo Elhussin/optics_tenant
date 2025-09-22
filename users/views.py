@@ -281,9 +281,28 @@ class RoleViewSet(viewsets.ModelViewSet):
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated]
 
+# class UserViewSet(viewsets.ModelViewSet):
+#     # is_deleted=False
+#     queryset = User.objects.filter()
+#     serializer_class = UserSerializer
+#     filter_backends = [DjangoFilterBackend]
+#     filterset_class = UserFilter
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         user = self.request.user
+#         if user.is_superuser:
+#             return User.objects.all()
+#         return User.objects.filter(id=user.id)
+
+
+
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 class UserViewSet(viewsets.ModelViewSet):
-    # is_deleted=False
-    queryset = User.objects.filter()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = UserFilter
@@ -294,6 +313,23 @@ class UserViewSet(viewsets.ModelViewSet):
         if user.is_superuser:
             return User.objects.all()
         return User.objects.filter(id=user.id)
+
+
+    @action(detail=False, methods=["get"])
+    def filter_options(self, request):
+        roles = User.objects.values_list('role', flat=True).distinct()
+        emails = User.objects.values_list('email', flat=True).distinct()
+        phones = User.objects.values_list('phone', flat=True).distinct()
+        usernames = User.objects.values_list('username', flat=True).distinct()
+
+        return Response({
+            "roles": list(filter(None, roles)),
+            "emails": list(filter(None, emails)),
+            "phones": list(filter(None, phones)),
+            "usernames": list(filter(None, usernames)),
+        })
+
+
 
 class ContactUsViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]

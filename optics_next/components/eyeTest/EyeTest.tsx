@@ -117,7 +117,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
         </div>
 
         {/* Notes + Customer */}
-        <OtherEyeTestFailed {...{ register, customers, setShowModal, errors }} />
+        <OtherEyeTestFailed {...{ register, customers, setShowModal, errors, isView }} />
 
         <div className="flex gap-3 pt-4">
           <ActionButton

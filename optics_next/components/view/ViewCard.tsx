@@ -21,11 +21,12 @@ export default function ViewCard({ entity }: { entity: string }) {
 
   
   const {data,isLoading} = useFilteredListRequest(form.listAlias);
+
   const SearchFields = generateSearchFieldsFromEndpoint(form.listAlias);
   
   if (!form) return <NotFound error={t('errorGetFormData')} />;
   if (isLoading || !data ) return <Loading4 />;
-
+  console.log("data", data);
   return (
     <>
       <SearchFilterForm fields={SearchFields} />
@@ -37,7 +38,7 @@ export default function ViewCard({ entity }: { entity: string }) {
         </div>
       </div>
       <div className="card-continear">
-      {data?.map((item: any) => (
+      {data.results?.map((item: any) => (
         <div key={item.id} className="card">
           {form.fields?.map((field) => {
             const value = item[field];

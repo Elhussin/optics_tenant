@@ -27,7 +27,7 @@ export function useFilteredListRequest(alias: string) {
     refetch();
   }, [query]); // 👈 بس query مش refetch
   
-
+  console.log("data", data);
   return {
     data,
     refetch,

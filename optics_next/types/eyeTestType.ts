@@ -33,4 +33,5 @@ export interface OtherFailedProps{
    customers:Record<string,any>[];
    setShowModal:(value:boolean)=>void;
    errors:any;
+   isView?:boolean;
  }
