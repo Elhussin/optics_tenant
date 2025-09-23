@@ -8,7 +8,6 @@ import { defaultConfig, ignoredFields } from '../../config/dataConfig';
 import { RenderField } from './renderField';
 import { cn } from '@/utils/cn';
 import { CirclePlus, RefreshCw,ArrowLeft } from 'lucide-react';
-import { useIsIframe } from '@/lib/hooks/useIsIframe';
 import { useFormRequest } from '@/lib/hooks/useFormRequest';
 import { formsConfig } from '@/config/formsConfig';
 import { useMemo } from 'react';
@@ -18,7 +17,7 @@ import { ActionButton } from '../ui/buttons';
 import { useRouter } from '@/app/i18n/navigation';
 
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
-  const isIframe = useIsIframe();
+  // const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues,] = useState<any>(null);
   const router = useRouter();
 
@@ -157,14 +156,14 @@ const visibleFields = config.fieldOrder || allFields;
             icon={<CirclePlus size={16} />}
           />
 
-          {!isIframe && config.includeResetButton && showResetButton && (
+          {/* {!isIframe && config.includeResetButton && showResetButton && (
             <ActionButton
               onClick={() => formRequest.reset()}
               label={t('reset')}
               icon={<RefreshCw size={16} />}
               variant="outline"
             />
-          )}
+          )} */}
 
         </div>
 

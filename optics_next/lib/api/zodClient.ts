@@ -6461,6 +6461,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedPrescriptionRecordList,
   },

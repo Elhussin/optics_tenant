@@ -64,14 +64,3 @@ export const OtherEyeTestFailed = (props: OtherFailedProps) => {
   )
 }
 
-
-
-// {Object.keys(errors).length > 0 && (
-//   <div className="mt-2">
-//     {Object.values(errors).map((error) => (
-//       <p key={error.message} className="text-red-500">
-//         {error.message}
-//       </p>
-//     ))}
-//   </div>
-// )}

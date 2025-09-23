@@ -8,6 +8,7 @@ export interface FormConfig {
   createErrorMessage?: string;
   updateSuccessMessage?: string;
   updateErrorMessage?: string;
+  filterAlias?: string;
   title?: string;
   detailsTitle?: string;
   createTitle?: string;
@@ -29,6 +30,7 @@ export const formsConfig: Record<string, FormConfig> = {
     createAlias: 'tenants_register_create',
     retrieveAlias: 'tenants_clients_retrieve',
     updateAlias: 'tenants_clients_partial_update',
+    filterAlias: "tenants_clients_filter_options_retrieve",
     hardDeleteAlias: 'tenants_clients_destroy',
     fields:["name","max_branches","max_users"],
     detailsField:[ "name","max_branches","max_users","website","is_active","paid_until", ],

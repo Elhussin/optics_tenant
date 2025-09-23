@@ -1,91 +1,204 @@
-'use client';
+// "use client";
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { SearchField } from '@/types/search';
-import { useState } from 'react';
-import { ActionButton } from '@/components/ui/buttons';
+// import { useState } from "react";
+// import { ActionButton } from "@/components/ui/buttons/";
+
+// interface Props {
+//   fields: any[];
+//   setFilters: (filters: Record<string, string>) => void;
+// }
+
+// export const SearchFilterForm = ({ fields, setFilters }: Props) => {
+//   const [form, setForm] = useState<Record<string, string>>({});
+//   const [resetKey, setResetKey] = useState<number>(0);
+
+//   const handleChange = (name: string, value: string) => {
+//     setForm((prev) => ({ ...prev, [name]: value }));
+//   };
+
+//   const handleSubmit = (e: React.FormEvent) => {
+//     e.preventDefault();
+//     console.log("form",form)
+//     setFilters(form);
+//   };
+
+//   const handleClear = () => {
+//     setForm({});
+//     setResetKey((k) => k + 1);
+//     setFilters({});
+//   };
+
+//   return (
+//     <form
+//       key={resetKey}
+//       className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 m-5"
+//       onSubmit={handleSubmit}
+//     >
+//       <div className="flex items-center col-span-full">
+//         <label className="block text-sm font-medium mr-2 w-24">Search</label>
+//         <input
+//           type="text"
+//           className="w-full border p-2 rounded"
+//           onChange={(e) => handleChange("search", e.target.value)} // 👈 param اسمه search
+//           value={form["search"] || ""}
+//         />
+//       </div>
+
+//       {fields.map((field) => (
+//         <div key={field.name} className="flex items-center">
+//           <label className="block text-sm font-medium mr-2 capitalize w-24">
+//             {field.label}
+//           </label>
+//           {field.type === "select" && field.options ? (
+//             <select
+//               className="w-full border p-2 rounded"
+//               onChange={(e) => handleChange(field.name, e.target.value)}
+//               value={form[field.name] || ""}
+//               // value={field.name.includes("id") ? form[field.name] : `${form[field.name]}__icontains` || ""}
+//             >
+//               <option value="">ALL</option>
+//               {field.options.map((opt: any) => (
+//                 <option key={`${opt.value}_`} value={opt.value}>
+//                   {opt.label}
+//                 </option>
+//               ))}
+//             </select>
+//           ) : (
+//             <input
+//               type="text"
+//               className="w-full border p-2 rounded"
+//               onChange={(e) => handleChange(field.name, e.target.value)}
+//               value={form[field.name] || ""}
+//             />
+//           )}
+//         </div>
+//       ))}
+
+//       <div className="flex flex-row justify-end">
+//         <ActionButton
+//           label="Search"
+//           type="submit"
+//           className="col-span-full bg-blue-600 text-white py-2 rounded"
+//         />
+//         <ActionButton
+//           label="Clear"
+//           type="button"
+//           variant="secondary"
+//           className="ml-2 col-span-full"
+//           onClick={handleClear}
+//         />
+//       </div>
+//     </form>
+//   );
+// };
+"use client";
+
+import { useState } from "react";
+import { ActionButton } from "@/components/ui/buttons/";
+
 interface Props {
-  fields: SearchField[];
-  actionPath?: string; // يمكن تمرير مسار مخصص (افتراضي '')
-  setFilters?: (filters: Record<string, string>) => void;
+  fields: any[];
+  setFilters: (filters: Record<string, string>) => void;
 }
 
-
-export const SearchFilterForm = ({ fields, actionPath = '' ,setFilters}: Props) => {
-  const router = useRouter();
+export const SearchFilterForm = ({ fields, setFilters }: Props) => {
   const [form, setForm] = useState<Record<string, string>>({});
   const [resetKey, setResetKey] = useState<number>(0);
 
   const handleChange = (name: string, value: string) => {
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    for (const key in form) {
-      if (form[key]) params.set(key, form[key]);
-    }
 
-    router.push(`${actionPath}?${params.toString()}`);
-    if(setFilters){
-      setFilters(form);
-    }
+    // ✅ تجهيز الفلاتر مع مراعاة __icontains
+    const filters: Record<string, string> = {};
+
+    Object.entries(form).forEach(([key, value]) => {
+      if (!value) return; // تجاهل الفارغ
+
+      if (key.includes("id")) {
+        filters[key] = value; // لو الحقل فيه id نرسله زي ما هو
+      } else if (key === "search") {
+        filters[key] = value; // الحقل الرئيسي للبحث
+      } else {
+        filters[`${key}__icontains`] = value; // باقي الحقول __icontains
+      }
+    });
+
+    console.log("filters sent:", filters);
+    setFilters(filters);
   };
 
   const handleClear = () => {
     setForm({});
     setResetKey((k) => k + 1);
-    router.replace(actionPath + '?');
+    setFilters({});
   };
 
   return (
-    <div>
-      <form key={resetKey} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 m-5" onSubmit={handleSubmit}>
+    <form
+      key={resetKey}
+      className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 m-5"
+      onSubmit={handleSubmit}
+    >
+      <div className="flex items-center col-span-full">
+        <label className="block text-sm font-medium mr-2 w-24">Search</label>
+        <input
+          type="text"
+          className="w-full border p-2 rounded"
+          onChange={(e) => handleChange("search", e.target.value)}
+          value={form["search"] || ""}
+        />
+      </div>
 
-        {fields.map((field) => (
-          <div key={field.name} className="flex items-center">
-            <label className="block text-sm font-medium mr-2 capitalize w-24">{field.label}</label>
-            {field.type === 'select' && field.options ? (
-              <select
-                className="w-full border p-2 rounded"
-                onChange={(e) => handleChange(field.name, e.target.value)}
-                defaultValue={''}
-              >
-                <option value="">ALL</option>
-                {field.options.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            ) : (
-              <input
-                type="text"
-                className="w-full  border p-2 rounded"
-                onChange={(e) => handleChange(field.name, e.target.value)}
-              />
-            )}
-          </div>
-        ))}
-        <div className="flex flex-row  justify-end">
-
-          <ActionButton
-            label="Search"
-            type="submit"
-            className="col-span-full bg-blue-600 text-white py-2 rounded"
-          />
-          <ActionButton
-            label="Clear"
-            type="button"
-            variant="secondary"
-            className="ml-2 col-span-full"
-            onClick={handleClear}
-          />
+      {fields.map((field) => (
+        <div key={field.name} className="flex items-center">
+          <label className="block text-sm font-medium mr-2 capitalize w-24">
+            {field.label}
+          </label>
+          {field.type === "select" && field.options ? (
+            <select
+              className="w-full border p-2 rounded"
+              onChange={(e) => handleChange(field.name, e.target.value)}
+              value={form[field.name] || ""}
+            >
+              <option value="">ALL</option>
+              {field.options.map((opt: any) => (
+                <option key={`${opt.value}_`} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type="text"
+              className="w-full border p-2 rounded"
+              onChange={(e) => handleChange(field.name, e.target.value)}
+              value={form[field.name] || ""}
+            />
+          )}
         </div>
+      ))}
 
-
-      </form>
-    </div>
+      <div className="flex flex-row justify-end">
+        <ActionButton
+          label="Search"
+          type="submit"
+          className="col-span-full bg-blue-600 text-white py-2 rounded"
+        />
+        <ActionButton
+          label="Clear"
+          type="button"
+          variant="secondary"
+          className="ml-2 col-span-full"
+          onClick={handleClear}
+        />
+      </div>
+    </form>
   );
 };

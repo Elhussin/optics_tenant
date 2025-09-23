@@ -3,13 +3,11 @@ import EyeRowView from "./EyeRowView";
 
 import { EyeTestLabel } from "./eyeTestLabel";
 import { ActionButton } from "@/components/ui/buttons";
-import { generateSearchFieldsFromEndpoint } from "@/utils/generateSearchFields";
 import { Loading4 } from "@/components/ui/loding";
 import { Pagination } from "@/components/view/Pagination";
-import { SearchFilterForm } from "./SearchFilterForm";
-import { useListRequest } from "@/lib/hooks/useListRequest";
+import { SearchFilterForm } from "../Search/SearchFilterForm";
+import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
 import { useSearchFieldsFromOptions } from "@/lib/hooks/useSearchFieldsFromOptions";
-import { mergeSearchFields } from "./mergeSearchFields"
 
 
 const serachLabel = {
@@ -21,24 +19,15 @@ const serachLabel = {
 
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {
     const alias = id ? "prescriptions_prescription_retrieve" : "prescriptions_prescription_list";
-    const { data, count, page, setPage, setFilters, isLoading } = useListRequest(alias);
-    console.log("data",data)
+    const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest(alias);
+    const { fields, isLoading: isFieldsLoading, errors} = useSearchFieldsFromOptions( "prescriptions_prescription_filter_options_retrieve"  );
     const totalPages = Math.ceil(count / 10);
-
-    // const { fields, isLoading: isFieldsLoading } = mergeSearchFields(alias, serachLabel);
-    const { fields, isFieldsLoading } = mergeSearchFields({listAlias:alias,filterAlias: "prescriptions_prescription_filter_options_retrieve", labels: serachLabel});
-
-    // const { fields, isLoading: isFieldsLoading } = useSearchFieldsFromOptions("prescriptions_prescription_filter_options_retrieve");
-    console.log("fields",fields)
-    // const SearchFields = generateSearchFieldsFromEndpoint(alias, serachLabel);
-    // console.log("SearchFields",SearchFields)
-
     if (isLoading||isFieldsLoading) return <Loading4 />
 
     return (
         <div>
+
             <SearchFilterForm fields={fields} setFilters={setFilters} />
-            {/* <SearchFilterForm fields={SearchFields} setFilters={setFilters} /> */}
             <h2 className="text-lg font-semibold mt-2 border-b border-gray-200 pb-2">{title}</h2>
             <div className="grid grid-cols-1  gap-2">
                 {data && data.length > 0 && (

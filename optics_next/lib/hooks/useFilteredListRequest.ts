@@ -1,37 +1,71 @@
-'use client';
-import { useFormRequest } from '@/lib/hooks/useFormRequest';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState,useCallback } from 'react';
 
-export function useFilteredListRequest(alias: string) {
+
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useFormRequest } from "@/lib/hooks/useFormRequest";
+
+export function useFilteredListRequest(alias: string, defaultPage = 1) {
   const searchParams = useSearchParams();
-  const [data, setData] = useState<any>([]);
+  const router = useRouter();
 
-  const fetchData = useFormRequest({
-    alias,
-    onSuccess: (res: any) => {
-      setData(res);
-    },
-  });
+  const [data, setData] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<any>(null);
 
-  const refetch = useCallback(() => {
-    const paramsObj: Record<string, any> = {};
+  const dataRequest = useFormRequest({ alias });
+
+  // ✨ حوّل searchParams ل object
+  const paramsObj = useMemo(() => {
+    const obj: Record<string, any> = {};
     searchParams.forEach((value, key) => {
-      paramsObj[key] = value;
+      obj[key] = value;
     });
-    fetchData.submitForm(paramsObj);
-  }, [fetchData]); // 👈 شيل searchParams
-  
-  const query = searchParams.toString(); // 👈 عشان dependency تبقى ثابتة
+    return obj;
+  }, [searchParams]);
+
+  const page = parseInt(paramsObj.page || defaultPage, 10);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setErrors(null);
+
+      const res = await dataRequest.submitForm(paramsObj);
+
+      setData(res.data.results || []);
+      setCount(res.data.count || 0);
+    } catch (err: any) {
+      setErrors(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [alias, JSON.stringify(paramsObj)]);
+
   useEffect(() => {
-    refetch();
-  }, [query]); // 👈 بس query مش refetch
-  
-  console.log("data", data);
+    fetchData();
+  }, [fetchData]);
+
+  // ✨ setter للفلاتر
+  const setFilters = (filters: Record<string, string>) => {
+    const params = new URLSearchParams({ ...filters, page: "1" });
+    router.push(`?${params.toString()}`);
+  };
+
+
+  // ✨ setter للصفحة
+  const setPage = (newPage: number) => {
+    const params = new URLSearchParams({ ...paramsObj, page: String(newPage) });
+    router.push(`?${params.toString()}`);
+  };
+
   return {
     data,
-    refetch,
-    isLoading: fetchData.isSubmitting,
-    errors: fetchData.errors,
+    count,
+    page,
+    isLoading,
+    errors,
+    setFilters,
+    setPage,
   };
 }

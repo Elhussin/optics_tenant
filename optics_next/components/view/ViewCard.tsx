@@ -2,8 +2,6 @@
 
 "use client";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
-import { formatLabel } from "@/utils/cardViewHelper";
-import { generateSearchFieldsFromEndpoint } from "@/utils/generateSearchFields";
 import { SearchFilterForm } from "@/components/Search/SearchFilterForm";
 import { formsConfig } from "@/config/formsConfig";
 import { ActionButton } from "@/components/ui/buttons";
@@ -12,24 +10,27 @@ import { NotFound } from '@/components/NotFound';
 import { Loading4 } from "@/components/ui/loding";
 import {useTranslations} from 'next-intl';
 import {formatRelatedValue} from "@/utils/formatRelatedValue";
-
+import { useSearchFieldsFromOptions } from "@/lib/hooks/useSearchFieldsFromOptions";
+import { Pagination } from "@/components/view/Pagination";
 export default function ViewCard({ entity }: { entity: string }) {
 
   const form = formsConfig[entity];
   const t = useTranslations('viewCard');
   const t2 = useTranslations(entity);
 
-  
-  const {data,isLoading} = useFilteredListRequest(form.listAlias);
+  const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest(form.listAlias||"");
+  const { fields, isLoading: isFieldsLoading, errors} = useSearchFieldsFromOptions(form.filterAlias||"");
+  const totalPages = Math.ceil(count / 10);
+  if (isLoading||isFieldsLoading) return <Loading4 />
 
-  const SearchFields = generateSearchFieldsFromEndpoint(form.listAlias);
+ 
   
   if (!form) return <NotFound error={t('errorGetFormData')} />;
   if (isLoading || !data ) return <Loading4 />;
   console.log("data", data);
   return (
     <>
-      <SearchFilterForm fields={SearchFields} />
+      <SearchFilterForm fields={fields} setFilters={setFilters} />
       <div className="head">
         <h2 className="title-1">{t2("title")}</h2>
         <div className="flex justify-end gap-1">
@@ -38,7 +39,7 @@ export default function ViewCard({ entity }: { entity: string }) {
         </div>
       </div>
       <div className="card-continear">
-      {data.results?.map((item: any) => (
+      {data?.map((item: any) => (
         <div key={item.id} className="card">
           {form.fields?.map((field) => {
             const value = item[field];
@@ -55,7 +56,7 @@ export default function ViewCard({ entity }: { entity: string }) {
           </div>
         </div>
       ))}
-
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       </div>
     </>
   );
