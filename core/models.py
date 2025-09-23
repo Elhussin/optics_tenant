@@ -18,5 +18,8 @@ class BaseModel(models.Model):
     #     self.is_deleted = True
     #     self.save()
 
+#  GET /en/prescription?customer__email=dd%40mail.com&page=1 200 in 105ms
+#  GET /en/prescription?customer__email__icontains=dd%40&page=1 200 in 89ms
+#  GET /en/prescription?customer__phone=111111111&page=1 200 in 104ms
     # def __str__(self):
     #     return f"{self.__class__.__name__} #{self.pk}"

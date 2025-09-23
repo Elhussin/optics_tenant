@@ -1528,7 +1528,6 @@ const AdditionEnum = z.enum([
 const PrescriptionRecord = z
   .object({
     id: z.number().int(),
-    customer: Customer,
     created_by: User,
     customer_name: z.string(),
     created_by_username: z.string(),
@@ -1553,6 +1552,7 @@ const PrescriptionRecord = z
     vertical_distance_right: z.string().max(20).nullish(),
     vertical_distance_left: z.string().max(20).nullish(),
     notes: z.string().nullish(),
+    customer: z.number().int(),
   })
   .passthrough();
 const PaginatedPrescriptionRecordList = z
@@ -1565,27 +1565,27 @@ const PaginatedPrescriptionRecordList = z
   .passthrough();
 const PrescriptionRecordRequest = z
   .object({
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    right_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
-    right_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
-    right_axis: z.number().gte(0).lte(180).nullable(),
-    left_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
-    left_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
-    left_axis: z.number().gte(0).lte(180).nullable(),
-    right_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
-    left_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
-    right_pupillary_distance: z.number().nullable(),
-    left_pupillary_distance: z.number().nullable(),
-    sigmant_right: z.string().max(20).nullable(),
-    sigmant_left: z.string().max(20).nullable(),
-    a_v_right: z.string().max(20).nullable(),
-    a_v_left: z.string().max(20).nullable(),
-    vertical_distance_right: z.string().max(20).nullable(),
-    vertical_distance_left: z.string().max(20).nullable(),
-    notes: z.string().nullable(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    right_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
+    right_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
+    right_axis: z.number().gte(0).lte(180).nullish(),
+    left_sphere: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
+    left_cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
+    left_axis: z.number().gte(0).lte(180).nullish(),
+    right_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
+    left_reading_add: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
+    right_pupillary_distance: z.number().nullish(),
+    left_pupillary_distance: z.number().nullish(),
+    sigmant_right: z.string().max(20).nullish(),
+    sigmant_left: z.string().max(20).nullish(),
+    a_v_right: z.string().max(20).nullish(),
+    a_v_left: z.string().max(20).nullish(),
+    vertical_distance_right: z.string().max(20).nullish(),
+    vertical_distance_left: z.string().max(20).nullish(),
+    notes: z.string().nullish(),
+    customer: z.number().int(),
   })
-  .partial()
   .passthrough();
 const PatchedPrescriptionRecordRequest = z
   .object({
@@ -1608,6 +1608,7 @@ const PatchedPrescriptionRecordRequest = z
     vertical_distance_right: z.string().max(20).nullable(),
     vertical_distance_left: z.string().max(20).nullable(),
     notes: z.string().nullable(),
+    customer: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -6431,9 +6432,24 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "customer__email__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "customer__id",
         type: "Query",
         schema: z.number().int().optional(),
+      },
+      {
+        name: "customer__last_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
       },
       {
         name: "customer__phone__icontains",

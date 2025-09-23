@@ -1,54 +1,58 @@
 from rest_framework.viewsets import ModelViewSet
-from .models import PrescriptionRecord
-from .serializers import PrescriptionRecordSerializer
-
-from core.permissions.decorators import permission_required,role_required
-from django.utils.decorators import method_decorator
-from django_filters.rest_framework import DjangoFilterBackend
-from .filters import PrescriptionRecordFilter
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from rest_framework.permissions import IsAuthenticated
-# @method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER','owner']), name='dispatch')
-# @method_decorator(permission_required(['create_prescription','__all__']), name='dispatch')
+from rest_framework.request import Request
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .models import PrescriptionRecord
+from .serializers import PrescriptionRecordSerializer
+from core.utils.filters_utils import FilterOptionsGenerator, create_filterset_class
+
+# تعريف الحقول للفلاتر
+filter_fields = {
+    "customer__id": ["exact"],
+    "customer__phone": ["icontains"],
+    "customer__email": ["icontains"],  # ← أضف الحقل الديناميكي هنا
+    "customer__first_name": ["icontains"],
+    "customer__last_name": ["icontains"],
+    "created_by__username": ["icontains"],
+    "created_by__id": ["exact"],
+}
+PrescriptionRecordFilter = create_filterset_class(PrescriptionRecord, filter_fields)
+
+# إنشاء FilterSet ديناميكي
+
 
 class PrescriptionViewSet(ModelViewSet):
     queryset = PrescriptionRecord.objects.all()
-    permission_classes = [AllowAny]
     serializer_class = PrescriptionRecordSerializer
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_class = PrescriptionRecordFilter
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
+
+    # @action(detail=False, methods=["get"])
+    # def filter_options(self, request: Request) -> Response:
+    #     generator = FilterOptionsGenerator(
+    #         queryset=self.get_queryset(),
+    #         filterset_class=self.filterset_class,
+    #         query_params=request.query_params
+    #     )
+    #     fields = ["customer__id", "customer__email", "customer__phone"]
+    #     options = generator.generate_options(fields)
+    #     return Response(options)
+
     @action(detail=False, methods=["get"])
-    def filter_options(self, request):
-        customer = PrescriptionRecord.objects.values_list('customer__id', flat=True).distinct()
-        emails = PrescriptionRecord.objects.values_list('customer__email', flat=True).distinct()
-        phones = PrescriptionRecord.objects.values_list('customer__phone', flat=True).distinct()
-        first_names = PrescriptionRecord.objects.values_list('customer__first_name', flat=True).distinct()
-        last_names = PrescriptionRecord.objects.values_list('customer__last_name', flat=True).distinct()
-
-        return Response({
-            "customer": list(filter(None, customer)),
-            "emails": list(filter(None, emails)),
-            "phones": list(filter(None, phones)),
-            "first_names": list(filter(None, first_names)),
-            "last_names": list(filter(None, last_names)),
-        })
-
-
-
-# استخدام pagination  لتحديد عدد الصفحات 
-
-# from rest_framework.pagination import PageNumberPagination
-# from rest_framework.viewsets import ModelViewSet
-
-# class UserPagination(PageNumberPagination):
-#     page_size = 10
-
-# class UserViewSet(ModelViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     pagination_class = UserPagination
+    def filter_options(self, request: Request) -> Response:
+        generator: FilterOptionsGenerator = FilterOptionsGenerator(
+            queryset=self.get_queryset(),
+            filterset_class=self.filterset_class,
+            query_params=request.query_params
+        )
+        fields: list[str] = ["customer__id", "customer__email", "customer__phone"]
+        options: dict[str, list] = generator.generate_options(fields)
+        return Response(options)
