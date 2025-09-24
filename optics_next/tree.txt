@@ -1,0 +1,173 @@
+my-project/
+├── package.json
+├── next.config.ts
+├── tsconfig.json
+├── .env
+├── .env.local
+├── .gitignore
+├── README.md
+├── postcss.config.mjs
+├── eslint.config.mjs
+├── bun.lock
+│
+└── src/
+    ├── app/                  ← App Router routes
+    │   ├── [locale]/
+    │   │   ├── layout.tsx
+    │   │   ├── page.tsx
+    │   │   ├── error.tsx
+    │   │   ├── not-found.tsx
+    │   │   ├── admin/page.tsx
+    │   │   ├── auth/
+    │   │   │   ├── activate/page.tsx
+    │   │   │   ├── forgot-password/page.tsx
+    │   │   │   ├── login/page.tsx
+    │   │   │   ├── register/page.tsx
+    │   │   │   └── reset-password/page.tsx
+    │   │   ├── contact/page.tsx
+    │   │   ├── dashboard/page.tsx
+    │   │   ├── payment/
+    │   │   │   ├── cancel/page.tsx
+    │   │   │   ├── fail/page.tsx
+    │   │   │   ├── processing/page.tsx
+    │   │   │   └── success/page.tsx
+    │   │   ├── prescription/
+    │   │   │   ├── create/page.tsx
+    │   │   │   └── [id]/
+    │   │   │       ├── page.tsx
+    │   │   │       └── edit/page.tsx
+    │   │   ├── profile/page.tsx
+    │   │   ├── unauthorized/page.tsx
+    │   │   └── [slug]/page.tsx
+    │   └── providers.tsx
+    │
+    ├── features/
+    │   ├── auth/
+    │   │   ├── components/
+    │   │   │   ├── LoginForm.tsx
+    │   │   │   ├── RegisterForm.tsx
+    │   │   │   └── ContactForm.tsx
+    │   │   ├── api/
+    │   │   │   ├── auth.ts
+    │   │   │   ├── schema.ts
+    │   │   │   └── types.ts
+    │   │   ├── hooks/
+    │   │   │   ├── useLogin.ts
+    │   │   │   └── useRegister.ts
+    │   │   └── utils/
+    │   │       └── authHelper.ts
+    │   │
+    │   ├── dashboard/
+    │   │   ├── components/
+    │   │   │   ├── PagesList.tsx
+    │   │   │   ├── PageDetail.tsx
+    │   │   │   ├── MultilingualPageEditor.tsx
+    │   │   │   └── MultilingualPageDisplay.tsx
+    │   │   ├── api/
+    │   │   │   ├── pages.ts
+    │   │   │   └── entity.ts
+    │   │   ├── hooks/
+    │   │   │   ├── usePages.ts
+    │   │   │   └── useEntity.ts
+    │   │   └── utils/
+    │   │       └── dashboardHelper.ts
+    │   │
+    │   ├── prescription/
+    │   │   ├── components/
+    │   │   │   ├── EyeTest.tsx
+    │   │   │   ├── EyeRow.tsx
+    │   │   │   ├── EyeExtraRow.tsx
+    │   │   │   ├── ViewEyeTest.tsx
+    │   │   │   └── ViewEyeRow.tsx
+    │   │   ├── api/
+    │   │   │   └── prescription.ts
+    │   │   ├── hooks/
+    │   │   │   └── usePrescription.ts
+    │   │   └── utils/
+    │   │       ├── EyeTestValidator.ts
+    │   │       └── handleEyeTestFormat.ts
+    │   │
+    │   └── payment/
+    │       ├── components/
+    │       │   ├── PayPalButton.tsx
+    │       │   ├── PricingPlans.tsx
+    │       │   ├── PaymentProcessingModal.tsx
+    │       │   └── Payment.tsx
+    │       ├── api/
+    │       │   └── payment.ts
+    │       └── hooks/
+    │           └── usePayment.ts
+    │
+    ├── shared/
+    │   ├── components/
+    │   │   ├── ui/
+    │   │   │   ├── buttons/
+    │   │   │   ├── dialogs/
+    │   │   │   ├── card.tsx
+    │   │   │   └── ThemeToggle.tsx
+    │   │   ├── layout/
+    │   │   │   ├── Header.tsx
+    │   │   │   ├── Footer.tsx
+    │   │   │   └── Navbar.tsx
+    │   │   ├── forms/
+    │   │   │   ├── DynamicFormGenerator.tsx
+    │   │   │   ├── ControlledSelect.tsx
+    │   │   │   └── renderField.tsx
+    │   │   └── search/
+    │   │       ├── SearchFilterForm.tsx
+    │   │       └── generateSearchFieldsFromOptions.tsx
+    │   │
+    │   ├── hooks/
+    │   │   ├── useFormRequest.ts
+    │   │   ├── useFilteredListRequest.ts
+    │   │   ├── useFilterDataOptions.ts
+    │   │   └── useAddItem.ts
+    │   │
+    │   ├── contexts/
+    │   │   ├── LocaleContext.tsx
+    │   │   ├── LanguageContext.tsx
+    │   │   └── UserContext.tsx
+    │   │
+    │   ├── utils/
+    │   │   ├── cn.ts
+    │   │   ├── toastService.ts
+    │   │   ├── formatRelatedValue.tsx
+    │   │   └── generateViewFields.ts
+    │   │
+    │   └── constants/
+    │       ├── url.ts
+    │       ├── plans.ts
+    │       └── defaultPublicPages.ts
+    │
+    ├── config/
+    │   ├── dataConfig.ts
+    │   ├── formsConfig.ts
+    │   └── themes/
+    │       ├── dashboard.json
+    │       ├── minimal.json
+    │       ├── modern.json
+    │       └── rtl.json
+    │
+    ├── messages/
+    │   ├── ar/
+    │   │   ├── common.json
+    │   │   └── formGenerator.json
+    │   └── en/
+    │       ├── common.json
+    │       └── formGenerator.json
+    │
+    ├── public/
+    │   ├── file.svg
+    │   ├── globe.svg
+    │   ├── logo.png
+    │   └── media/
+    │       ├── aside.png
+    │       └── start.jpg
+    │
+    ├── styles/
+    │   ├── globals.css
+    │   └── pages.css
+    │
+    └── types/
+        ├── feature-specific types داخل كل feature
+        └── shared types عامة

@@ -1,0 +1,58 @@
+"use client";
+import { useTranslations } from "next-intl";
+
+import {Link} from "@/src/app/i18n/navigation";
+import { useUser } from "@/src/features/auth/hooks/UserContext";
+
+export default function DashboardLinks() {
+  const {user} =useUser()
+  console.log(user)
+  const t = useTranslations("hrefs");
+  const links = [
+    { href: "client", roles: ["OWNER"], group: "Tenant" },
+    { href: "register_tenant", roles: ["OWNER"], group: "Tenant" },
+    { href: "domain", roles: ["OWNER"], group: "Tenant" },
+    
+    { href: "payment", roles: ["OWNER"], group: "Billing" },
+    { href: "subscription_plan", roles: ["OWNER"], group: "Billing" },
+    
+    { href: "roles", roles: ["OWNER"], group: "Access Control" },
+    { href: "users", roles: ["OWNER"], group: "Access Control" },
+    { href: "permissions", roles: ["OWNER"], group: "Access Control" },
+    { href: "role_permission", roles: ["OWNER"], group: "Access Control" },
+    
+    { href: "tenant_settings", roles: ["OWNER"], group: "Settings" },
+    { href: "contact_us", roles: ["OWNER"], group: "Support" },
+    { href: "customer", roles: ["OWNER"], group: "Customer" },
+  ];
+  
+  const userRole = user?.role?.name?.toUpperCase(); // "OWNER"
+
+  const allowedLinks = links.filter(link => link.roles.includes(userRole));
+  
+
+  const groupedLinks = allowedLinks.reduce((acc, link) => {
+    if (!acc[link.group]) acc[link.group] = [];
+    acc[link.group].push(link);
+    return acc;
+  }, {} as Record<string, typeof links>);
+  
+  return (
+    <div className="space-y-6">
+      {Object.entries(groupedLinks).map(([group, links]) => (
+        <div key={group}>
+          <h2 className="text-lg font-bold mb-2">{group}</h2>
+          <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {links.map(({ href }) => (
+              <Link href={`/dashboard/${href}/`} key={href} className="card ">
+                {t(href)}
+              </Link>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+  
+}
+

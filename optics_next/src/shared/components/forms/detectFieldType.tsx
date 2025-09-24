@@ -1,0 +1,300 @@
+"use client"
+import { z } from 'zod';
+import { relationshipConfigs } from '@/src/config/generatFormConfig';
+import { useState, useEffect } from 'react';
+import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
+import Modal from "@/src/shared/components/ui/dialogs/Modal";
+import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { CirclePlus } from 'lucide-react';
+import ReactSelect from 'react-select';
+import { Controller } from 'react-hook-form';
+
+export function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
+  while (
+    schema instanceof z.ZodOptional ||
+    schema instanceof z.ZodNullable ||
+    schema instanceof z.ZodDefault
+  ) {
+    schema = schema._def.innerType;
+  }
+  return schema;
+}
+
+export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
+  const schema = unwrapSchema(rawSchema);
+  if (field.endsWith('_id') && relationshipConfigs[field]) {
+    return 'foreignkey';
+  }
+  // check field name
+  const fieldLower = field.toLowerCase();
+  if (fieldLower.includes('email')) return 'email';
+  if (fieldLower.includes('password')) return 'password';
+  if (fieldLower.includes('phone') || fieldLower.includes('tel')) return 'tel';
+  if (fieldLower.includes('url') || fieldLower.includes('website')) return 'url';
+  if (fieldLower.includes('color')) return 'color';
+  if (fieldLower.includes('date')) return 'date';
+  if (fieldLower.includes('time')) return 'time';
+  if (fieldLower.includes('description') || fieldLower.includes('content') || fieldLower.includes('notes')) return 'textarea';
+
+  // check schema type
+  if (schema instanceof z.ZodBoolean) return 'checkbox';
+  if (schema instanceof z.ZodEnum) return 'select';
+  if (schema instanceof z.ZodUnion) return 'union';
+  if (schema instanceof z.ZodNumber) return 'number';
+
+  if (schema instanceof z.ZodString) {
+    const checks = schema._def.checks || [];
+    const hasEmail = checks.some((c: any) => c.kind === 'email');
+    const hasUrl = checks.some((c: any) => c.kind === 'url');
+    const hasMinLength = checks.some((c: any) => c.kind === 'min' && c.value >= 6);
+    const hasMaxLength = checks.some((c: any) => c.kind === 'max' && c.value > 100);
+
+    if (hasEmail) return 'email';
+    if (hasUrl) return 'url';
+    if (hasMinLength && fieldLower.includes('password')) return 'password';
+    if (hasMaxLength) return 'textarea';
+  }
+
+  if (schema instanceof z.ZodArray) return 'array';
+  if (schema instanceof z.ZodObject) return 'object';
+
+  return 'text';
+}
+
+
+// // استخراج خيارات Union
+// export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
+//   const options: string[] = [];
+
+//   schema._def.options.forEach((option: any) => {
+//     if (option instanceof z.ZodLiteral) {
+//       options.push(option.value);
+//     } else if (option instanceof z.ZodString) {
+//       // يمكن إضافة logic إضافي هنا للتعامل مع string enums
+//       options.push(option._def.value || 'string');
+//     }
+//   });
+
+//   return options;
+// }
+
+export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
+  const options: string[] = [];
+
+  schema._def.options.forEach((option: any) => {
+    if (option instanceof z.ZodLiteral) {
+      options.push(option.value);
+    } else if (option instanceof z.ZodString) {
+      // يمكن إضافة logic إضافي هنا للتعامل مع string enums
+      options.push('string');
+    }
+  });
+
+  return options;
+}
+
+// export function useForeignKeyData(fieldName: string, fieldType: string) {
+//   const [data, setData] = useState<any[]>([]);
+//   const [loading, setLoading] = useState(false);
+//   if (fieldType !== 'foreignkey') throw new Error('Invalid field type');
+//   const alies = relationshipConfigs[fieldName].endpoint;
+
+//   const fetchForeignKeyData = useFormRequest({
+//     alias: alies,
+//     onSuccess: (res) => {
+//       setData(Array.isArray(res) ? res : res.data || []);
+//       setLoading(false);
+//     },
+//     onError: (err) => {
+//       console.error("Error", err);
+//       setLoading(false);
+//     },
+//   });
+
+
+//   useEffect(() => {
+//     if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
+//       setLoading(true);
+//       fetchForeignKeyData.submitForm();
+//     }
+//   }, [fieldName, fieldType]);
+
+
+//   return { data, loading };
+// }
+export function useForeignKeyData(fieldName: string, fieldType: string) {
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // خد config لو موجود
+  const alias = relationshipConfigs[fieldName]?.endpoint;
+
+  const fetchForeignKeyData = useFormRequest({
+    alias,
+    onSuccess: (res) => {
+      setData(Array.isArray(res) ? res : res.data || []);
+      setLoading(false);
+    },
+    onError: (err) => {
+      console.error("Error", err);
+      setLoading(false);
+    },
+  });
+
+  useEffect(() => {
+    // ✅ الشرط هنا: مفيش API request إلا لو النوع فعلاً foreignkey
+    if (fieldType === "foreignkey" && alias) {
+      setLoading(true);
+      fetchForeignKeyData.submitForm();
+    }
+  }, [fieldType, fieldName, alias]);
+
+  return { data, loading };
+}
+
+export function ForeignKeyField({
+  fieldName,
+  register,
+  config,
+  label,
+  required,
+  errors,
+  form
+}: any) {
+
+
+
+  const { data, loading } = useForeignKeyData(fieldName, 'foreignkey');
+  const relationConfig = relationshipConfigs[fieldName];
+  const [showModal, setShowModal] = useState(false);
+  if (!relationConfig) return null;
+
+  return (
+
+    <div className={config.spacing}>
+
+      <label htmlFor={fieldName} className={config.labelClasses}>
+        {label}{required ? <span className="text-red-500">*</span> : ''}
+
+      </label>
+      <div className="flex items-center w-full">
+        <Controller
+          name={fieldName}
+          control={form.control}
+          render={({ field }) => (
+            <ReactSelect
+
+              // menuPortalTarget={document.body}
+
+              {...field}
+              options={data.map((item) => ({
+                value: item[relationConfig.valueField],
+                label: item[relationConfig.labelField],
+              }))}
+              onChange={(selected) => field.onChange(selected?.value)}
+              value={data
+                .map((item) => ({
+                  value: item[relationConfig.valueField],
+                  label: item[relationConfig.labelField],
+                }))
+                .find((opt) => opt.value === field.value) || null}
+              placeholder="Select..."
+              isClearable
+              classNamePrefix="rs"
+              className="w-full"
+
+            />
+          )}
+        />
+
+
+
+        <ActionButton
+          onClick={() => setShowModal(true)}
+          variant="outline"
+          className="ml-2 p-4"
+          icon={<CirclePlus size={18} color="green" />}
+          title="Add"
+        />
+      </div>
+      {showModal && (
+        <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
+      )}
+
+      {errors[fieldName] && (
+        <p className={config.errorClasses}>
+          {errors[fieldName]?.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
+// مكون حقل Union
+export function UnionField({
+  fieldName,
+  fieldSchema,
+  register,
+  config,
+  label,
+  required,
+  errors
+}: any) {
+  const unwrappedSchema = unwrapSchema(fieldSchema);
+  const options =
+    unwrappedSchema instanceof z.ZodUnion
+      ? getUnionOptions(unwrappedSchema)
+      : [];
+
+
+
+
+  return (
+    <div className={config.spacing}>
+      <label htmlFor={fieldName} className={config.labelClasses}>
+        {label}{required ? ' *' : ''}
+      </label>
+      <select
+        id={fieldName}
+        {...register(fieldName)}
+        className={config.baseClasses}
+      >
+        <option value="" className="option">Select...</option>
+        {options.map((option: string) => (
+          <option className="option" key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+      {errors[fieldName] && (
+        <p className={config.errorClasses}>
+          {errors[fieldName]?.message}
+        </p>
+      )}
+    </div>
+  );
+}
+
+
+export function useFieldOptions(fieldName: string, fieldType: string, schema?: z.ZodEnum<any>) {
+  const foreignKeyData = useForeignKeyData(fieldName, fieldType);
+
+  if (fieldType === "foreignkey") {
+    return {
+      data: foreignKeyData.data.map((opt: any) => ({
+        label: opt.label || opt.name || String(opt.id),
+        value: opt.value || opt.id,
+      })),
+      loading: foreignKeyData.loading,
+    };
+  }
+
+  if (fieldType === "select" && schema) {
+    return {
+      data: schema.options.map((opt: any) => ({ label: opt, value: opt })),
+      loading: false,
+    };
+  }
+
+  return { data: [], loading: false };
+}

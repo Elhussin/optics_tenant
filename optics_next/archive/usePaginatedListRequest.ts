@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useFormRequest } from "@/lib/hooks/useFormRequest";
+import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
 
 export function usePaginatedListRequest(alias: string, page = 1, filters: any = {}) {
   const [data, setData] = useState<any[]>([]);

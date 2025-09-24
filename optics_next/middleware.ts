@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 import createIntlMiddleware from "next-intl/middleware";
-import { routing } from "./app/i18n/routing";
+import { routing } from "./src/app/i18n/routing";
 import {
   getRequiredPermission,
   unauthorizedResponse,
-} from "./utils/middleware";
+} from "./src/shared/utils/middleware";
 
 const DEFAULT_LOCALE = "en";
 const LOCALE_REGEX = /^\/(ar|en)\//;

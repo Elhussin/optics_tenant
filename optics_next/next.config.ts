@@ -6,6 +6,6 @@ const nextConfig: NextConfig = {
 };
  
 const withNextIntl = createNextIntlPlugin(
-  './app/i18n/request.ts'
+  './src/app/i18n/request.ts'
 );
 export default withNextIntl(nextConfig);
