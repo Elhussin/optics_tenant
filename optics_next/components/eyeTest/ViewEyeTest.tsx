@@ -1,5 +1,5 @@
 
-import EyeRowView from "./EyeRowView";
+import EyeRowView from "./ViewEyeRow";
 
 import { EyeTestLabel } from "./eyeTestLabel";
 import { ActionButton } from "@/components/ui/buttons";
@@ -7,23 +7,18 @@ import { Loading4 } from "@/components/ui/loding";
 import { Pagination } from "@/components/view/Pagination";
 import { SearchFilterForm } from "../Search/SearchFilterForm";
 import { useFilteredListRequest } from "@/lib/hooks/useFilteredListRequest";
-import { useSearchFieldsFromOptions } from "@/lib/hooks/useSearchFieldsFromOptions";
+import { useFilterDataOptions } from "@/lib/hooks/useFilterDataOptions";
+import { formsConfig } from "@/config/formsConfig";
 
 
-const serachLabel = {
-    "created_by__id": "Empolyee ID",
-    "created_by__username__icontains": "Empolyee Name",
-    "customer__id": "Customer ID",
-    "customer__phone__icontains": "Phone",
-}
-
+// export default function ViewCard({ entity }: { entity: string }) {
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {
-    const alias = id ? "prescriptions_prescription_retrieve" : "prescriptions_prescription_list";
-    const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest(alias);
-    const { fields, isLoading: isFieldsLoading, errors} = useSearchFieldsFromOptions( "prescriptions_prescription_filter_options_retrieve"  );
-    const totalPages = Math.ceil(count / 10);
-    if (isLoading||isFieldsLoading) return <Loading4 />
+    const {filterAlias,listAlias} = formsConfig["prescriptions"];
 
+    const { data, totalPages, page, setPage, setFilters, isLoading } = useFilteredListRequest(listAlias);
+    const { fields, isLoading: isFieldsLoading} = useFilterDataOptions( filterAlias ||"" );
+    if (isLoading||isFieldsLoading) return <Loading4 />
+    console.log("fields",fields)
     return (
         <div>
 

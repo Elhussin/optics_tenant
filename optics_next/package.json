@@ -5,7 +5,7 @@
   "scripts": {
     "gen-ts": "openapi-typescript APIfILE.yaml -o lib/api/types.ts",
     "gen-ts1": "openapi-zod-client APIfILE.yaml -o lib/api/zodClient.ts",
-    "gen-zod": "openapi-zod-client http://store9.localhost:8000/api/schema -o lib/api/zodClient.ts",
+    "gen-zod": "openapi-zod-client http://store8.localhost:8000/api/schema -o lib/api/zodClient.ts",
     "run": "next dev --turbopack",
     "dev": "next dev",
     "build": "next build",
@@ -17,6 +17,7 @@
     "@editorjs/header": "^2.8.8",
     "@editorjs/list": "^2.0.8",
     "@hookform/resolvers": "^5.1.1",
+    "@tanstack/react-query": "^5.90.2",
     "@tiptap/extension-color": "^3.2.0",
     "@tiptap/extension-heading": "^3.2.0",
     "@tiptap/extension-highlight": "^3.2.0",

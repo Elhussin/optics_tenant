@@ -6422,9 +6422,9 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "created_by__id",
+        name: "created_by__first_name__icontains",
         type: "Query",
-        schema: z.number().int().optional(),
+        schema: z.string().optional(),
       },
       {
         name: "created_by__username__icontains",

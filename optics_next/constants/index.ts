@@ -23,3 +23,7 @@ export const currencyMap: Record<string, string> = {
   eg: 'egp',
   ae: 'aed',
 };
+
+
+
+export const IteamInPage= 5

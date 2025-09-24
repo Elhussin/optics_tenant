@@ -3,7 +3,7 @@
 "use client";
 import React, { Suspense } from 'react';
 import {LoadingSpinner} from '@/components/ui/loding';
-const EyeTest = React.lazy(() => import('@/components/eyeTest/EyeTest'));
+const EyeTest = React.lazy(() => import('@/components/eyeTest/EyeTest1'));
 
 export default function CreatePrescriptionPage() {
 

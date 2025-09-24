@@ -1,9 +1,10 @@
 export interface FormConfig {
   schemaName?: string;
-  createAlias?: string;
-  retrieveAlias?: string;
-  updateAlias?: string;
-  hardDeleteAlias?: string;
+  createAlias: string;
+  retrieveAlias: string;
+  updateAlias: string;
+  hardDeleteAlias: string;
+  listAlias: string;
   createSuccessMessage?: string;
   createErrorMessage?: string;
   updateSuccessMessage?: string;
@@ -15,7 +16,7 @@ export interface FormConfig {
   updateTitle?: string;
   fields: string[];
   detailsField: string[];
-  listAlias?: string;
+
   userConfig?:object,
   showResetButton?:boolean,
   showBackButton?:boolean,
@@ -221,6 +222,17 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'products_manufacturers_retrieve',
     updateAlias: 'products_manufacturers_partial_update',
     hardDeleteAlias: 'products_manufacturers_destroy',
+    fields:["name","email","phone"],
+    detailsField:["name","email","phone","address","website","is_active","is_deleted"],
+  },
+  prescriptions:{
+    schemaName: 'PrescriptionRequest',
+    listAlias: 'prescriptions_prescription_list',
+    createAlias: 'prescriptions_prescription_create',
+    retrieveAlias: 'prescriptions_prescription_retrieve',
+    updateAlias: 'prescriptions_prescription_partial_update',
+    hardDeleteAlias: 'prescriptions_prescription_destroy',
+    filterAlias: 'prescriptions_prescription_filter_options_retrieve',
     fields:["name","email","phone"],
     detailsField:["name","email","phone","address","website","is_active","is_deleted"],
   },

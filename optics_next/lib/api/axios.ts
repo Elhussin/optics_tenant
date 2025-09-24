@@ -41,7 +41,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   // تحديد الـ baseURL بشكل ديناميكي
   config.baseURL = getBaseUrl(undefined, false);
-  console.log("Base URL:", config.baseURL);
+  // console.log("Base URL:", config.baseURL);
 
   // ضبط الهيدرز
   setHeader(config, "X-OPTICS-TENANT-CSRFToken", csrfToken);
@@ -144,9 +144,10 @@ api.customRequest = async function (alias: string, data: any = {}) {
 
   try {
     const response = await axiosInstance(config);
+    console.log("Response from", alias, ":", response);
     return response.data;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     
     throw error;
   }

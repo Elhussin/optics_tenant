@@ -75,3 +75,13 @@ def create_filterset_class(model: Type, fields: Dict[str, List[str]]) -> Type[Fi
     )
 
     return DynamicFilterSet
+
+
+# 👇 دالة format تلقائي
+def format_field_name(field: str) -> str:
+    return field.replace("__", " ").replace("_", " ").title()
+
+
+# 👇 دالة اختيار الاسم النهائي (custom label أو format)
+def get_display_name(CUSTOM_FIELD_LABELS,field: str) -> str:
+    return CUSTOM_FIELD_LABELS.get(field, format_field_name(field))

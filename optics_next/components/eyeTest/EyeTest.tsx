@@ -12,6 +12,7 @@ import { EyeTestLabel, EyeTestLabelProps } from "./eyeTestLabel";
 import { validateEyeTest,validateContactLens } from "@/utils/handleEyeTestFormat";
 import { ContactLensValidator } from "@/utils/ContactLensValidator";
 import { OtherEyeTestFailed } from "./OtherEyeTestFailed";
+import { useApiForm } from "@/lib/hooks/useApiForm";
 
 const contactLensValidator = new ContactLensValidator();
 export default function EyeTest(props: PrescriptionFormProps) {
@@ -22,6 +23,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const { alias, title, message, submitText, id, isView = false } = props;
 
   const fetchCustomers = useFormRequest({ alias: "crm_customers_list" });
+  console.log(fetchCustomers)
   const fetchPrescriptions = useFormRequest({ alias: "prescriptions_prescription_retrieve" });
   const updatePrescriptions = useFormRequest({ alias: "prescriptions_prescription_update" });
 

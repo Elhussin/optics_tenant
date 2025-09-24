@@ -103,7 +103,7 @@ export const validateEyeTest=(data:any)=>{
     });
     if (!right.valid) {
       right.errors.forEach((err) => safeToast("Right eye: " + err, { type: "error" }));
-      return;
+      return false;
     }
 
 
@@ -117,7 +117,7 @@ export const validateEyeTest=(data:any)=>{
     });
     if (!left.valid) {
       left.errors.forEach((err) => safeToast("Left eye: " + err, { type: "error" }));
-      return;
+      return false;
     }
 }
 

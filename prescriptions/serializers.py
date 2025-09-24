@@ -16,6 +16,7 @@ class PrescriptionRecordSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_internal_value(self, data):
+        print (data)
         # # Coerce empty strings to None for nullable fields
         
         for field in [
@@ -30,10 +31,13 @@ class PrescriptionRecordSerializer(serializers.ModelSerializer):
             if field in data and data[field] == "":
                 data[field] = None
 
+        if 'customer' in data and isinstance(data['customer'], str) and data['customer'].isdigit():
+            data['customer'] = int(data['customer'])
+
+
         if 'customer' in data and data['customer'] == "":
+
             raise serializers.ValidationError({'customer': ['Customer field is required.']})
         
-
-            
 
         return super().to_internal_value(data)

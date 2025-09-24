@@ -7,6 +7,7 @@ import { AsideProvider } from "@/lib/contexts/AsideContext";
 import { UserProvider } from "@/lib/contexts/userContext";
 import { notFound } from "next/navigation";
 import  {getTrenMessages} from "@/utils/getTrenMessages";
+import { Providers } from "../providers";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -49,9 +50,9 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <UserProvider>
           <AsideProvider>
-            
+            <Providers>
            {children}
-
+            </Providers>
           </AsideProvider>
           </UserProvider>
         </NextIntlClientProvider>

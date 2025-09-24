@@ -3,7 +3,7 @@ import { useFormRequest } from "@/lib/hooks/useFormRequest";
 import { formatLabel } from "@/utils/cardViewHelper";
 import { detectFieldType } from "@/utils/generateSearchFields";
 
-export function useSearchFieldsFromOptions(alias: string,) {
+export function useFilterDataOptions(alias: string,) {
   const [fields, setFields] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<any>(null);
@@ -15,21 +15,24 @@ export function useSearchFieldsFromOptions(alias: string,) {
       try {
         setIsLoading(true);
         setErrors(null);
+  
         const result = await fetchData.submitForm();
-        if (result?.data) {
-          const mapped = Object.keys(result.data).map((key) => {
-            const type = detectFieldType(key); // ← نفس الـ helper
+        console.log("useFilterDataOptions", result);
+  
+        if (Array.isArray(result?.data)) {
+          const mapped = result.data.map((item: any) => {
+            const type = detectFieldType(item.name); // helper لتحديد النوع
             return {
-              name: key,
-              label: formatLabel(key),
-              type: result.data[key].length > 0 ? "select" : type,
-              options: result.data[key].map((val: string) => ({
+              name: item.name,         // الاسم الأصلي (key)
+              label: item.label,       // الاسم المعروض
+              type: item.values.length > 0 ? "select" : type,
+              options: item.values.map((val: string) => ({
                 label: val,
                 value: val,
               })),
             };
           });
-
+  
           setFields(mapped);
         }
       } catch (err) {
@@ -38,7 +41,10 @@ export function useSearchFieldsFromOptions(alias: string,) {
         setIsLoading(false);
       }
     };
+  
     fetch();
   }, [alias]);
+  
+
   return { fields, isLoading, errors };
 }

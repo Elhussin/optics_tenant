@@ -10,7 +10,7 @@ import { NotFound } from '@/components/NotFound';
 import { Loading4 } from "@/components/ui/loding";
 import {useTranslations} from 'next-intl';
 import {formatRelatedValue} from "@/utils/formatRelatedValue";
-import { useSearchFieldsFromOptions } from "@/lib/hooks/useSearchFieldsFromOptions";
+import { useFilterDataOptions } from "@/lib/hooks/useFilterDataOptions";
 import { Pagination } from "@/components/view/Pagination";
 export default function ViewCard({ entity }: { entity: string }) {
 
@@ -19,7 +19,7 @@ export default function ViewCard({ entity }: { entity: string }) {
   const t2 = useTranslations(entity);
 
   const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest(form.listAlias||"");
-  const { fields, isLoading: isFieldsLoading, errors} = useSearchFieldsFromOptions(form.filterAlias||"");
+  const { fields, isLoading: isFieldsLoading, errors} = useFilterDataOptions(form.filterAlias||"");
   const totalPages = Math.ceil(count / 10);
   if (isLoading||isFieldsLoading) return <Loading4 />
 

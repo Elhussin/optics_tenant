@@ -1,5 +1,5 @@
 import { generateSearchFieldsFromEndpoint } from "@/utils/generateSearchFields";
-import { useSearchFieldsFromOptions } from "@/lib/hooks/useSearchFieldsFromOptions";
+import { useSearchFieldsFromOptions } from "@/lib/hooks/useFilterDataOptions";
 
 export function mergeSearchFields({
     filterAlias,
