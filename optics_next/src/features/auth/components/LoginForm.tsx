@@ -26,9 +26,9 @@ export default function LoginForm(props: formRequestProps) {
   const { refetchUser, setUser, user,loading } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
-
-  const redirect = searchParams.get("redirect") || "/profile";
   const locale = useLocale() || "en";
+  const redirect = searchParams.get("redirect") || `/${locale}/profile`;
+
 
   const {
     handleSubmit,

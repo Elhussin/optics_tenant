@@ -2,27 +2,30 @@
 
 "use client";
 import LoginForm from '@/src/features/auth/components/LoginForm';
-import { getSubdomain} from '@/src/shared/utils/getSubdomain';
-import {useTranslations} from 'next-intl';
-import {formRequestProps} from '@/src/shared/types';
+// import { getSubdomain} from '@/src/shared/utils/getSubdomain';
+// import {useTranslations} from 'next-intl';
 
 
-export default  function RegisterPage(){
-const t = useTranslations('register');
-const t2 = useTranslations('tenants');
-const subdomain = getSubdomain();
+import { getSubdomainServer } from '@/src/shared/utils/getSubdomainServer';
+import { getTranslations } from 'next-intl/server';
+import { formRequestProps } from '@/src/shared/types';
+
+export default async function RegisterPage() {
+  const t = await getTranslations('register');
+  const t2 = await getTranslations('tenants');
+  const subdomain = await getSubdomainServer();
 
   const props: formRequestProps = {
-    alias: "users_register_create",
-    submitText: t("button"),
-    mode: "create",
-    title: t("title"),
-    message: t("message"),
+    alias: 'users_register_create',
+    submitText: t('button'),
+    mode: 'create',
+    title: t('title'),
+    message: t('message'),
     istenant: false,
   };
 
   if (!subdomain) {
-    props.alias = "tenants_register_create";
+    props.alias = tenants_register_create";
     props.message = t2("message");
     props.istenant = true;
     props.title = t2("title");

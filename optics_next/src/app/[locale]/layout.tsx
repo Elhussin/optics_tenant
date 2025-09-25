@@ -8,6 +8,7 @@ import { UserProvider } from "@/src/features/auth/hooks/UserContext";
 import { notFound } from "next/navigation";
 import  {getTrenMessages} from "@/src/shared/utils/getTrenMessages";
 import { Providers } from "@/src/shared/hooks/providers";
+import { Metadata } from "next";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -19,6 +20,16 @@ const inter = Inter({
   weight: ["400", "600", "700"],
   variable: "--font-main",
 });
+
+export const metadata: Metadata = {
+  title: "My App",
+  description: "My cool Next.js app",
+  icons: {
+    icon: "/media/icon.png",   // موجود في public/media
+    shortcut: "/media/icon.png",
+    apple: "/media/icon.png",
+  },
+};
 
 
 export default async function LocaleLayout({

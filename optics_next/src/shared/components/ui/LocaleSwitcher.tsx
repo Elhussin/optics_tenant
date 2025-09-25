@@ -36,6 +36,7 @@ export default function LocaleSwitcher() {
 
           setCountry(matchedCountry.value);
           setCurrency(mappedCurrency);
+          console.log('Detected country:', matchedCountry.value, 'Currency:', mappedCurrency);
           
           Cookies.set('country', matchedCountry.value, { path: '/', expires: 30 });
           Cookies.set('currency', mappedCurrency, { path: '/', expires: 30 });
