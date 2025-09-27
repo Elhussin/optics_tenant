@@ -55,27 +55,27 @@ SHARED_APPS = (
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'simple_history',
-    'corsheaders',
+    'corsheaders', # for 
     'djmoney',
     'drf_spectacular',
     'drf_spectacular_sidecar',
     'django_extensions',
     # Wagtail CMS
-    'modelcluster',
-    'taggit',
-    'wagtail.contrib.forms',
-    'wagtail.contrib.redirects',
-    'wagtail.embeds',
-    'wagtail.sites',
-    'wagtail.users',
-    'wagtail.snippets',
-    'wagtail.documents',
-    'wagtail.images',
-    'wagtail.search',
-    'wagtail.admin',
-    'wagtail',
-    'wagtail.api.v2',
-    'wagtail_localize',
+    # 'modelcluster',
+    # 'taggit',
+    # 'wagtail.contrib.forms',
+    # 'wagtail.contrib.redirects',
+    # 'wagtail.embeds',
+    # 'wagtail.sites',
+    # 'wagtail.users',
+    # 'wagtail.snippets',
+    # 'wagtail.documents',
+    # 'wagtail.images',
+    # 'wagtail.search',
+    # 'wagtail.admin',
+    # 'wagtail',
+    # 'wagtail.api.v2',
+    # 'wagtail_localize',
     # 'cms',  # app for wagtail
 
 )
@@ -130,7 +130,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',  
     'core.middleware.CustomLanguageMiddleware.CustomLanguageMiddleware',    
     'core.middleware.PlanValidationMiddleware.PlanValidationMiddleware',
-    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    # 'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 # pip install wagtail wagtail-localize wagtail.api.v2 djangorestframework django-cors-headers
 # ===============================
@@ -326,5 +326,5 @@ LOGGING = {
 }
 
 
-WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
-WAGTAIL_SITE_NAME = config('WAGTAIL_SITE_NAME', default='Optics Tenant')
+# WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
+# WAGTAIL_SITE_NAME = config('WAGTAIL_SITE_NAME', default='Optics Tenant')
