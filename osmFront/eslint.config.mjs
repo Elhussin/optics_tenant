@@ -17,6 +17,8 @@ const eslintConfig = [
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars-experimental": "off",
       "@typescript-eslint/no-unused-vars-experimental": "off",
+      "react-hooks/exhaustive-deps": "off",
+    
     },
   }),
 ];

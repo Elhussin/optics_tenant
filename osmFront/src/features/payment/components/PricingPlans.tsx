@@ -1,7 +1,7 @@
 "use client";
 import { useTranslations } from 'next-intl';
 import { Users, Store, Package, Check, Link as LinkIcon } from 'lucide-react';
-import {FetchData} from '@/src/shared/lib/api';
+import {FetchData} from '@/src/shared/api/api';
 import { useEffect, useState } from 'react';
 import { useUser } from '@/src/features/auth/hooks/UserContext';
 import { Link } from '@/src/app/i18n/navigation';

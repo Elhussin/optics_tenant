@@ -5,8 +5,8 @@
   "scripts": {
     "gen-ts": "openapi-typescript APIfILE.yaml -o lib/api/types.ts",
     "gen-ts1": "openapi-zod-client APIfILE.yaml -o lib/api/zodClient.ts",
-    "gen-zod": "openapi-zod-client http://store8.localhost:8000/api/schema -o lib/api/zodClient.ts",
-    "run": "next dev --turbopack",
+    "gen-zod": "openapi-zod-client http://store8.localhost:8000/api/schema -o src/shared/api/schemas.ts",
+    "run": "next dev",
     "dev": "next dev  --turbopack",
     "build": "next build",
     "start": "next start",
@@ -55,7 +55,6 @@
     "react-draggable": "^4.5.0",
     "react-hook-form": "^7.59.0",
     "react-icons": "^5.5.0",
-    "react-quill": "^2.0.0",
     "react-select": "^5.10.2",
     "react-tooltip": "^5.29.1",
     "sonner": "^2.0.5",

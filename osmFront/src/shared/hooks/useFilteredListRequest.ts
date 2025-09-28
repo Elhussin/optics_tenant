@@ -33,7 +33,7 @@ export function useFilteredListRequest(alias: string, defaultPage = 1) {
       const res = await dataRequest.submitForm(paramsObj);
       return res.data;
     },
-    keepPreviousData: true, // يخلي البيانات القديمة لحد ما توصل الجديدة
+    // keepPreviousData: true, // يخلي البيانات القديمة لحد ما توصل الجديدة
     staleTime: 1000 * 60 * 5, // 5 دقايق كاش
   });
 

@@ -2,9 +2,9 @@
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { axiosInstance } from "@/src/shared/lib/axios";
+import { axiosInstance } from "@/src/shared/api/axios";
 import { getBaseUrl } from "@/src/shared/utils/getBaseUrl";
-import { apiConfig } from "@/src/shared/lib/apiConfig";
+import { apiConfig } from "@/src/shared/api/apiConfig";
 
 export default function PayPalProcessingPage() {
   const searchParams = useSearchParams();

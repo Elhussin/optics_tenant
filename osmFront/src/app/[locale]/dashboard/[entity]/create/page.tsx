@@ -1,8 +1,8 @@
 'use client';
 import { useParams } from 'next/navigation';
 import { formsConfig } from '@/src/config/formsConfig';
-import DynamicFormGenerator from '@/src/features/auth/components/components/generate/DynamicFormGenerator';
-import {NotFound} from '@/src/features/auth/components/components/NotFound'
+import DynamicFormGenerator from '@/src/shared/components/forms/DynamicFormGenerator';
+import {NotFound} from '@/src/shared/components/views/NotFound'
 
 export default function EntityCreatePage() {
   const params = useParams();

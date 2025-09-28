@@ -7,7 +7,7 @@ import PricingPlans from '@/src/features/payment/components/PricingPlans';
 import { Users, Store, CreditCard, Calendar, AlertTriangle, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { FetchData } from '@/src/shared/lib/api';
+import { FetchData } from '@/src/shared/api/api';
 
 const fetcher = (url: string) => FetchData({ url });
 

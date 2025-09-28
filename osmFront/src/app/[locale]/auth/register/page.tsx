@@ -1,10 +1,10 @@
 
 
 "use client";
-import LoginForm from '@/components/forms/LoginForm';
-import { getSubdomain} from '@/utils/getSubdomain';
+import LoginForm from "@/src/features/auth/components/LoginForm";
+import { getSubdomain} from "@/src/shared/utils/getSubdomain";
 import {useTranslations} from 'next-intl';
-import {formRequestProps} from '@/types';
+import {formRequestProps} from "@/src/shared/types";
 
 
 export default  function RegisterPage(){

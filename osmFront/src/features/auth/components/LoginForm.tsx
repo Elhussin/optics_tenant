@@ -129,7 +129,7 @@ export default function LoginForm(props: formRequestProps) {
             </div>
 
             {/* اختيار الخطة (فقط لو tenant) */}
-            {istenant && (
+            {/* {istenant && (
               <div>
                 <label className="label">{t("planLabel")}</label>
                 <select
@@ -151,7 +151,7 @@ export default function LoginForm(props: formRequestProps) {
                   </p>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* رسالة خطأ عامة */}
             {errors.root && (

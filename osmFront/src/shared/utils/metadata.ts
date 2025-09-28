@@ -38,7 +38,7 @@
   
 
 
-import { MetadataOptions } from "@/types/metadata";
+import { MetadataOptions } from "@/src/shared/types/metadata";
 // import type { MetadataIcon } from 'next/dist/lib/metadata/types/metadata-types'; // Import this if needed for type safety
 
 export function generateMetadata({

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { axiosInstance } from "@/src/shared/lib/axios";
+import { axiosInstance } from "@/src/shared/api/axios";
 import { getBaseUrl } from "@/src/shared/utils/getBaseUrl";
-import { apiConfig } from "@/src/shared/lib/apiConfig";
+import { apiConfig } from "@/src/shared/api/apiConfig";
 import { PayPalButtonProps } from "../types";
 import PaymentProcessingModal from "./PaymentProcessingModal";
 import { useTranslations } from "next-intl";

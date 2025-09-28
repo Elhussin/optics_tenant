@@ -111,4 +111,4 @@ def run_batch_import(config_path):
 if __name__ == "__main__":
     run_batch_import(os.path.join(os.path.dirname(os.path.abspath(__file__)), "csv/csv_config.json"))
 
-# py scripts/add_many_csv_with_forginKey.py
+# python scripts/add_many_csv_with_forginKey.py

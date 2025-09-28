@@ -3,7 +3,7 @@ import { useState,useMemo, useRef, useCallback } from "react";
 import { ZodType, ZodObject } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import api from "@/src/shared/lib/axios";
+import api from "@/src/shared/api/axios";
 import { useFormRequestProps,UseFormRequestReturn } from "@/src/shared/types";
 import { handleServerErrors ,handleErrorStatus} from "@/src/shared/utils/error";
 function hasParameters(

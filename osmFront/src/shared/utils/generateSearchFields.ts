@@ -1,12 +1,14 @@
 
-import { endpoints } from '@/src/shared/lib/schemas';
-import { SearchField } from '@/types/search';
+import { endpoints } from '@/src/shared/api/schemas';
+import { SearchField } from '@/src/shared/types/search';
 import { formatLabel} from './cardViewHelper'
 
-export function detectFieldType(name: string, schemaDef?: any): "text" | "number" | "date" | "select" {
+// : "text" | "number" | "date" | "select" 
+export function detectFieldType(name: string, schemaDef?: any):any{
   if (schemaDef?.typeName === "ZodEnum") {
     return "select";
   }
+  
   if (name.toLowerCase().includes("id")) {
     return "number";
   }

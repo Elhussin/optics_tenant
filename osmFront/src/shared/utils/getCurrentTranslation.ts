@@ -1,5 +1,5 @@
-import { Language, PageData, PageTranslation } from "@/src/types/pages";
-
+import { Language, PageData, PageTranslation } from "@/src/features/pages/types";
+// optics_tenant/osmFront/src/features/pages/types/index.tsx
 export const getTranslation = (page: PageData, language: Language): PageTranslation | undefined => {
   return page.translations.find(t => t.language === language);
 };

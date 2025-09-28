@@ -4,7 +4,7 @@ import { useState, useMemo, useCallback, useRef } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/src/shared/lib/axios";
+import api from "@/src/shared/api/axios";
 import { ZodType, ZodObject } from "zod";
 
 interface UseApiFormProps<T> {
@@ -88,7 +88,13 @@ interface UseApiFormProps<T> {
 
 // // as unknown as UseFormReturn<T> & { query: typeof query; mutation: typeof mutation; submitForm: any; retry: any };
 
-
+interface useFormRequestProps {
+  alias: string;
+  defaultValues?: any;
+  onSuccess?: (data: any) => void;
+  onError?: (error: any) => void;
+  transform?: (data: any) => any;
+}
 
 export function useApiForm(options: useFormRequestProps) {
   const { alias, defaultValues, onSuccess, onError, transform } = options;
@@ -100,7 +106,7 @@ export function useApiForm(options: useFormRequestProps) {
       return api.customRequest(alias, payload);
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries([alias]); // تحديث الكاش بعد العملية
+      // queryClient.invalidateQueries([alias]); // تحديث الكاش بعد العملية
       onSuccess?.(data);
     },
     onError,

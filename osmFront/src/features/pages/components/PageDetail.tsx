@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useState } from "react";
-import { Loading4 } from "@/src/features/auth/components/components/ui/loding";
-import { Card, CardContent, CardHeader, CardTitle } from "@/src/features/auth/components/components/ui/card";
-import { RenderButtons } from "@/src/features/auth/components/components/ui/buttons/RenderButtons";
+import { Loading4 } from "@/src/shared/components/ui/loding";
+import { Card, CardContent, CardHeader, CardTitle } from "@/src/shared/components/ui/card";
+import { RenderButtons } from "@/src/shared/components/ui/buttons/RenderButtons";
 import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
 import { useCallback } from "react";
 import {useTranslations} from 'next-intl';

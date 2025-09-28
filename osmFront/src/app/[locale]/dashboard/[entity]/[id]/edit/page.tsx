@@ -1,15 +1,14 @@
 // app/[entity]/[id]/edit/page.tsx
 'use client';
 import { formsConfig } from '@/src/config/formsConfig';
-import DynamicFormGenerator from '@/src/features/auth/components/components/generate/DynamicFormGenerator';
+import DynamicFormGenerator from '@/src/shared/components/forms/DynamicFormGenerator';
 import { useParams } from 'next/navigation';
-import {NotFound} from '@/src/features/auth/components/components/NotFound'
+import {NotFound} from '@/src/shared/components/views/NotFound'
 export default function EntityEditPage() {
     const params = useParams();
    const entity = params.entity as string || '';
   const id = params.id as string || '';
 
- 
   if (!(entity in formsConfig)) {
     return <NotFound error="Invalid entity" />;
   }

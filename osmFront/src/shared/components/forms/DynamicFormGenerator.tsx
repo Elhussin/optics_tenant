@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { z } from 'zod';
-import { schemas } from '@/src/shared/lib/schemas';
+import { schemas } from '@/src/shared/api/schemas';
 import { Loading3 } from '@/src/shared/components/ui/loding';
 import { DynamicFormProps } from '@/src/shared/types/DynamicFormTypes';
 import { defaultConfig, ignoredFields } from '@/src/config/generatFormConfig';

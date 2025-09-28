@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { schemas } from '@/src/shared/lib/schemas';
+import { schemas } from '@/src/shared/api/schemas';
 import { z } from 'zod';
 
 const [,, schemaName] = process.argv;

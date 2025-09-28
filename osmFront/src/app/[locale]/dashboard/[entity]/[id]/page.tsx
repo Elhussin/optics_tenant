@@ -2,8 +2,8 @@
 'use client';
 import { useParams} from 'next/navigation';
 import { formsConfig } from '@/src/config/formsConfig';
-import ViewDetailsCard from '@/src/features/auth/components/components/view/ViewDetailsCard';
-import {NotFound} from '@/src/features/auth/components/components/NotFound'
+import ViewDetailsCard from '@/src/shared/components/views/ViewDetailsCard';
+import {NotFound} from '@/src/shared/components/views/NotFound'
 
 export default function EntityDetailsPage() {
   const params = useParams();

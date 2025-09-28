@@ -26,6 +26,7 @@ export interface CreatePageData {
   default_language: Language;
   translations: PageTranslation[];
   slug: string;
+  is_published?:boolean;
 }
 
 
@@ -41,4 +42,5 @@ export interface DefaultPublicPage {
     translations: PageTranslation[];
     is_published: boolean;
     slug: string;
+   
 }

@@ -76,6 +76,7 @@ export class ContactLensValidator {
     }
   
     private formatResultToQuarter(value: Record<string, string | number>): Record<string, string | number> {
+      
       for (const key in value) {
         value[key] = this.formatNumberCustom(value[key]);
       }
@@ -94,12 +95,12 @@ export class ContactLensValidator {
       return Math.round(num * 4) / 4;
     }
   
-    private formatNumberCustom(value: string | number): string | false {
+    private formatNumberCustom(value: string | number) :any {
       const num = typeof value === "number" ? value : parseFloat(String(value));
       if (this.isMultipleOfQuarter(num)) {
         return `${num >= 0 ? "+" : ""}${num.toFixed(2)}`;
       }
-      return false;
+    
     }
   
     private isMultipleOfQuarter(value: number): boolean {
