@@ -5,7 +5,6 @@ import requests
 from apps.tenants.models import Payment
 from django.utils.timezone import now
 from dateutil.relativedelta import relativedelta
-from decouple import config
 
 paypalrestsdk.configure({
     "mode": config("PAYPAL_MODE"),

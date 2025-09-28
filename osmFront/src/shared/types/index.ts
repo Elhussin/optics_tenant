@@ -59,13 +59,19 @@ export type UseFormRequestReturn = {
   errors: any;
   formErrors: any;
   submitForm: any;
-  retry: () => Promise<any>;
-  reset: (defaultValues?: any) => void;
+  retry?: () => Promise<any>;
+  reset?: (defaultValues?: any) => void;
   [key: string]: any; // للسماح بخصائص إضافية مثل methods الأخرى
 };
 
+export type UseApiFormReturn = {
+ [key: string]: any; // للسماح بخصائص إضافية مثل methods الأخرى
+ query: any, // للـ GET
+ mutation: any, // للـ POST/PUT/DELETE
+ submitForm: any, // دالة submit موحدة
+ isSubmitting: boolean,
 
-
+};
 export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;

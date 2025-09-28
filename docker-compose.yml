@@ -2,28 +2,31 @@ version: '3.9'
 services:
   db:
     image: postgres:15
+    container_name: osm_db
     restart: always
     environment:
-      POSTGRES_USER: osmuser
-      POSTGRES_PASSWORD: osmpassword
-      POSTGRES_DB: osmdb
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+      POSTGRES_DB: osm_db
+      POSTGRES_USER: osm_user
+      POSTGRES_PASSWORD: osm_pass
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   backend:
-    build: ./osmBack
-    restart: always
-    command: gunicorn osmBack.wsgi:application --bind 0.0.0.0:8000
+    build:
+      context: ./osmBack   # مسار مشروع Django
+      dockerfile: Dockerfile
+    container_name: osm_backend
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
-      - ./osmBack:/app
-    environment:
-      - DATABASE_URL=postgres://osmuser:osmpassword@db:5432/osmdb
+      - ./osmBack:/app       # ربط الكود المحلي مع الحاوية
+    ports:
+      - "8000:8000"          # إتاحة البورت محلياً
+    env_file:
+      - ./osmBack/.env       # ملف البيئة (DATABASE_URL, SECRET_KEY...)
     depends_on:
       - db
-    ports:
-      - "8000:8000"
 
   frontend:
     build: ./osmFront
