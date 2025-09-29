@@ -154,9 +154,9 @@ export default function LoginForm(props: formRequestProps) {
             )} */}
 
             {/* رسالة خطأ عامة */}
-            {errors.root && (
+            {/* {errors.root && (
               <p className="error-text">{errors.root.message as string}</p>
-            )}
+            )} */}
 
             {/* زر الإرسال */}
             <button

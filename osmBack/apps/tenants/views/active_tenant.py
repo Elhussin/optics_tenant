@@ -16,10 +16,9 @@ from apps.tenants.models import (
     Domain,
     SubscriptionPlan
 )
-
-from core.utils.email import send_activation_email, send_message_acount_activated
+from core.utils.email import send_activation_email, send_message_acount_activated,send_failed_activation_email
 from core.utils.expiration_date import expiration_date
-
+import threading
 paymant_logger = logging.getLogger('paypal')
 tenant_logger = logging.getLogger('tenant')
 
@@ -149,6 +148,10 @@ class TenantActivation:
             self.logger.warning(f"Post-activation setup failed: {str(e)}")
             return ActivationStatus.POST_SETUP_FAILED
 
+
+
+
+
 # OPTIMIZED VIEW IMPLEMENTATION
 # =============================
 
@@ -157,7 +160,7 @@ class ActivateTenantView(APIView):
     
     def __init__(self):
         super().__init__()
-        self.algorithm = TenantActivation()
+        self.tenantActivation = TenantActivation()
     
     def get(self, request):
         """
@@ -166,35 +169,38 @@ class ActivateTenantView(APIView):
         token = request.query_params.get("token")
         
         # Step 1: Validate token
-        pending, status = self.algorithm.validate_token(token)
+        pending, status = self.tenantActivation.validate_token(token)
         if status != ActivationStatus.SUCCESS:
             return self._handle_validation_error(status, pending)
         
         # Step 2: Check token expiration
-        expiration_status = self.algorithm.handle_token_expiration(pending)
+        expiration_status = self.tenantActivation.handle_token_expiration(pending)
         if expiration_status == ActivationStatus.TOKEN_EXPIRED:
             return Response({
                 "detail": T("Activation link expired. New activation email sent.")
             }, status=400)
         
-        # Step 3: Create tenant atomically
-        tenant, domain, creation_status = self.algorithm.create_tenant_atomic(pending)
+        ResponseData = {
+            "detail": T("Start creating your store. Please wait You will receive a confirmation email. "),
+            # "tenant_domain": domain,
+        }
+
+        
+        threading.Thread(target=self._background_activation, args=(pending,)).start()
+
+        return Response(ResponseData, status=200)
+
+
+    def _background_activation(self, pending):
+        tenant, domain, creation_status = self.tenantActivation.create_tenant_atomic(pending)
         if creation_status != ActivationStatus.SUCCESS:
-            return Response({
-                "detail": T("Failed to activate account.")
-            }, status=500)
-        
-        # Step 4: Setup user permissions (non-blocking)
-        self.algorithm.setup_user_permissions(pending, tenant)
-        
-        # Step 5: Send confirmation
+            send_failed_activation_email(pending.email)
+            return
+
+        self.tenantActivation.setup_user_permissions(pending, tenant)
         send_message_acount_activated(pending.email, pending.schema_name, pending.name)
-        
-        return Response({
-            "detail": T("Account activated successfully. Please wait while we create your store."),
-            "tenant_domain": domain
-        })
-    
+
+
     def _handle_validation_error(self, status, pending):
         """Helper method for handling validation errors"""
         error_messages = {
@@ -204,3 +210,37 @@ class ActivateTenantView(APIView):
         }
         return Response({"detail": error_messages[status]}, status=400)
 
+
+
+# class ActivateTenantView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def __init__(self):
+#         super().__init__()
+#         self.algorithm = TenantActivation()
+
+#     def get(self, request):
+#         token = request.query_params.get("token")
+#         pending, status = self.algorithm.validate_token(token)
+
+#         if status != ActivationStatus.SUCCESS:
+#             return self._handle_validation_error(status, pending)
+
+#         expiration_status = self.algorithm.handle_token_expiration(pending)
+#         if expiration_status == ActivationStatus.TOKEN_EXPIRED:
+#             return Response({"detail": "Activation link expired. New activation email sent."}, status=400)
+
+#         tenant, domain, creation_status = self.algorithm.create_tenant_atomic(pending)
+#         if creation_status != ActivationStatus.SUCCESS:
+#             return Response({"detail": "Failed to activate account."}, status=500)
+
+#         # ⬅️ هنا هنرجع للعميل على طول
+#         ResponseData = {
+#             "detail": "Account activated successfully. Please wait while we create your store.",
+#             "tenant_domain": domain,
+#         }
+
+#         # ⬅️ باقي الخطوات في الخلفية
+#         setup_permissions_and_notify.delay(pending.id, tenant.id)
+
+#         return Response(ResponseData, status=200)

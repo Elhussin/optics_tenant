@@ -15,7 +15,7 @@ interface Props {
 
 export default function ClientProviders({ children, locale, messages }: Props) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages}    timeZone={process.env.NEXT_PUBLIC_TIMEZONE}>
       <UserProvider>
         <AsideProvider>
           <Providers>

@@ -18,7 +18,8 @@ export default function ActivatePage() {
     onSuccess: async (res) => {
       setStatus("success");
       setMessage(
-        "Your account has been successfully activated. Login details and access link have been sent to your registered email."
+        res.detail
+        // "Your account has been successfully activated. Login details and access link have been sent to your registered email."
       );
     },
     onError: async (err) => {

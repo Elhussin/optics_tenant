@@ -81,3 +81,10 @@ def send_password_change_email(email):
     send_mail("Password Changed", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 
+def send_failed_activation_email(email):
+    message = """
+    Hi 👋,
+    Your account activation failed.
+    please try again by clicking previous activation link 
+    """
+    send_mail("Account Activation Failed", message, settings.DEFAULT_FROM_EMAIL, [email])

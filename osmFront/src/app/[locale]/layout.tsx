@@ -35,12 +35,13 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
-  const { locale } = params;
+  // console.log(params);
+  const { locale } = await params ?? {};
 
   if (!routing.locales.includes(locale as "en" | "ar")) {
     notFound();
   }
-
+  // const { messages } = await getRequestConfig({locale});
   let messages: Record<string, any>;
   try {
     messages = await getTrenMessages(locale);

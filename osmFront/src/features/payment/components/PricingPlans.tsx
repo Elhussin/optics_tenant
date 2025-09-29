@@ -13,10 +13,11 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
     useEffect(() => {
       (async () => {
         const data = await FetchData({url: `/api/tenants/subscription-plans/` });
+       console.log("FetchData",data);
         if(user)
-          setPlans(data.filter((p:any) => p.name !== "trial")) 
+          setPlans(data.results.filter((p:any) => p.name !== "trial")) 
         else
-          setPlans(data)
+          setPlans(data.results)
         })();
 
     }, [user]);

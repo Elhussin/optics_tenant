@@ -111,13 +111,3 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       isSubmitting: methods.formState.isSubmitting || mutation.isPending,
     }), [methods, submitForm]);
   }
-
-
-
-  //   return {
-//     ...methods, // فورم
-//     query, // للـ GET
-//     mutation, // للـ POST/PUT/DELETE
-//     submitForm, // دالة submit موحدة
-//     isSubmitting: methods.formState.isSubmitting || mutation.isPending,
-//   };

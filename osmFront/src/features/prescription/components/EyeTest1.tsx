@@ -29,7 +29,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const fetchPrescriptions = useFormRequest({ alias: "prescriptions_prescription_retrieve" });
   const updatePrescriptions = useFormRequest({ alias: "prescriptions_prescription_update" });
 
-  const { register, handleSubmit, mutation, errors } = useApiForm({
+  const { register, handleSubmit, mutation } = useApiForm({
     alias: alias,
     defaultValues: { username: "", email: "" },
     onSuccess: () => {
@@ -37,23 +37,20 @@ export default function EyeTest(props: PrescriptionFormProps) {
     },
   });
 
+  const { setValue, getValues, submitForm, errors, isSubmitting } = register;
 
 
-//   const form= useApiForm({ alias });
-//   const { register, setValue, getValues, submitForm, errors, isSubmitting, handleSubmit } = form;
-
-  /* Fetch prescription if editing */
-  const setValues = (data: any) => {
-    for (const [key, value] of Object.entries(data)) {
-      setValue(key, value);
-    }
-  };
+  // const setValues = (data: any) => {
+  //   for (const [key, value] of Object.entries(data)) {
+  //     setValue(key, value);
+  //   }
+  // };
 
   useEffect(() => {
     if (!id || !customers.length) return;
     (async () => {
       const result = await fetchPrescriptions.submitForm({ id });
-      setValues(result.data);
+      // setValues(result.data);
       const customer: any = result?.data?.customer;
       if (customer) {
         setValue("customer", String(typeof customer === "object" ? customer.id : customer));
@@ -105,7 +102,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
       }
 
       if (result?.success) {
-        setValues(result.data);
+        // setValues(result.data);
         safeToast(message || "Saved successfully", { type: "success" });
       }
 

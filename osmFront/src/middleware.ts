@@ -10,6 +10,7 @@ import {
 const DEFAULT_LOCALE = "en";
 const LOCALE_REGEX = /^\/(ar|en)\//;
 const PUBLIC_SUBDOMAIN = "public";
+const timeZone = 'Asia/Riyadh';
 
 export const config = {
   matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
