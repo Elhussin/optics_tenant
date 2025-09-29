@@ -77,9 +77,9 @@ def get_paypal_access_token():
 def create_paypal_order(client, plan, lang,direction, amount=0):
     access_token = get_paypal_access_token()
     if config("DEBUG"):
-        base_url = f"{config("PROTOCOL")}://{client.schema_name}.{config("FRONTEND_DOMAIN")}:{config("FRONTEND_PORT")}/{lang}"
+        base_url = f"{config('PROTOCOL')}://{client.schema_name}.{config('FRONTEND_DOMAIN')}:{config('FRONTEND_PORT')}/{lang}"
     else:
-        base_url = f"{config("PROTOCOL")}://{client.schema_name}.{config("FRONTEND_DOMAIN")}/{lang}"
+        base_url = f"{config('PROTOCOL')}://{client.schema_name}.{config('FRONTEND_DOMAIN')}/{lang}"
 
     return_url = f"{base_url}/payment/processing?client_id={client.uuid}&plan={plan}&direction={direction}"
     cancel_url = (
