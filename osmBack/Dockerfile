@@ -15,10 +15,10 @@ RUN apt-get update && apt-get install -y \
 # 4️⃣ نسخ ملف المتطلبات (requirements.txt) أولاً
 # عشان لو اتغير محتواه بس، Docker يعيد خطوة التثبيت فقط
 COPY requirements.txt /app/
-
+# COPY requirements.txt /app/requirements.txt
 # 5️⃣ تثبيت باكدجات Python
-RUN pip install --no-cache-dir -r requirements.txt
-
+# RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 # 6️⃣ نسخ باقي المشروع (الكود)
 COPY . /app/
 

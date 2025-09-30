@@ -1,0 +1,46 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  backend:
+    build:
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: osm_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./osmBack:/app
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./osmBack/.env.development
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: ./osmFront
+      dockerfile: Dockerfile
+    container_name: osm_frontend
+    command: pnpm dev
+    volumes:
+      - ./osmFront:/app
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./osmFront/.env
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

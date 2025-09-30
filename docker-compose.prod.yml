@@ -1,0 +1,53 @@
+version: '3.9'
+services:
+  # db:
+  #   image: postgres:15
+  #   container_name: osm_db
+  #   restart: always
+  #   environment:
+  #     POSTGRES_DB: osm_db
+  #     POSTGRES_USER: osm_user
+  #     POSTGRES_PASSWORD: osm_pass
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: osm_backend
+    command: gunicorn osmBack.wsgi:application --bind 0.0.0.0:8000 --workers 4
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./osmBack/.env.development  
+    depends_on:
+      - db
+
+  # frontend:
+  #   build:
+  #     context: ./osmFront
+  #     dockerfile: Dockerfile
+  #   container_name: osm_frontend
+  #   command: pnpm start   # ✅ يشغل النسخة المبنية
+  #   ports:
+  #     - "3000:3000"
+  #   env_file:
+  #     - ./osmFront/.env
+  #   depends_on:
+  #     - backend
+  frontend:
+    build:
+      context: ./osmFront
+      dockerfile: Dockerfile
+    container_name: osm_frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./osmFront/.env
+    depends_on:
+      - backend
+
+
+volumes:
+  postgres_data:

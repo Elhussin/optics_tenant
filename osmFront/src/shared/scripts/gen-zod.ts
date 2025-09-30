@@ -2,7 +2,8 @@
 
 import fs from 'fs';
 import path from 'path';
-import { schemas } from '../shared/lib/schemas';
+// import { schemas } from '../shared/lib/schemas';
+import {schemas} from '@/src/shared/api/schemas'
 import { z } from 'zod';
 
 // ===== configuration and settings =====

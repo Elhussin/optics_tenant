@@ -91,7 +91,7 @@ const visibleFields = config.fieldOrder || allFields;
         return;
       }else{
       setDefaultValues(result.data);
-      formRequest.reset();
+      // formRequest?.reset();
       }
         // to returen dat when cull from anothe mdule
 
@@ -111,9 +111,9 @@ const visibleFields = config.fieldOrder || allFields;
   }, [id]);
   
   useEffect(() => {
-  if (defaultValues) {
-    formRequest.reset(defaultValues);
-  }
+  // if (defaultValues) {
+  //   formRequest?.reset(defaultValues);
+  // }
   }, [defaultValues,formRequest]);
 
   if (id && !defaultValues) {

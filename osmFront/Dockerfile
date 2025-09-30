@@ -1,82 +1,39 @@
-# # مرحلة البناء
-# FROM node:18-alpine AS builder
-# WORKDIR /app
-# COPY package*.json ./
-# RUN npm install
-# COPY . .
-# RUN npm run build
+# 1️⃣ نبدأ من نسخة Node مناسبة وخفيفة
+FROM node:20-alpine AS builder
 
-# # مرحلة التشغيل
-# FROM node:18-alpine AS runner
-# WORKDIR /app
-# COPY --from=builder /app ./
-# EXPOSE 3000
-# CMD ["npm", "start"]
-# استخدم صورة Bun الرسمية
-# FROM oven/bun:1 AS builder
-
-# WORKDIR /app
-
-# # نسخ الملفات
-# COPY package.json bun.lock ./
-# RUN bun install
-
-# COPY . .
-
-# # بناء المشروع
-# RUN bun run build
-
-# # مرحلة التشغيل
-# FROM oven/bun:1 AS runner
-# WORKDIR /app
-
-# COPY --from=builder /app ./
-
-# EXPOSE 3000
-# CMD ["bun", "run", "start"]
-
-
-
-
-# # مرحلة البناء - باستخدام Node
-# FROM node:20 AS builder
-
-# WORKDIR /app
-
-# COPY package.json package-lock.json ./
-# RUN npm install
-
-# COPY . .
-
-# RUN npm run build
-
-# # مرحلة التشغيل - باستخدام Bun
-# FROM oven/bun:1 AS runner
-# WORKDIR /app
-
-# COPY --from=builder /app ./
-
-# EXPOSE 3000
-# CMD ["bun", "run", "start"]
-
-
-# اختار نسخة Node مناسبة
-FROM node:20-alpine
-
-# تثبيت pnpm عالميًا
-RUN npm install -g pnpm
-
-# تعيين مجلد العمل
+# 2️⃣ تعيين مجلد العمل
 WORKDIR /app
 
-# نسخ الملفات
+# 3️⃣ نسخ ملفات التعريف (عشان نعمل caching لو ما اتغيرتش)
 COPY package.json pnpm-lock.yaml* ./
 
-# تثبيت الحزم
+# 4️⃣ تثبيت pnpm
+RUN npm install -g pnpm
+
+# 5️⃣ تثبيت الحزم (بناء على lockfile)
 RUN pnpm install --frozen-lockfile
 
-# نسخ باقي المشروع
+# 6️⃣ نسخ باقي المشروع
 COPY . .
 
-# تشغيل التطبيق
+# 7️⃣ بناء نسخة الإنتاج
+RUN pnpm build
+
+# ------------------------------
+#  مرحلة التشغيل (أصغر صورة ممكنة)
+# ------------------------------
+FROM node:20-alpine AS runner
+
+WORKDIR /app
+
+# 8️⃣ نسخ الملفات المبنية من مرحلة builder
+COPY --from=builder /app ./
+
+# 9️⃣ تعيين متغير البيئة للـ production
+ENV NODE_ENV=production
+
+# 🔟 فتح البورت 3000
+EXPOSE 3000
+
+# 1️⃣1️⃣ تشغيل النسخة المبنية
 CMD ["pnpm", "start"]
