@@ -7,6 +7,7 @@ class TenantMiddleware(TenantMiddleware):
     def get_tenant(self, model, hostname):
         try:
             sub = hostname.split('.')[0]
+            # print(f"[TenantMiddleware] Hostname: {hostname}, Subdomain: {sub}")
             if sub in ['www', 'api', 'admin']:
                 raise Http404("Admin domain, not a tenant")
             # Find the domain object whose domain matches the hostname
@@ -15,5 +16,5 @@ class TenantMiddleware(TenantMiddleware):
         except model.DoesNotExist:
             raise Http404("Tenant not found")
         except Exception as e:
-            print(f"[TenantMiddleware Error] {e}")
+            # print(f"[TenantMiddleware Error] {e}")
             raise Http404("Invalid tenant")

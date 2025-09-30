@@ -6,7 +6,7 @@ from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
 from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
 
-
+from django.db import connection
 User = get_user_model()
 
 # Role and Permission Serializers
@@ -107,8 +107,6 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         username = attrs.get("username")
         password = attrs.get("password")
-
-
         user = User.objects.filter(username=username).first()
         if user is None:
             raise serializers.ValidationError({"username": ["User does not exist."]})

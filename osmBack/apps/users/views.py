@@ -51,6 +51,21 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    # @method_decorator
+    # def check_active_tenant(func):
+    #     def check_active_tenant_wrapper(self, *args, **kwargs):
+    #         tenant = self.request.headers.get('X-Tenant')
+    #         if not tenant:
+    #             return Response({"detail": "Missing X-Tenant header."}, status=400)
+    #         try:
+    #             tenant_obj = Client.objects.get(schema_name=tenant, is_active=True)
+
+    #         except Client.DoesNotExist:
+    #             return Response({"detail": "Invalid tenant."}, status=400)
+    #         return func(self, *args, **kwargs)
+        
+    #     return check_active_tenant_wrapper
+
 
     @extend_schema(
         request=LoginSerializer,
@@ -71,14 +86,22 @@ class LoginView(APIView):
         },
         description="Login endpoint for users"
     )
+    # @check_active_tenant
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
+        print("serializer",serializer)
+        print("active tenant scheam", connection.schema_name)
+        print (serializer.is_valid())
+        # print("request",request.query_params ,request.data, request.headers, request.FILES)
         if serializer.is_valid():
+            print("user", serializer.validated_data['user'])
             user = serializer.validated_data['user']
 
             if not user.is_active:
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
-            role = user.role
+            # role = user.role
+            print(user,"user")
+
             if user.role:
                 permissions = user.role.permissions.all()
             else:

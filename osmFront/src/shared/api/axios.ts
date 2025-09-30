@@ -33,10 +33,11 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 
   const csrfToken = cookies["optics_tenant_csrftoken"];
   const tenant = cookies["tenant"] || "public";
-  const language = cookies["NEXT_LOCALE"] || process.env.DEFAULT_LANGUAGE;
+  const language = cookies["language"] || process.env.DEFAULT_LANGUAGE;
   const country = cookies["country"] || process.env.DEFAULT_COUNTRY;
   const currency = cookies["currency"] || process.env.DEFAULT_CURRENCY;
-
+  console.log("cookies", cookies);
+  console.log("config", language, country, currency,tenant);
   // تحديد الـ baseURL بشكل ديناميكي
   config.baseURL = getBaseUrl(undefined, false);
   // console.log("Base URL:", config.baseURL);
@@ -47,6 +48,7 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   setHeader(config, "Accept-Language", language);
   setHeader(config, "Accept-Country", country);
   setHeader(config, "Accept-Currency", currency);
+
 
   return config;
 });

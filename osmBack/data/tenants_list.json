@@ -1,5 +1,13 @@
 [
   {
+    "name": "Public",
+    "paid_until": "2030-12-31",
+    "trial": true,
+    "create_superuser": true,
+    "username": "admin",
+    "email": "admin@store1.com"
+  },
+  {
     "name": "Store1",
     "paid_until": "2030-12-31",
     "trial": true,

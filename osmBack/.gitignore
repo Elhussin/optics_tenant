@@ -1,26 +1,12 @@
-#.gitignore
-
-venv
-.vscode
-*node_modules/*
-*.log
-*node/node_modules/*
-# Ignore Python bytecode files
-# Ignore virtual environment directories
-# ignore cashe
-# Python cache
+venv/
+env/
+ENV/
+.venv/
 *.pyc
 *.pyo
-
-# System cache
-.cache/
-*.log
-*.tmp
-.DS_Store
-# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
-# If you want to ignore all `migrations/__pycache__/` specifically:
+*.so
+.Python
 **/migrations/__pycache__/

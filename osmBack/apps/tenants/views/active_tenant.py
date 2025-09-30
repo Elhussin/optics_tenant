@@ -22,7 +22,8 @@ import threading
 paymant_logger = logging.getLogger('paypal')
 tenant_logger = logging.getLogger('tenant')
 
-
+import traceback
+from django.core.exceptions import ValidationError
 
 
 
@@ -73,17 +74,42 @@ class TenantActivation:
             return ActivationStatus.TOKEN_EXPIRED
         return ActivationStatus.SUCCESS
     
+    
+
+
     def create_tenant_atomic(self, pending):
         """
-        Algorithm: Atomic tenant creation with rollback capability
-        Time Complexity: O(1) for creation, O(n) for migrations
+        Safer tenant creation with pre-checks and better error reporting
         """
+
         try:
-            with transaction.atomic():
-                # Step 1: Create tenant record
+            # ✅ Pre-checks before transaction
+            # -------------------------------
+
+            # Check schema name validity
+            schema_name = slugify(pending.schema_name)
+            if not schema_name:
+                raise ValidationError("Invalid schema name")
+
+            if Client.objects.filter(schema_name=schema_name).exists():
+                raise ValidationError(f"Schema '{schema_name}' already exists")
+
+            # Check subscription plan
+            try:
                 trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
+            except SubscriptionPlan.DoesNotExist:
+                raise ValidationError("Trial subscription plan not found")
+
+            # Prepare domain
+            domain = f"{schema_name}.{settings.TENANT_BASE_DOMAIN}"
+            if Domain.objects.filter(domain=domain).exists():
+                raise ValidationError(f"Domain '{domain}' already exists")
+
+            # ✅ Transaction block
+            # --------------------
+            with transaction.atomic():
                 tenant = Client.objects.create(
-                    schema_name=pending.schema_name,
+                    schema_name=schema_name,
                     name=pending.name,
                     plan=trial_plan,
                     max_users=trial_plan.max_users,
@@ -92,21 +118,30 @@ class TenantActivation:
                     paid_until=expiration_date(trial_plan.duration_months),
                     on_trial=True,
                 )
-                
-                # Step 2: Create domain
-                domain = f"{slugify(pending.schema_name)}.{settings.TENANT_BASE_DOMAIN}"
-                Domain.objects.create(domain=domain, tenant=tenant, is_primary=True)
+                # print("Tenant created")
 
+                Domain.objects.create(
+                    domain=domain,
+                    tenant=tenant,
+                    is_primary=True
+                )
+                # print("Domain created")
+
+                # Mark pending request as activated
                 pending.is_activated = True
-                pending.is_deleted= True
+                pending.is_deleted = True
                 pending.save()
-                
+
                 return tenant, domain, ActivationStatus.SUCCESS
-                
+
         except Exception as e:
-            self.logger.error(f"Tenant creation failed: {str(e)}")
+            error_msg = f"Tenant creation failed: {str(e)}"
+            # print(error_msg)
+            traceback.print_exc()
+            self.logger.error(error_msg)
             return None, None, ActivationStatus.CREATION_FAILED
-    
+
+
     def setup_user_permissions(self, pending, tenant):
         """
         Algorithm: User and permission setup outside main transaction
@@ -192,7 +227,9 @@ class ActivateTenantView(APIView):
 
 
     def _background_activation(self, pending):
+
         tenant, domain, creation_status = self.tenantActivation.create_tenant_atomic(pending)
+  
         if creation_status != ActivationStatus.SUCCESS:
             send_failed_activation_email(pending.email)
             return
@@ -211,36 +248,3 @@ class ActivateTenantView(APIView):
         return Response({"detail": error_messages[status]}, status=400)
 
 
-
-# class ActivateTenantView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def __init__(self):
-#         super().__init__()
-#         self.algorithm = TenantActivation()
-
-#     def get(self, request):
-#         token = request.query_params.get("token")
-#         pending, status = self.algorithm.validate_token(token)
-
-#         if status != ActivationStatus.SUCCESS:
-#             return self._handle_validation_error(status, pending)
-
-#         expiration_status = self.algorithm.handle_token_expiration(pending)
-#         if expiration_status == ActivationStatus.TOKEN_EXPIRED:
-#             return Response({"detail": "Activation link expired. New activation email sent."}, status=400)
-
-#         tenant, domain, creation_status = self.algorithm.create_tenant_atomic(pending)
-#         if creation_status != ActivationStatus.SUCCESS:
-#             return Response({"detail": "Failed to activate account."}, status=500)
-
-#         # ⬅️ هنا هنرجع للعميل على طول
-#         ResponseData = {
-#             "detail": "Account activated successfully. Please wait while we create your store.",
-#             "tenant_domain": domain,
-#         }
-
-#         # ⬅️ باقي الخطوات في الخلفية
-#         setup_permissions_and_notify.delay(pending.id, tenant.id)
-
-#         return Response(ResponseData, status=200)

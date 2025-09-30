@@ -36,4 +36,4 @@ finally:
         conn.close()
 
 
-# python scripts/delete_db.py3
+# python scripts/delete_db.py

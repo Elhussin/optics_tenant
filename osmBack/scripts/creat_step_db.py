@@ -3,8 +3,8 @@ from psycopg2 import sql
 
 # Admin connection (Postgres superuser)
 admin_params = {
-    'dbname': 'postgres',
-    'user': 'postgres',
+    'dbname': 'optics_tenant',
+    'user': 'taha',
     'password': '3112',
     'host': 'localhost',
     'port': '5432'
@@ -12,7 +12,7 @@ admin_params = {
 
 # Database name and user to create and grant privileges to
 target_db = 'optics_tenant'
-target_user = 'taha1'
+target_user = 'taha'
 target_password = '3112'  # ضع كلمة المرور التي تريدها
 
 try:
@@ -59,6 +59,7 @@ try:
     db_cursor.execute(f"GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO {target_user};")
     db_cursor.execute(f"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO {target_user};")
     db_cursor.execute(f"ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO {target_user};")
+
 
     print(f"✅ Privileges granted to user '{target_user}' on DB '{target_db}'.")
 
