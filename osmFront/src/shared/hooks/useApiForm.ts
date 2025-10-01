@@ -1,131 +1,113 @@
 "use client";
-
-import { useState, useMemo, useCallback, useRef } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/src/shared/api/axios";
+import { useMemo } from "react";
 import { ZodType, ZodObject } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "@/src/shared/api/axios";
+import { useFormRequestProps, UseApiFormReturn } from "@/src/shared/types";
+import { handleServerErrors, handleErrorStatus } from "@/src/shared/utils/error";
 
-interface UseApiFormProps<T> {
-  alias: string;                       // endpoint key
-  defaultValues?: T;
-  transform?: (data: any) => any;      // تحويل البيانات قبل الإرسال
-  showToast?: boolean;
+function hasParameters(
+  endpoint: any
+): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
+  return "parameters" in endpoint;
 }
 
-// export function useApiForm<T extends Record<string, any>>(options: UseApiFormProps<T>) {
-//   const { alias, defaultValues, transform, showToast = true } = options;
-//   const queryClient = useQueryClient();
-//   const lastPayloadRef = useRef<any>(null);
+export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
+  const {
+    alias,
+    defaultValues,
+    onSuccess,
+    onError,
+    transform,
+    showToast = true,
+  } = options;
 
-//   // العثور على endpoint
-//   const endpoint = useMemo(() => api.api.find(e => e.alias === alias) || null, [alias]);
-
-//   // تحديد الـ schema من endpoint
-//   const schema: ZodType<any> | undefined = endpoint?.parameters?.body ?? endpoint?.parameters?.query;
-
-//   // Resolver
-//   const resolver = schema instanceof ZodObject ? zodResolver(schema) : undefined;
-
-//   // React Hook Form
-//   const formMethods = useForm<T>({
-//     resolver,
-//     defaultValues,
-//     mode: "onChange",
-//   });
-
-//   // 🔹 Query لجلب البيانات
-//   const query = useQuery({
-//     queryKey: [alias],
-//     queryFn: async () => {
-//       if (!endpoint) throw new Error(`Endpoint "${alias}" not found`);
-//       const res = await api.customRequest(endpoint.alias, { method: "GET" });
-//       return res;
-//     },
-//     staleTime: 1000 * 60 * 5,
-//     enabled: !!endpoint,
-//   });
-
-//   // 🔹 Mutation لإرسال البيانات
-//   const mutation = useMutation({
-//     mutationFn: async (data: any) => {
-//       if (!endpoint) throw new Error(`Endpoint "${alias}" not found`);
-//       const payload = transform ? transform(data) : data;
-//       lastPayloadRef.current = payload;
-//       return await api.customRequest(endpoint.alias, payload);
-//     },
-//     onSuccess: () => {
-//       queryClient.invalidateQueries([alias]);
-//     },
-//   });
-
-//   const submitForm = useCallback(async (data?: any) => {
-//     const values = data ?? formMethods.getValues();
-//     const isValid = await formMethods.trigger();
-//       console.log("isValid",isValid);
-//       console.log("values",formMethods);
-//     if (!isValid) return { success: false, error: "Validation failed" };
-//     return mutation.mutateAsync(values);
-//   }, [formMethods, mutation]);
-
-//   const retry = useCallback(() => {
-//     if (!lastPayloadRef.current) return { success: false, error: "No previous payload" };
-//     return submitForm(lastPayloadRef.current);
-//   }, [submitForm]);
-
-//   return {
-//       ...formMethods,
-//       submitForm,
-//       retry,
-//       isSubmitting: formMethods.formState.isSubmitting || mutation.isLoading,
-//       formErrors: formMethods.formState.errors,
-//       query, // الوصول للبيانات، isLoading, isError
-//       mutation, // الوصول لحالة الـ mutation
-//   } 
-// }
-
-
-// // as unknown as UseFormReturn<T> & { query: typeof query; mutation: typeof mutation; submitForm: any; retry: any };
-
-interface useFormRequestProps {
-  alias: string;
-  defaultValues?: any;
-  onSuccess?: (data: any) => void;
-  onError?: (error: any) => void;
-  transform?: (data: any) => any;
-}
-
-export function useApiForm(options: useFormRequestProps) {
-  const { alias, defaultValues, onSuccess, onError, transform } = options;
   const queryClient = useQueryClient();
 
-  // mutation باستخدام React Query
-  const mutation = useMutation({
-    mutationFn: async (payload: any) => {
-      return api.customRequest(alias, payload);
-    },
-    onSuccess: (data) => {
-      // queryClient.invalidateQueries([alias]); // تحديث الكاش بعد العملية
-      onSuccess?.(data);
-    },
-    onError,
-  });
+  // 🎯 جلب الـ endpoint من الـ API client
+  const endpoint = useMemo(() => {
+    const found = api.api.find((e) => e.alias === alias);
+    if (!found) return null;
+    return found;
+  }, [alias]);
 
-  const methods = useForm({
+  // 🎯 استخراج Schema الخاص بالـ endpoint
+  const schema: ZodType<any> | undefined =
+         endpoint && hasParameters(endpoint)
+      ? endpoint.parameters?.body ?? endpoint.parameters?.query
+      : undefined;
+
+  const resolver =
+    schema instanceof ZodObject
+      ? zodResolver(schema)
+      : (values: any) => ({ values, errors: {} });
+
+  // 🎯 إعداد react-hook-form
+  const methods = useForm<any>({
+    resolver,
     defaultValues,
     mode: "onChange",
   });
+//   if (!endpoint) {
+//     return { success: false, error: `Endpoint "${alias}" not found.` };
+//   }
 
-  const submitForm = async (data: any) => {
-    const values = transform ? transform(data) : data;
-    mutation.mutate(values); // ← استخدام React Query mutation
+  // 🎯 لو endpoint = GET → نستخدم useQuery
+  const query = useQuery({
+    queryKey: [alias, defaultValues],
+    queryFn: () => api.customRequest(alias as string, defaultValues),
+    enabled: !!alias && endpoint?.method === "get",
+  });
+
+  // 🎯 Mutation لعمليات POST / PUT / DELETE
+  const mutation = useMutation({
+    mutationFn: async (payload: any) =>{
+        if (!endpoint?.alias) {
+          throw new Error(`Endpoint alias is undefined for alias "${alias}"`);
+        }
+        return api.customRequest(endpoint.alias, payload);
+      },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: [alias as string] });     
+       onSuccess?.(data);
+    },
+    onError: (error: any) => {
+      // توزيع الأخطاء على الفورم
+      handleServerErrors(error, methods.setError, { showToast });
+      const normalized = handleErrorStatus(error);
+      onError?.(normalized);
+    },
+  });
+
+  // 🎯 دالة submit مرتبطة بالفورم
+  const submitForm = async (data?: any) => {
+    // تحقق من الـ validation
+    const isValid = await methods.trigger();
+    if (!isValid) {
+      const fieldErrors = Object.values(methods.formState.errors).map(
+        (err: any) => err?.message
+      );
+      return {
+        success: false,
+        error: fieldErrors.join(", ") || "Validation failed",
+      };
+    }
+
+    const values = data ?? methods.getValues();
+    const payload = transform ? transform(values) : values;
+
+    mutation.mutate(payload);
   };
 
-  return {
-    ...methods,
-    submitForm,
-    isSubmitting: mutation.isPending,
-    error: mutation.error,
-  };
-}
+
+    return useMemo(() => ({
+
+      ...methods, // فورم
+      query, // للـ GET
+      mutation, // للـ POST/PUT/DELETE
+      submitForm, // دالة submit موحدة
+      isSubmitting: methods.formState.isSubmitting || mutation.isPending,
+    }), [methods, submitForm]);
+  }

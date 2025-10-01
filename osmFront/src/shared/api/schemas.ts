@@ -641,7 +641,7 @@ const DocumentRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     title: z.string().min(1).max(255),
-    file: z.instanceof(File),
+    file: z.any(),
     customer: z.number().int().nullish(),
   })
   .passthrough();
@@ -650,7 +650,7 @@ const PatchedDocumentRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     title: z.string().min(1).max(255),
-    file: z.instanceof(File),
+    file: z.any(),
     customer: z.number().int().nullable(),
   })
   .partial()

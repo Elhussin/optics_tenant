@@ -1,46 +1,90 @@
-version: '3.9'
+    version: '3.9'
 
-services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    services:
+      db:
+        image: postgres:15-alpine
+        container_name: osm_postgres_dev
+        restart: unless-stopped
+        environment:
+          POSTGRES_DB: optics_tenant
+          POSTGRES_USER: taha
+          POSTGRES_PASSWORD: 3112
+        volumes:
+          - postgres_data_dev:/var/lib/postgresql/data
+        ports:
+          - "5433:5432"
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+          interval: 5s
+          timeout: 3s
+          retries: 5
+        networks:
+          - osm_network_dev
+
+      backend:
+        build:
+          context: ./osmBack
+          dockerfile: Dockerfile
+        container_name: osm_backend_dev
+        restart: unless-stopped
+        command: python manage.py runserver 0.0.0.0:8000
+        volumes:
+          - ./osmBack:/app
+          - /app/__pycache__
+        ports:
+          - "8000:8000"
+        env_file:
+          - ./osmBack/.env.development
+        environment:
+          - DJANGO_DEBUG=True
+          - PYTHONUNBUFFERED=1
+        depends_on:
+          db:
+            condition: service_healthy
+        networks:
+          - osm_network_dev
+
+      frontend:
+        build:
+          context: ./osmFront
+          dockerfile: Dockerfile
+        container_name: osm_frontend_dev
+        restart: unless-stopped
+        command: pnpm dev
+        volumes:
+          - ./osmFront:/app
+          - /app/node_modules
+          - /app/.next
+        ports:
+          - "3000:3000"
+        env_file:
+          - ./osmFront/.env
+        environment:
+          - NODE_ENV=development
+        depends_on:
+          - backend
+        networks:
+          - osm_network_dev
+
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5433:5432"
+      postgres_data_dev:
 
-  backend:
-    build:
-      context: ./osmBack
-      dockerfile: Dockerfile
-    container_name: osm_backend
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./osmBack:/app
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./osmBack/.env.development
-    depends_on:
-      - db
+    networks:
+      osm_network_dev:
+        driver: bridge
 
-  frontend:
-    build:
-      context: ./osmFront
-      dockerfile: Dockerfile
-    container_name: osm_frontend
-    command: pnpm dev
-    volumes:
-      - ./osmFront:/app
-    ports:
-      - "3000:3000"
-    env_file:
-      - ./osmFront/.env
-    depends_on:
-      - backend
+    # # # للتطوير
+    # # docker compose -f docker-compose.dev.yml up --build
 
-volumes:
-  postgres_data:
+    # # # للإنتاج
+    # # docker compose up --build -d
+
+
+    # # # إيقاف وحذف
+    # # docker compose down -v
+    # # docker compose down --remove-orphans
+    # docker logs -f osm_postgres_dev  
+    # # docker ps
+
+
+

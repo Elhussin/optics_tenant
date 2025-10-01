@@ -1,39 +1,45 @@
-# 1️⃣ نبدأ من نسخة Node مناسبة وخفيفة
+# ========================================
+# مرحلة البناء
+# ========================================
 FROM node:20-alpine AS builder
 
-# 2️⃣ تعيين مجلد العمل
 WORKDIR /app
 
-# 3️⃣ نسخ ملفات التعريف (عشان نعمل caching لو ما اتغيرتش)
-COPY package.json pnpm-lock.yaml* ./
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# 4️⃣ تثبيت pnpm
-RUN npm install -g pnpm
-
-# 5️⃣ تثبيت الحزم (بناء على lockfile)
+COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
-# 6️⃣ نسخ باقي المشروع
 COPY . .
-
-# 7️⃣ بناء نسخة الإنتاج
 RUN pnpm build
 
-# ------------------------------
-#  مرحلة التشغيل (أصغر صورة ممكنة)
-# ------------------------------
+# ========================================
+# مرحلة التشغيل
+# ========================================
 FROM node:20-alpine AS runner
 
 WORKDIR /app
 
-# 8️⃣ نسخ الملفات المبنية من مرحلة builder
-COPY --from=builder /app ./
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# 9️⃣ تعيين متغير البيئة للـ production
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --prod --frozen-lockfile
+
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/next.config.* ./
+
+# إنشاء مستخدم غير root وصلاحيات
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nextjs -u 1001 && \
+    chown -R nextjs:nodejs /app
+
+USER nextjs
+
 ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
-# 🔟 فتح البورت 3000
 EXPOSE 3000
 
-# 1️⃣1️⃣ تشغيل النسخة المبنية
 CMD ["pnpm", "start"]

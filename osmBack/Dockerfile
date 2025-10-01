@@ -1,30 +1,63 @@
-# 1️⃣ نبدأ من صورة Python الرسمية
-FROM python:3.11-slim AS base
+# ========================================
+# مرحلة البناء
+# ========================================
+FROM python:3.11-slim AS builder
 
-# 2️⃣ تعيين مجلد العمل داخل الحاوية
-# هنا هنحط كل ملفات المشروع
 WORKDIR /app
 
-# 3️⃣ تثبيت المكتبات الأساسية المطلوبة (لتجنب مشاكل psycopg2 وغيره)
-RUN apt-get update && apt-get install -y \
+# تثبيت الأدوات المطلوبة للبناء
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
-# 4️⃣ نسخ ملف المتطلبات (requirements.txt) أولاً
-# عشان لو اتغير محتواه بس، Docker يعيد خطوة التثبيت فقط
-COPY requirements.txt /app/
-# COPY requirements.txt /app/requirements.txt
-# 5️⃣ تثبيت باكدجات Python
-# RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install -r requirements.txt
-# 6️⃣ نسخ باقي المشروع (الكود)
-COPY . /app/
+# نسخ requirements
+COPY requirements.txt .
 
-# 7️⃣ فتح البورت اللي هيشغل عليه Django
+# إنشاء virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# تثبيت الحزم
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# ========================================
+# مرحلة التشغيل
+# ========================================
+FROM python:3.11-slim AS runner
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# نسخ الـ virtual environment
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# نسخ الكود
+COPY . .
+
+# إنشاء مجلد logs وصلاحياته
+RUN mkdir -p /app/logs && chown -R 1001:1001 /app/logs
+
+# إنشاء مستخدم غير root
+RUN useradd -m -u 1001 django && chown -R django:django /app
+
+USER django
+
+# جمع الملفات الثابتة
+RUN python manage.py collectstatic --noinput --clear || true
+
+ENV PYTHONUNBUFFERED=1
+ENV DJANGO_SETTINGS_MODULE=optics_tenant.settings
+
 EXPOSE 8000
 
-# 8️⃣ الأمر الافتراضي لتشغيل السيرفر
-# لو في production يفضل gunicorn بدل runserver
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+
+# استخدام gunicorn بدلاً من runserver في production
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "optics_tenant.wsgi:application"]
+# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

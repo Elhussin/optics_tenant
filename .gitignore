@@ -3,7 +3,7 @@
 Thumbs.db
 
 # Logs & temp
-*.log
+# *.log
 *.tmp
 .cache/
 
@@ -14,3 +14,8 @@ Thumbs.db
 
 # Docker
 docker-compose.override.yml
+
+
+
+# venv
+venv

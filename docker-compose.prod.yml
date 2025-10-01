@@ -1,53 +1,79 @@
 version: '3.9'
-services:
-  # db:
-  #   image: postgres:15
-  #   container_name: osm_db
-  #   restart: always
-  #   environment:
-  #     POSTGRES_DB: osm_db
-  #     POSTGRES_USER: osm_user
-  #     POSTGRES_PASSWORD: osm_pass
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
 
+services:
+  # ========================================
+  # قاعدة البيانات
+  # ========================================
+  db:
+    image: postgres:15-alpine
+    container_name: osm_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-osmdb}
+      POSTGRES_USER: ${DB_USER:-osmuser}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=en_US.UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-osmuser} -d ${DB_NAME:-osmdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - osm_network
+
+  # ========================================
+  # Backend (Django)
+  # ========================================
   backend:
     build:
       context: ./osmBack
       dockerfile: Dockerfile
     container_name: osm_backend
-    command: gunicorn osmBack.wsgi:application --bind 0.0.0.0:8000 --workers 4
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     ports:
       - "8000:8000"
     env_file:
-      - ./osmBack/.env.development  
+      - ./osmBack/.env.development
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - osm_network
 
-  # frontend:
-  #   build:
-  #     context: ./osmFront
-  #     dockerfile: Dockerfile
-  #   container_name: osm_frontend
-  #   command: pnpm start   # ✅ يشغل النسخة المبنية
-  #   ports:
-  #     - "3000:3000"
-  #   env_file:
-  #     - ./osmFront/.env
-  #   depends_on:
-  #     - backend
+  # ========================================
+  # Frontend (Next.js)
+  # ========================================
   frontend:
     build:
       context: ./osmFront
       dockerfile: Dockerfile
     container_name: osm_frontend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
       - ./osmFront/.env
     depends_on:
       - backend
-
+    networks:
+      - osm_network
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  osm_network:
+    driver: bridge
