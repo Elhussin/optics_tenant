@@ -36,11 +36,8 @@ axiosInstance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   const language = cookies["language"] || process.env.DEFAULT_LANGUAGE;
   const country = cookies["country"] || process.env.DEFAULT_COUNTRY;
   const currency = cookies["currency"] || process.env.DEFAULT_CURRENCY;
-  console.log("cookies", cookies);
-  console.log("config", language, country, currency,tenant);
-  // تحديد الـ baseURL بشكل ديناميكي
+
   config.baseURL = getBaseUrl(undefined, false);
-  // console.log("Base URL:", config.baseURL);
 
   // ضبط الهيدرز
   setHeader(config, "X-OPTICS-TENANT-CSRFToken", csrfToken);
@@ -144,11 +141,8 @@ api.customRequest = async function (alias: string, data: any = {}) {
 
   try {
     const response = await axiosInstance(config);
-    console.log("Response from", alias, ":", response);
     return response.data;
   } catch (error) {
-    // console.log(error);
-    
     throw error;
   }
 };

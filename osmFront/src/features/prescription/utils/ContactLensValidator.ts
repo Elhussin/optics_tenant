@@ -1,7 +1,34 @@
 export class ContactLensValidator {
     /**
-     * Convert an eyeglass prescription to a spherical equivalent.
+     * This class is used to validate and convert eyeglass prescriptions
+     * from a spherical format to a toric contact lens format.
+     * 
+     * The class contains two main methods:
+     * - convertToSpheric: takes an eyeglass prescription in a spherical format
+     *   and returns a contact lens prescription in the same format.
+     * - convertToToric: takes an eyeglass prescription in a spherical format
+     *   and returns a contact lens prescription in a toric format.
+     * 
+     * The class also contains several helper methods:
+     * - sphericalEquivalent: calculates the spherical equivalent of a given sphere and cylinder.
+     * - sphericWithoutVertexDistance: calculates the sphere without the vertex distance.
+     * - roundToNearestQuarter: rounds a number to the nearest quarter.
+     * - formatResultToQuarter: formats the result of the conversion to a quarter.
+     * - formatNumberCustom: formats a number to a string with two decimal places.
+     * - isMultipleOfQuarter: checks if a number is a multiple of 0.25.
+     * 
+     * Example of usage:
+     * const validator = new ContactLensValidator();
+     * 
+     * console.log(
+     *   validator.convertToSpheric({ SPH: "-5.25", CY: "-1.00", AX: "90", BV: "12", ADD: "2.00" })
+     * );
+     * 
+     * console.log(
+     *   validator.convertToToric({ SPH: "-5.25", CY: "-1.00", AX: "90", BV: "12", ADD: "2.00" })
+     * );
      */
+
     convertToSpheric(data: Record<string, string | number>): Record<string, string | number> {
       const sphere = String(data["SPH"] ?? "0").trim();
       const cylinder = String(data["CY"] ?? "0").trim();
@@ -107,15 +134,4 @@ export class ContactLensValidator {
       return value % 0.25 === 0;
     }
   }
-  
-  // مثال للاستخدام
-  const validator = new ContactLensValidator();
-  
-  console.log(
-    validator.convertToSpheric({ SPH: "-5.25", CY: "-1.00", AX: "90", BV: "12", ADD: "2.00" })
-  );
-  
-  console.log(
-    validator.convertToToric({ SPH: "-5.25", CY: "-1.00", AX: "90", BV: "12", ADD: "2.00" })
-  );
   
