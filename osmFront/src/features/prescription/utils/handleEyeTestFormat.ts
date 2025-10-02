@@ -26,7 +26,6 @@ const validatorMap: Record<string, (n: number) => number | string | null> = {
 export const handleEyeTestFormat = (props:HandleEyeTestFormatProps) => {
     const {field, value,setFieldErrors,setValue,getValues} = props
 
-    console.log(field,value);
     if(isNaN(Number(value))){
       setFieldErrors((prev:any) => ({ ...prev, [field]: true }));
       return;
@@ -101,6 +100,8 @@ export const validateEyeTest=(data:any)=>{
       pd: data.right_pupillary_distance,
       sg: data.sigmant_right,
     });
+
+
     if (!right.valid) {
       right.errors.forEach((err) => safeToast("Right eye: " + err, { type: "error" }));
       return false;
@@ -115,22 +116,25 @@ export const validateEyeTest=(data:any)=>{
       pd: data.left_pupillary_distance,
       sg: data.sigmant_left,
     });
+
     if (!left.valid) {
       left.errors.forEach((err) => safeToast("Left eye: " + err, { type: "error" }));
       return false;
     }
+    return true;
 }
 
 
 export const validateContactLens=(data:any)=>{
   
-  const rightSphere = contactLensValidator.convertToSpheric({SPH: data.right_sphere,CY: data.right_cylinder,AX: data.right_axis,BV: data.right_pupillary_distance,ADD: data.right_reading_add});
+  console.log("data",data);
+  const rightSphere = contactLensValidator.convertToSpheric({SPH: data.right_sphere,CY: data.right_cylinder,AX: data.right_axis,BV: data.vertical_distance_right,ADD: data.right_reading_add});
 
- const leftSphere = contactLensValidator.convertToSpheric({SPH: data.left_sphere,CY: data.left_cylinder,AX: data.left_axis,BV: data.left_pupillary_distance,ADD: data.left_reading_add});
+ const leftSphere = contactLensValidator.convertToSpheric({SPH: data.left_sphere,CY: data.left_cylinder,AX: data.left_axis,BV: data.vertical_distance_left,ADD: data.left_reading_add});
 
- const rightToric = contactLensValidator.convertToToric({SPH: data.right_sphere,CY: data.right_cylinder,AX: data.right_axis,BV: data.right_pupillary_distance,ADD: data.right_reading_add});
+ const rightToric = contactLensValidator.convertToToric({SPH: data.right_sphere,CY: data.right_cylinder,AX: data.right_axis,BV: data.vertical_distance_right,ADD: data.right_reading_add});
 
- const leftToric = contactLensValidator.convertToToric({SPH: data.left_sphere,CY: data.left_cylinder,AX: data.left_axis,BV: data.left_pupillary_distance,ADD: data.left_reading_add});
+ const leftToric = contactLensValidator.convertToToric({SPH: data.left_sphere,CY: data.left_cylinder,AX: data.left_axis,BV: data.vertical_distance_left,ADD: data.left_reading_add});
 
 return {
     rightSphere,

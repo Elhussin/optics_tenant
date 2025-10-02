@@ -114,5 +114,7 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       mutation, // للـ POST/PUT/DELETE
       submitForm, // دالة submit موحدة
       isSubmitting: methods.formState.isSubmitting || mutation.isPending,
+      errors: methods.formState.errors,
+      formErrors: { ...methods.formState.errors, root: methods.formState.errors.root?.message },
     }), [methods, submitForm]);
   }

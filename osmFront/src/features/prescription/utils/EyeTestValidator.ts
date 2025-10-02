@@ -238,7 +238,8 @@ export class EyeTestValidator {
     const axisNum = Number(axis);
 
     // تصحيح: التحقق من صفرية CYL فقط
-    if (cylNum === 0 || isNaN(cylNum)) return null;
+    // if (cylNum === 0 || isNaN(cylNum)) return null;
+    if (!cylNum || cylNum <= 0) return null; // لو مفيش CYL → ما نعدلش
 
     // تصحيح: CYL دائماً بالسالب باستخدام القيمة المطلقة
     const newCyl = -Math.abs(cylNum);
@@ -282,7 +283,7 @@ export class EyeTestValidator {
     if (hasCyl && hasAxis) return true;
     
     // 4. لا شيء (كلها فارغة)
-    if (!hasSph && !hasCyl && !hasAxis) return true;
+    if (!hasSph && !hasCyl && !hasAxis) return false;
 
     return false;
   }
@@ -302,6 +303,7 @@ export class EyeTestValidator {
     // التحقق من مجموعة SPH/CYL/AXIS
     if (!this.checkSphCylAxisCombo(data.sphere, data.cylinder, data.axis)) {
       errors.push("CYL and AXIS must be entered together, or both left empty.");
+      return { valid: false, errors, formatted };
     }
 
     // SPH

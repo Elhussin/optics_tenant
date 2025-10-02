@@ -3,7 +3,9 @@ import { OtherFailedProps } from "../types";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from "lucide-react";
 export const OtherEyeTestFailed = (props: OtherFailedProps) => {
+
   const { register, customers, setShowModal, errors, isView } = props;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       {/* Notes */}
@@ -59,7 +61,6 @@ export const OtherEyeTestFailed = (props: OtherFailedProps) => {
 
       </div>
       {errors?.customer && <p className="text-red-500 mt-1">{errors.customer.message}</p>}
-
     </div>
   )
 }

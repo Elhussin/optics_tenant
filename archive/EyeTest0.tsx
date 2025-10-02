@@ -1,17 +1,17 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
-import { PrescriptionFormProps } from "../types";
+import { PrescriptionFormProps } from "../osmFront/src/features/prescription/types";
 import { safeToast } from "@/src/shared/utils/toastService";
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from "lucide-react";
-import EyeRow from "./EyeRow";
-import EyeExtraRow from "./EyeExtraRow";
-import { EyeTestLabel, EyeTestLabelProps } from "./eyeTestLabel";
-import { validateEyeTest,validateContactLens } from "../utils/handleEyeTestFormat";
-import { ContactLensValidator } from "../utils/ContactLensValidator";
-import { OtherEyeTestFailed } from "./OtherEyeTestFailed";
+import EyeRow from "../osmFront/src/features/prescription/components/EyeRow";
+import EyeExtraRow from "../osmFront/src/features/prescription/components/EyeExtraRow";
+import { EyeTestLabel, EyeTestLabelProps } from "../osmFront/src/features/prescription/components/eyeTestLabel";
+import { validateEyeTest,validateContactLens } from "../osmFront/src/features/prescription/utils/handleEyeTestFormat";
+import { ContactLensValidator } from "../osmFront/src/features/prescription/utils/ContactLensValidator";
+import { OtherEyeTestFailed } from "../osmFront/src/features/prescription/components/OtherEyeTestFailed";
 
 
 const contactLensValidator = new ContactLensValidator();
