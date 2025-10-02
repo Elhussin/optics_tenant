@@ -23,11 +23,11 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const { alias, title, message, submitText, id, isView = false } = props;
 
   const fetchCustomers = useFormRequest({ alias: "crm_customers_list" });
-  console.log(fetchCustomers)
+
   const fetchPrescriptions = useFormRequest({ alias: "prescriptions_prescription_retrieve" });
   const updatePrescriptions = useFormRequest({ alias: "prescriptions_prescription_update" });
 
-  const { register, setValue, getValues, submitForm, errors, isSubmitting, handleSubmit } = useFormRequest({ alias });
+  const { register, setValue, getValues, submitForm, errors, isSubmitting, handleSubmit, reset } = useFormRequest({ alias });
 
   /* Fetch prescription if editing */
   const setValues = (data: any) => {
@@ -52,12 +52,10 @@ export default function EyeTest(props: PrescriptionFormProps) {
   useEffect(() => {
     const fetchData = async () => {
       const result = await fetchCustomers.submitForm();
-      console.log(result);
       const list = result.data.results.reverse();
       setCustomers(list);
 
       if (result.success) {
-        console.log(id, firstLoad, showModal, list.length > 0)
         if (!id && !firstLoad && !showModal && list.length > 0) {
           setValue("customer", String(list[0].id));
         }
@@ -76,23 +74,23 @@ export default function EyeTest(props: PrescriptionFormProps) {
 
       validateEyeTest(data);
       const validateContactLensData = validateContactLens(data);
-      console.log(validateContactLensData);
-      // submit
-      
+
       const sphericalData = contactLensValidator.convertToSpheric(data);
       const toricData = contactLensValidator.convertToToric(data);
-      console.log(sphericalData, toricData);
+
       let result;
-      console.log(data);
+
       if (id) {
         result = await updatePrescriptions.submitForm(data);
 
       } else {
         result = await submitForm(data);
       }
-
+      console.log(result);
       if (result?.success) {
-        setValues(result.data);
+        reset(result.data);
+
+        // setValues(result.data);
         safeToast(message || "Saved successfully", { type: "success" });
       }
 

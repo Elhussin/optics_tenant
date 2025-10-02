@@ -12,8 +12,9 @@ import { EyeTestLabel, EyeTestLabelProps } from "./eyeTestLabel";
 import { validateEyeTest, validateContactLens } from "../utils/handleEyeTestFormat";
 import { ContactLensValidator } from "../utils/ContactLensValidator";
 import { OtherEyeTestFailed } from "./OtherEyeTestFailed";
-
+import { EyeTestValidator } from "../utils/EyeTestValidator";
 const contactLensValidator = new ContactLensValidator();
+const validator = new EyeTestValidator();
 
 export default function EyeTest(props: PrescriptionFormProps) {
   const [customers, setCustomers] = useState<any[]>([]);
@@ -23,25 +24,27 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const [defaultData, setDefaultData] = useState<any>({});
   // API hooks
   const customersApi = useApiForm({ alias: "crm_customers_list" });
-  const prescriptionApi = useApiForm({ alias: "prescriptions_prescription_retrieve" });
+  const prescriptionApi = useApiForm({ alias: "prescriptions_prescription_retrieve", defaultValues: { id: Number(id) } });
   const updatePrescriptionApi = useApiForm({ alias: "prescriptions_prescription_update" });
   // const formApi = useApiForm({ alias });
 
   // const { register, setValue, getValues, handleSubmit, formState } = formApi.methods;
-  const { register, handleSubmit, setValue, getValues, submitForm, errors, isSubmitting } = useApiForm({ alias: alias, defaultValues: defaultData });
+  const { register, handleSubmit, setValue, getValues, submitForm, errors, isSubmitting, reset } = useApiForm({ alias: alias});
   // Fetch prescriptions if editing
   useEffect(() => {
     if (!id) return;
-    prescriptionApi.query.refetch({ id }).then((res: any) => {
-      if (res?.data) {
-        // setDefaultData(res.data);
-        Object.entries(res.data).forEach(([k, v]) => setValue(k, v));
-        if (res.data.customer) {
-          setValue("customer", String(res.data.customer.id ?? res.data.customer));
-        }
-
+    async function fetchData() {
+      const prescriptionData = await prescriptionApi.query.refetch();
+      console.log("prescriptionData",prescriptionData);
+      if (prescriptionData?.data) {
+        reset(prescriptionData.data);
       }
-    });
+       const customer: any = prescriptionData?.data?.customer;
+      if (customer) {
+        setValue("customer", String(typeof customer === "object" ? customer.id : customer));
+      }
+    }
+    fetchData();
   }, [id]);
 
   // Fetch customers
@@ -59,24 +62,32 @@ export default function EyeTest(props: PrescriptionFormProps) {
   // Submit Handler
   const onSubmit = async (data: any) => {
     try {
+      if(!validator.checkSphCylAxisCombo(data.right_sphere, data.right_cylinder, data.right_axis)) {
+        return
+      }
+      if(!validator.checkSphCylAxisCombo(data.left_sphere, data.left_cylinder, data.left_axis)) {
+        return
+      }
       validateEyeTest(data);
+      console.log(validateEyeTest(data));
       const contactLens= validateContactLens(data);
-      console.log(contactLens);
-
       const sphericalData = contactLensValidator.convertToSpheric(data);
       const toricData = contactLensValidator.convertToToric(data);
 
       let result;
-      console.log("data", data);
       if (id) {
         result = await updatePrescriptionApi.mutation.mutateAsync(data);
+        console.log(result);
       } else {
         result = await submitForm(data);
 
       }
-      console.log("result", result);
+
       if (result?.success) {
+        reset();
+    
         safeToast(message || "Saved successfully", { type: "success" });
+        reset(result.data);
       }
     } catch (err: any) {
       safeToast(err.message || "Server error", { type: "error" });

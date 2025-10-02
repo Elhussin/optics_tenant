@@ -81,9 +81,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     },
   });
 
-  // 🎯 دالة submit مرتبطة بالفورم
   const submitForm = async (data?: any) => {
-    // تحقق من الـ validation
+    // ✅ تحقق من الـ validation
     const isValid = await methods.trigger();
     if (!isValid) {
       const fieldErrors = Object.values(methods.formState.errors).map(
@@ -94,13 +93,19 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
         error: fieldErrors.join(", ") || "Validation failed",
       };
     }
-
+  
     const values = data ?? methods.getValues();
     const payload = transform ? transform(values) : values;
-
-    mutation.mutate(payload);
+  
+    try {
+      // ✅ هنا هتاخد Response وترجعه
+      const response = await mutation.mutateAsync(payload);
+      return { success: true, data: response };
+    } catch (error: any) {
+      return { success: false, error };
+    }
   };
-
+  
 
     return useMemo(() => ({
 
