@@ -115,7 +115,8 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
     );
   }
 
-  if (fieldType === "select" || fieldType === "foreignkey"){
+  //  || fieldType === "foreignkey"
+  if (fieldType === "select"){
     return <ControlledSelect
     name={fieldName}
     control={form.control}
@@ -126,65 +127,6 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
     />;
 
   }
-
-  // if (fieldType === "select" || fieldType === "foreignkey") {
-  //   return (
-  //     <Controller
-  //       name={fieldName}
-  //       control={form.control}
-  //       rules={{ required: required ? `${label} is required` : false }}
-  //       render={({ field }) => {
-  //         const selectedOption =
-  //           options.find((opt: any) => opt.value === field.value) || null;
-  //         return (
-  //           <>
-  //             <ReactSelect
-  //               id={fieldName}
-  //               options={options}
-  //               isLoading={loading}
-  //               value={selectedOption}
-  //               onChange={(opt) => field.onChange(opt?.value)}
-  //               onBlur={field.onBlur}
-  //               isClearable
-  //               placeholder={`Select ${label}...`}
-  //               classNamePrefix="rs"
-  //             />
-  //             {form.formState.errors[fieldName] && (
-  //               <p className={config.errorClasses}>
-  //                 {form.formState.errors[fieldName]?.message as string}
-  //               </p>
-  //             )}
-  //           </>
-  //         );
-  //       }}
-  //     />
-  //   );
-  // }
-
-//   <Controller
-//   name={fieldName}
-//   control={form.control}
-//   rules={{ required: required ? `${label} is required` : false }}
-//   render={({ field }) => {
-//     // اختار option المطابق للقيمة الحالية
-//     const selectedOption =
-//       options.find((opt) => opt.value === field.value) || null;
-
-//     return (
-//       <ReactSelect
-//         id={fieldName}
-//         options={options}
-//         value={selectedOption}
-//         isLoading={loading}
-//         onChange={(opt) => field.onChange(opt?.value)}
-//         onBlur={field.onBlur}
-//         isClearable
-//         placeholder={`Select ${label}...`}
-//         classNamePrefix="rs"
-//       />
-//     );
-//   }}
-// />
 
   if (fieldType === "textarea") {
     return (

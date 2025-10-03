@@ -34,57 +34,44 @@ export const defaultConfig: GeneratorConfig = {
   
   export const relationshipConfigs: RelationshipConfig = {
     user_id: {
-      endpoint: 'users_users_list',
       labelField: 'username',
       valueField: 'id',
       searchField: 'username',
-      createPage: '/dashboard/user/create',
       entityName: 'users',
     },
     category_id: {
-      endpoint: 'hrm_categories_list',
       labelField: 'name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/hrm/categories/create'
     },
     role_id: {
-      endpoint: 'users_roles_list',
       labelField: 'name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/dashboard/role/create',
       entityName: 'roles',
     },
     page_id: {
-      endpoint: 'pages_pages_list',
       labelField: 'slug',
       valueField: 'id',
       searchField: 'title',
-      createPage: '/dashboard/pages/create'
+      entityName: 'pages',
     },
     branch_id: {
-      endpoint: 'branches_branches_list',
       labelField: 'name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/branches/branches/create',
       entityName: 'branch',
     },
     employee_id: {
-      endpoint: 'hrm_employees_list',
       labelField: 'user_name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/hrm/employees/create',
       entityName: 'employee',
     },
     department_id: {
-      endpoint: 'hrm_departments_list',
       labelField: 'name',
       valueField: 'id',
       searchField: 'name',
-      createPage: '/hrm/department/create',
       entityName: 'department',
     },
 

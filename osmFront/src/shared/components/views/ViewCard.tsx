@@ -55,8 +55,9 @@ export default function ViewCard({ entity }: { entity: string }) {
           </div>
         </div>
       ))}
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+
       </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </>
   );
 }

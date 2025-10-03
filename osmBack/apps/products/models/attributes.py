@@ -9,8 +9,8 @@ class Attributes(BaseModel):
 
 class AttributeValue(BaseModel):
     """Product attribute values"""
-    attribute = models.ForeignKey(Attributes, related_name='values', on_delete=models.CASCADE)
+    attribute_id = models.ForeignKey("Attributes", related_name='values', on_delete=models.CASCADE)
     value = models.CharField(max_length=100 , unique=True)
     
     def __str__(self):
-        return f"{self.attribute.name}: {self.value}"
+        return f"{self.attribute_id.name}: {self.value}"

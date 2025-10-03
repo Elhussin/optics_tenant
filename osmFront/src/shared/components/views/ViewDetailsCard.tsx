@@ -48,6 +48,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   if (!form) return <NotFound error={t('noConfigError')} />;
   if (formRequest.isLoading || !data) return <Loading4 />;
   if (formRequest.error) return <NotFound error={t('errorLoadingData')} />;
+  console.log("detialsView",data)
   return (
     <div className="container-h">
       <div className="main-header">

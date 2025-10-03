@@ -7,6 +7,7 @@ class AttributesSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class AttributeValueSerializer(serializers.ModelSerializer):
+    attribute_name = serializers.CharField(source='attribute_id.name', read_only=True)
     class Meta:
         model = AttributeValue
         fields = '__all__'

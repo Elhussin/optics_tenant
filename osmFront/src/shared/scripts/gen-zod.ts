@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 // import { schemas } from '../shared/lib/schemas';
 import {schemas} from '@/src/shared/api/schemas'
+// C:\coding\optics_tenant\osmFront\src\shared\api\schemas.ts
 import { z } from 'zod';
 
 // ===== configuration and settings =====

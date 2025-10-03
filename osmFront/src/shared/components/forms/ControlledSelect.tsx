@@ -2,7 +2,7 @@
 
 import { Controller, FieldValues, Control } from 'react-hook-form';
 import ReactSelect from 'react-select';
-import { getFieldLabel } from '@/src/shared/utils/DynamicFormhelper'; 
+import { getFieldLabel } from '@/src/shared/utils/DynamicFormhelper';
 
 type Option = { label: string; value: string };
 
@@ -17,22 +17,16 @@ type ControlledSelectProps<T extends FieldValues> = {
   className?: string;
 };
 
-export function ControlledSelect<T extends FieldValues>({
-  name,
-  control,
-  label,
-  options,
-  required = false,
-  placeholder = 'Select...',
-  classNamePrefix = 'rs',
-  className = '',
-}: ControlledSelectProps<T>) {
+export function ControlledSelect<T extends FieldValues>(props: ControlledSelectProps<T>) {
+
+  const { name, control, label, options, required = false, placeholder = 'Select...', classNamePrefix = 'rs', className = '' } = props;
+
   const parsedOptions: Option[] = options.map((opt) =>
     typeof opt === 'string'
-      ? { value: opt, label: getFieldLabel(opt ) }
+      ? { value: opt, label: getFieldLabel(opt) }
       : opt
   );
-
+  
   return (
     <div className="space-y-1">
       {label && (

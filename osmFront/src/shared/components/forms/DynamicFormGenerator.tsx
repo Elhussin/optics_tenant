@@ -11,7 +11,7 @@ import { CirclePlus, ArrowLeft } from 'lucide-react';
 import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
 import { useMemo } from 'react';
 import { safeToast } from '@/src/shared/utils/toastService';
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { ActionButton } from '../ui/buttons';
 import { useRouter } from '@/src/app/i18n/navigation';
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
@@ -22,13 +22,13 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [currentFieldName, setCurrentFieldName] = useState('');
-  const { entity, id,setData} = props
+  const { entity, id, setData } = props
   const [loading, setLoading] = useState(false);
 
   if (!entity) throw new Error('entity is required');
   const t = useTranslations('formsConfig');
   const form = formsConfig[entity];
-  const alias = useMemo(() => (id ? form.updateAlias : form.createAlias ), [id, form]);
+  const alias = useMemo(() => (id ? form.updateAlias : form.createAlias), [id, form]);
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);
   const showResetButton = form.showResetButton ?? true;
   const showBackButton = form.showBackButton ?? true;
@@ -48,10 +48,10 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
 
   const errorMessage = useMemo(
     () => `${t('failed')} ${t(action)} ${t(entity)}`,
-    [id,t,entity]
+    [id, t, entity]
   );
 
-  const title = useMemo(() => `${t(action)} ${t(entity)}`, [id,t,entity]);
+  const title = useMemo(() => `${t(action)} ${t(entity)}`, [id, t, entity]);
 
 
   const userConfig: Record<string, any> = form.userConfig || {};
@@ -63,8 +63,8 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
     : undefined;
   const shape = (schema as any)?.shape || {};
   const effectiveIgnoredFields = useMemo(
-  () => (id ? [...ignoredFields, "password"] : ignoredFields),
-  [id]
+    () => (id ? [...ignoredFields, "password"] : ignoredFields),
+    [id]
   );
 
   const allFields = useMemo(
@@ -72,7 +72,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
     [shape, effectiveIgnoredFields]
   );
 
-const visibleFields = config.fieldOrder || allFields;
+  const visibleFields = config.fieldOrder || allFields;
 
   // Ensure alias and fetchAlias are always strings to satisfy type requirements
   const safeAlias: string = alias ?? '';
@@ -80,7 +80,7 @@ const visibleFields = config.fieldOrder || allFields;
   const canSubmit = Boolean(safeAlias);
 
   const formRequest = useApiForm({ alias: safeAlias });
-  const fetchDefaultData = useApiForm({ alias: safeFetchAlias });
+  const fetchDefaultData = useApiForm({ alias: safeFetchAlias, defaultValues: { id: id } });
 
 
 
@@ -88,17 +88,17 @@ const visibleFields = config.fieldOrder || allFields;
     e?.preventDefault();
     const result = await formRequest.submitForm(data);
     if (result?.success) {
-      safeToast(successMessage || 'Submitted successfully',{type:"success"})
-      if(setData){
+      safeToast(successMessage || 'Submitted successfully', { type: "success" })
+      if (setData) {
         setData(result.data);
         return;
-      }else{
-      setDefaultValues(result.data);
-      // formRequest?.reset();
+      } else {
+        formRequest?.reset(result.data);
+        // setDefaultValues(result.data);
       }
-       
+
     } else if (errorMessage) {
-      safeToast(errorMessage ,{type:"error"})
+      safeToast(errorMessage, { type: "error" })
     }
   };
 
@@ -106,7 +106,7 @@ const visibleFields = config.fieldOrder || allFields;
     if (id) {
       const fetchData = async () => {
         setLoading(true);
-        const result = await fetchDefaultData.submitForm({ id });
+        const result = await fetchDefaultData.query.refetch();
         formRequest?.reset(result.data);
         setLoading(false);
       };
@@ -115,8 +115,8 @@ const visibleFields = config.fieldOrder || allFields;
   }, [id]);
 
 
-  if (loading ) {
-    return <Loading3/>;
+  if (loading) {
+    return <Loading3 />;
   }
 
   return (
@@ -126,11 +126,11 @@ const visibleFields = config.fieldOrder || allFields;
         <h2 className="title" >{title ? title : form.schemaName}</h2>
 
         {showBackButton && !setData &&
-          <ActionButton icon={<ArrowLeft size={16} />} variant="success" title={t("back")} onClick={() => router.back()}/>}
+          <ActionButton icon={<ArrowLeft size={16} />} variant="success" title={t("back")} onClick={() => router.back()} />}
 
       </div>
 
-        <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
+      <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
 
         {visibleFields.map((fieldName) => (
           <RenderField
@@ -159,15 +159,6 @@ const visibleFields = config.fieldOrder || allFields;
             icon={<CirclePlus size={16} />}
           />
 
-          {/* {!isIframe && config.includeResetButton && showResetButton && (
-            <ActionButton
-              onClick={() => formRequest.reset()}
-              label={t('reset')}
-              icon={<RefreshCw size={16} />}
-              variant="outline"
-            />
-          )} */}
-
         </div>
 
       </form>
@@ -176,7 +167,6 @@ const visibleFields = config.fieldOrder || allFields;
           entity={relationConfig.entityName || ''}
           onClose={() => setShowModal(false)}
         />
-        // <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
       )}
     </div>
   );

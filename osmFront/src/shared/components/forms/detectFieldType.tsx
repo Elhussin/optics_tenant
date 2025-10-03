@@ -7,8 +7,8 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from 'lucide-react';
 import ReactSelect from 'react-select';
 import { Controller } from 'react-hook-form';
-
 import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
+
 export function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   while (
     schema instanceof z.ZodOptional ||
@@ -54,50 +54,40 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
     if (hasMinLength && fieldLower.includes('password')) return 'password';
     if (hasMaxLength) return 'textarea';
   }
-
   if (schema instanceof z.ZodArray) return 'array';
   if (schema instanceof z.ZodObject) return 'object';
 
   return 'text';
 }
 
-
-
-
 export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
   const options: string[] = [];
-
   schema._def.options.forEach((option: any) => {
     if (option instanceof z.ZodLiteral) {
       options.push(option.value);
     } else if (option instanceof z.ZodString) {
-      // يمكن إضافة logic إضافي هنا للتعامل مع string enums
       options.push('string');
     }
   });
-
   return options;
 }
 
 export function useForeignKeyData(entityName: string, setData: any) {
-
   const [loading, setLoading] = useState(false);
-  if (!entityName) return;
-
-
   const alias = formsConfig[entityName]?.listAlias;
   const fetchForeignKeyData = useApiForm({ alias: alias });
-      useEffect(() => {
-        (async () => {
-          if (alias) {
-            setLoading(true);
-        const res=await fetchForeignKeyData.query.refetch();
-          if (res?.data?.results) {
-            setData(res.data.results.reverse());
+  useEffect(() => {
+    (async () => {
+      if (alias) {
+        setLoading(true);
+        const res = await fetchForeignKeyData.query.refetch();
+        if (res?.data?.results) {
+          setData(res.data.results.reverse());
           setLoading(false);
         }
-      }})();
-    }, [entityName, alias]);
+      }
+    })();
+  }, [entityName, alias]);
 }
 
 export function ForeignKeyField({
@@ -116,10 +106,11 @@ export function ForeignKeyField({
   const [data, setData] = useState<any[]>([]);
 
   const relationConfig = relationshipConfigs[fieldName];
-  if (!relationConfig) return null;
+
+
   useForeignKeyData(relationConfig.entityName!, setData);
 
-
+  if (!relationConfig) return null;
 
   return (
 
@@ -137,17 +128,17 @@ export function ForeignKeyField({
             <ReactSelect
 
               {...field}
-              options={data.map((item) => ({
-                value: item[relationConfig.valueField],
-                label: item[relationConfig.labelField],
+              options={data.map((item: any) => ({
+                value: item?.[relationConfig?.valueField],
+                label: item?.[relationConfig?.labelField],
               }))}
-              onChange={(selected) => field.onChange(selected?.value)}
+              onChange={(selected: any) => field.onChange(selected?.value)}
               value={data
-                .map((item) => ({
-                  value: item[relationConfig.valueField],
-                  label: item[relationConfig.labelField],
+                .map((item: any) => ({
+                  value: item?.[relationConfig?.valueField],
+                  label: item?.[relationConfig?.labelField],
                 }))
-                .find((opt) => opt.value === field.value) || null}
+                .find((opt: any) => opt.value === field.value) || null}
               placeholder="Select..."
               isClearable
               classNamePrefix="rs"
@@ -176,7 +167,6 @@ export function ForeignKeyField({
   );
 }
 
-// مكون حقل Union
 export function UnionField({
   fieldName,
   fieldSchema,
@@ -220,7 +210,6 @@ export function UnionField({
     </div>
   );
 }
-
 
 export function useFieldOptions(fieldName: string, fieldType: string, schema?: z.ZodEnum<any>) {
   if (fieldType === "select" && schema) {

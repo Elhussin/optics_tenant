@@ -27,6 +27,17 @@ export default function DashboardLinks() {
     { href: "branch", roles: ["OWNER"], group: "Branch" },
     { href: "branch-users", roles: ["OWNER"], group: "Branch" },
     { href: "employee", roles: ["OWNER"], group: "Branch" },
+    { href: "attributes", roles: ["OWNER"], group: "Product" },
+    { href: "attribute-values", roles: ["OWNER"], group: "Product" },
+    { href: "manufacturers", roles: ["OWNER"], group: "Product" },
+    { href: "brands", roles: ["OWNER"], group: "Product" },
+    { href: "suppliers", roles: ["OWNER"], group: "Product" },
+    { href: "products", roles: ["OWNER"], group: "Product" },
+    { href: "lens-coating", roles: ["OWNER"], group: "Product" },
+    { href: "categories", roles: ["OWNER"], group: "Product" },
+    { href: "product-variants", roles: ["OWNER"], group: "Product" },
+    { href: "product-images", roles: ["OWNER"], group: "Product" },
+    { href: "flexible-prices", roles: ["OWNER"], group: "Product" },
   ];
   
   const userRole = user?.role?.name?.toUpperCase(); // "OWNER"

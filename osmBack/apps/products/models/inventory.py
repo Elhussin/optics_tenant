@@ -16,8 +16,8 @@ import uuid
 
 
 class Stocks(BaseModel):
-    branch = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
+    branch_id = models.ForeignKey("branches.Branch", on_delete=models.CASCADE)
+    variant_id = models.ForeignKey("ProductVariant", on_delete=models.CASCADE)
     # Stock quantities
     quantity_in_stock = models.PositiveIntegerField(default=0)
     reserved_quantity = models.PositiveIntegerField(default=0)
@@ -31,14 +31,14 @@ class Stocks(BaseModel):
     allow_backorder = models.BooleanField(default=False)
 
     class Meta:
-        unique_together = [('branch', 'variant')]
+        unique_together = [('branch_id', 'variant_id')]
         indexes = [
-            models.Index(fields=['branch', 'quantity_in_stock']),
-            models.Index(fields=['branch', 'is_active']),
+            models.Index(fields=['branch_id', 'quantity_in_stock']),
+            models.Index(fields=['branch_id', 'is_active']),
         ]
     
-    def __str__(self):
-        return f"{self.branch.name} - {self.variant} ({self.available_quantity} available)"
+    def __str__(self):  
+        return f"{self.branch_id.name} - {self.variant_id} ({self.available_quantity} available)"
 
     @property
     def available_quantity(self):
@@ -90,7 +90,7 @@ class StockMovements(BaseModel):
         RESERVE = 'reserve', 'Reserve Stock'
         RELEASE = 'release', 'Release Reserved'
     
-    stocks = models.ForeignKey(Stocks, on_delete=models.CASCADE, related_name='movements')
+    stocks_id = models.ForeignKey("Stocks", on_delete=models.CASCADE, related_name='movements')
     movement_type = models.CharField(max_length=20, choices=MovementType.choices)
     quantity = models.IntegerField()
     quantity_before = models.PositiveIntegerField()
@@ -103,7 +103,7 @@ class StockMovements(BaseModel):
     class Meta:
         ordering = ['-created_at']
         indexes = [
-            models.Index(fields=['stocks', '-created_at']),
+            models.Index(fields=['stocks_id', '-created_at']),
             models.Index(fields=['movement_type', '-created_at']),
         ]
     
@@ -130,8 +130,8 @@ class StockTransfer(BaseModel):
         CANCELLED = 'cancelled', 'Cancelled'
         
     
-    from_branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='outgoing_transfers')
-    to_branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='incoming_transfers')
+    from_branch_id = models.ForeignKey("branches.Branch", on_delete=models.CASCADE, related_name='outgoing_transfers')
+    to_branch_id = models.ForeignKey("branches.Branch", on_delete=models.CASCADE, related_name='incoming_transfers')
     transfer_number = models.CharField(max_length=50, unique=True, editable=False)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     requested_by = models.CharField(max_length=100, blank=True)
@@ -163,8 +163,8 @@ class StockTransfer(BaseModel):
             for item in self.items.select_for_update():
                 # خصم من الفرع المرسل
                 from_inventory = Inventory.objects.select_for_update().get(
-                    branch=self.from_branch,
-                    variant=item.variant
+                    branch=self.from_branch_id,
+                    variant=item.variant_id
                 )
                 if from_inventory.quantity_in_stock < item.quantity_requested:
                     raise ValueError(f"Insufficient stock for variant {item.variant}")
@@ -222,8 +222,8 @@ class StockTransfer(BaseModel):
 
 
 class StockTransferItem(BaseModel):
-    transfer = models.ForeignKey(StockTransfer, on_delete=models.CASCADE, related_name='items')
-    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
+    transfer_id = models.ForeignKey(StockTransfer, on_delete=models.CASCADE, related_name='items')
+    variant_id = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
     quantity_requested = models.PositiveIntegerField()
     quantity_sent = models.PositiveIntegerField(default=0)
     quantity_received = models.PositiveIntegerField(default=0)
@@ -231,6 +231,6 @@ class StockTransferItem(BaseModel):
     notes = models.TextField(blank=True)
 
     def __str__(self):
-        return f"{self.variant} x {self.quantity_requested}"
+        return f"{self.variant_id} x {self.quantity_requested}"
 
 

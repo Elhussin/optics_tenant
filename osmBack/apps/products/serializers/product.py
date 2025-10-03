@@ -13,16 +13,18 @@ from apps.products.serializers.suppliers import SupplierSerializer, Manufacturer
 from apps.products.serializers.inventory import StockMovementsSerializer,StocksSerializer,StockTransferSerializer, StockTransferItemSerializer
 
 class CategorySerializer(serializers.ModelSerializer):
-    parent = serializers.PrimaryKeyRelatedField(
-        queryset=Category.objects.all(), 
-        allow_null=True, 
-        required=False
-    )
+    # parent = serializers.PrimaryKeyRelatedField(
+    #     queryset=Category.objects.all(), 
+    #     allow_null=True, 
+    #     required=False
+    # )
+    parent_name = serializers.CharField(source='parent.name', read_only=True)
+
     
     class Meta:
         model = Category
         fields = [
-            'id', 'name', 'description', 'parent', 
+            'id', 'name', 'description', 'parent_id', 'parent_name',
             'is_active', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
@@ -40,7 +42,7 @@ class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
         fields = [
-            'id', 'variant', 'image', 'alt_text', 
+            'id', 'variant_id', 'image', 'alt_text', 
             'order', 'is_primary'
         ]
         read_only_fields = ['id', ]
@@ -49,14 +51,14 @@ class ProductImageSerializer(serializers.ModelSerializer):
         }
 
 class ProductVariantListSerializer(serializers.ModelSerializer):
-    frame_color: AttributeValueSerializer = AttributeValueSerializer(read_only=True)
-    lens_color: AttributeValueSerializer = AttributeValueSerializer(read_only=True)
+    frame_color_id: AttributeValueSerializer = AttributeValueSerializer(read_only=True)
+    lens_color_id: AttributeValueSerializer = AttributeValueSerializer(read_only=True)
     discount_price: float | None = serializers.SerializerMethodField()
     
     class Meta:
         model = ProductVariant
         fields = [
-            'id', 'sku', 'usku', 'frame_color', 'lens_color',
+            'id', 'sku', 'usku', 'frame_color_id', 'lens_color_id',
             'selling_price', 'discount_percentage', 'discount_price',
             'is_active'
         ]
@@ -109,8 +111,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'category', 'category_id', 'supplier', 'supplier_id',
-            'manufacturer', 'manufacturer_id', 'brand', 'brand_id',
+            'id', 'category_id', 'supplier_id',
+            'manufacturer_id', 'brand_id',
             'model', 'type', 'name', 'description', 'main_image',
             'variants', 'is_active', 'created_at', 'updated_at'
         ]
@@ -127,7 +129,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     # Frame specifications
     frame_shape = AttributeValueSerializer(read_only=True)
     frame_shape_id = serializers.PrimaryKeyRelatedField(
-        queryset=AttributeValue.objects.filter(attribute__name='Shape'),
+        queryset=AttributeValue.objects.filter(attribute_id__name='Shape'),
         source='frame_shape',
         write_only=True,
         allow_null=True
@@ -135,7 +137,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     
     frame_material = AttributeValueSerializer(read_only=True)
     frame_material_id = serializers.PrimaryKeyRelatedField(
-        queryset=AttributeValue.objects.filter(attribute__name='Material'),
+        queryset=AttributeValue.objects.filter(attribute_id__name='Material'),
         source='frame_material',
         write_only=True,
         allow_null=True
@@ -143,7 +145,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     
     frame_color = AttributeValueSerializer(read_only=True)
     frame_color_id = serializers.PrimaryKeyRelatedField(
-        queryset=AttributeValue.objects.filter(attribute__name='Color'),
+        queryset=AttributeValue.objects.filter(attribute_id__name='Color'),
         source='frame_color',
         write_only=True,
         allow_null=True
@@ -161,7 +163,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
     
     lens_type = AttributeValueSerializer(read_only=True)
     lens_type_id = serializers.PrimaryKeyRelatedField(
-        queryset=AttributeValue.objects.filter(attribute__name='Lens Type'),
+        queryset=AttributeValue.objects.filter(attribute_id__name='Lens Type'),
         source='lens_type',
         write_only=True,
         allow_null=True

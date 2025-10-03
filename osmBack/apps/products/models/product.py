@@ -17,7 +17,7 @@ class Category(BaseModel):
     """Category for glasses"""
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True)
-    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    parent_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     
     class Meta:
         verbose_name_plural = "Categories"
@@ -56,10 +56,10 @@ class Product(BaseModel):
         ('DV', 'Devices')
     ]
 
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    supplier = models.ForeignKey(Supplier, on_delete=models.CASCADE)
-    manufacturer = models.ForeignKey(Manufacturer, on_delete=models.CASCADE)
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
+    category_id = models.ForeignKey("Category", on_delete=models.CASCADE)
+    supplier_id = models.ForeignKey("Supplier", on_delete=models.CASCADE)
+    manufacturer_id = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
+    brand_id = models.ForeignKey("Brand", on_delete=models.CASCADE)
     # Basic information
 
     model = models.CharField(max_length=50)
@@ -73,7 +73,7 @@ class Product(BaseModel):
     main_image = models.ImageField(upload_to='products/', blank=True, null=True)
 
     class Meta:
-        unique_together = ('type','brand', 'model')
+        unique_together = ('type', 'brand_id', 'model')
     def __str__(self):
         return f"{self.brand.name} {self.model}"
     def get_absolute_url(self):
@@ -81,28 +81,28 @@ class Product(BaseModel):
 
 class ProductVariant(BaseModel):
 
-    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
+    product_id = models.ForeignKey("Product", related_name='variants', on_delete=models.CASCADE)
     
     # SKU International
     sku = models.CharField(max_length=50, unique=True,help_text="SKU (Stock Keeping Unit)") 
     
     usku = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique USKU")
     # Frame specifications 
-    frame_shape = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute__name': 'Shape'})
-    frame_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_material',blank=True,null=True, limit_choices_to={'attribute__name': 'Material'})
-    frame_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_color',blank=True,null=True, limit_choices_to={'attribute__name': 'Color'})
-    temple_length = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_temple_length',blank=True,null=True, limit_choices_to={'attribute__name': 'Length'})
-    bridge_width = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_bridge_width',blank=True,null=True, limit_choices_to={'attribute__name': 'Width'})
+    frame_shape = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Shape'})
+    frame_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_material',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Material'})
+    frame_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_color',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Color'})
+    temple_length = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_temple_length',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Length'})
+    bridge_width = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_bridge_width',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Width'})
 
     # specifications for lenses and frames
-    lens_diameter = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_diameter',blank=True,null=True, limit_choices_to={'attribute__name': 'Diameter'})
-    lens_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_color',blank=True,null=True, limit_choices_to={'attribute__name': 'Color'})
-    lens_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_material',blank=True,null=True, limit_choices_to={'attribute__name': 'Material'})
-    lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',blank=True,null=True, limit_choices_to={'attribute__name': 'Base Curve'})
+    lens_diameter = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_diameter',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Diameter'})
+    lens_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_color',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Color'})
+    lens_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_material',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Material'})
+    lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Base Curve'})
    
     # specifications for contact lenses
-    lens_water_content = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute__name': 'Water Content'})
-    replacement_schedule = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute__name': 'Replacement Schedule'})
+    lens_water_content = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Water Content'})
+    replacement_schedule = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Replacement Schedule'})
     expiration_date = models.DateField(blank=True,null=True)
 
     # specifications for lenses 
@@ -111,17 +111,17 @@ class ProductVariant(BaseModel):
         related_name='%(class)s_lens_coatings',
         blank=True,
     )
-    lens_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_type',blank=True,null=True, limit_choices_to={'attribute__name': 'Lens Type'})
+    lens_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Lens Type'})
     spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True)
     cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True)
     axis = models.IntegerField(default=0,blank=True,null=True, validators=[MinValueValidator(0), MaxValueValidator(180)])
     addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True)
-    unit = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, limit_choices_to={'attribute__name': 'Unit'},help_text="Unit of measurement box piesces")
+    unit = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Unit'},help_text="Unit of measurement box piesces")
   
     # Extra information
-    warranty = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',blank=True,null=True, limit_choices_to={'attribute__name': 'Warranty'})
-    weight = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_weight',blank=True,null=True, limit_choices_to={'attribute__name': 'Weight'})  
-    dimensions = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_dimensions',blank=True,null=True, limit_choices_to={'attribute__name': 'Dimensions'})
+    warranty = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Warranty'})
+    weight = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_weight',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Weight'})  
+    dimensions = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_dimensions',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Dimensions'})
 
     # Pricing
     last_purchase_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -204,7 +204,7 @@ class ProductVariant(BaseModel):
 
 class ProductImage(models.Model):
     """Additional product images"""
-    variant = models.ForeignKey(ProductVariant, related_name='images', on_delete=models.CASCADE)
+    variant_id = models.ForeignKey("ProductVariant", related_name='images', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='products/', unique=True)
     alt_text = models.CharField(max_length=200, blank=True)
     order = models.PositiveIntegerField(default=0)
@@ -218,11 +218,11 @@ class ProductImage(models.Model):
         return f"{self.variant.product.name} - {self.variant.color}"
 
 
-class FlexiblePrice(models.Model):
-    variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE, related_name='price_rules')
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-    customer_group = models.ForeignKey('crm.CustomerGroup', on_delete=models.SET_NULL, null=True, blank=True)
-    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL, null=True, blank=True)
+class FlexiblePrice(BaseModel):
+    variant_id = models.ForeignKey("ProductVariant", on_delete=models.CASCADE, related_name='price_rules')
+    customer_id = models.ForeignKey("crm.Customer", on_delete=models.SET_NULL, null=True, blank=True)
+    customer_group_id = models.ForeignKey("crm.CustomerGroup", on_delete=models.SET_NULL, null=True, blank=True)
+    branch_id = models.ForeignKey("branches.Branch", on_delete=models.SET_NULL, null=True, blank=True)
 
     # السعر الخاص
     special_price = models.DecimalField(max_digits=10, decimal_places=2)
