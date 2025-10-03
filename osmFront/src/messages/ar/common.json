@@ -465,24 +465,6 @@
     "message":"هل أنت متأكد من حذف هذا العنصر بشكل نهائي؟",
     "successMessage":"تم حذف العنصر بشكل نهائي بنجاح",
     "failedMessage":"فشل حذف العنصر"
-  },
-  "hrefs" : {
-    "client":"المستاجرين",
-    "register_tenant":"تسجيل المستأجر",
-    "domain":"النطاقات",
-    "payment":"المدفوعات",
-    "subscription_plan":"الاشتراكات",
-    "roles":"إعدادات الصلاحيات",
-    "users":"المستخدمين",
-    "permissions":"الصلاحيات",
-    "role_permission":"امتيازات الصلاحيات",
-    "tenant_settings":"اعدادات المستأجر",
-    "contact_us":"تواصل معنا",
-    "customer":"العملاء",
-    "branch":"الفروع",
-    "branch-users":"المستخدمين",
-    "employee":"الموظفين"
-
   }
 }
 

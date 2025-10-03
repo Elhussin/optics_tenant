@@ -70,3 +70,6 @@ def clear_all_cache():
 clear_all_cache()
 # This script is designed to be run in a Django environment where the settings module is properly configured.
 # It will clear the cache, remove cache-related files, and delete migration files except for __init__.py.
+
+# Run this script with the following command:
+# python manage.py runscript romve_cash

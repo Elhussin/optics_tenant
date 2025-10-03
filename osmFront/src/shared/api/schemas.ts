@@ -641,7 +641,7 @@ const DocumentRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     title: z.string().min(1).max(255),
-    file: z.any(),
+    file: z.instanceof(File),
     customer: z.number().int().nullish(),
   })
   .passthrough();
@@ -650,7 +650,7 @@ const PatchedDocumentRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     title: z.string().min(1).max(255),
-    file: z.any(),
+    file: z.instanceof(File),
     customer: z.number().int().nullable(),
   })
   .partial()
@@ -939,6 +939,8 @@ const Employee = z
     id: z.number().int(),
     user_id: z.number().int(),
     department_id: z.number().int().nullish(),
+    user_name: z.string(),
+    department_name: z.string(),
     position: PositionEnum.optional(),
     salary: z
       .string()
@@ -1620,7 +1622,7 @@ const ProductVariantAnswer = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     answer: z.string(),
-    question: z.number().int(),
+    question_id: z.number().int(),
     answered_by: z.number().int(),
   })
   .passthrough();
@@ -1637,7 +1639,7 @@ const ProductVariantAnswerRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     answer: z.string().min(1),
-    question: z.number().int(),
+    question_id: z.number().int(),
     answered_by: z.number().int(),
   })
   .passthrough();
@@ -1646,7 +1648,7 @@ const PatchedProductVariantAnswerRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     answer: z.string().min(1),
-    question: z.number().int(),
+    question_id: z.number().int(),
     answered_by: z.number().int(),
   })
   .partial()
@@ -1654,12 +1656,13 @@ const PatchedProductVariantAnswerRequest = z
 const AttributeValue = z
   .object({
     id: z.number().int(),
+    attribute_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     value: z.string().max(100),
-    attribute: z.number().int(),
+    attribute_id: z.number().int(),
   })
   .passthrough();
 const PaginatedAttributeValueList = z
@@ -1675,7 +1678,7 @@ const AttributeValueRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     value: z.string().min(1).max(100),
-    attribute: z.number().int(),
+    attribute_id: z.number().int(),
   })
   .passthrough();
 const PatchedAttributeValueRequest = z
@@ -1683,7 +1686,7 @@ const PatchedAttributeValueRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     value: z.string().min(1).max(100),
-    attribute: z.number().int(),
+    attribute_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -1917,7 +1920,7 @@ const ProductVariantMarketing = z
     seo_image_alt: z.string().max(200).optional(),
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
-    variant: z.number().int(),
+    variant_id: z.number().int(),
   })
   .passthrough();
 const PaginatedProductVariantMarketingList = z
@@ -1946,7 +1949,7 @@ const ProductVariantMarketingRequest = z
     seo_image_alt: z.string().max(200).optional(),
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
-    variant: z.number().int(),
+    variant_id: z.number().int(),
   })
   .passthrough();
 const PatchedProductVariantMarketingRequest = z
@@ -1967,17 +1970,21 @@ const PatchedProductVariantMarketingRequest = z
     seo_image_alt: z.string().max(200),
     gender: GenderEnum,
     age_group: z.union([AgeGroupEnum, BlankEnum]),
-    variant: z.number().int(),
+    variant_id: z.number().int(),
   })
   .partial()
   .passthrough();
 const ProductVariantOffer = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     offer: z.string().max(100),
     start_date: z.string(),
     end_date: z.string(),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
   })
   .passthrough();
 const PaginatedProductVariantOfferList = z
@@ -1990,25 +1997,29 @@ const PaginatedProductVariantOfferList = z
   .passthrough();
 const ProductVariantOfferRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     offer: z.string().min(1).max(100),
     start_date: z.string(),
     end_date: z.string(),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
   })
   .passthrough();
 const PatchedProductVariantOfferRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     offer: z.string().min(1).max(100),
     start_date: z.string(),
     end_date: z.string(),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
   })
   .partial()
   .passthrough();
 const ProductImage = z
   .object({
     id: z.number().int(),
-    variant: z.number().int(),
+    variant_id: z.number().int(),
     image: z.string().url(),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2025,7 +2036,7 @@ const PaginatedProductImageList = z
   .passthrough();
 const ProductImageRequest = z
   .object({
-    variant: z.number().int(),
+    variant_id: z.number().int(),
     image: z.instanceof(File),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2034,7 +2045,7 @@ const ProductImageRequest = z
   .passthrough();
 const PatchedProductImageRequest = z
   .object({
-    variant: z.number().int(),
+    variant_id: z.number().int(),
     image: z.instanceof(File),
     alt_text: z.string().max(200),
     order: z.number().int().gte(0).lte(2147483647),
@@ -2042,31 +2053,13 @@ const PatchedProductImageRequest = z
   })
   .partial()
   .passthrough();
-const Supplier = z
-  .object({
-    id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    name: z.string().max(50),
-    contact_person: z.string().max(100).optional(),
-    email: z.string().max(254).email().optional(),
-    phone: z.string().max(20).optional(),
-    address: z.string().optional(),
-    country: z.string().max(50).optional(),
-    website: z.string().max(200).url().optional(),
-    payment_terms: z.string().max(100).optional(),
-  })
-  .passthrough();
-const TypeEnum = z.enum(["CL", "SL", "SG", "EW", "AX", "OT", "DV"]);
 const ProductVariantList = z
   .object({
     id: z.number().int(),
     sku: z.string().max(50),
     usku: z.string(),
-    frame_color: AttributeValue,
-    lens_color: AttributeValue,
+    frame_color_id: AttributeValue,
+    lens_color_id: AttributeValue,
     selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     discount_percentage: z
       .string()
@@ -2076,22 +2069,27 @@ const ProductVariantList = z
     is_active: z.boolean().optional(),
   })
   .passthrough();
+const TypeEnum = z.enum(["CL", "SL", "SG", "EW", "AX", "OT", "DV"]);
 const Product = z
   .object({
     id: z.number().int(),
-    category: Category,
-    supplier: Supplier,
-    manufacturer: Manufacturer,
-    brand: Brand,
+    manufacturer_name: z.string(),
+    category_name: z.string(),
+    supplier_name: z.string(),
+    brand_name: z.string(),
+    variants: z.array(ProductVariantList),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     model: z.string().max(50),
     type: TypeEnum,
     name: z.string().max(200).nullish(),
     description: z.string().optional(),
-    main_image: z.string().url().nullish(),
-    variants: z.array(ProductVariantList),
-    is_active: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
+    category_id: z.number().int(),
+    supplier_id: z.number().int(),
+    manufacturer_id: z.number().int(),
+    brand_id: z.number().int(),
   })
   .passthrough();
 const PaginatedProductList = z
@@ -2104,30 +2102,30 @@ const PaginatedProductList = z
   .passthrough();
 const ProductRequest = z
   .object({
-    category_id: z.number().int(),
-    supplier_id: z.number().int(),
-    manufacturer_id: z.number().int(),
-    brand_id: z.number().int(),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     model: z.string().min(1).max(50),
     type: TypeEnum,
     name: z.string().max(200).nullish(),
     description: z.string().optional(),
-    main_image: z.instanceof(File).nullish(),
-    is_active: z.boolean().optional(),
-  })
-  .passthrough();
-const PatchedProductRequest = z
-  .object({
     category_id: z.number().int(),
     supplier_id: z.number().int(),
     manufacturer_id: z.number().int(),
     brand_id: z.number().int(),
+  })
+  .passthrough();
+const PatchedProductRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     model: z.string().min(1).max(50),
     type: TypeEnum,
     name: z.string().max(200).nullable(),
     description: z.string(),
-    main_image: z.instanceof(File).nullable(),
-    is_active: z.boolean(),
+    category_id: z.number().int(),
+    supplier_id: z.number().int(),
+    manufacturer_id: z.number().int(),
+    brand_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2139,7 +2137,7 @@ const ProductVariantQuestion = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     question: z.string(),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
     asked_by: z.number().int(),
   })
   .passthrough();
@@ -2156,7 +2154,7 @@ const ProductVariantQuestionRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     question: z.string().min(1),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
     asked_by: z.number().int(),
   })
   .passthrough();
@@ -2165,7 +2163,7 @@ const PatchedProductVariantQuestionRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     question: z.string().min(1),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
     asked_by: z.number().int(),
   })
   .partial()
@@ -2179,7 +2177,7 @@ const ProductVariantReview = z
     is_deleted: z.boolean().optional(),
     rating: z.number().int().gte(0).lte(32767),
     review: z.string(),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
     reviewed_by: z.number().int(),
   })
   .passthrough();
@@ -2197,7 +2195,7 @@ const ProductVariantReviewRequest = z
     is_deleted: z.boolean().optional(),
     rating: z.number().int().gte(0).lte(32767),
     review: z.string().min(1),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
     reviewed_by: z.number().int(),
   })
   .passthrough();
@@ -2207,7 +2205,7 @@ const PatchedProductVariantReviewRequest = z
     is_deleted: z.boolean(),
     rating: z.number().int().gte(0).lte(32767),
     review: z.string().min(1),
-    ProductVariant: z.number().int(),
+    ProductVariant_id: z.number().int(),
     reviewed_by: z.number().int(),
   })
   .partial()
@@ -2241,7 +2239,7 @@ const StockMovements = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    stocks: z.number().int(),
+    stocks_id: z.number().int(),
   })
   .passthrough();
 const PaginatedStockMovementsList = z
@@ -2266,7 +2264,7 @@ const StockMovementsRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    stocks: z.number().int(),
+    stocks_id: z.number().int(),
   })
   .passthrough();
 const PatchedStockMovementsRequest = z
@@ -2280,7 +2278,7 @@ const PatchedStockMovementsRequest = z
     reference_number: z.string().max(50),
     notes: z.string(),
     cost_per_unit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    stocks: z.number().int(),
+    stocks_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2299,8 +2297,8 @@ const StockTransferItem = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     notes: z.string().optional(),
-    transfer: z.number().int(),
-    variant: z.number().int(),
+    transfer_id: z.number().int(),
+    variant_id: z.number().int(),
   })
   .passthrough();
 const PaginatedStockTransferItemList = z
@@ -2323,8 +2321,8 @@ const StockTransferItemRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     notes: z.string().optional(),
-    transfer: z.number().int(),
-    variant: z.number().int(),
+    transfer_id: z.number().int(),
+    variant_id: z.number().int(),
   })
   .passthrough();
 const PatchedStockTransferItemRequest = z
@@ -2336,8 +2334,8 @@ const PatchedStockTransferItemRequest = z
     quantity_received: z.number().int().gte(0).lte(2147483647),
     unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     notes: z.string(),
-    transfer: z.number().int(),
-    variant: z.number().int(),
+    transfer_id: z.number().int(),
+    variant_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2363,8 +2361,8 @@ const StockTransfer = z
     shipped_date: z.string().datetime({ offset: true }).nullish(),
     received_date: z.string().datetime({ offset: true }).nullish(),
     notes: z.string().optional(),
-    from_branch: z.number().int(),
-    to_branch: z.number().int(),
+    from_branch_id: z.number().int(),
+    to_branch_id: z.number().int(),
   })
   .passthrough();
 const PaginatedStockTransferList = z
@@ -2386,8 +2384,8 @@ const StockTransferRequest = z
     shipped_date: z.string().datetime({ offset: true }).nullish(),
     received_date: z.string().datetime({ offset: true }).nullish(),
     notes: z.string().optional(),
-    from_branch: z.number().int(),
-    to_branch: z.number().int(),
+    from_branch_id: z.number().int(),
+    to_branch_id: z.number().int(),
   })
   .passthrough();
 const PatchedStockTransferRequest = z
@@ -2401,8 +2399,8 @@ const PatchedStockTransferRequest = z
     shipped_date: z.string().datetime({ offset: true }).nullable(),
     received_date: z.string().datetime({ offset: true }).nullable(),
     notes: z.string(),
-    from_branch: z.number().int(),
-    to_branch: z.number().int(),
+    from_branch_id: z.number().int(),
+    to_branch_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2425,8 +2423,8 @@ const Stocks = z
     last_restocked: z.string().datetime({ offset: true }).nullish(),
     last_sale: z.string().datetime({ offset: true }).nullish(),
     allow_backorder: z.boolean().optional(),
-    branch: z.number().int(),
-    variant: z.number().int(),
+    branch_id: z.number().int(),
+    variant_id: z.number().int(),
   })
   .passthrough();
 const PaginatedStocksList = z
@@ -2453,8 +2451,8 @@ const StocksRequest = z
     last_restocked: z.string().datetime({ offset: true }).nullish(),
     last_sale: z.string().datetime({ offset: true }).nullish(),
     allow_backorder: z.boolean().optional(),
-    branch: z.number().int(),
-    variant: z.number().int(),
+    branch_id: z.number().int(),
+    variant_id: z.number().int(),
   })
   .passthrough();
 const PatchedStocksRequest = z
@@ -2470,10 +2468,27 @@ const PatchedStocksRequest = z
     last_restocked: z.string().datetime({ offset: true }).nullable(),
     last_sale: z.string().datetime({ offset: true }).nullable(),
     allow_backorder: z.boolean(),
-    branch: z.number().int(),
-    variant: z.number().int(),
+    branch_id: z.number().int(),
+    variant_id: z.number().int(),
   })
   .partial()
+  .passthrough();
+const Supplier = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    name: z.string().max(50),
+    contact_person: z.string().max(100).optional(),
+    email: z.string().max(254).email().optional(),
+    phone: z.string().max(20).optional(),
+    address: z.string().optional(),
+    country: z.string().max(50).optional(),
+    website: z.string().max(200).url().optional(),
+    payment_terms: z.string().max(100).optional(),
+  })
   .passthrough();
 const PaginatedSupplierList = z
   .object({
@@ -2515,43 +2530,46 @@ const PatchedSupplierRequest = z
 const ProductVariant = z
   .object({
     id: z.number().int(),
-    product: Product,
+    product_id: z.number().int(),
     sku: z.string().max(50),
     usku: z.string(),
-    frame_shape: AttributeValue,
-    frame_material: AttributeValue,
-    frame_color: AttributeValue,
-    temple_length: z.number().int().nullish(),
-    temple_length_id: z.number().int().nullable(),
-    bridge_width: z.number().int().nullish(),
-    bridge_width_id: z.number().int().nullable(),
-    lens_diameter: z.number().int().nullish(),
-    lens_diameter_id: z.number().int().nullable(),
-    lens_color: z.number().int().nullish(),
-    lens_color_id: z.number().int().nullable(),
-    lens_material: z.number().int().nullish(),
-    lens_material_id: z.number().int().nullable(),
-    lens_base_curve: z.number().int().nullish(),
-    lens_base_curve_id: z.number().int().nullable(),
-    lens_water_content: z.number().int().nullish(),
-    lens_water_content_id: z.number().int().nullable(),
-    replacement_schedule: z.number().int().nullish(),
-    replacement_schedule_id: z.number().int().nullable(),
-    expiration_date: z.string().nullish(),
-    lens_coatings: z.array(LensCoating),
-    lens_type: AttributeValue,
+    product_name: z.string(),
+    frame_shape_name: z.string(),
+    frame_material_name: z.string(),
+    frame_color_name: z.string(),
+    temple_length_name: z.string(),
+    bridge_width_name: z.string(),
+    lens_diameter_name: z.string(),
+    lens_color_name: z.string(),
+    lens_material_name: z.string(),
+    lens_base_curve_name: z.string(),
+    lens_water_content_name: z.string(),
+    replacement_schedule_name: z.string(),
+    lens_type_name: z.string(),
+    lens_coatings_name: z.string(),
+    weight_name: z.string(),
+    dimensions_name: z.string(),
+    frame_shape_id: z.number().int().nullish(),
+    frame_material_id: z.number().int().nullish(),
+    frame_color_id: z.number().int().nullish(),
+    temple_length_id: z.number().int().nullish(),
+    bridge_width_id: z.number().int().nullish(),
+    lens_diameter_id: z.number().int().nullish(),
+    lens_color_id: z.number().int().nullish(),
+    lens_material_id: z.number().int().nullish(),
+    lens_base_curve_id: z.number().int().nullish(),
+    lens_water_content_id: z.number().int().nullish(),
+    replacement_schedule_id: z.number().int().nullish(),
+    lens_coatings_id: z.array(z.number().int()).optional(),
+    lens_type_id: z.number().int().nullish(),
     spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
     cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
     axis: z.number().int().gte(0).lte(180).nullish(),
     addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    unit: z.number().int().nullish(),
-    unit_id: z.number().int().nullable(),
-    warranty: z.number().int().nullish(),
-    warranty_id: z.number().int().nullable(),
-    weight: z.number().int().nullish(),
-    weight_id: z.number().int().nullable(),
-    dimensions: z.number().int().nullish(),
-    dimensions_id: z.number().int().nullable(),
+    unit_id: z.number().int().nullish(),
+    warranty_id: z.number().int().nullish(),
+    weight_id: z.number().int().nullish(),
+    dimensions_id: z.number().int().nullish(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -2562,7 +2580,7 @@ const ProductVariant = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     discount_price: z.string(),
-    images: z.array(ProductImage),
+    images: z.array(z.number().int()),
     is_active: z.boolean().optional(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
@@ -2580,28 +2598,27 @@ const ProductVariantRequest = z
   .object({
     product_id: z.number().int(),
     sku: z.string().min(1).max(50),
-    frame_shape_id: z.number().int().nullable(),
-    frame_material_id: z.number().int().nullable(),
-    frame_color_id: z.number().int().nullable(),
-    temple_length: z.number().int().nullish(),
-    bridge_width: z.number().int().nullish(),
-    lens_diameter: z.number().int().nullish(),
-    lens_color: z.number().int().nullish(),
-    lens_material: z.number().int().nullish(),
-    lens_base_curve: z.number().int().nullish(),
-    lens_water_content: z.number().int().nullish(),
-    replacement_schedule: z.number().int().nullish(),
-    expiration_date: z.string().nullish(),
-    lens_coating_ids: z.array(z.number().int()).optional(),
-    lens_type_id: z.number().int().nullable(),
+    frame_shape_id: z.number().int().nullish(),
+    frame_material_id: z.number().int().nullish(),
+    frame_color_id: z.number().int().nullish(),
+    temple_length_id: z.number().int().nullish(),
+    bridge_width_id: z.number().int().nullish(),
+    lens_diameter_id: z.number().int().nullish(),
+    lens_color_id: z.number().int().nullish(),
+    lens_material_id: z.number().int().nullish(),
+    lens_base_curve_id: z.number().int().nullish(),
+    lens_water_content_id: z.number().int().nullish(),
+    replacement_schedule_id: z.number().int().nullish(),
+    lens_coatings_id: z.array(z.number().int()).optional(),
+    lens_type_id: z.number().int().nullish(),
     spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
     cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
     axis: z.number().int().gte(0).lte(180).nullish(),
     addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    unit: z.number().int().nullish(),
-    warranty: z.number().int().nullish(),
-    weight: z.number().int().nullish(),
-    dimensions: z.number().int().nullish(),
+    unit_id: z.number().int().nullish(),
+    warranty_id: z.number().int().nullish(),
+    weight_id: z.number().int().nullish(),
+    dimensions_id: z.number().int().nullish(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -2621,25 +2638,24 @@ const PatchedProductVariantRequest = z
     frame_shape_id: z.number().int().nullable(),
     frame_material_id: z.number().int().nullable(),
     frame_color_id: z.number().int().nullable(),
-    temple_length: z.number().int().nullable(),
-    bridge_width: z.number().int().nullable(),
-    lens_diameter: z.number().int().nullable(),
-    lens_color: z.number().int().nullable(),
-    lens_material: z.number().int().nullable(),
-    lens_base_curve: z.number().int().nullable(),
-    lens_water_content: z.number().int().nullable(),
-    replacement_schedule: z.number().int().nullable(),
-    expiration_date: z.string().nullable(),
-    lens_coating_ids: z.array(z.number().int()),
+    temple_length_id: z.number().int().nullable(),
+    bridge_width_id: z.number().int().nullable(),
+    lens_diameter_id: z.number().int().nullable(),
+    lens_color_id: z.number().int().nullable(),
+    lens_material_id: z.number().int().nullable(),
+    lens_base_curve_id: z.number().int().nullable(),
+    lens_water_content_id: z.number().int().nullable(),
+    replacement_schedule_id: z.number().int().nullable(),
+    lens_coatings_id: z.array(z.number().int()),
     lens_type_id: z.number().int().nullable(),
     spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
     cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
     axis: z.number().int().gte(0).lte(180).nullable(),
     addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
-    unit: z.number().int().nullable(),
-    warranty: z.number().int().nullable(),
-    weight: z.number().int().nullable(),
-    dimensions: z.number().int().nullable(),
+    unit_id: z.number().int().nullable(),
+    warranty_id: z.number().int().nullable(),
+    weight_id: z.number().int().nullable(),
+    dimensions_id: z.number().int().nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -3649,9 +3665,8 @@ export const schemas = {
   PaginatedProductImageList,
   ProductImageRequest,
   PatchedProductImageRequest,
-  Supplier,
-  TypeEnum,
   ProductVariantList,
+  TypeEnum,
   Product,
   PaginatedProductList,
   ProductRequest,
@@ -3682,6 +3697,7 @@ export const schemas = {
   PaginatedStocksList,
   StocksRequest,
   PatchedStocksRequest,
+  Supplier,
   PaginatedSupplierList,
   SupplierRequest,
   PatchedSupplierRequest,

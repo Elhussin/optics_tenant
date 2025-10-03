@@ -6,7 +6,14 @@
     "createTitle":"Create",
     "updateTitle":"Update",
     "back":"Back",
-    "errorGetFormData":"Invalid entity Detected"
+    "errorGetFormData":"Invalid entity Detected",
+    "is_active": "Active",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      }
+    }
   },
   "viewDetailsCard":{
     "print":"Print Details",
@@ -15,7 +22,20 @@
     "entityError":"Invalid entity Or ID",
     "noConfigError":"Invalid entity - No config Detected",
     "errorLoadingData":"Error loading data",
-    "deletedItem":"This item is deleted. You can restore it or delete it permanently."
+    "deletedItem":"This item is deleted. You can restore it or delete it permanently.",
+    "is_active": "Active",
+    "is_deleted": "Deleted",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+    }
+ 
   },
   "formsConfig":{
     "create":"Add",
@@ -28,302 +48,264 @@
     "noData":"No Data Found",
     "success":"Successfully",
     "failed":"Failed to",
-    "client":"Client",
-    "register_tenant":"New Client ",
-    "domain":"Domain",
-    "payment":"Paymant",
-    "subscription_plan":"Subscription Plan",
+    "clients":"Clients",
+    "register-tenants":"Register Tenants",
+    "domains":"Domains",
+    "payments":"Payments",
+    "subscription-plans":"Subscription Plans",
     "roles":"Roles",
     "users":"Users",
     "permissions":"Permissions",
-    "role_permission" : "Role & Permission",
-    "contact_us":"Contact Us",
-    "tenant_settings":"Tenant Settings",
-    "customer":"Customer",
-    "branch":"Branch",
+    "role-permissions":"Role & Permissions",
+    "contact-us":"Contact Us",
+    "tenant-settings":"Tenant Settings",
+    "departments":"Departments",
+    "employees":"Employees",
+    "customers":"Customers",
+    "prescriptions":"Prescriptions",
+    "branches":"Branches",
     "branch-users":"Branch Users",
-    "employee":"Employee"
+    "attributes":"Attributes",
+    "attribute-value":"Attribute Values",
+    "suppliers":"Suppliers",
+    "manufacturers":"Manufacturers",
+    "brands":"Brands",
+    "categories":"Categories",
+    "lens-coatings":"Lens Coatings",
+    "products":"Products",
+    "product-variants":"Product Variants",
+    "product-images":"Product Images",
+    "flexible-prices":"Flexible Prices"
   },
-  "client":{
+  "clients": {
     "title": "Clients",
     "detailsTitle": "Client Details",
     "name": "Client Name",
     "max_branches": "Max Branches",
     "max_users": "Max Users",
     "website": "Website",
-    "is_active": "Status",
-    "is_deleted": "Deleted",
-    "paid_until": "Paid Until",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-    }
+    "paid_until": "Paid Until"
+
   },
-  "register_tenant":{
+  "register_tenants": {
     "title": "Register New Tenant",
     "detailsTitle": "Tenant Details",
     "name": "Tenant Name",
-    "email": "Subdomain",
-    "is_active": "Status",
-    "is_deleted": "Deleted",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-    }
+    "email": "Subdomain"
   },
-  "domain":{
+  "domains": {
     "title": "Domains",
     "detailsTitle": "Domain Details",
-    "domain": "Domain",
-    "is_active": "Status",
-    "is_deleted": "Deleted",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-    }
+    "domain": "Domain"
   },
-  "payment" : {
+  "payments": {
     "title": "Payments",
     "detailsTitle": "Payment Details",
     "amount": "Amount",
-    "transaction_id" : "Transaction ID",
-    "status" :"Status",
-    "client" : "Client",
-    "created_at" :  "Received Date",
-    "updated_at" : "Last Updated",
-    "method" : "Payment Method",
-    "currency" : "Currency"    
-
-
-
-
+    "transaction_id": "Transaction ID",
+    "status": "Status",
+    "client": "Client",
+    "method": "Method",
+    "currency": "Currency"
   },
-  "subscription_plan":{
+  "subscription_plans": {
     "title": "Subscription Plans",
     "detailsTitle": "Subscription Plan Details",
     "name": "Plan Name",
     "description": "Description",
-    "maxBranches": "Max Branches",
-    "maxUsers": "Max Users",
+    "max_branches": "Max Branches",
+    "max_users": "Max Users",
     "month_price": "Monthly Price",
     "year_price": "Yearly Price",
-    "is_active": "Status",
-    "is_deleted": "Deleted",
     "currency": "Currency",
-    "discount": "Discount",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-    }
+    "discount": "Discount"
   },
   "roles": {
     "title": "Roles",
     "detailsTitle": "Role Details",
-    "name": "Name",
-    "description": "Description",
-    "is_active": "Active",
-    "is_deleted": "Deleted",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-    }
+    "name": "Role Name",
+    "description": "Description"
   },
   "users": {
     "title": "Users",
     "detailsTitle": "User Details",
-    "username": "User Name",
-    "email": "User Email",
-    "phone": "User Phone",
-    "address": "User Address",
-    "website": "User Website",
-    "is_active": "Active",
-    "is_deleted": "Deleted",
-    "role": "Role",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-    }
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "website": "Website",
+    "role": "Role"
   },
-  "permissions" : {
-    "title" : "Permissions",
-    "detailsTitle" :"Permission Details",
-    "code" : "Code",
-    "description" :"Description",
-    "is_active": "Status",
-    "is_deleted": "Deleted",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-  }
-},
-"role_permission" : {
-      "title" : "Permissions and Roles",
-    "detailsTitle" :"Role Permission Details",
-    "role" : "Role",
-    "permission" :"Permission",
-    "is_active": "Status",
-    "is_deleted": "Deleted",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-  }
-},
-"contact_us": {
-    "title" : "Contact Us",
-    "detailsTitle" :"Message Details",
-    "name": "Sender Name",
-    "email" : "Email",
-    "phone" :"Phone",
-    "message" : "Message",
-    "created_at" :"Received Date",
-    "updated_at" : "Last Updated" ,
-    "is_active": "Status",
-    "is_deleted": "Deleted",
-    "values": {
-      "is_active": {
-        "true": "Active",
-        "false": "Inactive"
-      },
-      "is_deleted": {
-        "true": "Deleted",
-        "false": "Not Deleted"
-      }
-  }
+  "permissions": {
+    "title": "Permissions",
+    "detailsTitle": "Permission Details",
+    "code": "Code",
+    "description": "Description"
 
-},
-"tenant_settings" :{
-  "title" :"Basic Settings",
-  "detailsTitle" :"Basic Settings Details",
-  "business_name" : "Name",
-  "phone" : "Phone",
-  "email" : "Email",
-  "facebook" : "Facebook",
-  "twitter" : "Twitter",
-  "instagram" : "Instagram",
-  "linkedin" : "LinkedIn",
-  "description" : "Description",
-  "website" : "Website",
-  "is_active": "Status",
-  "is_deleted": "Deleted",
-  "values": {
-    "is_active": {
-      "true": "Active",
-      "false": "Inactive"
-    },
-    "is_deleted": {
-      "true": "Deleted",
-      "false": "Not Deleted"
-    }
+  },
+  "role_permissions": {
+    "title": "Role & Permissions",
+    "detailsTitle": "Role & Permissions Details",
+    "role": "Role",
+    "permission": "Permission"
+  },
+  "contact_us": {
+    "title": "Contact Us",
+    "detailsTitle": "Contact Us Details",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message"
+
+  },
+  "tenant_settings": {
+    "title": "Tenant Settings",
+    "detailsTitle": "Tenant Settings Details",
+    "business_name": "Business Name",
+    "phone": "Phone",
+    "email": "Email",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "instagram": "Instagram",
+    "linkedin": "Linkedin",
+    "description": "Description",
+    "website": "Website"
+  },
+  "departments": {
+    "title": "Departments",
+    "detailsTitle": "Department Details",
+    "name": "Department Name",
+    "description": "Description"
+  },
+  "employees": {
+    "title": "Employees",
+    "detailsTitle": "Employee Details",
+    "name": "Employee Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "customer": {
+    "title": "Customers",
+    "detailsTitle": "Customer Details",
+    "name": "Customer Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address"
+  },
+  "prescriptions": {
+    "title": "Prescriptions",
+    "detailsTitle": "Prescription Details",
+    "customer_name": "Customer Name",
+    "notes": "Notes",
+    "user_name": "User Name"
+  },
+  "branch-users": {
+    "title": "Branch Users",
+    "detailsTitle": "Branch User Details",
+    "branch_name": "Branch Name",
+    "employee_name": "Employee Name",
+    "status": "Status"
+  },
+  "branches": {
+    "title": "Branches",
+    "detailsTitle": "Branch Details",
+    "name": "Branch Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country"
+  },
+  "attributes": {
+    "title": "Attributes",
+    "detailsTitle": "Attribute Details",
+    "name": "Attribute Name",
+    "description": "Description"
+  },
+  "attribute_values": {
+    "title": "Attribute Values",
+    "detailsTitle": "Attribute Value Details",
+    "attribute_name": "Attribute Name",
+    "value": "Value"
+  },
+  "suppliers": {
+    "title": "Suppliers",
+    "detailsTitle": "Supplier Details",
+    "name": "Supplier Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "contact_person": "Contact Person",
+    "country": "Country",
+    "website": "Website",
+    "payment_terms": "Payment Terms"
+  },
+  "manufacturers": {
+    "title": "Manufacturers",
+    "detailsTitle": "Manufacturer Details",
+    "name": "Manufacturer Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "country": "Country",
+    "website": "Website"
+  },
+  "brands": {
+    "title": "Brands",
+    "detailsTitle": "Brand Details",
+    "name": "Brand Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "country": "Country",
+    "website": "Website",
+    "description": "Description",
+    "logo": "Logo"
+  },
+  "categories": {
+    "title": "Categories",
+    "detailsTitle": "Category Details",
+    "name": "Category Name",
+    "description": "Description",
+    "parent_name": "Parent Category"
+  },
+  "lens-coating": {
+    "title": "Lens Coatings",
+    "detailsTitle": "Lens Coating Details",
+    "name": "Lens Coating Name",
+    "description": "Description"
+  },
+  "products": {
+    "title": "Products",
+    "detailsTitle": "Product Details",
+    "name": "Product Name",
+    "category_name": "Category Name",
+    "brand_name": "Brand Name",
+    "description": "Description",
+    "supplier_name": "Supplier Name",
+    "manufacturer_name": "Manufacturer Name",
+    "model": "Model",
+    "type": "Type"
+  },
+  "product-variants": {
+    "title": "Product Variants",
+    "detailsTitle": "Product Variant Details",
+    "name": "Product Variant Name",
+    "description": "Description"
+  },
+  "product-images": {
+    "title": "Product Images",
+    "detailsTitle": "Product Image Details",
+    "name": "Product Image Name",
+    "description": "Description"
+  },
+  "flexible-prices": {
+    "title": "Flexible Prices",
+    "detailsTitle": "Flexible Price Details",
+    "name": "Flexible Price Name",
+    "description": "Description"
+  } 
 }
-},"customer":{
-  "title": "Customers",
-  "detailsTitle": "Customer Details",
-  "name": "Customer Name",
-  "email": "Customer Email",
-  "phone": "Customer Phone",
-  "address": "Customer Address",
-  "website": "Customer Website",
-  "is_active": "Active",
-  "is_deleted": "Deleted",
-  "values": {
-    "is_active": {
-      "true": "Active",
-      "false": "Inactive"
-    },
-    "is_deleted": {
-      "true": "Deleted",
-      "false": "Not Deleted"
-    }
-}
-},
-"branch":{
-  "title": "Branches",
-  "detailsTitle": "Branch Details",
-  "name": "Branch Name",
-  "email": "Branch Email",
-  "phone": "Branch Phone",
-  "address": "Branch Address",
-  "branch_id": "Branch ID",
-  "is_active": "Active",
-  "is_deleted": "Deleted",
-  "values": {
-    "is_active": {
-      "true": "Active",
-      "false": "Inactive"
-    },
-    "is_deleted": {
-      "true": "Deleted",
-      "false": "Not Deleted"
-    }
-}
-},
-"branch-users":{
-  "title": "Branch Users",
-  "detailsTitle": "Branch User Details",
-  "name": "Branch User Name",
-  "email": "Branch User Email",
-  "phone": "Branch User Phone",
-  "address": "Branch User Address",
-  "website": "Branch User Website",
-  "is_active": "Active",
-  "is_deleted": "Deleted",
-  "values": {
-    "is_active": {
-      "true": "Active",
-      "false": "Inactive"
-    },
-    "is_deleted": {
-      "true": "Deleted",
-      "false": "Not Deleted"
-    }
-}
-}
-}
+
+

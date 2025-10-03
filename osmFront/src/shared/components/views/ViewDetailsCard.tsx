@@ -6,7 +6,7 @@ import {
   handleCopy, 
   handlePrint,
 } from "@/src/shared/utils/cardViewHelper";
-import { useTranslations } from "next-intl";
+import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
 
 import { ViewCardProps } from "@/src/shared/types";
 import { RenderButtons } from "../ui/buttons/RenderButtons";
@@ -22,8 +22,8 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const form = formsConfig[entity] 
   const [data, setData] = useState<any | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
-  const t = useTranslations('viewDetailsCard');
-  const t2 = useTranslations(entity);
+  const t = useMergedTranslations(['viewDetailsCard', entity]);
+ 
 
   // hook لجلب البيانات
   const formRequest = useApiForm({
@@ -52,7 +52,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   return (
     <div className="container-h">
       <div className="main-header">
-        <h2 className="title-1 ">{t2('detailsTitle')}</h2>
+        <h2 className="title-1 ">{t('detailsTitle')}</h2>
         <hr className="hr" />
       </div>
 
@@ -64,10 +64,10 @@ export default function ViewDetailsCard(props: ViewCardProps) {
         return (
           <p key={field} className="card-body flex">
             <strong className="mr-2 w-1/3 ">
-              {t2(field)} :
+              {t(field)}:
             </strong>
             <span className="ml-2 w-2/3">
-            {formatRelatedValue(value, field, t2)}
+            {formatRelatedValue(value, field, t)}
             </span>
           </p>
         );
@@ -102,7 +102,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
                 variant="info"
                 title={t('print')}
                 icon={<Printer size={16} />}
-                onClick={() => handlePrint(printRef as React.RefObject<HTMLDivElement>,t2('detailsTitle'))}
+                onClick={() => handlePrint(printRef as React.RefObject<HTMLDivElement>,t('detailsTitle'))}
               />
               <ActionButton
                 variant="info"

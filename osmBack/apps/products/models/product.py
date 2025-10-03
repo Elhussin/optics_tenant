@@ -15,7 +15,7 @@ from apps.products.services.generate_sku_code import generate_sku_code
 
 class Category(BaseModel):
     """Category for glasses"""
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100 ,unique=True)
     description = models.TextField(blank=True)
     parent_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     
@@ -24,6 +24,7 @@ class Category(BaseModel):
         indexes = [
             models.Index(fields=['name', 'is_active']),
         ]
+    unique_together = ('name', 'parent_id')
     
     def __str__(self):
         return self.name
@@ -70,7 +71,7 @@ class Product(BaseModel):
     # Product description
     description = models.TextField(blank=True)
     # Main image
-    main_image = models.ImageField(upload_to='products/', blank=True, null=True)
+    # main_image = models.ImageField(upload_to='products/', blank=True, null=True)
 
     class Meta:
         unique_together = ('type', 'brand_id', 'model')
@@ -88,40 +89,40 @@ class ProductVariant(BaseModel):
     
     usku = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique USKU")
     # Frame specifications 
-    frame_shape = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Shape'})
-    frame_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_material',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Material'})
-    frame_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_color',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Color'})
-    temple_length = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_temple_length',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Length'})
-    bridge_width = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_bridge_width',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Width'})
+    frame_shape_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_shape',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Shape'})
+    frame_material_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_frame_material',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Material'})
+    frame_color_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_color',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Color'})
+    temple_length_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_temple_length',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Length'})
+    bridge_width_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_bridge_width',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Width'})
 
     # specifications for lenses and frames
-    lens_diameter = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_diameter',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Diameter'})
-    lens_color = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_color',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Color'})
-    lens_material = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_material',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Material'})
-    lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Base Curve'})
+    lens_diameter_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_diameter',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Diameter'})
+    lens_color_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_color',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Color'})
+    lens_material_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_material',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Material'})
+    lens_base_curve_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Base Curve'})
    
     # specifications for contact lenses
-    lens_water_content = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Water Content'})
-    replacement_schedule = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Replacement Schedule'})
+    lens_water_content_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Water Content'})
+    replacement_schedule_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Replacement Schedule'})
     expiration_date = models.DateField(blank=True,null=True)
 
     # specifications for lenses 
-    lens_coatings = models.ManyToManyField(
+    lens_coatings_id = models.ManyToManyField(
         'LensCoating',
         related_name='%(class)s_lens_coatings',
         blank=True,
     )
-    lens_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Lens Type'})
+    lens_type_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Lens Type'})
     spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True)
     cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True)
     axis = models.IntegerField(default=0,blank=True,null=True, validators=[MinValueValidator(0), MaxValueValidator(180)])
     addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True)
-    unit = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Unit'},help_text="Unit of measurement box piesces")
+    unit_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Unit'},help_text="Unit of measurement box piesces")
   
     # Extra information
-    warranty = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Warranty'})
-    weight = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_weight',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Weight'})  
-    dimensions = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_dimensions',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Dimensions'})
+    warranty_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Warranty'})
+    weight_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_weight',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Weight'})  
+    dimensions_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_dimensions',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Dimensions'})
 
     # Pricing
     last_purchase_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
@@ -132,28 +133,28 @@ class ProductVariant(BaseModel):
 
     def _eyewear_fields(self):
         return [
-            str(self.frame_color.id if self.frame_color else ''),
-            str(self.temple_length.id if self.temple_length else ''),
-            str(self.bridge_width.id if self.bridge_width else ''),
-            str(self.lens_diameter.id if self.lens_diameter else ''),
-            str(self.lens_color.id if self.lens_color else ''),
-            str(self.lens_material.id if self.lens_material else ''),
+            str(self.frame_color_id.id if self.frame_color_id else ''),
+            str(self.temple_length_id.id if self.temple_length_id else ''),
+            str(self.bridge_width_id.id if self.bridge_width_id else ''),
+            str(self.lens_diameter_id.id if self.lens_diameter_id else ''),
+            str(self.lens_color_id.id if self.lens_color_id else ''),
+            str(self.lens_material_id.id if self.lens_material_id else ''),
         ]
 
     def _lenses_fields(self):
-        coatings = self.lens_coatings.order_by('id').values_list('id', flat=True)
+        coatings = self.lens_coatings_id.order_by('id').values_list('id', flat=True)
         coating_str = ','.join(map(str, coatings)) if coatings.exists() else ''
         return [
             coating_str,
-            str(self.lens_diameter.id if self.lens_diameter else ''),
-            str(self.lens_color.id if self.lens_color else ''),
-            str(self.lens_material.id if self.lens_material else ''),
-            str(self.lens_base_curve.id if self.lens_base_curve else ''),
-            str(self.lens_type or ''),
+            str(self.lens_diameter_id.id if self.lens_diameter_id else ''),
+            str(self.lens_color_id.id if self.lens_color_id else ''),
+            str(self.lens_material_id.id if self.lens_material_id else ''),
+            str(self.lens_base_curve_id.id if self.lens_base_curve_id else ''),
+            str(self.lens_type_id.id if self.lens_type_id else ''),
             str(self.spherical or ''),
             str(self.cylinder or ''),
             str(self.axis or ''),
-            str(self.replacement_schedule or ''),
+            str(self.replacement_schedule_id.id if self.replacement_schedule_id else ''),
             str(self.addition or ''),
         ]
 

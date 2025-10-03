@@ -1,7 +1,7 @@
 import { FormConfig } from "@/src/shared/types/formConfig";
 export const formsConfig: Record<string, FormConfig> = {
 
-  client:{
+  "clients":{
     schemaName: 'ClientRequest',
     listAlias: 'tenants_clients_list',
     createAlias: 'tenants_register_create',
@@ -12,7 +12,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","max_branches","max_users"],
     detailsField:[ "name","max_branches","max_users","website","is_active","paid_until", ],
   },
-  register_tenant:{
+  "register-tenants":{
     schemaName: 'RegisterTenantRequest',
     listAlias: 'tenants_register_list',
     createAlias: 'tenants_register_create',
@@ -22,7 +22,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","email"],
     detailsField:["name","email",],
   },
-  domain:{
+  'domains':{
     schemaName: 'DomainRequest',
     listAlias: 'tenants_domain_list',
     createAlias: 'tenants_domain_create',
@@ -32,7 +32,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["domain"],
     detailsField:["domain","is_active"],
   },
-  payment:{
+  'payments':{
     schemaName: 'PaymentRequest',
     listAlias: 'tenants_payments_list',
     createAlias: 'tenants_payments_create',
@@ -42,7 +42,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["amount","transaction_id","status","client"],
     detailsField:["amount","transaction_id","status","client","created_at","updated_at","method","currency"],
   },
-  subscription_plan:{
+  "subscription-plans":{
     schemaName: 'SubscriptionPlanRequest',
     listAlias: 'tenants_subscription_plans_list',
     createAlias: 'tenants_subscription_plans_create',
@@ -52,7 +52,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","max_users","max_branches","description"],
     detailsField:["name","max_users","max_branches","description","month_price","year_price","currency","discount"],
   },
-  roles:{
+  'roles':{
     schemaName: 'PatchedRoleRequest',
     listAlias: 'users_roles_list',
     createAlias: 'users_roles_create',
@@ -62,7 +62,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","description"],
     detailsField:["name","description","is_active","is_deleted"],
   },
-  users: {
+  'users': {
     schemaName: 'UserRequest',
     listAlias: 'users_users_list',
     createAlias: 'users_users_create',
@@ -72,7 +72,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["username","email","phone","role","is_active"],
     detailsField:["username","email","phone","role","is_active","address","website"],
   },
-  permissions:{
+  'permissions':{
     schemaName: 'PermissionRequest',
     listAlias: 'users_permissions_list',
     createAlias: 'users_permissions_create',
@@ -82,7 +82,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["code","description"],
     detailsField:["code","description","is_active"],
   },
-  role_permission:{
+  'role-permissions':{
     schemaName: 'RolePermissionRequest',
     listAlias: 'users_role_permissions_list',
     createAlias: 'users_role_permissions_create',
@@ -92,7 +92,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["role","permission"],
     detailsField:["role","permission","is_active"],
   },
-  contact_us:{
+  'contact-us':{
     schemaName: 'ContactUsRequest',
     listAlias: 'users_contact_us_list',
     createAlias: 'users_contact_us_create',
@@ -102,7 +102,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","email","phone","message"],
     detailsField:["name","email","phone","message","created_at","updated_at","is_deleted","is_active"],
   },
-  tenant_settings:{
+  'tenant-settings':{
     schemaName: 'TenantSettingsRequest',
     listAlias: 'users_tenant_settings_list',
     createAlias: 'users_tenant_settings_create',
@@ -110,9 +110,9 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_tenant_settings_partial_update',
     hardDeleteAlias: 'users_tenant_settings_destroy',
     fields:["business_name","phone","email"],
-    detailsField:["business_name","phone","email","facebook","instagram","twitter","linkedin","description","is_active","is_deleted"],
+    detailsField:["business_name","phone","email","facebook","instagram","twitter","linkedin","website","description","is_active","is_deleted"],
   },
-  department: {
+  'departments': {
     schemaName: 'Department',
     createAlias: 'hrm_departments_create',
     listAlias: 'hrm_departments_list',
@@ -135,26 +135,7 @@ export const formsConfig: Record<string, FormConfig> = {
     userConfig:{},
 
   },
-  supplier: {
-    schemaName: 'SupplierRequest',
-    listAlias: 'products_suppliers_list',
-    createAlias: 'products_suppliers_create',
-    retrieveAlias: 'products_suppliers_retrieve',
-    updateAlias: 'products_suppliers_partial_update',
-    hardDeleteAlias: 'products_suppliers_destroy',
-    createSuccessMessage: 'Supplier created successfully',
-    createErrorMessage: 'Failed to create supplier',
-    updateSuccessMessage: 'Supplier updated successfully',
-    updateErrorMessage: 'Failed to update supplier',
-    title: 'Supplier',
-    detailsTitle: 'Supplier Details',
-    createTitle: 'Add Supplier',
-    updateTitle: 'Update Supplier',
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","website","is_active","is_deleted"],
-
-  },
-  employee:{
+  'employees':{
     schemaName: 'EmployeeRequest',
     listAlias: 'hrm_employees_list',
     createAlias: 'hrm_employees_create',
@@ -170,13 +151,13 @@ export const formsConfig: Record<string, FormConfig> = {
     createTitle: 'Add Employee',
     updateTitle: 'Update Employee',
     fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","website","is_active","is_deleted"],
+    detailsField:["name","email","phone","address","is_active","is_deleted"],
     showResetButton:true,
     showBackButton:true,
     className:"",
     userConfig:{},
   },
-  customer:{
+  'customers':{
     schemaName: 'CustomerRequest',
     listAlias: 'crm_customers_list',
     createAlias: 'crm_customers_create',
@@ -184,19 +165,9 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'crm_customers_partial_update',
     hardDeleteAlias: 'crm_customers_destroy',
     fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","website","is_active","is_deleted"],
+    detailsField:["name","email","phone","address","is_active","is_deleted"],
   },
-  manufacturer:{
-    schemaName: 'ManufacturerRequest',
-    listAlias: 'products_manufacturers_list',
-    createAlias: 'products_manufacturers_create',
-    retrieveAlias: 'products_manufacturers_retrieve',
-    updateAlias: 'products_manufacturers_partial_update',
-    hardDeleteAlias: 'products_manufacturers_destroy',
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","website","is_active","is_deleted"],
-  },
-  prescriptions:{
+  'prescriptions':{
     schemaName: 'PrescriptionRequest',
     listAlias: 'prescriptions_prescription_list',
     createAlias: 'prescriptions_prescription_create',
@@ -204,8 +175,8 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'prescriptions_prescription_partial_update',
     hardDeleteAlias: 'prescriptions_prescription_destroy',
     filterAlias: 'prescriptions_prescription_filter_options_retrieve',
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","website","is_active","is_deleted"],
+    fields:["customer_name","notes","user_name"],
+    detailsField:["customer_name","notes","user_name","is_active","is_deleted"],
   },
   "branch-users":{
     schemaName: 'BranchUsersRequest',
@@ -214,10 +185,10 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'branches_branch_users_retrieve',
     updateAlias: 'branches_branch_users_partial_update',
     hardDeleteAlias: 'branches_branch_users_destroy',
-    fields:["branch_id","employee_id","status","notes"],
-    detailsField:["branch_id","employee_id","status","notes","is_active","is_deleted"],
+    fields:["branch_name","employee_name","status"],
+    detailsField:["branch_name","employee_name","status","is_active","is_deleted"],
   },
-  branch:{
+  'branches':{
     schemaName: 'BranchRequest',
     listAlias: 'branches_branches_list',
     createAlias: 'branches_branches_create',
@@ -227,7 +198,7 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","email","phone"],
     detailsField:["name","email","phone","address","city","country","is_active","is_deleted"],
   },
-  attributes:{
+  'attributes':{
     schemaName: 'AttributesRequest',
     listAlias: 'products_attributes_list',
     createAlias: 'products_attributes_create',
@@ -235,7 +206,7 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_attributes_partial_update',
     hardDeleteAlias: 'products_attributes_destroy',
     fields:["name"],
-    detailsField:["name","is_active","is_deleted"],
+    detailsField:["name","description","is_active","is_deleted"],
   },
   "attribute-values":{
     schemaName: 'AttributeValuesRequest',
@@ -244,10 +215,10 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'products_attribute_values_retrieve',
     updateAlias: 'products_attribute_values_partial_update',
     hardDeleteAlias: 'products_attribute_values_destroy',
-    fields:["attribute","value","attribute_name"],
-    detailsField:["attribute","value","attribute_name","is_active","is_deleted"],
+    fields:["attribute_id","value","attribute_name"],
+    detailsField:["attribute_id","value","attribute_name","is_active","is_deleted"],
   },
-  "suppliers":{
+  'suppliers':{
     schemaName: 'SupplierRequest',
     listAlias: 'products_suppliers_list',
     createAlias: 'products_suppliers_create',
@@ -284,10 +255,10 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'products_categories_retrieve',
     updateAlias: 'products_categories_partial_update',
     hardDeleteAlias: 'products_categories_destroy',
-    fields:["name","description","parent_id","parent_name"],
+    fields:["name","description","parent_name"],
     detailsField:["name","description","parent_id","parent_name","is_active","is_deleted"],
   },
-  "lens-coating":{
+  'lens-coatings':{
     schemaName: 'LensCoatingRequest',
     listAlias: 'products_lens_coatings_list',
     createAlias: 'products_lens_coatings_create',
@@ -304,6 +275,36 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'products_products_retrieve',
     updateAlias: 'products_products_partial_update',
     hardDeleteAlias: 'products_products_destroy',
+    fields:["name","category_name","brand_name",],
+    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+  },
+  'product-variants':{
+    schemaName: 'ProductVariantRequest',
+    listAlias: 'products_product_variants_list',
+    createAlias: 'products_product_variants_create',
+    retrieveAlias: 'products_product_variants_retrieve',
+    updateAlias: 'products_product_variants_partial_update',
+    hardDeleteAlias: 'products_product_variants_destroy',
+    fields:["name","category_name","brand_name",],
+    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+  },
+  "product-images":{
+    schemaName: 'ProductImageRequest',
+    listAlias: 'products_product_images_list',
+    createAlias: 'products_product_images_create',
+    retrieveAlias: 'products_product_images_retrieve',
+    updateAlias: 'products_product_images_partial_update',
+    hardDeleteAlias: 'products_product_images_destroy',
+    fields:["name","category_name","brand_name",],
+    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+  },
+  "flexible-prices":{
+    schemaName: 'FlexiblePriceRequest',
+    listAlias: 'products_flexible_prices_list',
+    createAlias: 'products_flexible_prices_create',
+    retrieveAlias: 'products_flexible_prices_retrieve',
+    updateAlias: 'products_flexible_prices_partial_update',
+    hardDeleteAlias: 'products_flexible_prices_destroy',
     fields:["name","category_name","brand_name",],
     detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
   },
