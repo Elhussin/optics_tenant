@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { ConfirmDialogProps } from '@/src/shared/types';
-
+import { useTranslations } from 'next-intl';
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   open,
@@ -13,6 +13,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   cancelText = 'Cancel',
   isDanger = true,
 }) => {
+
   if (!open) return null;
 
   return (

@@ -4,24 +4,26 @@ import { z } from 'zod';
 import { schemas } from '@/src/shared/api/schemas';
 import { Loading3 } from '@/src/shared/components/ui/loding';
 import { DynamicFormProps } from '@/src/shared/types/DynamicFormTypes';
-import { defaultConfig, ignoredFields } from '@/src/config/generatFormConfig';
+import { defaultConfig, ignoredFields } from '@/src/features/dashboard/api/generatFormConfig';
 import { RenderField } from './renderField';
 import { cn } from '@/src/shared/utils/cn';
 import { CirclePlus, ArrowLeft } from 'lucide-react';
-import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
-import { formsConfig } from '@/src/config/formsConfig';
+import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
 import { useMemo } from 'react';
 import { safeToast } from '@/src/shared/utils/toastService';
 import {useTranslations} from 'next-intl';
 import { ActionButton } from '../ui/buttons';
 import { useRouter } from '@/src/app/i18n/navigation';
-
+import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
+import { relationshipConfigs } from '@/src/features/dashboard/api/generatFormConfig';
+import { useApiForm } from '@/src/shared/hooks/useApiForm';
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
-  // const isIframe = useIsIframe();
   const [defaultValues, setDefaultValues,] = useState<any>(null);
   const router = useRouter();
-
+  const [showModal, setShowModal] = useState(false);
+  const [currentFieldName, setCurrentFieldName] = useState('');
   const { entity, id,setData} = props
+  const [loading, setLoading] = useState(false);
 
   if (!entity) throw new Error('entity is required');
   const t = useTranslations('formsConfig');
@@ -31,7 +33,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const showResetButton = form.showResetButton ?? true;
   const showBackButton = form.showBackButton ?? true;
   const className = form.className || '';
-
+  const relationConfig = relationshipConfigs[currentFieldName];
   const action = id ? 'update' : 'create';
 
   const submitText = useMemo(
@@ -77,8 +79,9 @@ const visibleFields = config.fieldOrder || allFields;
   const safeFetchAlias: string = fetchAlias ?? '';
   const canSubmit = Boolean(safeAlias);
 
-  const formRequest = useFormRequest({ alias: safeAlias, defaultValues });
-  const fetchDefaultData = useFormRequest({ alias: safeFetchAlias });
+  const formRequest = useApiForm({ alias: safeAlias });
+  const fetchDefaultData = useApiForm({ alias: safeFetchAlias });
+
 
 
   const onSubmit = async (data: any, e?: React.BaseSyntheticEvent) => {
@@ -93,8 +96,7 @@ const visibleFields = config.fieldOrder || allFields;
       setDefaultValues(result.data);
       // formRequest?.reset();
       }
-        // to returen dat when cull from anothe mdule
-
+       
     } else if (errorMessage) {
       safeToast(errorMessage ,{type:"error"})
     }
@@ -103,20 +105,17 @@ const visibleFields = config.fieldOrder || allFields;
   useEffect(() => {
     if (id) {
       const fetchData = async () => {
+        setLoading(true);
         const result = await fetchDefaultData.submitForm({ id });
-        setDefaultValues(result.data);
+        formRequest?.reset(result.data);
+        setLoading(false);
       };
       fetchData();
     }
   }, [id]);
-  
-  useEffect(() => {
-  // if (defaultValues) {
-  //   formRequest?.reset(defaultValues);
-  // }
-  }, [defaultValues,formRequest]);
 
-  if (id && !defaultValues) {
+
+  if (loading ) {
     return <Loading3/>;
   }
 
@@ -141,6 +140,10 @@ const visibleFields = config.fieldOrder || allFields;
             form={formRequest}
             config={config}
             mode={id ? 'edit' : 'create'}
+            setShowModal={(show: boolean) => {
+              if (show) setCurrentFieldName(fieldName);
+              setShowModal(show);
+            }}
           />
         ))}
 
@@ -168,6 +171,13 @@ const visibleFields = config.fieldOrder || allFields;
         </div>
 
       </form>
+      {showModal && (
+        <DynamicFormDialog
+          entity={relationConfig.entityName || ''}
+          onClose={() => setShowModal(false)}
+        />
+        // <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
+      )}
     </div>
   );
 }

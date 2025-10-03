@@ -8,13 +8,14 @@ import { Pagination } from "@/src/shared/components/views/Pagination";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
-import { formsConfig } from "@/src/config/formsConfig";
+import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
 
 
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {
     const {filterAlias,listAlias} = formsConfig["prescriptions"];
 
     const { data, totalPages, page, setPage, setFilters, isLoading } = useFilteredListRequest(listAlias);
+    console.log("data",data)
     const { fields, isLoading: isFieldsLoading} = useFilterDataOptions( filterAlias ||"" );
     if (isLoading||isFieldsLoading) return <Loading4 />
     console.log("fields",fields)

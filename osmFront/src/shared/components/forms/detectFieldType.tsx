@@ -1,14 +1,14 @@
 "use client"
 import { z } from 'zod';
-import { relationshipConfigs } from '@/src/config/generatFormConfig';
+import { relationshipConfigs } from '@/src/features/dashboard/api/generatFormConfig';
 import { useState, useEffect } from 'react';
-import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
-import Modal from "@/src/shared/components/ui/dialogs/Modal";
+import { useApiForm } from '@/src/shared/hooks/useApiForm';
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from 'lucide-react';
 import ReactSelect from 'react-select';
 import { Controller } from 'react-hook-form';
 
+import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
 export function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
   while (
     schema instanceof z.ZodOptional ||
@@ -62,21 +62,7 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
 }
 
 
-// // استخراج خيارات Union
-// export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
-//   const options: string[] = [];
 
-//   schema._def.options.forEach((option: any) => {
-//     if (option instanceof z.ZodLiteral) {
-//       options.push(option.value);
-//     } else if (option instanceof z.ZodString) {
-//       // يمكن إضافة logic إضافي هنا للتعامل مع string enums
-//       options.push(option._def.value || 'string');
-//     }
-//   });
-
-//   return options;
-// }
 
 export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
   const options: string[] = [];
@@ -93,63 +79,25 @@ export function getUnionOptions(schema: z.ZodUnion<any>): string[] {
   return options;
 }
 
-// export function useForeignKeyData(fieldName: string, fieldType: string) {
-//   const [data, setData] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(false);
-//   if (fieldType !== 'foreignkey') throw new Error('Invalid field type');
-//   const alies = relationshipConfigs[fieldName].endpoint;
+export function useForeignKeyData(entityName: string, setData: any) {
 
-//   const fetchForeignKeyData = useFormRequest({
-//     alias: alies,
-//     onSuccess: (res) => {
-//       setData(Array.isArray(res) ? res : res.data || []);
-//       setLoading(false);
-//     },
-//     onError: (err) => {
-//       console.error("Error", err);
-//       setLoading(false);
-//     },
-//   });
-
-
-//   useEffect(() => {
-//     if (fieldType === 'foreignkey' && relationshipConfigs[fieldName]) {
-//       setLoading(true);
-//       fetchForeignKeyData.submitForm();
-//     }
-//   }, [fieldName, fieldType]);
-
-
-//   return { data, loading };
-// }
-export function useForeignKeyData(fieldName: string, fieldType: string) {
-  const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  if (!entityName) return;
 
-  // خد config لو موجود
-  const alias = relationshipConfigs[fieldName]?.endpoint;
 
-  const fetchForeignKeyData = useFormRequest({
-    alias,
-    onSuccess: (res) => {
-      setData(Array.isArray(res) ? res : res.data || []);
-      setLoading(false);
-    },
-    onError: (err) => {
-      console.error("Error", err);
-      setLoading(false);
-    },
-  });
-
-  useEffect(() => {
-    // ✅ الشرط هنا: مفيش API request إلا لو النوع فعلاً foreignkey
-    if (fieldType === "foreignkey" && alias) {
-      setLoading(true);
-      fetchForeignKeyData.submitForm();
-    }
-  }, [fieldType, fieldName, alias]);
-
-  return { data, loading };
+  const alias = formsConfig[entityName]?.listAlias;
+  const fetchForeignKeyData = useApiForm({ alias: alias });
+      useEffect(() => {
+        (async () => {
+          if (alias) {
+            setLoading(true);
+        const res=await fetchForeignKeyData.query.refetch();
+          if (res?.data?.results) {
+            setData(res.data.results.reverse());
+          setLoading(false);
+        }
+      }})();
+    }, [entityName, alias]);
 }
 
 export function ForeignKeyField({
@@ -159,15 +107,19 @@ export function ForeignKeyField({
   label,
   required,
   errors,
-  form
+  form,
+  setShowModal,
+
 }: any) {
 
 
+  const [data, setData] = useState<any[]>([]);
 
-  const { data, loading } = useForeignKeyData(fieldName, 'foreignkey');
   const relationConfig = relationshipConfigs[fieldName];
-  const [showModal, setShowModal] = useState(false);
   if (!relationConfig) return null;
+  useForeignKeyData(relationConfig.entityName!, setData);
+
+
 
   return (
 
@@ -183,8 +135,6 @@ export function ForeignKeyField({
           control={form.control}
           render={({ field }) => (
             <ReactSelect
-
-              // menuPortalTarget={document.body}
 
               {...field}
               options={data.map((item) => ({
@@ -217,10 +167,6 @@ export function ForeignKeyField({
           title="Add"
         />
       </div>
-      {showModal && (
-        <Modal url={relationConfig.createPage || ''} onClose={() => setShowModal(false)} />
-      )}
-
       {errors[fieldName] && (
         <p className={config.errorClasses}>
           {errors[fieldName]?.message}
@@ -277,18 +223,6 @@ export function UnionField({
 
 
 export function useFieldOptions(fieldName: string, fieldType: string, schema?: z.ZodEnum<any>) {
-  const foreignKeyData = useForeignKeyData(fieldName, fieldType);
-
-  if (fieldType === "foreignkey") {
-    return {
-      data: foreignKeyData.data.map((opt: any) => ({
-        label: opt.label || opt.name || String(opt.id),
-        value: opt.value || opt.id,
-      })),
-      loading: foreignKeyData.loading,
-    };
-  }
-
   if (fieldType === "select" && schema) {
     return {
       data: schema.options.map((opt: any) => ({ label: opt, value: opt })),

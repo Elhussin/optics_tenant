@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import { safeToast } from "@/src/shared/utils/toastService";
-import { useFormRequest } from "./useFormRequest";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/src/shared/components/ui/dialogs/ConfirmDialog";
 import { useTranslations } from "next-intl";
+import { useApiForm } from "./useApiForm";
 
 type UseHardDeleteWithDialogProps = {
   alias: string;
@@ -26,7 +26,7 @@ export function useHardDeleteWithDialog({
   const router = useRouter();
   const [showDialog, setShowDialog] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
-  const hardDeleteRequest = useFormRequest({
+  const hardDeleteRequest = useApiForm({
     alias,
     onError: (err: any) => {
       safeToast(err.response?.data?.detail, { type: "error" });
@@ -41,8 +41,8 @@ export function useHardDeleteWithDialog({
 
   const handleConfirm = async () => {
     if (selectedId) {
-      const resualt = await hardDeleteRequest.submitForm({ id: selectedId });
-      if (!resualt?.success) {
+      const result = await hardDeleteRequest.mutation.mutateAsync({ id: selectedId });
+      if (!result?.success) {
         safeToast(t("failedMessage"), { type: "error" });
       }
       onSuccess?.();

@@ -4,13 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import RichTextEditor from './RichTextEditor';
 import { CreatePageData, Language, PageTranslation, LANGUAGES } from '@/src/features/pages/types';
-import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
 import { safeToast } from '@/src/shared/utils/toastService';
 import { Loading4 } from '@/src/shared/components/ui/loding';
 import { defaultPublicPages } from '@/src/shared/constants/defaultPublicPages';
 import {useTranslations} from 'next-intl';
 import {useLocale} from 'next-intl';
 import {getBaseUrl} from '@/src/shared/utils/getBaseUrl';
+import {useApiForm} from '@/src/shared/hooks/useApiForm';
 interface MultilingualPageEditorProps {
   pageId?: string;
   defaultPage?: string | null;
@@ -30,9 +30,18 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
   const [formData, setFormData] = useState<CreatePageData | null>(null);
   
-  const pageRequest = useFormRequest({ alias: `users_pages_retrieve` });
-  const createRequest = useFormRequest({ alias: `users_pages_create` });
-  const updateRequest = useFormRequest({ alias: `users_pages_partial_update` });
+  const pageRequest = useApiForm({ alias: `users_pages_retrieve`,defaultValues: { id: pageId } });
+  const createRequest = useApiForm({ alias: `users_pages_create` });
+  const updateRequest = useApiForm({ alias: `users_pages_partial_update` ,
+    onSuccess: () => {
+      safeToast(t('PageUpdated'), { type: "success" })
+      loadPage();
+
+    },
+    onError: () => {
+      safeToast(t('errorUpdatingPage'), { type: "error" });
+    }
+  });
 
   // دالة لتوليد slug من العنوان
   const generateSlug = (title: string) => {
@@ -71,7 +80,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
     return formData.translations.find(t => t.language === activeLanguage) || formData.translations[0];
   };
 
-  // حساب نسبة اكتمال الترجمة للغة معينة
+
   const getTranslationCompleteness = (language: Language) => {
     if (!formData) return 0;
     
@@ -105,7 +114,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
         });
       }
     } else if (!pageId) {
-      // تهيئة بيانات جديدة فقط عندما لا يكون هناك pageId ولا defaultPage
+
       setFormData({
         default_language: 'en',
         translations: Object.entries(LANGUAGES).map(([code]) => ({
@@ -126,7 +135,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
   const loadPage = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await pageRequest.submitForm({ id: pageId });
+      const res = await pageRequest.query.refetch();
       const page = res.data;
   
       // تأكد من وجود جميع اللغات المطلوبة
@@ -172,7 +181,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
         safeToast(t('errorGetFormData'),{type:"error"});
         return;
       }
-
+      // await updatePrescriptionApi.mutation.mutateAsync(data);
       // التحقق من وجود عنوان للغة الافتراضية
       const defaultTranslation = formData.translations.find(t => t.language === formData.default_language);
       if (!defaultTranslation?.title.trim()) {
@@ -188,15 +197,11 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({ pageId,
 
       let result;
       if (pageId) {
-        result = await updateRequest.submitForm({ id: pageId, formData: finalFormData });
-        if (result?.success) {
-          safeToast(t('PageUpdated'), { type: "success" });
-          setFormData(result.data);
-        } else {
-          setFormErrors(updateRequest.errors || {});
-          safeToast(t('errorUpdatingPage'), { type: "error" });
 
-        }
+        result = await updateRequest.mutation.mutateAsync({ id: pageId, formData: finalFormData });
+        setFormData(result.data);
+
+
       } else {
         result = await createRequest.submitForm(finalFormData);
         if (result?.success) {

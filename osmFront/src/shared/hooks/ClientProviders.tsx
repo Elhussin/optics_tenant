@@ -16,13 +16,15 @@ interface Props {
 export default function ClientProviders({ children, locale, messages }: Props) {
   return (
     <NextIntlClientProvider locale={locale} messages={messages}    timeZone={process.env.NEXT_PUBLIC_TIMEZONE}>
+              <Providers>
       <UserProvider>
         <AsideProvider>
-          <Providers>
+
             {children}
-          </Providers>
+
         </AsideProvider>
       </UserProvider>
+      </Providers>
     </NextIntlClientProvider>
   );
 }

@@ -478,7 +478,10 @@
     "role_permission":"امتيازات الصلاحيات",
     "tenant_settings":"اعدادات المستأجر",
     "contact_us":"تواصل معنا",
-    "customer":"العملاء"
+    "customer":"العملاء",
+    "branch":"الفروع",
+    "branch-users":"المستخدمين",
+    "employee":"الموظفين"
 
   }
 }

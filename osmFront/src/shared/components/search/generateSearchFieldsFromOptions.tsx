@@ -1,32 +1,34 @@
 import { useEffect, useState } from "react";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
+import { useApiForm } from "../../hooks/useApiForm";
 import { formatLabel } from "@/src/shared/utils/cardViewHelper";
 
 export function useSearchFieldsFromOptions(alias: string) {
   const [fields, setFields] = useState<any[]>([]);
-  const fetchData = useFormRequest({ alias });
+  const fetchData = useApiForm({ alias });
+
 
   useEffect(() => {
-    const fetch = async () => {
-      try {
-        const result = await fetchData.submitForm();
-
-        if (result?.data) {
-          const mapped = Object.keys(result.data).map((key) => ({
-            name: key,
-            label: formatLabel(key), // هنا تقدر تحط ترجمة
-            type: "select" as const,
-            options: result.data[key].map((val: string) => ({
-              label: val,
-              value: val,
-            })),
-          }));
-          setFields(mapped);
-        }
-      } catch (err) {
+ 
+    async function fetch() {
+      try{
+      const res = await fetchData.query.refetch();
+      if (res?.data) {
+        const mapped = Object.keys(res.data).map((key) => ({
+          name: key,
+          label: formatLabel(key), // هنا تقدر تحط ترجمة
+          type: "select" as const,
+          options: res.data[key].map((val: string) => ({
+            label: val,
+            value: val,
+          })),
+        }));
+        setFields(mapped);
+      }
+      }
+      catch (err) {
         console.error("Error fetching filter options:", err);
       }
-    };
+    }
     fetch();
   }, [alias]);
 

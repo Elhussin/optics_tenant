@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
+
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useTranslations } from "next-intl";
 export default function ForgotPasswordPage() {
   const [status, setStatus] = useState<
@@ -10,7 +11,7 @@ export default function ForgotPasswordPage() {
   const t = useTranslations("forgotPassword");
   const alias = "users_password_reset_create";
 
-  const formRequest = useFormRequest({
+  const formRequest = useApiForm({
     alias,
     onSuccess: async (res) => {
       setStatus("success");

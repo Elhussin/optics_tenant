@@ -3,7 +3,7 @@
 "use client";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { SearchFilterForm } from "../search/SearchFilterForm";
-import { formsConfig } from "@/src/config/formsConfig";
+import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
 import { NotFound } from './NotFound';
@@ -27,7 +27,6 @@ export default function ViewCard({ entity }: { entity: string }) {
   
   if (!form) return <NotFound error={t('errorGetFormData')} />;
   if (isLoading || !data ) return <Loading4 />;
-  console.log("data", data);
   return (
     <>
       <SearchFilterForm fields={fields} setFilters={setFilters} />

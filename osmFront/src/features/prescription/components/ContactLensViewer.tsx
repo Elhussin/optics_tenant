@@ -41,7 +41,7 @@ const ContactLensViewer: React.FC<Props> = ({
   );
 
   return (
-    <div className="grid md:grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
       {renderSection("Right Sphere", rightSphere)}
       {renderSection("Left Sphere", leftSphere)}
       {renderSection("Right Toric", rightToric)}

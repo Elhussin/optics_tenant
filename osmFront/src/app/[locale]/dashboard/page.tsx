@@ -24,6 +24,9 @@ export default function DashboardLinks() {
     { href: "tenant_settings", roles: ["OWNER"], group: "Settings" },
     { href: "contact_us", roles: ["OWNER"], group: "Support" },
     { href: "customer", roles: ["OWNER"], group: "Customer" },
+    { href: "branch", roles: ["OWNER"], group: "Branch" },
+    { href: "branch-users", roles: ["OWNER"], group: "Branch" },
+    { href: "employee", roles: ["OWNER"], group: "Branch" },
   ];
   
   const userRole = user?.role?.name?.toUpperCase(); // "OWNER"

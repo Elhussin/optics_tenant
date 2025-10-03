@@ -1,5 +1,4 @@
 'use client';
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
 import { X, Trash2, Pencil, ArrowLeft, Check, RotateCcw } from "lucide-react";
 import { useHardDeleteWithDialog } from '@/src/shared/hooks/useHardDeleteWithDialog';
 
@@ -7,13 +6,14 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { safeToast } from '@/src/shared/utils/toastService';
 import { useTranslations } from 'next-intl';
 import { RenderButtonsProps } from '@/src/shared/types';
-
+import { useApiForm } from '@/src/shared/hooks/useApiForm';
 
 
 
 export const RenderButtons = ({ data, alias, refetch, navigatePath }: RenderButtonsProps) => {
   const t = useTranslations("button");
-  const editRequest = useFormRequest({
+
+  const editRequest = useApiForm({
     alias: alias.editAlias,
     onSuccess: () => {
       safeToast(t("updatedSuccessfully"), { type: "success" });
@@ -25,10 +25,11 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath }: RenderButt
   });
 
   const handleDelete = () =>
-    editRequest.submitForm({ id: data.id, is_deleted: true, is_active: false, ...("is_published" in data ? { is_published: false } : {}) });
+
+    editRequest.mutation.mutateAsync({ id: data.id, is_deleted: true, is_active: false, ...("is_published" in data ? { is_published: false } : {}) });
 
   const handleRestore = () =>
-    editRequest.submitForm({
+    editRequest.mutation.mutateAsync({
       id: data.id,
       is_deleted: false,
       is_active: true,
@@ -36,10 +37,10 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath }: RenderButt
     });
 
   const handleActivate = () =>
-    editRequest.submitForm({ id: data.id, is_active: true, ...("is_published" in data ? { is_published: true } : {}) });
+    editRequest.mutation.mutateAsync({ id: data.id, is_active: true, ...("is_published" in data ? { is_published: true } : {}) });
 
   const handleDeactivate = () =>
-    editRequest.submitForm({ id: data.id, is_active: false, ...("is_published" in data ? { is_published: false } : {}) });
+    editRequest.mutation.mutateAsync({ id: data.id, is_active: false, ...("is_published" in data ? { is_published: false } : {}) });
 
 
   const { confirmHardDelete, ConfirmDialogComponent } = useHardDeleteWithDialog({

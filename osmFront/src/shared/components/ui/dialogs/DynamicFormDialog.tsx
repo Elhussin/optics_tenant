@@ -5,12 +5,13 @@ import DynamicFormGenerator from "@/src/shared/components/forms/DynamicFormGener
 import Draggable from "react-draggable";
 import { useRef } from "react";
 import { DynamicFormDialogProps } from "@/src/shared/types";
+import { useTranslations } from "next-intl";
 
 
 const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, title }) => {
 
   const nodeRef = useRef(null);
-
+  const t = useTranslations(entity);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
       <Draggable handle=".modal-header" nodeRef={nodeRef}>
@@ -20,7 +21,7 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, 
         >
           {/* الهيدر draggable */}
           <div className="modal-header flex justify-between items-center p-4 border-b cursor-move bg-gray-100">
-            <span className="font-semibold"> {title}</span>
+            <span className="font-semibold"> {t(title)}</span>
             <button onClick={onClose}>X</button>
           </div>
 

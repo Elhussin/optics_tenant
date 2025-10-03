@@ -1,8 +1,8 @@
 "use client";
 
 import { useUser } from "@/src/features/auth/hooks/UserContext";
-import { formRequestProps, UseFormRequestReturn } from "@/src/shared/types";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
+import { formRequestProps } from "@/src/shared/types";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import { safeToast } from "@/src/shared/utils/toastService";
@@ -36,7 +36,7 @@ export default function LoginForm(props: formRequestProps) {
     errors,
     isSubmitting,
     register,
-  }: UseFormRequestReturn = useFormRequest({ alias });
+  } = useApiForm({ alias });
 
   const onSubmit = async (data: any) => {
     try {

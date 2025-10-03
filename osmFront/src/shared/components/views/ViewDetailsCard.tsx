@@ -11,11 +11,11 @@ import { useTranslations } from "next-intl";
 import { ViewCardProps } from "@/src/shared/types";
 import { RenderButtons } from "../ui/buttons/RenderButtons";
 import { Loading4 } from "../ui/loding";
-import { formsConfig } from "@/src/config/formsConfig";
+import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
 import { ActionButton } from "../ui/buttons";
 import { NotFound } from "./NotFound";
 import { Copy, Printer, FileText } from "lucide-react";
-import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
+import { useApiForm } from '@/src/shared/hooks/useApiForm';
 
 export default function ViewDetailsCard(props: ViewCardProps) {
   const { entity, id } = props;
@@ -26,16 +26,17 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   const t2 = useTranslations(entity);
 
   // hook لجلب البيانات
-  const formRequest = useFormRequest({
+  const formRequest = useApiForm({
     alias: form.retrieveAlias,
-    onSuccess: (res:any) => setData(res),
+    defaultValues:  { id: Number(id) } ,
     onError: (err:any) => console.error(err),
   });
 
   // refetch function ثابتة
-  const refetch = useCallback(() => {
+  const refetch = useCallback(async () => {
     if (id == null) return;
-    formRequest.submitForm({ id });
+    const result = await formRequest.query.refetch();
+    setData(result?.data);
   }, [id]);
 
   useEffect(() => {

@@ -38,7 +38,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
         reset(prescriptionData.data);
       }
        const customer: any = prescriptionData?.data?.customer;
-       console.log("customer",customer);
+
       if (customer) {
         setValue("customer", String(typeof customer === "object" ? customer.id : customer));
       }
@@ -62,19 +62,17 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const onSubmit = async (data: any) => {
     validateEyeTest(data);
       const eyeTest = validateEyeTest(data);
-      console.log("eyeTest",eyeTest);
       if(!eyeTest ){
         return
       }
 
       const contactLens= validateContactLens(data);
-      console.log("contactLens",contactLens);
       setContactLensData(contactLens);
       try {
       let result;
       if (id) {
         result = await updatePrescriptionApi.mutation.mutateAsync(data);
-        console.log(result);
+
       } else {
         result = await submitForm(data);
 

@@ -1,15 +1,16 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { safeToast } from "@/src/shared/utils/toastService";
 import { useTranslations } from "next-intl";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
+
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid") || "";
   const token = searchParams.get("token") || "";
   const t = useTranslations("resetPassword");
-  const formRequest = useFormRequest({
+  const formRequest = useApiForm({
     alias: "users_password_reset_confirm_create",
     defaultValues: { uid, token, password: "" },
     onSuccess: () => {

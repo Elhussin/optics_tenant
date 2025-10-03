@@ -3,11 +3,10 @@ import { useEffect, useState } from "react";
 import { Loading4 } from "@/src/shared/components/ui/loding";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/shared/components/ui/card";
 import { RenderButtons } from "@/src/shared/components/ui/buttons/RenderButtons";
-import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
 import { useCallback } from "react";
 import {useTranslations} from 'next-intl';
 import {useLocale} from 'next-intl';
-
+import {useApiForm} from '@/src/shared/hooks/useApiForm';
 export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   const t = useTranslations("pagesList");
@@ -20,15 +19,20 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   
 
-     const {submitForm} = useFormRequest({
+     const fetchPage = useApiForm({
       alias: "users_pages_retrieve",
-      onSuccess: (res) => {setPageData(res);},
+      defaultValues: { id: pageId },
+   
     });
   
 
-  const refetch = useCallback(() => {
+  const refetch = useCallback(async () => {
     if (pageId == null) return;
-     submitForm({ id: pageId });
+    const res = await fetchPage.query.refetch();
+    if (res?.status) {
+      setPageData(res.data);
+    }
+    //  submitForm({ id: pageId });
   }, [pageId]);
   
   useEffect(() => {

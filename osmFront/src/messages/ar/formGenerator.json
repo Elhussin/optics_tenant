@@ -38,7 +38,11 @@
     "role_permission":"صلاحيات الدور",
     "contact_us":"تواصل",
     "tenant_settings":"إعدادات المستأجر",
-    "customer":"العملاء"
+    "customer":"العملاء",
+    "branch":"الفروع",
+    "branch-users":"مستخدم الفرع",
+    
+    "employee":"الموظفين"
 
   },
   "client":{
@@ -265,6 +269,46 @@
   "title": "العملاء",
   "detailsTitle": "تفاصيل العميل",
   "name": "اسم العميل",
+  "email": "البريد الإلكتروني",
+  "phone": "رقم الهاتف",
+  "address": "العنوان",
+  "website": "الموقع الإلكتروني",
+  "is_active": "الحالة",
+  "is_deleted": "الحذف",
+  "values": {
+    "is_active": {
+      "true": "مفعل",
+      "false": "غير مفعل"
+    },
+    "is_deleted": {
+      "true": "محذوف",
+      "false": "غير محذوف"
+    }
+}
+},
+"branch-users":{
+  "title": "مستخدم الفرع",
+  "detailsTitle": "تفاصيل المستخدم",
+  "branch_id": "الفرع",
+  "employee_id": "الموظف",
+  "status": "الحالة",
+  "notes": "الملاحظات",
+  "is_active": "الحالة",
+  "is_deleted": "الحذف",
+  "values": {
+    "is_active": {
+      "true": "مفعل",
+      "false": "غير مفعل"
+    },
+    "is_deleted": {
+      "true": "محذوف",
+      "false": "غير محذوف"
+    }
+}
+},"branch":{
+  "title": "الفروع",
+  "detailsTitle": "تفاصيل الفرع",
+  "name": "اسم الفرع",
   "email": "البريد الإلكتروني",
   "phone": "رقم الهاتف",
   "address": "العنوان",

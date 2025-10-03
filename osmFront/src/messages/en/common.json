@@ -480,7 +480,10 @@
     "role_permission":"Role & Permissions",
     "contact_us":"Contact Us",
     "tenant_settings":"Tenant Settings",
-    "customer":"Customers"
+    "customer":"Customers",
+    "branch":"Branches",
+    "branch-users":"Branch Users",
+    "employee":"Employees"
   }
 
 

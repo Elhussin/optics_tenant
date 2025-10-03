@@ -159,7 +159,7 @@ export type RenderButtonsProps = {
 export interface DynamicFormDialogProps {
   onClose: (e: any) => void;
   entity: string;
-  title: string;
+  title?: string;
 }
 
 

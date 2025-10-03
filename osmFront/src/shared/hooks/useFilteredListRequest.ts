@@ -1,14 +1,17 @@
 import { useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
-import { IteamInPage } from "@/src/shared/constants";
-
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
+import { IteamInPage } from "@/src/shared/constants"; 
+import { useEffect, useState } from "react";
 export function useFilteredListRequest(alias: string, defaultPage = 1) {
+  const [data, setData] = useState<any[]>([]);
+  const [count, setCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const dataRequest = useFormRequest({ alias });
+  const dataRequest = useApiForm({ alias });
 
   // ✨ حوّل searchParams إلى object
   const paramsObj = useMemo(() => {
@@ -21,25 +24,23 @@ export function useFilteredListRequest(alias: string, defaultPage = 1) {
 
   const page = parseInt(paramsObj.page || defaultPage, 10);
 
-  // ✨ React Query: جلب البيانات
-  const {
-    data: response,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["filteredList", alias, paramsObj], // الكاش حسب alias + params
-    queryFn: async () => {
-      const res = await dataRequest.submitForm(paramsObj);
-      return res.data;
-    },
-    // keepPreviousData: true, // يخلي البيانات القديمة لحد ما توصل الجديدة
-    staleTime: 1000 * 60 * 5, // 5 دقايق كاش
-  });
 
-  const results = response?.results || [];
-  const count = response?.count || 0;
-  const totalPages = Math.ceil(count / (IteamInPage || 10));
+
+  
+  useEffect(() => {
+
+    async function fetchData() {
+      const res = await dataRequest.query.refetch();
+      if (res?.data) {
+        setData(res?.data?.results || []);
+        setCount(res?.data?.count || 0);
+        setTotalPages(Math.ceil(count / (IteamInPage || 10)));
+      }
+
+    }
+    fetchData();
+  }, []);
+
 
   // ✨ setter للفلاتر
   const setFilters = (filters: Record<string, string>) => {
@@ -54,14 +55,17 @@ export function useFilteredListRequest(alias: string, defaultPage = 1) {
   };
 
   return {
-    data: results,
+    data: data,
     count,
     totalPages,
     page,
-    isLoading,
-    isError,
-    error,
+    isLoading:dataRequest.isLoading,
+    isError:dataRequest.isError,
+    error:dataRequest.error,
     setFilters,
     setPage,
   };
 }
+
+
+

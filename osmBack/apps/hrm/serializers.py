@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import (Department,Employee,Leave,Attendance,PerformanceReview,Payroll,Task,Notification)
 
 class DepartmentSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = Department
         fields = '__all__'
@@ -13,14 +14,24 @@ class DepartmentSerializer(serializers.ModelSerializer):
     #     return data
 
 class EmployeeSerializer(serializers.ModelSerializer):
-    # user_id = serializers.PrimaryKeyRelatedField(read_only=True)
-    # department_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    user_name = serializers.CharField(source="user_id.username", read_only=True, default=None)
+    department_name = serializers.CharField(source="department_id.name", read_only=True, default=None)
+
+    # def to_representation(self, instance):
+    #     data = super().to_representation(instance)
+    #     if instance.user is None:
+    #         data["user_name"] = None
+    #     if instance.department is None:
+    #         data["department_name"] = None
+    #     return data
     class Meta:
         model = Employee
         fields = [
             "id",
             "user_id",
             "department_id",
+            "user_name",
+            "department_name",
             "position",
             "salary",
             "phone",

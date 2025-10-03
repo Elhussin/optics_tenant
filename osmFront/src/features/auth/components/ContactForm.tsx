@@ -1,20 +1,12 @@
 "use client";
 
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
-import { UseFormRequestReturn } from "@/src/shared/types";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 export default function ContactForm() {
   const t = useTranslations("contact");
 
-  const {
-    handleSubmit,
-    submitForm,
-    errors,
-    isSubmitting,
-    isLoading,
-    register,
-  }: UseFormRequestReturn = useFormRequest({ alias: "crm_contact_us_create" });
+const {handleSubmit, submitForm, errors, isSubmitting, isLoading, register} = useApiForm({ alias: "crm_contact_us_create" });
 
   const onSubmit = async (data: any) => {
     const result = await submitForm(data);

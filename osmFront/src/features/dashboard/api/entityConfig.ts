@@ -154,22 +154,7 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsField:["name","email","phone","address","website","is_active","is_deleted"],
 
   },
-  branch: {
-    schemaName: 'BranchRequest',
-    listAlias: 'branches_branches_list',
-    createAlias: 'branches_branches_create',
-    retrieveAlias: 'branches_branches_retrieve',
-    updateAlias: 'branches_branches_partial_update',
-    hardDeleteAlias: 'branches_branches_destroy',
-    fields:["name","description"],
-    detailsField:["name","description","is_active","is_deleted"],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{},
-
-  },
-  employees:{
+  employee:{
     schemaName: 'EmployeeRequest',
     listAlias: 'hrm_employees_list',
     createAlias: 'hrm_employees_create',
@@ -222,4 +207,26 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","email","phone"],
     detailsField:["name","email","phone","address","website","is_active","is_deleted"],
   },
+  "branch-users":{
+    schemaName: 'BranchUsersRequest',
+    listAlias: 'branches_branch_users_list',
+    createAlias: 'branches_branch_users_create',
+    retrieveAlias: 'branches_branch_users_retrieve',
+    updateAlias: 'branches_branch_users_partial_update',
+    hardDeleteAlias: 'branches_branch_users_destroy',
+    fields:["branch_id","employee_id","status","notes"],
+    detailsField:["branch_id","employee_id","status","notes","is_active","is_deleted"],
+  },
+  branch:{
+    schemaName: 'BranchRequest',
+    listAlias: 'branches_branches_list',
+    createAlias: 'branches_branches_create',
+    retrieveAlias: 'branches_branches_retrieve',
+    updateAlias: 'branches_branches_partial_update',
+    hardDeleteAlias: 'branches_branches_destroy',
+    fields:["name","email","phone"],
+    detailsField:["name","email","phone","address","city","country","is_active","is_deleted"],
+  },
+
+
 };

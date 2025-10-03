@@ -39,7 +39,10 @@
     "role_permission" : "Role & Permission",
     "contact_us":"Contact Us",
     "tenant_settings":"Tenant Settings",
-    "customer":"Customer"
+    "customer":"Customer",
+    "branch":"Branch",
+    "branch-users":"Branch Users",
+    "employee":"Employee"
   },
   "client":{
     "title": "Clients",
@@ -268,6 +271,48 @@
   "phone": "Customer Phone",
   "address": "Customer Address",
   "website": "Customer Website",
+  "is_active": "Active",
+  "is_deleted": "Deleted",
+  "values": {
+    "is_active": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "is_deleted": {
+      "true": "Deleted",
+      "false": "Not Deleted"
+    }
+}
+},
+"branch":{
+  "title": "Branches",
+  "detailsTitle": "Branch Details",
+  "name": "Branch Name",
+  "email": "Branch Email",
+  "phone": "Branch Phone",
+  "address": "Branch Address",
+  "branch_id": "Branch ID",
+  "is_active": "Active",
+  "is_deleted": "Deleted",
+  "values": {
+    "is_active": {
+      "true": "Active",
+      "false": "Inactive"
+    },
+    "is_deleted": {
+      "true": "Deleted",
+      "false": "Not Deleted"
+    }
+}
+},
+"branch-users":{
+  "title": "Branch Users",
+  "detailsTitle": "Branch User Details",
+  "name": "Branch User Name",
+  "email": "Branch User Email",
+  "phone": "Branch User Phone",
+  "address": "Branch User Address",
+  "website": "Branch User Website",
   "is_active": "Active",
   "is_deleted": "Deleted",
   "values": {

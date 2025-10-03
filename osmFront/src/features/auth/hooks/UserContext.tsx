@@ -1,12 +1,11 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode, useMemo } from 'react';
-import { useFormRequest } from '@/src/shared/hooks/useFormRequest';
 import { safeToast } from '@/src/shared/utils/toastService';
 import { useRouter } from '@/src/app/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { UserContextType, User } from '@/src/shared/types';
-
+import { useApiForm } from '@/src/shared/hooks/useApiForm';
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 
@@ -18,10 +17,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   // ✅ طلب بيانات المستخدم
-  const fetchUser = useFormRequest({
+  const fetchUser = useApiForm({
     alias: "users_profile_retrieve",
     onSuccess: (res: User) => {
-      setUser(res);
       setLoading(false);
     },
     onError: () => {
@@ -33,11 +31,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
 
   useEffect(() => {
-    fetchUser.submitForm();
-  }, []);
+    (async () => {
+      
+      const res = await fetchUser.query.refetch();
+      if(res){
+        setUser(  res.data);
+      }
+    })();
+
+    // fetchUser.submitForm();
+  }, [user]);
 
 
-  const logoutRequest = useFormRequest({
+  const logoutRequest = useApiForm({
     alias: "users_logout_create",
     onSuccess: () => {
       setUser(null);

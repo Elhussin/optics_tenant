@@ -375,8 +375,8 @@ class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
-@method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER']), name='dispatch')
-@method_decorator(permission_required(['create_page']), name='dispatch')
+# @method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER']), name='dispatch')
+# @method_decorator(permission_required(['create_page',"__all__"]), name='dispatch')
 class PageViewSet(viewsets.ModelViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer

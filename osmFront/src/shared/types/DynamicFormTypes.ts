@@ -31,8 +31,10 @@ export interface ForeignKeyConfig {
   valueField: string;
   searchField?: string;
   createPage?: string;
+  entityName?: string;
 }
 
 export interface RelationshipConfig {
   [fieldName: string]: ForeignKeyConfig;
+
 }

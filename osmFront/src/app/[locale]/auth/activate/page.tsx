@@ -1,7 +1,7 @@
 'use client';
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 
 export default function ActivatePage() {
   const alias = "tenants_activate_retrieve";
@@ -13,7 +13,7 @@ export default function ActivatePage() {
   );
   const [message, setMessage] = useState<string>("Activating your account...");
 
-  const formRquest= useFormRequest({
+  const formRquest= useApiForm({
     alias,
     onSuccess: async (res) => {
       setStatus("success");

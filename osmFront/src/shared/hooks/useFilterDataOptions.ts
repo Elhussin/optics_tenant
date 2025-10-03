@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useFormRequest } from "@/src/shared/hooks/useFormRequest";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { detectFieldType } from "@/src/shared/utils/generateSearchFields";
 
 export function useFilterDataOptions(alias: string,) {
@@ -7,16 +7,18 @@ export function useFilterDataOptions(alias: string,) {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<any>(null);
 
-  const fetchData = useFormRequest({ alias,});
+  const fetchData = useApiForm({ alias,});
 
+
+  
   useEffect(() => {
     const fetch = async () => {
       try {
         setIsLoading(true);
         setErrors(null);
   
-        const result = await fetchData.submitForm();
-        console.log("useFilterDataOptions", result);
+        const result = await fetchData.query.refetch();
+        console.log("useFilterDataOptions", result.data);
   
         if (Array.isArray(result?.data)) {
           const mapped = result.data.map((item: any) => {
