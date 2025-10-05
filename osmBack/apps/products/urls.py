@@ -7,7 +7,7 @@ from .view import (
 AttributesViewSet, AttributeValueViewSet,
  ProductVariantMarketingViewSet
 ,ProductVariantReviewViewSet, ProductVariantQuestionViewSet, ProductVariantAnswerViewSet, ProductVariantOfferViewSet
-,CategoryViewSet, LensCoatingViewSet, ProductViewSet, ProductVariantViewSet, ProductImageViewSet,FlexiblePriceViewSet
+,CategoryViewSet, ProductViewSet, ProductVariantViewSet, ProductImageViewSet,FlexiblePriceViewSet
 ,SupplierViewSet, ManufacturerViewSet, BrandViewSet
 ,StocksViewSet, StockMovementsViewSet, StockTransferViewSet, StockTransferItemViewSet
 )
@@ -25,7 +25,7 @@ router.register(r'questions', ProductVariantQuestionViewSet, basename='product-v
 router.register(r'answers', ProductVariantAnswerViewSet, basename='product-variant-answer')
 router.register(r'offers', ProductVariantOfferViewSet, basename='product-variant-offer')
 router.register(r'categories', CategoryViewSet, basename='category')
-router.register(r'lens-coatings', LensCoatingViewSet, basename='lens-coating')
+# router.register(r'lens-coatings', LensCoatingViewSet, basename='lens-coating')
 router.register(r'products', ProductViewSet, basename='product')
 router.register(r'product-images', ProductImageViewSet, basename='product-image')
 router.register(r'flexible-prices', FlexiblePriceViewSet, basename='flexible-price')

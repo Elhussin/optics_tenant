@@ -8,7 +8,7 @@ import { Pagination } from "@/src/shared/components/views/Pagination";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
-import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 
 
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {

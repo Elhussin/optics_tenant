@@ -4,7 +4,7 @@ from .attributes import AttributeValue
 from django.db import models
 import hashlib
 from django.core.exceptions import ValidationError
-from scripts.lens_power import spherical_lens_powers ,cylinder_lens_powers,additional_lens_powers
+from apps.products.utils.index import spherical_lens_powers ,cylinder_lens_powers,additional_lens_powers
 from decimal import Decimal
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
@@ -29,19 +29,19 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
-class LensCoating(BaseModel):
-    """Lens coating for glasses"""
-    name = models.CharField(max_length=100,unique=True)
-    description = models.TextField(blank=True)
+# class LensCoating(BaseModel):
+#     """Lens coating for glasses"""
+#     name = models.CharField(max_length=100,unique=True)
+#     description = models.TextField(blank=True)
     
-    class Meta:
-        verbose_name_plural = "Lens Coatings"
-        indexes = [
-            models.Index(fields=['name']),
-        ]
+#     class Meta:
+#         verbose_name_plural = "Lens Coatings"
+#         indexes = [
+#             models.Index(fields=['name']),
+#         ]
     
-    def __str__(self):
-        return self.name
+#     def __str__(self):
+#         return self.name
 
 
 
@@ -76,7 +76,7 @@ class Product(BaseModel):
     class Meta:
         unique_together = ('type', 'brand_id', 'model')
     def __str__(self):
-        return f"{self.brand.name} {self.model}"
+        return f"{self.brand_id.name} {self.model}"
     def get_absolute_url(self):
         return reverse('products:product_detail', args=[str(self.pk)])
 
@@ -85,7 +85,7 @@ class ProductVariant(BaseModel):
     product_id = models.ForeignKey("Product", related_name='variants', on_delete=models.CASCADE)
     
     # SKU International
-    sku = models.CharField(max_length=50, unique=True,help_text="SKU (Stock Keeping Unit)") 
+    sku = models.CharField(max_length=50, null=True, blank=True, unique=True,help_text="SKU (Stock Keeping Unit)") 
     
     usku = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique USKU")
     # Frame specifications 
@@ -105,13 +105,19 @@ class ProductVariant(BaseModel):
     lens_water_content_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Water Content'})
     replacement_schedule_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Replacement Schedule'})
     expiration_date = models.DateField(blank=True,null=True)
-
-    # specifications for lenses 
-    lens_coatings_id = models.ManyToManyField(
-        'LensCoating',
+    lens_coatings = models.ManyToManyField(
+        AttributeValue,
         related_name='%(class)s_lens_coatings',
         blank=True,
+        limit_choices_to={'attribute_id__name': 'Coatings'}
     )
+
+    # specifications for lenses 
+    # lens_coatings_id = models.ManyToManyField(
+    #     'LensCoating',
+    #     related_name='%(class)s_lens_coatings',
+    #     blank=True,
+    # )
     lens_type_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Lens Type'})
     spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True)
     cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True)

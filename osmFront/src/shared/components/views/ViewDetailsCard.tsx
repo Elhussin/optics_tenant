@@ -11,7 +11,7 @@ import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations"
 import { ViewCardProps } from "@/src/shared/types";
 import { RenderButtons } from "../ui/buttons/RenderButtons";
 import { Loading4 } from "../ui/loding";
-import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 import { ActionButton } from "../ui/buttons";
 import { NotFound } from "./NotFound";
 import { Copy, Printer, FileText } from "lucide-react";

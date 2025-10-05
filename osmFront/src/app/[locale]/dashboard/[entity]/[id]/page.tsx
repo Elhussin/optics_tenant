@@ -1,7 +1,7 @@
 
 'use client';
 import { useParams} from 'next/navigation';
-import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
+import { formsConfig } from '@/src/features/formGenerator/constants/entityConfig';
 import ViewDetailsCard from '@/src/shared/components/views/ViewDetailsCard';
 import {NotFound} from '@/src/shared/components/views/NotFound'
 

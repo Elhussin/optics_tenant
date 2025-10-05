@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from apps.products.models import (
-    Category, LensCoating, Product, ProductVariant, 
+    Category, Product, ProductVariant, 
     ProductImage, FlexiblePrice,Supplier,Manufacturer,Brand,AttributeValue,
 )
 from apps.crm.models import Customer,CustomerGroup
@@ -29,14 +29,14 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-class LensCoatingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LensCoating
-        fields = [
-            'id', 'name', 'description', 
-            'is_active', 'created_at', 'updated_at'
-        ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+# class LensCoatingSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = LensCoating
+#         fields = [
+#             'id', 'name', 'description', 
+#             'is_active', 'created_at', 'updated_at'
+#         ]
+#         read_only_fields = ['id', 'created_at', 'updated_at']
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:

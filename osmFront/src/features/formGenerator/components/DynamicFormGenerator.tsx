@@ -8,7 +8,7 @@ import { defaultConfig, ignoredFields } from '@/src/features/formGenerator/const
 import { RenderField } from './ RenderField';
 import { cn } from '@/src/shared/utils/cn';
 import { CirclePlus, ArrowLeft } from 'lucide-react';
-import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
+import { formsConfig } from '@/src/features/formGenerator/constants/entityConfig';
 import { useMemo } from 'react';
 import { safeToast } from '@/src/shared/utils/toastService';
 import { useTranslations } from 'next-intl';
@@ -81,7 +81,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const canSubmit = Boolean(safeAlias);
 
   const formRequest = useApiForm({ alias: safeAlias });
-  const fetchDefaultData = useApiForm({ alias: safeFetchAlias, defaultValues: { id: id } });
+  const fetchDefaultData = useApiForm({ alias: safeFetchAlias, defaultValues: { id: id ,all:true}});
 
 
 

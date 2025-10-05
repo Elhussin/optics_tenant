@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 
 export function useForeignKeyData(entityName: string, setData: any) {
     const [loading, setLoading] = useState(false);

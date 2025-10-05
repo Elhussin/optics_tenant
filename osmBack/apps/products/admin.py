@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from .models import( Attributes, AttributeValue,StockMovements,Stocks,StockTransfer, StockTransferItem,   ProductVariantMarketing,
  ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer,
- Category, LensCoating, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand,
+ Category, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand,
  FlexiblePrice
 )
 
@@ -35,7 +35,7 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brand, BrandAdmin)
 admin.site.register(ProductVariant, ProductVariantAdmin)
-admin.site.register(LensCoating)
+# admin.site.register(LensCoating)
 admin.site.register(StockMovements)
 admin.site.register(Stocks)
 admin.site.register(StockTransfer)

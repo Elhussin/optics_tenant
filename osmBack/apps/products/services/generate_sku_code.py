@@ -2,7 +2,8 @@ import hashlib
 
 def generate_sku_code(variant):
     """Generates a human-readable and unique SKU code for a variant."""
-    product = variant.product
+    product = variant.product_id
+    print (product)
     fields = [str(product.id or '')]
 
     if product.type in ['EW', 'SG']:
@@ -18,7 +19,7 @@ def generate_sku_code(variant):
 
     # بناء الكود البشري المقروء
     type_code = product.type
-    brand_code = product.brand[:2].upper() if product.brand else 'XX'
+    brand_code = product.brand_id.name[:2].upper() if product.brand_id else 'XX'
     model_code = (product.model or '')[:4].upper()
     
     return f"{type_code}-{brand_code}-{model_code}-{hash_value}"

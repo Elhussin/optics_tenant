@@ -209,7 +209,7 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsField:["name","description","is_active","is_deleted"],
   },
   "attribute-values":{
-    schemaName: 'AttributeValuesRequest',
+    schemaName: 'AttributeValueRequest',
     listAlias: 'products_attribute_values_list',
     createAlias: 'products_attribute_values_create',
     retrieveAlias: 'products_attribute_values_retrieve',

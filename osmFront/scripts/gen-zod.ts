@@ -94,7 +94,7 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
     schema instanceof z.ZodNullable ||
     schema instanceof z.ZodDefault
   ) {
-    schema = schema._def.innerType;
+    schema = schema._def.innerType; 
   }
   return schema;
 }
@@ -358,7 +358,7 @@ export default function ${pascal}Form({
 
 
 // ===== write files =====
-const formFile = `components/forms/${pascal}Form.tsx`;
+const formFile = `src/features/formGenerator/components/${pascal}Form.tsx`;
 
 
 // create directories
@@ -372,4 +372,4 @@ console.log(`✅ ${pascal}Form created successfully:
 // npx ts-node scripts/generate-zod-form.ts user_schema users/login
 // npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
 // npx tsx scripts/generate-zod-form.ts LogoutResponse users/logout ./config/custom-form.json
-// npx tsx scripts/gen-zod.ts PrescriptionRecordRequest prescriptions ./config/custom-form.json
+// npx tsx scripts/gen-zod.ts ProductVariantRequest products/product-variants ./config/custom-form.json

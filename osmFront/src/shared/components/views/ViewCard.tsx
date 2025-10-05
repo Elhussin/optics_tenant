@@ -3,7 +3,7 @@
 "use client";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { SearchFilterForm } from "../search/SearchFilterForm";
-import { formsConfig } from "@/src/features/dashboard/api/entityConfig";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
 import { NotFound } from './NotFound';

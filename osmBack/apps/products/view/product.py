@@ -2,14 +2,14 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 
 from apps.products.models import (
-    Category, LensCoating, Product, ProductVariant, 
+    Category, Product, ProductVariant, 
     ProductImage, FlexiblePrice,ProductVariantOffer
 )
 
 
 from apps.products.serializers import (
     ProductVariantSerializer, ProductSerializer, CategorySerializer,
-    LensCoatingSerializer, ProductImageSerializer, FlexiblePriceSerializer,ProductVariantOfferSerializer
+ ProductImageSerializer, FlexiblePriceSerializer,ProductVariantOfferSerializer
 )
 
 from rest_framework import viewsets
@@ -20,10 +20,10 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
-class LensCoatingViewSet(viewsets.ModelViewSet):
-    queryset = LensCoating.objects.all()
-    serializer_class = LensCoatingSerializer
-    permission_classes = [IsAuthenticated]
+# class LensCoatingViewSet(viewsets.ModelViewSet):
+#     queryset = LensCoating.objects.all()
+#     serializer_class = LensCoatingSerializer
+#     permission_classes = [IsAuthenticated]
 
 
 class ProductVariantViewSet(viewsets.ModelViewSet):
