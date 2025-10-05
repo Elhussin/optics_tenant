@@ -75,7 +75,7 @@ class Tax(models.Model):
         return f"{self.name} ({self.rate}%)"
 
 
-class Category(models.Model):
+class AccountingCategory(models.Model):
     """ Represents a transaction category (income or expense). """
     TYPE_CHOICES = [
         ('income', 'Income'),
@@ -100,7 +100,7 @@ class Transaction(models.Model):
     date = models.DateField()
     amount = MoneyField(max_digits=10, decimal_places=2, default_currency='USD', currency_field_name='amount_currency')
     transaction_type = models.CharField(max_length=7, choices=[ ('income', 'Income'),('expense', 'Expense'),])
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
+    category = models.ForeignKey("AccountingCategory", on_delete=models.SET_NULL, null=True, blank=True)
     tax_rate = models.ForeignKey(Tax, on_delete=models.SET_NULL, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

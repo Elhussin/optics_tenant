@@ -1,6 +1,15 @@
 // lib/axios.ts
+'use client';
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { endpoints } from "./schemas";
+
+// import dynamic from 'next/dynamic';
+
+// const endpoints = dynamic(
+//   () => import('./schemas'),
+//   { ssr: false }
+// );
+
 import { getBaseUrl } from "@/src/shared/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { parseCookies } from "nookies"; // مكتبة صغيرة لقراءة الكوكيز في server/client
@@ -95,6 +104,16 @@ function replacePathParams(url: string, params: Record<string, any>): string {
   return processedUrl;
 }
 
+// function replacePathParams(url: string, params: Record<string, any>) {
+//   return url.replace(/:([a-zA-Z_][a-zA-Z0-9_]*)/g, (_, key) => {
+//     if (params[key] === undefined) {
+//       throw new Error(`Missing path parameter: ${key}`);
+//     }
+//     return encodeURIComponent(params[key]);
+//   });
+// }
+
+
 api.customRequest = async function (alias: string, data: any = {}) {
   const endpoint: any = endpoints.find((e) => e.alias === alias);
   if (!endpoint) {
@@ -115,13 +134,23 @@ api.customRequest = async function (alias: string, data: any = {}) {
   }
 
   if (data && typeof data === "object") {
+
     Object.entries(data).forEach(([key, value]) => {
+      if (value === undefined || value === null) return; // ✅ تجاهل القيم غير المعرفة
       if (pathParamNames.includes(key)) {
         pathParams[key] = value;
       } else {
         otherParams[key] = value;
       }
     });
+    
+    // Object.entries(data).forEach(([key, value]) => {
+    //   if (pathParamNames.includes(key)) {
+    //     pathParams[key] = value;
+    //   } else {
+    //     otherParams[key] = value;
+    //   }
+    // });
   }
 
   url = replacePathParams(url, pathParams);

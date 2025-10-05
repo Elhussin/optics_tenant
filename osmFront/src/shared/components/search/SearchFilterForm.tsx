@@ -3,13 +3,14 @@
 
 import { useState } from "react";
 import { ActionButton } from "../ui/buttons";
-
+import { useRouter } from "next/navigation";
 interface Props {
   fields: any[];
   setFilters: (filters: Record<string, string>) => void;
 }
 
 export const SearchFilterForm = ({ fields, setFilters }: Props) => {
+  const router = useRouter();
   const [form, setForm] = useState<Record<string, string>>({});
   const [resetKey, setResetKey] = useState<number>(0);
 
@@ -37,8 +38,6 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
         filters[`${key}__icontains`] = value; // باقي الحقول __icontains
       }
     });
-
-    console.log("filters sent:", filters);
     setFilters(filters);
   };
 
@@ -46,6 +45,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
     setForm({});
     setResetKey((k) => k + 1);
     setFilters({});
+    router.push("?");
   };
 
   return (

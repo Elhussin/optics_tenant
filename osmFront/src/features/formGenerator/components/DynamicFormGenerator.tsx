@@ -4,19 +4,20 @@ import { z } from 'zod';
 import { schemas } from '@/src/shared/api/schemas';
 import { Loading3 } from '@/src/shared/components/ui/loding';
 import { DynamicFormProps } from '@/src/shared/types/DynamicFormTypes';
-import { defaultConfig, ignoredFields } from '@/src/features/dashboard/api/generatFormConfig';
-import { RenderField } from './renderField';
+import { defaultConfig, ignoredFields } from '@/src/features/formGenerator/constants/generatFormConfig';
+import { RenderField } from './ RenderField';
 import { cn } from '@/src/shared/utils/cn';
 import { CirclePlus, ArrowLeft } from 'lucide-react';
 import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
 import { useMemo } from 'react';
 import { safeToast } from '@/src/shared/utils/toastService';
 import { useTranslations } from 'next-intl';
-import { ActionButton } from '../ui/buttons';
+import { ActionButton } from '@/src/shared/components/ui/buttons';
 import { useRouter } from '@/src/app/i18n/navigation';
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
-import { relationshipConfigs } from '@/src/features/dashboard/api/generatFormConfig';
+import { relationshipConfigs } from '@/src/features/formGenerator/constants/generatFormConfig';
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
+
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const [defaultValues, setDefaultValues,] = useState<any>(null);
   const router = useRouter();
@@ -91,6 +92,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
       safeToast(successMessage || 'Submitted successfully', { type: "success" })
       if (setData) {
         setData(result.data);
+        formRequest.refetch();
         return;
       } else {
         formRequest?.reset(result.data);

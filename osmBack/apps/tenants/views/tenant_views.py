@@ -59,7 +59,7 @@ class ClientViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Get the client associated with the user
-        if self.request.user.role.name.lower() == 'owner':
+        if self.request.user.role_id.name.lower() == 'owner':
             return Client.objects.all()
             
         user_client = self.request.user.client

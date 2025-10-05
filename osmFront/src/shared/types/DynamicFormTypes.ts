@@ -27,8 +27,8 @@ export interface DynamicFormProps{
 
 export interface ForeignKeyConfig {
   endpoint?: string;
-  labelField?: string;
-  valueField?: string;
+  labelField: string;
+  valueField: string;
   searchField?: string;
   createPage?: string;
   entityName?: string;

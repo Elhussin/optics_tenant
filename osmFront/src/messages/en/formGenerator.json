@@ -66,7 +66,7 @@
     "branches":"Branches",
     "branch-users":"Branch Users",
     "attributes":"Attributes",
-    "attribute-value":"Attribute Values",
+    "attribute-values":"Attribute Values",
     "suppliers":"Suppliers",
     "manufacturers":"Manufacturers",
     "brands":"Brands",
@@ -87,7 +87,7 @@
     "paid_until": "Paid Until"
 
   },
-  "register_tenants": {
+  "register-tenants": {
     "title": "Register New Tenant",
     "detailsTitle": "Tenant Details",
     "name": "Tenant Name",
@@ -108,7 +108,7 @@
     "method": "Method",
     "currency": "Currency"
   },
-  "subscription_plans": {
+  "subscription-plans": {
     "title": "Subscription Plans",
     "detailsTitle": "Subscription Plan Details",
     "name": "Plan Name",
@@ -143,7 +143,7 @@
     "description": "Description"
 
   },
-  "role_permissions": {
+  "role-permissions": {
     "title": "Role & Permissions",
     "detailsTitle": "Role & Permissions Details",
     "role": "Role",
@@ -158,7 +158,7 @@
     "message": "Message"
 
   },
-  "tenant_settings": {
+  "tenant-settings": {
     "title": "Tenant Settings",
     "detailsTitle": "Tenant Settings Details",
     "business_name": "Business Name",
@@ -223,7 +223,7 @@
     "name": "Attribute Name",
     "description": "Description"
   },
-  "attribute_values": {
+  "attribute-values": {
     "title": "Attribute Values",
     "detailsTitle": "Attribute Value Details",
     "attribute_name": "Attribute Name",
@@ -270,7 +270,7 @@
     "description": "Description",
     "parent_name": "Parent Category"
   },
-  "lens-coating": {
+  "lens-coatings": {
     "title": "Lens Coatings",
     "detailsTitle": "Lens Coating Details",
     "name": "Lens Coating Name",

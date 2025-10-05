@@ -16,6 +16,30 @@ type ControlledSelectProps<T extends FieldValues> = {
   classNamePrefix?: string;
   className?: string;
 };
+const customStyles = {
+  control: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: state.isFocused ? (state.theme.dark ? '#374151' : 'white') : 'white',
+    borderColor: state.isFocused ? '#3b82f6' : '#d1d5db', // focus ring
+    borderRadius: '0.375rem',
+    padding: '0.5rem 0.75rem',
+    width: '100%',
+  }),
+  option: (provided: any, state: any) => ({
+    ...provided,
+    cursor: 'pointer',
+    backgroundColor: state.isSelected
+      ? '#3b82f6'
+      : state.isFocused
+      ? state.theme.dark ? '#4b5563' : '#f3f4f6'
+      : state.theme.dark ? '#374151' : 'white',
+    color: state.theme.dark ? 'white' : 'black',
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 50,
+  }),
+};
 
 export function ControlledSelect<T extends FieldValues>(props: ControlledSelectProps<T>) {
 
@@ -42,18 +66,31 @@ export function ControlledSelect<T extends FieldValues>(props: ControlledSelectP
         rules={{ required: required ? `${label || name} is required` : false }}
         render={({ field, fieldState }) => (
           <>
-            <ReactSelect
+            {/* <ReactSelect
               inputId={name}
               options={parsedOptions}
               onChange={(opt) => field.onChange((opt as Option)?.value)}
               onBlur={field.onBlur}
               value={parsedOptions.find((o) => o.value === field.value) || null}
 
-              className={className}
+              className={'options'}
               classNamePrefix={classNamePrefix}
               placeholder={placeholder}
               isClearable
-            />
+            /> */}
+            <ReactSelect
+            inputId={name}
+            options={parsedOptions}
+            onChange={(opt) => field.onChange((opt as Option)?.value)}
+            onBlur={field.onBlur}
+            value={parsedOptions.find((o) => o.value === field.value) || null}
+            // className="select"
+            // classNamePrefix="select"   // <- هذا سيضيف select__option, select__menu, select__control ...
+            placeholder={placeholder}
+            isClearable
+            styles={customStyles}
+          />
+
             {fieldState.error && (
               <p className="text-sm text-red-500 mt-1">
                 {fieldState.error.message}

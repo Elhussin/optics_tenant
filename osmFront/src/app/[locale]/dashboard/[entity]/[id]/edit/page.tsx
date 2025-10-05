@@ -1,9 +1,13 @@
 // app/[entity]/[id]/edit/page.tsx
 'use client';
 import { formsConfig } from '@/src/features/dashboard/api/entityConfig';
-import DynamicFormGenerator from '@/src/shared/components/forms/DynamicFormGenerator';
 import { useParams } from 'next/navigation';
 import {NotFound} from '@/src/shared/components/views/NotFound'
+import dynamic from 'next/dynamic';
+const DynamicFormGenerator = dynamic(
+  () => import('@/src/features/formGenerator/components/DynamicFormGenerator'),
+  { ssr: false }
+);
 export default function EntityEditPage() {
     const params = useParams();
    const entity = params.entity as string || '';

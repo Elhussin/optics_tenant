@@ -1,11 +1,11 @@
 from apps.accounting.models import  (FinancialPeriod,
  Account,Transaction,JournalEntry,
-Tax,Category,RecurringTransaction)
+Tax,AccountingCategory,RecurringTransaction)
 from rest_framework import viewsets
 
 from apps.accounting.serializers import (FinancialPeriodSerializer,
  AccountSerializer,TransactionSerializer,JournalEntrySerializer,
-TaxSerializer,CategorySerializer,RecurringTransactionSerializer)
+TaxSerializer,AccountingCategorySerializer,RecurringTransactionSerializer)
 class FinancialPeriodViewSet(viewsets.ModelViewSet):
     queryset = FinancialPeriod.objects.all()
     serializer_class = FinancialPeriodSerializer
@@ -21,9 +21,9 @@ class JournalEntryViewSet(viewsets.ModelViewSet):
 class TaxViewSet(viewsets.ModelViewSet):
     queryset = Tax.objects.all()
     serializer_class = TaxSerializer
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+class AccountingCategoryViewSet(viewsets.ModelViewSet):
+    queryset = AccountingCategory.objects.all()
+    serializer_class = AccountingCategorySerializer
 class RecurringTransactionViewSet(viewsets.ModelViewSet):
     queryset = RecurringTransaction.objects.all()
     serializer_class = RecurringTransactionSerializer

@@ -35,18 +35,21 @@ class UserSerializer(serializers.ModelSerializer):
     password = ReusableFields.password()
     first_name = ReusableFields.first_name()
     last_name = ReusableFields.last_name()
-    role = RoleSerializer(read_only=True)  # عرض البيانات كاملة
-    role_id = serializers.PrimaryKeyRelatedField(
-        queryset=Role.objects.all(),
-        source='role',
-        write_only=True  # لقبول الإدخال بالـ ID
-    )
+    # role = RoleSerializer(read_only=True)  # عرض البيانات كاملة
+    # role_name = serializers.CharField(source="role_id.name", read_only=True)
+    role = RoleSerializer(source='role_id', read_only=True)
+
+    # role = serializers.PrimaryKeyRelatedField(
+    #     queryset=Role.objects.all(),
+    #     source='role_id',
+    #     write_only=True  # لقبول الإدخال بالـ ID
+    # )
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'role_id', 'is_active', 'is_staff', 'role', 'password',
-            'is_deleted', 'deleted_at', 'phone', 'client'
+            'is_deleted', 'deleted_at', 'phone', 'client',
         ]
         read_only_fields = ['id', 'deleted_at','client']
 

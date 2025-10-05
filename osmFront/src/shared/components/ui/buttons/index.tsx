@@ -57,10 +57,15 @@ export function ActionButton({
       type={type}
       title={title}
       disabled={disabled}
-      className={cn("btn cursor-pointer", variantClasses[variant], className)}
+      className={cn(
+        "btn flex items-center justify-center gap-1", // ⚡ flex + center
+        variantClasses[variant],
+        className
+      )}
     >
       {icon}
-      {label}
+      {label && <span>{label}</span>}
     </button>
   );
+  
 }

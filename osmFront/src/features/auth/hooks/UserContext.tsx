@@ -35,6 +35,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       
       const res = await fetchUser.query.refetch();
       if(res){
+        console.log("user", res.data);
         setUser(  res.data);
       }
     })();

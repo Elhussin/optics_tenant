@@ -58,7 +58,10 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
   const query = useQuery({
     queryKey: [alias, defaultValues],
     queryFn: () => api.customRequest(alias as string, defaultValues),
-    enabled: !!alias && endpoint?.method === "get",
+    // enabled: !!alias && endpoint?.method === "get",
+    enabled: !!alias && endpoint?.method === "get" &&
+          !Object.values(defaultValues || {}).includes(undefined),
+
   });
 
   // 🎯 Mutation لعمليات POST / PUT / DELETE

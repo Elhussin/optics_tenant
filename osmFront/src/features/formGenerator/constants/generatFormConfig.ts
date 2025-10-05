@@ -7,7 +7,7 @@ export const defaultConfig: GeneratorConfig = {
     submitButtonClasses: "btn btn-primary",
     submitButtonText: "Save",
     includeResetButton: true,
-    spacing: "mb-4",
+    spacing: "mb-2",
     containerClasses: "space-y-4"
 
   };
@@ -21,7 +21,7 @@ export const defaultConfig: GeneratorConfig = {
     'date': { component: 'input', type: 'date' },
     'datetime': { component: 'input', type: 'datetime-local' },
     'time': { component: 'input', type: 'time' },
-    'textarea': { component: 'textarea', props: { rows: 3 } },
+    'textarea': { component: 'textarea', props: { rows: 2 } },
     'select': { component: 'select' },
     'checkbox': { component: 'input', type: 'checkbox', wrapper: 'checkbox' },
     'radio': { component: 'input', type: 'radio', wrapper: 'radio' },

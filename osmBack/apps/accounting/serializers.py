@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from apps.accounting.models import  (FinancialPeriod,
  Account,Transaction,JournalEntry,
-Tax,Category,RecurringTransaction)
+Tax,AccountingCategory,RecurringTransaction)
 
 
 
@@ -25,9 +25,9 @@ class TaxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tax
         fields = '__all__'
-class CategorySerializer(serializers.ModelSerializer):
+class AccountingCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = Category
+        model = AccountingCategory
         fields = '__all__'
 class RecurringTransactionSerializer(serializers.ModelSerializer):
     class Meta:

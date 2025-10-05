@@ -8,7 +8,7 @@ router.register(r'accounts', AccountViewSet, basename='account')
 router.register(r'transactions', TransactionViewSet, basename='transaction')
 router.register(r'journal-entries', JournalEntryViewSet, basename='journal-entry')
 router.register(r'taxes', TaxViewSet, basename='tax')
-router.register(r'categories', CategoryViewSet, basename='category')
+router.register(r'categories', AccountingCategoryViewSet, basename='category')
 router.register(r'recurring-transactions', RecurringTransactionViewSet, basename='recurring-transaction')
 
 urlpatterns = [

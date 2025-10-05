@@ -10,6 +10,9 @@ from drf_spectacular.utils import extend_schema , inline_serializer
 from django.db import connection
 from core.utils.set_token import set_token_cookies
 from django.conf import settings
+from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
+
 from core.permissions.permissions import ROLE_PERMISSIONS
 from django_filters.rest_framework import DjangoFilterBackend
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
@@ -22,11 +25,11 @@ from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSe
                          TenantSettings)
 from apps.tenants.models import Client
 from rest_framework import permissions
-from .filters import UserFilter
+from .filters import UserFilter,USER_RELATED_FIELDS,USER_FIELD_LABELS
 from core.utils.email import send_password_reset_email
-from rest_framework.decorators import action
 from core.permissions.decorators import permission_required,role_required
 from django.utils.decorators import method_decorator
+from core.utils.filters_utils import FilterOptionsGenerator, create_filterset_class,get_display_name
 
 User = get_user_model()
 
@@ -51,21 +54,6 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-    # @method_decorator
-    # def check_active_tenant(func):
-    #     def check_active_tenant_wrapper(self, *args, **kwargs):
-    #         tenant = self.request.headers.get('X-Tenant')
-    #         if not tenant:
-    #             return Response({"detail": "Missing X-Tenant header."}, status=400)
-    #         try:
-    #             tenant_obj = Client.objects.get(schema_name=tenant, is_active=True)
-
-    #         except Client.DoesNotExist:
-    #             return Response({"detail": "Invalid tenant."}, status=400)
-    #         return func(self, *args, **kwargs)
-        
-    #     return check_active_tenant_wrapper
-
 
     @extend_schema(
         request=LoginSerializer,
@@ -89,27 +77,22 @@ class LoginView(APIView):
     # @check_active_tenant
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        print("serializer",serializer)
-        print("active tenant scheam", connection.schema_name)
-        print (serializer.is_valid())
-        # print("request",request.query_params ,request.data, request.headers, request.FILES)
+     
         if serializer.is_valid():
-            print("user", serializer.validated_data['user'])
             user = serializer.validated_data['user']
 
             if not user.is_active:
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
-            # role = user.role
-            print(user,"user")
+   
 
-            if user.role:
-                permissions = user.role.permissions.all()
+            if user.role_id:
+                permissions = user.role_id.permissions.all()
             else:
                 permissions = Permission.objects.none()
 
             refresh = RefreshToken.for_user(user)
-            refresh["role_id"] = user.role.id if user.role else None
-            refresh["role"] = user.role.name if user.role else None
+            refresh["role_id"] = user.role_id.id if user.role_id else None
+            refresh["role"] = user.role_id.name if user.role_id else None
             refresh["tenant"] = connection.schema_name
             refresh["permissions"] = list(permissions.values_list('code', flat=True))
 
@@ -149,13 +132,13 @@ class RefreshTokenView(APIView):
             # get user permissions from database
             user_id = refresh["user_id"]
             user = User.objects.get(id=user_id)
-            if user.role:
-                permissions = user.role.permissions.all()
+            if user.role_id:
+                permissions = user.role_id.permissions.all()
             else:
                 permissions = Permission.objects.none()
 
-            access["role_id"] = user.role.id if user.role else None
-            access["role"] = user.role.name if user.role else None
+            access["role_id"] = user.role_id.id if user.role_id else None
+            access["role"] = user.role_id.name if user.role_id else None
             access["tenant"] = refresh["tenant"]
             access["permissions"] = list(permissions.values_list('code', flat=True))
 
@@ -283,7 +266,6 @@ class LogoutView(APIView):
         response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
-        print("Logged out")
         return response
 
 # @method_decorator(role_required(['ADMIN']), name='dispatch')
@@ -304,31 +286,15 @@ class RoleViewSet(viewsets.ModelViewSet):
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated]
 
-# class UserViewSet(viewsets.ModelViewSet):
-#     # is_deleted=False
-#     queryset = User.objects.filter()
-#     serializer_class = UserSerializer
-#     filter_backends = [DjangoFilterBackend]
-#     filterset_class = UserFilter
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         user = self.request.user
-#         if user.is_superuser:
-#             return User.objects.all()
-#         return User.objects.filter(id=user.id)
 
 
-
-
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend,SearchFilter]
     filterset_class = UserFilter
+    search_fields = USER_RELATED_FIELDS
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -337,22 +303,25 @@ class UserViewSet(viewsets.ModelViewSet):
             return User.objects.all()
         return User.objects.filter(id=user.id)
 
-
     @action(detail=False, methods=["get"])
     def filter_options(self, request):
-        roles = User.objects.values_list('role', flat=True).distinct()
-        emails = User.objects.values_list('email', flat=True).distinct()
-        phones = User.objects.values_list('phone', flat=True).distinct()
-        usernames = User.objects.values_list('username', flat=True).distinct()
+        generator = FilterOptionsGenerator(
+            queryset=self.get_queryset(),
+            filterset_class=self.filterset_class,
+            query_params=request.query_params,
+        )
+        options = generator.generate_options(USER_RELATED_FIELDS)
 
-        return Response({
-            "roles": list(filter(None, roles)),
-            "emails": list(filter(None, emails)),
-            "phones": list(filter(None, phones)),
-            "usernames": list(filter(None, usernames)),
-        })
-
-
+        # 👇 كل حقل يرجع مع الاسم الأصلي + label + القيم
+        formatted_options = [
+            {
+                "name": field,                # الاسم الأصلي (key للـ frontend)
+                "label": get_display_name(USER_FIELD_LABELS,field),  # الاسم المعروض
+                "values": values,             # القيم المتاحة
+            }
+            for field, values in options.items()
+        ]
+        return Response(formatted_options)
 
 class ContactUsViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]

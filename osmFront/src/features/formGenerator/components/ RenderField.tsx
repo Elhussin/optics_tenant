@@ -1,26 +1,21 @@
 "use client";
 import { z } from "zod";
-// import { Controller } from "react-hook-form";
-// import ReactSelect from "react-select";
+
 import { useEffect } from "react";
-import { ControlledSelect } from "./ControlledSelect";
 import {
   detectFieldType,
-  unwrapSchema,
-  ForeignKeyField,
-  UnionField,
-  useFieldOptions,
-} from "./detectFieldType";
-import {
-  getFieldLabel,
-  isFieldRequired,
-} from "@/src/shared/utils/DynamicFormhelper";
-import { fieldTemplates } from "@/src/features/dashboard/api/generatFormConfig";
-
+} from "../utils/detectFieldType";
+import { ForeignKeyField } from "./ForeignKeyField";
+import { UnionField } from "./UnionField";
+import { useFieldOptions } from "../hooks/useFieldOptions";
+import { unwrapSchema } from "../utils/unwrapSchema";
+import { getFieldLabel,isFieldRequired } from "../utils";
+import { fieldTemplates } from "../constants/generatFormConfig";
+import { RHFSelect } from "./RHFSelect";
 // ============================
 // RenderField Component
 // ============================
-export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShowModal }: any) => {
+export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal }: any) => {
   const fieldType = detectFieldType(fieldName, fieldSchema);
   const template =
     fieldTemplates[fieldType] || fieldTemplates["text"] || {
@@ -60,7 +55,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
   // ============================
   // Renders by fieldType
   // ============================
-
+  // foreignkey
   if (fieldType === "foreignkey") {
     return (
       <ForeignKeyField
@@ -91,7 +86,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
       />
     );
   }
-
+  // checkbox
   if (template.wrapper === "checkbox") {
     return (
       <div key={fieldName} className={config.spacing}>
@@ -115,19 +110,31 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
     );
   }
 
-  //  || fieldType === "foreignkey"
-  if (fieldType === "select"){
-    return <ControlledSelect
-    name={fieldName}
-    control={form.control}
-    options={options} 
-    label={label} 
-    required={required}
-  
-    />;
+  // select
+  if (fieldType === "select") {
 
+    return (
+      <>
+        {label && (
+          <label htmlFor={fieldName} className="block font-medium text-sm m-1">
+            {label}
+            {required ? <span className="text-red-500"> *</span> : ''}
+          </label>
+        )}
+
+        <RHFSelect
+          name={fieldName}
+          control={form.control}
+          parsedOptions={options}
+          label={label}
+          required={required}
+          placeholder="Select a value"
+          className="flex-1" // يملأ المساحة المتبقية
+        />
+      </>
+    )
   }
-
+  // textarea
   if (fieldType === "textarea") {
     return (
       <div key={fieldName} className={config.spacing}>
@@ -139,7 +146,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
           id={fieldName}
           {...form.register(fieldName)}
           className={config.baseClasses}
-          rows={template.props?.rows || 3}
+          rows={template.props?.rows || 2}
           placeholder={`${label}...`}
           autoComplete="off"
         />
@@ -152,6 +159,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
     );
   }
 
+  // array
   if (fieldType === "array") {
     return (
       <div key={fieldName} className={config.spacing}>
@@ -179,6 +187,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode,setShow
     );
   }
 
+  // object
   if (fieldType === "object") {
     return (
       <div key={fieldName} className={config.spacing}>

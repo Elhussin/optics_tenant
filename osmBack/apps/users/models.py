@@ -26,14 +26,14 @@ class Permission(BaseModel):
     description = models.TextField(blank=True)
 
 class RolePermission(BaseModel):
-    role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
+    role_id = models.ForeignKey(Role, on_delete=models.CASCADE)
+    permission_id = models.ForeignKey(Permission, on_delete=models.CASCADE)
     
     class Meta:
-        unique_together = ('role', 'permission')
+        unique_together = ('role_id', 'permission_id')
 
 class User(AbstractUser):
-    role = models.ForeignKey("Role", on_delete=models.SET_NULL, null=True, blank=True)
+    role_id = models.ForeignKey("Role", on_delete=models.SET_NULL, null=True, blank=True)
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
@@ -112,7 +112,7 @@ class Page(BaseModel):
         ('ar', 'Arabic'),
     ]
     slug = models.SlugField(max_length=200, unique=True)   
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
+    author_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
     default_language = models.CharField(
         max_length=2, 
         choices=LANGUAGE_CHOICES, 
@@ -125,7 +125,7 @@ class Page(BaseModel):
         ordering = ['-updated_at']
 
 class PageContent(BaseModel):
-    page = models.ForeignKey(
+    page_id = models.ForeignKey(
         Page, 
         related_name='translations',  # ✅ عدلتها من pagecontent
         on_delete=models.CASCADE
@@ -141,5 +141,5 @@ class PageContent(BaseModel):
     class Meta:
         db_table = 'page_translations'
         unique_together = [
-            ['page', 'language'],
+            ['page_id', 'language'],
         ]

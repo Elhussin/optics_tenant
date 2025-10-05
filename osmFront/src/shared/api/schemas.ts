@@ -36,7 +36,7 @@ const PatchedAccountRequest = z
   .partial()
   .passthrough();
 const TransactionTypeEnum = z.enum(["income", "expense"]);
-const Category = z
+const AccountingCategory = z
   .object({
     id: z.number().int(),
     name: z.string().max(100),
@@ -45,15 +45,15 @@ const Category = z
     parent: z.number().int().nullish(),
   })
   .passthrough();
-const PaginatedCategoryList = z
+const PaginatedAccountingCategoryList = z
   .object({
     count: z.number().int(),
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
-    results: z.array(Category),
+    results: z.array(AccountingCategory),
   })
   .passthrough();
-const CategoryRequest = z
+const AccountingCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
     category_type: TransactionTypeEnum,
@@ -61,7 +61,7 @@ const CategoryRequest = z
     parent: z.number().int().nullish(),
   })
   .passthrough();
-const PatchedCategoryRequest = z
+const PatchedAccountingCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
     category_type: TransactionTypeEnum,
@@ -1184,6 +1184,7 @@ const User = z
     email: z.string().email(),
     first_name: z.string().max(30),
     last_name: z.string().max(30),
+    role_id: z.number().int().nullish(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     role: Role,
@@ -1765,6 +1766,43 @@ const PatchedBrandRequest = z
     website: z.string().max(200).url(),
     description: z.string(),
     logo: z.instanceof(File).nullable(),
+  })
+  .partial()
+  .passthrough();
+const Category = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(100),
+    description: z.string().optional(),
+    parent_id: z.number().int().nullish(),
+    parent_name: z.string(),
+    is_active: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PaginatedCategoryList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Category),
+  })
+  .passthrough();
+const CategoryRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string().optional(),
+    parent_id: z.number().int().nullish(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedCategoryRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string(),
+    parent_id: z.number().int().nullable(),
+    is_active: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -3292,8 +3330,8 @@ const RolePermission = z
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    role: z.number().int(),
-    permission: z.number().int(),
+    role_id: z.number().int(),
+    permission_id: z.number().int(),
   })
   .passthrough();
 const PaginatedRolePermissionList = z
@@ -3308,16 +3346,16 @@ const RolePermissionRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    role: z.number().int(),
-    permission: z.number().int(),
+    role_id: z.number().int(),
+    permission_id: z.number().int(),
   })
   .passthrough();
 const PatchedRolePermissionRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
-    role: z.number().int(),
-    permission: z.number().int(),
+    role_id: z.number().int(),
+    permission_id: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -3454,7 +3492,7 @@ const UserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
-    role_id: z.number().int(),
+    role_id: z.number().int().nullish(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     password: z
@@ -3474,7 +3512,7 @@ const PatchedUserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
-    role_id: z.number().int(),
+    role_id: z.number().int().nullable(),
     is_active: z.boolean(),
     is_staff: z.boolean(),
     password: z
@@ -3497,10 +3535,10 @@ export const schemas = {
   AccountRequest,
   PatchedAccountRequest,
   TransactionTypeEnum,
-  Category,
-  PaginatedCategoryList,
-  CategoryRequest,
-  PatchedCategoryRequest,
+  AccountingCategory,
+  PaginatedAccountingCategoryList,
+  AccountingCategoryRequest,
+  PatchedAccountingCategoryRequest,
   FinancialPeriod,
   PaginatedFinancialPeriodList,
   FinancialPeriodRequest,
@@ -3639,6 +3677,10 @@ export const schemas = {
   PaginatedBrandList,
   BrandRequest,
   PatchedBrandRequest,
+  Category,
+  PaginatedCategoryList,
+  CategoryRequest,
+  PatchedCategoryRequest,
   FlexiblePrice,
   PaginatedFlexiblePriceList,
   FlexiblePriceRequest,
@@ -3891,7 +3933,7 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
     ],
-    response: PaginatedCategoryList,
+    response: PaginatedAccountingCategoryList,
   },
   {
     method: "post",
@@ -3902,10 +3944,10 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: CategoryRequest,
+        schema: AccountingCategoryRequest,
       },
     ],
-    response: Category,
+    response: AccountingCategory,
   },
   {
     method: "get",
@@ -3919,7 +3961,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Category,
+    response: AccountingCategory,
   },
   {
     method: "put",
@@ -3930,7 +3972,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: CategoryRequest,
+        schema: AccountingCategoryRequest,
       },
       {
         name: "id",
@@ -3938,7 +3980,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Category,
+    response: AccountingCategory,
   },
   {
     method: "patch",
@@ -3949,7 +3991,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: PatchedCategoryRequest,
+        schema: PatchedAccountingCategoryRequest,
       },
       {
         name: "id",
@@ -3957,7 +3999,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Category,
+    response: AccountingCategory,
   },
   {
     method: "delete",
@@ -9902,7 +9944,17 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "email",
+        name: "email__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9912,17 +9964,22 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
-        name: "phone",
+        name: "phone__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "role",
+        name: "role_id__name__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "username",
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "username__icontains",
         type: "Query",
         schema: z.string().optional(),
       },

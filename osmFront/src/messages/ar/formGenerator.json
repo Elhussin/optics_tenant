@@ -108,7 +108,7 @@
     "method": "نوع العملية",
     "currency": "العملة"
   },
-  "subscription_plans": {
+  "subscription-plans": {
     "title": "خطط الاشتراك",
     "detailsTitle": "تفاصيل خطة الاشتراك",
     "name": "اسم الخطة",
@@ -143,13 +143,13 @@
     "description": "الوصف"
 
   },
-  "role_permissions": {
+  "role-permissions": {
     "title": " الصلاحيات والادوار",
     "detailsTitle": "تفاصيل الصلاحيات والادوار",
     "role": "الدور",
     "permission": "الصلاحية"
   },
-  "contact_us": {
+  "contact-us": {
     "title": "تواصل",
     "detailsTitle": "تفاصيل الرسالة",
     "name": "اسم المرسل",
@@ -158,7 +158,7 @@
     "message": "الرسالة"
 
   },
-  "tenant_settings": {
+  "tenant-settings": {
     "title": "الأعدادت الأساسية",
     "detailsTitle": "تفاصيل الأعدادت الأساسية",
     "business_name": "الاسم",
@@ -223,7 +223,7 @@
     "name": "اسم الخصائص",
     "description": "الوصف"
   },
-  "attribute_values": {
+  "attribute-values": {
     "title": "قيم الخصائص",
     "detailsTitle": "تفاصيل قيمة الخصائص",
     "attribute_name": "اسم قيمة الخصائص",
@@ -270,7 +270,7 @@
     "description": "الوصف",
     "parent_name": "القسم الرئيسي"
   },
-  "lens-coating": {
+  "lens-coatings": {
     "title": "طبقات الحماية",
     "detailsTitle": "تفاصيل طبقة الحماية",
     "name": "اسم طبقة الحماية",
