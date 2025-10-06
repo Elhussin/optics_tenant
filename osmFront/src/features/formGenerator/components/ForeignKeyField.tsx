@@ -1,19 +1,38 @@
 "use client"
 import { relationshipConfigs } from '@/src/features/formGenerator/constants/generatFormConfig';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from 'lucide-react';
 import { RHFSelect } from './RHFSelect';
 import { useForeignKeyData } from '../hooks/useForeignKeyData';
 import { ForeignKeyFieldProps } from '../types';
-
+import { useFilteredListRequest } from '@/src/shared/hooks/useFilteredListRequest';
+import { formsConfig } from '@/src/features/formGenerator/constants/entityConfig';
 
 export function ForeignKeyField(props: ForeignKeyFieldProps) {
-  const { fieldName,register,config,label,required,errors,form,setShowModal } = props;
-  const [data, setData] = useState<any[]>([]);
-  const relationConfig = relationshipConfigs[fieldName];
-  useForeignKeyData(relationConfig.entityName!, setData);
+  const { fieldName,register,config,label,required,errors,form,setShowModal,fetchForginKey,setFetchForginKey  } = props;
 
+  const relationConfig = relationshipConfigs[fieldName];
+  const alias = formsConfig[relationConfig?.entityName]?.listAlias;
+
+  const {data,refetch}=useFilteredListRequest({alias: alias!,defaultPage: 1, defaultPageSize: 1000, defaultAll: true})
+  const parsedOptions=data.map((item: any) => ({
+    value: item?.[relationConfig?.valueField],
+    label: item?.[relationConfig?.labelField],
+  }))
+
+  useEffect(() => {
+    if (fetchForginKey) {
+      refetch();
+      setFetchForginKey(false);
+      console.log(data);
+      console.log(data?.[0]?.[relationConfig?.valueField]);
+      data.reverse();
+      if (data?.length > 0) {
+        form.setValue(fieldName, data?.[0]?.[relationConfig?.valueField]);
+      }
+    }
+  }, [fetchForginKey,alias,fieldName]);
   if (!relationConfig) return null;
 
   return (
@@ -29,10 +48,7 @@ export function ForeignKeyField(props: ForeignKeyFieldProps) {
         <RHFSelect
           name={fieldName}
           control={form.control}
-          parsedOptions={data.map((item: any) => ({
-            value: item?.[relationConfig?.valueField],
-            label: item?.[relationConfig?.labelField],
-          }))}
+          parsedOptions={parsedOptions}
           label={label}
           required={required}
           placeholder="Select a country"

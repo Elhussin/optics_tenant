@@ -46,7 +46,7 @@
         "model": "AttributeValue",
         "csv": "csv/attribute_value.csv",
         "foreign_keys": {
-          "attribute": {
+          "attribute_id": {
             "lookup_field": "name",
             "create_if_missing": true
           }
@@ -94,19 +94,19 @@
         "model": "Product",
         "csv": "csv/product.csv",
         "foreign_keys": {
-          "brand": {
+          "brand_id": {
             "lookup_field": "name",
             "create_if_missing": true
           },
-          "supplier": {
+          "supplier_id": {
             "lookup_field": "name",
             "create_if_missing": true
           },
-          "manufacturer": {
+          "manufacturer_id": {
             "lookup_field": "name",
             "create_if_missing": true
           },
-          "category": {
+          "category_id": {
             "lookup_field": "name",
             "create_if_missing": true
           }

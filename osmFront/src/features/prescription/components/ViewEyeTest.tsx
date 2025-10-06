@@ -14,7 +14,7 @@ import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {
     const {filterAlias,listAlias} = formsConfig["prescriptions"];
 
-    const { data, totalPages, page, setPage, setPageSize,page_size, setFilters, isLoading,all } = useFilteredListRequest(listAlias);
+    const { data, totalPages, page, setPage, setPageSize,page_size, setFilters, isLoading,all } = useFilteredListRequest({alias:listAlias});
     console.log("data",data)
     const { fields, isLoading: isFieldsLoading} = useFilterDataOptions( filterAlias ||"" );
     if (isLoading||isFieldsLoading) return <Loading4 />

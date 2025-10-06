@@ -9,7 +9,7 @@ import {useLocale} from 'next-intl';
 export const PagesList = () => {
     const t = useTranslations("pagesList");
       const locale = useLocale();
-    const {data,isLoading} = useFilteredListRequest("users_pages_list");
+    const {data,isLoading} = useFilteredListRequest({alias:"users_pages_list"});
 
     if (isLoading || !data ) return <Loading4 />;
     return (

@@ -1,25 +1,165 @@
-attribute,value
+attribute_id,value
 Shape,Cercl
-Material,Plastic
-Color,Green
-Length,152
-Width,18
-Diameter,52
-Base Curve,4
-Lens Type,Single Stok
-Water Content,50%
-Replacement Schedule,6 Month
-Warranty,2 Year
-Dimensions,30-140-150
 Shape,Round
-Material,Astat
+Shape,Square
+Shape,Oval
+Material,Plastic
+Material,Steel
+Material,Wood
+Material,Glass
+Color,Green
 Color,Red
+Color,Blue
+Color,Yellow
+Color,Black
+Color,White
+Color,Orange
+Color,Purple
+Color,Brown
+Color,Gray
+Length,152
 Length,150
-Width,17
+Length,148
+Length,146
+Length,144
+Length,142
+Length,140
+Length,138
+Length,136
+Length,134
+Length,132
+Length,130
+Length,128
+Length,126
+Length,124
+Length,122
+Length,120
+Length,118
+Length,116
+Length,114
+Length,112
+Length,110
+Length,108
+Length,106
+Length,104
+Length,102
+Length,100
+Length,98
+Length,96
+Length,94
+Length,92
+Length,90
+Length,88
+Length,86
+Length,84
+Length,82
+Length,80
+Length,78
+Length,76
+Length,74
+Length,72
+Length,70
+Length,68
+Length,66
+Length,64
+Length,62
+Length,60
+Length,58
+Length,56
+Length,54
+Length,52
+Length,50
+Length,48
+Length,46
+Length,44
+Length,42
+Length,40
+Length,38
+Length,36
+Length,34
+Length,32
+Length,30
+Length,28
+Length,26
+Length,24
+Length,22
+Length,20
+Length,18
+Length,16
+Length,14
+Length,12
+Length,10
+Width,62
+Width,60
+Width,58
+Width,56
+Width,54
+Width,52
+Width,50
+Width,48
+Width,46
+Width,44
+Width,42
+Width,40
+Width,38
+Width,36
+Width,34
+Width,32
+Width,30
+Width,28
+Width,26
+Width,24
+Diameter,62
+Diameter,60
+Diameter,58
+Diameter,56
+Diameter,54
+Diameter,52
 Diameter,50
+Diameter,48
+Diameter,46
+Diameter,44
+Diameter,42
+Diameter,40
+Diameter,38
+Diameter,36
+Diameter,34
+Diameter,32
+Diameter,30
+Base Curve,0
+Base Curve,1
+Base Curve,2
+Base Curve,3
+Base Curve,4
+Base Curve,5
 Base Curve,6
+Base Curve,7
+Base Curve,8
+Base Curve,9
+Base Curve,10
+Base Curve,11
+Base Curve,12
+
+Lens Type,Single Stok
+Lens Type,Multi  Focal RX
 Lens Type,Single RX
+Lens Type,Single RX
+Water Content,50%
 Water Content,60%
+Replacement Schedule,6 Month
 Replacement Schedule,1 Month
+Replacement Schedule,3 Month
+Replacement Schedule,1 Year
+Warranty,2 Year
 Warranty,1 Year
+Dimensions,30-140-150
 Dimensions,28-138-148
+Dimensions,26-136-146
+Dimensions,24-134-144
+Dimensions,22-132-142
+Dimensions,20-130-140
+Dimensions,18-128-138
+Dimensions,16-126-136
+Dimensions,14-124-134
+Dimensions,12-122-132
+Dimensions,10-120-130

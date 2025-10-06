@@ -15,7 +15,7 @@ import { RHFSelect } from "./RHFSelect";
 // ============================
 // RenderField Component
 // ============================
-export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal }: any) => {
+export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal,fetchForginKey,setFetchForginKey }: any) => {
   const fieldType = detectFieldType(fieldName, fieldSchema);
   const template =
     fieldTemplates[fieldType] || fieldTemplates["text"] || {
@@ -68,6 +68,8 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
         errors={form.formState.errors}
         form={form}
         setShowModal={setShowModal}
+        fetchForginKey={fetchForginKey}
+        setFetchForginKey={setFetchForginKey}
       />
     );
   }

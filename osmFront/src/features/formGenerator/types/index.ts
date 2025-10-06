@@ -32,6 +32,8 @@ export interface UnionFieldProps extends baseFieldProps {
 export interface ForeignKeyFieldProps extends baseFieldProps {
     form: any;
     setShowModal: (show: boolean) => void;
+    fetchForginKey: boolean;
+    setFetchForginKey: (fetch: boolean) => void;
 }
 
 

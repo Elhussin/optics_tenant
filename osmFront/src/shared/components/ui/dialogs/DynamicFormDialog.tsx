@@ -33,6 +33,7 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, 
             <DynamicFormGenerator
               entity={entity}
               setData={(newCustomer) => onClose(newCustomer)}
+              
             />
           </div>
         </div>

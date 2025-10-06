@@ -18,7 +18,7 @@ export default function ViewCard({ entity }: { entity: string }) {
   const form = formsConfig[entity];
 
   const t = useMergedTranslations(['viewCard', entity]);
-  const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest(form.listAlias||"");
+  const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest({alias:form.listAlias||""});
   const { fields, isLoading: isFieldsLoading, errors} = useFilterDataOptions(form.filterAlias||"");
   const totalPages = Math.ceil(count / 10);
   if (isLoading||isFieldsLoading) return <Loading4 />

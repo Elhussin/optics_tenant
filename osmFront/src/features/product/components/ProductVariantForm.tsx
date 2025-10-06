@@ -3,25 +3,37 @@ import { schemas } from '@/src/shared/api/schemas';
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
 import { safeToast } from "@/src/shared/utils/toastService";
 import { useFilteredListRequest } from '@/src/shared/hooks/useFilteredListRequest';
+import { useAttributesData } from '../hooks/useAttributesData';
+import { Loading } from '@/src/shared/components/ui/loding';
+// import {RHFSelect} from "@/src/shared/components/ui/rhf-select";
+import {RHFSelect} from "@/src/features/formGenerator/components/RHFSelect";
+import {FilterOtian} from "./FilterOtian";
+import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 const schema = schemas.ProductVariantRequest;
 
 export default function ProductVariantForm({ alias, title, message, submitText, id, isView = false, className = "",}: any) {
-  
-  const updateProductVariant= useApiForm({ alias: "products_product-variants_update" });
-  const { register, handleSubmit, setValue, getValues, submitForm, errors, isSubmitting, reset ,   } = useApiForm({ alias: alias});
+  const [showModal, setShowModal] = React.useState(false);
+  const [entity,setEntity] = React.useState<string>("");
   const [customers, setCustomers] = React.useState<any[]>([]);
-  const fetchCustomers = useFilteredListRequest("users_customers_list");
-  // Fetch customers
-  useEffect(() => {
-    fetchCustomers.query.refetch().then((res: any) => {
-      if (res?.data?.results) {
-        setCustomers(res.data.results.reverse());
-        if (!id && res.data.results.length > 0) {
-          setValue("customer", String(res.data.results[0].id));
-        }
-      }
-    });
-  }, [fetchCustomers]);
+  const [attributes, setAttributes] = React.useState<any[]>([]);
+  const [cureantAttribute, setCureantAttribute ] = React.useState<any>({});
+
+  const updateProductVariant= useApiForm({ alias: "products_product-variants_update" });
+  const { register, handleSubmit, setValue, getValues, submitForm, errors, isSubmitting, reset ,control   } = useApiForm({ alias: alias});
+
+  const fetchAttributes = useFilteredListRequest({alias:"products_attribute_values_list", defaultPage: 1,defaultAll: true,defaultPageSize: 1000});
+  // if (fetchAttributes.data) {
+  //   setAttributes(fetchAttributes.data);
+  // }
+  // const { attributes, loading } = useAttributesData();
+
+// if (loading) return <Loading />;
+console.log(fetchAttributes,"attributes");
+
+// // مثال: خيارات اللون
+const colorOptions = fetchAttributes.data?.filter((v:any)=> v.attribute_name === "Color").map((v:any)=> ({ label: v.value, value: v.id })) || [];
+console.log(colorOptions,"colorOptions");
+
 
   const onSubmit = async (data: any) => {
       try {
@@ -48,7 +60,16 @@ export default function ProductVariantForm({ alias, title, message, submitText, 
   return (
     <div className={`${className}`}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        
+      <FilterOtian
+      name="Color"
+      data={fetchAttributes.data}
+      control={control}
+      setShowModal={setShowModal}
+      setEntity={setEntity}
+      entityName="attribute-values"
+      setCureantAttribute={setCureantAttribute}
+    />
+
   <div className="mb-4">
     
     <label htmlFor="product_id" className="block text-sm font-medium text-gray-700 mb-1">
@@ -490,7 +511,7 @@ export default function ProductVariantForm({ alias, title, message, submitText, 
     />
     
     {errors.discount_percentage && <p className="text-red-500 text-sm mt-1">{errors.discount_percentage?.message}</p>}
-  </div>
+  </div>relationConfig
 
   <div className="mb-4">
     <div className="flex items-center space-x-2">
@@ -530,6 +551,21 @@ export default function ProductVariantForm({ alias, title, message, submitText, 
           )} */}
         </div>
       </form>
+      {showModal && (
+        <DynamicFormDialog
+          entity={"attribute-values"}
+          // onClose={() => setShowModal(false)}
+          onClose={(res: any) => {
+            setShowModal(false);
+            if (res) {
+              fetchAttributes.data?.push(res);
+              fetchAttributes.refetch();
+              // setAttributes((prev) => [res, ...prev]);
+              setValue(cureantAttribute, String(res.id));
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

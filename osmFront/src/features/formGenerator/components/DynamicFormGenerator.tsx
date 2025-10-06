@@ -19,12 +19,13 @@ import { relationshipConfigs } from '@/src/features/formGenerator/constants/gene
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
 
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
-  const [defaultValues, setDefaultValues,] = useState<any>(null);
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [currentFieldName, setCurrentFieldName] = useState('');
   const { entity, id, setData } = props
   const [loading, setLoading] = useState(false);
+  const [fetchForginKey,setFetchForginKey]=useState(false)
+
 
   if (!entity) throw new Error('entity is required');
   const t = useTranslations('formsConfig');
@@ -81,7 +82,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const canSubmit = Boolean(safeAlias);
 
   const formRequest = useApiForm({ alias: safeAlias });
-  const fetchDefaultData = useApiForm({ alias: safeFetchAlias, defaultValues: { id: id ,all:true}});
+  const fetchDefaultData = useApiForm({ alias: safeFetchAlias, defaultValues: { id: id}});
 
 
 
@@ -90,14 +91,17 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
     const result = await formRequest.submitForm(data);
     if (result?.success) {
       safeToast(successMessage || 'Submitted successfully', { type: "success" })
+      formRequest.refetch();
       if (setData) {
         setData(result.data);
-        formRequest.refetch();
+    
         return;
       } else {
         formRequest?.reset(result.data);
+        // formRequest.setValue(currentFieldName, result.data.id);
         // setDefaultValues(result.data);
       }
+ 
 
     } else if (errorMessage) {
       safeToast(errorMessage, { type: "error" })
@@ -146,6 +150,8 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
               if (show) setCurrentFieldName(fieldName);
               setShowModal(show);
             }}
+            fetchForginKey={fetchForginKey}
+            setFetchForginKey={setFetchForginKey}
           />
         ))}
 
@@ -167,7 +173,11 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
       {showModal && (
         <DynamicFormDialog
           entity={relationConfig.entityName || ''}
-          onClose={() => setShowModal(false)}
+          onClose={() => {
+            setShowModal(false)
+            setFetchForginKey(true)
+          }}
+
         />
       )}
     </div>

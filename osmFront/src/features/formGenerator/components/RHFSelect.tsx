@@ -22,7 +22,7 @@ export const RHFSelect = (props: RHFSelectProps) => {
             <ReactSelect
               inputId={name}
               options={parsedOptions}
-              onChange={(opt) => field.onChange((opt as Option)?.value)}
+              onChange={(opt) => field.onChange((opt as any)?.value)}
               onBlur={field.onBlur}
               value={parsedOptions.find((o) => o.value === field.value) || null}
               styles={customStyles}
