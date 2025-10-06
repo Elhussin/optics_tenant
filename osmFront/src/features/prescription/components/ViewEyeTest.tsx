@@ -18,10 +18,8 @@ const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, t
     console.log("data",data)
     const { fields, isLoading: isFieldsLoading} = useFilterDataOptions( filterAlias ||"" );
     if (isLoading||isFieldsLoading) return <Loading4 />
-    console.log("fields",fields)
     return (
         <div>
-
             <SearchFilterForm fields={fields} setFilters={setFilters} />
             <h2 className="text-lg font-semibold mt-2 border-b border-gray-200 pb-2">{title}</h2>
             <div className="grid grid-cols-1  gap-2">
@@ -61,54 +59,13 @@ const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, t
                     ))
                 )}
             </div>
-            {/* <Pagination page={page} totalPages={totalPages} onPageChange={setPage} /> */}
-            {/* <Pagination
+            <Pagination
                 page={page}
                 totalPages={totalPages}
                 pageSize={page_size}
                 onPageChange={setPage}
                 onPageSizeChange={setPageSize}
-            /> */}
-            {/* <Pagination
-            page={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-            pageSize={page_size}
-            onPageSizeChange={(value) => {
-                // لو المستخدم اختار "All"
-                if (value === "all") {
-                setFilters({ ...setFilters, all: "true", page_size: "0" });
-                } else {
-                setFilters({ ...setFilters, all: "false", page_size: String(value) });
-                }
-            }}
-            /> */}
-
-                <Pagination
-                page={page}
-                totalPages={totalPages}
-                pageSize={page_size}
-                all={all}
-                onPageChange={setPage}
-                onPageSizeChange={(value) => {
-                    setFilters({
-                    ...setFilters,
-                    all: "false",
-                    page_size: value === "all" ? "0" : String(value),
-                    page: "1",
-                    });
-                }}
-                onToggleAll={(checked) => {
-                    setFilters({
-                    ...setFilters,
-                    all: checked ? "true" : "false",
-                    page_size: checked ? "0" : "10",
-                    // page: "1",
-                    });
-                }}
-                />
-
-
+            />
         </div>
     );
 };

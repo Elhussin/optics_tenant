@@ -2,6 +2,7 @@
 from typing import Type, Dict, Any, List
 from django.db.models import QuerySet
 from django_filters.rest_framework import FilterSet
+from django_filters import FilterSet
 
 class FilterOptionsGenerator:
     """
@@ -38,9 +39,7 @@ class FilterOptionsGenerator:
         return options
 
 
-# filters_utils.py
-import django_filters
-from django_filters import FilterSet
+
 
 def create_filterset_class(model: Type, fields: Dict[str, List[str]]) -> Type[FilterSet]:
     """

@@ -29,9 +29,9 @@ export function useFilteredListRequest(props: UseFilteredListRequestProps) {
   }, [searchParams]);
 
 
-  const page = parseInt(paramsObj.page || props.defaultPage, 10);
-  const page_size = parseInt(paramsObj.page_size || props.defaultPageSize, 10);
-  const all = paramsObj.all === "true" || props.defaultAll;
+  const page = parseInt(paramsObj.page || defaultPage, 10);
+  const page_size = parseInt(paramsObj.page_size || defaultPageSize, 10);
+  const all = paramsObj.all === "true" || defaultAll;
 
   // ✅ إنشاء hook الطلب وتمرير كل الفلاتر والبحث داخله
   const dataRequest = useApiForm({

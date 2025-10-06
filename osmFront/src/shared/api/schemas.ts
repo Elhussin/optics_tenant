@@ -1858,39 +1858,6 @@ const PatchedFlexiblePriceRequest = z
   })
   .partial()
   .passthrough();
-const LensCoating = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(100),
-    description: z.string().optional(),
-    is_active: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-  })
-  .passthrough();
-const PaginatedLensCoatingList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(LensCoating),
-  })
-  .passthrough();
-const LensCoatingRequest = z
-  .object({
-    name: z.string().min(1).max(100),
-    description: z.string().optional(),
-    is_active: z.boolean().optional(),
-  })
-  .passthrough();
-const PatchedLensCoatingRequest = z
-  .object({
-    name: z.string().min(1).max(100),
-    description: z.string(),
-    is_active: z.boolean(),
-  })
-  .partial()
-  .passthrough();
 const Manufacturer = z
   .object({
     id: z.number().int(),
@@ -2094,7 +2061,7 @@ const PatchedProductImageRequest = z
 const ProductVariantList = z
   .object({
     id: z.number().int(),
-    sku: z.string().max(50),
+    sku: z.string().max(50).nullish(),
     usku: z.string(),
     frame_color_id: AttributeValue,
     lens_color_id: AttributeValue,
@@ -2569,7 +2536,7 @@ const ProductVariant = z
   .object({
     id: z.number().int(),
     product_id: z.number().int(),
-    sku: z.string().max(50),
+    sku: z.string().max(50).nullish(),
     usku: z.string(),
     product_name: z.string(),
     frame_shape_name: z.string(),
@@ -2635,7 +2602,7 @@ const PaginatedProductVariantList = z
 const ProductVariantRequest = z
   .object({
     product_id: z.number().int(),
-    sku: z.string().min(1).max(50),
+    sku: z.string().max(50).nullish(),
     frame_shape_id: z.number().int().nullish(),
     frame_material_id: z.number().int().nullish(),
     frame_color_id: z.number().int().nullish(),
@@ -2672,7 +2639,7 @@ const ProductVariantRequest = z
 const PatchedProductVariantRequest = z
   .object({
     product_id: z.number().int(),
-    sku: z.string().min(1).max(50),
+    sku: z.string().max(50).nullable(),
     frame_shape_id: z.number().int().nullable(),
     frame_material_id: z.number().int().nullable(),
     frame_color_id: z.number().int().nullable(),
@@ -3685,10 +3652,6 @@ export const schemas = {
   PaginatedFlexiblePriceList,
   FlexiblePriceRequest,
   PatchedFlexiblePriceRequest,
-  LensCoating,
-  PaginatedLensCoatingList,
-  LensCoatingRequest,
-  PatchedLensCoatingRequest,
   Manufacturer,
   PaginatedManufacturerList,
   ManufacturerRequest,
@@ -3838,6 +3801,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedAccountList,
   },
@@ -3929,6 +3897,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -4026,6 +3999,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedFinancialPeriodList,
   },
@@ -4117,6 +4095,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -4214,6 +4197,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedRecurringTransactionList,
   },
@@ -4305,6 +4293,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -4402,6 +4395,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedTransactionList,
   },
@@ -4496,6 +4494,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedBranchUsersList,
   },
@@ -4587,6 +4590,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -4691,6 +4699,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedCampaignList,
   },
@@ -4782,6 +4795,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -4879,6 +4897,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedContactList,
   },
@@ -4970,6 +4993,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -5088,6 +5116,11 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
         name: "phone",
         type: "Query",
         schema: z.string().optional(),
@@ -5186,6 +5219,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedDocumentList,
   },
@@ -5277,6 +5315,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -5374,6 +5417,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedOpportunityList,
   },
@@ -5465,6 +5513,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -5562,6 +5615,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedTaskList,
   },
@@ -5653,6 +5711,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -5762,6 +5825,11 @@ export const endpoints = makeApi([
       },
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -5878,6 +5946,11 @@ export const endpoints = makeApi([
       },
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -6014,6 +6087,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedLeaveList,
   },
@@ -6105,6 +6183,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -6202,6 +6285,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedPayrollList,
   },
@@ -6293,6 +6381,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -6390,6 +6483,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedTaskList,
   },
@@ -6480,49 +6578,14 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "created_by__first_name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_by__username__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__email__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__first_name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__id",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "customer__last_name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__phone__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "page",
         type: "Query",
         schema: z.number().int().optional(),
       },
       {
-        name: "search",
+        name: "page_size",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedPrescriptionRecordList,
@@ -6625,6 +6688,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedProductVariantAnswerList,
   },
@@ -6716,6 +6784,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -6813,6 +6886,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedAttributesList,
   },
@@ -6904,6 +6982,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -7001,6 +7084,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedCategoryList,
   },
@@ -7095,6 +7183,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedFlexiblePriceList,
   },
@@ -7180,8 +7273,8 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/products/lens-coatings/",
-    alias: "products_lens_coatings_list",
+    path: "/api/products/manufacturers/",
+    alias: "products_manufacturers_list",
     requestFormat: "json",
     parameters: [
       {
@@ -7189,97 +7282,8 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
-    ],
-    response: PaginatedLensCoatingList,
-  },
-  {
-    method: "post",
-    path: "/api/products/lens-coatings/",
-    alias: "products_lens_coatings_create",
-    requestFormat: "json",
-    parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: LensCoatingRequest,
-      },
-    ],
-    response: LensCoating,
-  },
-  {
-    method: "get",
-    path: "/api/products/lens-coatings/:id/",
-    alias: "products_lens_coatings_retrieve",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: LensCoating,
-  },
-  {
-    method: "put",
-    path: "/api/products/lens-coatings/:id/",
-    alias: "products_lens_coatings_update",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: LensCoatingRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: LensCoating,
-  },
-  {
-    method: "patch",
-    path: "/api/products/lens-coatings/:id/",
-    alias: "products_lens_coatings_partial_update",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedLensCoatingRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: LensCoating,
-  },
-  {
-    method: "delete",
-    path: "/api/products/lens-coatings/:id/",
-    alias: "products_lens_coatings_destroy",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/products/manufacturers/",
-    alias: "products_manufacturers_list",
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "page",
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -7377,6 +7381,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedProductVariantMarketingList,
   },
@@ -7468,6 +7477,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -7565,6 +7579,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedProductImageList,
   },
@@ -7656,6 +7675,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -7753,6 +7777,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedProductVariantQuestionList,
   },
@@ -7844,6 +7873,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -7941,6 +7975,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedStockMovementsList,
   },
@@ -8032,6 +8071,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -8129,6 +8173,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedStockTransferList,
   },
@@ -8220,6 +8269,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -8317,6 +8371,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedSupplierList,
   },
@@ -8411,6 +8470,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedProductVariantList,
   },
@@ -8502,6 +8566,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -8641,6 +8710,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -8802,6 +8876,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedPaymentList,
   },
@@ -8901,6 +8980,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -9047,6 +9131,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedRegisterTenantList,
   },
@@ -9141,6 +9230,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedSubscriptionPlanList,
   },
@@ -9232,6 +9326,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -9375,6 +9474,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedPageList,
   },
@@ -9497,6 +9601,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedPermissionList,
   },
@@ -9606,6 +9715,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedPageList,
   },
@@ -9647,6 +9761,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -9744,6 +9863,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
     response: PaginatedRoleList,
   },
@@ -9838,6 +9962,11 @@ export const endpoints = makeApi([
     parameters: [
       {
         name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
       },
@@ -9944,44 +10073,14 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "email__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "first_name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "last_name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "page",
         type: "Query",
         schema: z.number().int().optional(),
       },
       {
-        name: "phone__icontains",
+        name: "page_size",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "role_id__name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "username__icontains",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedUserList,

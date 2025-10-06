@@ -135,12 +135,12 @@ class PageContentSerializer(serializers.ModelSerializer):
 
 class PageSerializer(serializers.ModelSerializer):
     translations = PageContentSerializer(many=True)
-    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Page
         fields = [
             'id','default_language', 'is_published','slug','is_deleted','is_active',
-             'created_at', 'updated_at', 'translations','author'
+             'created_at', 'updated_at', 'translations','author_id'
         ]
 
     def validate_slug(self, value):
@@ -151,7 +151,7 @@ class PageSerializer(serializers.ModelSerializer):
         page = Page.objects.create(**validated_data)
         
         for translation_data in translations_data:
-            PageContent.objects.create(page=page, **translation_data)
+            PageContent.objects.create(page_id=page, **translation_data)
         
         return page
     

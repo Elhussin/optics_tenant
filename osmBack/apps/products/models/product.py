@@ -105,7 +105,7 @@ class ProductVariant(BaseModel):
     lens_water_content_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Water Content'})
     replacement_schedule_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Replacement Schedule'})
     expiration_date = models.DateField(blank=True,null=True)
-    lens_coatings = models.ManyToManyField(
+    lens_coatings_id = models.ManyToManyField(
         AttributeValue,
         related_name='%(class)s_lens_coatings',
         blank=True,

@@ -6,7 +6,9 @@ from django.apps import apps
 from django_tenants.utils import schema_context
 import csv
 import io
-
+from core.mixins.filterOptionsMixin import FilterOptionsMixin
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 class CSVImportView(APIView):
     
@@ -77,3 +79,18 @@ class CSVImportView(APIView):
                 })
 
         return Response(serializer.errors, status=400)
+
+
+
+class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
+    queryset = None
+    serializer_class = None
+    search_fields = []
+    field_labels = {}
+    # permission_classes = [IsAuthenticated]
+    permission_classes = []
+
+    def get_queryset(self):
+        if self.queryset is None:
+            raise NotImplementedError("You must define queryset or override get_queryset()")
+        return self.queryset.all()
