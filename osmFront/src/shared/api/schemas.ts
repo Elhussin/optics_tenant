@@ -6575,8 +6575,49 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/prescriptions/prescription/",
     alias: "prescriptions_prescription_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "created_by__first_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by__username",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__first_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "customer__last_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -6587,6 +6628,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedPrescriptionRecordList,
   },
@@ -6594,6 +6640,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/prescriptions/prescription/",
     alias: "prescriptions_prescription_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6608,6 +6655,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/prescriptions/prescription/:id/",
     alias: "prescriptions_prescription_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6622,6 +6670,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/prescriptions/prescription/:id/",
     alias: "prescriptions_prescription_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6641,6 +6690,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/prescriptions/prescription/:id/",
     alias: "prescriptions_prescription_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6660,6 +6710,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/prescriptions/prescription/:id/",
     alias: "prescriptions_prescription_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6674,6 +6725,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/prescriptions/prescription/filter_options/",
     alias: "prescriptions_prescription_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: PrescriptionRecord,
   },
@@ -9467,8 +9519,49 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/pages/",
     alias: "users_pages_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "author_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "default_language",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_published",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -9479,6 +9572,26 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "slug",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "translations",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedPageList,
   },
@@ -9486,6 +9599,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/users/pages/",
     alias: "users_pages_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9500,6 +9614,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/pages/:id/",
     alias: "users_pages_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9514,6 +9629,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/users/pages/:id/",
     alias: "users_pages_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9533,6 +9649,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/users/pages/:id/",
     alias: "users_pages_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9552,6 +9669,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/users/pages/:id/",
     alias: "users_pages_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9561,6 +9679,14 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/users/pages/filter_options/",
+    alias: "users_pages_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Page,
   },
   {
     method: "post",
@@ -9856,8 +9982,24 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/roles/",
     alias: "users_roles_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -9868,6 +10010,16 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "permissions",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedRoleList,
   },
@@ -9875,6 +10027,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/users/roles/",
     alias: "users_roles_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9889,6 +10042,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/roles/:id/",
     alias: "users_roles_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9903,6 +10057,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/users/roles/:id/",
     alias: "users_roles_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9922,6 +10077,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/users/roles/:id/",
     alias: "users_roles_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9944,6 +10100,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/users/roles/:id/",
     alias: "users_roles_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -9953,6 +10110,14 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/users/roles/filter_options/",
+    alias: "users_roles_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Role,
   },
   {
     method: "get",
@@ -10070,8 +10235,44 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/users/",
     alias: "users_users_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -10082,6 +10283,36 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role_id__name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "username",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "username__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedUserList,
   },
@@ -10089,6 +10320,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/users/users/",
     alias: "users_users_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10103,6 +10335,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/users/:id/",
     alias: "users_users_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10117,6 +10350,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/users/users/:id/",
     alias: "users_users_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10136,6 +10370,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/users/users/:id/",
     alias: "users_users_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10155,6 +10390,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/users/users/:id/",
     alias: "users_users_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10169,6 +10405,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/users/users/filter_options/",
     alias: "users_users_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: User,
   },

@@ -57,6 +57,7 @@ export const formsConfig: Record<string, FormConfig> = {
     listAlias: 'users_roles_list',
     createAlias: 'users_roles_create',
     retrieveAlias: 'users_roles_retrieve',
+    filterAlias: 'users_roles_filter_options_retrieve',
     updateAlias: 'users_roles_partial_update',
     hardDeleteAlias: 'users_roles_destroy',
     fields:["name","description"],
@@ -309,3 +310,18 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
   },
 };
+
+
+export const featuresConfig : Record<string, FormConfig> = {
+  "pages":{
+  schemaName: 'PageRequest',
+  listAlias: 'users_pages_list',
+  createAlias: 'users_pages_create',
+  retrieveAlias: 'users_pages_retrieve',
+  updateAlias: 'users_pages_partial_update',
+  hardDeleteAlias: 'users_pages_destroy',
+  fields:["name","slug","is_published",],
+  filterAlias: 'users_pages_filter_options_retrieve',
+  detailsField:["name","slug","is_published","is_active","is_deleted"],
+}
+}

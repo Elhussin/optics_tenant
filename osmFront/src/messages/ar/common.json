@@ -113,7 +113,9 @@
     "dark": "الظلام",
     "light": "الضوء",
     "register": "تسجيل",
-    "login": " الدخول"
+    "login": " الدخول",
+    "search": "بحث",
+    "closeSearch": "اغلاق البحث"
   },
   "button": {
     "close": "اغلاق",

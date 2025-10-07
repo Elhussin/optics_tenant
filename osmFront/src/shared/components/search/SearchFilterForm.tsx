@@ -4,23 +4,57 @@
 import { useState } from "react";
 import { ActionButton } from "../ui/buttons";
 import { useRouter } from "next/navigation";
+import { useSearch } from "@/src/shared/contexts/SearchContext";
+import {Search, SearchX} from "lucide-react";
 interface Props {
   fields: any[];
   setFilters: (filters: Record<string, string>) => void;
 }
 
+
 export const SearchFilterForm = ({ fields, setFilters }: Props) => {
   const router = useRouter();
   const [form, setForm] = useState<Record<string, string>>({});
   const [resetKey, setResetKey] = useState<number>(0);
+  const { isSearchVisible } = useSearch();
+
+  // const handleChange = (name: string, value: string) => {
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     [name]: value,
+  //   }));
+
+  // };
+
 
   const handleChange = (name: string, value: string) => {
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setForm((prev) => {
+      const newForm = {
+        ...prev,
+        [name]: value,
+      };
+  
+      // تحديث الفلاتر مباشرة عند أي تغيير
+      const filters: Record<string, string> = {};
+      Object.entries(newForm).forEach(([key, val]) => {
+        if (!val) return;
+        if (key.includes("id")) {
+          filters[key] = val;
+        } else if (key === "search") {
+          console.log(val);
+          if (val.length < 3) return;
+          filters[key] = val;
+        } else {
+          filters[`${key}`] = val;
+        }
+      });
+  
+      setFilters(filters);
+  
+      return newForm;
+    });
   };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -35,7 +69,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
       } else if (key === "search") {
         filters[key] = value; // الحقل الرئيسي للبحث
       } else {
-        filters[`${key}__icontains`] = value; // باقي الحقول __icontains
+        filters[`${key}`] = value; // باقي الحقول __icontains  //__icontains
       }
     });
     setFilters(filters);
@@ -47,14 +81,14 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
     setFilters({});
     router.push("?");
   };
-
+  if (!isSearchVisible) return null;
   return (
     <form
       key={resetKey}
       className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 m-5"
       onSubmit={handleSubmit}
     >
-      <div className="flex items-center col-span-full">
+      {/* <div className="md:flex items-center col-span-full">
         <label className="block text-sm font-medium mr-2 w-24">Search</label>
         <input
           type="text"
@@ -62,10 +96,56 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
           onChange={(e) => handleChange("search", e.target.value)}
           value={form["search"] || ""}
         />
+
+      <div className="flex flex-row justify-end">
+        <ActionButton
+
+          title="Search"
+          icon={<Search />}
+          type="submit"
+          variant="outline"
+      
+        />
+        <ActionButton
+
+          title="Clear"
+          icon={<SearchX />}
+          type="button"
+          variant="outline"
+          onClick={handleClear}
+        />
       </div>
+      </div> */}
+<div className="md:flex items-center col-span-full gap-1">
+
+  {/* حاوية الحقل + الأزرار */}
+  <div className="flex flex-1 border border-gray-200 rounded overflow-hidden">
+    <input
+      type="text"
+      className="input-text"
+      onChange={(e) => handleChange("search", e.target.value)}
+      value={form["search"] || ""}
+      placeholder="Search..."
+    />
+    <ActionButton
+      title="Search"
+      icon={<Search />}
+      type="submit"
+      variant="outline"
+    />
+    <ActionButton
+      title="Clear"
+      icon={<SearchX />}
+      type="button"
+      variant="outline"
+      onClick={handleClear}
+
+    />
+  </div>
+</div>
 
       {fields.map((field) => (
-        <div key={field.name} className="flex items-center">
+        <div key={field.name} className=" items-center">
           <label className="block text-sm font-medium mr-2 capitalize w-24">
             {field.label}
           </label>
@@ -93,20 +173,6 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
         </div>
       ))}
 
-      <div className="flex flex-row justify-end">
-        <ActionButton
-          label="Search"
-          type="submit"
-          className="col-span-full bg-blue-600 text-white py-2 rounded"
-        />
-        <ActionButton
-          label="Clear"
-          type="button"
-          variant="secondary"
-          className="ml-2 col-span-full"
-          onClick={handleClear}
-        />
-      </div>
     </form>
   );
 };

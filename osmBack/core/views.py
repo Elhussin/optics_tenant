@@ -9,7 +9,9 @@ import io
 from core.mixins.filterOptionsMixin import FilterOptionsMixin
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.fields import CharField
 class CSVImportView(APIView):
     
     def post(self, request):
@@ -82,15 +84,49 @@ class CSVImportView(APIView):
 
 
 
+# class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
+#     queryset = None
+#     serializer_class = None
+#     search_fields = []
+#     field_labels = {}
+#     # permission_classes = [IsAuthenticated]
+#     permission_classes = []
+
+#     def get_queryset(self):
+#         if self.queryset is None:
+#             raise NotImplementedError("You must define queryset or override get_queryset()")
+#         return self.queryset.all()
+
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+
 class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
-    queryset = None
-    serializer_class = None
-    search_fields = []
-    field_labels = {}
-    # permission_classes = [IsAuthenticated]
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
+    _generated_filterset_class = None  # لتجنب إعادة التوليد كل مرة
+
+    @property
+    def filterset_class(self):
+        """
+        يعيد الكلاس المولد مرة واحدة فقط حتى لا يتكرر إنشاؤه.
+        """
+        if self._generated_filterset_class is None:
+            self._generated_filterset_class = super().get_filterset_class()
+        return self._generated_filterset_class
+    @property
+    def search_fields(self):
+        if getattr(self, "_search_fields", None):
+            return self._search_fields
+        # توليد من serializer كل الحقول النصية تلقائيًا
+        return [f for f, field in self.serializer_class().fields.items() if isinstance(field, CharField)]
+
+    @property
+    def filter_fields(self):
+        if getattr(self, "_filter_fields", None):
+            return self._filter_fields
+        # توليد كل الحقول مع lookup 'exact' تلقائيًا
+        return {f: ["exact"] for f in self.serializer_class().fields.keys()}
 
     def get_queryset(self):
-        if self.queryset is None:
-            raise NotImplementedError("You must define queryset or override get_queryset()")
-        return self.queryset.all()
+        return super().get_queryset()
+

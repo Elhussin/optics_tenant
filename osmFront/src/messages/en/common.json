@@ -113,7 +113,9 @@
     "dark": "Dark",
     "light": "Light",
     "register": "Register",
-    "login": "Login"
+    "login": "Login",
+    "search": "Search",
+    "closeSearch": "Close Search"
   },
   "button": {
     "close": "Close",

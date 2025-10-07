@@ -1,4 +1,6 @@
 
+"use client";
+
 import { Loading4 } from "@/src/shared/components/ui/loding";
 import { Card, CardContent, CardHeader, CardTitle } from "@/src/shared/components/ui/card";
 import {ActionButton } from "@/src/shared/components/ui/buttons";
@@ -6,13 +8,27 @@ import { Pencil, Eye } from "lucide-react";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import {useTranslations} from 'next-intl';
 import {useLocale} from 'next-intl';
+import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
+import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
+import { Pagination } from "@/src/shared/components/views/Pagination";
+import  PublicPages  from "./PublicPages";
 export const PagesList = () => {
     const t = useTranslations("pagesList");
-      const locale = useLocale();
-    const {data,isLoading} = useFilteredListRequest({alias:"users_pages_list"});
+    const locale = useLocale();
 
-    if (isLoading || !data ) return <Loading4 />;
+    const {filterAlias,listAlias} = featuresConfig["pages"];
+
+    const { data, totalPages, page, setPage, setPageSize,page_size, setFilters, isLoading }  = useFilteredListRequest({alias:listAlias||""});
+
+    const { fields, isLoading: isFieldsLoading } = useFilterDataOptions(filterAlias || "", {
+      enabled: !!filterAlias,
+    });
+    if (isLoading || !data || isFieldsLoading) return <Loading4 />;
     return (
+      <>
+      <SearchFilterForm fields={fields} setFilters={setFilters} />
+      <PublicPages />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {data?.map((p: any) => {
           // اختيار الترجمة المناسبة
@@ -38,6 +54,14 @@ export const PagesList = () => {
           );
         })}
       </div>
+      <Pagination
+                page={page}
+                totalPages={totalPages}
+                pageSize={page_size}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+            />
+      </>
     );
   };
   

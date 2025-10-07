@@ -14,22 +14,20 @@ import {formatRelatedValue} from "@/src/shared/utils/formatRelatedValue";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { Pagination } from "./Pagination";
 export default function ViewCard({ entity }: { entity: string }) {
-
-  const form = formsConfig[entity];
-
+  const {filterAlias,listAlias,fields} = formsConfig[entity];
   const t = useMergedTranslations(['viewCard', entity]);
-  const { data, count, page, setPage, setFilters, isLoading } = useFilteredListRequest({alias:form.listAlias||""});
-  const { fields, isLoading: isFieldsLoading, errors} = useFilterDataOptions(form.filterAlias||"");
+  const { data, count, page, setPage, setFilters, isLoading, page_size, setPageSize } = useFilteredListRequest({alias:listAlias||""});
+
+  const { fields:filterFields, isLoading: isFieldsLoading } = useFilterDataOptions(filterAlias || "", {
+    enabled: !!filterAlias,
+  });
+
   const totalPages = Math.ceil(count / 10);
   if (isLoading||isFieldsLoading) return <Loading4 />
-
- 
-  
-  if (!form) return <NotFound error={t('errorGetFormData')} />;
-  if (isLoading || !data ) return <Loading4 />;
+  if (isLoading || !data || isFieldsLoading) return <Loading4 />;
   return (
     <>
-      <SearchFilterForm fields={fields} setFilters={setFilters} />
+      <SearchFilterForm fields={filterFields} setFilters={setFilters} />
       <div className="head">
         <h2 className="title-1">{t("title")}</h2>
         <div className="flex justify-end gap-1">
@@ -40,7 +38,7 @@ export default function ViewCard({ entity }: { entity: string }) {
       <div className="card-continear">
       {data?.map((item: any) => (
         <div key={item.id} className="card">
-          {form.fields?.map((field) => {
+          {fields?.map((field) => {
             const value = item[field];
             return (
               <p key={field} className="card-body flex">
@@ -57,7 +55,13 @@ export default function ViewCard({ entity }: { entity: string }) {
       ))}
 
       </div>
-      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+          <Pagination
+                page={page}
+                totalPages={totalPages}
+                pageSize={page_size}
+                onPageChange={setPage}
+                onPageSizeChange={setPageSize}
+            />
     </>
   );
 }

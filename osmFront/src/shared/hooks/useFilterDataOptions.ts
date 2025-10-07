@@ -2,30 +2,32 @@ import { useEffect, useState } from "react";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { detectFieldType } from "@/src/shared/utils/generateSearchFields";
 
-export function useFilterDataOptions(alias: string,) {
+export function useFilterDataOptions(
+  alias: string,
+  options?: { enabled?: boolean } // تمرير enabled للتحكم
+) {
   const [fields, setFields] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<any>(null);
 
-  const fetchData = useApiForm({ alias,});
+  const fetchData = useApiForm({ alias });
+  const enabled = options?.enabled ?? true; // بشكل افتراضي مفعل
 
-
-  
   useEffect(() => {
+    if (!enabled || !alias) return; // لو غير مفعل أو alias فارغ، ما نعملش fetch
+
     const fetch = async () => {
       try {
         setIsLoading(true);
         setErrors(null);
-  
         const result = await fetchData.query.refetch();
-        console.log("useFilterDataOptions", result.data);
-  
+
         if (Array.isArray(result?.data)) {
           const mapped = result.data.map((item: any) => {
             const type = detectFieldType(item.name); // helper لتحديد النوع
             return {
-              name: item.name,         // الاسم الأصلي (key)
-              label: item.label,       // الاسم المعروض
+              name: item.name,
+              label: item.label,
               type: item.values.length > 0 ? "select" : type,
               options: item.values.map((val: string) => ({
                 label: val,
@@ -33,7 +35,7 @@ export function useFilterDataOptions(alias: string,) {
               })),
             };
           });
-  
+
           setFields(mapped);
         }
       } catch (err) {
@@ -42,10 +44,9 @@ export function useFilterDataOptions(alias: string,) {
         setIsLoading(false);
       }
     };
-  
+
     fetch();
-  }, [alias]);
-  
+  }, [alias, enabled]); // اضفنا enabled dependency
 
   return { fields, isLoading, errors };
 }

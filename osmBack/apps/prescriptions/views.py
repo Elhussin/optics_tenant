@@ -7,7 +7,8 @@ from rest_framework.filters import SearchFilter
 from core.views import BaseViewSet
 from .models import PrescriptionRecord
 from .serializers import PrescriptionRecordSerializer
-from core.utils.filters_utils import FilterOptionsGenerator, create_filterset_class,get_display_name
+from core.utils.filters_utils import FilterOptionsGenerator,get_display_name
+from core.utils.create_filterset import create_filterset_class
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 CUSTOMER_RELATED_FIELDS = [
     "customer__id",
@@ -37,77 +38,35 @@ CUSTOMER_FILTER_FIELDS = {
     "created_by__first_name": ["icontains"],
 }
 
-# PrescriptionRecordFilter = create_filterset_class(PrescriptionRecord, filter_fields)
-
-
-
-
 
 class PrescriptionViewSet(BaseViewSet):
-    queryset =  PrescriptionRecord.objects.select_related("customer", "created_by"  ).all()
+    queryset = PrescriptionRecord.objects.select_related("customer", "created_by").all()
     serializer_class = PrescriptionRecordSerializer
     search_fields = CUSTOMER_RELATED_FIELDS
     field_labels = CUSTOMER_FIELD_LABELS
     filter_fields = CUSTOMER_FILTER_FIELDS
-    filterset_class = PrescriptionRecord
 
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired(
-            allowed_roles=["staff","OWNER"],
+            allowed_roles=["staff", "OWNER"],
             required_permissions=["view_prescriptions"]
         )
     ]
+
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-    # queryset = PrescriptionRecord.objects.select_related("customer", "created_by"  ).all()
-    # serializer_class = PrescriptionRecordSerializer
-    # permission_classes = [IsAuthenticated]
-    # filter_backends = [DjangoFilterBackend, SearchFilter]
-    # filterset_class = PrescriptionRecordFilter
-    # search_fields = CUSTOMER_RELATED_FIELDS
+# to use this view add this to urls
+# class PrescriptionListAPIView(FilterOptionsAPIViewMixin, APIView):
+#     queryset = PrescriptionRecord.objects.select_related("customer", "created_by").all()
+#     serializer_class = PrescriptionRecordSerializer
+#     filter_fields = CUSTOMER_FILTER_FIELDS
+#     search_fields = CUSTOMER_RELATED_FIELDS
+#     field_labels = CUSTOMER_FIELD_LABELS
 
-
-    # @action(detail=False, methods=["get"])
-    # def filter_options(self, request):
-    #     generator = FilterOptionsGenerator(
-    #         queryset=self.get_queryset(),
-    #         filterset_class=self.filterset_class,
-    #         query_params=request.query_params,
-    #     )
-    #     options = generator.generate_options(CUSTOMER_RELATED_FIELDS)
-
-    #     # 👇 كل حقل يرجع مع الاسم الأصلي + label + القيم
-    #     formatted_options = [
-    #         {
-    #             "name": field,                # الاسم الأصلي (key للـ frontend)
-    #             "label": get_display_name(CUSTOM_FIELD_LABELS,field),  # الاسم المعروض
-    #             "values": values,             # القيم المتاحة
-    #         }
-    #         for field, values in options.items()
-    #     ]
-    #     return Response(formatted_options)
-
-
-# class UserViewSet(BaseViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     search_fields = USER_RELATED_FIELDS
-#     field_labels = USER_FIELD_LABELS
-#     filter_fields = filter_fields
-#     # filterset_class = UserFilter
-#     permission_classes = [
-#         IsAuthenticated,
-#         RoleOrPermissionRequired(
-#             allowed_roles=["staff"],
-#             required_permissions=["view_users"]
-#         )
-#     ]
-
-#     def get_queryset(self):
-#         user = self.request.user
-#         if user.is_superuser:
-#             return User.objects.all()
-#         return User.objects.filter(id=user.id)
-
+#     def get(self, request):
+#         # تطبيق الفلترة
+#         filtered_qs = self.filter_queryset(request)
+#         serializer = self.serializer_class(filtered_qs, many=True)
+#         return Response(serializer.data)

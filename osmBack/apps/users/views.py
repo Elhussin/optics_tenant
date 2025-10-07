@@ -10,25 +10,19 @@ from drf_spectacular.utils import extend_schema , inline_serializer
 from django.db import connection
 from core.utils.set_token import set_token_cookies
 from django.conf import settings
-from rest_framework.decorators import action
-from rest_framework.filters import SearchFilter
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
-from django_filters.rest_framework import DjangoFilterBackend
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.utils.http import  urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import force_str, force_bytes
+from django.utils.encoding import  force_bytes
 from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
 from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,
                           TenantSettingsSerializer,RegisterSerializer, LoginSerializer,
                           UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,PasswordResetConfirmSerializer,
                          TenantSettings)
 from apps.tenants.models import Client
-from rest_framework import permissions
-from .filters import UserFilter,USER_RELATED_FIELDS,USER_FIELD_LABELS,filter_fields
+
+from .contexts.index import USER_RELATED_FIELDS,USER_FIELD_LABELS,USER_FILTER_FIELDS
 from core.utils.email import send_password_reset_email
-from core.permissions.decorators import permission_required,role_required
-from django.utils.decorators import method_decorator
-from core.utils.filters_utils import FilterOptionsGenerator, create_filterset_class,get_display_name
 
 from core.views import BaseViewSet
 User = get_user_model()
@@ -268,9 +262,7 @@ class LogoutView(APIView):
         response.delete_cookie('refresh_token')
         return response
 
-# @method_decorator(role_required(['ADMIN']), name='dispatch')
-# @method_decorator(permission_required('create_permission'), name='dispatch')
-# @method_decorator(role_required(['ADMIN','TECHNICIAN','OWNER']), name='dispatch')
+
 class PermissionViewSet(viewsets.ModelViewSet):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
@@ -281,54 +273,18 @@ class RolePermissionViewSet(viewsets.ModelViewSet):
     serializer_class = RolePermissionSerializer
     permission_classes = [IsAuthenticated]
 
-class RoleViewSet(viewsets.ModelViewSet):
+class RoleViewSet(BaseViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     permission_classes = [IsAuthenticated]
 
-
-
-
-# class UserViewSet(viewsets.ModelViewSet):
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
-#     filter_backends = [DjangoFilterBackend,SearchFilter]
-#     filterset_class = UserFilter
-#     search_fields = USER_RELATED_FIELDS
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         user = self.request.user
-#         if user.is_superuser:
-#             return User.objects.all()
-#         return User.objects.filter(id=user.id)
-
-#     @action(detail=False, methods=["get"])
-#     def filter_options(self, request):
-#         generator = FilterOptionsGenerator(
-#             queryset=self.get_queryset(),
-#             filterset_class=self.filterset_class,
-#             query_params=request.query_params,
-#         )
-#         options = generator.generate_options(USER_RELATED_FIELDS)
-
-#         # 👇 كل حقل يرجع مع الاسم الأصلي + label + القيم
-#         formatted_options = [
-#             {
-#                 "name": field,                # الاسم الأصلي (key للـ frontend)
-#                 "label": get_display_name(USER_FIELD_LABELS,field),  # الاسم المعروض
-#                 "values": values,             # القيم المتاحة
-#             }
-#             for field, values in options.items()
-#         ]
-#         return Response(formatted_options)
 
 class UserViewSet(BaseViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     search_fields = USER_RELATED_FIELDS
     field_labels = USER_FIELD_LABELS
-    filter_fields = filter_fields
+    filter_fields = USER_FILTER_FIELDS
     # filterset_class = UserFilter
     permission_classes = [
         IsAuthenticated,
@@ -367,12 +323,13 @@ class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 
-class PageViewSet(viewsets.ModelViewSet):
+class PageViewSet(BaseViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
     permission_classes = [
+        IsAuthenticated,
         RoleOrPermissionRequired(
-            allowed_roles=["staff"],
+            allowed_roles=["OWNER"],
             required_permissions=["view_users"]
         )
     ]
@@ -401,14 +358,3 @@ class PageViewSet(viewsets.ModelViewSet):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data)
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    """
-    Custom permission to only allow owners to edit their pages.
-    """
-    def has_object_permission(self, request, view, obj):
-        # Read permissions for any request
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        # Write permissions only to the owner
-        return obj.author == request.user

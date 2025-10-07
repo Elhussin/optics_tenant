@@ -1,13 +1,8 @@
 "use client";
 import {formatRelatedValue} from "@/src/shared/utils/formatRelatedValue";
 import { useRef, useEffect, useState, useCallback } from "react";
-import { 
-  handleDownloadPDF, 
-  handleCopy, 
-  handlePrint,
-} from "@/src/shared/utils/cardViewHelper";
+import { handleDownloadPDF, handleCopy,  handlePrint,} from "@/src/shared/utils/cardViewHelper";
 import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
-
 import { ViewCardProps } from "@/src/shared/types";
 import { RenderButtons } from "../ui/buttons/RenderButtons";
 import { Loading4 } from "../ui/loding";
@@ -48,7 +43,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   if (!form) return <NotFound error={t('noConfigError')} />;
   if (formRequest.isLoading || !data) return <Loading4 />;
   if (formRequest.error) return <NotFound error={t('errorLoadingData')} />;
-  console.log("detialsView",data)
+
   return (
     <div className="container-h">
       <div className="main-header">
