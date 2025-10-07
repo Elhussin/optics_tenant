@@ -91,14 +91,13 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
     const result = await formRequest.submitForm(data);
     if (result?.success) {
       safeToast(successMessage || 'Submitted successfully', { type: "success" })
-      formRequest.refetch();
+      // formRequest.refetch();
       if (setData) {
         setData(result.data);
-    
         return;
       } else {
         formRequest?.reset(result.data);
-        // formRequest.setValue(currentFieldName, result.data.id);
+        formRequest.setValue(currentFieldName, result.data.id);
         // setDefaultValues(result.data);
       }
  

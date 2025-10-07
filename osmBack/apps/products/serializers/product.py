@@ -13,11 +13,6 @@ from apps.products.serializers.suppliers import SupplierSerializer, Manufacturer
 from apps.products.serializers.inventory import StockMovementsSerializer,StocksSerializer,StockTransferSerializer, StockTransferItemSerializer
 
 class CategorySerializer(serializers.ModelSerializer):
-    # parent = serializers.PrimaryKeyRelatedField(
-    #     queryset=Category.objects.all(), 
-    #     allow_null=True, 
-    #     required=False
-    # )
     parent_name = serializers.CharField(source='parent.name', read_only=True)
 
     
@@ -29,14 +24,7 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
-# class LensCoatingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = LensCoating
-#         fields = [
-#             'id', 'name', 'description', 
-#             'is_active', 'created_at', 'updated_at'
-#         ]
-#         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
