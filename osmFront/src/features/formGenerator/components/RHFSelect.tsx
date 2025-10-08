@@ -28,6 +28,7 @@ export const RHFSelect = (props: RHFSelectProps) => {
               styles={customStyles}
               placeholder={placeholder}
               isClearable
+              
             />
             {fieldState.error && (
               <p className="text-sm text-red-500 mt-1">

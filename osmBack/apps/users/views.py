@@ -263,12 +263,12 @@ class LogoutView(APIView):
         return response
 
 
-class PermissionViewSet(viewsets.ModelViewSet):
+class PermissionViewSet(BaseViewSet):
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
     permission_classes = [IsAuthenticated]
 
-class RolePermissionViewSet(viewsets.ModelViewSet):
+class RolePermissionViewSet(BaseViewSet):
     queryset = RolePermission.objects.all()
     serializer_class = RolePermissionSerializer
     permission_classes = [IsAuthenticated]
@@ -285,7 +285,6 @@ class UserViewSet(BaseViewSet):
     search_fields = USER_RELATED_FIELDS
     field_labels = USER_FIELD_LABELS
     filter_fields = USER_FILTER_FIELDS
-    # filterset_class = UserFilter
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired(
@@ -302,12 +301,12 @@ class UserViewSet(BaseViewSet):
 
 
 
-class ContactUsViewSet(viewsets.ModelViewSet):
+class ContactUsViewSet(BaseViewSet):
     permission_classes = [AllowAny]
     queryset = ContactUs.objects.all()
     serializer_class = ContactUsSerializer
 
-class TenantSettingsViewset(viewsets.ModelViewSet):
+class TenantSettingsViewset(BaseViewSet):
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
     permission_classes = [IsAuthenticated]

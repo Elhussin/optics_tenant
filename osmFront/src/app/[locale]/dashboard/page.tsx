@@ -10,11 +10,13 @@ export default function DashboardLinks() {
   // load the form config for each link translated
   const t = useTranslations("formsConfig");
   const links = [
+    // Tenant
     { href: "clients", roles: ["OWNER"], group: "Tenant" },
     { href: "register-tenants", roles: ["OWNER"], group: "Tenant" },
     { href: "domains", roles: ["OWNER"], group: "Tenant" },
     { href: "payments", roles: ["OWNER"], group: "Billing" },
     { href: "subscription-plans", roles: ["OWNER"], group: "Billing" },
+    // Users
     { href: "roles", roles: ["OWNER"], group: "Access Control" },
     { href: "users", roles: ["OWNER"], group: "Access Control" },
     { href: "permissions", roles: ["OWNER"], group: "Access Control" },

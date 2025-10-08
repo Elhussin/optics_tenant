@@ -2,14 +2,15 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from .serializers import *
 from .models import *
+from core.views import BaseViewSet
 
 
-class BranchViewSet(viewsets.ModelViewSet):
+class BranchViewSet(BaseViewSet):
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
 
 
-class BranchUsersViewSet(viewsets.ModelViewSet):
+class BranchUsersViewSet(BaseViewSet):
     queryset = BranchUsers.objects.all()
     serializer_class = BranchUsersSerializer
 

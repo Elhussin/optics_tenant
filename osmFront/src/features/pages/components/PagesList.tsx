@@ -12,10 +12,13 @@ import { featuresConfig } from "@/src/features/formGenerator/constants/entityCon
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { Pagination } from "@/src/shared/components/views/Pagination";
+import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
 import  PublicPages  from "./PublicPages";
 export const PagesList = () => {
     const t = useTranslations("pagesList");
     const locale = useLocale();
+    const { show } = useSearchButton();
+    show();
 
     const {filterAlias,listAlias} = featuresConfig["pages"];
 

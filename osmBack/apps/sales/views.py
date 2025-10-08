@@ -13,8 +13,8 @@ from rest_framework.decorators import api_view
 from apps.sales.models import Invoice
 from apps.sales.serializers import InvoiceSerializer
 from apps.sales.services.invoice_service import confirm_invoice, calculate_invoice_totals
-
-class OrderViewSet(viewsets.ModelViewSet):
+from core.views import BaseViewSet
+class OrderViewSet(BaseViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
@@ -40,7 +40,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 
-class InvoiceViewSet(viewsets.ModelViewSet):
+class InvoiceViewSet(BaseViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = [IsAuthenticated]
@@ -60,7 +60,7 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
 
 
-class PaymentViewSet(viewsets.ModelViewSet):
+class PaymentViewSet(BaseViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer 
     permission_classes = [IsAuthenticated]
@@ -90,6 +90,6 @@ def invoice_choices(request):
 
 # from apps.sales.permissions import IsBranchManagerOrReadOnly
 
-# class OrderViewSet(viewsets.ModelViewSet):
+# class OrderViewSet(BaseViewSet):
 #     ...
 #     permission_classes = [IsAuthenticated, IsBranchManagerOrReadOnly]

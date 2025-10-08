@@ -14,11 +14,12 @@ from .filters import EmployeeFilter,DepartmentFilter
 from core.utils.options_builder import build_choices_from_queryset, build_choices_from_list
 from django.contrib.auth import get_user_model
 from rest_framework import status
+from core.views import BaseViewSet
 
 User = get_user_model()
 
 
-# class DepartmentViewSet(viewsets.ModelViewSet):
+# class DepartmentViewSet(BaseViewSet):
 #     queryset = Department.objects.all()
 #     serializer_class = DepartmentSerializer
 #     filter_backends = [DjangoFilterBackend]
@@ -27,7 +28,7 @@ User = get_user_model()
 #     def destroy(self, request, *args, **kwargs):
 #         return Response({"detail": "You can't remove this item. Use  delete instead."}, status=405)
 
-class DepartmentViewSet(viewsets.ModelViewSet):
+class DepartmentViewSet(BaseViewSet):
 
     queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
@@ -51,38 +52,38 @@ class EmployeeFormOptionsView(APIView):
         })
         
 
-class EmployeeViewSet(viewsets.ModelViewSet):
+class EmployeeViewSet(BaseViewSet):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = EmployeeFilter
 
 
-class LeaveViewSet(viewsets.ModelViewSet):
+class LeaveViewSet(BaseViewSet):
     queryset = Leave.objects.all()
     serializer_class = LeaveSerializer
 
 
-class AttendanceViewSet(viewsets.ModelViewSet):
+class AttendanceViewSet(BaseViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
 
 
-class PerformanceReviewViewSet(viewsets.ModelViewSet):
+class PerformanceReviewViewSet(BaseViewSet):
     queryset = PerformanceReview.objects.all()
     serializer_class = PerformanceReviewSerializer
 
 
-class PayrollViewSet(viewsets.ModelViewSet):
+class PayrollViewSet(BaseViewSet):
     queryset = Payroll.objects.all()
     serializer_class = PayrollSerializer
 
 
-class TaskViewSet(viewsets.ModelViewSet):
+class TaskViewSet(BaseViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
 
-class NotificationViewSet(viewsets.ModelViewSet):
+class NotificationViewSet(BaseViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer

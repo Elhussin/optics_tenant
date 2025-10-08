@@ -75,7 +75,7 @@ export default function Profile() {
               {user?.role.name.toLowerCase() === 'owner' && (
                 <>
                   <Link
-                    href={`/dashboard/tenant_settings?action=viewAll`}
+                    href={`/dashboard/tenant-settings`}
                     className="text-blue-600 hover:underline"
                   >
                     Setting

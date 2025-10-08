@@ -88,50 +88,34 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
       className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 m-5"
       onSubmit={handleSubmit}
     >
-      {/* <div className="md:flex items-center col-span-full">
-        <label className="block text-sm font-medium mr-2 w-24">Search</label>
-        <input
-          type="text"
-          className="w-full border p-2 rounded"
-          onChange={(e) => handleChange("search", e.target.value)}
-          value={form["search"] || ""}
-        />
-
-      <div className="flex flex-row justify-end">
-        <ActionButton
-
-          title="Search"
-          icon={<Search />}
-          type="submit"
-          variant="outline"
-      
-        />
-        <ActionButton
-
-          title="Clear"
-          icon={<SearchX />}
-          type="button"
-          variant="outline"
-          onClick={handleClear}
-        />
-      </div>
-      </div> */}
 <div className="md:flex items-center col-span-full gap-1">
 
   {/* حاوية الحقل + الأزرار */}
-  <div className="flex flex-1 border border-gray-200 rounded overflow-hidden">
+  <div className="flex flex-1 border border-gray-200 p-1  overflow-hidden rounded-2xl">
     <input
       type="text"
-      className="input-text"
+      className="input-text rounded-2xl"
       onChange={(e) => handleChange("search", e.target.value)}
       value={form["search"] || ""}
       placeholder="Search..."
     />
-    <ActionButton
+    <button
+      type="submit"
+      className="p-0"
+      title="Search"
+      onClick={handleClear}
+    >
+      
+      <SearchX />
+
+    </button>
+
+    {/* <ActionButton
       title="Search"
       icon={<Search />}
       type="submit"
       variant="outline"
+      className="p-0"
     />
     <ActionButton
       title="Clear"
@@ -139,8 +123,8 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
       type="button"
       variant="outline"
       onClick={handleClear}
-
-    />
+      className="p-0"
+    /> */}
   </div>
 </div>
 

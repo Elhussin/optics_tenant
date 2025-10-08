@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { getSubdomain } from '@/src/shared/utils/getSubdomain';
 import DesktopNavLinks from './DesktopNavLinks';
 import MobileNavMenu from './MobileNavMenu';
+import { AutoHideSearchOnRouteChange } from '../search/AutoHideSearchOnRouteChange';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function Navbar() {
 
   return (
     <nav className="nav">
+      <AutoHideSearchOnRouteChange />
       <DesktopNavLinks subdomain={subdomain} />
       <div className="md:hidden">
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-700 dark:text-white">

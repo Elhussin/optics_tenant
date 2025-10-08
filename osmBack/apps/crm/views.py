@@ -12,9 +12,10 @@ from .serializers import (
     CustomerSerializer, CustomerGroupSerializer, OpportunitySerializer, InteractionSerializer, 
     ComplaintSerializer, SubscriptionSerializer, TaskSerializer,CampaignSerializer,DocumentSerializer,ContactSerializer
 )
+from core.views import BaseViewSet
 
 
-class CustomerViewSet(viewsets.ModelViewSet):
+class CustomerViewSet(BaseViewSet):
     serializer_class = CustomerSerializer
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
@@ -28,7 +29,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         serializer.save(created_by=self.request.user)
         
 
-class CustomerGroupViewSet(viewsets.ModelViewSet):
+class CustomerGroupViewSet(BaseViewSet):
     queryset = CustomerGroup.objects.all()
     serializer_class = CustomerGroupSerializer
 
@@ -37,7 +38,7 @@ class CustomerGroupViewSet(viewsets.ModelViewSet):
 
 # OpportunityViewSet: get all ``Opportunity`` objects
 
-class OpportunityViewSet(viewsets.ModelViewSet):
+class OpportunityViewSet(BaseViewSet):
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
 
@@ -46,7 +47,7 @@ class OpportunityViewSet(viewsets.ModelViewSet):
     
 # InteractionViewSet: get all ``Interaction`` objects
 
-class InteractionViewSet(viewsets.ModelViewSet):
+class InteractionViewSet(BaseViewSet):
     queryset = Interaction.objects.all()
     serializer_class = InteractionSerializer
 
@@ -55,7 +56,7 @@ class InteractionViewSet(viewsets.ModelViewSet):
     
 # ComplaintViewSet: get all ``Complaint`` objects
 
-class ComplaintViewSet(viewsets.ModelViewSet):
+class ComplaintViewSet(BaseViewSet):
     queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
 
@@ -64,7 +65,7 @@ class ComplaintViewSet(viewsets.ModelViewSet):
     
 # SubscriptionViewSet: get all ``Subscription`` objects
 
-class SubscriptionViewSet(viewsets.ModelViewSet):
+class SubscriptionViewSet(BaseViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
 
@@ -73,7 +74,7 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
     
 # TaskViewSet: get all ``Task`` objects
 
-class TaskViewSet(viewsets.ModelViewSet):
+class TaskViewSet(BaseViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
 
@@ -82,7 +83,7 @@ class TaskViewSet(viewsets.ModelViewSet):
     
 # CampaignViewSet: get all ``Campaign`` objects
 
-class CampaignViewSet(viewsets.ModelViewSet):
+class CampaignViewSet(BaseViewSet):
     queryset = Campaign.objects.all()
     serializer_class = CampaignSerializer
 
@@ -91,14 +92,14 @@ class CampaignViewSet(viewsets.ModelViewSet):
     
 # DocumentViewSet: get all ``Document`` objects
 
-class DocumentViewSet(viewsets.ModelViewSet):
+class DocumentViewSet(BaseViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
     # def get_permissions(self):
     #     return super().get_default_permissions()
     
-class ContactViewSet(viewsets.ModelViewSet):
+class ContactViewSet(BaseViewSet):
     permission_classes = [AllowAny]
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer

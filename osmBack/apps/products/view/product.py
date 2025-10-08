@@ -14,39 +14,39 @@ from apps.products.serializers import (
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-
-class CategoryViewSet(viewsets.ModelViewSet):
+from core.views import BaseViewSet
+class CategoryViewSet(BaseViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
-# class LensCoatingViewSet(viewsets.ModelViewSet):
+# class LensCoatingViewSet(BaseViewSet):
 #     queryset = LensCoating.objects.all()
 #     serializer_class = LensCoatingSerializer
 #     permission_classes = [IsAuthenticated]
 
 
-class ProductVariantViewSet(viewsets.ModelViewSet):
+class ProductVariantViewSet(BaseViewSet):
     queryset = ProductVariant.objects.all()
     serializer_class = ProductVariantSerializer
     permission_classes = [IsAuthenticated]
 
-class ProductViewSet(viewsets.ModelViewSet):
+class ProductViewSet(BaseViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
 
-class ProductImageViewSet(viewsets.ModelViewSet):
+class ProductImageViewSet(BaseViewSet):
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
     permission_classes = [IsAuthenticated]
 
-class FlexiblePriceViewSet(viewsets.ModelViewSet):
+class FlexiblePriceViewSet(BaseViewSet):
     queryset = FlexiblePrice.objects.all()
     serializer_class = FlexiblePriceSerializer
     permission_classes = [IsAuthenticated]
 
-class ProductVariantOfferViewSet(viewsets.ModelViewSet):
+class ProductVariantOfferViewSet(BaseViewSet):
     queryset = ProductVariantOffer.objects.all()
     serializer_class = ProductVariantOfferSerializer
     permission_classes = [IsAuthenticated]

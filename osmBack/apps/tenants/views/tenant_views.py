@@ -6,6 +6,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from django_tenants.utils import  get_tenant
+from core.views import BaseViewSet
 from apps.tenants.models import (
     Client,
     SubscriptionPlan,
@@ -53,13 +54,13 @@ class DomainView(APIView):
 # ClientViewSet
 # ==============================================================
 
-class ClientViewSet(viewsets.ModelViewSet):
+class ClientViewSet(BaseViewSet):
     serializer_class = ClientSerializer
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         # Get the client associated with the user
-        if self.request.user.role_id.name.lower() == 'owner':
+        if self.request.user.role_id.name.lower() == 'owner' or self.request.user.is_superuser:
             return Client.objects.all()
             
         user_client = self.request.user.client
@@ -83,12 +84,12 @@ class ClientViewSet(viewsets.ModelViewSet):
 
 
 
-class SubscriptionPlanViewSet(viewsets.ModelViewSet):
+class SubscriptionPlanViewSet(BaseViewSet):
     permission_classes = [AllowAny] 
     queryset = SubscriptionPlan.objects.all()
     serializer_class = SubscriptionPlanSerializer
 
-class RegisterTenantViewSet(viewsets.ModelViewSet):
+class RegisterTenantViewSet(BaseViewSet):
     permission_classes = [permissions.IsAuthenticated]
     queryset = PendingTenantRequest.objects.all()
     serializer_class = RegisterTenantSerializer

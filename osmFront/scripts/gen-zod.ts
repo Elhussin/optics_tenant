@@ -372,4 +372,7 @@ console.log(`✅ ${pascal}Form created successfully:
 // npx ts-node scripts/generate-zod-form.ts user_schema users/login
 // npx tsx scripts/generate-zod-form.ts LoginRequest users/login ./config/custom-form.json
 // npx tsx scripts/generate-zod-form.ts LogoutResponse users/logout ./config/custom-form.json
-// npx tsx scripts/gen-zod.ts ProductVariantRequest products/product-variants ./config/custom-form.json
+// npx tsx scripts/gen-zod.ts ProductRequest products/product ./config/custom-form.json
+
+
+// z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }

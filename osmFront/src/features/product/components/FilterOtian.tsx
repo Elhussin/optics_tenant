@@ -1,13 +1,13 @@
 import {RHFSelect} from "@/src/features/formGenerator/components/RHFSelect";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from "lucide-react";
-export const FilterOtian = ({data,control, name,setShowModal,setEntity ,entityName,setCureantAttribute}:any) => {
-    const filterData = data?.filter((v:any)=> v.attribute_name === name).map((v:any)=> ({ label: v.value, value: v.id })) || [];
+export const FilterOtian = ({data,control, name,setShowModal,setEntity ,entityName,setCureantAttribute,filter,hent}:any) => {
+    const filterData = data?.filter((v:any)=> v.attribute_name === filter).map((v:any)=> ({ label: v.value, value: v.id })) || [];
 
     setCureantAttribute(name)
     return (
         <div>
-            <label htmlFor={name}>{name}</label>
+            <label title={hent} htmlFor={name}>{name}</label>
         <RHFSelect
         name={name}
         control={control}
@@ -16,6 +16,7 @@ export const FilterOtian = ({data,control, name,setShowModal,setEntity ,entityNa
         required
         placeholder={`Select ${name}`}
         className="flex-1"
+        // title={hent}
       />
            <ActionButton
           onClick={() => setShowModal(true) && setEntity(entityName) && setCureantAttribute(name)}

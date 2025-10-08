@@ -9,12 +9,14 @@ import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterFor
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
 
 
 const ViewEyeTest: React.FC<{ id?: string | number, title?: string }> = ({ id, title }) => {
     const {filterAlias,listAlias} = formsConfig["prescriptions"];
     const { data, totalPages, page, setPage, setPageSize,page_size, setFilters, isLoading }  = useFilteredListRequest({alias:listAlias||""});
-
+    const { show } = useSearchButton();
+    show();
     const { fields, isLoading: isFieldsLoading } = useFilterDataOptions(filterAlias || "", {
       enabled: !!filterAlias,
     });

@@ -118,7 +118,7 @@ class ProductVariant(BaseModel):
     #     related_name='%(class)s_lens_coatings',
     #     blank=True,
     # )
-    lens_type_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Lens Type'})
+    product_type_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_product_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Product Type'})
     spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True)
     cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True)
     axis = models.IntegerField(default=0,blank=True,null=True, validators=[MinValueValidator(0), MaxValueValidator(180)])
