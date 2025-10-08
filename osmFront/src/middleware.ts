@@ -51,7 +51,11 @@ export async function middleware(request: NextRequest) {
   if (!locale) {
     return NextResponse.redirect(new URL(`/${DEFAULT_LOCALE}${pathname}`, request.url));
 
+  } 
+  if (token && request.nextUrl.pathname.startsWith('/auth')) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
+  
 
   // تخطي بعض المسارات
   if (

@@ -87,9 +87,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not role:
             guest_role = Role.objects.filter(name='GUEST').first()
             if guest_role:
-                user.role = guest_role
+                user.role_id = guest_role
         else:
-            user.role = role
+            user.role_id = role
         user.is_active = True
         user.save()
         return user

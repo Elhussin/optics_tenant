@@ -7,36 +7,24 @@ import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import { safeToast } from "@/src/shared/utils/toastService";
 import { cn } from "@/src/shared/utils/cn";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Link } from "@/src/app/i18n/navigation";
 import {useLocale} from "next-intl";
 export default function LoginForm(props: formRequestProps) {
-  
-  const {
-    title,
-    message,
-    submitText = "Login",
-    alias,
-    mode = "login",
-    istenant = false,
-  } = props;
-
+  const {   title, message,submitText = "Login",  alias,  mode = "login", istenant = false, } = props;
   const t = useTranslations("login");
-  const { refetchUser, setUser, user,loading } = useUser();
+  const { refetchUser, user,loading } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale() || "en";
-  const redirect = searchParams.get("redirect") || `/${locale}/profile`;
 
 
-  const {
-    handleSubmit,
-    submitForm,
-    errors,
-    isSubmitting,
-    register,
-  } = useApiForm({ alias });
+  // 🧩 نستخدم useMemo لتثبيت redirect حتى لا يعاد تغييره كل render
+  const redirect = useMemo(() => {
+    return searchParams.get("redirect") || `/${locale}/profile`;
+  }, [ searchParams,  locale,]);
+  const {  handleSubmit, submitForm,errors,  isSubmitting, register,  } = useApiForm({ alias });
 
   const onSubmit = async (data: any) => {
     try {
@@ -44,31 +32,46 @@ export default function LoginForm(props: formRequestProps) {
       if (!result?.success) return;
 
       if (mode === "login") {
-        const userResult = await refetchUser();
-        if (userResult?.success) {
-          // setUser(userResult?.data as User);
+        const res = await refetchUser();
+        console.log(res)
+        if (res?.data)  {
+          safeToast(message || t("successMessage"), { type: "success" });
           router.replace(redirect);
         } else {
           safeToast(t("errorMessage"), { type: "error" });
         }
       } else if (mode === "create") {
+        safeToast(message || t("successMessage"), { type: "success" });
         router.replace(`/${locale}/auth/login`);
       }
-
-      safeToast(message || t("successMessage"), { type: "success" });
     } catch {
       safeToast(t("errorMessage"), { type: "error" });
     }
   };
 
 
-  useEffect(() => {
-    if (!loading && user) {
-      router.replace(redirect);
-    }
-  }, [user, loading, redirect, router]);
+useEffect(() => {
+  if (loading) return;
+  if (!loading && user) {
+    router.replace(redirect);
+  }
+}, [loading, user, redirect, router]);
+
+
+  // useEffect(() => {
+  //   if (!loading && user) {
+  //     router.replace(redirect);
+  //   }
+  // }, [user, loading, redirect, router]);
   
-    // if( isSubmitting || loading ) return <Loading4 />;
+  // useEffect(() => {
+  //   if (typeof window === "undefined") return;
+  //   if (!loading && user) {
+  //     router.replace(redirect);
+  //   }
+  // }, [loading, user, redirect, router]);
+
+    // if( isSubmitting || loading ) return <Loading4 />;b
 
   return (
     <div className={cn("flex justify-center px-4 py-8 bg")}>
@@ -127,37 +130,6 @@ export default function LoginForm(props: formRequestProps) {
                 </p>
               )}
             </div>
-
-            {/* اختيار الخطة (فقط لو tenant) */}
-            {/* {istenant && (
-              <div>
-                <label className="label">{t("planLabel")}</label>
-                <select
-                  {...register("requested_plan")}
-                  className="select"
-                  // defaultValue={defaultPlan}
-                >
-                  <option value="">{t("planPlaceholder")}</option>
-                  <option value="trial">{t("planOption.trial")}</option>
-                  <option value="basic">{t("planOption.basic")}</option>
-                  <option value="premium">{t("planOption.pro")}</option>
-                  <option value="enterprise">
-                    {t("planOption.enterprise")}
-                  </option>
-                </select>
-                {errors.requested_plan && (
-                  <p className="error-text">
-                    {errors.requested_plan.message as string}
-                  </p>
-                )}
-              </div>
-            )} */}
-
-            {/* رسالة خطأ عامة */}
-            {/* {errors.root && (
-              <p className="error-text">{errors.root.message as string}</p>
-            )} */}
-
             {/* زر الإرسال */}
             <button
               type="submit"

@@ -15,34 +15,25 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  // ✅ طلب بيانات المستخدم
-  const fetchUser = useApiForm({
-    alias: "users_profile_retrieve",
-    onSuccess: (res: User) => {
-      setLoading(false);
-    },
-    onError: () => {
-      setUser(null);
-      setLoading(false);
-  
-    },
-  });
-
-
+  const fetchUser = useApiForm({alias: "users_profile_retrieve",});
   useEffect(() => {
     (async () => {
-      
-      const res = await fetchUser.query.refetch();
-      if(res){
-        console.log("user", res.data);
-        setUser(  res.data);
+      setLoading(true);
+      try {
+        const res = await fetchUser.query.refetch();
+        if (res?.data) {
+          console.log("user", res.data);
+          setUser(res.data);
+        } else {
+          setUser(null);
+        }
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     })();
-
-    // fetchUser.submitForm();
-  }, [user]);
-
+  }, []); 
 
   const logoutRequest = useApiForm({
     alias: "users_logout_create",
@@ -68,7 +59,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     user,
     setUser,
     loading,
-    refetchUser: () => fetchUser.submitForm(),
+    refetchUser: async () => {
+      try {
+        const res = await fetchUser.query.refetch();
+        if (res?.data) setUser(res.data);
+        return res;
+      } catch {
+        setUser(null);
+        return null;
+      }
+    },
     logout,
   }), [user, loading]);
 

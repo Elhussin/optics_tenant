@@ -55,6 +55,7 @@ export default function Profile() {
     return <div className="p-6 text-red-500">❌ {t('failedToLoad')}</div>;
   }
 
+  console.log(clientData, "clientData", user, "user");
   return (
     <>
       {user && (
@@ -71,8 +72,8 @@ export default function Profile() {
             <div className="grid sm:grid-cols-2 gap-4 capitalize">
               <p><strong>{t('username')}:</strong> {user?.username}</p>
               <p><strong>{t('email')}:</strong> {user?.email}</p>
-              <p><strong>{t('role')}:</strong> {user?.role.name}</p>
-              {user?.role.name.toLowerCase() === 'owner' && (
+              <p><strong>{t('role')}:</strong> {user?.role?.name}</p>
+              {user?.role?.name?.toLowerCase() === 'owner' && (
                 <>
                   <Link
                     href={`/dashboard/tenant-settings`}
@@ -87,7 +88,7 @@ export default function Profile() {
           </section>
 
           {/* بيانات العميل */}
-          {user.role.name.toLowerCase() === 'owner' && (
+          {user?.role?.name?.toLowerCase() === 'owner' && (
             <section className="bg-surface p-6 rounded-xl shadow-md border">
               <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
                 <Store className="w-5 h-5 text-purple-500" /> {t('clientInformation')}
@@ -163,7 +164,7 @@ export default function Profile() {
           )}
 
           {/* عرض خطط الترقية */}
-          {user.role.name?.toLowerCase() === 'owner' &&
+          {user?.role?.name?.toLowerCase() === 'owner' &&
             clientData &&
             (clientData.plans?.name === 'trial' || (daysLeft !== null && daysLeft <= 0)) && (
               <div id="pricingSectian">
