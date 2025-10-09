@@ -129,8 +129,8 @@ export interface ButtonProps {
   navigateTo?: string;
   onClick?: (e?: React.SyntheticEvent) => void | Promise<void>; // يقبل أي event
   name?: string;
+  entity?: string;
 }
-
 
 
 

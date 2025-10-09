@@ -282,17 +282,6 @@ export const formsConfig: Record<string, FormConfig> = {
     fields:["name","description","parent_name"],
     detailsField:["name","description","parent_id","parent_name","is_active","is_deleted"],
   },
-  // 'lens-coatings':{
-  //   schemaName: 'LensCoatingRequest',
-  //   listAlias: 'products_lens_coatings_list',
-  //   createAlias: 'products_lens_coatings_create',
-  //   retrieveAlias: 'products_lens_coatings_retrieve',
-  //   updateAlias: 'products_lens_coatings_partial_update',
-  //   hardDeleteAlias: 'products_lens_coatings_destroy',
-  //   filterAlias: 'products_lens_coatings_filter_options_retrieve',
-  //   fields:["name","description"],
-  //   detailsField:["name","description","is_active","is_deleted"],
-  // },
   "products":{
     schemaName: 'ProductRequest',
     listAlias: 'products_products_list',

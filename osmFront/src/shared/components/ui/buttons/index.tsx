@@ -32,6 +32,7 @@ export function ActionButton({
   onCrud,
   navigateTo,
   name,
+  entity
 
 }: ButtonProps) {
   const router = useRouter();
@@ -57,7 +58,8 @@ export function ActionButton({
     <button
       onClick={handleClick}
       type={type}
-      name={name}
+      name={name!}
+      // entity={entity!}
       title={title}
       disabled={disabled}
       className={cn(

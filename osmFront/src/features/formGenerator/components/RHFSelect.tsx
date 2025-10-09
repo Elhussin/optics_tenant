@@ -7,7 +7,6 @@ import customStyles from '../constants';
 
 export const RHFSelect = (props: RHFSelectProps) => {
   const { name, control, parsedOptions, label, required = false, placeholder = 'Select...', className = '' } = props;
-
   return (
     <div className={className}>
       <Controller

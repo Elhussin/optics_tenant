@@ -9,7 +9,7 @@ type CheckboxField = {
   options: CheckboxGroupOption[]; // قائمة الخيارات
 };
 
-const ReturnCheckbox = ({
+export const ReturnCheckbox = ({
   data,
   register,
   errors,
@@ -22,6 +22,8 @@ const ReturnCheckbox = ({
   watch: any;
   setValue: any;
 }) => {
+
+  console.log("CheckboxGroupOption",data)
   return (
     <>
       {data.map((field, i) => {
