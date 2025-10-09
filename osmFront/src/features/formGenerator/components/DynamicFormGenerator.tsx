@@ -17,6 +17,8 @@ import { useRouter } from '@/src/app/i18n/navigation';
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 import { relationshipConfigs } from '@/src/features/formGenerator/constants/generatFormConfig';
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
+import { useMergedTranslations } from '@/src/shared/utils/useMergedTranslations';
+import { NotFound } from '@/src/shared/components/views/NotFound';
 
 export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const router = useRouter();
@@ -28,7 +30,8 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
 
 
   if (!entity) throw new Error('entity is required');
-  const t = useTranslations('formsConfig');
+  // const t = useTranslations('formsConfig');
+  const t = useMergedTranslations(['viewDetailsCard', entity,'formsConfig']);
   const form = formsConfig[entity];
   const alias = useMemo(() => (id ? form.updateAlias : form.createAlias), [id, form]);
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);
@@ -120,10 +123,12 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   }, [id]);
 
 
-  if (loading) {
+  if (loading ) {
     return <Loading3 />;
   }
-
+  if (!schema) {
+    return <NotFound error={t('thisFormDoesNotExist')} />;
+  }
   return (
     <div className={cn(className) + ' container'}>
       <div className="head">
@@ -132,7 +137,6 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
 
         {showBackButton && !setData &&
           <ActionButton icon={<ArrowLeft size={16} />} variant="success" title={t("back")} onClick={() => router.back()} />}
-
       </div>
 
       <form onSubmit={formRequest.handleSubmit(onSubmit)} className={config.containerClasses}>
@@ -151,6 +155,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
             }}
             fetchForginKey={fetchForginKey}
             setFetchForginKey={setFetchForginKey}
+            t={t}
           />
         ))}
 

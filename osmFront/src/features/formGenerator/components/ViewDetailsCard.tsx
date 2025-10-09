@@ -4,11 +4,11 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import { handleDownloadPDF, handleCopy,  handlePrint,} from "@/src/shared/utils/cardViewHelper";
 import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
 import { ViewCardProps } from "@/src/shared/types";
-import { RenderButtons } from "../ui/buttons/RenderButtons";
-import { Loading4 } from "../ui/loding";
+import { RenderButtons } from "@/src/shared/components/ui/buttons/RenderButtons";
+import { Loading4 } from "@/src/shared/components/ui/loding";
 import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
-import { ActionButton } from "../ui/buttons";
-import { NotFound } from "./NotFound";
+import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { NotFound } from "@/src/shared/components/views/NotFound";
 import { Copy, Printer, FileText } from "lucide-react";
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
 
@@ -43,7 +43,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   if (!form) return <NotFound error={t('noConfigError')} />;
   if (formRequest.isLoading || !data) return <Loading4 />;
   if (formRequest.error) return <NotFound error={t('errorLoadingData')} />;
-console.log(data)
+console.log("data Ditealis ",data)
   return (
     <div className="container-h">
       <div className="main-header">
@@ -77,15 +77,18 @@ console.log(data)
 
           {/* الأزرار */}
           <div className="btn-card">
+    
           <RenderButtons
                 data={data}
                 alias={{
-                  editAlias: form.updateAlias,
-                  deleteAlias: form.hardDeleteAlias,
+                  editAlias: form.updateAlias!,
+                  deleteAlias: form.hardDeleteAlias!,
                 }}
+                isViweOnly={form.isViweOnly}
                 navigatePath={`/dashboard/${entity}`}
                 refetch={refetch}
              />
+           
             <div className="flex gap-2 mt-4">
               <ActionButton
                 variant="info"

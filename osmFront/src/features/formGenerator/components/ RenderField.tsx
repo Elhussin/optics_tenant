@@ -15,7 +15,7 @@ import { RHFSelect } from "./RHFSelect";
 // ============================
 // RenderField Component
 // ============================
-export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal,fetchForginKey,setFetchForginKey }: any) => {
+export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal,fetchForginKey,setFetchForginKey,t }: any) => {
   const fieldType = detectFieldType(fieldName, fieldSchema);
   const template =
     fieldTemplates[fieldType] || fieldTemplates["text"] || {
@@ -24,7 +24,8 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
     };
 
   const unwrappedSchema = unwrapSchema(fieldSchema);
-  const label = getFieldLabel(fieldName, fieldSchema);
+  // const label = getFieldLabel(fieldName, fieldSchema);
+  const label = t(fieldName);
   const required = isFieldRequired(fieldSchema);
 
   // Handle select / foreignkey options

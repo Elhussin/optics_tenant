@@ -2,21 +2,21 @@
 
 "use client";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
-import { SearchFilterForm } from "../search/SearchFilterForm";
+import { SearchFilterForm } from "../../../shared/components/search/SearchFilterForm";
 import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
-import { NotFound } from './NotFound';
-import { Loading4 } from "../ui/loding";
+import { NotFound } from '../../../shared/components/views/NotFound';
+import { Loading4 } from "../../../shared/components/ui/loding";
 import { useTranslations } from 'next-intl';
 import { useMergedTranslations } from '@/src/shared/utils/useMergedTranslations';
 import { formatRelatedValue } from "@/src/shared/utils/formatRelatedValue";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
-import { Pagination } from "./Pagination";
+import { Pagination } from "../../../shared/components/views/Pagination";
 import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
 import { useEffect } from "react";
 export default function ViewCard({ entity }: { entity: string }) {
-  const { filterAlias, listAlias, fields } = formsConfig[entity];
+  const { filterAlias, listAlias, fields,isViweOnly } = formsConfig[entity];
   const t = useMergedTranslations(['viewCard', entity]);
   const { data, count, page, setPage, setFilters, isLoading, page_size, setPageSize } = useFilteredListRequest({ alias: listAlias || "" });
   // show search button
@@ -39,7 +39,9 @@ export default function ViewCard({ entity }: { entity: string }) {
       <div className="head">
         <h2 className="title-1">{t("title")}</h2>
         <div className="flex justify-end gap-1">
+        {!isViweOnly && (
           <ActionButton variant="success" icon={<Plus size={16} />} navigateTo={`/dashboard/${entity}/create`} title={`${t('createTitle')} ${entity}`} />
+        )}
           <ActionButton variant="success" icon={<ArrowLeft size={16} />} navigateTo={`/dashboard/`} title={t('back')} />
         </div>
       </div>
@@ -57,7 +59,9 @@ export default function ViewCard({ entity }: { entity: string }) {
             })}
             <div className="btn-card">
               <ActionButton variant="info" navigateTo={`/dashboard/${entity}/${item.id}`} icon={<Eye size={16} />} title={`${t('view')} ${entity}`} />
-              <ActionButton variant="warning" navigateTo={`/dashboard/${entity}/${item.id}/edit`} icon={<Pencil size={16} />} title={`${t('edit')} ${entity}`} />
+              {!isViweOnly && (
+                <ActionButton variant="warning" navigateTo={`/dashboard/${entity}/${item.id}/edit`} icon={<Pencil size={16} />} title={`${t('edit')} ${entity}`} />
+              )}
             </div>
           </div>
         ))}

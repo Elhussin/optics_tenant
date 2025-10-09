@@ -2,15 +2,16 @@ import { FormConfig } from "@/src/shared/types/formConfig";
 export const formsConfig: Record<string, FormConfig> = {
 // TENANT APP
   "clients":{
-    schemaName: 'ClientRequest',
+    // schemaName: 'ClientRequest',
     listAlias: 'tenants_clients_list',
-    createAlias: 'tenants_register_create',
+    // createAlias: 'tenants_register_create',
     retrieveAlias: 'tenants_clients_retrieve',
-    updateAlias: 'tenants_clients_partial_update',
+    // updateAlias: 'tenants_clients_partial_update',
     filterAlias: "tenants_clients_filter_options_retrieve",
-    hardDeleteAlias: 'tenants_clients_destroy',
+    // hardDeleteAlias: 'tenants_clients_destroy',
     fields:["name","max_branches","max_users"],
     detailsField:[ "name","max_branches","max_users","website","is_active","paid_until", ],
+    isViweOnly:true
   },
   "register-tenants":{
     schemaName: 'RegisterTenantRequest',
@@ -35,15 +36,16 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsField:["domain","is_active"],
   },
   'payments':{
-    schemaName: 'PaymentRequest',
+    // schemaName: 'PaymentRequest',
     listAlias: 'tenants_payments_list',
-    createAlias: 'tenants_payments_create',
-    updateAlias: 'tenants_payments_partial_update',
-    hardDeleteAlias: 'tenants_payments_destroy',
+    // createAlias: 'tenants_payments_create',
+    // updateAlias: 'tenants_payments_partial_update',
+    // hardDeleteAlias: 'tenants_payments_destroy',
     retrieveAlias: 'tenants_payments_retrieve',
     filterAlias: "tenants_payments_filter_options_retrieve",
     fields:["amount","transaction_id","status","client"],
     detailsField:["amount","transaction_id","status","client","created_at","updated_at","method","currency"],
+    isViweOnly:true
   },
   "subscription-plans":{
     schemaName: 'SubscriptionPlanRequest',

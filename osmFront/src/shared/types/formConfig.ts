@@ -1,10 +1,10 @@
 export interface FormConfig {
     schemaName?: string;
-    createAlias: string;
-    retrieveAlias: string;
-    updateAlias: string;
-    hardDeleteAlias: string;
-    listAlias: string;
+    createAlias?: string;
+    retrieveAlias?: string;
+    updateAlias?: string;
+    hardDeleteAlias?: string;
+    listAlias?: string;
     createSuccessMessage?: string;
     createErrorMessage?: string;
     updateSuccessMessage?: string;
@@ -21,5 +21,6 @@ export interface FormConfig {
     showResetButton?:boolean,
     showBackButton?:boolean,
     className?:string
+    isViweOnly?:boolean
   }
   

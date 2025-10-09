@@ -48,6 +48,7 @@
     "noData":"No Data Found",
     "success":"Successfully",
     "failed":"Failed to",
+    "thisFormDoesNotExist":"This form does not exist OR  not Allowed",
     "clients":"Clients",
     "register-tenants":"Register Tenants",
     "domains":"Domains",
@@ -84,7 +85,9 @@
     "max_branches": "Max Branches",
     "max_users": "Max Users",
     "website": "Website",
-    "paid_until": "Paid Until"
+    "paid_until": "Paid Until",
+    "on_trial": "On Trial",
+    "max_products": "Max Products"
 
   },
   "register-tenants": {

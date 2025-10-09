@@ -10,7 +10,7 @@ import { useApiForm } from '@/src/shared/hooks/useApiForm';
 
 
 
-export const RenderButtons = ({ data, alias, refetch, navigatePath }: RenderButtonsProps) => {
+export const RenderButtons = ({ data, alias, refetch, navigatePath,isViweOnly=false }: RenderButtonsProps) => {
   const t = useTranslations("button");
 
   const editRequest = useApiForm({
@@ -59,6 +59,8 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath }: RenderButt
   return (
     <div className="flex gap-2 mt-4">
       {backButton}
+      {!isViweOnly &&(
+      <>
       {data?.is_deleted && (
         <>
           {restoreButton}
@@ -83,7 +85,8 @@ export const RenderButtons = ({ data, alias, refetch, navigatePath }: RenderButt
         </>
       )}
       {ConfirmDialogComponent}
-
+      </>
+      )}
     </div>
   );
 };

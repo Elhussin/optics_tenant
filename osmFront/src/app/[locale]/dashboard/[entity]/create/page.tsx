@@ -10,7 +10,6 @@ const DynamicFormGenerator = dynamic(
 export default function EntityCreatePage() {
   const params = useParams();
   const entity = params.entity as string || '';
-  const locale = params.locale as string || 'en';
 
 
   if (!(entity in formsConfig)) {

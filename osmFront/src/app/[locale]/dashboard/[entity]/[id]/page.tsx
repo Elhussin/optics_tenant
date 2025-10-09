@@ -2,7 +2,7 @@
 'use client';
 import { useParams} from 'next/navigation';
 import { formsConfig } from '@/src/features/formGenerator/constants/entityConfig';
-import ViewDetailsCard from '@/src/shared/components/views/ViewDetailsCard';
+import ViewDetailsCard from '@/src/features/formGenerator/components/ViewDetailsCard';
 import {NotFound} from '@/src/shared/components/views/NotFound'
 
 export default function EntityDetailsPage() {

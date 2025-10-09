@@ -48,6 +48,7 @@
     "noData": "لم يتم العثور على بيانات",
     "success": "تم بنجاح",
     "failed": "فشل في",
+    "thisFormDoesNotExist":"هذا النموذج غير موجود أو غير مسموح به",
     "clients": "المستاجرين",
     "register-tenants": "تسجيل المستأجر",
     "domains": "النطاقات",
@@ -84,7 +85,9 @@
     "max_branches": "عدد الفروع",
     "max_users": "عدد المستخدمين",
     "website": "الموقع الإلكتروني",
-    "paid_until": "تاريخ الانتهاء"
+    "paid_until": "تاريخ الانتهاء",
+    "max_products": "عدد المنتجات",
+    "on_trial": "تجريبي"
 
   },
   "register_tenants": {

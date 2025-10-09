@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { formsConfig } from '@/src/features/formGenerator/constants/entityConfig';
 
-import ViewCard from '@/src/shared/components/views/ViewCard';
+import ViewCard from '@/src/features/formGenerator/components/ViewCard';
 import {NotFound} from '@/src/shared/components/views/NotFound';
 
 export default function EntityPage() {

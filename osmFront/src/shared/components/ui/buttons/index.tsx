@@ -31,6 +31,8 @@ export function ActionButton({
   onClick,
   onCrud,
   navigateTo,
+  name,
+
 }: ButtonProps) {
   const router = useRouter();
 
@@ -55,6 +57,7 @@ export function ActionButton({
     <button
       onClick={handleClick}
       type={type}
+      name={name}
       title={title}
       disabled={disabled}
       className={cn(

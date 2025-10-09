@@ -72,7 +72,7 @@ class ClientViewSet(BaseViewSet):
         # Check if the user has permission to view the client
         instance = self.get_object()
         if not request.user.client or instance.id != request.user.client.id:
-            if self.request.user.role.name.lower() != 'owner':
+            if self.request.user.role_id.name.lower() != 'owner':
                 raise PermissionDenied("You do not have permission to view this client.")
         return super().retrieve(request, *args, **kwargs)
 

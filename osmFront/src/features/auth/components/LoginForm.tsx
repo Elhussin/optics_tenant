@@ -34,7 +34,7 @@ export default function LoginForm(props: formRequestProps) {
       if (mode === "login") {
         const res = await refetchUser();
         console.log(res)
-        if (res?.data)  {
+        if (res?.success)  {
           safeToast(message || t("successMessage"), { type: "success" });
           router.replace(redirect);
         } else {

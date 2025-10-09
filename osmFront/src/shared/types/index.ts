@@ -128,6 +128,7 @@ export interface ButtonProps {
   onCrud?: (e?: React.SyntheticEvent) => void | Promise<void>; // يقبل أي event
   navigateTo?: string;
   onClick?: (e?: React.SyntheticEvent) => void | Promise<void>; // يقبل أي event
+  name?: string;
 }
 
 
@@ -152,6 +153,7 @@ export type RenderButtonsProps = {
   alias: Alias;
   refetch: () => void;   // ✅ إضافة refetch
   navigatePath: string;
+  isViweOnly?: boolean;
 };
 
 

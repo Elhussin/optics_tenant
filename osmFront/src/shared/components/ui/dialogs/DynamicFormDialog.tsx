@@ -24,7 +24,7 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, 
         >
           {/* الهيدر draggable */}
           <div className="modal-header flex justify-between items-center p-4 border-b cursor-move bg-surface">
-            <span className="font-semibold"> {t(title)}</span>
+            <span className="font-semibold"> {t("title")||title}</span>
             <button onClick={onClose}>X</button>
           </div>
 
