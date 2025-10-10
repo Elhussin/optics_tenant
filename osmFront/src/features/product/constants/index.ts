@@ -9,7 +9,7 @@ export const TEXTFIELDDATA = [
   { "label": "Description", "name": "description", "type": "textarea", "rows": 5, "placeholder": "Description..." },
 ]
 
-const checkBox = [
+export const checkBox = [
   { "label": "Is Active", "name": "is_active", type: "checkbox" },
   { "label": "Is Deleted", "name": "is_deleted", type: "checkbox" },
   { "name": "lens_coatings_id", "role": "lensMex", "filter": "Coatings", "entityName": "attribute-values" },

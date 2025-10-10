@@ -3,7 +3,7 @@ import { Cairo, Inter } from "next/font/google";
 import "@/src/styles/globals.css";
 import { routing } from "@/src/app/i18n/routing";
 import { notFound } from "next/navigation";
-import { getTrenMessages } from "@/src/shared/utils/getTrenMessages";
+import { getTrenMessagesFiles } from "@/src/shared/utils/getTrenMessagesFiles";
 import ClientProviders from "@/src/shared/hooks/ClientProviders";
 import { Metadata } from "next";
 

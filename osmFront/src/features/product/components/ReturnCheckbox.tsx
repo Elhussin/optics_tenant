@@ -22,11 +22,14 @@ export const ReturnCheckbox = ({
   watch: any;
   setValue: any;
 }) => {
+  const checkBox = [
+    { "name": "lens_coatings_id", "role": "lensMex", "filter": "Coatings", "entityName": "attribute-values" },
+  ]
 
   console.log("CheckboxGroupOption",data)
   return (
     <>
-      {data.map((field, i) => {
+      {checkBox.map((field, i) => {
         const selectedValues: string[] = watch(field.name) || [];
 
         const handleChange = (value: string) => {
@@ -39,20 +42,20 @@ export const ReturnCheckbox = ({
         return (
           <div key={i} className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {field.label}
+              {field.filter}
             </label>
 
-            <div className="space-y-1">
-              {field.options.map((opt) => (
-                <label key={opt.value} className="flex items-center gap-2">
+            <div className="space-y-1 flex flex-row">
+              {data?.filter((v: any) => v.attribute_name === field.filter).map((opt: any) => (
+                <label key={opt.id} className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    value={opt.value}
-                    checked={selectedValues.includes(opt.value)}
-                    onChange={() => handleChange(opt.value)}
+                    value={opt.id}
+                    checked={selectedValues.includes(opt.id)}
+                    onChange={() => handleChange(opt.id)}
                     className="cursor-pointer"
                   />
-                  {opt.label}
+                  {opt.value}
                 </label>
               ))}
             </div>

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 
 export const parsedOptions= (data:any,filter:string ,mapOnly=false)=>{
-  console.log("parsedOptionsdata",data)
+
   if(mapOnly){
     return data.map((v: any) => ({ label: v.name, value: v.id })) || []
   }
