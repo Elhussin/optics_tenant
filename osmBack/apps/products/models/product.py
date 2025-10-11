@@ -50,8 +50,7 @@ class Product(BaseModel):
     PRODUCT_TYPE_CHOICES = [
         ('CL', 'Contact Lenses'),
         ('SL', 'Spectacle Lenses'),
-        ('SG', 'Sunglasses'),
-        ('EW', 'Eyewear'),
+        ('FR', 'Frames'),
         ('AX', 'Accessories'),
         ('OT', 'Other'),
         ('DV', 'Devices')

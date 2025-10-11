@@ -32,7 +32,6 @@ export function ActionButton({
   onCrud,
   navigateTo,
   name,
-  entity
 
 }: ButtonProps) {
   const router = useRouter();

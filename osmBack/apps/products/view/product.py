@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
-
+from rest_framework.request import Request
 from apps.products.models import (
     Category, Product, ProductVariant, 
     ProductImage, FlexiblePrice,ProductVariantOffer
@@ -31,8 +31,23 @@ class ProductVariantViewSet(BaseViewSet):
     serializer_class = ProductVariantSerializer
     permission_classes = [IsAuthenticated]
 
+# class ProductViewSet(BaseViewSet):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+#     permission_classes = [IsAuthenticated]
+
 class ProductViewSet(BaseViewSet):
-    queryset = Product.objects.all()
+
+    queryset = (
+        Product.objects.all()
+        .select_related(
+            'manufacturer_id',
+            'category_id',
+            'supplier_id',
+            'brand_id'
+        )  # للعلاقات ForeignKey
+        .prefetch_related('variants')  # للعلاقات العكسية (OneToMany)
+    )
     serializer_class = ProductSerializer
     permission_classes = [IsAuthenticated]
 

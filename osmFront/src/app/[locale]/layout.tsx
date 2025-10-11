@@ -44,7 +44,7 @@ export default async function LocaleLayout({
   // const { messages } = await getRequestConfig({locale});
   let messages: Record<string, any>;
   try {
-    messages = await getTrenMessages(locale);
+    messages = await getTrenMessagesFiles(locale);
   } catch (error) {
     notFound();
   }

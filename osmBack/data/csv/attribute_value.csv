@@ -163,3 +163,28 @@ Dimensions,16-126-136
 Dimensions,14-124-134
 Dimensions,12-122-132
 Dimensions,10-120-130
+
+Coatings,MC Green
+Coatings,MC Blue
+Coatings,Polarized G15
+Coatings,Polarized Grey
+Coatings,Polarized Green
+Coatings,Transitions Gray 
+Coatings,Transitions Brown 
+Coatings,Transitions Green 
+Coatings,Transitions G15 
+Coatings,UV
+Coatings,UV400
+Coatings,Blue Light
+
+Weight,100 g
+Weight,200 g
+Weight,300 g
+Weight,400 g
+Weight,500 g
+Uint,1 pes
+Uint,2 pes
+Uint,10 pes
+Uint,30 pes
+Uint,90 pes
+
