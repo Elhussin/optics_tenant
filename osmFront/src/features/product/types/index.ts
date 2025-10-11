@@ -6,6 +6,13 @@ export interface ProductForginKeyConfigType {
     entityName:string,
     mapOnly?:boolean,
     fieldName:string,
-    hent?:string
+    hent?:string,
+    label?:string,
+    options?:any[],
+    type?:string,
+    rows?:number,
+    placeholder?:string,
+    required?:boolean,
+    
   }
   

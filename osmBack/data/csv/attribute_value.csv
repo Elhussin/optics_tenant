@@ -140,10 +140,16 @@ Base Curve,10
 Base Curve,11
 Base Curve,12
 
-Lens Type,Single Stok
-Lens Type,Multi  Focal RX
-Lens Type,Single RX
-Lens Type,Single RX
+Product Type,Single Stock
+Product Type,Multi  Focal RX
+Product Type,Single RX
+
+Product Type,Contact Lens Clear
+Product Type,Contact Lens Colored 
+Product Type,Sun Glasses
+Product Type,Spectacle Glasses 
+Product Type,Other 
+
 Water Content,50%
 Water Content,60%
 Replacement Schedule,6 Month
