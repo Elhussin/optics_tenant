@@ -1,60 +1,50 @@
-/**
- * يبني payload لأي كيان (product أو variant)
- * @param {Array} config - إعدادات الحقول (ProductConfig أو ProductVariantConfig)
- * @param {Object} formData - البيانات من form (product أو variants)
- * @param {Object} options - خيارات إضافية للتحكم في السلوك
- * @returns {Object|Array} - payload جاهز للإرسال
- */
+// buildPayload.ts
 type BuildPayloadOptions= {
-    role?: string;
-    prefix?: string;
-    include?: string[];
-    multiple?: boolean;
-  
+  role?: string;
+  prefix?: string;
+  include?: string[];
+  multiple?: boolean;
 };
+
 interface BuildPayloadProps {
-    config: any;
-    formData: any;
-    options?: BuildPayloadOptions;
+  config: any;
+  formData: any;
+  options?: BuildPayloadOptions;
 }
 
 export function buildPayload({config, formData, options = {}}: BuildPayloadProps) {
   const {
-    role,               // role لتصفية الحقول (optional)
-    prefix = "",        // مسار داخل formData (مثلاً "variants")
-    include = [],       // حقول إضافية تضاف دايمًا
-    multiple = false,   // لو true => يرجع Array (لـ variants)
+    role,
+    prefix = "",
+    include = [],
+    multiple = false,
   } = options;
 
-  // دالة داخلية لتجميع البيانات من كائن واحد
-  const buildSingle = (data : any) =>
+  const buildSingle = (data: any) =>
     config
-      .filter(
-        (field : any) =>
-          field.role === "all" ||
-          (role && field.role === role)
-      )
-      .reduce((acc : any, field : any) => {
+      .filter((field: any) => field.role === "all" || !role || field.role === role)
+      .reduce((acc: any, field: any) => {
         const name = field.name;
         acc[name] = data?.[name] ?? "";
         return acc;
       }, {});
 
-  // إضافة include fields لو موجودة
-  const addInclude = (payload : any, data : any) => {
-    include.forEach((name : any) => {
+  const addInclude = (payload: any, data: any) => {
+    include.forEach((name: any) => {
       payload[name] = data?.[name] ?? "";
     });
     return payload;
   };
 
-  // لو الحقول متعددة (variants)
+  // Support: formData could be an array, or an object that contains prefix array, or object for single entity
   if (multiple) {
-    const dataArray = prefix ? formData[prefix] || [] : formData || [];
-    return dataArray.map((item : any) => addInclude(buildSingle(item), item));
+    let dataArray: any[] = [];
+    if (Array.isArray(formData)) dataArray = formData;
+    else if (prefix && formData && Array.isArray(formData[prefix])) dataArray = formData[prefix];
+    else if (Array.isArray(formData?.variants)) dataArray = formData.variants;
+    return dataArray.map((item: any) => addInclude(buildSingle(item), item));
   }
 
-  // لو الحقول مفردة (product)
-  const targetData = prefix ? formData[prefix] || {} : formData;
-  return addInclude(buildSingle(targetData), formData);
+  const targetData = prefix ? (formData?.[prefix] || {}) : formData || {};
+  return addInclude(buildSingle(targetData), targetData);
 }

@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { RHFSelect } from "@/src/features/formGenerator/components/RHFSelect";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from "lucide-react";
-import { useUser } from "../../auth/hooks/UserContext";
-import { useProductFormStore } from "../store/useProductFormStore";
+import { useUser } from "../osmFront/src/features/auth/hooks/UserContext";
+import { useProductFormStore } from "../osmFront/src/features/product/store/useProductFormStore";
 export const ForeignKeyField = ({ data, control, item }: any) => {
-  const { setShowModal, setEntityName, setCurrentFieldName } = useProductFormStore();
+  const { setShowModal, setEntityName, setCurrentFieldName , setVariantField ,variants , openVariantIndex } = useProductFormStore();
 
   const { user } = useUser();
   const handleClick = (entity: string, fieldName: string) => {
@@ -33,7 +33,7 @@ export const ForeignKeyField = ({ data, control, item }: any) => {
           placeholder="Select..."
           className="flex-1"
         />
-        {user?.role === "admin" && (
+        {/* {user?.role === "OWNER" && ( */}
           <ActionButton
             onClick={() => handleClick(item.entityName, item.name)}
             variant="outline"
@@ -41,7 +41,7 @@ export const ForeignKeyField = ({ data, control, item }: any) => {
             icon={<CirclePlus size={18} color="green" />}
             title="Add"
           />
-        )}
+        {/* )} */}
       </div>
     </div>
   )

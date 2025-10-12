@@ -1,3 +1,4 @@
+// useProductFormStore.ts
 import { create } from "zustand";
 
 interface ProductFormState {
@@ -8,7 +9,6 @@ interface ProductFormState {
   isShowModal: boolean;
   entityName: string;
   currentFieldName: string;
-  
   isVariant: boolean;
   setVariantCount: (count: number) => void;
   setVariantField: (index: number, field: string, value: any) => void;
@@ -17,10 +17,11 @@ interface ProductFormState {
   setShowModal: (value: boolean) => void;
   setEntityName: (name: string) => void;
   setCurrentFieldName: (name: string) => void;
-  
+  setIsVariant: (value: boolean) => void;
+  setOpenVariantIndex: (index: number | null) => void;
 }
 
-export const useProductFormStore = create<ProductFormState>((set) => ({
+export const useProductFormStore = create<ProductFormState>((set, get) => ({
   variantCount: 1,
   variants: [{}],
   openVariantIndex: null,
@@ -38,11 +39,15 @@ export const useProductFormStore = create<ProductFormState>((set) => ({
       } else if (count < state.variants.length) {
         updated.length = count;
       }
-      return { variantCount: count, variants: updated };
+      // if openVariantIndex is now out of range, close it
+      const openIdx = get().openVariantIndex;
+      const newOpenIdx = openIdx !== null && openIdx >= count ? null : openIdx;
+      return { variantCount: count, variants: updated, openVariantIndex: newOpenIdx };
     }),
 
   setVariantField: (index: number, field: string, value: any) =>
     set((state) => {
+      if (typeof index !== "number" || index < 0) return { variants: state.variants };
       const updated = [...state.variants];
       updated[index] = { ...updated[index], [field]: value };
       return { variants: updated };
@@ -58,4 +63,5 @@ export const useProductFormStore = create<ProductFormState>((set) => ({
   setEntityName: (name: string) => set({ entityName: name }),
   setCurrentFieldName: (name: string) => set({ currentFieldName: name }),
   setIsVariant: (value: boolean) => set({ isVariant: value }),
+  setOpenVariantIndex: (index: number | null) => set({ openVariantIndex: index }),
 }));

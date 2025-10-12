@@ -1,18 +1,34 @@
 export interface ProductForginKeyConfigType {
     name:string,
+    label?:string,
     role:string,
     filter:string,
-    schemaName?: string;
-    entityName:string,
-    mapOnly?:boolean,
-    fieldName:string,
+    subFilter?:string,
     hent?:string,
-    label?:string,
-    options?:any[],
+    entityName:string,
+    fieldName:string,
     type?:string,
-    rows?:number,
     placeholder?:string,
-    required?:boolean,
-    
+    required:boolean,
   }
   
+  // mapOnly?:boolean,
+  // options?:any[],
+  // rows?:number,
+  // schemaName?: string;
+
+//   name:string,
+// label?:string,
+// role:string,
+// filter:string,
+// entityName: string,
+// fieldName:string,
+// type?:string,
+// placeholder?:string,
+// required:boolean,
+
+// // for foreign key
+// options?:any[],
+// rows?:number,
+// schemaName?: string;
+// mapOnly?:boolean,

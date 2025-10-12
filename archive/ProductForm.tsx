@@ -5,8 +5,8 @@ import { Loading } from '@/src/shared/components/ui/loding';
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 import { ProductForginKeyConfig, ProductConfig } from '@/src/features/product/constants';
 import { useProductRelations } from '@/src/features/product/hooks/useProductRelations';
-import { RenderForm } from './RenderForm';
-import { SelcetField } from "./SelcetField";
+import { RenderForm } from '../osmFront/src/features/product/components0/RenderForm';
+import { SelcetField } from "../osmFront/src/features/product/components0/SelectField";
 export default function ProductVariantForm({ alias, title, message, submitText, id, isView = false, className = "", }: any) {
   const [showModal, setShowModal] = useState(false);
   const [entity, setEntity] = useState<string>("");
@@ -142,6 +142,9 @@ export default function ProductVariantForm({ alias, title, message, submitText, 
             <input className="input-text" type="number" value={varientCount} onChange={(e) => setVarientCount(Number(e.target.value),)} />
           </div>
         </div>
+        
+
+
         {selectedType && isProduct && (
           <RenderForm
             filteredConfig={filteredConfig}
@@ -192,6 +195,8 @@ export default function ProductVariantForm({ alias, title, message, submitText, 
             </div>
           ))
         }
+
+
         <div className="flex gap-3 pt-4">
           {isVariant && isProduct && (
 

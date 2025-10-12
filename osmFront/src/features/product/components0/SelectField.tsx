@@ -1,31 +1,40 @@
-'use client';
 import { Controller } from 'react-hook-form';
 import ReactSelect from 'react-select';
-import { RHFSelectProps } from '../types';
 import customStyles from '@/src/shared/constants/customStyles';
+interface SelcetFieldProps {
+  control: any;
+  parsedOptions: any[];
+  item: any;
+  setVariantField: any;
+  openVariantIndex: any;
+}
 
-
-export const RHFSelect = (props: RHFSelectProps) => {
-  const { name, control, parsedOptions, label, required = false, placeholder = 'Select...', className = ''} = props;
+export const SelectField = (props: SelcetFieldProps) => {
+  const { control, parsedOptions, item, setVariantField, openVariantIndex } = props;
+  console.log(item)
   return (
-    <div className={className}>
+    <div>
       <Controller
-        name={name as any}
+        name={item.name as any}
         control={control}
         rules={{
-          required: required ? `${label || name} is required` : false,
+          required: item.required ? `${item.label || item.name} is required` : false,
         }}
 
         render={({ field, fieldState }) => (
           <>
             <ReactSelect
-              inputId={name}
+              inputId={item.name}
               options={parsedOptions}
-              onChange={(opt) => {field.onChange((opt as any)?.value)}}
+              onChange={(opt) => {
+                field.onChange((opt as any)?.value)
+                
+                setVariantField(openVariantIndex!, item.name, (opt as any)?.value)
+              }}
               onBlur={field.onBlur}
               value={parsedOptions.find((o) => o.value === field.value) || null}
               styles={customStyles}
-              placeholder={placeholder}
+              placeholder={item.placeholder || "Select..."}
               isClearable
             />
             {fieldState.error && (
