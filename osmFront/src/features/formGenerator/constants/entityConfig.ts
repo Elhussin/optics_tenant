@@ -235,7 +235,7 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_attribute_values_partial_update',
     hardDeleteAlias: 'products_attribute_values_destroy',
     filterAlias: 'products_attribute_values_filter_options_retrieve',
-    fields:["attribute_id","value","attribute_name"],
+    fields:["attribute_id","value","attribute_name","label"],
     detailsField:["attribute_id","value","attribute_name","is_active","is_deleted"],
   },
   'suppliers':{

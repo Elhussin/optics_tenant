@@ -1,5 +1,6 @@
 from core.models import BaseModel
 from django.db import models
+from django.utils.text import slugify
 
 class Attributes(BaseModel):
     """Product attributes"""
@@ -11,29 +12,27 @@ class AttributeValue(BaseModel):
     """Product attribute values"""
     attribute_id = models.ForeignKey("Attributes", related_name='values', on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
+    label = models.CharField(max_length=100, blank=True, null=True)
+    unique_key = models.CharField(max_length=255, unique=True, editable=False)
+
 
     class Meta:
         unique_together = ('attribute_id', 'value')
+        verbose_name = "Attribute Value"
+        verbose_name_plural = "Attribute Values"
+
+    def save(self, *args, **kwargs):
+        # توليد label تلقائيًا لو لم يتم إدخاله
+            if not self.label:
+                self.label = self.value
+
+            # المفتاح الفريد يعتمد فقط على attribute + value
+            # slugify يزيل الفراغات ويحول النص لشكل ثابت وصديق لعناوين URL
+            base_key = f"{self.attribute_id}_{self.value}"
+            self.unique_key = slugify(base_key)
+
+            super().save(*args, **kwargs)
+    
     def __str__(self):
-        return f"{self.attribute_id.name}: {self.value}"
+        return f"{self.attribute.name}: {self.label or self.value}"
 
-
-# class Attributes(BaseModel):
-#     name = models.CharField(max_length=100, unique=True)
-#     values = models.ManyToManyField("AttributeValue", through="AttributesAttributeValue", related_name="attributes")
-
-#     def __str__(self):
-#         return self.name
-
-# class AttributeValue(BaseModel):
-#     value = models.CharField(max_length=100, unique=True)
-
-#     def __str__(self):
-#         return self.value
-
-# class AttributesAttributeValue(BaseModel):
-#     attribute = models.ForeignKey(Attributes, on_delete=models.CASCADE)
-#     value = models.ForeignKey(AttributeValue, on_delete=models.CASCADE)
-
-#     class Meta:
-#         unique_together = ('attribute', 'value')

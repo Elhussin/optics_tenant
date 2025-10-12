@@ -85,12 +85,6 @@
       {
         "schema": "public",
         "app": "products",
-        "model": "LensCoating",
-        "csv": "csv/lens_coating.csv"
-      },
-      {
-        "schema": "public",
-        "app": "products",
         "model": "Product",
         "csv": "csv/product.csv",
         "foreign_keys": {

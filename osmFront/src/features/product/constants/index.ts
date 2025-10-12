@@ -29,7 +29,7 @@ export const ProductConfig:ProductForginKeyConfigType[] = [
 ]
 
 
-  export const ProductForginKeyConfig : ProductForginKeyConfigType[] = [
+export const ProductVariantConfig : ProductForginKeyConfigType[] = [
 
   // product variant
   { "name": "product_type_id",  "role": "all", "filter": "Product Type", "hent": "Product Type Sun Glasses ,Color Contact lens", "entityName": "attribute-values" ,"fieldName":"attribute_name" ,"type":"foreignkey"},

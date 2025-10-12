@@ -1663,6 +1663,8 @@ const AttributeValue = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     value: z.string().max(100),
+    label: z.string().max(100).nullish(),
+    unique_key: z.string(),
     attribute_id: z.number().int(),
   })
   .passthrough();
@@ -1679,6 +1681,7 @@ const AttributeValueRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     value: z.string().min(1).max(100),
+    label: z.string().max(100).nullish(),
     attribute_id: z.number().int(),
   })
   .passthrough();
@@ -1687,6 +1690,7 @@ const PatchedAttributeValueRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     value: z.string().min(1).max(100),
+    label: z.string().max(100).nullable(),
     attribute_id: z.number().int(),
   })
   .partial()
@@ -2059,23 +2063,66 @@ const PatchedProductImageRequest = z
   })
   .partial()
   .passthrough();
-const ProductVariantList = z
+const ProductVariant = z
   .object({
     id: z.number().int(),
+    product_name: z.string(),
+    frame_shape_name: z.string(),
+    frame_material_name: z.string(),
+    frame_color_name: z.string(),
+    temple_length_name: z.string(),
+    bridge_width_name: z.string(),
+    lens_diameter_name: z.string(),
+    lens_color_name: z.string(),
+    lens_material_name: z.string(),
+    lens_base_curve_name: z.string(),
+    lens_water_content_name: z.string(),
+    replacement_schedule_name: z.string(),
+    lens_type_name: z.string(),
+    lens_coatings_name: z.string(),
+    weight_name: z.string(),
+    dimensions_name: z.string(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     sku: z.string().max(50).nullish(),
     usku: z.string(),
-    frame_color_id: AttributeValue,
-    lens_color_id: AttributeValue,
+    expiration_date: z.string().nullish(),
+    spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
+    cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
+    axis: z.number().int().gte(0).lte(180).nullish(),
+    addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
+    last_purchase_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
     selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    discount_price: z.number(),
-    is_active: z.boolean().optional(),
+    product_id: z.number().int(),
+    frame_shape_id: z.number().int().nullish(),
+    frame_material_id: z.number().int().nullish(),
+    frame_color_id: z.number().int().nullish(),
+    temple_length_id: z.number().int().nullish(),
+    bridge_width_id: z.number().int().nullish(),
+    lens_diameter_id: z.number().int().nullish(),
+    lens_color_id: z.number().int().nullish(),
+    lens_material_id: z.number().int().nullish(),
+    lens_base_curve_id: z.number().int().nullish(),
+    lens_water_content_id: z.number().int().nullish(),
+    replacement_schedule_id: z.number().int().nullish(),
+    product_type_id: z.number().int().nullish(),
+    unit_id: z.number().int().nullish(),
+    warranty_id: z.number().int().nullish(),
+    weight_id: z.number().int().nullish(),
+    dimensions_id: z.number().int().nullish(),
+    lens_coatings_id: z.array(z.number().int()).optional(),
   })
   .passthrough();
-const TypeEnum = z.enum(["CL", "SL", "SG", "EW", "AX", "OT", "DV"]);
+const TypeEnum = z.enum(["CL", "SL", "FR", "AX", "OT", "DV"]);
 const Product = z
   .object({
     id: z.number().int(),
@@ -2083,7 +2130,7 @@ const Product = z
     category_name: z.string(),
     supplier_name: z.string(),
     brand_name: z.string(),
-    variants: z.array(ProductVariantList),
+    variants: z.array(ProductVariant).optional(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -2106,8 +2153,47 @@ const PaginatedProductList = z
     results: z.array(Product),
   })
   .passthrough();
+const ProductVariantRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    sku: z.string().max(50).nullish(),
+    expiration_date: z.string().nullish(),
+    spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
+    cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
+    axis: z.number().int().gte(0).lte(180).nullish(),
+    addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
+    last_purchase_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    discount_percentage: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    frame_shape_id: z.number().int().nullish(),
+    frame_material_id: z.number().int().nullish(),
+    frame_color_id: z.number().int().nullish(),
+    temple_length_id: z.number().int().nullish(),
+    bridge_width_id: z.number().int().nullish(),
+    lens_diameter_id: z.number().int().nullish(),
+    lens_color_id: z.number().int().nullish(),
+    lens_material_id: z.number().int().nullish(),
+    lens_base_curve_id: z.number().int().nullish(),
+    lens_water_content_id: z.number().int().nullish(),
+    replacement_schedule_id: z.number().int().nullish(),
+    product_type_id: z.number().int().nullish(),
+    unit_id: z.number().int().nullish(),
+    warranty_id: z.number().int().nullish(),
+    weight_id: z.number().int().nullish(),
+    dimensions_id: z.number().int().nullish(),
+    lens_coatings_id: z.array(z.number().int()).optional(),
+  })
+  .passthrough();
 const ProductRequest = z
   .object({
+    variants: z.array(ProductVariantRequest).optional(),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     model: z.string().min(1).max(50),
@@ -2122,6 +2208,7 @@ const ProductRequest = z
   .passthrough();
 const PatchedProductRequest = z
   .object({
+    variants: z.array(ProductVariantRequest),
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     model: z.string().min(1).max(50),
@@ -2533,65 +2620,6 @@ const PatchedSupplierRequest = z
   })
   .partial()
   .passthrough();
-const ProductVariant = z
-  .object({
-    id: z.number().int(),
-    product_id: z.number().int(),
-    sku: z.string().max(50).nullish(),
-    usku: z.string(),
-    product_name: z.string(),
-    frame_shape_name: z.string(),
-    frame_material_name: z.string(),
-    frame_color_name: z.string(),
-    temple_length_name: z.string(),
-    bridge_width_name: z.string(),
-    lens_diameter_name: z.string(),
-    lens_color_name: z.string(),
-    lens_material_name: z.string(),
-    lens_base_curve_name: z.string(),
-    lens_water_content_name: z.string(),
-    replacement_schedule_name: z.string(),
-    lens_type_name: z.string(),
-    lens_coatings_name: z.string(),
-    weight_name: z.string(),
-    dimensions_name: z.string(),
-    frame_shape_id: z.number().int().nullish(),
-    frame_material_id: z.number().int().nullish(),
-    frame_color_id: z.number().int().nullish(),
-    temple_length_id: z.number().int().nullish(),
-    bridge_width_id: z.number().int().nullish(),
-    lens_diameter_id: z.number().int().nullish(),
-    lens_color_id: z.number().int().nullish(),
-    lens_material_id: z.number().int().nullish(),
-    lens_base_curve_id: z.number().int().nullish(),
-    lens_water_content_id: z.number().int().nullish(),
-    replacement_schedule_id: z.number().int().nullish(),
-    lens_coatings_id: z.array(z.number().int()).optional(),
-    lens_type_id: z.number().int().nullish(),
-    spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
-    cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
-    axis: z.number().int().gte(0).lte(180).nullish(),
-    addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    unit_id: z.number().int().nullish(),
-    warranty_id: z.number().int().nullish(),
-    weight_id: z.number().int().nullish(),
-    dimensions_id: z.number().int().nullish(),
-    last_purchase_price: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullish(),
-    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    discount_percentage: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .optional(),
-    discount_price: z.string(),
-    images: z.array(z.number().int()),
-    is_active: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-  })
-  .passthrough();
 const PaginatedProductVariantList = z
   .object({
     count: z.number().int(),
@@ -2600,47 +2628,22 @@ const PaginatedProductVariantList = z
     results: z.array(ProductVariant),
   })
   .passthrough();
-const ProductVariantRequest = z
+const PatchedProductVariantRequest = z
   .object({
-    product_id: z.number().int(),
-    sku: z.string().max(50).nullish(),
-    frame_shape_id: z.number().int().nullish(),
-    frame_material_id: z.number().int().nullish(),
-    frame_color_id: z.number().int().nullish(),
-    temple_length_id: z.number().int().nullish(),
-    bridge_width_id: z.number().int().nullish(),
-    lens_diameter_id: z.number().int().nullish(),
-    lens_color_id: z.number().int().nullish(),
-    lens_material_id: z.number().int().nullish(),
-    lens_base_curve_id: z.number().int().nullish(),
-    lens_water_content_id: z.number().int().nullish(),
-    replacement_schedule_id: z.number().int().nullish(),
-    lens_coatings_id: z.array(z.number().int()).optional(),
-    lens_type_id: z.number().int().nullish(),
-    spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullish(),
-    cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullish(),
-    axis: z.number().int().gte(0).lte(180).nullish(),
-    addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullish(),
-    unit_id: z.number().int().nullish(),
-    warranty_id: z.number().int().nullish(),
-    weight_id: z.number().int().nullish(),
-    dimensions_id: z.number().int().nullish(),
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    sku: z.string().max(50).nullable(),
+    expiration_date: z.string().nullable(),
+    spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
+    cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
+    axis: z.number().int().gte(0).lte(180).nullable(),
+    addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullish(),
+      .nullable(),
     selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    discount_percentage: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .optional(),
-    is_active: z.boolean().optional(),
-  })
-  .passthrough();
-const PatchedProductVariantRequest = z
-  .object({
-    product_id: z.number().int(),
-    sku: z.string().max(50).nullable(),
+    discount_percentage: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     frame_shape_id: z.number().int().nullable(),
     frame_material_id: z.number().int().nullable(),
     frame_color_id: z.number().int().nullable(),
@@ -2652,23 +2655,12 @@ const PatchedProductVariantRequest = z
     lens_base_curve_id: z.number().int().nullable(),
     lens_water_content_id: z.number().int().nullable(),
     replacement_schedule_id: z.number().int().nullable(),
-    lens_coatings_id: z.array(z.number().int()),
-    lens_type_id: z.number().int().nullable(),
-    spherical: z.union([SphericalEnum, BlankEnum, NullEnum]).nullable(),
-    cylinder: z.union([CylinderEnum, BlankEnum, NullEnum]).nullable(),
-    axis: z.number().int().gte(0).lte(180).nullable(),
-    addition: z.union([AdditionEnum, BlankEnum, NullEnum]).nullable(),
+    product_type_id: z.number().int().nullable(),
     unit_id: z.number().int().nullable(),
     warranty_id: z.number().int().nullable(),
     weight_id: z.number().int().nullable(),
     dimensions_id: z.number().int().nullable(),
-    last_purchase_price: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullable(),
-    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    discount_percentage: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    is_active: z.boolean(),
+    lens_coatings_id: z.array(z.number().int()),
   })
   .partial()
   .passthrough();
@@ -3673,10 +3665,11 @@ export const schemas = {
   PaginatedProductImageList,
   ProductImageRequest,
   PatchedProductImageRequest,
-  ProductVariantList,
+  ProductVariant,
   TypeEnum,
   Product,
   PaginatedProductList,
+  ProductVariantRequest,
   ProductRequest,
   PatchedProductRequest,
   ProductVariantQuestion,
@@ -3709,9 +3702,7 @@ export const schemas = {
   PaginatedSupplierList,
   SupplierRequest,
   PatchedSupplierRequest,
-  ProductVariant,
   PaginatedProductVariantList,
-  ProductVariantRequest,
   PatchedProductVariantRequest,
   InvoiceItem,
   InvoiceTypeEnum,
@@ -11139,7 +11130,7 @@ export const endpoints = makeApi([
         schema: z.number().optional(),
       },
       {
-        name: "discount_price",
+        name: "expiration_date",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -11179,12 +11170,12 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "images",
+        name: "is_active",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.boolean().optional(),
       },
       {
-        name: "is_active",
+        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -11244,11 +11235,6 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "lens_type_id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "lens_type_name",
         type: "Query",
         schema: z.string().optional(),
@@ -11285,6 +11271,11 @@ export const endpoints = makeApi([
       },
       {
         name: "product_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "product_type_id",
         type: "Query",
         schema: z.string().optional(),
       },
