@@ -1,15 +1,6 @@
 import { ProductForginKeyConfigType } from "@/src/features/product/types";
 import { generateLensOptions } from "@/src/features/product/utils/generateLensOptions";
 
-export const TEXTFIELDDATA = [
-  { "label": "Model", "name": "model", "type": "text" },
-  { "label": "Name", "name": "name", "type": "text" },
-  { "label": "Sku", "name": "sku", "type": "text" },
-  { "label": "Last purchase price", "name": "last_purchase_price", "type": "text" },
-  { "label": "Sell price", "name": "selling_price", "type": "text" },
-  { "label": "Discount percentage", "name": "discount_percentage", "type": "text" },
-  { "label": "Description", "name": "description", "type": "textarea", "rows": 5, "placeholder": "Description..." },
-]
 
 export const checkBox = [
   { "label": "Is Active", "name": "is_active", type: "checkbox" },
@@ -17,46 +8,49 @@ export const checkBox = [
 ]
 
 export const TypeEnum = [{ value: "CL", label: "Contact Lens" }, { value: "SL", label: "Spectacle Lens" }, { value: "FR", label: "Frames" }, { value: "AX", label: "Accessories" }, { value: "DV", label: "Devices" }, { value: "OT", label: "Other" }]
+export const ProductTypeEnum=[
+  {
+    value:"SV-ST",
+    label:"Single Stock",
+    filter:"ST",
+  },
+  {
+    value:"SV-RX",
+    label:"Single RX",
+    filter:"RX",
+  },
+  {
+    value:"MF-RX",
+    label:"Multi Focal ",
+    filter:"RX",
+  },
+  {
+    value:"BF-RX",
+    label:"Bifocal RX",
+    filter:"RX",
+  },
 
-// export const ProductConfig: ProductForginKeyConfigType[] = [
-//   {
-//     "name": "category_id", "role": "all", "filter": "Category", "entityName": "categories", "mapOnly": true, "subFilter="",
-// hent": "Category", "fieldName": "name", "type": "foreignkey", "required": true },
-//   {
-//       "name": "supplier_id", "role": "all", "filter": "Supplier", "entityName": "suppliers", "mapOnly": true, "subFilter="",
-// hent": "Supplier", "fieldName": "name", "type": "foreignkey", "required": true },
-//   {
-//         "name": "manufacturer_id", "role": "all", "filter": "Manufacturer", "entityName": "manufacturers", "mapOnly": true, "subFilter="",
-// hent": "Manufacturer", "fieldName": "name", "type": "foreignkey", "required": true },
-//   {
-//           "name": "brand_id", "role": "all", "filter": "Brand", "entityName": "brands", "mapOnly": true, "subFilter="",
-// hent": "Brand", "fieldName": "name", "type": "foreignkey", "required": true },
-//   { "label": "Model", "name": "model", "type": "text", "role": "all", "filter": "Model", "entityName": "attribute-values", "fieldName": "attribute_name", "placeholder": "Model...", "required": true },
-//   { "label": "Name", "name": "name", "type": "text", "role": "all", "filter": "Name", "entityName": "attribute-values", "fieldName": "attribute_name", "placeholder": "Name...", "required": true },
-//   // { "label": "Description", "name": "description", "type": "textarea", "rows": 5, "placeholder": "Description..." ,"role": "all", "filter": "Description", "entityName": "attribute-values" ,"fieldName":"attribute_name" },
-// ]
-// name:string,
-// label?:string,
-// role:string,
-// filter:string,
-// subFilter="",
-// hent ?: string,
-//   // subFilter="",
-//   hent: "",
-// entityName: string,
-
-// fieldName:string,
-// type?:string,
-// placeholder?:string,
-// required:boolean,
-
-
-// options?:any[],
-// rows?:number,
-
-// schemaName?: string;
-// mapOnly?:boolean,
-
+  {
+    value:"CL-Cl",
+    label:"Contact Lens Clear",
+    filter:"CL",
+  },
+  {
+    value:"CL-CO",
+    label:"Contact Lens Colored",
+    filter:"CL",
+  },
+  {
+    value:"FR-SG",
+    label:"Frames Sun Glasses",
+    filter:"FR",
+  },
+  {
+    value:"FR-SP",
+    label:"Frames Spectacle Glasses",
+    filter:"FR",
+  }
+]
 
 export const ProductVariantConfig: ProductForginKeyConfigType[] = [
   // 🧩 Product Type
@@ -66,14 +60,67 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Product Type",
     subFilter: "",
-    hent: "Product Type Sun Glasses ,Color Contact lens",
+    title: "Product Type Sun Glasses ,Color Contact lens",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
     placeholder: "Select product type...",
     required: true,
   },
-
+    // 💰 Pricing
+    {
+      label: "SKU",
+      name: "sku",
+      role: "all",
+      filter: "SKU",
+      subFilter: "",
+      title: "SKU is unique identifier for product | 123456789 |...",
+      entityName: "attribute-values",
+      fieldName: "attribute_name",
+      type: "text",
+      placeholder: "Enter SKU...",
+      required: true,
+    },
+    {
+      label: "Last Purchase Price",
+      name: "last_purchase_price",
+      role: "all",
+      filter: "Last Purchase Price",
+      subFilter: "",
+      title: "Last Purchase Price | 100 | 200 | 300 |...",
+      entityName: "attribute-values",
+      fieldName: "attribute_name",
+      type: "text",
+      placeholder: "Enter last purchase price...",
+      required: true,
+    },
+    {
+      label: "Selling Price",
+      name: "selling_price",
+      role: "all",
+      filter: "Selling Price",
+      subFilter: "",
+      title: "Selling Price | 100 | 200 | 300 |...",
+      entityName: "attribute-values",
+      fieldName: "attribute_name",
+      type: "text",
+      placeholder: "Enter selling price...",
+      required: true,
+    },
+    {
+      label: "Discount Percentage",
+      name: "discount_percentage",
+      role: "all",
+      filter: "Discount Percentage",
+      subFilter: "",
+      title: "Discount Percentage | 10 | 20 | 30 |...",
+      entityName: "attribute-values",
+      fieldName: "attribute_name",
+      type: "number",
+      placeholder: "Enter discount percentage (%)",
+      required: true,
+    
+    },
   // 🕶️ Frame Attributes (FR)
   {
     name: "frame_shape_id",
@@ -81,7 +128,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "FR",
     filter: "Shape",
     subFilter: "",
-    hent: "Frame Shape | Circle | Oval | Square | Rectangle",
+    title: "Frame Shape | Circle | Oval | Square | Rectangle",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -94,7 +141,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "FR",
     filter: "Material",
     subFilter: "",
-    hent: "Frame Material | Metal | Plastic | Wood | Glass",
+    title: "Frame Material | Metal | Plastic | Wood | Glass",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -107,7 +154,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "FR",
     filter: "Color",
     subFilter: "",
-    hent: "Frame Color | Black | White | Brown | Green |...",
+    title: "Frame Color | Black | White | Brown | Green |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -120,7 +167,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "FR",
     filter: "Length",
     subFilter: "",
-    hent: "Frame Temple Length ",
+    title: "Frame Temple Length ",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -133,14 +180,13 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "FR",
     filter: "Width",
     subFilter: "",
-    hent: "Frame Bridge Width",
+    title: "Frame Bridge Width",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
     placeholder: "Select width...",
     required: true,
   },
-
   // 👁️ Lens Attributes (All)
   {
     name: "lens_base_curve_id",
@@ -148,7 +194,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Base Curve",
     subFilter: "RX-CL",
-    hent: "Lens Base Curve",
+    title: "Lens Base Curve",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -161,7 +207,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Color",
     subFilter: "",
-    hent: "Lens Color | Brown | Green | Blue |...",
+    title: "Lens Color | Brown | Green | Blue |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -174,7 +220,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Material",
     subFilter: "",
-    hent: "Lens Material | Polycarbonate | CR-39 | Silicone |...",
+    title: "Lens Material | Polycarbonate | CR-39 | Silicone |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -187,14 +233,13 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Diameter",
     subFilter: "",
-    hent: "Lens Diameter | 12mm | 13mm | 14mm |...",
+    title: "Lens Diameter | 12mm | 13mm | 14mm |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
     placeholder: "Select diameter...",
     required: true,
   },
-
   // 👁‍🗨 Contact Lens (CL)
   {
     name: "unit_id",
@@ -202,7 +247,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "CL",
     filter: "Unit",
     subFilter: "",
-    hent: "Items in box | 1piece | 2piece | 3piece |...",
+    title: "Items in box | 1piece | 2piece | 3piece |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -215,7 +260,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "CL",
     filter: "Water Content",
     subFilter: "",
-    hent: "Lens Water Content | 12% | 13% | 14% |...",
+    title: "Lens Water Content | 12% | 13% | 14% |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -228,14 +273,13 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "CL",
     filter: "Replacement Schedule",
     subFilter: "",
-    hent: "Replacement Schedule | Daily | Weekly | Monthly |...",
+    title: "Replacement Schedule | Daily | Weekly | Monthly |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
     placeholder: "Select schedule...",
     required: true,
   },
-
   // ⚙️ Common Attributes
   {
     name: "warranty_id",
@@ -243,7 +287,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Warranty",
     subFilter: "",
-    hent: "",
+    title: "Warranty | 1year | 2year | 3year |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -256,7 +300,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Dimensions",
     subFilter: "",
-    hent: "",
+    title: "Dimensions | 12mm | 13mm | 14mm |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -269,7 +313,7 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Weight",
     subFilter: "",
-    hent: "",
+    title: "Weight | 100g | 200g | 300g |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
@@ -282,65 +326,11 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     role: "all",
     filter: "Coatings",
     subFilter: "",
-    hent: "",
+    title: "Lens Coatings | Anti-reflective | UV Protection | Scratch Resistant |...",
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "checkbox",
     placeholder: "Select coatings...",
-    required: true,
-  },
-
-  // 💰 Pricing
-  {
-    label: "SKU",
-    name: "sku",
-    role: "all",
-    filter: "SKU",
-    subFilter: "",
-    hent: "",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "text",
-    placeholder: "Enter SKU...",
-    required: true,
-  },
-  {
-    label: "Last Purchase Price",
-    name: "last_purchase_price",
-    role: "all",
-    filter: "Last Purchase Price",
-    subFilter: "",
-    hent: "",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "text",
-    placeholder: "Enter last purchase price...",
-    required: true,
-  },
-  {
-    label: "Selling Price",
-    name: "selling_price",
-    role: "all",
-    filter: "Selling Price",
-    subFilter: "",
-    hent: "",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "text",
-    placeholder: "Enter selling price...",
-    required: true,
-  },
-  {
-    label: "Discount Percentage",
-    name: "discount_percentage",
-    role: "all",
-    filter: "Discount Percentage",
-    subFilter: "",
-    hent: "",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "number",
-    placeholder: "Enter discount percentage (%)",
     required: true,
   },
 
@@ -350,36 +340,37 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     label: "SPH",
     role: "SL",
     filter: "",
-    subFilter: "",
-    hent: "",
+    subFilter: "SL-ST",
+    title: "SPH | -60 | -50 | -40 |...",
     entityName: "products",
     fieldName: "spherical",
-    options: generateLensOptions(-60, 60),
     type: "select",
     placeholder: "Select SPH...",
     required: true,
+    options: generateLensOptions(-60, 60),
   },
   {
     name: "cylinder",
     label: "CYL",
     role: "SL",
     filter: "",
-    subFilter: "",
-    hent: "",
+    subFilter: "SL-ST",
+    title: "CYL | -12 | -11 | -10 |...",
     entityName: "products",
     fieldName: "cylinder",
-    options: generateLensOptions(-12, 12),
+
     type: "select",
     placeholder: "Select CYL...",
     required: true,
+    options: generateLensOptions(-12, 12),
   },
   {
     name: "axis",
     label: "AXIS",
     role: "SL",
     filter: "",
-    subFilter: "",
-    hent: "",
+    subFilter: "SL-ST",
+    title: "AXIS | 0 | 1 | 2 |...",
     entityName: "products",
     fieldName: "axis",
     options: generateLensOptions(0, 180, 1, false),
@@ -392,8 +383,8 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     label: "ADD",
     role: "SL",
     filter: "",
-    subFilter: "",
-    hent: "",
+    subFilter: "SL-ST",
+    title: "ADD | 1 | 2 | 3 |...",
     entityName: "products",
     fieldName: "addition",
     options: generateLensOptions(1, 6),
@@ -401,4 +392,131 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     placeholder: "Select ADD...",
     required: true,
   },
+  {
+    name: "is_active",
+    label: "Is Active",
+    role: "all",
+    filter: "Is Active",
+    subFilter: "",
+    title: "Is Active | True | False",
+    entityName: "",
+    fieldName: "is_active",
+    type: "checkbox",
+    placeholder: "Select Is Active...",
+    required: true,
+    options: [],
+  },
 ];
+
+// switch (filter) {
+//   case "categories":
+//     relatedData = data.categories || [];
+//   case "suppliers":
+//     relatedData = data.suppliers || [];
+//   case "manufacturers":
+//     relatedData = data.manufacturers || [];
+//   case "brands":
+//     relatedData = data.brands || [];
+//   default:
+//     relatedData = data.attributes || [];
+// }
+export const ProductConfig: ProductForginKeyConfigType[] = [
+  // Foreign keys - أساسي قبل أي بيانات نصية
+
+  // نصوص أساسية للمنتج
+  {
+    name: "model",
+    label: "Model",
+    type: "text",
+    role: "all",
+    filter: "Model",
+    title: "Enter Product Model | Model Number",
+    entityName: "",
+    fieldName: "",
+    placeholder: "Model...",
+    required: true,
+  },
+  {
+    name: "name",
+    label: "Name",
+    role: "all",
+    filter: "Name",
+    title: "Enter Product Name",
+    entityName: "",
+    fieldName: "",
+    type: "text",
+    placeholder: "Name...",
+    required: false,
+  },
+  {
+    name: "category_id",
+    label: "Category",
+    role: "all",
+    filter: "categories",
+    title: "Select Main Category",
+    subFilter: "",
+    entityName: "categories",
+    fieldName: "name",
+    type: "foreignkey",
+    placeholder: "Select Category...",
+    required: true,
+    mapOnly: true,
+
+  },
+  {
+    name: "supplier_id",
+    label: "Supplier",
+    role: "all",
+    filter: "suppliers",
+    title: "Select Supplier | Supplier Name",
+    entityName: "suppliers",
+    fieldName: "name",
+    type: "foreignkey",
+    placeholder: "Select Supplier...",
+    required: true,
+    mapOnly: true, // use to map only the data without any other data
+  },
+  {
+    name: "manufacturer_id",
+    label: "Manufacturer",
+    role: "all",
+    filter: "manufacturers",
+    title: "Select Manufacturer | Manufacturer Name",
+    entityName: "manufacturers",
+    fieldName: "name",
+    type: "foreignkey",
+    required: true,
+    mapOnly: true,
+  },
+  {
+    name: "brand_id",
+    label: "Brand",
+    role: "all",
+    filter: "brands",
+    title: "Select Brand | Brand Name",
+    entityName: "brands",
+    fieldName: "name",
+    type: "foreignkey",
+    required: true,
+    mapOnly: true,
+  },
+
+  
+];
+
+
+export const MainTypeConfig : ProductForginKeyConfigType[] = [
+  {
+    name: "type",
+    label: "Type",
+    role: "all",
+    filter: "Type",
+    title: "Select Product Type",
+    entityName: "products",
+    fieldName: "type",
+    type: "select",
+    placeholder: "Select Product Type...",
+    required: true,
+    // options: TypeEnum,
+  },
+]

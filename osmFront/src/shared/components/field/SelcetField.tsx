@@ -16,7 +16,8 @@ export const SelcetField = (props: SelcetFieldProps) => {
   const { control, parsedOptions, item, setVariantField, openVariantIndex, variantNumber } = props;
 
   const registerName = variantNumber !== undefined ? `variants.${variantNumber}.${item.name}` : item.name;
-
+  // console.log("registerName", item);
+  // console.log("parsedOptions", parsedOptions);
   return (
     <div>
       <Controller

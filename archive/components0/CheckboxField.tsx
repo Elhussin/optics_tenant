@@ -57,7 +57,7 @@ export const CheckboxField = ({
   return (
     <>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2 border-b-2  border-gray-300" >
           {item.filter}
         </label>
 

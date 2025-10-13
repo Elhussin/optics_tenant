@@ -1,16 +1,22 @@
-
 export function selectRelatedData(data: any, filter?: string) {
-    switch (filter) {
-      case "Category":
-        return data.categories || [];
-      case "Supplier":
-        return data.suppliers || [];
-      case "Manufacturer":
-        return data.manufacturers || [];
-      case "Brand":
-        return data.brands || [];
-      default:
-        return data.attributes || [];
-    }
+  let relatedData = [];
+
+  switch (filter) {
+    case "categories":
+      relatedData = data.categories || [];
+      break;
+    case "suppliers":
+      relatedData = data.suppliers || [];
+      break;
+    case "manufacturers":
+      relatedData = data.manufacturers || [];
+      break;
+    case "brands":
+      relatedData = data.brands || [];
+      break;
+    default:
+      relatedData = data["attribute-values"] || [];
+      break;
   }
-  
+  return relatedData;
+}

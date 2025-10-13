@@ -4,31 +4,12 @@ export interface ProductForginKeyConfigType {
     role:string,
     filter:string,
     subFilter?:string,
-    hent?:string,
+    title?:string,
     entityName:string,
     fieldName:string,
     type?:string,
     placeholder?:string,
     required:boolean,
+    options?:any[],
+    mapOnly?:boolean,  // use to map only the data without any other data
   }
-  
-  // mapOnly?:boolean,
-  // options?:any[],
-  // rows?:number,
-  // schemaName?: string;
-
-//   name:string,
-// label?:string,
-// role:string,
-// filter:string,
-// entityName: string,
-// fieldName:string,
-// type?:string,
-// placeholder?:string,
-// required:boolean,
-
-// // for foreign key
-// options?:any[],
-// rows?:number,
-// schemaName?: string;
-// mapOnly?:boolean,

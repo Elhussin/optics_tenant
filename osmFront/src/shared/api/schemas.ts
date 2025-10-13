@@ -641,7 +641,7 @@ const DocumentRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     title: z.string().min(1).max(255),
-    file: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }),
+    file: z.instanceof(File),
     customer: z.number().int().nullish(),
   })
   .passthrough();
@@ -650,7 +650,7 @@ const PatchedDocumentRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     title: z.string().min(1).max(255),
-    file: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }),
+    file: z.instanceof(File),
     customer: z.number().int().nullable(),
   })
   .partial()
@@ -1729,6 +1729,7 @@ const PatchedAttributesRequest = z
   })
   .partial()
   .passthrough();
+const ProductTypeEnum = z.enum(["CL", "SL", "FR", "AX", "OT", "DV", "All"]);
 const Brand = z
   .object({
     id: z.number().int(),
@@ -1740,6 +1741,7 @@ const Brand = z
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
     description: z.string().optional(),
+    product_type: ProductTypeEnum.optional(),
     logo: z.string().url().nullish(),
   })
   .passthrough();
@@ -1759,7 +1761,8 @@ const BrandRequest = z
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
     description: z.string().optional(),
-    logo: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }).nullish(),
+    product_type: ProductTypeEnum.optional(),
+    logo: z.instanceof(File).nullish(),
   })
   .passthrough();
 const PatchedBrandRequest = z
@@ -1770,7 +1773,8 @@ const PatchedBrandRequest = z
     country: z.string().max(50),
     website: z.string().max(200).url(),
     description: z.string(),
-    logo: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
+    product_type: ProductTypeEnum,
+    logo: z.instanceof(File).nullable(),
   })
   .partial()
   .passthrough();
@@ -1955,7 +1959,7 @@ const ProductVariantMarketingRequest = z
       .min(1)
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
-    seo_image: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }).nullish(),
+    seo_image: z.instanceof(File).nullish(),
     seo_image_alt: z.string().max(200).optional(),
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
@@ -1976,7 +1980,7 @@ const PatchedProductVariantMarketingRequest = z
       .min(1)
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
-    seo_image: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
+    seo_image: z.instanceof(File).nullable(),
     seo_image_alt: z.string().max(200),
     gender: GenderEnum,
     age_group: z.union([AgeGroupEnum, BlankEnum]),
@@ -2047,7 +2051,7 @@ const PaginatedProductImageList = z
 const ProductImageRequest = z
   .object({
     variant_id: z.number().int(),
-    image: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }),
+    image: z.instanceof(File),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
     is_primary: z.boolean().optional(),
@@ -2056,7 +2060,7 @@ const ProductImageRequest = z
 const PatchedProductImageRequest = z
   .object({
     variant_id: z.number().int(),
-    image: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }),
+    image: z.instanceof(File),
     alt_text: z.string().max(200),
     order: z.number().int().gte(0).lte(2147483647),
     is_primary: z.boolean(),
@@ -3377,7 +3381,7 @@ const PaginatedTenantSettingsList = z
   .passthrough();
 const TenantSettingsRequest = z
   .object({
-    logo: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
+    logo: z.instanceof(File).nullable(),
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     business_name: z.string().min(1).max(255),
@@ -3408,7 +3412,7 @@ const TenantSettingsRequest = z
   .passthrough();
 const PatchedTenantSettingsRequest = z
   .object({
-    logo: z.custom<File>().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
+    logo: z.instanceof(File).nullable(),
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     business_name: z.string().min(1).max(255),
@@ -3635,6 +3639,7 @@ export const schemas = {
   PaginatedAttributesList,
   AttributesRequest,
   PatchedAttributesRequest,
+  ProductTypeEnum,
   Brand,
   PaginatedBrandList,
   BrandRequest,
@@ -8403,6 +8408,11 @@ export const endpoints = makeApi([
         name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
+      },
+      {
+        name: "product_type",
+        type: "Query",
+        schema: z.string().optional(),
       },
       {
         name: "search",

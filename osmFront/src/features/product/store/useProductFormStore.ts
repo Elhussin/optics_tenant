@@ -19,8 +19,15 @@ interface ProductFormState {
   setCurrentFieldName: (name: string) => void;
   setIsVariant: (value: boolean) => void;
   setOpenVariantIndex: (index: number | null) => void;
+  data: Record<string, any[]>; // كل entity عبارة عن array
+  setData: (entity: string, newItem: any) => void;
 }
 
+// interface ProductFormState {
+//     data: Record<string, any[]>; // كل entity عبارة عن array
+//     setData: (entity: string, newItem: any) => void;
+//   }
+  
 export const useProductFormStore = create<ProductFormState>((set, get) => ({
   variantCount: 1,
   variants: [{}],
@@ -64,4 +71,28 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
   setCurrentFieldName: (name: string) => set({ currentFieldName: name }),
   setIsVariant: (value: boolean) => set({ isVariant: value }),
   setOpenVariantIndex: (index: number | null) => set({ openVariantIndex: index }),
+
+  data: {
+    "attribute-values": [],
+    suppliers: [],
+    manufacturers: [],
+    brands: [],
+    categories: [],
+  },
+  // setData: (entity, newItem) =>
+  //   set((state) => ({
+  //     data: {
+  //       ...state.data,
+  //       [entity]: [...(state.data[entity] || []), newItem],
+  //     },
+  //   })),
+
+    setData: (key, value) =>
+      set((state) => {
+        const existing = state.data[key];
+        // نتأكد أن البيانات مختلفة فعلًا قبل إعادة تعيينها
+        if (JSON.stringify(existing) === JSON.stringify(value)) return state;
+        return { data: { ...state.data, [key]: value } };
+      }),
+    
 }));

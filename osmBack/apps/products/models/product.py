@@ -29,8 +29,6 @@ class Category(BaseModel):
     def __str__(self):
         return self.name
 
-
-
 class Product(BaseModel):
     """Product for glasses"""
     PRODUCT_TYPE_CHOICES = [

@@ -1,4 +1,5 @@
 // Dialog.tsx (بقي كما هو — مجرد تذكير أنه يستخدم setValue(currentFieldName, String(data.id)))
+"use client";
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 import { useProductFormStore } from "../store/useProductFormStore";
 
@@ -7,21 +8,24 @@ interface Props {
 }
 
 export const Dialog = ({ setValue }: Props) => {
-  const { isShowModal, entityName, setShowModal, currentFieldName } = useProductFormStore();
+  const { isShowModal, entityName, setShowModal, currentFieldName, setData } = useProductFormStore();
 
   return (
     <>
       {isShowModal && (
-        <DynamicFormDialog
-          entity={entityName}
-          onClose={(data: any) => {
-            setShowModal(false);
-            if (data) {
-              setValue(currentFieldName, String(data.id));
-            }
-          }}
-          title="Add Attribute Value"
-        />
+
+    <DynamicFormDialog
+      entity={entityName}
+      onClose={(newItem: any) => {
+        setShowModal(false);
+        if (newItem) {
+          setValue(currentFieldName, String(newItem.id));
+          // تحديث البيانات في store بشكل عام
+          setData(entityName, newItem);
+        }
+      }}
+      title={`Add ${entityName.charAt(0).toUpperCase() + entityName.slice(1)}`}
+    />
       )}
     </>
   )

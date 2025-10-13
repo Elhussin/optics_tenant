@@ -22,7 +22,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       try {
         const res = await fetchUser.query.refetch();
         if (res?.data) {
-          console.log("user", res.data);
           setUser(res.data);
         } else {
           setUser(null);
