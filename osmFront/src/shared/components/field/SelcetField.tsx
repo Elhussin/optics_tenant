@@ -10,15 +10,14 @@ interface SelcetFieldProps {
   setVariantField: any;
   openVariantIndex: any;
   variantNumber?: number | undefined;
+  errors?: any;
 }
 
 export const SelcetField = (props: SelcetFieldProps) => {
-  const { control, parsedOptions, item, setVariantField, openVariantIndex, variantNumber } = props;
-
+  const { control, parsedOptions, item, setVariantField, openVariantIndex, variantNumber, errors } = props;
   const registerName = variantNumber !== undefined ? `variants.${variantNumber}.${item.name}` : item.name;
-  // console.log("registerName", item);
-  // console.log("parsedOptions", parsedOptions);
   return (
+
     <div>
       <Controller
         name={registerName as any}
@@ -28,6 +27,7 @@ export const SelcetField = (props: SelcetFieldProps) => {
         }}
         render={({ field, fieldState }) => (
           <>
+
             <ReactSelect
               inputId={registerName}
               options={parsedOptions}
@@ -46,11 +46,15 @@ export const SelcetField = (props: SelcetFieldProps) => {
               placeholder={item.placeholder || "Select..."}
               isClearable
             />
-            {fieldState.error && (
+            
+            {/* {fieldState.error && (
               <p className="text-sm text-red-500 mt-1">
                 {fieldState.error.message}
               </p>
-            )}
+            )} */}
+                  {errors && errors[registerName] && (
+        <p className="text-red-500 text-sm mt-1">{errors[registerName]?.message}</p>
+      )}
           </>
         )}
       />

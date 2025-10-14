@@ -12,22 +12,22 @@ export const ProductTypeEnum=[
   {
     value:"SV-ST",
     label:"Single Stock",
-    filter:"ST",
+    filter:"SL",
   },
   {
     value:"SV-RX",
     label:"Single RX",
-    filter:"RX",
+    filter:"SL",
   },
   {
     value:"MF-RX",
     label:"Multi Focal ",
-    filter:"RX",
+    filter:"SL",
   },
   {
     value:"BF-RX",
     label:"Bifocal RX",
-    filter:"RX",
+    filter:"SL",
   },
 
   {
@@ -54,19 +54,7 @@ export const ProductTypeEnum=[
 
 export const ProductVariantConfig: ProductForginKeyConfigType[] = [
   // 🧩 Product Type
-  {
-    name: "product_type_id",
-    label: "Product Type",
-    role: "all",
-    filter: "Product Type",
-    subFilter: "",
-    title: "Product Type Sun Glasses ,Color Contact lens",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "foreignkey",
-    placeholder: "Select product type...",
-    required: true,
-  },
+
     // 💰 Pricing
     {
       label: "SKU",
@@ -404,22 +392,11 @@ export const ProductVariantConfig: ProductForginKeyConfigType[] = [
     type: "checkbox",
     placeholder: "Select Is Active...",
     required: true,
-    options: [],
+    
   },
 ];
 
-// switch (filter) {
-//   case "categories":
-//     relatedData = data.categories || [];
-//   case "suppliers":
-//     relatedData = data.suppliers || [];
-//   case "manufacturers":
-//     relatedData = data.manufacturers || [];
-//   case "brands":
-//     relatedData = data.brands || [];
-//   default:
-//     relatedData = data.attributes || [];
-// }
+
 export const ProductConfig: ProductForginKeyConfigType[] = [
   // Foreign keys - أساسي قبل أي بيانات نصية
 
@@ -517,6 +494,20 @@ export const MainTypeConfig : ProductForginKeyConfigType[] = [
     type: "select",
     placeholder: "Select Product Type...",
     required: true,
-    // options: TypeEnum,
+    options: TypeEnum,
+  },
+  {
+    name: "product_type_id",
+    label: "Product Type",
+    role: "all",
+    filter: "Product Type",
+    subFilter: "",
+    title: "Product Type Sun Glasses ,Color Contact lens",
+    entityName: "attribute-values",
+    fieldName: "attribute_name",
+    type: "foreignkey",
+    placeholder: "Select product type...",
+    required: true,
+    options: ProductTypeEnum,
   },
 ]

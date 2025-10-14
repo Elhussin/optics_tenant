@@ -22,7 +22,6 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
         openVariantIndex,
         toggleVariant,
         setOpenVariantIndex,
-        data,
     } = useProductFormStore();
 
     const {isLoading } = useProductRelations();
@@ -57,36 +56,30 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
     const toggleVariantOptions = () => {
         setIsVariant(!isVariant);
         if (!isVariant) {
-            // opening variant step: ensure first variant is open
             setOpenVariantIndex(0);
         }
     };
 
 
-    // Build and submit: get form values from useForm + variants from store
     const handleSave = () => {
-
-        // use handleSubmit to validate and get values from react-hook-form
         handleSubmit((formValues: any) => {
-            // build variants payload from zustand variants array
             const variantsPayload = buildPayload({
                 config: ProductVariantConfig,
                 formData: variants,
                 options: { multiple: true, include: ["product_id"], prefix: "variants" },
             });
 
-            console.log("formValues", formValues);
-            console.log("handleSave", variantsPayload);
+
             const finalPayload = {
                 ...formValues,
                 variants: variantsPayload,
             };
-            console.log("handleSave", finalPayload);
             onSubmit(finalPayload);
         })();
     };
 
     const onSubmit = async (data: any) => {
+        console.log("data",data);
         try {
             let result;
             if (id) {
@@ -99,10 +92,13 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                 safeToast("Saved successfully", { type: "success" });
                 reset(result.data);
             }
+            console.log("result",result);
         } catch (err: any) {
+            console.log("err",err);
             safeToast(err?.message || "Server error", { type: "error" });
         }
     };
+
     if (isLoading) return <Loading />;
     return (
         // <div className="mb-4 grid grid-cols-1 justify-center items-center gap-4">
@@ -120,14 +116,27 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                         <label className="label" htmlFor="type">Type <span className="text-red-500">*</span></label>
                         <SelcetField
                             item={MainTypeConfig[0]}
-                            parsedOptions={TypeEnum}
+                            parsedOptions={MainTypeConfig[0].options||[]}
                             control={control}
                             setVariantField={setVariantField}
                             openVariantIndex={openVariantIndex}
                         />
                     </div>
 
-                {/* Variant Count */}
+
+                    {/* Product Veriant Type */}
+                    <div className="mb-4">
+                        <label className="label" htmlFor="type">Variant Type <span className="text-red-500">*</span></label>
+                        <SelcetField
+                            item={MainTypeConfig[1]}
+                            parsedOptions={MainTypeConfig[1].options?.filter((item:any)=>item.filter===productType)||[]}
+                            control={control}
+                            setVariantField={setVariantField}
+                            openVariantIndex={openVariantIndex}
+                        />
+                    </div>
+                    
+                                    {/* Variant Count */}
                     <div className="mb-4">
                         <label className="label" htmlFor="variantCount">Variant Count <span className="text-red-500">*</span></label>
                         <input
@@ -140,8 +149,9 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                         />
                     </div>
 
-                    {/* Product details */}
+
                     <div className="">
+                    {/* Product details */}
                         {productType && (
                             <RenderForm
                                 filteredConfig={filteredConfig}
@@ -150,7 +160,6 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                                 errors={errors}
                                 setValue={setValue}
                                 watch={watch}
-                                // data={data}
                                 selectedType={productType}
                                 variantNumber={undefined} // product-level
                             />
@@ -158,6 +167,7 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                     </div>
                     </div>
                     )}
+                    
                     {/* Variant Forms */}
                         <div>
                         {isVariant &&
@@ -177,7 +187,6 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                                             errors={errors}
                                             setValue={setValue}
                                             watch={watch}
-                                            // data={data}
                                             selectedType={productType}
                                             variantNumber={i} // IMPORTANT: pass index so fields register as variants[i].*
                                         />
@@ -215,7 +224,7 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                 </>
             </form>
 
-            <Dialog setValue={setValue} />
+            <Dialog setValue={setValue} getValues={getValues} />
         </div>
     );
 }

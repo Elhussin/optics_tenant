@@ -14,7 +14,7 @@ const filterOptions = (data: any[], fieldName: string, filter: string) =>
       value: v.id,
     }));
 
-    export const parsedOptions = (data: any, item: any) => {
+export const parsedOptions = (data: any, item: any) => {
       if (!Array.isArray(data)) return [];
     
       // flatten لو فيها nested arrays

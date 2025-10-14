@@ -105,7 +105,11 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       const response = await mutation.mutateAsync(payload);
       return { success: true, data: response };
     } catch (error: any) {
-      return { success: false, error };
+     
+      handleServerErrors(error, methods.setError, { showToast });
+      const normalized = handleErrorStatus(error);
+      onError?.(normalized);
+      // return { success: false, error };
     }
   };
   

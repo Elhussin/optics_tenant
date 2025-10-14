@@ -68,23 +68,23 @@ export function useProductRelations() {
 
 
   useEffect(() => {
-    if (fetchAttributes.data?.length) setData("attribute-values", fetchAttributes.data);
+    if (fetchAttributes.data?.length) setData("attribute-values", fetchAttributes.data.reverse());
   }, [fetchAttributes.data]);
   
   useEffect(() => {
-    if (fetchSuppliers.data?.length) setData("suppliers", fetchSuppliers.data);
+    if (fetchSuppliers.data?.length) setData("suppliers", fetchSuppliers.data.reverse());
   }, [fetchSuppliers.data]);
   
   useEffect(() => {
-    if (fetchManufacturers.data?.length) setData("manufacturers", fetchManufacturers.data);
+    if (fetchManufacturers.data?.length) setData("manufacturers", fetchManufacturers.data.reverse());
   }, [fetchManufacturers.data]);
   
   useEffect(() => {
-    if (fetchBrands.data?.length) setData("brands", fetchBrands.data);
+    if (fetchBrands.data?.length) setData("brands", fetchBrands.data.reverse());
   }, [fetchBrands.data]);
   
   useEffect(() => {
-    if (fetchCategories.data?.length) setData("categories", fetchCategories.data);
+    if (fetchCategories.data?.length) setData("categories", fetchCategories.data.reverse());
   }, [fetchCategories.data]);
 
   

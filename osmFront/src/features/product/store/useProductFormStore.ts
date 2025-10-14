@@ -22,11 +22,6 @@ interface ProductFormState {
   data: Record<string, any[]>; // كل entity عبارة عن array
   setData: (entity: string, newItem: any) => void;
 }
-
-// interface ProductFormState {
-//     data: Record<string, any[]>; // كل entity عبارة عن array
-//     setData: (entity: string, newItem: any) => void;
-//   }
   
 export const useProductFormStore = create<ProductFormState>((set, get) => ({
   variantCount: 1,
@@ -79,20 +74,31 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
     brands: [],
     categories: [],
   },
-  // setData: (entity, newItem) =>
-  //   set((state) => ({
-  //     data: {
-  //       ...state.data,
-  //       [entity]: [...(state.data[entity] || []), newItem],
-  //     },
-  //   })),
 
+
+    // setData: (key, value) =>
+    //   set((state) => {
+    //     const existing = state.data[key];
+    //     // نتأكد أن البيانات مختلفة فعلًا قبل إعادة تعيينها
+    //     if (JSON.stringify(existing) === JSON.stringify(value)) return state;
+    //     return { data: { ...state.data, [key]: value } };
+    //   }),
     setData: (key, value) =>
       set((state) => {
-        const existing = state.data[key];
-        // نتأكد أن البيانات مختلفة فعلًا قبل إعادة تعيينها
-        if (JSON.stringify(existing) === JSON.stringify(value)) return state;
-        return { data: { ...state.data, [key]: value } };
+        const existing = state.data[key] || [];
+    
+        // ✅ إذا القيمة مصفوفة، نستبدلها بالكامل
+        if (Array.isArray(value)) {
+          if (JSON.stringify(existing) === JSON.stringify(value)) return state;
+          return { data: { ...state.data, [key]: value } };
+        }
+    
+        // ✅ إذا القيمة عنصر واحد، نضيفه فقط إذا لم يكن موجودًا
+        const exists = existing.some((item: any) => item.id === value.id);
+        const updated = exists ? existing : [...existing, value];
+    
+        return { data: { ...state.data, [key]: updated } };
       }),
+    
     
 }));

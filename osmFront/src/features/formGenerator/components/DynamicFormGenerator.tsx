@@ -100,6 +100,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
         return;
       } else {
         formRequest?.reset(result.data);
+        // console.log()
         formRequest.setValue(currentFieldName, result.data.id);
         // setDefaultValues(result.data);
       }

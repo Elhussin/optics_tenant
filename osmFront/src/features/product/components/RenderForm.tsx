@@ -21,6 +21,25 @@ interface RenderFormProps {
   variantNumber?: number | undefined;
 }
 
+const filterData = (
+  data: any,
+  item: any,
+  selectedType: any,
+  subField?: string,
+  subFilter?: string
+) => {
+  const filterField = item.filter;
+  const selectedData = selectRelatedData(data, filterField);
+  let filteredData = selectedData;
+  if (subField && subFilter && filterField === subField) {
+    filteredData = selectedData?.filter(
+      (v: any) => v[subFilter] === selectedType || v[subFilter] === "All"
+    );
+  }
+  return parsedOptions(filteredData, item);
+};
+
+
 export const RenderForm = ({ filteredConfig, selectedType, control, register, errors, setValue, watch, variantNumber }: RenderFormProps) => {
   const { setShowModal, setEntityName, setCurrentFieldName, setVariantField, openVariantIndex ,data } = useProductFormStore();
 
@@ -30,21 +49,14 @@ export const RenderForm = ({ filteredConfig, selectedType, control, register, er
     setShowModal(true);
   };
 
-  console.log("data", data);
-  const filterBrand = data?.['brands'].filter((v: any) => v.product_type === selectedType);
-  console.log("filterBrand", filterBrand);
+  console.log("errors",errors)
   return (
     <div className="space-y-4">
       {filteredConfig.map((item: any, index: number) => {
-        // corrected precedence: ensure selectedType exists
-        if (!selectedType) {
-          // if no selectedType (shouldn't happen here) skip
-        }
-
         if (item.type === "select") {
           if (selectedType && (selectedType === item.role || item.role === "all")) {
             return (
-              <div key={`select-${index}`} className="grid grid-cols-4">
+              <div key={`select-${index}`} className="flex flex-1">
                 <div className="flex flex-row">
                 <label className="label" title={item.title} htmlFor={item.name}>{item.label}</label>
                 <SelcetField
@@ -54,6 +66,7 @@ export const RenderForm = ({ filteredConfig, selectedType, control, register, er
                   setVariantField={setVariantField}
                   openVariantIndex={openVariantIndex}
                   variantNumber={variantNumber}
+                  errors={errors}
                 />
                </div>
               </div>
@@ -95,20 +108,26 @@ export const RenderForm = ({ filteredConfig, selectedType, control, register, er
           return null;
         } else if (item.type === "foreignkey") {
           return (
-            <>
+            <div key={index}>
             <label className="label" title={item.title} htmlFor={item.name}>{item.label}</label>
     
-            <div className={`flex items-center gap-2`} key={index}>
+            <div className={`flex items-center gap-2`} >
                 <div className="flex-1">
               <SelcetField
-                key={index}
                 item={item}
-                parsedOptions={parsedOptions(selectRelatedData(data, item.filter),item)}
+                parsedOptions={ 
+                  filterData(
+                  useProductFormStore((state) => state.data),
+                  item,
+                  selectedType,
+                  "brands",
+                  "product_type"
+                )}
                 control={control}
                 setVariantField={setVariantField}
                 openVariantIndex={openVariantIndex}
                 variantNumber={variantNumber}
-      
+                errors={errors}
               />
               </div>
               <div>
@@ -121,7 +140,7 @@ export const RenderForm = ({ filteredConfig, selectedType, control, register, er
               />
               </div>
             </div>
-            </>
+            </div>
           );
         } else {
           // text field

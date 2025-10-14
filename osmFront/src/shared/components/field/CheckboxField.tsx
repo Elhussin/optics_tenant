@@ -22,18 +22,7 @@ export const CheckboxField = ({
 }: CheckboxFieldProps) => {
   const { setShowModal, setEntityName, setCurrentFieldName, setVariantField } = useProductFormStore();
 
-  // console.log("data:", data);
-  // console.log("isArray:", Array.isArray(data));
-  // console.log("first item:", data?.[0]);
-  // console.log("item.filter:", item.filter);
-  
-  // const filter = Array.isArray(data)
-  //   ? data.filter((v: any) => {
-  //       console.log("v:", v);
-  //       return v.attribute_name === item.filter;
-  //     })
-  //   : [];
-  // console.log("filter result:", filter);
+
   
   const registerName = variantNumber !== undefined ? `variants.${variantNumber}.${item.name}` : item.name;
 
@@ -55,9 +44,6 @@ export const CheckboxField = ({
 
   return (
     <div className="mb-4">
-      {/* <label className="block text-sm font-medium text-gray-700 mb-2">
-        {item.filter}
-      </label> */}
 
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -68,6 +54,7 @@ export const CheckboxField = ({
                 id={item.name}
                 type="checkbox"
                 {...register(item.name)}
+                checked={true}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor={item.name} className="label">
@@ -90,7 +77,11 @@ export const CheckboxField = ({
           ))}
         </div>
       </div>
-
+      {/* {form.formState.errors[fieldName] && (
+          <p className={config.errorClasses}>
+            {form.formState.errors[fieldName]?.message as string}
+          </p>
+        )} */}
       {errors && errors[registerName] && (
         <p className="text-red-500 text-sm mt-1">{errors[registerName]?.message}</p>
       )}
