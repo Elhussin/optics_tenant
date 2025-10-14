@@ -12,7 +12,7 @@ admin.site.site_title = "Optics Admin Portal"
 admin.site.index_title = "Welcome to the Optics Admin Portal"
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category_id', 'brand_id', 'created_at')
+    list_display = ('description', 'category_id', 'brand_id', 'created_at')
     search_fields = ('name', 'category_id__name', 'brand_id__name')
     list_filter = ('category_id', 'brand_id')
     ordering = ('-created_at',)

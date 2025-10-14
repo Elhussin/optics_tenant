@@ -109,7 +109,7 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
 
                 <>
                 {/* Product Form */}
-                {!isVariant && (
+                {/* {!isVariant && ( */}
                 <div>
                 {/* Type */}
                      <div className="mb-4">
@@ -166,11 +166,12 @@ export default function ProductVariantForm({ className, submitText = "Save", id 
                         )}
                     </div>
                     </div>
-                    )}
+                    {/* )} */}
                     
                     {/* Variant Forms */}
                         <div>
                         {isVariant &&
+
                             Array.from({ length: variantCount }).map((_, i) => (
                                 <div key={i}>
                                     <h2

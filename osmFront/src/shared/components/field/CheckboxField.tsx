@@ -21,27 +21,20 @@ export const CheckboxField = ({
   variantNumber,
 }: CheckboxFieldProps) => {
   const { setShowModal, setEntityName, setCurrentFieldName, setVariantField } = useProductFormStore();
-
-
   
   const registerName = variantNumber !== undefined ? `variants.${variantNumber}.${item.name}` : item.name;
-
   const selectedValues: string[] = watch(registerName) || [];
 
   const handleChange = (value: string) => {
     const updated = selectedValues.includes(value) ? selectedValues.filter((v) => v !== value) : [...selectedValues, value];
+    if (updated.length === 0) {
+      setValue(registerName, [], { shouldValidate: true });
+    }
     setValue(registerName, updated, { shouldValidate: true });
     if (typeof variantNumber === "number") {
       setVariantField(variantNumber, item.name, updated);
     }
   };
-
-  const handleClick = (entity: string, fieldName: string) => {
-    setEntityName(entity);
-    setCurrentFieldName(fieldName);
-    setShowModal(true);
-  };
-
   return (
     <div className="mb-4">
 
@@ -77,11 +70,7 @@ export const CheckboxField = ({
           ))}
         </div>
       </div>
-      {/* {form.formState.errors[fieldName] && (
-          <p className={config.errorClasses}>
-            {form.formState.errors[fieldName]?.message as string}
-          </p>
-        )} */}
+
       {errors && errors[registerName] && (
         <p className="text-red-500 text-sm mt-1">{errors[registerName]?.message}</p>
       )}

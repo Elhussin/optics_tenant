@@ -1,11 +1,10 @@
 // TextField.tsx
-import { useProductFormStore } from "../../../features/product/store/useProductFormStore";
+import { useProductFormStore } from "@/src/features/product/store/useProductFormStore";
 
 export const TextField = ({ item, register, errors, variantNumber }: { item: any, register: any, errors: any, variantNumber?: number }) => {
   const { setVariantField } = useProductFormStore();
 
   const registerName = variantNumber !== undefined ? `variants.${variantNumber}.${item.name}` : item.name;
-
   const handleLocalChange = (e: any) => {
     if (typeof variantNumber === "number") {
       setVariantField(variantNumber, item.name, e.target.value);
@@ -34,6 +33,7 @@ export const TextField = ({ item, register, errors, variantNumber }: { item: any
           id={registerName}
           type={item.type === "number" ? "number" : "text"}
           required={item.required}
+          
           placeholder={item.placeholder || item.label + "..."}
           {...register(registerName)}
           className={item.type === "textarea" ? "textarea" : "input-text"}

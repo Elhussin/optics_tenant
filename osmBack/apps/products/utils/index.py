@@ -106,3 +106,6 @@ def export_stock_to_excel(stock_queryset):
     
     workbook.save(response)
     return response
+
+
+

@@ -12,7 +12,7 @@ from apps.crm.models import Customer
 from apps.branches.models import Branch
 from django.urls import reverse
 from apps.products.services.generate_sku_code import generate_sku_code
-
+from apps.products.utils.generate_product_sku_code import generate_product_sku_code
 class Category(BaseModel):
     """Category for glasses"""
     name = models.CharField(max_length=100 ,unique=True)
@@ -28,36 +28,65 @@ class Category(BaseModel):
     
     def __str__(self):
         return self.name
-
+PRODUCT_TYPE_CHOICES = [
+    ('CL', 'Contact Lenses'),
+    ('SL', 'Spectacle Lenses'),
+    ('FR', 'Frames'),
+    ('AX', 'Accessories'),
+    ('OT', 'Other'),
+    ('DV', 'Devices')
+]
+VARIANT_TYPE_CHOICES = [
+    ('none', 'No Variants'),
+    ('frames', 'Frames Variants'),
+    ('lenses', 'Lenses Variants'),
+    ('accessories', 'Accessories Variants')
+]
 class Product(BaseModel):
     """Product for glasses"""
-    PRODUCT_TYPE_CHOICES = [
-        ('CL', 'Contact Lenses'),
-        ('SL', 'Spectacle Lenses'),
-        ('FR', 'Frames'),
-        ('AX', 'Accessories'),
-        ('OT', 'Other'),
-        ('DV', 'Devices')
-    ]
-
     category_id = models.ForeignKey("Category", on_delete=models.CASCADE)
     supplier_id = models.ForeignKey("Supplier", on_delete=models.CASCADE)
     manufacturer_id = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
     brand_id = models.ForeignKey("Brand", on_delete=models.CASCADE)
-    # Basic information
 
     model = models.CharField(max_length=50)
     type = models.CharField(max_length=50, choices=PRODUCT_TYPE_CHOICES)
-    name = models.CharField(max_length=200,blank=True,null=True)
+    name = models.CharField(max_length=200, blank=True, null=True)
+    description = models.TextField(blank=True, editable=False)
+    usku = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique product SKU generated automatically")
+    variant_type = models.CharField(max_length=20, choices=VARIANT_TYPE_CHOICES, default='none')
+    price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    stock = models.PositiveIntegerField(default=0)
 
-    description = models.TextField(blank=True)
     class Meta:
-        unique_together = ('type', 'brand_id', 'model')
+        unique_together = ('type', 'brand_id', 'model', 'name')
+
     def __str__(self):
         return f"{self.brand_id.name} {self.model}"
-    def get_absolute_url(self):
-        return reverse('products:product_detail', args=[str(self.pk)])
 
+    def save(self, *args, **kwargs):
+        # 🔹 توليد الاسم إذا لم يُحدّد
+
+
+        # 🔹 إنشاء الوصف تلقائيًا
+        if not self.description:
+            if self.name:
+                self.description = f"{self.type} {self.brand_id.name} {self.model} {self.name}".upper()
+            else:
+                self.description = f"{self.type} {self.brand_id.name} {self.model}".upper()
+        
+        if not self.name:
+            self.name = f"{self.brand_id.name} {self.model}".title()
+
+        # 🔹 إنشاء كود SKU فريد
+        if not self.usku:
+            self.usku = generate_product_sku_code(self)
+
+        super().save(*args, **kwargs)
+
+
+
+ 
 class ProductVariant(BaseModel):
 
     product_id = models.ForeignKey("Product", related_name='variants', on_delete=models.CASCADE)
@@ -86,11 +115,11 @@ class ProductVariant(BaseModel):
     expiration_date = models.DateField(blank=True,null=True)
 
     product_type_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_product_type',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Product Type'})
-    spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True)
-    cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True)
-    axis = models.IntegerField(default=0,blank=True,null=True, validators=[MinValueValidator(0), MaxValueValidator(180)])
-    addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True)
-    unit_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Unit'},help_text="Unit of measurement box piesces")
+    spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True, default=None)
+    cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True, default=None)
+    axis = models.IntegerField(blank=True,null=True, validators=[MinValueValidator(0), MaxValueValidator(180)], default=None)
+    addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True, default=None)
+    unit_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, default=None, limit_choices_to={'attribute_id__name': 'Unit'},help_text="Unit of measurement box piesces")
   
     # Extra information
     warranty_id = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Warranty'})
@@ -100,7 +129,7 @@ class ProductVariant(BaseModel):
     # Pricing
     last_purchase_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
-    discount_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    discount_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True, blank=True)
 
 
 
@@ -230,3 +259,32 @@ class FlexiblePrice(BaseModel):
             return False
         return True
 
+
+
+
+class BaseVariant(BaseModel):
+    product = models.ForeignKey(Product, related_name='variants', on_delete=models.CASCADE)
+    sku = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    usku = models.CharField(max_length=64, unique=True, editable=False)
+    selling_price = models.DecimalField(max_digits=10, decimal_places=2)
+    discount_percentage = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    class Meta:
+        abstract = True
+
+
+class FrameVariant(BaseVariant):
+    frame_shape = models.ForeignKey(AttributeValue, ...)
+    frame_material = models.ForeignKey(AttributeValue, ...)
+    frame_color = models.ForeignKey(AttributeValue, ...)
+
+
+class LensVariant(BaseVariant):
+    lens_diameter = models.ForeignKey(AttributeValue, ...)
+    lens_color = models.ForeignKey(AttributeValue, ...)
+    lens_base_curve = models.ForeignKey(AttributeValue, ...)
+    sphere = models.CharField(max_length=20, choices=spherical_lens_powers, blank=True)
+
+
+class ContactLensVariant(LensVariant):
+    water_content = models.ForeignKey(AttributeValue, ...)
+    replacement_schedule = models.ForeignKey(AttributeValue, ...)

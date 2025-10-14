@@ -17,7 +17,6 @@ export const SelcetField = (props: SelcetFieldProps) => {
   const { control, parsedOptions, item, setVariantField, openVariantIndex, variantNumber, errors } = props;
   const registerName = variantNumber !== undefined ? `variants.${variantNumber}.${item.name}` : item.name;
   return (
-
     <div>
       <Controller
         name={registerName as any}
@@ -31,6 +30,7 @@ export const SelcetField = (props: SelcetFieldProps) => {
             <ReactSelect
               inputId={registerName}
               options={parsedOptions}
+              defaultValue={null}
               onChange={(opt) => {
                 const value = (opt as any)?.value ?? null;
                 field.onChange(value);
@@ -46,15 +46,18 @@ export const SelcetField = (props: SelcetFieldProps) => {
               placeholder={item.placeholder || "Select..."}
               isClearable
             />
-            
-            {/* {fieldState.error && (
+
+            {fieldState.error && (
               <p className="text-sm text-red-500 mt-1">
-                {fieldState.error.message}
+                         <p>{registerName}</p>   {fieldState.error.message}
               </p>
+
+            )}
+
+
+            {/* {errors && errors[registerName] && (
+              <p className="text-red-500 text-sm mt-1">{errors[registerName]?.message}</p>
             )} */}
-                  {errors && errors[registerName] && (
-        <p className="text-red-500 text-sm mt-1">{errors[registerName]?.message}</p>
-      )}
           </>
         )}
       />

@@ -117,7 +117,7 @@ export const RenderForm = ({ filteredConfig, selectedType, control, register, er
                 item={item}
                 parsedOptions={ 
                   filterData(
-                  useProductFormStore((state) => state.data),
+                  data,
                   item,
                   selectedType,
                   "brands",
