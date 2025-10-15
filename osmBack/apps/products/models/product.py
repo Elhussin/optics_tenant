@@ -57,7 +57,6 @@ class Product(BaseModel):
     supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
     manufacturer = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
     brand = models.ForeignKey("Brand", on_delete=models.CASCADE)
-
     model = models.CharField(max_length=50)
     type = models.CharField(max_length=50, choices=PRODUCT_TYPE_CHOICES)
     name = models.CharField(max_length=200, blank=True, null=True)
@@ -232,10 +231,11 @@ class ContactLensVariantExpirationDate(models.Model):
         verbose_name_plural = "Contact Lens Variant Expiration Dates"
 
 class ExtraVariantAttribute(BaseModel):
-    variant_type = models.CharField(max_length=50)  
-    variant_id = models.ForeignKey("ProductVariant", on_delete=models.CASCADE)
-    attribute = models.ForeignKey("Attributes", on_delete=models.CASCADE)
-    value = models.ForeignKey("AttributeValue", on_delete=models.CASCADE)
+    # variant_type = models.CharField(max_length=50)  
+    variant_type = models.ForeignKey("Attributes", related_name='extravariantattribute_set', on_delete=models.CASCADE)
+    variant = models.ForeignKey("ProductVariant", related_name='productvariant_set', on_delete=models.CASCADE)
+    attribute = models.ForeignKey("Attributes", related_name='attribute_set', on_delete=models.CASCADE)
+    value = models.ForeignKey("AttributeValue", related_name='attributevalue_set', on_delete=models.CASCADE)
     class Meta:
         unique_together = ("variant_type", "variant_id", "attribute", "value")
 
