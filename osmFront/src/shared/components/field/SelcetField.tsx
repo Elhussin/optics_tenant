@@ -26,7 +26,6 @@ export const SelcetField = (props: SelcetFieldProps) => {
         }}
         render={({ field, fieldState }) => (
           <>
-
             <ReactSelect
               inputId={registerName}
               options={parsedOptions}
@@ -53,11 +52,6 @@ export const SelcetField = (props: SelcetFieldProps) => {
               </p>
 
             )}
-
-
-            {/* {errors && errors[registerName] && (
-              <p className="text-red-500 text-sm mt-1">{errors[registerName]?.message}</p>
-            )} */}
           </>
         )}
       />

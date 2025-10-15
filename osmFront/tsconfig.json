@@ -22,6 +22,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../archive/EyeTest0.tsx", "../archive/useFormRequest.ts", "scripts/fixSchemas.js", "../archive/ProductForm.tsx", "../archive/ForeignKeyField.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "../archive/EyeTest0.tsx", "../archive/useFormRequest.ts", "scripts/fixSchemas.js", "../archive/ProductForm.tsx", "../archive/ForeignKeyField.tsx", "src/shared/try.tsx"],
   "exclude": ["node_modules"]
 }
