@@ -34,5 +34,5 @@ class AttributeValue(BaseModel):
             super().save(*args, **kwargs)
     
     def __str__(self):
-        return f"{self.attribute.name}: {self.label or self.value}"
+        return f"{self.attribute_id.name}: {self.label or self.value}"
 

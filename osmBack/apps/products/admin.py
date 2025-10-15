@@ -1,10 +1,16 @@
 from django.contrib import admin
 
-
-from .models import( Attributes, AttributeValue,StockMovements,Stocks,StockTransfer, StockTransferItem,   ProductVariantMarketing,
- ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer,
- Category, Product, ProductVariant ,ProductImage,Supplier, Manufacturer, Brand,
- FlexiblePrice
+from .models import( Attributes, AttributeValue, ProductVariantMarketing
+,ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer
+,Category, Product, ProductVariant ,ProductImage,FlexiblePrice,
+    ExtraVariantAttribute,
+    ContactLensVariant,
+    ContactLensVariantExpirationDate,
+    FrameVariant,
+    StokLensVariant,
+    RxLensVariant,
+ Supplier, Manufacturer, Brand,
+ Stocks,StockMovements,StockTransfer, StockTransferItem
 )
 
 admin.site.site_header = "Optics Admin"
@@ -12,9 +18,9 @@ admin.site.site_title = "Optics Admin Portal"
 admin.site.index_title = "Welcome to the Optics Admin Portal"
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('description', 'category_id', 'brand_id', 'created_at')
-    search_fields = ('name', 'category_id__name', 'brand_id__name')
-    list_filter = ('category_id', 'brand_id')
+    list_display = ('description', 'category', 'brand', 'created_at')
+    search_fields = ('name', 'category__name', 'brand__name')
+    list_filter = ('category', 'brand')
     ordering = ('-created_at',)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at')
@@ -27,7 +33,7 @@ class BrandAdmin(admin.ModelAdmin):
 class ProductVariantAdmin(admin.ModelAdmin):
     # list_display = ('product', 'variant_name','created_at')
     search_fields = ('product__name', 'variant_name')
-    list_filter = ('product_id',)
+    list_filter = ('product',)
     ordering = ('-created_at',)
     
 
@@ -51,3 +57,18 @@ admin.site.register(ProductVariantQuestion)
 admin.site.register(ProductVariantAnswer)
 admin.site.register(ProductVariantOffer)
 admin.site.register(FlexiblePrice)
+admin.site.register(FrameVariant)
+admin.site.register(StokLensVariant)
+admin.site.register(RxLensVariant)
+admin.site.register(ContactLensVariant)
+admin.site.register(ContactLensVariantExpirationDate)
+admin.site.register(ExtraVariantAttribute)
+
+# VARIANT_SERIALIZER_MAPPING = {
+#     "basic": ProductVariantSerializer,
+#     "frames": FrameVariantSerializer,
+#     "StockLenses": StokLensVariantSerializer,
+#     "RxLenses": RxLensVariantSerializer,
+#     "ContactLenses": ContactLensVariantSerializer,
+#     "custom": ContactLensVariantExpirationDateSerializer,
+# }

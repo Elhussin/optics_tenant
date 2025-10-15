@@ -31,10 +31,18 @@ class ProductVariantViewSet(BaseViewSet):
     serializer_class = ProductVariantSerializer
     permission_classes = [IsAuthenticated]
 
-# class ProductViewSet(BaseViewSet):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
-#     permission_classes = [IsAuthenticated]
+# class ProductVariantViewSet(viewsets.ModelViewSet):
+#     queryset = ProductVariant.objects.all()
+
+#     def get_serializer_class(self):
+#         variant = self.get_object() if self.action in ['retrieve', 'update', 'partial_update'] else None
+#         if variant:
+#             return get_variant_serializer_class(variant.product_id.type)
+        
+#         # في حالة create، نقرأ نوع المنتج من البيانات القادمة
+#         product_type = self.request.data.get('product_type')
+#         return get_variant_serializer_class(product_type)
+
 
 class ProductViewSet(BaseViewSet):
 

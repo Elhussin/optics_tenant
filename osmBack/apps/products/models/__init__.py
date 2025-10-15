@@ -1,7 +1,14 @@
 from .attributes import Attributes, AttributeValue
 from .marketing import ProductVariantMarketing
 from .product_support import ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer
-from .product import Category, Product, ProductVariant ,ProductImage,FlexiblePrice
+from .product import (Category, Product, ProductVariant ,ProductImage,FlexiblePrice,
+    ExtraVariantAttribute,
+    ContactLensVariantExpirationDate,
+    FrameVariant,
+    StokLensVariant,
+    RxLensVariant,
+    ContactLensVariant,
+)
 from .suppliers import Supplier, Manufacturer, Brand
 
 from .inventory import Stocks,StockMovements,StockTransfer, StockTransferItem
@@ -15,4 +22,9 @@ __all__ = [
     "InventoryDocument", "InventoryLineItem",
     "ProductImage",
     "FlexiblePrice",
+    "ExtraVariantAttribute",
+    "ContactLensVariantExpirationDate",
+    "FrameVariant",
+    "StokLensVariant",
+    "RxLensVariant",
 ]
