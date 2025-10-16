@@ -18,9 +18,9 @@ admin.site.site_title = "Optics Admin Portal"
 admin.site.index_title = "Welcome to the Optics Admin Portal"
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('description', 'category', 'brand', 'created_at')
-    search_fields = ('name', 'category__name', 'brand__name')
-    list_filter = ('category', 'brand')
+    list_display = ('description',  'brand', 'created_at')
+    search_fields = ('name',  'brand__name')
+    list_filter = ('brand','type')
     ordering = ('-created_at',)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'created_at')

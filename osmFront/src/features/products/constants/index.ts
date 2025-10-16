@@ -4,10 +4,7 @@ import { generateLensOptions } from "@/src/features/product/utils/generateLensOp
 
 export const VariantTypeEnum = [{ value: "CL", label: "Contact Lens" }, { value: "SL", label: "Spectacle Lens" }, { value: "FR", label: "Frames" }, { value: "AX", label: "Accessories" }, { value: "DV", label: "Devices" }, { value: "OT", label: "Other" }]
 export const ProductTypeEnum=[
-  {
-    value:"SV-ST",
-    label:"Single Stock",
-    filter:"SL",
+  {value:"SV-ST",label:"Single Stock", filter:"SL",
   },
   {
     value:"SV-RX",
@@ -508,13 +505,6 @@ export const CustmVariantAttribute: ProductForginKeyConfigType[]=[
     required: true,
   },
 ]
-export const VARIANT_TYPE_CHOICES = [
-  { value: "basic", label: "Basic" }, 
-  { value: "frames", label: "Frames" }, 
-  { value: "stockLenses", label: "Stock Lenses" }, 
-  { value: "rxLenses", label: "Rx Lenses" }, 
-  { value: "contactLenses", label: "Contact Lenses" }, 
-  { value: "custom", label: "Custom" }]
 
 
 export const ProductConfig: Record<string, ProductForginKeyConfigType> = {

@@ -37,6 +37,7 @@ PRODUCT_TYPE_CHOICES = [
     ('OT', 'Other'),
     ('DV', 'Devices')
 ]
+
 VARIANT_TYPE_CHOICES = [
     ('basic', 'Basic'),
     ('frames', 'Frames'),
@@ -53,13 +54,14 @@ VARIANT_TYPE_CHOICES = [
 class Product(BaseModel):
 
     """Product for glasses"""
-    category = models.ForeignKey("Category", on_delete=models.CASCADE)
-    supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
-    manufacturer = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
+    # category = models.ForeignKey("Category", on_delete=models.CASCADE)
+    categories = models.ManyToManyField("Category", related_name="products")
+    # supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
+    # manufacturer = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
     brand = models.ForeignKey("Brand", on_delete=models.CASCADE)
     model = models.CharField(max_length=50)
     type = models.CharField(max_length=50, choices=PRODUCT_TYPE_CHOICES)
-    name = models.CharField(max_length=200, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True, editable=False)
     usku = models.CharField(max_length=64, unique=True, editable=False, help_text="Unique product SKU generated automatically")
     variant_type = models.CharField(max_length=20, choices=VARIANT_TYPE_CHOICES, default='basic')
@@ -71,15 +73,13 @@ class Product(BaseModel):
         return f"{self.brand.name} {self.model}"
 
     def save(self, *args, **kwargs):
-        fields=['brand.id', 'category.id', 'supplier.id', 'manufacturer.id', 'model']
-        if not self.description:
-            if self.name:
-                self.description = f"{self.type} {self.brand.name} {self.model} {self.name}".upper()
-            else:
-                self.description = f"{self.type} {self.brand.name} {self.model}".upper()
-        
+        fields=['brand.id','model']
         if not self.name:
             self.name = f"{self.brand.name} {self.model}".title()
+            self.description = f"{self.type} {self.name}".upper()
+        else:
+            self.description = f"{self.type} {self.brand.name} {self.model} {self.name}".upper()
+        
 
         # 🔹 إنشاء كود SKU فريد
         if not self.usku:
@@ -203,22 +203,22 @@ class FrameVariant(ProductVariant):
 
 class StokLensVariant(ProductVariant,BaseLens):
     spherical = models.CharField(max_length=20, choices=spherical_lens_powers)
-    cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True, default=None)
+    cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True, default=None)
 
  
 class RxLensVariant(ProductVariant,BaseLens):
     lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Base Curve'})
-    addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True, default=None)
+    addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True, default=None)
 
 
 class ContactLensVariant(ProductVariant,BaseLens):
     lens_water_content = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_water_content',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Water Content'})
     replacement_schedule = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_replacement_schedule',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Replacement Schedule'})
     units = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_unit',blank=True,null=True, default=None, limit_choices_to={'attribute_id__name': 'Unit'},help_text="Unit of measurement box piesces")
-    spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True, default=None)
-    cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True,null=True, default=None)
-    axis = models.CharField(max_length=20,blank=True,null=True, default=None)
-    addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True,null=True, default=None)
+    spherical = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True, default=None)
+    cylinder = models.CharField(max_length=20, choices=cylinder_lens_powers,blank=True, default=None)
+    axis = models.CharField(max_length=20,blank=True, default=None)
+    addition = models.CharField(max_length=20, choices=additional_lens_powers,blank=True, default=None)
     lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',blank=True,null=True, limit_choices_to={'attribute_id__name': 'Base Curve'})
 
 
@@ -295,6 +295,27 @@ class FlexiblePrice(BaseModel):
             return False
         return True
 
+
+
+class ProductSupplier(models.Model):
+  
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
+    purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
+    supply_code = models.CharField(max_length=100, blank=True, null=True)  # لو المورد عنده كود خاص
+    lead_time_days = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('product', 'supplier')  # يمنع تكرار نفس المنتج عند نفس المورد
+
+class ProductManufacturer(models.Model):
+
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
+    ref_code = models.CharField(max_length=100, blank=True, null=True)
+
+    class Meta:
+        unique_together = ('product', 'manufacturer')
 
 
 

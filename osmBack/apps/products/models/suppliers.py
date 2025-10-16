@@ -57,3 +57,5 @@ class Supplier(BaseModel):
     class Meta:
         verbose_name = "Supplier"
         verbose_name_plural = "Suppliers"
+
+
