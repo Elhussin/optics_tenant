@@ -13,7 +13,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/src/shared/components
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/src/shared/components/shadcn/ui/command";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
-import { FieldsProps, SelectFieldsProps } from "@/src/features/products/types";
+import { FieldsProps, SelectFieldsProps ,MultiSelectFieldProps } from "@/src/features/products/types";
 import { Badge } from "@/src/shared/components/shadcn/ui/badge";
 import { useForm, Controller } from "react-hook-form";
 
@@ -21,7 +21,7 @@ export const CheckboxField = ({ fieldRow, field }: FieldsProps) => {
   return (
     <div className="flex items-center space-x-2">
       <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-      <span>{field.placeholder}</span>
+      <span>{fieldRow.placeholder}</span>
     </div>
   );
 };
@@ -85,7 +85,7 @@ export const SelectField = ({ fieldRow, field, options }: SelectFieldsProps) => 
 // لاحظ أننا نحذف useState للـ value لأنها ستأتي من form
 export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps) {
   const [open, setOpen] = useState(false);
-  const selectedLabel = options.find((o) => o.value === field.value)?.label;
+  const selectedLabel = options?.find((o) => o.value === field.value)?.label;
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -107,7 +107,7 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options.map((opt,index) => (
+              {options?.map((opt,index) => (
                 <CommandItem
                   key={index}
                   value={String(opt.value)}
@@ -132,20 +132,15 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
     </Popover>
   );
 }
-type multiSelectFieldProps = {
-    control: any;
-    options: any;
-    fieldRow: any;
 
-}
-
-export const multiSelectField = ({ fieldRow, control,options }: multiSelectFieldProps) => {
+export const MultiSelectField = ({fieldName, fieldRow, control,options }: MultiSelectFieldProps) => {
   return (
       <Controller
-        name={fieldRow.name}
+        name={fieldName}
         control={control}
         render={({ field }) => {
-          const selected = options.filter((opt:any) => field.value.includes(opt.value));
+          const selected = options?.filter((opt:any) => field.value.includes(opt.value))||
+          fieldRow.options?.filter((opt:any) => field.value.includes(opt.value))||[];
 
           return (
             <Popover>
@@ -157,7 +152,7 @@ export const multiSelectField = ({ fieldRow, control,options }: multiSelectField
                 >
                   {selected.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
-                      {selected.map((s:any,index:number) => (
+                      {selected?.map((s:any,index:number) => (
                         <Badge
                           key={index}
                           className="text-xs flex items-center gap-1"
@@ -185,7 +180,7 @@ export const multiSelectField = ({ fieldRow, control,options }: multiSelectField
                 <Command>
                   <CommandList>
                     <CommandGroup>
-                      {options.map((opt:any,index:number) => (
+                      {options?.map((opt:any,index:number) => (
                         <CommandItem
                           key={index}
                           onSelect={() => {
@@ -220,31 +215,17 @@ export const multiSelectField = ({ fieldRow, control,options }: multiSelectField
 }
 
 
-
-// import { Checkbox } from "@/components/ui/checkbox";
-// import { useForm, Controller } from "react-hook-form";
-
-// const options = [
-//   { label: "Lens", value: "lens" },
-//   { label: "Frame", value: "frame" },
-//   { label: "Accessory", value: "accessory" },
-// ];
-
-export default function MultiCheckbox(options:any,control:any,field:any) {
-  // const { control, handleSubmit } = useForm({
-  //   defaultValues: { types: [] },
-  // });
-
-  // const onSubmit = (data: any) => console.log(data);
-
+export const MultiCheckbox = ({fieldName, fieldRow, control,options }: MultiSelectFieldProps) => {
+  // const selected = options?.filter((opt:any) => field.value.includes(opt.value))||fieldRow.options?.filter((opt:any) => field.value.includes(opt.value))||[];
+  const DefaultOptions = options || fieldRow.options || [];
   return (
       <Controller
-        name="types"
+        name={fieldName}
         control={control}
         render={({ field }) => (
           <div className="space-y-2">
-            {options.map((opt) => (
-              <div key={opt.value} className="flex items-center space-x-2">
+            {DefaultOptions?.map((opt : any,index:number) => (
+              <div key={index} className="flex items-center space-x-2">
                 <Checkbox
                   id={opt.value}
                   checked={field.value.includes(opt.value)}

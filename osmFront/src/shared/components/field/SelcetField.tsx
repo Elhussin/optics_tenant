@@ -33,8 +33,6 @@ export const SelcetField = (props: SelcetFieldProps) => {
               onChange={(opt) => {
                 const value = (opt as any)?.value ?? null;
                 field.onChange(value);
-
-                // only set variant store if variantNumber isn't undefined
                 if (typeof variantNumber === "number") {
                   setVariantField(variantNumber, item.name, value);
                 }

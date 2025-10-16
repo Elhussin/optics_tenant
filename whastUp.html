@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>إرسال رسائل واتساب - UltraMsg</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      font-size: 16px;
+    }
+    textarea {
+      height: 100px;
+    }
+    #log {
+      background: #f8f8f8;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 14px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .status{
+      color: green;
+    }
+    .error{
+      color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>📨 إرسال رسائل واتساب عبر UltraMsg</h2>
+  <!-- <label>🔑 Token:</label>
+  <input type="text" id="token" placeholder="ادخل التوكن الخاص بك"> -->
+
+  <label>📞 رقم واحد (اختياري):</label>
+  <input type="text" id="singleNumber" placeholder="مثلاً: 966512345678">
+
+  <label>CSV File: With Column (phone)</label>
+  <input type="file" id="csvFile" accept=".csv">
+
+  <label>💬 Message:</label>
+  <textarea id="message" placeholder="Write your message here..."></textarea>
+
+  <button id="sendBtn">🚀 Send Messages</button>
+  <p class="" id="status"></p>
+
+  <div id="log"></div>
+
+  <script>
+    let status = document.getElementById("status");
+    const INSTANCE_ID = "instance146445";  // غيّر هذا حسب حسابك في UltraMsg
+    const token = "g55byj9vkyxeiodi";
+    // Fetch Messages 
+    // https://api.ultramsg.com/instance146445/messages?token=g55byj9vkyxeiodi&page=1&limit=100&status=unsent
+    async function getMessages() {
+      const res = await fetch("https://api.ultramsg.com/"+INSTANCE_ID+"/messages?token="+token+"&page=1&limit=100&status=sent");
+      const data = await res.json();
+      console.log(data.total);
+    }
+    getMessages();
+
+
+    // Send Message
+    async function sendMessage(token, phone, message) {
+      const url = "https://api.ultramsg.com/" + INSTANCE_ID + "/messages/chat";
+
+      const params = new URLSearchParams();
+      params.append("token", token);
+      params.append("to", phone);
+      params.append("body", message);
+      status.innerHTML ="";
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: params,
+        });
+        const text = await res.text();
+
+        status.innerHTML = `✅ message sent to ${phone}: ${text}`;
+      } catch (err) {
+        status.innerHTML = `❌ Error sending message to ${phone}: ${err.message}`;
+      }
+    }
+
+    function log(msg) {
+      const logDiv = document.getElementById("log");
+      logDiv.innerHTML += `<div>${msg}</div>`;
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    document.getElementById("sendBtn").addEventListener("click", async () => {
+      status.innerHTML = "";
+      const message = document.getElementById("message").value.trim();
+      const singleNumber = document.getElementById("singleNumber").value.trim();
+      const file = document.getElementById("csvFile").files[0];
+
+      if (!message) {
+        status.innerHTML.className = "error";
+        status.innerHTML = "Please enter a message.";
+
+        return;
+      }
+
+      let numbers = [];
+
+      if (singleNumber) {
+        numbers.push(singleNumber);
+      } else if (file) {
+        const text = await file.text();
+        const rows = text.split("\n").map(r => r.trim()).filter(Boolean);
+        const header = rows[0].toLowerCase().split(",");
+        const phoneIndex = header.indexOf("phone");
+
+        if (phoneIndex === -1) {
+          status.innerHTML.className = "error";
+          status.innerHTML = "Column 'phone' not found in CSV file.";
+
+          return;
+        }
+
+        for (let i = 1; i < rows.length; i++) {
+          const cols = rows[i].split(",");
+          numbers.push(cols[phoneIndex]);
+        }
+      } else {
+        status.innerHTML.className = "error";
+        status.innerHTML = "Please enter a single number or upload a CSV file.";
+        return;
+      }
+
+      log(`📋 ${numbers.length} numbers will be sent...`);
+      status.innerHTML = `${numbers.length} numbers will be sent...`;
+
+      for (const num of numbers) {
+        await sendMessage(token, num, message);
+        await new Promise(res => setTimeout(res, 1500)); // تأخير 1.5 ثانية
+      }
+      status.innerHTML.className = "status";
+      status.innerHTML = "🎉 All messages sent successfully!";
+
+      // status.innerHTML=""
+    });
+  </script>
+
+</body>
+</html>

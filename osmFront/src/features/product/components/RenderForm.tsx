@@ -49,7 +49,6 @@ export const RenderForm = ({ filteredConfig, selectedType, control, register, er
     setShowModal(true);
   };
 
-  console.log("errors",errors)
   return (
     <div className="space-y-4">
       {filteredConfig.map((item: any, index: number) => {

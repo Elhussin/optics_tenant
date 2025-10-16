@@ -6,12 +6,13 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useProductFormStore } from "@/src/features/product/store/useProductFormStore";
 import { useProductRelations } from "@/src/features/product/hooks/useProductRelations";
 import { useMemo } from "react";
-import { ProductConfig, MainFieldConfig } from "@/src/features/products/constants/config";
+import { ProductConfig, MainFieldConfig,veriantConfig } from "@/src/features/products/constants/config";
 import { handleSave } from "./handleSave";
 import { RenderFields } from "./RenderFields";
 import { Loading } from '@/src/shared/components/ui/loding';
 import { Dialog } from "./Dialog";
 import { useEffect } from "react";
+
 export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
     const defaultValues = {
         name: "",
@@ -19,42 +20,31 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
         variant_type: "basic",
         variant_count: 1,
         is_active: true,
-        brand: "",
-        model: "",
-      };
+        // brand: "",
+        // model: "",
+    };
     const form = useApiForm({ alias: alias || "products_products_create", defaultValues });
     const store = useProductFormStore();
     const { isLoading } = useProductRelations();
-    const [productType, brand, model, variant_count] = form.watch(["type", "brand", "model","variant_count"]);
+    const [productType, brand, model, variant_count,variant_type] = form.watch(["type", "brand", "model", "variant_count","variant_type"]);
     const isComplete = useMemo(
         () => [productType, brand, model].every(
-          (v) => v !== null && v !== undefined && v !== ""
+            (v) => v !== null && v !== undefined && v !== ""
         ),
         [productType, brand, model]
-      );
-      
-      
-    // const isComplete = useMemo(
-    //     () => [productType, brand, model].some((v) => v === null || v === undefined || v === ""),
-    //     [productType, brand, model]
-    // );
+    );
+
 
     const filteredConfig = ProductConfig.filter(item => {
         return item.role === "all" || item.role === productType;
     });
 
+    const submitText= id?"Update":"Save";
 
     useEffect(() => {
         store.setVariantCount(variant_count);
-        // store.setIsVariant(true);
-        console.log(variant_count,productType);
 
-        // if(store.variantCount >= 1 && productType!=""){
-        //     store.setIsVariant(true);
-        // }
     }, [variant_count]);
-    console.log("isComplete :",isComplete,"productType:",productType,"brand:",brand,"model:",model,"variant_count:",variant_count);
-    console.log(store.variantCount || "No variant count",store.isVariant, "productType",productType,"isComplete",isComplete);
 
     const toggleVariantOptions = () => {
         store.setIsVariant(!store.isVariant);
@@ -69,14 +59,14 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
             <Form {...form}>
                 <form onSubmit={(e) => e.preventDefault()} className="space-y-6 p-4 border rounded-lg max-w-xl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <RenderFields fields={MainFieldConfig}form={form} />
-                    {productType&& <RenderFields fields={ProductConfig} form={form} selectedType={productType}/>}
-                   </div>
+                        <RenderFields fields={MainFieldConfig} form={form} variantNumber={undefined}/>
+                        {productType && <RenderFields fields={ProductConfig} form={form} selectedType={productType} variantNumber={undefined} />}
+                    </div>
                     <div>
-                    {store.isVariant &&
-
+                        {store.isVariant &&
                             Array.from({ length: store.variantCount }).map((_, i) => (
-                                <div key={i}>
+                                // className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                                <div key={i}  >
                                     <h2
                                         className='font-bold border-b-2 border-gray-200 mb-1 p-1 cursor-pointer'
                                         onClick={() => store.toggleVariant(i)}
@@ -84,11 +74,12 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
                                         Variant {i + 1}
                                     </h2>
                                     {store.openVariantIndex === i && (
+                                        variant_type &&
                                         <RenderFields
-                                            fields={ProductConfig}
+                                            fields={veriantConfig(variant_type)}
                                             form={form}
                                             selectedType={productType}
-                                            // variantNumber={i} // IMPORTANT: pass index so fields register as variants[i].*
+                                            variantNumber={i} 
                                         />
                                     )}
                                 </div>
@@ -99,14 +90,14 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
                     {/* Submit Button */}
                     <div className="flex gap-3 pt-4 ">
                         {store.isVariant && (
-                            <Button
-                                type="button"
-                                onClick={() => handleSave(form, store.variants, filteredConfig)}
-                                disabled={form.isSubmitting}
-                                className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${form.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                {form.isSubmitting ? 'Saving...' : "submitText"}
-                            </Button>
+                        <Button
+                            type="button"
+                            onClick={() => handleSave(form, store.variants, filteredConfig)}
+                            disabled={form.isSubmitting}
+                            className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${form.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                            {form.isSubmitting ? 'Saving...' :submitText}
+                        </Button>
                         )}
 
                         <Button
@@ -127,30 +118,3 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
         </>
     );
 };
-
-
-
-// let options: any[] = [];
-// switch (selectedType) {
-//     case "basic":
-//         options = BasicVariantConfig;
-//         break;
-//     case "frames":
-//         options = FrameVariantConfig;
-//         break;
-//     case "stockLenses":
-//         options = StockLensVariantConfig;
-//         break;
-//     case "rxLenses":
-//         options = RxLensVariantConfig;
-//         break;
-//     case "contactLenses":
-//         options = ContactLensVariantConfig;
-//         break;
-//     case "custom":
-//         options = CustomVariantConfig;
-//         break;
-//     default:
-//         options = [];
-//         break;
-// }
