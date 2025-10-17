@@ -24,3 +24,4 @@ Process 873536 waits for ShareRowExclusiveLock on relation 16402 of database 163
 HINT:  See server log for query details.
 CONTEXT:  while inserting index tuple (0,5) in relation "tenants_client_schema_name_key"
 
+[2025-10-17 11:54:19,658] WARNING tenant: Post-activation setup failed: Cannot resolve keyword 'permission' into field. Choices are: created_at, id, is_active, is_deleted, permission_id, permission_id_id, role_id, role_id_id, updated_at

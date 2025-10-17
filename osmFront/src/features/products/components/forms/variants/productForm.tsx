@@ -7,8 +7,8 @@ import { useProductFormStore } from "@/src/features/product/store/useProductForm
 import { useProductRelations } from "@/src/features/product/hooks/useProductRelations";
 import { useMemo } from "react";
 import { ProductConfig, MainFieldConfig,veriantConfig } from "@/src/features/products/constants/config";
-import { handleSave } from "./handleSave";
-import { RenderFields } from "./RenderFields";
+import { handleSave } from "../../../utils/handleSave";
+import { RenderFields } from "../../../../../shared/components/field/RenderFields";
 import { Loading } from '@/src/shared/components/ui/loding';
 import { Dialog } from "./Dialog";
 import { useEffect } from "react";
@@ -57,10 +57,10 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
     return (
         <>
             <Form {...form}>
-                <form onSubmit={(e) => e.preventDefault()} className="space-y-6 p-4 border rounded-lg max-w-xl mx-auto">
+                <form onSubmit={(e) => e.preventDefault()} className="space-y-6 p-4 border rounded-lg max-w-xxl mx-auto">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <RenderFields fields={MainFieldConfig} form={form} variantNumber={undefined}/>
-                        {productType && <RenderFields fields={ProductConfig} form={form} selectedType={productType} variantNumber={undefined} />}
+                        {productType && <RenderFields fields={filteredConfig} form={form} selectedType={productType} variantNumber={undefined} />}
                     </div>
                     <div>
                         {store.isVariant &&
@@ -75,12 +75,14 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
                                     </h2>
                                     {store.openVariantIndex === i && (
                                         variant_type &&
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <RenderFields
                                             fields={veriantConfig(variant_type)}
                                             form={form}
                                             selectedType={productType}
                                             variantNumber={i} 
                                         />
+                                        </div>
                                     )}
                                 </div>
                             ))}
@@ -92,7 +94,7 @@ export const ProductForm = ({ alias, id }: { alias: string, id?: string }) => {
                         {store.isVariant && (
                         <Button
                             type="button"
-                            onClick={() => handleSave(form, store.variants, filteredConfig)}
+                            onClick={() => handleSave(form, store.variants, veriantConfig(variant_type))}
                             disabled={form.isSubmitting}
                             className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${form.isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >

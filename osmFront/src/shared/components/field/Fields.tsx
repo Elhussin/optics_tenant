@@ -13,9 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/src/shared/components
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/src/shared/components/shadcn/ui/command";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
-import { FieldsProps, SelectFieldsProps ,MultiSelectFieldProps } from "@/src/features/products/types";
+import { FieldsProps, SelectFieldsProps, MultiSelectFieldProps } from "@/src/features/products/types";
 import { Badge } from "@/src/shared/components/shadcn/ui/badge";
 import { useForm, Controller } from "react-hook-form";
+import { StringToBoolean } from "class-variance-authority/types";
 
 export const CheckboxField = ({ fieldRow, field }: FieldsProps) => {
   return (
@@ -58,7 +59,7 @@ export const TextField = ({ fieldRow, field }: FieldsProps) => {
 };
 
 
-export const TextareaField = ({ fieldRow, field  }: FieldsProps) => {
+export const TextareaField = ({ fieldRow, field }: FieldsProps) => {
   return (
     <Textarea placeholder={fieldRow.placeholder} {...field} className="w-full" required={fieldRow.required} />
   );
@@ -72,7 +73,7 @@ export const SelectField = ({ fieldRow, field, options }: SelectFieldsProps) => 
       </SelectTrigger>
       <SelectContent>
 
-        {(options|| fieldRow.options   || [{ value: "", label: "" }]).map((opt: any,index:number) => (
+        {(options || fieldRow.options || [{ value: "", label: "" }]).map((opt: any, index: number) => (
           <SelectItem key={index} value={opt.value}>
             {opt.label}
           </SelectItem>
@@ -96,7 +97,7 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
           aria-expanded={open}
           className="w-full justify-between"
         >
-          {selectedLabel || fieldRow.placeholder||"Select..."}
+          {selectedLabel || fieldRow.placeholder || "Select..."}
           <ChevronsUpDown className="opacity-50 h-4 w-4" />
         </Button>
       </PopoverTrigger>
@@ -107,7 +108,7 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
-              {options?.map((opt,index) => (
+              {options?.map((opt, index) => (
                 <CommandItem
                   key={index}
                   value={String(opt.value)}
@@ -133,28 +134,71 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
   );
 }
 
-export const MultiSelectField = ({fieldName, fieldRow, control,options }: MultiSelectFieldProps) => {
-  return (
-      <Controller
-        name={fieldName}
-        control={control}
-        render={({ field }) => {
-          const selected = options?.filter((opt:any) => field.value.includes(opt.value))||
-          fieldRow.options?.filter((opt:any) => field.value.includes(opt.value))||[];
 
-          return (
+export const MultiCheckbox = ({ fieldName, fieldRow, control, options }: MultiSelectFieldProps) => {
+  console.log("MultiCheckbox", options)
+  const DefaultOptions = options || fieldRow.options || [];
+  return (
+
+    <Controller
+      name={fieldName}
+      control={control}
+      defaultValue={[]} // ✅ يضمن أن field.value يكون [] وليس undefined
+      render={({ field }) => (
+        <div className="space-y-2 grid grid-cols-3 gap-1.5">
+          {DefaultOptions?.map((opt: any, index: number) => (
+            <div key={index} className="flex items-center space-x-2">
+              <Checkbox
+                id={opt.value}
+                checked={(field.value || []).includes(opt.value)} // ✅ حماية إضافية
+                onCheckedChange={(checked) => {
+                  const currentValues = field.value || [];
+                  const newValue = checked
+                    ? [...currentValues, opt.value]
+                    : currentValues.filter((v: string) => v !== opt.value);
+                  field.onChange(newValue);
+                }}
+              />
+              <label htmlFor={opt.value} className="text-sm font-medium">
+                {opt.label}
+              </label>
+            </div>
+          ))}
+        </div>
+      )}
+    />
+
+
+  );
+}
+
+
+export function MultiSelectField({ control, fieldName, options }: MultiSelectFieldProps) {
+
+  return (
+    <Controller
+      name={fieldName as string }
+      control={control}
+      defaultValue={[] as Array<string | number>} // ✅ يضمن أن field.value لن يكون undefined
+      render={({ field }) => {
+        const value = (field.value || []) as Array<string | number>;
+
+        const selected = options?.filter((opt: any) => value.includes(opt.value)) || [];
+
+        return (
+          <div className="flex flex-col gap-2">
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between"
+                  className="w-full justify-between text-left font-normal"
                   type="button"
                 >
                   {selected.length > 0 ? (
                     <div className="flex flex-wrap gap-1">
-                      {selected?.map((s:any,index:number) => (
+                      {selected.map((s) => (
                         <Badge
-                          key={index}
+                          key={s.value}
                           className="text-xs flex items-center gap-1"
                         >
                           {s.label}
@@ -162,38 +206,46 @@ export const MultiSelectField = ({fieldName, fieldRow, control,options }: MultiS
                             className="w-3 h-3 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              field.onChange(
-                                field.value.filter((v: string) => v !== s.value)
-                              );
+                              field.onChange(value.filter((v) => v !== s.value));
                             }}
                           />
                         </Badge>
                       ))}
                     </div>
                   ) : (
-                    fieldRow.placeholder
+                    <span className="text-muted-foreground">
+                      Select options...
+                    </span>
                   )}
-                  <ChevronsUpDown className="w-4 h-4 opacity-50" />
+                  <div className="flex items-center gap-1">
+                    {selected.length > 0 && (
+                      <span className="text-xs text-muted-foreground">
+                        ({selected.length})
+                      </span>
+                    )}
+                    <ChevronsUpDown className="w-4 h-4 opacity-50" />
+                  </div>
                 </Button>
               </PopoverTrigger>
+
               <PopoverContent className="p-0 w-[250px]">
                 <Command>
                   <CommandList>
                     <CommandGroup>
-                      {options?.map((opt:any,index:number) => (
+                      {options?.map((opt) => (
                         <CommandItem
-                          key={index}
+                          key={opt.value}
                           onSelect={() => {
-                            const newValue = field.value.includes(opt.value)
-                              ? field.value.filter((v: string) => v !== opt.value)
-                              : [...field.value, opt.value];
+                            const newValue = value.includes(opt.value)
+                              ? value.filter((v) => v !== opt.value)
+                              : [...value, opt.value];
                             field.onChange(newValue);
                           }}
                         >
                           <Check
                             className={cn(
                               "mr-2 h-4 w-4",
-                              field.value.includes(opt.value)
+                              value.includes(opt.value)
                                 ? "opacity-100"
                                 : "opacity-0"
                             )}
@@ -206,44 +258,9 @@ export const MultiSelectField = ({fieldName, fieldRow, control,options }: MultiS
                 </Command>
               </PopoverContent>
             </Popover>
-          );
-        }}
-
-      />
-  )
-
-}
-
-
-export const MultiCheckbox = ({fieldName, fieldRow, control,options }: MultiSelectFieldProps) => {
-  // const selected = options?.filter((opt:any) => field.value.includes(opt.value))||fieldRow.options?.filter((opt:any) => field.value.includes(opt.value))||[];
-  const DefaultOptions = options || fieldRow.options || [];
-  return (
-      <Controller
-        name={fieldName}
-        control={control}
-        render={({ field }) => (
-          <div className="space-y-2">
-            {DefaultOptions?.map((opt : any,index:number) => (
-              <div key={index} className="flex items-center space-x-2">
-                <Checkbox
-                  id={opt.value}
-                  checked={field.value.includes(opt.value)}
-                  onCheckedChange={(checked) => {
-                    const newValue = checked
-                      ? [...field.value, opt.value]
-                      : field.value.filter((v: string) => v !== opt.value);
-                    field.onChange(newValue);
-                  }}
-                />
-                <label htmlFor={opt.value} className="text-sm font-medium">
-                  {opt.label}
-                </label>
-              </div>
-            ))}
           </div>
-        )}
-      />
-
+        );
+      }}
+    />
   );
 }

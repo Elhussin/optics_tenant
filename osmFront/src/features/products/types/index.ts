@@ -42,7 +42,7 @@ export interface MultiSelectFieldProps {
     fieldName: string;
     control: any;
     fieldRow: ProductConfigType;
-    options?: OptionsProps;
+    options: OptionsProps;
     
 }
 

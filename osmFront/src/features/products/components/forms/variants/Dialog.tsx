@@ -1,12 +1,13 @@
 "use client";
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
-import { useProductFormStore } from "@/src/features/product/store/useProductFormStore";
+import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
 
 interface Props {
   setValue: (fieldName: string, value: string,) => void;
+  defaultValues?: any;
 }
 
-export const Dialog = ({ setValue }: Props) => {
+export const Dialog = ({ setValue,defaultValues }: Props) => {
   const { isShowModal, entityName, setShowModal, currentFieldName, setData,  } = useProductFormStore();
 
   return (
@@ -15,6 +16,7 @@ export const Dialog = ({ setValue }: Props) => {
 
       <DynamicFormDialog
         entity={entityName}
+        // defaultValues={{currentFieldName:defaultValues}}
         onClose={(newItem) => {
             if (newItem) {
               setData(entityName, newItem);

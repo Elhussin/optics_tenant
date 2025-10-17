@@ -24,7 +24,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [currentFieldName, setCurrentFieldName] = useState('');
-  const { entity, id, setData } = props
+  const { entity, id, setData ,defaultValues } = props
   const [loading, setLoading] = useState(false);
   const [fetchForginKey,setFetchForginKey]=useState(false)
 
@@ -83,8 +83,8 @@ export default function DynamicFormGenerator(props: DynamicFormProps,) {
   const safeAlias: string = alias ?? '';
   const safeFetchAlias: string = fetchAlias ?? '';
   const canSubmit = Boolean(safeAlias);
-
-  const formRequest = useApiForm({ alias: safeAlias });
+console.log("defaultValues",defaultValues)
+  const formRequest = useApiForm({ alias: safeAlias, defaultValues: defaultValues||{} });
   const fetchDefaultData = useApiForm({ alias: safeFetchAlias, defaultValues: { id: id}});
 
 

@@ -61,7 +61,7 @@ class Command(BaseCommand):
 
         except Exception as e:
             raise CommandError(f"Failed to create superuser: {e}")
+# python manage.py create_tenant_superuser --schema_name store4 --username store1 --email store4@mail.com
 
-# python manage.py create_tenant_superuser --schema_name store1 --username store1 --email admin1@store1.com
 
 # python manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com

@@ -162,6 +162,7 @@ export interface DynamicFormDialogProps {
   onClose: (e: any) => void;
   entity: string;
   title?: string;
+  defaultValues?: any;
 }
 
 

@@ -11,7 +11,7 @@ const DynamicFormGenerator = dynamic(
   { ssr: false }
 );
 
-const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, title }) => {
+const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, title ,defaultValues}) => {
 
   const nodeRef = useRef(null);
   const t = useTranslations(entity);
@@ -33,7 +33,7 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({ onClose, entity, 
             <DynamicFormGenerator
               entity={entity}
               setData={(data:any) => onClose(data)}
-              
+              defaultValues={defaultValues!}
             />
           </div>
         </div>

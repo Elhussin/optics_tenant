@@ -23,6 +23,7 @@ export interface DynamicFormProps{
   mode?: 'create' | 'edit';
   id?: string | number;
   setData?: (e: any) => void; 
+  defaultValues?: any;
 }
 
 export interface ForeignKeyConfig {
