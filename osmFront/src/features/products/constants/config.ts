@@ -1,5 +1,5 @@
 import { ProductConfigType } from "@/src/features/products/types";
-import { generateLensOptions } from "@/src/features/product/utils/generateLensOptions";
+import { generateLensOptions } from "@/src/features/products/utils/generateLensOptions";
 
 
 
@@ -23,7 +23,6 @@ export const VARIANT_TYPE_CHOICES = [
 ]
 
 export const ProductConfig: ProductConfigType[] = [
-
     {
         name: "model",
         label: "Model",
@@ -57,7 +56,7 @@ export const ProductConfig: ProductConfigType[] = [
         subFilter: "",
         entityName: "categories",
         fieldName: "name",
-        type: "foreignkey",
+        type: "multiCheckbox",
         placeholder: "Select Category...",
         required: true,
         mapOnly: true,
@@ -90,19 +89,6 @@ export const ProductConfig: ProductConfigType[] = [
         required: false,
 
     },
-    {
-        name: "variant_type",
-        label: "Variant Type",
-        role: "all",
-        filter: "Variant Type",
-        title: "Select Variant Type",
-        entityName: "products",
-        fieldName: "variant_type",
-        type: "select",
-        placeholder: "Select Variant Type...",
-        required: true,
-        options: VARIANT_TYPE_CHOICES,
-    },
 ]
 
 export const MainFieldConfig : ProductConfigType[] = [
@@ -133,35 +119,24 @@ export const MainFieldConfig : ProductConfigType[] = [
         defaultValue: 1,
         className:"w-full",
         // onChange: (value: any) => {setVariantCount(Number(value))}
-    }
+    },
+        {
+        name: "variant_type",
+        label: "Variant Type",
+        role: "all",
+        filter: "Variant Type",
+        title: "Select Variant Type",
+        entityName: "products",
+        fieldName: "variant_type",
+        type: "select",
+        placeholder: "Select Variant Type...",
+        required: true,
+        options: VARIANT_TYPE_CHOICES,
+    },
+    {name:"attribute_count",label:"Attribute Count",type:"number",role:"all",filter:"",entityName:"",fieldName:"",required:true},
+
   ]
 
-
-    // {
-    //     name: "supplier",
-    //     label: "Supplier",
-    //     role: "all",
-    //     filter: "suppliers",
-    //     title: "Select Supplier | Supplier Name",
-    //     entityName: "suppliers",
-    //     fieldName: "name",
-    //     type: "foreignkey",
-    //     placeholder: "Select Supplier...",
-    //     required: true,
-    //     mapOnly: true, // use to map only the data without any other data
-    // },
-    // {
-    //     name: "manufacturer",
-    //     label: "Manufacturer",
-    //     role: "all",
-    //     filter: "manufacturers",
-    //     title: "Select Manufacturer | Manufacturer Name",
-    //     entityName: "manufacturers",
-    //     fieldName: "name",
-    //     type: "foreignkey",
-    //     required: true,
-    //     mapOnly: true,
-    // },
 export const ProductTypeEnum=[
   {value:"SV-ST",label:"Single Stock", filter:"SL",
   },
@@ -206,19 +181,19 @@ export const ProductTypeEnum=[
 
 
 export const BasicVariantConfig: ProductConfigType[] = [
-  {
-    label: "product",
-    name: "Product",
-    role: "all",
-    filter: "Product",
-    subFilter: "",
-    title: "Product is unique identifier for product | 123456789 |...",
-    entityName: "products",
-    fieldName: "attribute_name",
-    type: "text",
-    placeholder: "Select product...",
-    required: true,
-  },
+  // {
+  //   label: "product",
+  //   name: "Product",
+  //   role: "all",
+  //   filter: "Product",
+  //   subFilter: "",
+  //   title: "Product is unique identifier for product | 123456789 |...",
+  //   entityName: "products",
+  //   fieldName: "attribute_name",
+  //   type: "text",
+  //   placeholder: "Select product...",
+  //   required: true,
+  // },
   {
     label: "SKU",
     name: "sku",
@@ -624,42 +599,36 @@ export const ContactLensVariantConfig: ProductConfigType[] = [
   },
 ]
 
-export const CustomVariantConfig: ProductConfigType[]=[
-      {
-    name: "custom_attribute_count",
-    label: "Attribute Count",
-    role: "all",
-    filter: "Attribute Count",
-    subFilter: "",
-    title: "Attribute Count | 1 | 2 | 3 |...",
-    entityName: "",
-    fieldName: "custom_attribute_count",
-    type: "number",
-    placeholder: "Enter Attribute Count...",
-    required: true,
-  },
+
+
+export const CustomVariantMainConfig: ProductConfigType[]=[
+{name:"attribute_count",label:"Attribute Count",type:"number",role:"all",filter:"",entityName:"",fieldName:"",required:true},
   {
     name: "variant_type",
-    label: "Product Variant Type",
+    label: "Product Variant Name",
     role: "all",
     filter: "Attribute",
     subFilter: "",
-    title: "Attribute | ...",
+    title: "Variant Name Should be unique",
     entityName: "attribute",
     fieldName: "name",
     type: "foreignkey",
     placeholder: "Select Attribute...",
     required: true,
   },
+]
+
+
+export const CustomVariantConfig: ProductConfigType[]=[
   {
     name: "attribute",
     label: "Attribute",
     role: "all",
     filter: "Attribute",
     subFilter: "",
-    title: "Attribute | ...",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
+    title: "attribute | ...",
+    entityName: "attributes",
+    fieldName: "name",
     type: "foreignkey",
     placeholder: "Select Attribute...",
     required: true,
@@ -700,7 +669,7 @@ export const veriantConfig = (variant_type:string)=>{
             config = [ ...ContactLensVariantConfig, ...BaseLensVariantConfig, ...BasicVariantConfig];
             break;
         case "custom":
-            config = [ ...CustomVariantConfig, ...BasicVariantConfig];
+            config = BasicVariantConfig
             break;
         default:
             config = [];

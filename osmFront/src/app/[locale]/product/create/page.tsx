@@ -3,7 +3,7 @@
 "use client";
 import React, { Suspense } from 'react';
 import {LoadingSpinner} from '@/src/shared/components/ui/loding';
-const ProductVariantForm = React.lazy(() => import('@/src/features/product/components/ProductVariantForm'));
+const ProductVariantForm = React.lazy(() => import('@/src/features/products/components/ProductForm'));
 
 export default function CreatePrescriptionPage() {
 

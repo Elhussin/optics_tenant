@@ -21,6 +21,10 @@ interface ProductFormState {
   setOpenVariantIndex: (index: number | null) => void;
   data: Record<string, any[]>; // كل entity عبارة عن array
   setData: (entity: string, newItem: any) => void;
+  attributeCount: number;
+  setAttributeCount: (count: number) => void;
+  isAttribute: boolean;
+  setIsAttribute: (value: boolean) => void;
 }
   
 export const useProductFormStore = create<ProductFormState>((set, get) => ({
@@ -32,20 +36,39 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
   entityName: "",
   currentFieldName: "",
   isVariant: false,
+  attributeCount: 0,
+  isAttribute: false,
 
+  // setVariantCount: (count: number) =>
+  //   set((state) => {
+  //     const updated = [...state.variants];
+  //     if (count > state.variants.length) {
+  //       updated.push(...Array.from({ length: count - state.variants.length }, () => ({})));
+  //     } else if (count < state.variants.length) {
+  //       updated.length = count;
+  //     }
+  //     // if openVariantIndex is now out of range, close it
+  //     const openIdx = get().openVariantIndex;
+  //     const newOpenIdx = openIdx !== null && openIdx >= count ? null : openIdx;
+  //     return { variantCount: count, variants: updated, openVariantIndex: newOpenIdx };
+  //   }),
   setVariantCount: (count: number) =>
-    set((state) => {
-      const updated = [...state.variants];
-      if (count > state.variants.length) {
-        updated.push(...Array.from({ length: count - state.variants.length }, () => ({})));
-      } else if (count < state.variants.length) {
-        updated.length = count;
-      }
-      // if openVariantIndex is now out of range, close it
-      const openIdx = get().openVariantIndex;
-      const newOpenIdx = openIdx !== null && openIdx >= count ? null : openIdx;
-      return { variantCount: count, variants: updated, openVariantIndex: newOpenIdx };
-    }),
+  set((state) => {
+    if (state.variantCount === count) return state; // ✅ لا تحدث أي تغييرات
+
+    const updated = [...state.variants];
+    if (count > state.variants.length) {
+      updated.push(...Array.from({ length: count - state.variants.length }, () => ({})));
+    } else if (count < state.variants.length) {
+      updated.length = count;
+    }
+
+    const openIdx = get().openVariantIndex;
+    const newOpenIdx = openIdx !== null && openIdx >= count ? null : openIdx;
+
+    return { variantCount: count, variants: updated, openVariantIndex: newOpenIdx };
+  }),
+
 
   setVariantField: (index: number, field: string, value: any) =>
     set((state) => {
@@ -66,6 +89,8 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
   setCurrentFieldName: (name: string) => set({ currentFieldName: name }),
   setIsVariant: (value: boolean) => set({ isVariant: value }),
   setOpenVariantIndex: (index: number | null) => set({ openVariantIndex: index }),
+  setAttributeCount: (count: number) => set({ attributeCount: count }),
+  setIsAttribute: (value: boolean) => set({ isAttribute: value }),
 
   data: {
     "attribute-values": [],

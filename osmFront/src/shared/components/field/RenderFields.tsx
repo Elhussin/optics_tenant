@@ -1,7 +1,7 @@
 
 import { FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/src/shared/components/shadcn/ui/form";
 import { TextField, CheckboxField, SwitchField, RadioField, SelectField, SearchableSelect, MultiSelectField, MultiCheckbox } from "./Fields";
-import { filterData } from "../../../features/products/components/forms/variants/filterData";
+import { filterData } from "../../../features/products/utils/filterData";
 import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { CirclePlus } from "lucide-react";
@@ -9,9 +9,9 @@ import { RenderFormProps } from "@/src/features/products/types";
 import { parsedOptions } from "@/src/features/products/utils/parsedOptions";
 
 export const RenderFields = (props: RenderFormProps) => {
-    const { fields, form, selectedType, variantNumber } = props;
+    const { fields, form, selectedType, variantNumber ,attributeCount} = props;
     const { setShowModal, setEntityName, setCurrentFieldName, setVariantField, data } = useProductFormStore();
-
+    console.log(fields, selectedType, variantNumber)
     const handleClick = (entity: string, fieldName: string) => {
         setEntityName(entity);
         setCurrentFieldName(fieldName);
@@ -24,8 +24,9 @@ export const RenderFields = (props: RenderFormProps) => {
 
     return (
         <>
-            {fields.map((fieldRow, index) => {
-                const fieldName = variantNumber !== undefined ? `variants.${variantNumber}.${fieldRow.name}` : fieldRow.name;
+            {fields?.map((fieldRow, index) => {
+                let fieldName = variantNumber !== undefined ? `variants.${variantNumber}.${fieldRow.name}` : fieldRow.name;
+                    fieldName= attributeCount !== undefined ? `fieldName.${attributeCount}.${fieldRow.name}` : fieldName;
                 return (
                     <FormField
                         key={index}
@@ -44,7 +45,11 @@ export const RenderFields = (props: RenderFormProps) => {
 
                             return (
                                 <FormItem>
-                                    <FormLabel>{fieldRow.label} {fieldRow.required && <span className="text-red-500">*</span>}</FormLabel>
+                                    <FormLabel>
+                                    {fieldRow.label} {fieldRow.required && <span className="text-red-500">*</span>}
+                                    <InfoPopover hint={fieldRow?.title || ""} />
+                                    
+                                    </FormLabel>
                                     <FormControl>
                                         {(() => {
                                             switch (fieldRow.type) {
@@ -67,15 +72,8 @@ export const RenderFields = (props: RenderFormProps) => {
                                                         <div className="flex ">
                                                             <div className="flex-1">
                                                                 <SearchableSelect fieldRow={fieldRow} field={{ ...field, onChange: handleChange }}
-                                                                    // options={filterData(data, field, selectedType)}
                                                                     options={
-                                                                        filterData(
-                                                                            data,
-                                                                            fieldRow,
-                                                                            selectedType,
-                                                                            "brands",
-                                                                            "product_type"
-                                                                        )}
+                                                                        filterData(data, fieldRow, selectedType, "brands", "product_type" )}
                                                                 />
                                                             </div>
                                                             <div>
@@ -95,7 +93,7 @@ export const RenderFields = (props: RenderFormProps) => {
                                                             <div className="flex-1">
                                                                 <MultiSelectField fieldName={fieldName}
                                                                     fieldRow={fieldRow}
-                                                                    options={parsedOptions(data?.['attribute-values'].filter((v: any) => v.attribute_name === fieldRow.filter),fieldRow.name)}
+                                                                    options={parsedOptions(data?.[fieldRow.entityName].filter((v: any) => v[fieldRow.fieldName] === fieldRow.filter), fieldRow)}
 
                                                                     control={form.control} />
                                                             </div>
@@ -115,9 +113,9 @@ export const RenderFields = (props: RenderFormProps) => {
                                                     return (
                                                         <div className="flex w-full">
                                                             <div className="flex-1">
-                                                                <MultiCheckbox fieldName={fieldName} fieldRow={fieldRow} 
-                                                                    options={parsedOptions(data?.['attribute-values'].filter((v: any) => v.attribute_name === fieldRow.filter),fieldRow.name)}
-                                                                control={form.control} />
+                                                                <MultiCheckbox fieldName={fieldName} fieldRow={fieldRow}
+                                                                    options={parsedOptions(data?.['attribute-values'].filter((v: any) => v.attribute_name === fieldRow.filter), fieldRow)}
+                                                                    control={form.control} />
                                                             </div>
                                                             <div>
                                                                 <ActionButton
@@ -149,3 +147,19 @@ export const RenderFields = (props: RenderFormProps) => {
     );
 };
 
+
+
+
+import { Popover, PopoverTrigger, PopoverContent } from "@/src/shared/components/shadcn/ui/popover";
+import { InfoIcon } from "lucide-react";
+
+export const InfoPopover = ({hint}:{hint :string}) => (
+  <Popover>
+    <PopoverTrigger>
+      <InfoIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+    </PopoverTrigger>
+    <PopoverContent className="w-64">
+      <p>{hint}</p>
+    </PopoverContent>
+  </Popover>
+);

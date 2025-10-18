@@ -45,7 +45,7 @@
 
 // // import { ProductRequest, productFormFields } from "@/schemas/product";
 // import DynamicFormWithFK from "@/src/features/products/components/DynamicFormWithFK";
-import {ProductForm} from "@/src/features/products/components/forms/variants/productForm";
+import {ProductForm} from "@/src/features/products/components/ProductForm";
 export default function ProductPage() {
   return (
     <div className="p-8">

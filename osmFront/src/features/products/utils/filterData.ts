@@ -1,5 +1,5 @@
-import { parsedOptions } from "@/src/features/product/utils/parsedOptions"
-import { selectRelatedData } from "@/src/features/product/utils/selectRelatedData"
+import { parsedOptions } from "@/src/features/products/utils/parsedOptions"
+import { selectRelatedData } from "@/src/features/products/utils/selectRelatedData"
 
 export const filterData = (
     data: any,
@@ -11,7 +11,6 @@ export const filterData = (
     const filterField = item.filter;
     const selectedData = selectRelatedData(data, filterField);
     let filteredData = selectedData;
-    console.log("data",data)
     if (subField && subFilter && filterField === subField) {
       filteredData = selectedData?.filter(
         (v: any) => v[subFilter] === selectedType || v[subFilter] === "All"
