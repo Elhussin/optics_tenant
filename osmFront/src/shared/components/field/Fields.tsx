@@ -136,7 +136,7 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
 
 
 export const MultiCheckbox = ({ fieldName, fieldRow, control, options }: MultiSelectFieldProps) => {
-  console.log("MultiCheckbox", options)
+  // console.log("MultiCheckbox", options)
   const DefaultOptions = options || fieldRow.options || [];
   return (
 

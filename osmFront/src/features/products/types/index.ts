@@ -27,7 +27,7 @@ export interface RenderFormProps {
   options?: OptionsProps;
   selectedType?: string;
   variantNumber?: number;
-  attributeCount?: number;
+  attributeIndex?: number;
 }
 // Fields
 export interface FieldsProps {

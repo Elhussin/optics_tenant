@@ -1,4 +1,6 @@
 import { PageData } from "@/src/features/pages/types";
+import { UseFormReturn, FieldValues } from "react-hook-form";
+
 export type ApiError = {
     [field: string]: string | string[];
   };
@@ -64,13 +66,11 @@ export type UseFormRequestReturn = {
   [key: string]: any; // للسماح بخصائص إضافية مثل methods الأخرى
 };
 
-export type UseApiFormReturn = {
- [key: string]: any; // للسماح بخصائص إضافية مثل methods الأخرى
+export type UseApiFormReturn = UseFormReturn<any, any, any> & {
  query: any, // للـ GET
  mutation: any, // للـ POST/PUT/DELETE
  submitForm: any, // دالة submit موحدة
  isSubmitting: boolean,
-
 };
 export type UserContextType = {
   user: any | null;

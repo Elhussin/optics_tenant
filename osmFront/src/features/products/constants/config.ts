@@ -181,19 +181,7 @@ export const ProductTypeEnum=[
 
 
 export const BasicVariantConfig: ProductConfigType[] = [
-  // {
-  //   label: "product",
-  //   name: "Product",
-  //   role: "all",
-  //   filter: "Product",
-  //   subFilter: "",
-  //   title: "Product is unique identifier for product | 123456789 |...",
-  //   entityName: "products",
-  //   fieldName: "attribute_name",
-  //   type: "text",
-  //   placeholder: "Select product...",
-  //   required: true,
-  // },
+
   {
     label: "SKU",
     name: "sku",
@@ -602,18 +590,17 @@ export const ContactLensVariantConfig: ProductConfigType[] = [
 
 
 export const CustomVariantMainConfig: ProductConfigType[]=[
-{name:"attribute_count",label:"Attribute Count",type:"number",role:"all",filter:"",entityName:"",fieldName:"",required:true},
   {
     name: "variant_type",
     label: "Product Variant Name",
     role: "all",
-    filter: "Attribute",
+    filter: "",
     subFilter: "",
     title: "Variant Name Should be unique",
     entityName: "attribute",
     fieldName: "name",
     type: "foreignkey",
-    placeholder: "Select Attribute...",
+    // placeholder: "Select Attribute...",
     required: true,
   },
 ]
@@ -624,13 +611,13 @@ export const CustomVariantConfig: ProductConfigType[]=[
     name: "attribute",
     label: "Attribute",
     role: "all",
-    filter: "Attribute",
+    filter: "",
     subFilter: "",
     title: "attribute | ...",
     entityName: "attributes",
     fieldName: "name",
     type: "foreignkey",
-    placeholder: "Select Attribute...",
+    // placeholder: "",
     required: true,
   },
   {
@@ -643,7 +630,7 @@ export const CustomVariantConfig: ProductConfigType[]=[
     entityName: "attribute-values",
     fieldName: "attribute_name",
     type: "foreignkey",
-    placeholder: "Select Value...",
+    // placeholder: "Select Value...",
     required: true,
   },
 

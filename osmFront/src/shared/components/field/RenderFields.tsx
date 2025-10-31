@@ -9,9 +9,9 @@ import { RenderFormProps } from "@/src/features/products/types";
 import { parsedOptions } from "@/src/features/products/utils/parsedOptions";
 
 export const RenderFields = (props: RenderFormProps) => {
-    const { fields, form, selectedType, variantNumber ,attributeCount} = props;
+    const { fields, form, selectedType, variantNumber ,attributeIndex} = props;
     const { setShowModal, setEntityName, setCurrentFieldName, setVariantField, data } = useProductFormStore();
-    console.log(fields, selectedType, variantNumber)
+    // console.log(fields, selectedType, variantNumber)
     const handleClick = (entity: string, fieldName: string) => {
         setEntityName(entity);
         setCurrentFieldName(fieldName);
@@ -25,9 +25,15 @@ export const RenderFields = (props: RenderFormProps) => {
     return (
         <>
             {fields?.map((fieldRow, index) => {
-                let fieldName = variantNumber !== undefined ? `variants.${variantNumber}.${fieldRow.name}` : fieldRow.name;
-                    fieldName= attributeCount !== undefined ? `fieldName.${attributeCount}.${fieldRow.name}` : fieldName;
-                return (
+                let fieldName = fieldRow.name;
+                if (variantNumber !== undefined && attributeIndex !== undefined) {
+                fieldName = `variants.${variantNumber}.attributes.${attributeIndex}.${fieldRow.name}`;
+                } else if (variantNumber !== undefined) {
+                fieldName = `variants.${variantNumber}.${fieldRow.name}`;
+                }
+                        
+            
+                    return (
                     <FormField
                         key={index}
                         control={form.control}
@@ -35,13 +41,14 @@ export const RenderFields = (props: RenderFormProps) => {
                         rules={{ required: fieldRow.required ? `${fieldRow.label} is required` : false }}
 
                         render={({ field }) => {
-                            const handleChange = (value: any) => {
-                                field.onChange(value);
-
+                                const handleChange = (value: any) => {
+                                const finalValue = value?.target ? value.target.value : value;
+                                field.onChange(finalValue);
                                 if (variantNumber !== undefined) {
-                                    handleVariantField(variantNumber, fieldRow.name, value);
+                                    handleVariantField(variantNumber, fieldRow.name, finalValue);
                                 }
-                            };
+                                };
+
 
                             return (
                                 <FormItem>

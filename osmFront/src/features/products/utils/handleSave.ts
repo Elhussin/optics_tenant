@@ -3,6 +3,7 @@ import { buildPayload } from "@/src/features/products/utils/buildPayload";
 
 export const handleSave = (form: any, variants: any,config:any,id?:string) => {
     console.log("variants",variants)
+    
     form.handleSubmit((formValues: any) => {
         const variantsPayload = buildPayload({
             config: config,
