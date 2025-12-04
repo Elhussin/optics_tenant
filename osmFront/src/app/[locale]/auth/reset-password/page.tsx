@@ -76,9 +76,9 @@ export default function ResetPasswordPage() {
 
             {/* Submit Button */}
             <ActionButton
-              label={`${formRequest.isSubmitting ? t("sending") : t("button")}`}
+              label={`${formRequest.isBusy ? t("sending") : t("button")}`}
               type="submit"
-              disabled={formRequest.isSubmitting}
+              disabled={formRequest.isBusy}
               variant="primary"
               className="w-full"
               // className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
@@ -87,9 +87,9 @@ export default function ResetPasswordPage() {
             </ActionButton>
 
             {/* Root Error */}
-            {formRequest.formErrors.root && (
+            {formRequest.errors.root && (
               <p className="text-center text-sm text-red-600 mt-3">
-                {formRequest.formErrors.root}
+                {formRequest.errors.root}
               </p>
             )}
           </form>

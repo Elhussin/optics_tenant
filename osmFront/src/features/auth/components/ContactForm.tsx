@@ -6,7 +6,7 @@ import { toast } from "sonner";
 export default function ContactForm() {
   const t = useTranslations("contact");
 
-const {handleSubmit, submitForm, errors, isSubmitting, isLoading, register} = useApiForm({ alias: "crm_contact_us_create" });
+const {handleSubmit, submitForm, errors, isBusy, register} = useApiForm({ alias: "crm_contact_us_create" });
 
   const onSubmit = async (data: any) => {
     const result = await submitForm(data);
@@ -63,7 +63,7 @@ const {handleSubmit, submitForm, errors, isSubmitting, isLoading, register} = us
 
       <button
         type="submit"
-        disabled={isSubmitting || isLoading}
+        disabled={isBusy}
         className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
         {t("submit")}

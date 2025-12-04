@@ -1,14 +1,10 @@
 export const contact = {
     email: "hasin3112@gmail.com",
     phone: "0540919725",
-    address: "Al-Awja, Jordan",
-    companyName: "Optics",
+    address: "Jeddah, Saudi Arabia",
+    companyName: "O-S-M",
     companyLogo: "https://via.placeholder.com/150",
-    companyLogoText: "Optics",
-
-    
-
-    
+    companyLogoText: "O-S-M Logo",    
 }
 
 export const bankDetial = {

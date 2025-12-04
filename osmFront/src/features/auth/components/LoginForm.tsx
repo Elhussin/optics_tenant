@@ -24,7 +24,7 @@ export default function LoginForm(props: formRequestProps) {
   const redirect = useMemo(() => {
     return searchParams.get("redirect") || `/${locale}/profile`;
   }, [ searchParams,  locale,]);
-  const {  handleSubmit, submitForm,errors,  isSubmitting, register,  } = useApiForm({ alias });
+  const {  handleSubmit, submitForm,errors,  isBusy, register,  } = useApiForm({ alias });
 
   const onSubmit = async (data: any) => {
     try {
@@ -133,10 +133,10 @@ useEffect(() => {
             {/* زر الإرسال */}
             <button
               type="submit"
-              disabled={isSubmitting }
+              disabled={isBusy }
               className="btn btn-primary w-full text-white"
             >
-              {isSubmitting ? submitText + "..." : submitText}
+              {isBusy ? submitText + "..." : submitText}
             </button>
             <div className="flex flex-col gap-2">
               {mode === "login" ? (

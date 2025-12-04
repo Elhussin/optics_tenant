@@ -99,12 +99,12 @@ export const ProductForm = ({ alias, id }: { alias: string; id?: string }) => {
         <Button
           type="button"
           onClick={() => handleSave(form, store.variants, veriantConfig(variant_type))}
-          disabled={form.isSubmitting}
+          disabled={form.isBusy}
           className={`bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md font-medium transition-colors ${
-            form.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+            form.isBusy ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
-          {form.isSubmitting ? "Saving..." : submitText}
+          {form.isBusy ? "Saving..." : submitText}
         </Button>
         </>
     )}
