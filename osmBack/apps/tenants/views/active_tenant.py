@@ -131,6 +131,10 @@ class TenantActivation:
                 pending.is_activated = True
                 pending.is_deleted = True
                 pending.save()
+                created_user=self.setup_user_permissions(pending, tenant)
+                print(created_user)
+                # if not created_user:
+                #     return tenant, domain, ActivationStatus.POST_SETUP_FAILED
 
                 return tenant, domain, ActivationStatus.SUCCESS
 
@@ -234,7 +238,8 @@ class ActivateTenantView(APIView):
             send_failed_activation_email(pending.email)
             return
 
-        self.tenantActivation.setup_user_permissions(pending, tenant)
+        # self.tenantActivation.setup_user_permissions(pending, tenant)
+
         send_message_acount_activated(pending.email, pending.schema_name, pending.name)
 
 
