@@ -115,3 +115,4 @@ export const ProductForm = ({ alias, id }: { alias: string; id?: string }) => {
   );
 };
 
+export default ProductForm;

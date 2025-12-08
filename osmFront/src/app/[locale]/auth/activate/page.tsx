@@ -13,7 +13,7 @@ export default function ActivatePage() {
   );
   const [message, setMessage] = useState<string>("Activating your account...");
 
-  const formRquest= useApiForm({
+  const formRquest = useApiForm({
     alias,
     onSuccess: async (res) => {
       setStatus("success");
@@ -36,10 +36,13 @@ export default function ActivatePage() {
       setMessage("Invalid or missing activation token.");
       return;
     }
+    (async () => {
+      const res = await formRquest.submitForm({ token });
+      console.log("res", res);
+    })()
+  }, [token]);
 
-    formRquest.submitForm({ token });
-    }, []);
-// formRquest token
+  // formRquest token
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
       <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6 text-center space-y-4">

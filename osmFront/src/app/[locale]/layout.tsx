@@ -33,28 +33,29 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  // console.log(params);
-  const { locale } = await params ?? {};
+  const { locale } = await params;
 
-  if (!routing.locales.includes(locale as "en" | "ar")) {
+  const lang = locale;
+
+  if (!routing.locales.includes(lang as "en" | "ar")) {
     notFound();
   }
   // const { messages } = await getRequestConfig({locale});
   let messages: Record<string, any>;
   try {
-    messages = await getTrenMessagesFiles(locale);
+    messages = await getTrenMessagesFiles(lang);
   } catch (error) {
     notFound();
   }
 
-  const dir = locale === "ar" ? "rtl" : "ltr";
+  const dir = lang === "ar" ? "rtl" : "ltr";
 
   return (
-    <html lang={locale}>
+    <html lang={lang}>
       <body dir={dir} className={`${cairo.variable} ${inter.variable}`} data-theme="dark">
-        <ClientProviders locale={locale} messages={messages}>
+        <ClientProviders locale={lang} messages={messages}>
           {children}
         </ClientProviders>
       </body>

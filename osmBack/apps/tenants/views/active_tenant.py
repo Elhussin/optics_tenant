@@ -131,11 +131,6 @@ class TenantActivation:
                 pending.is_activated = True
                 pending.is_deleted = True
                 pending.save()
-                created_user=self.setup_user_permissions(pending, tenant)
-                print(created_user)
-                # if not created_user:
-                #     return tenant, domain, ActivationStatus.POST_SETUP_FAILED
-
                 return tenant, domain, ActivationStatus.SUCCESS
 
         except Exception as e:
@@ -166,8 +161,8 @@ class TenantActivation:
                     defaults={"description": "All permissions"}
                 )
                 RolePermission.objects.get_or_create(
-                    role=owner_role, 
-                    permission=all_permission
+                    role_id=owner_role, 
+                    permission_id=all_permission
                 )
                 
                 # Create superuser
@@ -176,7 +171,7 @@ class TenantActivation:
                     username=pending.name,
                     email=pending.email,
                     password=pending.password,
-                    role=owner_role,
+                    role_id=owner_role,
                     client=tenant
                 )
                 call_command('import_csv_with_foreign', schema=pending.schema_name, config="data/csv_config.json")
@@ -238,7 +233,7 @@ class ActivateTenantView(APIView):
             send_failed_activation_email(pending.email)
             return
 
-        # self.tenantActivation.setup_user_permissions(pending, tenant)
+        self.tenantActivation.setup_user_permissions(pending, tenant)
 
         send_message_acount_activated(pending.email, pending.schema_name, pending.name)
 

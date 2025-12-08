@@ -28,3 +28,5 @@ CONTEXT:  while inserting index tuple (0,5) in relation "tenants_client_schema_n
 [2025-12-04 21:34:27,479] WARNING tenant: Post-activation setup failed: Cannot resolve keyword 'permission' into field. Choices are: created_at, id, is_active, is_deleted, permission_id, permission_id_id, role_id, role_id_id, updated_at
 [2025-12-04 21:45:55,150] WARNING tenant: Post-activation setup failed: Cannot resolve keyword 'permission' into field. Choices are: created_at, id, is_active, is_deleted, permission_id, permission_id_id, role_id, role_id_id, updated_at
 [2025-12-06 17:19:40,969] WARNING tenant: Post-activation setup failed: Cannot resolve keyword 'permission' into field. Choices are: created_at, id, is_active, is_deleted, permission_id, permission_id_id, role_id, role_id_id, updated_at
+[2025-12-07 17:52:19,421] WARNING tenant: Post-activation setup failed: Cannot resolve keyword 'permission' into field. Choices are: created_at, id, is_active, is_deleted, permission_id, permission_id_id, role_id, role_id_id, updated_at
+[2025-12-07 18:59:35,905] WARNING tenant: Post-activation setup failed: User() got unexpected keyword arguments: 'role'

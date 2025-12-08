@@ -3,7 +3,7 @@
 import fs from 'fs';
 import path from 'path';
 // import { schemas } from '../shared/lib/schemas';
-import {schemas} from '@/src/shared/api/schemas'
+import { schemas } from '@/src/shared/api/schemas'
 // C:\coding\optics_tenant\osmFront\src\shared\api\schemas.ts
 import { z } from 'zod';
 
@@ -57,7 +57,7 @@ const fieldTemplates: Record<string, FieldTemplate> = {
 };
 
 // command line arguments
-const [,, schemaName, apiEndpoint, configPath] = process.argv;
+const [, , schemaName, apiEndpoint, configPath] = process.argv;
 
 // check if schema name is provided
 if (!schemaName || !(schemaName in schemas)) {
@@ -94,7 +94,7 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
     schema instanceof z.ZodNullable ||
     schema instanceof z.ZodDefault
   ) {
-    schema = schema._def.innerType; 
+    schema = (schema as any)._def.innerType;
   }
   return schema;
 }
@@ -102,7 +102,7 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
 // detect field type
 function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
   const schema = unwrapSchema(rawSchema);
-  
+
   // analyze field name
   const fieldLower = field.toLowerCase();
   if (fieldLower.includes('email')) return 'email';
@@ -113,28 +113,28 @@ function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
   if (fieldLower.includes('date')) return 'date';
   if (fieldLower.includes('time')) return 'time';
   if (fieldLower.includes('description') || fieldLower.includes('content') || fieldLower.includes('notes')) return 'textarea';
-  
+
   // analyze schema type
   if (schema instanceof z.ZodBoolean) return 'checkbox';
   if (schema instanceof z.ZodEnum) return 'select';
   if (schema instanceof z.ZodNumber) return 'number';
-  
+
   if (schema instanceof z.ZodString) {
     const checks = schema._def.checks || [];
     const hasEmail = checks.some((c: any) => c.kind === 'email');
     const hasUrl = checks.some((c: any) => c.kind === 'url');
     const hasMinLength = checks.some((c: any) => c.kind === 'min' && c.value >= 6);
     const hasMaxLength = checks.some((c: any) => c.kind === 'max' && c.value > 100);
-    
+
     if (hasEmail) return 'email';
     if (hasUrl) return 'url';
     if (hasMinLength && fieldLower.includes('password')) return 'password';
     if (hasMaxLength) return 'textarea';
   }
-  
+
   if (schema instanceof z.ZodArray) return 'array';
   if (schema instanceof z.ZodObject) return 'object';
-  
+
   return 'text';
 }
 
@@ -145,7 +145,7 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
   const schema = unwrapSchema(rawSchema);
   const description = rawSchema.description || field.replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase());
   const isRequired = !(rawSchema instanceof z.ZodOptional);
-  
+
   let inputElement = '';
   let wrapperStart = '';
   let wrapperEnd = '';
@@ -173,7 +173,7 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
       case 'select':
         if (schema instanceof z.ZodEnum) {
           const options = schema.options
-            .map((opt: string) => `<option value="${opt}">${opt}</option>`)
+            .map((opt: any) => `<option value="${opt}">${opt}</option>`)
             .join('\n      ');
           inputElement = `${labelElement}
     <select 
@@ -186,7 +186,7 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
     </select>`;
         }
         break;
-        
+
       case 'textarea':
         const rows = template.props?.rows || 3;
         inputElement = `${labelElement}
@@ -198,7 +198,7 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
       placeholder="${description}..."
     />`;
         break;
-        
+
       case 'array':
         inputElement = `${labelElement}
     <div className="space-y-2">
@@ -212,7 +212,7 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
       />
     </div>`;
         break;
-        
+
       case 'object':
         inputElement = `${labelElement}
     <div className="border border-gray-200 rounded-md p-3">
@@ -226,13 +226,13 @@ function generateFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
       />
     </div>`;
         break;
-        
+
       default:
         const inputType = template.type || 'text';
         const additionalProps = template.props ? Object.entries(template.props)
           .map(([key, value]) => `${key}={${JSON.stringify(value)}}`)
           .join(' ') : '';
-        
+
         inputElement = `${labelElement}
     <input 
       id="${field}" 
