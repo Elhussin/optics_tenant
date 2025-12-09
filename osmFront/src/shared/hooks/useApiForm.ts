@@ -22,6 +22,7 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     onError,
     transform,
     showToast = true,
+    skipCache = false,
   } = options;
 
   const queryClient = useQueryClient();
@@ -35,7 +36,7 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
 
   // 🎯 استخراج Schema الخاص بالـ endpoint
   const schema: ZodType<any> | undefined =
-         endpoint && hasParameters(endpoint)
+    endpoint && hasParameters(endpoint)
       ? endpoint.parameters?.body ?? endpoint.parameters?.query
       : undefined;
 
@@ -50,31 +51,49 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     defaultValues,
     mode: "onChange",
   });
-//   if (!endpoint) {
-//     return { success: false, error: `Endpoint "${alias}" not found.` };
-//   }
 
   // 🎯 لو endpoint = GET → نستخدم useQuery
+  const queryKey = useMemo(() => [alias, JSON.stringify(defaultValues || {})], [alias, defaultValues]);
+  // const query = useQuery({
+  //   queryKey,
+  //   queryFn: () => api.customRequest(alias as string, defaultValues),
+  //   enabled: !!alias && endpoint?.method === "get" &&
+  //         !Object.values(defaultValues || {}).includes(undefined),
+  // });
   const query = useQuery({
-    queryKey: [alias, defaultValues],
+    queryKey,
     queryFn: () => api.customRequest(alias as string, defaultValues),
-    // enabled: !!alias && endpoint?.method === "get",
-    enabled: !!alias && endpoint?.method === "get" &&
-          !Object.values(defaultValues || {}).includes(undefined),
-
+    // enabled: !!alias && endpoint?.method === "get" && !Object.values(defaultValues || {}).includes(undefined),
+    enabled: Boolean(alias && endpoint?.method === "get"),
+    // force refresh عند الحاجة
+    staleTime: skipCache ? 0 : 5 * 60 * 1000,
   });
 
-  // 🎯 Mutation لعمليات POST / PUT / DELETE
+  const prefetch = async (newValues: any) => {
+    const prefetchKey = [alias, JSON.stringify(newValues || {})];
+    if (!queryClient.getQueryData(prefetchKey)) {
+      await queryClient.prefetchQuery({
+        queryKey: prefetchKey,
+        queryFn: () => api.customRequest(alias as string, newValues),
+      });
+    }
+  };
+
+  const fetchDirect = async () => {
+    await queryClient.invalidateQueries({ queryKey });
+    return api.customRequest(alias as string, defaultValues);
+  };
+
   const mutation = useMutation({
-    mutationFn: async (payload: any) =>{
-        if (!endpoint?.alias) {
-          throw new Error(`Endpoint alias is undefined for alias "${alias}"`);
-        }
-        return api.customRequest(endpoint.alias, payload);
-      },
+    mutationFn: async (payload: any) => {
+      if (!endpoint?.alias) {
+        throw new Error(`Endpoint alias is undefined for alias "${alias}"`);
+      }
+      return api.customRequest(endpoint.alias, payload);
+    },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: [alias as string] });     
-       onSuccess?.(data);
+      queryClient.invalidateQueries({ queryKey: [alias as string] });
+      onSuccess?.(data);
     },
     onError: (error: any) => {
       // توزيع الأخطاء على الفورم
@@ -83,6 +102,12 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       onError?.(normalized);
     },
   });
+
+  const resetForm = () => {
+    methods.reset(defaultValues);
+    queryClient.invalidateQueries({ queryKey });
+  };
+
 
   const submitForm = async (data?: any) => {
     // ✅ تحقق من الـ validation
@@ -96,33 +121,45 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
         error: fieldErrors.join(", ") || "Validation failed",
       };
     }
-  
+
     const values = data ?? methods.getValues();
-    const payload = transform ? transform(values) : values;
-  
+    let payload = transform ? transform(values) : values;
+
     try {
-      // ✅ هنا هتاخد Response وترجعه
+
+      if (!transform && Object.values(values).some(v => v instanceof File)) {
+        const fd = new FormData();
+        Object.entries(values).forEach(([k, v]) => {
+          if (v instanceof File) fd.append(k, v);
+          else fd.append(k, JSON.stringify(v));
+        });
+        payload = fd;
+      }
+
       const response = await mutation.mutateAsync(payload);
+      onSuccess?.(response);
       return { success: true, data: response };
     } catch (error: any) {
-     
+      console.log(error);
       handleServerErrors(error, methods.setError, { showToast });
       const normalized = handleErrorStatus(error);
       onError?.(normalized);
-      // return { success: false, error };
+      return { success: false, error: normalized };
     }
   };
-  
 
-    return useMemo(() => ({
 
-      ...methods, // فورم
-      query, // للـ GET
-      mutation, // للـ POST/PUT/DELETE
-      submitForm, // دالة submit موحدة
-      isSubmitting: methods.formState.isSubmitting || mutation.isPending,
-      errors: methods.formState.errors,
-      formErrors: { ...methods.formState.errors, root: methods.formState.errors.root?.message },
-      
-    }), [methods, submitForm]);
-  }
+  const isBusy = query.isLoading || query.isFetching || methods.formState.isSubmitting || mutation.isPending;
+  return {
+    ...methods,
+    query,
+    mutation,
+    submitForm,
+    resetForm,
+    fetchDirect,
+    prefetch,
+    isBusy: isBusy,
+    errors: { ...methods.formState.errors, root: methods.formState.errors.root?.message },
+  };
+
+}

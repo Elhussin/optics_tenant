@@ -27,7 +27,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
   const prescriptionApi = useApiForm({ alias: "prescriptions_prescription_retrieve", defaultValues: { id: Number(id) } });
 
   const updatePrescriptionApi = useApiForm({ alias: "prescriptions_prescription_update" });
-  const { register, handleSubmit, setValue, getValues, submitForm, errors, isSubmitting, reset ,   } = useApiForm({ alias: alias});
+  const { register, handleSubmit, setValue, getValues, submitForm, errors, isBusy, reset ,   } = useApiForm({ alias: alias});
 
 
   useEffect(() => {
@@ -111,8 +111,8 @@ export default function EyeTest(props: PrescriptionFormProps) {
         <div className="flex gap-3 pt-4">
           <ActionButton
             onClick={handleSubmit(onSubmit)}
-            label={isSubmitting ? title + "..." : title}
-            disabled={isSubmitting}
+            label={isBusy ? title + "..." : title}
+            disabled={isBusy}
             variant="info"
             title={submitText || "Save"}
             icon={<CirclePlus size={16} />}

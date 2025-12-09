@@ -133,7 +133,7 @@ class RefreshTokenView(APIView):
 
             access["role_id"] = user.role_id.id if user.role_id else None
             access["role"] = user.role_id.name if user.role_id else None
-            access["tenant"] = refresh["tenant"]
+            access["tenant"] = refresh.payload.get("tenant", connection.schema_name)
             access["permissions"] = list(permissions.values_list('code', flat=True))
 
             response = Response({"msg": "Token refreshed", "access": str(access)})

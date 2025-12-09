@@ -54,6 +54,7 @@ export interface useFormRequestProps {
   onError?: (err: any) => void;
   transform?: (data: any) => any;
   showToast?: boolean;
+  skipCache?: boolean;
 }
 
 export type UseFormRequestReturn = {
@@ -70,7 +71,11 @@ export type UseApiFormReturn = UseFormReturn<any, any, any> & {
  query: any, // للـ GET
  mutation: any, // للـ POST/PUT/DELETE
  submitForm: any, // دالة submit موحدة
- isSubmitting: boolean,
+ isBusy: boolean,
+ resetForm: () => void,
+ prefetch: (newValues: any) => Promise<void>,
+ fetchDirect: () => Promise<{ success: boolean; error?: any }>,
+ errors: any,
 };
 export type UserContextType = {
   user: any | null;

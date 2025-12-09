@@ -1,10 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-
 type Options = Record<string, any>;
 export function useMergedTranslations(namespaces: string[]) {
-  // Call hooks at the top level
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const translations = namespaces.map(ns => useTranslations(ns));
 
   const t = (key: string, opts?: Options) => {

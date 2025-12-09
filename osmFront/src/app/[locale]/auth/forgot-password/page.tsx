@@ -64,10 +64,10 @@ export default function ForgotPasswordPage() {
 
         <button
           type="submit"
-          disabled={formRequest.isSubmitting || formRequest.isLoading}
+          disabled={formRequest.isBusy}
           className="btn btn-primary"
         >
-          {formRequest.isSubmitting || formRequest.isLoading
+          {formRequest.isBusy
             ? t("sending")
             : t("button")}
         </button>

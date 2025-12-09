@@ -41,8 +41,8 @@ export default function ViewDetailsCard(props: ViewCardProps) {
   // حالات الخطأ واللودنج
   if (!entity || !id) return <NotFound error={t('entityError')} />;
   if (!form) return <NotFound error={t('noConfigError')} />;
-  if (formRequest.isLoading || !data) return <Loading4 />;
-  if (formRequest.error) return <NotFound error={t('errorLoadingData')} />;
+  if (formRequest.isBusy || !data) return <Loading4 />;
+  if (formRequest.errors) return <NotFound error={t('errorLoadingData')} />;
 console.log("data Ditealis ",data)
   return (
     <div className="container-h">
