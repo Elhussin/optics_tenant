@@ -34,7 +34,7 @@ class PlanValidationMiddleware:
                 return JsonResponse({"error": "Your account is inactive."}, status=403)
 
             # تحقق من انتهاء الخطة
-            if client.is_plan_expired and client.is_plan_expired < now().date():
+            if client.is_plan_expired:
                 return JsonResponse({"error": "Your subscription plan has expired."}, status=403)
 
         return self.get_response(request)

@@ -79,7 +79,7 @@ SHARED_APPS = (
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'simple_history',
-    'corsheaders', # for 
+    'corsheaders', # corsheaders use for 
     'djmoney',
     'drf_spectacular',
     'drf_spectacular_sidecar',

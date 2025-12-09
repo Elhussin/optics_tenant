@@ -18,14 +18,6 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
   const [resetKey, setResetKey] = useState<number>(0);
   const { isSearchVisible } = useSearch();
 
-  // const handleChange = (name: string, value: string) => {
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-
-  // };
-
 
   const handleChange = (name: string, value: string) => {
     setForm((prev) => {
