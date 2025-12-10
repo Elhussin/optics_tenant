@@ -1,5 +1,4 @@
-import { ProductForginKeyConfigType } from "@/src/features/product/types";
-import { generateLensOptions } from "@/src/features/product/utils/generateLensOptions";
+import { ProductForginKeyConfigType } from "@/src/features/products/types";
 
 
 export const VariantTypeEnum = [{ value: "CL", label: "Contact Lens" }, { value: "SL", label: "Spectacle Lens" }, { value: "FR", label: "Frames" }, { value: "AX", label: "Accessories" }, { value: "DV", label: "Devices" }, { value: "OT", label: "Other" }]

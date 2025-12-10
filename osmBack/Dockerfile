@@ -1,63 +1,38 @@
-# ========================================
-# مرحلة البناء
-# ========================================
-FROM python:3.11-slim AS builder
+FROM python:3.12-slim
 
 WORKDIR /app
 
-# تثبيت الأدوات المطلوبة للبناء
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
+# تثبيت اعتمادات النظام
+RUN apt-get update && apt-get install -y \
+    gcc \ 
     libpq-dev \
+    netcat-openbsd \
     && rm -rf /var/lib/apt/lists/*
 
-# نسخ requirements
+# نسخ requirements.txt فقط أولاً (Docker layer caching)
 COPY requirements.txt .
 
-# إنشاء virtual environment
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# إنشاء virtual environment وتثبيت المتطلبات
+RUN python -m venv /app/venv
+ENV PATH="/app/venv/bin:$PATH"
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
 
-# تثبيت الحزم
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# ========================================
-# مرحلة التشغيل
-# ========================================
-FROM python:3.11-slim AS runner
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libpq5 curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# نسخ الـ virtual environment
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
-# نسخ الكود
+# نسخ باقي المشروع
 COPY . .
 
-# إنشاء مجلد logs وصلاحياته
-RUN mkdir -p /app/logs && chown -R 1001:1001 /app/logs
+# إنشاء المجلدات المطلوبة
+RUN mkdir -p /app/staticfiles /app/media
 
-# إنشاء مستخدم غير root
-RUN useradd -m -u 1001 django && chown -R django:django /app
+# نسخ entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-USER django
-
-# جمع الملفات الثابتة
-RUN python manage.py collectstatic --noinput --clear || true
-
-ENV PYTHONUNBUFFERED=1
-ENV DJANGO_SETTINGS_MODULE=optics_tenant.settings
-
+# منفذ التشغيل
 EXPOSE 8000
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/api/health/', timeout=5)" || exit 1
 
-# استخدام gunicorn بدلاً من runserver في production
-# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "optics_tenant.wsgi:application"]
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["/entrypoint.sh"]

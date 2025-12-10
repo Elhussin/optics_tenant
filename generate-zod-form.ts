@@ -93,7 +93,7 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
     schema instanceof z.ZodNullable ||
     schema instanceof z.ZodDefault
   ) {
-    schema = schema._def.innerType;
+    schema = schema._def.innerType as z.ZodTypeAny;
   }
   return schema;
 }

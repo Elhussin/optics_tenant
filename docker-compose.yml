@@ -1,35 +1,81 @@
-version: '3.9'
 services:
-  # db:
-  #   image: postgres:15
-  #   container_name: osm_db
-  #   restart: always
-  #   environment:
-  #     POSTGRES_DB: osm_db
-  #     POSTGRES_USER: osm_user
-  #     POSTGRES_PASSWORD: osm_pass
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-
-  backend:
-    build:
-      context: ./osmBack   # مسار مشروع Django
-      dockerfile: Dockerfile
-    container_name: osm_backend
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./osmBack:/app       # ربط الكود المحلي مع الحاوية
+  db:
+    image: postgres:16
+    container_name: postgres_db
     env_file:
-      - ./osmBack/.env.development       # ملف البيئة (DATABASE_URL, SECRET_KEY...)
-    network_mode: "host"  # للوصول إلى PostgreSQL على localhost
-
-
+      - ./.env
+    restart: always
+    environment:
+      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $DB_USER -d $DB_NAME || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+      
+  backend:
+    build: 
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: backend
+    restart: always
+    env_file:
+      - ./osmBack/.env
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    expose:
+      - "8000"
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  frontend:
+    build:
+      context: ./osmFront
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    expose:
+      - "80"
+    networks:
+      - app-network
+  
+  # nginx:
+  #   image: nginx:stable-alpine
+  #   container_name: nginx_reverse_proxy
+  #   restart: always
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - static_volume:/staticfiles:ro
+  #     - media_volume:/media:ro
+  #     - certbot_certs:/etc/letsencrypt:ro
+  #   networks:
+  #     - app-network
+  #   depends_on:
+  #     - backend
+  #     - frontend
 
 volumes:
   postgres_data:
+  static_volume:
+  media_volume:
+  certbot_certs:
+    external: true
 
-
-# docker-compose up -d
-# docker compose up --build
+networks:
+  app-network:
+    driver: bridge

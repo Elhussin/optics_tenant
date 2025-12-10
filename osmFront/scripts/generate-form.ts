@@ -5,7 +5,7 @@ import path from 'path';
 import { schemas } from '@/src/shared/api/schemas';
 import { z } from 'zod';
 
-const [,, schemaName] = process.argv;
+const [, , schemaName] = process.argv;
 if (!schemaName || !(schemaName in schemas)) {
   console.error('❌ Please provide a valid schema name from zodSchemas.ts');
   process.exit(1);
@@ -16,7 +16,7 @@ const schema = (schemas as any)[schemaName] as z.ZodObject<any>;
 const shape = schema.shape;
 
 // 👇 تجاهل الحقول غير الضرورية
-const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'is_active','group'];
+const ignoredFields = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'is_superuser', 'is_active', 'group'];
 const visibleFields = Object.keys(shape).filter((f) => !ignoredFields.includes(f));
 
 const pascal = schemaName.replace(/(^\w|_\w)/g, (m) => m.replace('_', '').toUpperCase());
@@ -29,7 +29,7 @@ function unwrapSchema(schema: z.ZodTypeAny): z.ZodTypeAny {
     schema instanceof z.ZodNullable ||
     schema instanceof z.ZodDefault
   ) {
-    schema = schema._def.innerType;
+    schema = schema._def.innerType as z.ZodTypeAny;
   }
   return schema;
 }
@@ -49,7 +49,7 @@ function getFieldCode(field: string, rawSchema: z.ZodTypeAny): string {
     </label>`;
   } else if (schema instanceof z.ZodEnum) {
     const options = schema.options
-      .map((opt: string) => `<option value="${opt}">${opt}</option>`)
+      .map((opt: any) => `<option value="${opt}">${opt}</option>`)
       .join('\n    ');
     inputElement = `
     <label htmlFor="${field}" className="block text-sm font-medium mb-1">${description}</label>

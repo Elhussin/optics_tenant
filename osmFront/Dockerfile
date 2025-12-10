@@ -1,18 +1,17 @@
 # ========================================
 # مرحلة البناء
 # ========================================
-FROM node:20-alpine AS builder
+
+# المرحلة الأولى: بناء المشروع
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps
 
 COPY . .
-RUN pnpm build
-
+RUN npm run build
 # ========================================
 # مرحلة التشغيل
 # ========================================
@@ -22,8 +21,8 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --prod --frozen-lockfile
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps --prod --frozen-lockfile
 
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
@@ -42,4 +41,6 @@ ENV HOSTNAME="0.0.0.0"
 
 EXPOSE 3000
 
-CMD ["pnpm", "start"]
+CMD ["npm", "run", "start"]
+
+

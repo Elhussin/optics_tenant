@@ -12,10 +12,10 @@ export default function CreatePrescriptionPage() {
 
        <ProductVariantForm
             alias="products_product-variants_create"
-            title="create Product Variant"
-            message="Sucussfully created Product Variant"
-            submitText="Save Product Variant"
-            className="container"
+            // title="create Product Variant"
+            // message="Sucussfully created Product Variant"
+            // submitText="Save Product Variant"
+            // className="container"
           />
           </Suspense>
 
