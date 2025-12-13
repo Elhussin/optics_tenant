@@ -9,6 +9,16 @@ from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings
 from django.db import connection
 User = get_user_model()
 
+class HealthResponseSerializer(serializers.Serializer):
+    """
+    Serializer for health check response.
+
+    Args:
+        serializers.Serializer: The serializer class.
+    """
+    status = serializers.CharField()
+
+
 # Role and Permission Serializers
 class RolePermissionSerializer(serializers.ModelSerializer):
     role_name = serializers.CharField(source="role_id.name", read_only=True)

@@ -19,7 +19,23 @@ export interface ProductConfigType {
   className?: string;
 }
 
-
+export interface ProductForginKeyConfigType {
+  name: string;
+  label?: string;
+  role: string;
+  filter: string;
+  subFilter?: string;
+  title?: string;
+  entityName: string;
+  fieldName: string;
+  type?: string;
+  placeholder?: string;
+  required: boolean;
+  options?: OptionsProps;
+  mapOnly?: boolean;
+  defaultValue?: any;
+  className?: string;
+}
 
 export interface RenderFormProps {
   fields: ProductConfigType[];

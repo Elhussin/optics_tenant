@@ -1,6 +1,6 @@
 import { ProductForginKeyConfigType } from "@/src/features/products/types";
 
-
+export const TypeEnum = [{ value: "CL", label: "Contact Lens" }, { value: "SL", label: "Spectacle Lens" }, { value: "FR", label: "Frames" }, { value: "AX", label: "Accessories" }, { value: "DV", label: "Devices" }, { value: "OT", label: "Other" }]
 export const VariantTypeEnum = [{ value: "CL", label: "Contact Lens" }, { value: "SL", label: "Spectacle Lens" }, { value: "FR", label: "Frames" }, { value: "AX", label: "Accessories" }, { value: "DV", label: "Devices" }, { value: "OT", label: "Other" }]
 export const ProductTypeEnum=[
   {value:"SV-ST",label:"Single Stock", filter:"SL",
@@ -149,7 +149,7 @@ export const ProductConfig: Record<string, ProductForginKeyConfigType> = {
     type: "select",
     placeholder: "Select Variant Type...",
     required: true,
-    options: VARIANT_TYPE_CHOICES,
+    options: VariantTypeEnum,
   },
   "is_active":{
     name: "is_active",

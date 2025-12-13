@@ -13,20 +13,20 @@ export function generateViewFieldsWithLabels(
     fieldLabels?: Record<string, string>;
   }
 ): FieldMeta[] {
-  const shape = schema._def.shape();
+  const shape = schema.shape;
 
   return Object.entries(shape)
     .filter(([key]) => !options?.hiddenFields?.includes(key))
     .map(([key, zodType]) => {
       // استخدم label مخصص إن وُجد، أو الوصف من Zod، أو الاسم الافتراضي
       const customLabel = options?.fieldLabels?.[key];
-      const zodLabel = zodType.description;
+      const zodLabel = (zodType as any).description;
       const fallbackLabel = key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
 
       return {
         key,
         label: customLabel || zodLabel || fallbackLabel,
-        zodType,
+        zodType: zodType as ZodTypeAny,
       };
     });
 }

@@ -1,6 +1,6 @@
 
 from django.urls import path
-from .views import( LoginView, RegisterView, LogoutView, RefreshTokenView,
+from .views import( LoginView, RegisterView, LogoutView, RefreshTokenView, HealthCheckView,
 ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView,PageViewSet,PublicPageViewSet,
 ContactUsViewSet,TenantSettingsViewset,
 PermissionViewSet, RolePermissionViewSet, RoleViewSet)
@@ -9,6 +9,7 @@ from django.urls import include
 
 
 router = DefaultRouter()
+
 router.register(r'users', UserViewSet, basename='users')
 router.register(r'permissions', PermissionViewSet, basename='permissions')
 router.register(r'role-permissions', RolePermissionViewSet, basename='role-permissions')
@@ -22,6 +23,7 @@ router.register(r'tenant-settings', TenantSettingsViewset, basename='tenant-sett
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("health/", HealthCheckView.as_view()),
     path("register/", RegisterView.as_view()),
     path("login/", LoginView.as_view()),
     path("logout/", LogoutView.as_view()),

@@ -1,19 +1,46 @@
-
-"use client"
-import { useState } from "react"
+"use client";
+import { useState } from "react";
 import { Checkbox } from "@/src/shared/components/shadcn/ui/checkbox";
 import { Switch } from "@/src/shared/components/shadcn/ui/switch";
-import { RadioGroup, RadioGroupItem } from "@/src/shared/components/shadcn/ui/radio-group";
-import { FormItem, FormControl, FormLabel } from "@/src/shared/components/shadcn/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/shared/components/shadcn/ui/select";
+import {
+  RadioGroup,
+  RadioGroupItem,
+} from "@/src/shared/components/shadcn/ui/radio-group";
+import {
+  FormItem,
+  FormControl,
+  FormLabel,
+} from "@/src/shared/components/shadcn/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/shared/components/shadcn/ui/select";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Textarea } from "@/src/shared/components/shadcn/ui/textarea";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/src/shared/components/shadcn/ui/popover";
-import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/src/shared/components/shadcn/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/src/shared/components/shadcn/ui/popover";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/src/shared/components/shadcn/ui/command";
 import { Check, ChevronsUpDown, X } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
-import { FieldsProps, SelectFieldsProps, MultiSelectFieldProps } from "@/src/features/products/types";
+import {
+  FieldsProps,
+  SelectFieldsProps,
+  MultiSelectFieldProps,
+} from "@/src/features/products/types";
 import { Badge } from "@/src/shared/components/shadcn/ui/badge";
 import { useForm, Controller } from "react-hook-form";
 import { StringToBoolean } from "class-variance-authority/types";
@@ -38,9 +65,16 @@ export const SwitchField = ({ fieldRow, field }: FieldsProps) => {
 
 export const RadioField = ({ fieldRow, field }: FieldsProps) => {
   return (
-    <RadioGroup onValueChange={field.onChange} value={field.value} className="flex gap-3">
+    <RadioGroup
+      onValueChange={field.onChange}
+      value={field.value}
+      className="flex gap-3"
+    >
       {(fieldRow.options || []).map((opt) => (
-        <FormItem key={String(opt.value)} className="flex items-center space-x-2">
+        <FormItem
+          key={String(opt.value)}
+          className="flex items-center space-x-2"
+        >
           <FormControl>
             <RadioGroupItem value={String(opt.value)} />
           </FormControl>
@@ -51,40 +85,58 @@ export const RadioField = ({ fieldRow, field }: FieldsProps) => {
   );
 };
 
-
 export const TextField = ({ fieldRow, field }: FieldsProps) => {
   return (
-    <Input type={fieldRow.type} placeholder={fieldRow.placeholder} value={field.defaultValue || ""} {...field} className={fieldRow.className} />
+    <Input
+      type={fieldRow.type}
+      placeholder={fieldRow.placeholder}
+      value={field.defaultValue || ""}
+      {...field}
+      className={fieldRow.className}
+    />
   );
 };
-
 
 export const TextareaField = ({ fieldRow, field }: FieldsProps) => {
   return (
-    <Textarea placeholder={fieldRow.placeholder} {...field} className="w-full" required={fieldRow.required} />
+    <Textarea
+      placeholder={fieldRow.placeholder}
+      {...field}
+      className="w-full"
+      required={fieldRow.required}
+    />
   );
 };
 
-export const SelectField = ({ fieldRow, field, options }: SelectFieldsProps) => {
+export const SelectField = ({
+  fieldRow,
+  field,
+  options,
+}: SelectFieldsProps) => {
   return (
-    <Select onValueChange={field.onChange} value={field.value} >
+    <Select onValueChange={field.onChange} value={field.value}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder={fieldRow.placeholder || "Select"} />
       </SelectTrigger>
       <SelectContent>
-
-        {(options || fieldRow.options || [{ value: "", label: "" }]).map((opt: any, index: number) => (
-          <SelectItem key={index} value={opt.value}>
-            {opt.label}
-          </SelectItem>
-        ))}
+        {(options || fieldRow.options || [{ value: "", label: "" }]).map(
+          (opt: any, index: number) => (
+            <SelectItem key={index} value={opt.value}>
+              {opt.label}
+            </SelectItem>
+          )
+        )}
       </SelectContent>
     </Select>
   );
 };
 
 // لاحظ أننا نحذف useState للـ value لأنها ستأتي من form
-export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps) {
+export function SearchableSelect({
+  fieldRow,
+  options,
+  field,
+}: SelectFieldsProps) {
   const [open, setOpen] = useState(false);
   const selectedLabel = options?.find((o) => o.value === field.value)?.label;
 
@@ -134,16 +186,19 @@ export function SearchableSelect({ fieldRow, options, field }: SelectFieldsProps
   );
 }
 
-
-export const MultiCheckbox = ({ fieldName, fieldRow, control, options }: MultiSelectFieldProps) => {
+export const MultiCheckbox = ({
+  fieldName,
+  fieldRow,
+  control,
+  options,
+}: MultiSelectFieldProps) => {
   // console.log("MultiCheckbox", options)
   const DefaultOptions = options || fieldRow.options || [];
   return (
-
     <Controller
       name={fieldName}
       control={control}
-      defaultValue={[]} // ✅ يضمن أن field.value يكون [] وليس undefined
+      defaultValue={[]as any} // ✅ يضمن أن field.value يكون [] وليس undefined
       render={({ field }) => (
         <div className="space-y-2 grid grid-cols-3 gap-1.5">
           {DefaultOptions?.map((opt: any, index: number) => (
@@ -167,23 +222,24 @@ export const MultiCheckbox = ({ fieldName, fieldRow, control, options }: MultiSe
         </div>
       )}
     />
-
-
   );
-}
+};
 
-
-export function MultiSelectField({ control, fieldName, options }: MultiSelectFieldProps) {
-
+export function MultiSelectField({
+  control,
+  fieldName,
+  options,
+}: MultiSelectFieldProps) {
   return (
     <Controller
-      name={fieldName as string }
+      name={fieldName}
       control={control}
-      defaultValue={[] as Array<string | number>} // ✅ يضمن أن field.value لن يكون undefined
+      defaultValue={[] as any} // ✅ يضمن أن field.value لن يكون undefined
       render={({ field }) => {
         const value = (field.value || []) as Array<string | number>;
 
-        const selected = options?.filter((opt: any) => value.includes(opt.value)) || [];
+        const selected =
+          options?.filter((opt: any) => value.includes(opt.value)) || [];
 
         return (
           <div className="flex flex-col gap-2">
@@ -206,7 +262,9 @@ export function MultiSelectField({ control, fieldName, options }: MultiSelectFie
                             className="w-3 h-3 cursor-pointer"
                             onClick={(e) => {
                               e.stopPropagation();
-                              field.onChange(value.filter((v) => v !== s.value));
+                              field.onChange(
+                                value.filter((v) => v !== s.value)
+                              );
                             }}
                           />
                         </Badge>

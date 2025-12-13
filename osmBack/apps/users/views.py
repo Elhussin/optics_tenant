@@ -18,7 +18,7 @@ from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings
 from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,
                           TenantSettingsSerializer,RegisterSerializer, LoginSerializer,
                           UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,PasswordResetConfirmSerializer,
-                         TenantSettings)
+                         TenantSettings, HealthResponseSerializer)
 from apps.tenants.models import Client
 
 from .contexts.index import USER_RELATED_FIELDS,USER_FIELD_LABELS,USER_FILTER_FIELDS
@@ -26,6 +26,26 @@ from core.utils.email import send_password_reset_email
 
 from core.views import BaseViewSet
 User = get_user_model()
+
+
+class HealthCheckView(APIView):
+    """
+    Health check endpoint to verify that the API is running.
+    permission_classes = [AllowAny]
+
+    Args:
+        APIView: The API view class.
+    """
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        responses={200: HealthResponseSerializer},
+        description="Health check endpoint to verify that the API is running."
+    )
+    def get(self, request):
+        return Response({"status": "ok"})
+
+
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
