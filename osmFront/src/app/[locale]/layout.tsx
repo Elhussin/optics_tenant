@@ -1,6 +1,6 @@
 // src/app/[locale]/layout.tsx
 import { Cairo, Inter } from "next/font/google";
-import "@/src/styles/globals.css";
+import "@/src/styles/app.css";
 import { routing } from "@/src/app/i18n/routing";
 import { notFound } from "next/navigation";
 import { getTrenMessagesFiles } from "@/src/shared/utils/getTrenMessagesFiles";

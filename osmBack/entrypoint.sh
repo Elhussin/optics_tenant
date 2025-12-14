@@ -50,15 +50,15 @@ python manage.py collectstatic --noinput --clear
 echo "Starting Gunicorn..."
 exec gunicorn optics_tenant.wsgi:application \
     --bind 0.0.0.0:8000 \
-    # --workers 4 \
-    # --threads 2 \
-    # --worker-class gthread \
-    # --worker-tmp-dir /dev/shm \
-    # --log-level info \
-    # --access-logfile - \
-    # --error-logfile - \
-    # --timeout 120 \
-    # --graceful-timeout 30 \
-    # --keep-alive 5
+    --workers 4 \
+    --threads 2 \
+    --worker-class gthread \
+    --worker-tmp-dir /dev/shm \
+    --log-level info \
+    --access-logfile - \
+    --error-logfile - \
+    --timeout 120 \
+    --graceful-timeout 30 \
+    --keep-alive 5
 
  
