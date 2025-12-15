@@ -1,287 +1,187 @@
-// 'use client';
-// import { useRouter, usePathname } from '@/src/app/i18n/navigation';
-// import { useLocale } from 'next-intl';
-// import { useTransition } from 'react';
-// import { useEffect, useState } from 'react';
-// import Cookies from 'js-cookie';
-// import { languages, countries, currencies, currencyMap } from '@/src/shared/constants';
-// import { Loader2 } from 'lucide-react';
-// export default function LocaleSwitcher() {
-//   const router = useRouter();
-//   const pathname = usePathname();
-//   const locale = useLocale(); 
-//   const [isPending, startTransition] = useTransition();
-
-//   const [language, setLanguage] = useState(locale||'en'||process.env.DEFAULT_LANGUAGE);
-//   const [country, setCountry] = useState(Cookies.get('country') || process.env.DEFAULT_COUNTRY);
-//   const [currency, setCurrency] = useState(Cookies.get('currency') || process.env.DEFAULT_CURRENCY);
-
-
-//   // Sync language state with locale changes
-//   useEffect(() => {
-//     setLanguage(locale);
-//   }, [locale]);
-
-//   // IP-based country/currency detection (only once)
-//   useEffect(() => {
-//     const cookieCountry = Cookies.get('country');
-//     const cookieCurrency = Cookies.get('currency');
-
-//     if (!cookieCountry || !cookieCurrency) {
-//       fetch('https://ipapi.co/json/')
-//         .then((res) => res.json())
-//         .then((data) => {
-//           const detectedCountry = data.country_code?.toLowerCase() || 'sa';
-//           const matchedCountry = countries.find((c) => c.value === detectedCountry) || countries[0];
-//           const mappedCurrency = currencyMap[matchedCountry.value] || 'sar';
-
-//           setCountry(matchedCountry.value);
-//           setCurrency(mappedCurrency);
-//           setLanguage(process.env.DEFAULT_LANGUAGE || 'en');
-          
-//           Cookies.set('country', matchedCountry.value, { path: '/', expires: 30 });
-//           Cookies.set('currency', mappedCurrency, { path: '/', expires: 30 });
-//           Cookies.set('language', process.env.DEFAULT_LANGUAGE || 'en', { path: '/', expires: 30 });
-//         })
-//         .catch(() => {
-//           setCountry(process.env.DEFAULT_COUNTRY || 'sa');
-//           setCurrency(process.env.DEFAULT_CURRENCY || 'sar');
-//           setLanguage(process.env.DEFAULT_LANGUAGE || 'en');
-//           Cookies.set('country', process.env.DEFAULT_COUNTRY || 'sa', { path: '/', expires: 30 });
-//           Cookies.set('currency', process.env.DEFAULT_CURRENCY || 'sar', { path: '/', expires: 30 });
-//           Cookies.set('language', process.env.DEFAULT_LANGUAGE || 'en', { path: '/', expires: 30 });
-//         });
-//     }
-//   }, []);
-
-//   // Update cookies when country/currency changes (not language - that's handled by next-intl)
-//   useEffect(() => {
-//     if (country) {
-//       Cookies.set('country', country, { path: '/', expires: 30 });
-//     }
-//   }, [country]);
-
-//   useEffect(() => {
-//     if (currency) {
-//       Cookies.set('currency', currency, { path: '/', expires: 30 });
-//     }
-//   }, [currency]);
-
-//   const handleLanguageChange = (newLang: string) => {
-//     if (newLang !== locale) {
-//       startTransition(() => {
-//         // This will change the URL and trigger a re-render with new locale
-//         router.replace(pathname, { locale: newLang });
-//       });
-//     }
-//   };
-
-//   const handleCountryChange = (selected: string) => {
-//     setCountry(selected);
-//     const newCurrency = currencyMap[selected] || 'sar';
-//     setCurrency(newCurrency);
-//   };
-
-//   return (
-//     <div className="flex flex-row gap-4 items-center">
-//       {/* Language Selector */}
-//       <div>
-//         <select
-//           className="header-select"
-//           value={locale} // Use locale instead of language state
-//           disabled={isPending}
-//           onChange={(e) => handleLanguageChange(e.target.value)}
-//         >
-//           {languages.map((l) => (
-//             <option key={l.value} value={l.value}>
-//               {l.label}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
-
-//       {/* Country Selector */}
-//       <div>
-//         <select
-//           disabled
-//           className="header-select disabled:opacity-50"
-//           value={country}
-//           onChange={(e) => handleCountryChange(e.target.value)}
-//         >
-//           {/* <option value="">{country}</option> */}
-//           {countries.map((c) => (
-//             <option key={c.value} value={c.value}>
-//               {c.label}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
-
-//       {/* Currency Selector */}
-//       <div>
-//         <select
-//           disabled
-//           className="header-select disabled:opacity-50"
-//           value={currency}
-//           onChange={(e) => setCurrency(e.target.value)}
-//         >
-//           {/* <option value="">{currency}</option> */}
-//           {currencies.map((c) => (
-//             <option key={c.value} value={c.value}>
-//               {c.label}
-//             </option>
-//           ))}
-//         </select>
-//       </div>
-      
-//       {/* Loading indicator */}
-//       {isPending && (
-//         <Loader2 className="animate-spin" />
-//       )}
-//     </div>
-//   );
-// }
-
 'use client';
 
 import { useRouter, usePathname } from '@/src/app/i18n/navigation';
-import { useLocale } from 'next-intl';
-import { useTransition, useEffect, useState } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useTransition, useEffect, useState, useRef } from 'react';
 import Cookies from 'js-cookie';
 import { languages, countries, currencies, currencyMap } from '@/src/shared/constants';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Globe, ChevronDown, Check, MapPin, Coins } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import clsx from 'clsx';
+import { useClickOutside } from '@/src/shared/hooks/useClickOutside';
+// C:\coding\optics_tenant\osmFront\src\shared\hooks\useClickOutside.tsx
+type Tab = 'language' | 'country' | 'currency';
 
 export default function LocaleSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
+  // const t = useTranslations('common'); // Assuming you have common translations, or use fallback text
 
   const [isPending, startTransition] = useTransition();
+  const [isOpen, setIsOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>('language');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Fallbacks: locale > env default > 'en'
+  useClickOutside(dropdownRef, () => setIsOpen(false));
+
   const defaultLanguage = process.env.DEFAULT_LANGUAGE || 'en';
   const defaultCountry = process.env.DEFAULT_COUNTRY || 'sa';
   const defaultCurrency = process.env.DEFAULT_CURRENCY || 'sar';
 
-  const [language, setLanguage] = useState(locale || defaultLanguage);
   const [country, setCountry] = useState(Cookies.get('country') || defaultCountry);
   const [currency, setCurrency] = useState(Cookies.get('currency') || defaultCurrency);
 
-  // Sync language state with locale
+  // Sync state (simplified for UI)
   useEffect(() => {
-    setLanguage(locale || defaultLanguage);
-  }, [locale]);
-
-  // Detect country/currency via IP (only if cookies not present)
-  useEffect(() => {
-    const fetchLocation = async () => {
-      try {
-        const res = await fetch('https://ipapi.co/json/');
-        const data = await res.json();
-        const detectedCountry = data.country_code?.toLowerCase() || defaultCountry;
-        const matchedCountry = countries.find(c => c.value === detectedCountry) || countries[0];
-        const mappedCurrency = currencyMap[matchedCountry.value] || defaultCurrency;
-
-        setCountry(matchedCountry.value);
-        setCurrency(mappedCurrency);
-        setLanguage(defaultLanguage);
-
-        Cookies.set('country', matchedCountry.value, { path: '/', expires: 30 });
-        Cookies.set('currency', mappedCurrency, { path: '/', expires: 30 });
-        Cookies.set('language', defaultLanguage, { path: '/', expires: 30 });
-      } catch (error) {
-        // Fallback if IP detection fails
-        setCountry(defaultCountry);
-        setCurrency(defaultCurrency);
-        setLanguage(defaultLanguage);
-
-        Cookies.set('country', defaultCountry, { path: '/', expires: 30 });
-        Cookies.set('currency', defaultCurrency, { path: '/', expires: 30 });
-        Cookies.set('language', defaultLanguage, { path: '/', expires: 30 });
-      }
-    };
-
-    if (!Cookies.get('country') || !Cookies.get('currency')) {
-      fetchLocation();
-    }
+    if (!Cookies.get('country')) handleAutoDetect();
   }, []);
 
-  // Update cookies when country/currency changes
-  useEffect(() => {
-    if (country) Cookies.set('country', country, { path: '/', expires: 30 });
-  }, [country]);
+  const handleAutoDetect = async () => {
+    try {
+      const res = await fetch('https://ipapi.co/json/');
+      const data = await res.json();
+      const detected = data.country_code?.toLowerCase();
+      if (detected) {
+        const matched = countries.find(c => c.value === detected);
+        if (matched) {
+          setCountry(matched.value);
+          setCurrency(currencyMap[matched.value] || defaultCurrency);
+          Cookies.set('country', matched.value, { path: '/', expires: 30 });
+          Cookies.set('currency', currencyMap[matched.value] || defaultCurrency, { path: '/', expires: 30 });
+        }
+      }
+    } catch (e) { console.error("Auto detect failed", e); }
+  };
 
-  useEffect(() => {
-    if (currency) Cookies.set('currency', currency, { path: '/', expires: 30 });
-  }, [currency]);
-
-  // Handle language change
   const handleLanguageChange = (newLang: string) => {
     if (newLang !== locale) {
       startTransition(() => {
         router.replace(pathname, { locale: newLang });
+        setIsOpen(false);
       });
     }
   };
 
-  // Handle country change
   const handleCountryChange = (selected: string) => {
     setCountry(selected);
-    setCurrency(currencyMap[selected] || defaultCurrency);
+    const newCurr = currencyMap[selected] || defaultCurrency;
+    setCurrency(newCurr);
+    Cookies.set('country', selected, { path: '/', expires: 30 });
+    Cookies.set('currency', newCurr, { path: '/', expires: 30 });
   };
 
+  const handleCurrencyChange = (selected: string) => {
+    setCurrency(selected);
+    Cookies.set('currency', selected, { path: '/', expires: 30 });
+  };
+
+  const activeLanLabel = languages.find(l => l.value === locale)?.label.substring(0, 3).toUpperCase();
+
   return (
-    <div className="flex flex-row gap-4 items-center">
-      {/* Language Selector */}
-      <div>
-        <select
-          className="header-select"
-          value={locale}
-          disabled={isPending}
-          onChange={(e) => handleLanguageChange(e.target.value)}
-        >
-          {languages.map(l => (
-            <option key={l.value} value={l.value}>
-              {l.label}
-            </option>
-          ))}
-        </select>
-      </div>
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors border border-transparent hover:border-gray-200 dark:hover:border-gray-700"
+      >
+        <Globe size={18} className="text-gray-500" />
+        <span>{activeLanLabel}</span>
+        <span className="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1" />
+        <span className="uppercase text-xs text-gray-500">{country}</span>
+        {isPending ? <Loader2 size={14} className="animate-spin ml-1" /> : <ChevronDown size={14} className={clsx("transition-transform duration-200", isOpen && "rotate-180")} />}
+      </button>
 
-      {/* Country Selector */}
-      <div>
-        <select
-          disabled
-          className="header-select disabled:opacity-50"
-          value={country}
-          onChange={(e) => handleCountryChange(e.target.value)}
-        >
-          {countries.map(c => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </div>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-4 z-50 origin-top-right"
+          >
+            {/* Tabs */}
+            <div className="flex p-1 mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+              {(['language', 'country', 'currency'] as Tab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={clsx(
+                    "flex-1 flex items-center justify-center py-1.5 text-xs font-medium rounded-md transition-all",
+                    activeTab === tab
+                      ? "bg-white dark:bg-gray-700 text-primary-600 dark:text-primary-400 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  )}
+                >
+                  {tab === 'language' && <Globe size={12} className="mr-1.5" />}
+                  {tab === 'country' && <MapPin size={12} className="mr-1.5" />}
+                  {tab === 'currency' && <Coins size={12} className="mr-1.5" />}
+                  <span className="capitalize">{tab}</span>
+                </button>
+              ))}
+            </div>
 
-      {/* Currency Selector */}
-      <div>
-        <select
-          disabled
-          className="header-select disabled:opacity-50"
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-        >
-          {currencies.map(c => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
-      </div>
+            {/* Content */}
+            <div className="space-y-1 max-h-60 overflow-y-auto scrollbar-thin px-1">
 
-      {/* Loading Indicator */}
-      {isPending && <Loader2 className="animate-spin" />}
+              {activeTab === 'language' && languages.map((l) => (
+                <button
+                  key={l.value}
+                  onClick={() => handleLanguageChange(l.value)}
+                  className={clsx(
+                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                    locale === l.value
+                      ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400"
+                      : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-lg">{l.label.split(' ')[0]}</span> {/* Assuming first part is flag/emoji if present, else just label */}
+                    {l.label}
+                  </span>
+                  {locale === l.value && <Check size={16} />}
+                </button>
+              ))}
+
+              {activeTab === 'country' && countries.map((c) => (
+                <button
+                  key={c.value}
+                  onClick={() => handleCountryChange(c.value)}
+                  className={clsx(
+                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                    country === c.value
+                      ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400"
+                      : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    {c.label}
+                  </span>
+                  {country === c.value && <Check size={16} />}
+                </button>
+              ))}
+
+              {activeTab === 'currency' && currencies.map((c) => (
+                <button
+                  key={c.value}
+                  onClick={() => handleCurrencyChange(c.value)}
+                  className={clsx(
+                    "w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
+                    currency === c.value
+                      ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400"
+                      : "hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-200"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    {c.label}
+                  </span>
+                  {currency === c.value && <Check size={16} />}
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

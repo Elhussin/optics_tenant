@@ -58,21 +58,6 @@ useEffect(() => {
 }, [loading, user, redirect, router]);
 
 
-  // useEffect(() => {
-  //   if (!loading && user) {
-  //     router.replace(redirect);
-  //   }
-  // }, [user, loading, redirect, router]);
-  
-  // useEffect(() => {
-  //   if (typeof window === "undefined") return;
-  //   if (!loading && user) {
-  //     router.replace(redirect);
-  //   }
-  // }, [loading, user, redirect, router]);
-
-    // if( isSubmitting || loading ) return <Loading4 />;b
-
   return (
     <div className={cn("flex justify-center px-4 py-8 bg")}>
       <div
@@ -143,13 +128,13 @@ useEffect(() => {
                 <>
                   <Link
                     href="./register"
-                    className="btn btn-outline w-full text-primary underline"
+                    className=" w-full text-primary underline"
                   >
                     {t("register")}
                   </Link>
                   <Link
                     href="./forgot-password"
-                    className="btn btn-outline w-full text-primary underline"
+                    className="w-full text-primary underline"
                   >
                     {t("forgotPassword")}
                   </Link>
@@ -157,7 +142,7 @@ useEffect(() => {
               ) : (
                 <Link
                   href="./login"
-                  className="btn btn-outline w-full text-primary underline"
+                  className=" w-full text-primary underline"
                 >
                   {t("button")}
                 </Link>

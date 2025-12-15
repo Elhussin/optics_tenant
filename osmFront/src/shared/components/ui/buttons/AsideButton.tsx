@@ -12,7 +12,8 @@ export const AsideButton = () => {
       aria-label="Toggle Sidebar"
       className= {cn("aside-button")} 
     >
-      {!isVisible ? <Menu size={22} className="text-button-text" /> : <X size={22} className="text-button-text" />}
+      {!isVisible ? <Menu size={22} className="" /> :""}
     </button>
   );
 };
+//  <X size={22} className="text-button-text" />
