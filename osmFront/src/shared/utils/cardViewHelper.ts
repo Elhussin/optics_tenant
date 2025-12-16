@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { safeToast } from "./toastService";
+import { safeToast } from "./safeToast";
 export function formatLabel(field: string): string {
   return field
     .replace(/[_\-]+/g, ' ')
@@ -57,22 +57,22 @@ export const handleDownloadPDF = async (printRef: any, title: string) => {
 
 export const handleCopy = (item: any, fields: string[]) => {
   const text = fields.map((field) => {
-      const value = item[field];
-      const formatted =
-        typeof value === "boolean"
-          ? value
-            ? "✅"
-            : "❌"
-          : isValidDate(value)
+    const value = item[field];
+    const formatted =
+      typeof value === "boolean"
+        ? value
+          ? "✅"
+          : "❌"
+        : isValidDate(value)
           ? formatDate(value)
           : value ?? "N/A";
-      return `${formatLabel(field)}: ${formatted}`;
-    })
+    return `${formatLabel(field)}: ${formatted}`;
+  })
     .join("\n");
 
   navigator.clipboard.writeText(text);
   safeToast("✅ Copied to clipboard", { type: "success" });
-  
+
 };
 
 export const handlePrint = (printRef: React.RefObject<HTMLElement>, title: string) => {

@@ -5,26 +5,34 @@ import { formRequestProps } from "@/src/shared/types";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
-import { safeToast } from "@/src/shared/utils/toastService";
+import { safeToast } from "@/src/shared/utils/safeToast";
 import { cn } from "@/src/shared/utils/cn";
 import { useEffect, useMemo } from "react";
 import Image from "next/image";
 import { Link } from "@/src/app/i18n/navigation";
-import {useLocale} from "next-intl";
+import { useLocale } from "next-intl";
 export default function LoginForm(props: formRequestProps) {
-  const {   title, message,submitText = "Login",  alias,  mode = "login", istenant = false, } = props;
+  const {
+    title,
+    message,
+    submitText = "Login",
+    alias,
+    mode = "login",
+    istenant = false,
+  } = props;
   const t = useTranslations("login");
-  const { refetchUser, user,loading } = useUser();
+  const { refetchUser, user, loading } = useUser();
   const router = useRouter();
   const searchParams = useSearchParams();
   const locale = useLocale() || "en";
 
-
   // 🧩 نستخدم useMemo لتثبيت redirect حتى لا يعاد تغييره كل render
   const redirect = useMemo(() => {
     return searchParams.get("redirect") || `/${locale}/profile`;
-  }, [ searchParams,  locale,]);
-  const {  handleSubmit, submitForm,errors,  isBusy, register,  } = useApiForm({ alias });
+  }, [searchParams, locale]);
+  const { handleSubmit, submitForm, errors, isBusy, register } = useApiForm({
+    alias,
+  });
 
   const onSubmit = async (data: any) => {
     try {
@@ -33,8 +41,8 @@ export default function LoginForm(props: formRequestProps) {
 
       if (mode === "login") {
         const res = await refetchUser();
-        console.log(res)
-        if (res?.success)  {
+        console.log(res);
+        if (res?.success) {
           safeToast(message || t("successMessage"), { type: "success" });
           router.replace(redirect);
         } else {
@@ -49,14 +57,12 @@ export default function LoginForm(props: formRequestProps) {
     }
   };
 
-
-useEffect(() => {
-  if (loading) return;
-  if (!loading && user) {
-    router.replace(redirect);
-  }
-}, [loading, user, redirect, router]);
-
+  useEffect(() => {
+    if (loading) return;
+    if (!loading && user) {
+      router.replace(redirect);
+    }
+  }, [loading, user, redirect, router]);
 
   return (
     <div className={cn("flex justify-center px-4 py-8 bg")}>
@@ -118,7 +124,7 @@ useEffect(() => {
             {/* زر الإرسال */}
             <button
               type="submit"
-              disabled={isBusy }
+              disabled={isBusy}
               className="btn btn-primary w-full text-white"
             >
               {isBusy ? submitText + "..." : submitText}
@@ -140,10 +146,7 @@ useEffect(() => {
                   </Link>
                 </>
               ) : (
-                <Link
-                  href="./login"
-                  className=" w-full text-primary underline"
-                >
+                <Link href="./login" className=" w-full text-primary underline">
                   {t("button")}
                 </Link>
               )}
@@ -152,21 +155,17 @@ useEffect(() => {
         </div>
 
         {/* الجانب الأيمن (صورة + رسالة ترحيب) */}
-        <div
-          className={cn(
-            "hidden md:flex items-center justify-center p-2"
-          )}
-        >
+        <div className={cn("hidden md:flex items-center justify-center p-2")}>
           <div className="relative w-full h-[400px] text-white text-center flex items-center justify-center  bg-primary rounded-2xl ">
-                    <Image
-                      src="/media/start.jpg"
-                      alt="Start APP"
-                      fill
-                      className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
-                      priority
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-    
+            <Image
+              src="/media/start.jpg"
+              alt="Start APP"
+              fill
+              className="absolute inset-0 w-full h-full object-cover opacity-70 rounded-2xl"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+
             <div className="absolute bottom-3 z-10 space-y-4">
               <h2 className="text-3xl font-bold">{t("welcomeTitle")}</h2>
               <p className="text-lg">{t("welcomeMessage")}</p>

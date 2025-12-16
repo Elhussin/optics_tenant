@@ -55,6 +55,8 @@ export interface useFormRequestProps {
   transform?: (data: any) => any;
   showToast?: boolean;
   skipCache?: boolean;
+  enabled?: boolean;
+
 }
 
 export type UseFormRequestReturn = {
@@ -76,6 +78,7 @@ export type UseApiFormReturn = UseFormReturn<any, any, any> & {
  prefetch: (newValues: any) => Promise<void>,
  fetchDirect: () => Promise<{ success: boolean; error?: any }>,
  errors: any,
+
 };
 export type UserContextType = {
   user: any | null;
@@ -186,4 +189,14 @@ export type GlobalAlertType = "info" | "warning" | "error" | "success";
 export interface GlobalAlertProps {
   message?: string; // يمكن تمريرها من parent
   type?: GlobalAlertType; // يمكن تمريرها من parent
+}
+
+
+/**
+ * Normalized error interface
+ */
+export interface NormalizedError {
+  message: string;
+  code?: number | string;
+  details?: any;
 }

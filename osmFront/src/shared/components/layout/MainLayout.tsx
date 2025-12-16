@@ -1,34 +1,31 @@
-"use client"
-import Header from './Header';
-import Footer from './Footer';
-import { Toaster } from 'sonner';
-import GlobalAlert from '../ui/GlobalAlert';
-import { usePathname } from 'next/navigation';
+"use client";
+import Header from "./Header";
+import Footer from "./Footer";
+import { Toaster } from "sonner";
+import GlobalAlert from "../ui/GlobalAlert";
+import { usePathname } from "next/navigation";
 import Aside from "./Aside";
-import { useAside } from '@/src/shared/contexts/AsideContext';
-import clsx from 'clsx';
-import { useLocale } from 'next-intl';
+import { useAside } from "@/src/shared/contexts/AsideContext";
+import clsx from "clsx";
+import { useLocale } from "next-intl";
 interface Props {
   mainContent?: React.ReactNode;
 }
 
 export default function MainLayout({ mainContent }: Props) {
-
   const pathname = usePathname();
-  const excluded = ['/auth/login', '/auth/register'];
+  const excluded = ["/auth/login", "/auth/register"];
 
   const showAside = !excluded.includes(pathname);
   const { isVisible } = useAside();
 
   const locale = useLocale();
-  const isRTL = locale === 'ar';
+  const isRTL = locale === "ar";
   return (
-    <div className="flex flex-col min-h-screen pt-16 bg-gray-50/50 dark:bg-gray-950">
-
+    <div className="flex flex-col min-h-screen pt-16 ">
       <div className="fixed top-0 left-0 w-full z-30 shadow-sm">
         <Header />
       </div>
-
 
       <div className={clsx("flex flex-1 min-h-0")}>
         {showAside && <Aside />}
@@ -52,13 +49,10 @@ export default function MainLayout({ mainContent }: Props) {
                 },
               }}
             />
-
           </div>
         </main>
-
       </div>
       <Footer />
     </div>
-
   );
 }

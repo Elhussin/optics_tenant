@@ -74,7 +74,7 @@
 //       });
 
 //       if (options.showToast) {
-        
+
 //         safeToast(nonFieldError, { type: "error" });
 //       }
 //     }
@@ -82,7 +82,7 @@
 //     // fallback error
 //     const normalized = handleErrorStatus(error);
 //     message = normalized.message + " " + normalized.code + " " + normalized.details;
-    
+
 //     if (normalized.code === "NETWORK_ERROR") {
 //       message = "Network error. Please check your internet connection.";
 //     }
@@ -97,7 +97,7 @@
 //     }
 //   }
 // }
-import { safeToast } from "@/src/shared/utils/toastService";
+import { safeToast } from "@/src/shared/utils/safeToast";
 
 export interface NormalizedError {
   message: string;

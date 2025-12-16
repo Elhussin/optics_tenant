@@ -12,11 +12,12 @@ import { motion } from 'framer-motion';
 import clsx from 'clsx';
 
 export default function DesktopNavLinks({ subdomain }: { subdomain: string | null }) {
-  const { user, logout } = useUser();
+  const { user } = useUser();
   const t = useTranslations('navBar');
   const { toggleSearch, isSearchVisible } = useSearch();
   const { isVisible } = useSearchButton();
   const pathname = usePathname();
+
 
   const NavItem = ({ href, children }: { href: string; children: React.ReactNode }) => {
     const isActive = pathname === href || (href !== '/' && pathname?.startsWith(href));

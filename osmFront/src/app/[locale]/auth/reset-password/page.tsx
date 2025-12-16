@@ -1,7 +1,7 @@
 "use client";
 import { useSearchParams } from "next/navigation";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { safeToast } from "@/src/shared/utils/toastService";
+import { safeToast } from "@/src/shared/utils/safeToast";
 import { useTranslations } from "next-intl";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 
@@ -43,7 +43,7 @@ export default function ResetPasswordPage() {
             <input type="hidden" {...formRequest.register("uid")} />
 
             <input type="hidden" {...formRequest.register("token")} />
-  
+
             {/* Password Field */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -62,7 +62,7 @@ export default function ResetPasswordPage() {
                   {formRequest.formState.errors.password.message as string}
                 </p>
               )}
-                                 {formRequest.formState.errors.uid && (
+              {formRequest.formState.errors.uid && (
                 <p className="text-sm text-red-500 mt-1">
                   {formRequest.formState.errors.uid.message as string}
                 </p>
@@ -82,9 +82,7 @@ export default function ResetPasswordPage() {
               variant="primary"
               className="w-full"
               // className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
-            >
-              
-            </ActionButton>
+            ></ActionButton>
 
             {/* Root Error */}
             {formRequest.errors.root && (
@@ -96,6 +94,5 @@ export default function ResetPasswordPage() {
         </div>
       )}
     </div>
-
   );
 }
