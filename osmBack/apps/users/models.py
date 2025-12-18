@@ -20,7 +20,7 @@ class Role(BaseModel):
         ordering = ['name']
 
 class Permission(BaseModel):
-    code = models.CharField(max_length=100, unique=True)  # مثل create_prescription
+    code = models.CharField(max_length=100, unique=True)  # create_prescription
     description = models.TextField(blank=True)
 
 class RolePermission(BaseModel):
@@ -43,19 +43,24 @@ class User(AbstractUser):
     objects = SoftDeleteUserManager()
 
     def delete(self, using=None, keep_parents=False):
+        # CHANGED: Soft delete now also deactivates the user to prevent login
         self.is_deleted = True
+        self.is_active = False 
         self.deleted_at = timezone.now()
         self.save()
 
-
     def save(self, *args, **kwargs):
-        # لو تم وضع is_deleted=True لأول مرة
+        # If is_deleted set to True for first time
         if self.is_deleted and not self.deleted_at:
             self.deleted_at = timezone.now()
+            self.is_active = False # Ensure deactivation
 
-        # لو تم استعادة العنصر
+        # If restoring
         elif not self.is_deleted and self.deleted_at:
             self.deleted_at = None
+            # Do NOT auto-activate. Admin should manually reactivate if needed, or decide policy.
+            # But usually restore implies active. Let's keep is_active as is or restore it?
+            # Safer to leave is_active control to admin unless explicit restore action.
 
         super().save(*args, **kwargs)
 
@@ -68,48 +73,36 @@ class ContactUs(BaseModel):
 
 class TenantSettings(BaseModel):
     business_name = models.CharField(max_length=255 , default="Optics Tenant")
-    description = models.TextField(blank=True, default="This is a default description for the tenant settings.")
+    description = models.TextField(blank=True, default="Default description.")
     # Social Media
     facebook = models.URLField(blank=True, default='https://www.facebook.com')
     instagram = models.URLField(blank=True, default='https://www.instagram.com')
-    whatsapp = models.CharField(max_length=20, blank=True, default='whatsapp')
+    whatsapp = models.CharField(max_length=20, blank=True, default='')
     twitter = models.URLField(blank=True, default='https://www.twitter.com')
     tiktok = models.URLField(blank=True, default='https://www.tiktok.com')
     linkedin = models.URLField(blank=True, default='https://www.linkedin.com')
 
     # Contact Info
-    phone = models.CharField(max_length=20, blank=True, default='123-456-7890')
-    email = models.EmailField(blank=True, default='email@example.com')
-    website = models.URLField(blank=True, default='https://www.example.com')
-
+    phone = models.CharField(max_length=20, blank=True, default='')
+    email = models.EmailField(blank=True, default='')
+    website = models.URLField(blank=True, default='')
 
     # SEO Settings
-    seo_title = models.CharField(max_length=255, blank=True, default='Default SEO Title')
-    seo_description = models.TextField(blank=True, default='Default SEO Description')
-    seo_keywords = models.CharField(max_length=255, blank=True, default='keyword1, keyword2')
+    seo_title = models.CharField(max_length=255, blank=True, default='')
+    seo_description = models.TextField(blank=True, default='')
+    seo_keywords = models.CharField(max_length=255, blank=True, default='')
 
-    # UI Preferences
-    # primary_color = models.CharField(max_length=7, blank=True, default='#0000FF')  # Default to blue
-    # secondary_color = models.CharField(max_length=7, blank=True, default='#FFFFFF')  # Default to white
-    # logo = models.ImageField(upload_to='logos/', null=True, blank=True, default='logo.png')
-    
-    # Other Settings
-    # timezone = models.CharField(max_length=50, blank=True, default='UTC')
-    # currency = models.CharField(max_length=10, blank=True, default='USD')
-    # date_format = models.CharField(max_length=20, blank=True, default='YYYY-MM-DD')
-    # time_format = models.CharField(max_length=20, blank=True, default='24')
+    address = models.CharField(max_length=255, blank=True, default='')
+    city = models.CharField(max_length=100, blank=True, default='')
+    state = models.CharField(max_length=100, blank=True, default='')
+    postal_code = models.CharField(max_length=20, blank=True, default='')
+    country = models.CharField(max_length=100, blank=True, default='')
 
-    address = models.CharField(max_length=255, blank=True, default='123 Default St, Default City, Default Country')
-    city = models.CharField(max_length=100, blank=True, default='Default City')
-    state = models.CharField(max_length=100, blank=True, default='Default State')
-    postal_code = models.CharField(max_length=20, blank=True, default='12345')
-    country = models.CharField(max_length=100, blank=True, default='Default Country')
-
-    # bankDetails
-    bank_name = models.CharField(max_length=100, blank=True, default='Default Bank')
-    account_number = models.CharField(max_length=100, blank=True, default='123456789')
-    iban = models.CharField(max_length=100, blank=True, default='DE89370400440532013000')
-    swift_code = models.CharField(max_length=100, blank=True, default='DEUTDEDBFRA')
+    # bankDetails - CHANGED: Removed dangerous hardcoded defaults
+    bank_name = models.CharField(max_length=100, blank=True, default='')
+    account_number = models.CharField(max_length=100, blank=True, default='')
+    iban = models.CharField(max_length=100, blank=True, default='')
+    swift_code = models.CharField(max_length=100, blank=True, default='')
 
     def __str__(self):
         return self.business_name if self.business_name else "Tenant Settings"
@@ -135,7 +128,7 @@ class Page(BaseModel):
 class PageContent(BaseModel):
     page = models.ForeignKey(
         Page, 
-        related_name='translations',  # ✅ عدلتها من pagecontent
+        related_name='translations',
         on_delete=models.CASCADE
     )
     language = models.CharField(max_length=2, choices=Page.LANGUAGE_CHOICES)

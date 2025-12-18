@@ -13,7 +13,45 @@ from decimal import Decimal
 import datetime
 import uuid
 
+# --- Managers & QuerySets ---
 
+class StockQuerySet(models.QuerySet):
+    def for_branch(self, branch):
+        return self.filter(branch=branch)
+    
+    def low_stock(self):
+        return self.filter(quantity_in_stock__lte=models.F('reorder_level'))
+    
+    def out_of_stock(self):
+        return self.filter(quantity_in_stock__lte=models.F('reserved_quantity'))
+    
+    def in_stock(self):
+        return self.filter(quantity_in_stock__gt=models.F('reserved_quantity'))
+
+class StockManager(models.Manager):
+    def get_queryset(self):
+        return StockQuerySet(self.model, using=self._db)
+    
+    def for_branch(self, branch):
+        return self.get_queryset().for_branch(branch)
+    
+    def low_stock(self):
+        return self.get_queryset().low_stock()
+    
+    def get_total_stock(self, variant):
+        """Get total stock across all branches for a variant"""
+        return self.filter(variant=variant).aggregate(
+            total=models.Sum('quantity_in_stock')
+        )['total'] or 0
+    
+    def get_available_branches(self, variant, min_quantity=1):
+        """Get branches that have the variant in stock"""
+        return self.filter(
+            variant=variant,
+            quantity_in_stock__gte=min_quantity + models.F('reserved_quantity')
+        ).select_related('branch')
+
+# --- Models ---
 
 class Stock(BaseModel):
     branch = models.ForeignKey("branches.Branch", on_delete=models.CASCADE)
@@ -29,6 +67,8 @@ class Stock(BaseModel):
     last_restocked = models.DateTimeField(null=True, blank=True)
     last_sale = models.DateTimeField(null=True, blank=True)
     allow_backorder = models.BooleanField(default=False)
+
+    objects = StockManager()
 
     class Meta:
         unique_together = [('branch', 'variant')]
@@ -234,5 +274,3 @@ class StockTransferItem(BaseModel):
 
     def __str__(self):
         return f"{self.variant} x {self.quantity_requested}"
-
-

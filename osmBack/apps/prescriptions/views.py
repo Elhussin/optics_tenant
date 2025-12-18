@@ -10,6 +10,7 @@ from .serializers import PrescriptionRecordSerializer
 from core.utils.filters_utils import FilterOptionsGenerator,get_display_name
 from core.utils.create_filterset import create_filterset_class
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
+
 CUSTOMER_RELATED_FIELDS = [
     "customer__id",
     "customer__phone",
@@ -23,8 +24,6 @@ CUSTOMER_FIELD_LABELS = {
     "customer__last_name": "Last Name",
     "created_by__username": "Created By",
     "customer__phone": "Phone",
-    
-
 }
 
 # 👇 تعريف الحقول للفلترة الدقيقة
@@ -40,6 +39,7 @@ CUSTOMER_FILTER_FIELDS = {
 
 
 class PrescriptionViewSet(BaseViewSet):
+    # Optimizing query: select_related is good practice here
     queryset = PrescriptionRecord.objects.select_related("customer", "created_by").all()
     serializer_class = PrescriptionRecordSerializer
     search_fields = CUSTOMER_RELATED_FIELDS
@@ -49,7 +49,7 @@ class PrescriptionViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired(
-            allowed_roles=["staff", "OWNER"],
+            allowed_roles=["staff", "OWNER", "optometrist"], # Added optometrist if exists
             required_permissions=["view_prescriptions"]
         )
     ]
@@ -57,16 +57,6 @@ class PrescriptionViewSet(BaseViewSet):
     def perform_create(self, serializer):
         serializer.save(created_by=self.request.user)
 
-# to use this view add this to urls
-# class PrescriptionListAPIView(FilterOptionsAPIViewMixin, APIView):
-#     queryset = PrescriptionRecord.objects.select_related("customer", "created_by").all()
-#     serializer_class = PrescriptionRecordSerializer
-#     filter_fields = CUSTOMER_FILTER_FIELDS
-#     search_fields = CUSTOMER_RELATED_FIELDS
-#     field_labels = CUSTOMER_FIELD_LABELS
-
-#     def get(self, request):
-#         # تطبيق الفلترة
-#         filtered_qs = self.filter_queryset(request)
-#         serializer = self.serializer_class(filtered_qs, many=True)
-#         return Response(serializer.data)
+    def get_queryset(self):
+        # Optional: Add security filtering if prescriptions should be private to branch/doctor
+        return super().get_queryset()

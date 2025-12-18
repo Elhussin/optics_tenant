@@ -44,16 +44,28 @@ project-root/
 │
 └── README.md
 ```
+
+## Remove Venv
+```bash
+Remove-Item -Recurse -Force .venv; pdm install
+```
 ## Start App
+
 
 ```bash
 pdm install
-pdm run python manage.py collectstatic
 pdm run python manage.py makemigrations
+pdm run python manage.py migrate_schemas --shared
+pdm run python manage.py migrate_schemas --tenant
+
+pdm run python manage.py create_public_tenant
+pdm run python manage.py runserver
+
+
 pdm run python manage.py createsuperuser
 pdm run python manage.py migrate_all_tenants
 pdm run python manage.py migrate
-
+pdm run python manage.py collectstatic
 pdm run  python manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com
 #or pdm run  python manage.py create_tenant_superuser --schema_name public
 # pdm run python manage.py createsuperuser
@@ -79,3 +91,4 @@ bun run dev
 bun run build
 bun run start
 ```
+pdm run python manage.py showmigrations prescriptions

@@ -1,10 +1,9 @@
 from django.db import models
-
+from django.conf import settings
 from core.models import BaseModel
 from django.core.validators import MinLengthValidator, MaxLengthValidator
+from django.utils import timezone
 from django.contrib.auth import get_user_model
-User = get_user_model()
-
 
 
 class Customer(BaseModel):
@@ -16,7 +15,7 @@ class Customer(BaseModel):
     ]
     """عملاء المتجر"""
     # Personal Information
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name="crm_customer")
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="crm_customers")
     first_name = models.CharField(max_length=100,blank=True)
     last_name = models.CharField(max_length=100, blank=True)
     identification_number = models.CharField(max_length=20, unique=True,validators=[MinLengthValidator(10), MaxLengthValidator(10)],help_text="Enter a valid identification number 10 digits.")
@@ -33,7 +32,7 @@ class Customer(BaseModel):
     postal_code = models.CharField(max_length=20, blank=True)
     
     # Membership
-    customer_since = models.DateTimeField(auto_now_add=True)
+    # customer_since removed as it duplicates created_at
     is_vip = models.BooleanField(default=False,null=True, blank=True)
     loyalty_points = models.IntegerField(default=0 ,null=True, blank=True)
     
@@ -71,7 +70,7 @@ class Interaction(BaseModel):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.interaction_type} with {self.customer.user.username}"
+        return f"{self.interaction_type} with {self.customer.full_name}"
 
 class Complaint(BaseModel):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="complaints")
@@ -79,7 +78,7 @@ class Complaint(BaseModel):
     status = models.CharField(max_length=20, choices=[('open', 'Open'), ('resolved', 'Resolved')], default='open')
 
     def __str__(self):
-        return f"Complaint by {self.customer.user.username}"
+        return f"Complaint by {self.customer.full_name}"
     
 
 class Opportunity(BaseModel):
@@ -142,11 +141,11 @@ class Subscription(BaseModel):
     ]
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="subscriptions")
     subscription_type = models.CharField(max_length=20, choices=SUBSCRIPTION_TYPES, verbose_name="Subscription Type")  # نوع الاشتراك
-    start_date = models.DateTimeField(auto_now_add=True, verbose_name="Start Date")  # تاريخ بدء الاشتراك
+    start_date = models.DateTimeField(default=timezone.now, verbose_name="Start Date")  # تاريخ بدء الاشتراك
     end_date = models.DateTimeField(verbose_name="End Date")  # تاريخ انتهاء الاشتراك
 
     def __str__(self):
-        return f"{self.customer.user.username} - {self.subscription_type}"
+        return f"{self.customer.full_name} - {self.subscription_type}"
 
     class Meta:
         verbose_name = "Subscription"
@@ -170,7 +169,3 @@ class Contact(BaseModel):
     phone = models.CharField(max_length=20)
     name = models.CharField(max_length=100)
     message = models.TextField(max_length=500)
-
-
-
-    

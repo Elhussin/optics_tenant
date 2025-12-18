@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from .models import PrescriptionRecord
 from apps.crm.serializers import CustomerSerializer
@@ -14,30 +13,28 @@ class PrescriptionRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = PrescriptionRecord
         fields = '__all__'
+        extra_kwargs = {
+            'right_sphere': {'allow_null': True},
+            'right_cylinder': {'allow_null': True},
+            'left_sphere': {'allow_null': True},
+            'left_cylinder': {'allow_null': True},
+            'notes': {'allow_null': True},
+        }
 
     def to_internal_value(self, data):
-        print (data)
-        # # Coerce empty strings to None for nullable fields
-        
-        for field in [
+        # Clean empty strings to None for fields that might be sent as ""
+        fields_to_clean = [
             'right_sphere', 'right_cylinder', 'right_axis',
             'left_sphere', 'left_cylinder', 'left_axis',
             'right_reading_add', 'left_reading_add',
             'right_pupillary_distance', 'left_pupillary_distance',
-            'sigmant_right', 'sigmant_left',
-            'a_v_right', 'a_v_left',
-            'doctor_name', 'notes',
-        ]:
+            'segment_height_right', 'segment_height_left',
+            'visual_acuity_right', 'visual_acuity_left',
+            'notes',
+        ]
+        
+        for field in fields_to_clean:
             if field in data and data[field] == "":
                 data[field] = None
-
-        if 'customer' in data and isinstance(data['customer'], str) and data['customer'].isdigit():
-            data['customer'] = int(data['customer'])
-
-
-        if 'customer' in data and data['customer'] == "":
-
-            raise serializers.ValidationError({'customer': ['Customer field is required.']})
-        
 
         return super().to_internal_value(data)

@@ -30,31 +30,46 @@ class Branch(BaseModel):
 
     def save(self, *args, **kwargs):
         if not self.branch_code:
-            prefix = "ST" if self.branch_type == "store" else "BR"
-            # عدّ الفروع من نفس النوع للحصول على رقم متسلسل
-            count = Branch.objects.filter(branch_type=self.branch_type).count() + 1
-            code = f"{prefix}{count:03d}"
-
-            # تأكد أنه غير مستخدم (في حالة حذف فرع قد يُعاد استخدام نفس الرقم)
-            while Branch.objects.filter(branch_code=code).exists():
-                count += 1
-                code = f"{prefix}{count:03d}"
-
-            self.branch_code = code
-
+            self.branch_code = self.generate_unique_code()
         super().save(*args, **kwargs)
 
+    def generate_unique_code(self):
+        prefix = "ST" if self.branch_type == "store" else "BR"
+        # Safer approach than simple count: ensure uniqueness
+        count = Branch.objects.filter(branch_type=self.branch_type).count() + 1
+        code = f"{prefix}{count:03d}"
+        
+        # Simple collision avoidance loop
+        while Branch.objects.filter(branch_code=code).exists():
+            count += 1
+            code = f"{prefix}{count:03d}"
+            
+        return code
 
 
 class BranchUsers(BaseModel):
-
-    branch_id = models.ForeignKey(Branch, on_delete=models.CASCADE)
-    employee_id = models.ForeignKey(Employee, on_delete=models.CASCADE)
-    status = models.BooleanField(default=True )     
+    # Fixed Naming: Removed _id suffix to prevent branch_id_id
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='staff')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='assigned_branches')
+    is_active = models.BooleanField(default=True) # Renamed from status
     notes = models.TextField(null=True, blank=True)
+
     def __str__(self):
-        return f"{self.employee.user.username} - {self.branch}"    
+        return f"{self.employee.user.username} - {self.branch.name}"    
     
     class Meta:
-        unique_together = ('branch_id', 'employee_id')
+        unique_together = ('branch', 'employee')
 
+
+class Shift(BaseModel):
+    branch = models.ForeignKey(Branch, on_delete=models.CASCADE, related_name='shifts')
+    employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name='shifts')
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField()
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.employee.user.username} - {self.branch.name} ({self.start_time.date()})"
+
+    class Meta:
+        ordering = ['-start_time']

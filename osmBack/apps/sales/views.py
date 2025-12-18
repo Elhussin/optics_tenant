@@ -4,20 +4,45 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from apps.sales.models import Order,Invoice,Payment
-from apps.sales.serializers import OrderSerializer,InvoiceSerializer,PaymentSerializer
+from apps.sales.models import Order, Invoice, Payment
+from apps.sales.serializers import OrderSerializer, InvoiceSerializer, PaymentSerializer
 from apps.sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
-from rest_framework.decorators import api_view
-# views.py - Invoice API with actions
-
-from apps.sales.models import Invoice
-from apps.sales.serializers import InvoiceSerializer
 from apps.sales.services.invoice_service import confirm_invoice, calculate_invoice_totals
+from rest_framework.decorators import api_view
 from core.views import BaseViewSet
-class OrderViewSet(BaseViewSet):
+
+class BaseSalesViewSet(BaseViewSet):
+    """
+    Base ViewSet for Sales to enforce Branch Isolation
+    """
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        # Start with default filtering (e.g. by IsDeleted if implemented in BaseViewSet)
+        qs = super().get_queryset()
+        user = self.request.user
+        
+        # Superuser sees all
+        if user.is_superuser:
+            return qs
+
+        # Regular users see records from their branch
+        if hasattr(user, 'branchusers') and user.branchusers.branch:
+            # Check if model has 'branch' field or relation
+            if hasattr(self.serializer_class.Meta.model, 'branch'):
+                return qs.filter(branch=user.branchusers.branch)
+            # Payment links to Invoice -> Branch
+            if self.serializer_class.Meta.model == Payment:
+                 return qs.filter(invoice__branch=user.branchusers.branch)
+        
+        # If no branch assigned, maybe return nothing or own records?
+        # Safe default: return nothing or check logic
+        return qs.none() 
+
+
+class OrderViewSet(BaseSalesViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post'])
     def confirm(self, request, pk=None):
@@ -38,12 +63,9 @@ class OrderViewSet(BaseViewSet):
         return Response({'total': order.total_amount}, status=200)
 
 
-
-
-class InvoiceViewSet(BaseViewSet):
+class InvoiceViewSet(BaseSalesViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
-    permission_classes = [IsAuthenticated]
 
     @action(detail=True, methods=['post'])
     def confirm(self, request, pk=None):
@@ -58,16 +80,9 @@ class InvoiceViewSet(BaseViewSet):
         return Response({'total': invoice.total_amount}, status=200)
 
 
-
-
-class PaymentViewSet(BaseViewSet):
+class PaymentViewSet(BaseSalesViewSet):
     queryset = Payment.objects.all()
     serializer_class = PaymentSerializer 
-    permission_classes = [IsAuthenticated]
-
-# views.py - API for returning choices
-
-
 
 
 @api_view(['GET'])
@@ -85,11 +100,3 @@ def invoice_choices(request):
         'invoice_type': Invoice.INVOICE_TYPES,
         'status': Invoice.INVOICE_STATUS,
     })
-
-
-
-# from apps.sales.permissions import IsBranchManagerOrReadOnly
-
-# class OrderViewSet(BaseViewSet):
-#     ...
-#     permission_classes = [IsAuthenticated, IsBranchManagerOrReadOnly]

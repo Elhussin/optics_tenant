@@ -1,6 +1,6 @@
-# models.py بعد استخدام الخدمات (services) مع قاعدة BaseDocument و BaseItem
+# models.py - Refactored for Thread Safety
 
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.utils.translation import gettext_lazy as _
 from apps.crm.models import Customer
 from apps.branches.models import Branch, BranchUsers
@@ -8,6 +8,9 @@ from core.models import BaseModel
 from apps.products.models import ProductVariant
 from apps.prescriptions.models import PrescriptionRecord
 from decimal import Decimal
+import time
+
+# Services (Assuming they exist as imported)
 from apps.sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
 from apps.sales.services.invoice_service import confirm_invoice, calculate_invoice_totals
 from apps.sales.services.payment_service import apply_payment
@@ -72,9 +75,24 @@ class Order(BaseDocument):
 
     def save(self, *args, **kwargs):
         if not self.order_number:
-            from apps.sales.utils import generate_serial_number
-            self.order_number = generate_serial_number(Order, 'ORD', 'order_number')
-        super().save(*args, **kwargs)
+            self._save_with_retry(*args, **kwargs)
+        else:
+            super().save(*args, **kwargs)
+
+    def _save_with_retry(self, *args, **kwargs):
+        # Retry logic for unique constaint violation on order_number
+        from apps.sales.utils import generate_serial_number
+        max_retries = 5
+        for i in range(max_retries):
+            try:
+                self.order_number = generate_serial_number(Order, 'ORD', 'order_number')
+                with transaction.atomic():
+                    super().save(*args, **kwargs)
+                return # Success
+            except IntegrityError:
+                if i == max_retries - 1:
+                    raise # Give up
+                time.sleep(0.1) # Small backoff
 
     def calculate_totals(self):
         return calculate_order_totals(self)
@@ -107,13 +125,26 @@ class Invoice(BaseDocument):
     notes = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"Invoice {self.invoice_number} - {self.customer.name}"
+        return f"Invoice {self.invoice_number} - {self.customer.first_name}"
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            from apps.sales.utils import generate_serial_number
-            self.invoice_number = generate_serial_number(Invoice, 'INV', 'invoice_number')
-        super().save(*args, **kwargs)
+            self._save_with_retry(*args, **kwargs)
+        else:
+            super().save(*args, **kwargs)
+
+    def _save_with_retry(self, *args, **kwargs):
+        from apps.sales.utils import generate_serial_number
+        max_retries = 5
+        for i in range(max_retries):
+            try:
+                self.invoice_number = generate_serial_number(Invoice, 'INV', 'invoice_number')
+                with transaction.atomic():
+                    super().save(*args, **kwargs)
+                return
+            except IntegrityError:
+                if i == max_retries - 1: raise
+                time.sleep(0.1)
 
     def calculate_totals(self):
         return calculate_invoice_totals(self)

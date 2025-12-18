@@ -1,12 +1,9 @@
 from rest_framework import serializers
 from .models import (
     Customer, CustomerGroup, Opportunity, Interaction, 
-    Complaint, Subscription, Task,Campaign,Document,Contact
+    Complaint, Subscription, Task, Campaign, Document, Contact
 )
-
 from django.contrib.auth import get_user_model
-
-from rest_framework import serializers
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,7 +19,7 @@ class CustomerSerializer(serializers.ModelSerializer):
              'address_line1', 'address_line2',
                'city', 'postal_code','is_active','is_deleted'
         ]
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
 
         extra_kwargs = {
             'phone': {
@@ -49,12 +46,6 @@ class CustomerSerializer(serializers.ModelSerializer):
                     'blank': 'Please select a valid customer type.'
                 }
             },
-            'phone': {
-                'error_messages': {
-                    'required': 'Phone number is required.',
-                    'blank': 'Please enter a valid phone number.'
-                }
-            },
             'first_name': {
                 'error_messages': {
                     'required': 'First name is required.',
@@ -68,12 +59,6 @@ class CustomerSerializer(serializers.ModelSerializer):
                 }
             },
         }
-
-    def create(self, validated_data):
-        # Add the current user to the new customer
-        validated_data['created_by'] = self.context['request'].user
-        return super().create(validated_data)
-
 
 class InteractionSerializer(serializers.ModelSerializer):
     class Meta:

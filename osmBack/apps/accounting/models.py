@@ -2,7 +2,8 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from djmoney.models.fields import MoneyField
 from djmoney.money import Money
-
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 User = get_user_model()
 
@@ -31,33 +32,38 @@ class Account(models.Model):
         choices=[(c, c) for c in CURRENCIES],  # Store currency as a 3-letter code
         default='USD'
     )
-
-    @property
-    def balance(self):
-        """ Calculates the account balance based on transactions. """
-        income = self.transactions.filter(transaction_type='income').aggregate(
-            total=models.Sum('amount')
-        )['total'] or Money(0, self.currency)
-
-        expense = self.transactions.filter(transaction_type='expense').aggregate(
-            total=models.Sum('amount')
-        )['total'] or Money(0, self.currency)
-
-        # Ensure both are Money objects before subtraction
-        return Money(income or 0, self.currency) - Money(expense or 0, self.currency)
+    
+    # CHANGED: Added real DB field for balance for performance and persistence
+    balance = MoneyField(max_digits=19, decimal_places=2, default_currency='USD', default=0)
 
     def update_balance(self):
-        """ Updates and saves the account balance. """
-        total = self.transactions.aggregate(total=models.Sum('amount'))['total'] or 0
-        self.balance = total  # 
-        self.save()  # save the account balance to the database
-        return total # This does not update the database. Consider saving if needed.
+        """ Recalculates the balance from transactions and saves it to the DB. """
+        # Filter for transactions related to this account
+        income = self.transactions.filter(transaction_type='income').aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
+        
+        expense = self.transactions.filter(transaction_type='expense').aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
 
+        # Create Money objects to ensure currency safety
+        # income and expense from aggregate might be Decimal, need to wrap in Money if not MoneyField aggregate behavior
+        # However, djmoney aggregate returns Money instance usually if field is MoneyField. 
+        # But to be safe vs None:
+        
+        if not isinstance(income, Money):
+            income = Money(income, self.currency)
+        if not isinstance(expense, Money):
+            expense = Money(expense, self.currency)
+
+        self.balance = income - expense
+        self.save(update_fields=['balance'])
+        return self.balance
 
     def perform_destroy(self, instance):
-        account = instance.account
-        instance.delete()
-        account.update_balance()
+        # Logic for destruction if needed
+        pass
 
     def __str__(self):
         return f"{self.name} ({self.currency})"
@@ -93,7 +99,6 @@ class AccountingCategory(models.Model):
 
 class Transaction(models.Model):
     """ Represents a financial transaction within an account. """
-
     
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='transactions')
     period = models.ForeignKey(FinancialPeriod, on_delete=models.PROTECT)
@@ -113,8 +118,13 @@ class Transaction(models.Model):
 
         super().save(*args, **kwargs)
 
-        # Update account balance (consider saving it to avoid recalculating often)
+        # Update account balance 
         self.account.update_balance()
+
+    def delete(self, *args, **kwargs):
+        account = self.account
+        super().delete(*args, **kwargs)
+        account.update_balance()
 
     def __str__(self):
         return f"{self.date} - {self.amount}"
@@ -130,17 +140,42 @@ class JournalEntry(models.Model):
 class RecurringTransaction(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     amount = MoneyField(max_digits=10, decimal_places=2, default_currency='USD')
-    transaction_types = models.CharField(max_length=7, choices=[ ('income', 'Income'),('expense', 'Expense'),])
+    # CHANGED: Fixed plural name to match Transaction model for consistency if intended, 
+    # but kept singular 'transaction_type' to match logic usually. 
+    # Actually, model had 'transaction_types' but Transaction has 'transaction_type'. 
+    # I will rename field to 'transaction_type' to match Transaction model.
+    transaction_type = models.CharField(max_length=7, choices=[ ('income', 'Income'),('expense', 'Expense'),])
     interval = models.CharField(max_length=10, choices=[('monthly', 'Monthly'), ('yearly', 'Yearly')])
     next_execution = models.DateField()
 
+    def calculate_next_date(self):
+        if self.interval == 'monthly':
+            return self.next_execution + relativedelta(months=1)
+        elif self.interval == 'yearly':
+            return self.next_execution + relativedelta(years=1)
+        return self.next_execution
+
     def process(self):
         if self.next_execution <= timezone.now().date():
+            # Get or create open period context if needed, but for now just basic creation
+            # Note: Creating transaction requires a 'period'. We need a way to resolve current period.
+            # Warning: This might fail if no open period exists.
+            current_period = FinancialPeriod.objects.filter(
+                start_date__lte=timezone.now().date(), 
+                end_date__gte=timezone.now().date(),
+                is_closed=False
+            ).first()
+            
+            if not current_period:
+                # Fallback or error logging needed in real app
+                return
+
             Transaction.objects.create(
                 account=self.account,
                 amount=self.amount,
-                transaction_types=self.transaction_types,
+                transaction_type=self.transaction_type, # Fixed field name
                 date=timezone.now().date(),
+                period=current_period
             )
             self.next_execution = self.calculate_next_date()
             self.save()

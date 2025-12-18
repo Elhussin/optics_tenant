@@ -1,9 +1,10 @@
-
 from django_filters import rest_framework as filters
 from core.filters.base import BaseFilterSet, DynamicCharFilter  # إذا كنت تستخدمها
 from .models import Employee,Department
 
 class EmployeeFilter(BaseFilterSet):
+    # Fixed: user_id__username -> user__username is technically same if django follows, 
+    # but since field is now 'user', user__username is correct.
     user__username = DynamicCharFilter(label="Username")
     phone = DynamicCharFilter()
     position = filters.MultipleChoiceFilter(choices=Employee.Position)

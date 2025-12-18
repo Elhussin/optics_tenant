@@ -4,6 +4,7 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 router.register(r'customers', CustomerViewSet, basename='customer')
+router.register(r'owned-resources', OwnedResourceViewSet, basename='owned-resource')
 router.register(r'customer-groups', CustomerGroupViewSet, basename='customer-group')
 router.register(r'opportunities', OpportunityViewSet, basename='opportunity')
 router.register(r'interactions', InteractionViewSet, basename='interaction')

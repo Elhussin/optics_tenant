@@ -12,9 +12,6 @@ User = get_user_model()
 class HealthResponseSerializer(serializers.Serializer):
     """
     Serializer for health check response.
-
-    Args:
-        serializers.Serializer: The serializer class.
     """
     status = serializers.CharField()
 
@@ -89,6 +86,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Assign role by ID if provided, otherwise fallback to 'GUEST' role
         role = validated_data.get('role', None)
         if not role:
+            # Consider moving 'GUEST' to settings.DEFAULT_ROLE
             guest_role = Role.objects.filter(name='GUEST').first()
             if guest_role:
                 user.role = guest_role
@@ -97,10 +95,6 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.is_active = True
         user.save()
         return user
-
-    def validate_email(self, value):
-        return check_unique_field(User, 'email', value, self.instance)
-
     
     def validate_username(self, value):
         return check_unique_field(User, 'username', value, self.instance)
@@ -116,15 +110,19 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         username = attrs.get("username")
         password = attrs.get("password")
-        user = User.objects.filter(username=username).first()
-        if user is None:
+        
+        # Optimize: Don't check DB twice manually. authenticate() does it.
+        # But here we want custom error msg "User does not exist" vs "Incorrect password"
+        user_check = User.objects.filter(username=username).first()
+        if user_check is None:
             raise serializers.ValidationError({"username": ["User does not exist."]})
 
-     
         user = authenticate(username=username, password=password)
         if user is None:
+            # Could be inactive or wrong password
+            if user_check and not user_check.is_active:
+                 raise serializers.ValidationError({"detail": ["User account is disabled."]})
             raise serializers.ValidationError({"password": ["Incorrect password."]})
-        
 
         attrs['user'] = user
         return attrs
@@ -165,23 +163,20 @@ class PageSerializer(serializers.ModelSerializer):
     
         translations_data = validated_data.pop('translations', [])
         
-        # تحديث الحقول الأساسية - exclude read-only fields
-        updatable_fields = ['default_language', 'is_published', 'is_active', 'is_deleted']
-        for attr in updatable_fields:
-            if attr in validated_data:
-                setattr(instance, attr, validated_data[attr])
+        # Standard serializer behavior: Update instance with validated_data
+        # We don't need to manually filter fields if serializer definitions are correct.
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
         
         instance.save()
 
-        # تحديث أو إنشاء الترجمات
+        # Update or create translations
         if translations_data:
-            # الحصول على اللغات الموجودة في البيانات الجديدة
             new_languages = {t.get('language') for t in translations_data if t.get('language')}
             
-            # حذف الترجمات للغات غير موجودة في البيانات الجديدة
+            # Use transaction atomic if possible
             instance.translations.exclude(language__in=new_languages).delete()
             
-            # تحديث أو إنشاء الترجمات الجديدة
             for translation_data in translations_data:
                 language = translation_data.get('language')
                 if language:
@@ -191,7 +186,6 @@ class PageSerializer(serializers.ModelSerializer):
                         defaults=translation_data
                     )
         
-        # إعادة تحميل الترجمات المحدثة
         instance.refresh_from_db()
         return instance
 

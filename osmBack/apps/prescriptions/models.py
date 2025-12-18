@@ -1,15 +1,16 @@
 from django.db import models
 from core.models import BaseModel
 from apps.crm.models import Customer
-from apps.users.models import User
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 # Create your models here.
 from scripts.lens_power import spherical_lens_powers ,cylinder_lens_powers,additional_lens_powers
 from decimal import Decimal
+
 class PrescriptionRecord(BaseModel):
     """Prescription Record"""
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='prescriptions')
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_prescriptions')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
 
     # Right Eye
     right_sphere = models.CharField(max_length=20, choices=spherical_lens_powers,blank=True,null=True ,default="-00.00")
@@ -29,10 +30,15 @@ class PrescriptionRecord(BaseModel):
     # Additional Information
     right_pupillary_distance = models.FloatField(null=True, blank=True)
     left_pupillary_distance = models.FloatField(null=True, blank=True)
-    sigmant_right = models.CharField(max_length=20, blank=True ,null=True)
-    sigmant_left = models.CharField(max_length=20, blank=True ,null=True)
-    a_v_right = models.CharField(max_length=20, blank=True ,null=True)
-    a_v_left = models.CharField(max_length=20, blank=True ,null=True)
+    
+    # Fixed Naming: sigmant -> segment_height
+    segment_height_right = models.CharField(max_length=20, blank=True ,null=True)
+    segment_height_left = models.CharField(max_length=20, blank=True ,null=True)
+    
+    # Fixed Naming: a_v -> visual_acuity
+    visual_acuity_right = models.CharField(max_length=20, blank=True ,null=True)
+    visual_acuity_left = models.CharField(max_length=20, blank=True ,null=True)
+    
     vertical_distance_right = models.CharField(max_length=20, blank=True ,null=True)
     vertical_distance_left = models.CharField(max_length=20, blank=True ,null=True)
 
