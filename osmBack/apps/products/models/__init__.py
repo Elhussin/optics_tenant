@@ -1,4 +1,4 @@
-from .attributes import Attributes, AttributeValue
+from .attributes import Attribute, AttributeValue
 from .marketing import ProductVariantMarketing
 from .product_support import ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer
 from .product import (Category, Product, ProductVariant ,ProductImage,FlexiblePrice,
@@ -11,12 +11,12 @@ from .product import (Category, Product, ProductVariant ,ProductImage,FlexiblePr
 )
 from .suppliers import Supplier, Manufacturer, Brand
 
-from .inventory import Stocks,StockMovements,StockTransfer, StockTransferItem
+from .inventory import Stock,StockMovement,StockTransfer, StockTransferItem
 __all__ = [
     "Product", "ProductVariant", "Category",
-    "StockMovements", "Stocks", "StockTransfer", "StockTransferItem",
+    "StockMovement", "Stock", "StockTransfer", "StockTransferItem",
     "ProductVariantMarketing",
-    "Attributes", "AttributeValue",
+    "Attribute", "AttributeValue",
     "ProductVariantReview", "ProductVariantQuestion", "ProductVariantAnswer", "ProductVariantOffer",
     "Supplier", "Manufacturer", "Brand",
     "InventoryDocument", "InventoryLineItem",

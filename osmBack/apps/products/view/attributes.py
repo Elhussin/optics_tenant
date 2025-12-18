@@ -1,14 +1,13 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from apps.products.models import Attributes, AttributeValue
-from apps.products.serializers.attributes import AttributesSerializer, AttributeValueSerializer
+from apps.products.models import Attribute, AttributeValue
+from apps.products.serializers.attributes import AttributeSerializer, AttributeValueSerializer
 from core.views import BaseViewSet
 
 
 ATTRIBUTES_RELATED_FIELDS = [
     "attribute_id__name",
 ]
-# # 👇 أسماء مخصصة لبعض الحقول
 ATTRIBUTES_FIELD_LABELS = {
     "attribute_id__name": "Attribute Name",
     "value": "Value",
@@ -21,8 +20,8 @@ ATTRIBUTES_FILTER_FIELDS = {
 }
 
 class AttributesViewSet(BaseViewSet):
-    queryset = Attributes.objects.all()
-    serializer_class = AttributesSerializer
+    queryset = Attribute.objects.all()
+    serializer_class = AttributeSerializer
     permission_classes = [IsAuthenticated]
     # search_fields = ['name']
     # filter_fields = ['name','is_active','is_deleted']

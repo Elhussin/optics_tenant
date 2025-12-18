@@ -25,7 +25,7 @@ def role_required(allowed_roles):
                 return view_func(request, *args, **kwargs)
 
             # نفترض عندك user.role علاقة ForeignKey لـ Role
-            if user.role_id and user.role_id.name in allowed_roles:
+            if user.role and user.role.name in allowed_roles:
                 return view_func(request, *args, **kwargs)
 
             return HttpResponseForbidden("You do not have permission.")

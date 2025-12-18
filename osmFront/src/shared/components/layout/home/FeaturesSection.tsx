@@ -21,7 +21,7 @@ export default function FeaturesSection() {
   return (
     <section
       aria-label={t("title")}
-      className="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-6 lg:p-8"
+      className="relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-6 lg:p-8 shadow-lg "
     >
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -43,7 +43,7 @@ export default function FeaturesSection() {
         </div>
 
         {/* Image */}
-        <div className="relative w-full max-w-md aspect-w-16 aspect-h-9 overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-300">
+        <div className="relative w-full max-w-md aspect-video overflow-hidden rounded-xl shadow-lg hover:scale-105 transition-transform duration-300">
           <Image
             src="/media/FeaturesSection.png"
             alt={t("title")}

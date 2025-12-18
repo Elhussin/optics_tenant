@@ -6,7 +6,7 @@ from apps.tenants.models import Client
 from apps.users.models import Role, User  
 
 class Command(BaseCommand):
-    help = 'Create a superuser for a specific tenant schema'
+    help = 'Create an admin user for a specific tenant schema'
 
     def add_arguments(self, parser):
         parser.add_argument('--schema_name', '-s', type=str, required=True, help='Tenant schema name')
@@ -44,24 +44,27 @@ class Command(BaseCommand):
 
 
                 # User.objects.create_superuser(username=username, email=email, password=password, client_id=client.id, role=role.id)
-                user = User.objects.create(
+                user, created = User.objects.get_or_create(
                     username=username,
-                    email=email,
-                    client=client_id,
-                    role=role_id,
-                    is_superuser=True,
-                    is_staff=True
+                    defaults={
+                        'email': email,
+                        'client_id': client_id,
+                        'role_id': role_id,
+                        'is_superuser': True,
+                        'is_staff': True
+                    }
                 )
-                user.set_password(password)
-                user.save()
-
-                self.stdout.write(self.style.SUCCESS(
-                    f"Superuser '{username}' created successfully in schema '{schema_name}'."
-                ))
+                if created:
+                    user.set_password(password)
+                    user.save()
+                    self.stdout.write(self.style.SUCCESS(
+                        f"Superuser '{username}' created successfully in schema '{schema_name}'."
+                    ))
+                else:
+                    self.stdout.write(self.style.WARNING(
+                        f"Superuser '{username}' already exists in schema '{schema_name}'. Skipping creation."
+                    ))
 
         except Exception as e:
             raise CommandError(f"Failed to create superuser: {e}")
-# python manage.py create_tenant_superuser --schema_name store4 --username store1 --email store4@mail.com
-
-
-# python manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com
+# python manage.py create_tenant_admin --schema_name store4 --username store1 --email store4@mail.com --role_id <ID> --client_id <ID>

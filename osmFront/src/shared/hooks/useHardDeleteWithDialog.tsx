@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { safeToast } from "@/src/shared/utils/toastService";
+import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
 import { ConfirmDialog } from "@/src/shared/components/ui/dialogs/ConfirmDialog";
 import { useTranslations } from "next-intl";
@@ -41,7 +41,9 @@ export function useHardDeleteWithDialog({
 
   const handleConfirm = async () => {
     if (selectedId) {
-      const result = await hardDeleteRequest.mutation.mutateAsync({ id: selectedId });
+      const result = await hardDeleteRequest.mutation.mutateAsync({
+        id: selectedId,
+      });
       if (!result?.success) {
         safeToast(t("failedMessage"), { type: "error" });
       }

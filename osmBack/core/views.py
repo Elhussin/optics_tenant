@@ -20,7 +20,11 @@ class CSVImportView(APIView):
             csv_file = serializer.validated_data['csv_file']
             config = serializer.validated_data['config']
 
-            schema = config['schema']
+            # Security: Use schema from authenticated user's client instead of request data
+            if not request.user.client:
+                return Response({"error": "User is not associated with any tenant client."}, status=403)
+            
+            schema = request.user.client.schema_name
             app_label = config['app']
             model_name = config['model']
             foreign_keys = config.get('foreign_keys', {})
@@ -29,7 +33,7 @@ class CSVImportView(APIView):
                 try:
                     model = apps.get_model(app_label=app_label, model_name=model_name)
                 except LookupError:
-                    return Response({"error": "Model not found."}, status=400)
+                    return Response({"error": f"Model {model_name} in {app_label} not found."}, status=400)
 
                 model_fields = {
                     f.name: f for f in model._meta.get_fields()
@@ -83,19 +87,6 @@ class CSVImportView(APIView):
         return Response(serializer.errors, status=400)
 
 
-
-# class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
-#     queryset = None
-#     serializer_class = None
-#     search_fields = []
-#     field_labels = {}
-#     # permission_classes = [IsAuthenticated]
-#     permission_classes = []
-
-#     def get_queryset(self):
-#         if self.queryset is None:
-#             raise NotImplementedError("You must define queryset or override get_queryset()")
-#         return self.queryset.all()
 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated

@@ -2,7 +2,7 @@
 set -e
 
 # Load virtual environment
-source /app/venv/bin/activate
+source /opt/venv/bin/activate
 
 echo "Waiting for PostgreSQL..."
 python << 'END'
@@ -47,18 +47,23 @@ python manage.py migrate --noinput
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --clear
 
-echo "Starting Gunicorn..."
-exec gunicorn optics_tenant.wsgi:application \
-    --bind 0.0.0.0:8000 \
-    --workers 4 \
-    --threads 2 \
-    --worker-class gthread \
-    --worker-tmp-dir /dev/shm \
-    --log-level info \
-    --access-logfile - \
-    --error-logfile - \
-    --timeout 120 \
-    --graceful-timeout 30 \
-    --keep-alive 5
 
- 
+echo "Checking for custom command..."
+if [ "$#" -gt 0 ]; then
+    echo "Executing custom command: $@"
+    exec "$@"
+else
+    echo "Starting Gunicorn..."
+    exec gunicorn optics_tenant.wsgi:application \
+        --bind 0.0.0.0:8000 \
+        --workers 4 \
+        --threads 2 \
+        --worker-class gthread \
+        --worker-tmp-dir /dev/shm \
+        --log-level info \
+        --access-logfile - \
+        --error-logfile - \
+        --timeout 120 \
+        --graceful-timeout 30 \
+        --keep-alive 5
+fi

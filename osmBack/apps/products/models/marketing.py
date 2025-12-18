@@ -16,7 +16,7 @@ class ProductVariantMarketing(BaseModel):
         ('child', 'Child'),
         ('senior', 'Senior')
     ]
-    variant_id = models.ForeignKey(ProductVariant, related_name='marketing', on_delete=models.CASCADE)
+    variant = models.ForeignKey(ProductVariant, related_name='marketing', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField()
     meta_title = models.CharField(max_length=200, blank=True)

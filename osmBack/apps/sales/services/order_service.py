@@ -1,7 +1,7 @@
 # services/order_service.py
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from apps.products.models import Stocks, StockMovements
+from apps.products.models import Stock, StockMovement
 from apps.sales.services.base_document_service import calculate_document_totals
 
 def calculate_order_totals(order):
@@ -13,7 +13,7 @@ def confirm_order(order, user):
         raise ValidationError("Only pending orders can be confirmed")
 
     for item in order.items.select_related('variant'):
-        stock = Stocks.objects.select_for_update().filter(
+        stock = Stock.objects.select_for_update().filter(
             branch=order.branch,
             variant=item.variant
         ).first()
@@ -21,8 +21,8 @@ def confirm_order(order, user):
         if not stock or stock.available_quantity < item.quantity:
             raise ValidationError(f"Insufficient stock for {item.variant}")
 
-        StockMovements.objects.create(
-            stocks=stock,
+        StockMovement.objects.create(
+            stock=stock,
             movement_type='reserve',
             quantity=item.quantity,
             quantity_before=stock.quantity_in_stock,
@@ -43,13 +43,13 @@ def cancel_order(order, user):
         raise ValidationError("Cannot cancel this order")
 
     for item in order.items.select_related('variant'):
-        stock = Stocks.objects.select_for_update().filter(
+        stock = Stock.objects.select_for_update().filter(
             branch=order.branch,
             variant=item.variant
         ).first()
         if stock:
-            StockMovements.objects.create(
-                stocks=stock,
+            StockMovement.objects.create(
+                stock=stock,
                 movement_type='release',
                 quantity=item.quantity,
                 quantity_before=stock.quantity_in_stock,

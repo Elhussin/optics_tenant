@@ -37,8 +37,8 @@ class DepartmentViewSet(BaseViewSet):
 
     def get_queryset(self):
         if self.request.user.is_superuser:
-            return Department.objects.all()
-        return Department.objects.filter(is_deleted=False)
+            return Department.objects.all_objects()
+        return Department.objects.all()
 #     def destroy(self, request, *args, **kwargs):
 #         return Response({"detail": "You can't remove this item. Use  delete instead."}, status=405)
 

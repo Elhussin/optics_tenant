@@ -13,10 +13,14 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 
 # إنشاء virtual environment وتثبيت المتطلبات
-RUN python -m venv /app/venv
-ENV PATH="/app/venv/bin:$PATH"
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
+
+# تثبيت dos2unix لحل مشاكل نهاية الأسطر في Windows
+RUN apt-get update && apt-get install -y dos2unix && rm -rf /var/lib/apt/lists/*
+
 
 # نسخ باقي المشروع
 COPY . .
@@ -26,7 +30,7 @@ RUN mkdir -p /app/staticfiles /app/media
 
 # نسخ entrypoint script
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN dos2unix /entrypoint.sh && chmod +x /entrypoint.sh
 
 # منفذ التشغيل
 EXPOSE 8000

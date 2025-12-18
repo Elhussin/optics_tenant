@@ -1,14 +1,14 @@
 from rest_framework import serializers
-from apps.products.models import Stocks, StockMovements, StockTransfer, StockTransferItem
+from apps.products.models import Stock, StockMovement, StockTransfer, StockTransferItem
 
-class StocksSerializer(serializers.ModelSerializer):
+class StockSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Stocks
+        model = Stock
         fields = '__all__'
 
-class StockMovementsSerializer(serializers.ModelSerializer):
+class StockMovementSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StockMovements
+        model = StockMovement
         fields = '__all__'
 
 class StockTransferSerializer(serializers.ModelSerializer):
