@@ -90,6 +90,7 @@ SHARED_APPS = (
 # TENANT_APPS
 # ===============================
 TENANT_APPS = (
+
     'django.contrib.contenttypes',
     'django.contrib.auth',
     'django.contrib.admin',
@@ -98,6 +99,7 @@ TENANT_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'django_extensions',
+
     'core',
     'apps.users',
     'apps.prescriptions',

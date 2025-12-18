@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from .models import ProductVariant
-from .serializers.product import ProductVariantSerializer, ProductVariantListSerializer
+from .serializers.product import ProductVariantSerializer
 from apps.crm.models import Customer
 # from apps.branches.models import Branch
 # from .models import Supplier
@@ -12,8 +12,8 @@ from apps.crm.models import Customer
 
 class ProductVariantViewSet(viewsets.ModelViewSet):
     queryset = ProductVariant.objects.select_related(
-        'product', 'frame_color', 'lens_color', 'lens_type'
-    ).prefetch_related('lens_coatings', 'images')
+        'product'
+    ).prefetch_related('images')
     
     serializer_class = ProductVariantSerializer
 
@@ -36,9 +36,9 @@ class ProductVariantViewSet(viewsets.ModelViewSet):
             )
 
         if category:
-            queryset = queryset.filter(product__category_id=category)
+            queryset = queryset.filter(product__categories__id=category)
 
-        serializer = ProductVariantListSerializer(queryset, many=True)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
     @action(detail=True, methods=['post'], url_path='calculate-price')

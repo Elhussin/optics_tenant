@@ -10,6 +10,7 @@ from core.utils.expiration_date import expiration_date
 from core.constants.tenants import PAYMENT_METHODS,PAYMENT_PERIODS
 from core.mixins.VerboseNameMixin import VerboseNameMixin
 import uuid
+from django.contrib.auth.hashers import make_password
 
 class SubscriptionPlanSerializer(VerboseNameMixin, serializers.ModelSerializer):
     class Meta:
@@ -57,7 +58,7 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
             schema_name=schema_name,
             name=name,
             email=email,
-            password=password,
+            password=make_password(password),
             plan=trial_plan,
             expires_at=expires_at,
             token=uuid.uuid4(),

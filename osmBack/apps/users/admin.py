@@ -18,19 +18,19 @@ class RolePermissionAdmin(admin.ModelAdmin):
     list_display = ('role_name', 'permission_code')
 
     def role_name(self, obj):
-        return obj.role_id.name
+        return obj.role.name
 
     def permission_code(self, obj):
-        return obj.permission_id.code
+        return obj.permission.code
 
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
-    list_display = ['author_id']
+    list_display = ['author']
 
 @admin.register(PageContent)
 class PageContentAdmin(admin.ModelAdmin):
-    list_display = ['page_id', 'language', 'title']
+    list_display = ['page', 'language', 'title']
 
 @admin.register(TenantSettings)
 class TenantSettingsAdmin(admin.ModelAdmin):

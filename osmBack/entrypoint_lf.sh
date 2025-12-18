@@ -2,7 +2,7 @@
 set -e
 
 # Load virtual environment
-source /opt/venv/bin/activate
+source /app/venv/bin/activate
 
 echo "Waiting for PostgreSQL..."
 python << 'END'

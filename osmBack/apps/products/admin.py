@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import( Attributes, AttributeValue, ProductVariantMarketing
+from .models import( Attribute, AttributeValue, ProductVariantMarketing
 ,ProductVariantReview, ProductVariantQuestion, ProductVariantAnswer, ProductVariantOffer
 ,Category, Product, ProductVariant ,ProductImage,FlexiblePrice,
     ExtraVariantAttribute,
@@ -10,7 +10,7 @@ from .models import( Attributes, AttributeValue, ProductVariantMarketing
     StokLensVariant,
     RxLensVariant,
  Supplier, Manufacturer, Brand,
- Stocks,StockMovements,StockTransfer, StockTransferItem
+ Stock,StockMovement,StockTransfer, StockTransferItem
 )
 
 admin.site.site_header = "Optics Admin"
@@ -42,12 +42,12 @@ admin.site.register(Category, CategoryAdmin)
 admin.site.register(Brand, BrandAdmin)
 admin.site.register(ProductVariant, ProductVariantAdmin)
 # admin.site.register(LensCoating)
-admin.site.register(StockMovements)
-admin.site.register(Stocks)
+admin.site.register(StockMovement)
+admin.site.register(Stock)
 admin.site.register(StockTransfer)
 admin.site.register(StockTransferItem)
 admin.site.register(ProductVariantMarketing)
-admin.site.register(Attributes)
+admin.site.register(Attribute)
 admin.site.register(AttributeValue)
 admin.site.register(Supplier)
 admin.site.register(Manufacturer)
@@ -64,11 +64,3 @@ admin.site.register(ContactLensVariant)
 admin.site.register(ContactLensVariantExpirationDate)
 admin.site.register(ExtraVariantAttribute)
 
-# VARIANT_SERIALIZER_MAPPING = {
-#     "basic": ProductVariantSerializer,
-#     "frames": FrameVariantSerializer,
-#     "StockLenses": StokLensVariantSerializer,
-#     "RxLenses": RxLensVariantSerializer,
-#     "ContactLenses": ContactLensVariantSerializer,
-#     "custom": ContactLensVariantExpirationDateSerializer,
-# }

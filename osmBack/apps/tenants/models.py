@@ -4,7 +4,7 @@ import uuid
 from datetime import timedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from core.constants.tenants import PAYMENT_METHODS, STATUS_CHOICES, CURANCY
+from core.constants.tenants import PAYMENT_METHODS, STATUS_CHOICES, CURRENCY
 from core.utils.update_client_plan import update_client_plan
 from core.utils.expiration_date import expiration_date
 from core.models import BaseModel
@@ -12,10 +12,12 @@ import logging
 from django.core.exceptions import ValidationError
 from django.db import connection
 from django.core.management import call_command
-paymant_logger = logging.getLogger('paypal')
+from django.apps import apps  # Added to resolve SubscriptionPlan
+
+payment_logger = logging.getLogger('paypal')
 
 class SubscriptionPlan(BaseModel):
-    """Plane Subscription """
+    """Plan Subscription"""
     name = models.CharField(max_length=50, unique=True,verbose_name=_("Name"))  # trial, basic, premium...
     duration_months = models.PositiveIntegerField(default=30,)
     duration_years = models.PositiveIntegerField(default=365)
@@ -24,7 +26,7 @@ class SubscriptionPlan(BaseModel):
     max_products = models.PositiveIntegerField(default=200,verbose_name=_("Max Products"))
     month_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Month"))
     year_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Year"))
-    currency = models.CharField(max_length=10, default="USD", choices=CURANCY,verbose_name=_("Currency"))
+    currency = models.CharField(max_length=10, default="USD", choices=CURRENCY,verbose_name=_("Currency"))
     discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Discount"))
 
 
@@ -63,8 +65,10 @@ class PendingTenantRequest(BaseModel):
         """Set plan to trial and expires_at to expiration_date"""
         if self.plan and not self.expires_at:
             self.token_expires_at = expiration_date(1)
-            self.expires_at = expiration_date(self.plan.duration_days)
-            self.plan = "SubscriptionPlan".objects.get(name="trial")
+            # Use duration_months * 30 as approximation since duration_days is not on model
+            days = self.plan.duration_months * 30
+            self.expires_at = expiration_date(days)
+            
         super().save(*args, **kwargs)
 
 class Client(TenantMixin,BaseModel):
@@ -116,11 +120,11 @@ class Payment(BaseModel):
     client = models.ForeignKey("Client", on_delete=models.CASCADE, related_name="payments")
     plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default="USD", choices=CURANCY)
+    currency = models.CharField(max_length=10, default="USD", choices=CURRENCY)
     method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default="paypal")
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    direction = models.CharField(max_length=10, choices=[('month', 'Monthly'), ('year', 'Yearly')], default='monthly')
+    direction = models.CharField(max_length=10, choices=[('month', 'Monthly'), ('year', 'Yearly')], default='month')
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
@@ -142,9 +146,9 @@ class Payment(BaseModel):
         if self.status == 'success':
             try:
                 update_client_plan(self)
-                paymant_logger.info(f"Successfully applied plan {self.plan} to client {self.client}")
+                payment_logger.info(f"Successfully applied plan {self.plan} to client {self.client}")
             except Exception as e:
-                paymant_logger.error(f"Failed to apply plan to client: {str(e)}")
+                payment_logger.error(f"Failed to apply plan to client: {str(e)}")
                 raise
         else:
-            paymant_logger.warning(f"Attempted to apply plan for non-successful payment: {self.id}")
+            payment_logger.warning(f"Attempted to apply plan for non-successful payment: {self.id}")

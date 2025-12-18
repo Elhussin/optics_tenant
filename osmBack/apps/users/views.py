@@ -99,14 +99,14 @@ class LoginView(APIView):
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
    
 
-            if user.role_id:
-                permissions = user.role_id.permissions.all()
+            if user.role:
+                permissions = user.role.permissions.all()
             else:
                 permissions = Permission.objects.none()
 
             refresh = RefreshToken.for_user(user)
-            refresh["role_id"] = user.role_id.id if user.role_id else None
-            refresh["role"] = user.role_id.name if user.role_id else None
+            refresh["role_id"] = user.role.id if user.role else None
+            refresh["role"] = user.role.name if user.role else None
             refresh["tenant"] = connection.schema_name
             refresh["permissions"] = list(permissions.values_list('code', flat=True))
 
@@ -146,13 +146,13 @@ class RefreshTokenView(APIView):
             # get user permissions from database
             user_id = refresh["user_id"]
             user = User.objects.get(id=user_id)
-            if user.role_id:
-                permissions = user.role_id.permissions.all()
+            if user.role:
+                permissions = user.role.permissions.all()
             else:
                 permissions = Permission.objects.none()
 
-            access["role_id"] = user.role_id.id if user.role_id else None
-            access["role"] = user.role_id.name if user.role_id else None
+            access["role_id"] = user.role.id if user.role else None
+            access["role"] = user.role.name if user.role else None
             access["tenant"] = refresh.payload.get("tenant", connection.schema_name)
             access["permissions"] = list(permissions.values_list('code', flat=True))
 
@@ -360,7 +360,7 @@ class PageViewSet(BaseViewSet):
             data = data['formData']
 
         # Remove read-only fields that shouldn't be in update
-        read_only_fields = ['id', 'created_at', 'updated_at', 'slug', 'author_id']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'slug', 'author']
         clean_data = {k: v for k, v in data.items() if k not in read_only_fields}
 
         print("Clean data for serializer:", clean_data)

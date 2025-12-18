@@ -21,8 +21,8 @@ class HealthResponseSerializer(serializers.Serializer):
 
 # Role and Permission Serializers
 class RolePermissionSerializer(serializers.ModelSerializer):
-    role_name = serializers.CharField(source="role_id.name", read_only=True)
-    permission_name = serializers.CharField(source="permission_id.name", read_only=True)
+    role_name = serializers.CharField(source="role.name", read_only=True)
+    permission_name = serializers.CharField(source="permission.name", read_only=True)
     class Meta:
         model = RolePermission
         fields = '__all__'
@@ -47,14 +47,14 @@ class UserSerializer(serializers.ModelSerializer):
     password = ReusableFields.password()
     first_name = ReusableFields.first_name()
     last_name = ReusableFields.last_name()
-    role = RoleSerializer(source='role_id', read_only=True)
+    role = RoleSerializer(read_only=True)
 
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'role_id', 'is_active', 'is_staff', 'role', 'password',
+            'role', 'is_active', 'is_staff', 'password',
             'is_deleted', 'deleted_at', 'phone', 'client',
         ]
         read_only_fields = ['id', 'deleted_at','client']
@@ -91,9 +91,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not role:
             guest_role = Role.objects.filter(name='GUEST').first()
             if guest_role:
-                user.role_id = guest_role
+                user.role = guest_role
         else:
-            user.role_id = role
+            user.role = role
         user.is_active = True
         user.save()
         return user
@@ -141,12 +141,12 @@ class PageContentSerializer(serializers.ModelSerializer):
 
 class PageSerializer(serializers.ModelSerializer):
     translations = PageContentSerializer(many=True)
-    author_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
     class Meta:
         model = Page
         fields = [
             'id','default_language', 'is_published','slug','is_deleted','is_active',
-             'created_at', 'updated_at', 'translations','author_id'
+             'created_at', 'updated_at', 'translations','author'
         ]
 
     def validate_slug(self, value):
@@ -157,7 +157,7 @@ class PageSerializer(serializers.ModelSerializer):
         page = Page.objects.create(**validated_data)
         
         for translation_data in translations_data:
-            PageContent.objects.create(page_id=page, **translation_data)
+            PageContent.objects.create(page=page, **translation_data)
         
         return page
     

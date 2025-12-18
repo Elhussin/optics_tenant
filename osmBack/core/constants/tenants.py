@@ -16,7 +16,7 @@ STATUS_CHOICES = [
         ("canceled", "Canceled"),
     ]
 
-CURANCY=[
+CURRENCY=[
     ("usd", "USD"),
     ("egp", "EGP"),
     ("sar", "SAR"),

@@ -2,8 +2,6 @@
 
 "use client"
 import { useEffect, useState, useRef } from "react";
-// import { themes } from "../../constants";
-// import { useAutoTranslation } from "../../hooks/useAutoTranslation";
 import { Palette, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { type ClassValue, clsx } from "clsx";
@@ -31,7 +29,6 @@ function cn(...inputs: ClassValue[]) {
 export default function ThemeToggle() {
   const [theme, setTheme] = useState("theme-light");
   const [isOpen, setIsOpen] = useState(false);
-  // const { t } = useAutoTranslation("common", { keyPrefix: "buttons" });
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Initialize theme from localStorage

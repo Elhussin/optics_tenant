@@ -2,7 +2,7 @@
 
 from django.db import transaction
 from django.core.exceptions import ValidationError
-from apps.products.models import Stocks, StockMovements
+from apps.products.models import Stock, StockMovement
 from apps.sales.services.base_document_service import calculate_document_totals
 
 
@@ -15,7 +15,7 @@ def confirm_invoice(invoice):
         raise ValidationError("Only draft invoices can be confirmed")
 
     for item in invoice.items.select_related('product_variant'):
-        stock = Stocks.objects.select_for_update().filter(
+        stock = Stock.objects.select_for_update().filter(
             branch=invoice.branch,
             variant=item.product_variant
         ).first()
@@ -32,8 +32,8 @@ def confirm_invoice(invoice):
         before = stock.quantity_in_stock
         stock.save()
 
-        StockMovements.objects.create(
-            stocks=stock,
+        StockMovement.objects.create(
+            stock=stock,
             movement_type=movement_type,
             quantity=item.quantity if movement_type == 'purchase' else -item.quantity,
             quantity_before=before,
