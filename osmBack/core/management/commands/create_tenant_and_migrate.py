@@ -48,7 +48,7 @@ class Command(BaseCommand):
         with schema_context(schema_name):
 
             call_command('import_csv_with_foreign', schema=schema_name, config="data/csv_config.json")
-            call_command('import_pages', schema=schema_name, config="data/csv/pages1.csv")
+            # call_command('import_pages', schema=schema_name, config="data/csv/pages1.csv")
             call_command('create_tenant_superuser', schema_name=schema_name, username='admin', email='admin@public.com')
 
         self.stdout.write(self.style.SUCCESS(f'Tenant "{name}" created and migrated successfully!'))

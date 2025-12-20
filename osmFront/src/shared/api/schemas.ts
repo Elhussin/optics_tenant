@@ -9,6 +9,8 @@ const Account = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     currency: AccountCurrencyEnum.optional(),
+    balance_currency: z.string(),
+    balance: z.string().regex(/^-?\d{0,17}(?:\.\d{0,2})?$/),
     user: z.number().int(),
   })
   .passthrough();
@@ -24,23 +26,18 @@ const AccountRequest = z
   .object({
     name: z.string().min(1).max(255),
     currency: AccountCurrencyEnum.optional(),
-    user: z.number().int(),
   })
   .passthrough();
 const PatchedAccountRequest = z
-  .object({
-    name: z.string().min(1).max(255),
-    currency: AccountCurrencyEnum,
-    user: z.number().int(),
-  })
+  .object({ name: z.string().min(1).max(255), currency: AccountCurrencyEnum })
   .partial()
   .passthrough();
-const TransactionTypeEnum = z.enum(["income", "expense"]);
+const CategoryTypeEnum = z.enum(["income", "expense"]);
 const AccountingCategory = z
   .object({
     id: z.number().int(),
     name: z.string().max(100),
-    category_type: TransactionTypeEnum,
+    category_type: CategoryTypeEnum,
     description: z.string().nullish(),
     parent: z.number().int().nullish(),
   })
@@ -56,7 +53,7 @@ const PaginatedAccountingCategoryList = z
 const AccountingCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
-    category_type: TransactionTypeEnum,
+    category_type: CategoryTypeEnum,
     description: z.string().nullish(),
     parent: z.number().int().nullish(),
   })
@@ -64,7 +61,7 @@ const AccountingCategoryRequest = z
 const PatchedAccountingCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
-    category_type: TransactionTypeEnum,
+    category_type: CategoryTypeEnum,
     description: z.string().nullable(),
     parent: z.number().int().nullable(),
   })
@@ -140,13 +137,14 @@ const PatchedJournalEntryRequest = z
   })
   .partial()
   .passthrough();
+const TransactionTypeEnum = z.enum(["income", "expense"]);
 const IntervalEnum = z.enum(["monthly", "yearly"]);
 const RecurringTransaction = z
   .object({
     id: z.number().int(),
     amount_currency: z.string(),
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_types: TransactionTypeEnum,
+    transaction_type: TransactionTypeEnum,
     interval: IntervalEnum,
     next_execution: z.string(),
     account: z.number().int(),
@@ -163,7 +161,7 @@ const PaginatedRecurringTransactionList = z
 const RecurringTransactionRequest = z
   .object({
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_types: TransactionTypeEnum,
+    transaction_type: TransactionTypeEnum,
     interval: IntervalEnum,
     next_execution: z.string(),
     account: z.number().int(),
@@ -172,7 +170,7 @@ const RecurringTransactionRequest = z
 const PatchedRecurringTransactionRequest = z
   .object({
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_types: TransactionTypeEnum,
+    transaction_type: TransactionTypeEnum,
     interval: IntervalEnum,
     next_execution: z.string(),
     account: z.number().int(),
@@ -270,12 +268,11 @@ const BranchUsers = z
     id: z.number().int(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    status: z.boolean().optional(),
+    is_active: z.boolean().optional(),
     notes: z.string().nullish(),
-    branch_id: z.number().int(),
-    employee_id: z.number().int(),
+    branch: z.number().int(),
+    employee: z.number().int(),
   })
   .passthrough();
 const PaginatedBranchUsersList = z
@@ -288,22 +285,20 @@ const PaginatedBranchUsersList = z
   .passthrough();
 const BranchUsersRequest = z
   .object({
-    is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    status: z.boolean().optional(),
+    is_active: z.boolean().optional(),
     notes: z.string().nullish(),
-    branch_id: z.number().int(),
-    employee_id: z.number().int(),
+    branch: z.number().int(),
+    employee: z.number().int(),
   })
   .passthrough();
 const PatchedBranchUsersRequest = z
   .object({
-    is_active: z.boolean(),
     is_deleted: z.boolean(),
-    status: z.boolean(),
+    is_active: z.boolean(),
     notes: z.string().nullable(),
-    branch_id: z.number().int(),
-    employee_id: z.number().int(),
+    branch: z.number().int(),
+    employee: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -366,6 +361,51 @@ const PatchedBranchRequest = z
     is_main_branch: z.boolean(),
     allows_online_orders: z.boolean(),
     operating_hours: z.unknown(),
+  })
+  .partial()
+  .passthrough();
+const Shift = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+    notes: z.string().nullish(),
+    branch: z.number().int(),
+    employee: z.number().int(),
+  })
+  .passthrough();
+const PaginatedShiftList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Shift),
+  })
+  .passthrough();
+const ShiftRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+    notes: z.string().nullish(),
+    branch: z.number().int(),
+    employee: z.number().int(),
+  })
+  .passthrough();
+const PatchedShiftRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    start_time: z.string().datetime({ offset: true }),
+    end_time: z.string().datetime({ offset: true }),
+    notes: z.string().nullable(),
+    branch: z.number().int(),
+    employee: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -763,7 +803,7 @@ const Subscription = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     subscription_type: SubscriptionTypeEnum,
-    start_date: z.string().datetime({ offset: true }),
+    start_date: z.string().datetime({ offset: true }).optional(),
     end_date: z.string().datetime({ offset: true }),
     customer: z.number().int(),
   })
@@ -781,6 +821,7 @@ const SubscriptionRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     subscription_type: SubscriptionTypeEnum,
+    start_date: z.string().datetime({ offset: true }).optional(),
     end_date: z.string().datetime({ offset: true }),
     customer: z.number().int(),
   })
@@ -790,6 +831,7 @@ const PatchedSubscriptionRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     subscription_type: SubscriptionTypeEnum,
+    start_date: z.string().datetime({ offset: true }),
     end_date: z.string().datetime({ offset: true }),
     customer: z.number().int(),
   })
@@ -850,6 +892,10 @@ const PatchedTaskRequest = z
 const Attendance = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     date: z.string(),
     hours_worked: z.number().nullish(),
     check_in: z.string().nullish(),
@@ -867,6 +913,8 @@ const PaginatedAttendanceList = z
   .passthrough();
 const AttendanceRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     date: z.string(),
     hours_worked: z.number().nullish(),
     check_in: z.string().nullish(),
@@ -876,6 +924,8 @@ const AttendanceRequest = z
   .passthrough();
 const PatchedAttendanceRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     date: z.string(),
     hours_worked: z.number().nullable(),
     check_in: z.string().nullable(),
@@ -937,8 +987,8 @@ const PositionEnum = z.enum([
 const Employee = z
   .object({
     id: z.number().int(),
-    user_id: z.number().int(),
-    department_id: z.number().int().nullish(),
+    user: z.number().int(),
+    department: z.number().int().nullish(),
     user_name: z.string(),
     department_name: z.string(),
     position: PositionEnum.optional(),
@@ -964,8 +1014,8 @@ const PaginatedEmployeeList = z
   .passthrough();
 const EmployeeRequest = z
   .object({
-    user_id: z.number().int(),
-    department_id: z.number().int().nullish(),
+    user: z.number().int(),
+    department: z.number().int().nullish(),
     position: PositionEnum.optional(),
     salary: z
       .string()
@@ -979,8 +1029,8 @@ const EmployeeRequest = z
   .passthrough();
 const PatchedEmployeeRequest = z
   .object({
-    user_id: z.number().int(),
-    department_id: z.number().int().nullable(),
+    user: z.number().int(),
+    department: z.number().int().nullable(),
     position: PositionEnum,
     salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     phone: z.string().max(20),
@@ -995,10 +1045,14 @@ const LeaveStatusEnum = z.enum(["pending", "approved", "rejected"]);
 const Leave = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     leave_type: LeaveTypeEnum,
     start_date: z.string(),
     end_date: z.string().nullish(),
-    status: LeaveStatusEnum.optional(),
+    status: LeaveStatusEnum,
     employee: z.number().int(),
   })
   .passthrough();
@@ -1012,17 +1066,19 @@ const PaginatedLeaveList = z
   .passthrough();
 const LeaveRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     leave_type: LeaveTypeEnum,
     end_date: z.string().nullish(),
-    status: LeaveStatusEnum.optional(),
     employee: z.number().int(),
   })
   .passthrough();
 const PatchedLeaveRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     leave_type: LeaveTypeEnum,
     end_date: z.string().nullable(),
-    status: LeaveStatusEnum,
     employee: z.number().int(),
   })
   .partial()
@@ -1031,10 +1087,13 @@ const NotificationTypeEnum = z.enum(["leave", "task", "payroll"]);
 const Notification = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     notification_type: NotificationTypeEnum,
     message: z.string().nullish(),
     is_read: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
     employee: z.number().int(),
   })
   .passthrough();
@@ -1048,6 +1107,8 @@ const PaginatedNotificationList = z
   .passthrough();
 const NotificationRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     notification_type: NotificationTypeEnum,
     message: z.string().nullish(),
     is_read: z.boolean().optional(),
@@ -1056,6 +1117,8 @@ const NotificationRequest = z
   .passthrough();
 const PatchedNotificationRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     notification_type: NotificationTypeEnum,
     message: z.string().nullable(),
     is_read: z.boolean(),
@@ -1066,6 +1129,10 @@ const PatchedNotificationRequest = z
 const Payroll = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     month: z.string().max(20),
     basic_salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     bonuses: z
@@ -1093,6 +1160,8 @@ const PaginatedPayrollList = z
   .passthrough();
 const PayrollRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     month: z.string().min(1).max(20),
     basic_salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     bonuses: z
@@ -1112,6 +1181,8 @@ const PayrollRequest = z
   .passthrough();
 const PatchedPayrollRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     month: z.string().min(1).max(20),
     basic_salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     bonuses: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
@@ -1134,6 +1205,10 @@ const RatingEnum = z.union([
 const PerformanceReview = z
   .object({
     id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     review_date: z.string(),
     rating: RatingEnum,
     comments: z.string().nullish(),
@@ -1150,6 +1225,8 @@ const PaginatedPerformanceReviewList = z
   .passthrough();
 const PerformanceReviewRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     rating: RatingEnum,
     comments: z.string().nullish(),
     employee: z.number().int(),
@@ -1157,6 +1234,8 @@ const PerformanceReviewRequest = z
   .passthrough();
 const PatchedPerformanceReviewRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     rating: RatingEnum,
     comments: z.string().nullable(),
     employee: z.number().int(),
@@ -1184,10 +1263,9 @@ const User = z
     email: z.string().email(),
     first_name: z.string().max(30),
     last_name: z.string().max(30),
-    role_id: z.number().int().nullish(),
+    role: Role,
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
-    role: Role,
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
     phone: z.string().regex(/^\+?\d{7,15}$/),
@@ -1884,10 +1962,10 @@ const PrescriptionRecord = z
       .nullish(),
     right_pupillary_distance: z.number().nullish(),
     left_pupillary_distance: z.number().nullish(),
-    sigmant_right: z.string().max(20).nullish(),
-    sigmant_left: z.string().max(20).nullish(),
-    a_v_right: z.string().max(20).nullish(),
-    a_v_left: z.string().max(20).nullish(),
+    segment_height_right: z.string().max(20).nullish(),
+    segment_height_left: z.string().max(20).nullish(),
+    visual_acuity_right: z.string().max(20).nullish(),
+    visual_acuity_left: z.string().max(20).nullish(),
     vertical_distance_right: z.string().max(20).nullish(),
     vertical_distance_left: z.string().max(20).nullish(),
     notes: z.string().nullish(),
@@ -1920,10 +1998,10 @@ const PrescriptionRecordRequest = z
       .nullish(),
     right_pupillary_distance: z.number().nullish(),
     left_pupillary_distance: z.number().nullish(),
-    sigmant_right: z.string().max(20).nullish(),
-    sigmant_left: z.string().max(20).nullish(),
-    a_v_right: z.string().max(20).nullish(),
-    a_v_left: z.string().max(20).nullish(),
+    segment_height_right: z.string().max(20).nullish(),
+    segment_height_left: z.string().max(20).nullish(),
+    visual_acuity_right: z.string().max(20).nullish(),
+    visual_acuity_left: z.string().max(20).nullish(),
     vertical_distance_right: z.string().max(20).nullish(),
     vertical_distance_left: z.string().max(20).nullish(),
     notes: z.string().nullish(),
@@ -1950,10 +2028,10 @@ const PatchedPrescriptionRecordRequest = z
       .nullable(),
     right_pupillary_distance: z.number().nullable(),
     left_pupillary_distance: z.number().nullable(),
-    sigmant_right: z.string().max(20).nullable(),
-    sigmant_left: z.string().max(20).nullable(),
-    a_v_right: z.string().max(20).nullable(),
-    a_v_left: z.string().max(20).nullable(),
+    segment_height_right: z.string().max(20).nullable(),
+    segment_height_left: z.string().max(20).nullable(),
+    visual_acuity_right: z.string().max(20).nullable(),
+    visual_acuity_left: z.string().max(20).nullable(),
     vertical_distance_right: z.string().max(20).nullable(),
     vertical_distance_left: z.string().max(20).nullable(),
     notes: z.string().nullable(),
@@ -2011,7 +2089,7 @@ const AttributeValue = z
     value: z.string().max(100),
     label: z.string().max(100).nullish(),
     unique_key: z.string(),
-    attribute_id: z.number().int(),
+    attribute: z.number().int(),
   })
   .passthrough();
 const PaginatedAttributeValueList = z
@@ -2028,7 +2106,7 @@ const AttributeValueRequest = z
     is_deleted: z.boolean().optional(),
     value: z.string().min(1).max(100),
     label: z.string().max(100).nullish(),
-    attribute_id: z.number().int(),
+    attribute: z.number().int(),
   })
   .passthrough();
 const PatchedAttributeValueRequest = z
@@ -2037,11 +2115,11 @@ const PatchedAttributeValueRequest = z
     is_deleted: z.boolean(),
     value: z.string().min(1).max(100),
     label: z.string().max(100).nullable(),
-    attribute_id: z.number().int(),
+    attribute: z.number().int(),
   })
   .partial()
   .passthrough();
-const Attributes = z
+const Attribute = z
   .object({
     id: z.number().int(),
     values: z.array(AttributeValue),
@@ -2052,22 +2130,22 @@ const Attributes = z
     name: z.string().max(100),
   })
   .passthrough();
-const PaginatedAttributesList = z
+const PaginatedAttributeList = z
   .object({
     count: z.number().int(),
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
-    results: z.array(Attributes),
+    results: z.array(Attribute),
   })
   .passthrough();
-const AttributesRequest = z
+const AttributeRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
   })
   .passthrough();
-const PatchedAttributesRequest = z
+const PatchedAttributeRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
@@ -2129,7 +2207,7 @@ const Category = z
     id: z.number().int(),
     name: z.string().max(100),
     description: z.string().optional(),
-    parent_id: z.number().int().nullish(),
+    parent: z.number().int().nullish(),
     parent_name: z.string(),
     is_active: z.boolean().optional(),
     created_at: z.string().datetime({ offset: true }),
@@ -2148,7 +2226,7 @@ const CategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
     description: z.string().optional(),
-    parent_id: z.number().int().nullish(),
+    parent: z.number().int().nullish(),
     is_active: z.boolean().optional(),
   })
   .passthrough();
@@ -2156,7 +2234,7 @@ const PatchedCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
     description: z.string(),
-    parent_id: z.number().int().nullable(),
+    parent: z.number().int().nullable(),
     is_active: z.boolean(),
   })
   .partial()
@@ -2280,7 +2358,7 @@ const ProductVariantMarketing = z
     seo_image_alt: z.string().max(200).optional(),
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
-    variant_id: z.number().int(),
+    variant: z.number().int(),
   })
   .passthrough();
 const PaginatedProductVariantMarketingList = z
@@ -2309,7 +2387,7 @@ const ProductVariantMarketingRequest = z
     seo_image_alt: z.string().max(200).optional(),
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
-    variant_id: z.number().int(),
+    variant: z.number().int(),
   })
   .passthrough();
 const PatchedProductVariantMarketingRequest = z
@@ -2330,7 +2408,7 @@ const PatchedProductVariantMarketingRequest = z
     seo_image_alt: z.string().max(200),
     gender: GenderEnum,
     age_group: z.union([AgeGroupEnum, BlankEnum]),
-    variant_id: z.number().int(),
+    variant: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2379,7 +2457,7 @@ const PatchedProductVariantOfferRequest = z
 const ProductImage = z
   .object({
     id: z.number().int(),
-    variant_id: z.number().int(),
+    variant: z.number().int(),
     image: z.string().url(),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2396,7 +2474,7 @@ const PaginatedProductImageList = z
   .passthrough();
 const ProductImageRequest = z
   .object({
-    variant_id: z.number().int(),
+    variant: z.number().int(),
     image: z.instanceof(File),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2405,7 +2483,7 @@ const ProductImageRequest = z
   .passthrough();
 const PatchedProductImageRequest = z
   .object({
-    variant_id: z.number().int(),
+    variant: z.number().int(),
     image: z.instanceof(File),
     alt_text: z.string().max(200),
     order: z.number().int().gte(0).lte(2147483647),
@@ -2435,14 +2513,12 @@ const Product = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     model: z.string().max(50),
-    name: z.string().max(200).nullish(),
+    name: z.string().max(200).optional(),
     description: z.string(),
     usku: z.string(),
     variant_type: VariantTypeEnum.optional(),
-    category: z.number().int(),
-    supplier: z.number().int(),
-    manufacturer: z.number().int(),
     brand: z.number().int(),
+    categories: z.array(z.number().int()),
   })
   .passthrough();
 const PaginatedProductList = z
@@ -2458,12 +2534,10 @@ const ProductRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     model: z.string().min(1).max(50),
-    name: z.string().max(200).nullish(),
+    name: z.string().max(200).optional(),
     variant_type: VariantTypeEnum.optional(),
-    category: z.number().int(),
-    supplier: z.number().int(),
-    manufacturer: z.number().int(),
     brand: z.number().int(),
+    categories: z.array(z.number().int()),
   })
   .passthrough();
 const PatchedProductRequest = z
@@ -2471,12 +2545,10 @@ const PatchedProductRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     model: z.string().min(1).max(50),
-    name: z.string().max(200).nullable(),
+    name: z.string().max(200),
     variant_type: VariantTypeEnum,
-    category: z.number().int(),
-    supplier: z.number().int(),
-    manufacturer: z.number().int(),
     brand: z.number().int(),
+    categories: z.array(z.number().int()),
   })
   .partial()
   .passthrough();
@@ -2572,7 +2644,7 @@ const MovementTypeEnum = z.enum([
   "reserve",
   "release",
 ]);
-const StockMovements = z
+const StockMovement = z
   .object({
     id: z.number().int(),
     created_at: z.string().datetime({ offset: true }),
@@ -2590,18 +2662,18 @@ const StockMovements = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    stocks_id: z.number().int(),
+    stock: z.number().int(),
   })
   .passthrough();
-const PaginatedStockMovementsList = z
+const PaginatedStockMovementList = z
   .object({
     count: z.number().int(),
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
-    results: z.array(StockMovements),
+    results: z.array(StockMovement),
   })
   .passthrough();
-const StockMovementsRequest = z
+const StockMovementRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
@@ -2615,10 +2687,10 @@ const StockMovementsRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    stocks_id: z.number().int(),
+    stock: z.number().int(),
   })
   .passthrough();
-const PatchedStockMovementsRequest = z
+const PatchedStockMovementRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
@@ -2629,7 +2701,7 @@ const PatchedStockMovementsRequest = z
     reference_number: z.string().max(50),
     notes: z.string(),
     cost_per_unit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    stocks_id: z.number().int(),
+    stock: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2648,8 +2720,8 @@ const StockTransferItem = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     notes: z.string().optional(),
-    transfer_id: z.number().int(),
-    variant_id: z.number().int(),
+    transfer: z.number().int(),
+    variant: z.number().int(),
   })
   .passthrough();
 const PaginatedStockTransferItemList = z
@@ -2672,8 +2744,8 @@ const StockTransferItemRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     notes: z.string().optional(),
-    transfer_id: z.number().int(),
-    variant_id: z.number().int(),
+    transfer: z.number().int(),
+    variant: z.number().int(),
   })
   .passthrough();
 const PatchedStockTransferItemRequest = z
@@ -2685,14 +2757,16 @@ const PatchedStockTransferItemRequest = z
     quantity_received: z.number().int().gte(0).lte(2147483647),
     unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     notes: z.string(),
-    transfer_id: z.number().int(),
-    variant_id: z.number().int(),
+    transfer: z.number().int(),
+    variant: z.number().int(),
   })
   .partial()
   .passthrough();
 const StockTransferStatusEnum = z.enum([
   "pending",
-  "in_transit",
+  "submitted",
+  "shipped",
+  "received",
   "completed",
   "cancelled",
 ]);
@@ -2712,8 +2786,8 @@ const StockTransfer = z
     shipped_date: z.string().datetime({ offset: true }).nullish(),
     received_date: z.string().datetime({ offset: true }).nullish(),
     notes: z.string().optional(),
-    from_branch_id: z.number().int(),
-    to_branch_id: z.number().int(),
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
   })
   .passthrough();
 const PaginatedStockTransferList = z
@@ -2735,8 +2809,8 @@ const StockTransferRequest = z
     shipped_date: z.string().datetime({ offset: true }).nullish(),
     received_date: z.string().datetime({ offset: true }).nullish(),
     notes: z.string().optional(),
-    from_branch_id: z.number().int(),
-    to_branch_id: z.number().int(),
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
   })
   .passthrough();
 const PatchedStockTransferRequest = z
@@ -2750,12 +2824,12 @@ const PatchedStockTransferRequest = z
     shipped_date: z.string().datetime({ offset: true }).nullable(),
     received_date: z.string().datetime({ offset: true }).nullable(),
     notes: z.string(),
-    from_branch_id: z.number().int(),
-    to_branch_id: z.number().int(),
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
   })
   .partial()
   .passthrough();
-const Stocks = z
+const Stock = z
   .object({
     id: z.number().int(),
     created_at: z.string().datetime({ offset: true }),
@@ -2774,19 +2848,19 @@ const Stocks = z
     last_restocked: z.string().datetime({ offset: true }).nullish(),
     last_sale: z.string().datetime({ offset: true }).nullish(),
     allow_backorder: z.boolean().optional(),
-    branch_id: z.number().int(),
-    variant_id: z.number().int(),
+    branch: z.number().int(),
+    variant: z.number().int(),
   })
   .passthrough();
-const PaginatedStocksList = z
+const PaginatedStockList = z
   .object({
     count: z.number().int(),
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
-    results: z.array(Stocks),
+    results: z.array(Stock),
   })
   .passthrough();
-const StocksRequest = z
+const StockRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
@@ -2802,11 +2876,11 @@ const StocksRequest = z
     last_restocked: z.string().datetime({ offset: true }).nullish(),
     last_sale: z.string().datetime({ offset: true }).nullish(),
     allow_backorder: z.boolean().optional(),
-    branch_id: z.number().int(),
-    variant_id: z.number().int(),
+    branch: z.number().int(),
+    variant: z.number().int(),
   })
   .passthrough();
-const PatchedStocksRequest = z
+const PatchedStockRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
@@ -2819,8 +2893,8 @@ const PatchedStocksRequest = z
     last_restocked: z.string().datetime({ offset: true }).nullable(),
     last_sale: z.string().datetime({ offset: true }).nullable(),
     allow_backorder: z.boolean(),
-    branch_id: z.number().int(),
-    variant_id: z.number().int(),
+    branch: z.number().int(),
+    variant: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2926,7 +3000,6 @@ const ProductVariantRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
-    product: z.number().int(),
     product_type: z.number().int(),
     warranty: z.number().int().nullish(),
     weight: z.number().int().nullish(),
@@ -2947,7 +3020,6 @@ const PatchedProductVariantRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
-    product: z.number().int(),
     product_type: z.number().int(),
     warranty: z.number().int().nullable(),
     weight: z.number().int().nullable(),
@@ -3449,6 +3521,7 @@ const PatchedContactUsRequest = z
   })
   .partial()
   .passthrough();
+const HealthResponse = z.object({ status: z.string() }).passthrough();
 const LoginRequest = z
   .object({ username: z.string().min(1), password: z.string().min(1) })
   .passthrough();
@@ -3583,8 +3656,8 @@ const RolePermission = z
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    role_id: z.number().int(),
-    permission_id: z.number().int(),
+    role: z.number().int(),
+    permission: z.number().int(),
   })
   .passthrough();
 const PaginatedRolePermissionList = z
@@ -3599,16 +3672,16 @@ const RolePermissionRequest = z
   .object({
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
-    role_id: z.number().int(),
-    permission_id: z.number().int(),
+    role: z.number().int(),
+    permission: z.number().int(),
   })
   .passthrough();
 const PatchedRolePermissionRequest = z
   .object({
     is_active: z.boolean(),
     is_deleted: z.boolean(),
-    role_id: z.number().int(),
-    permission_id: z.number().int(),
+    role: z.number().int(),
+    permission: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -3745,7 +3818,6 @@ const UserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
-    role_id: z.number().int().nullish(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     password: z
@@ -3765,7 +3837,6 @@ const PatchedUserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
-    role_id: z.number().int().nullable(),
     is_active: z.boolean(),
     is_staff: z.boolean(),
     password: z
@@ -3787,7 +3858,7 @@ export const schemas = {
   PaginatedAccountList,
   AccountRequest,
   PatchedAccountRequest,
-  TransactionTypeEnum,
+  CategoryTypeEnum,
   AccountingCategory,
   PaginatedAccountingCategoryList,
   AccountingCategoryRequest,
@@ -3800,6 +3871,7 @@ export const schemas = {
   PaginatedJournalEntryList,
   JournalEntryRequest,
   PatchedJournalEntryRequest,
+  TransactionTypeEnum,
   IntervalEnum,
   RecurringTransaction,
   PaginatedRecurringTransactionList,
@@ -3822,6 +3894,10 @@ export const schemas = {
   PaginatedBranchList,
   BranchRequest,
   PatchedBranchRequest,
+  Shift,
+  PaginatedShiftList,
+  ShiftRequest,
+  PatchedShiftRequest,
   Campaign,
   PaginatedCampaignList,
   CampaignRequest,
@@ -3925,10 +4001,10 @@ export const schemas = {
   PaginatedAttributeValueList,
   AttributeValueRequest,
   PatchedAttributeValueRequest,
-  Attributes,
-  PaginatedAttributesList,
-  AttributesRequest,
-  PatchedAttributesRequest,
+  Attribute,
+  PaginatedAttributeList,
+  AttributeRequest,
+  PatchedAttributeRequest,
   ProductTypeEnum,
   Brand,
   PaginatedBrandList,
@@ -3974,10 +4050,10 @@ export const schemas = {
   ProductVariantReviewRequest,
   PatchedProductVariantReviewRequest,
   MovementTypeEnum,
-  StockMovements,
-  PaginatedStockMovementsList,
-  StockMovementsRequest,
-  PatchedStockMovementsRequest,
+  StockMovement,
+  PaginatedStockMovementList,
+  StockMovementRequest,
+  PatchedStockMovementRequest,
   StockTransferItem,
   PaginatedStockTransferItemList,
   StockTransferItemRequest,
@@ -3987,10 +4063,10 @@ export const schemas = {
   PaginatedStockTransferList,
   StockTransferRequest,
   PatchedStockTransferRequest,
-  Stocks,
-  PaginatedStocksList,
-  StocksRequest,
-  PatchedStocksRequest,
+  Stock,
+  PaginatedStockList,
+  StockRequest,
+  PatchedStockRequest,
   Supplier,
   PaginatedSupplierList,
   SupplierRequest,
@@ -4039,6 +4115,7 @@ export const schemas = {
   PaginatedContactUsList,
   ContactUsRequest,
   PatchedContactUsRequest,
+  HealthResponse,
   LoginRequest,
   LoginSuccessResponse,
   LoginBadRequest,
@@ -4083,8 +4160,44 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/accounts/",
     alias: "accounting_accounts_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "balance",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "balance_currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4095,6 +4208,21 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "user",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedAccountList,
   },
@@ -4102,6 +4230,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/accounts/",
     alias: "accounting_accounts_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4116,6 +4245,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4130,6 +4260,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4149,6 +4280,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4168,6 +4300,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4177,6 +4310,14 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/accounting/accounts/filter_options/",
+    alias: "accounting_accounts_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Account,
   },
   {
     method: "get",
@@ -4281,8 +4422,34 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_closed",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4293,6 +4460,16 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedFinancialPeriodList,
   },
@@ -4300,6 +4477,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4314,6 +4492,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4328,6 +4507,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4347,6 +4527,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4366,6 +4547,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4378,10 +4560,54 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/accounting/financial-periods/filter_options/",
+    alias: "accounting_financial_periods_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: FinancialPeriod,
+  },
+  {
+    method: "get",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "account",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "credit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "credit_currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "debit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "debit_currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4392,6 +4618,16 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "transaction",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedJournalEntryList,
   },
@@ -4399,6 +4635,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4413,6 +4650,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4427,6 +4665,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4446,6 +4685,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4465,6 +4705,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4477,10 +4718,54 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/accounting/journal-entries/filter_options/",
+    alias: "accounting_journal_entries_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: JournalEntry,
+  },
+  {
+    method: "get",
     path: "/api/accounting/recurring-transactions/",
     alias: "accounting_recurring_transactions_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "account",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "amount_currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "interval",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "next_execution",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4491,6 +4776,16 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "transaction_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedRecurringTransactionList,
   },
@@ -4498,6 +4793,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/recurring-transactions/",
     alias: "accounting_recurring_transactions_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4512,6 +4808,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4526,6 +4823,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4545,6 +4843,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4564,6 +4863,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4573,6 +4873,14 @@ export const endpoints = makeApi([
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/accounting/recurring-transactions/filter_options/",
+    alias: "accounting_recurring_transactions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: RecurringTransaction,
   },
   {
     method: "get",
@@ -4677,8 +4985,54 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/transactions/",
     alias: "accounting_transactions_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "account",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "amount_currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "category",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4689,6 +5043,31 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "period",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "transaction_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedTransactionList,
   },
@@ -4696,6 +5075,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/transactions/",
     alias: "accounting_transactions_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4710,6 +5090,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4724,6 +5105,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4743,6 +5125,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4762,6 +5145,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4774,13 +5158,21 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/accounting/transactions/filter_options/",
+    alias: "accounting_transactions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Transaction,
+  },
+  {
+    method: "get",
     path: "/api/branches/branch-users/",
     alias: "branches_branch_users_list",
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "branch_id",
+        name: "branch",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -4790,7 +5182,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "employee_id",
+        name: "employee",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -4833,11 +5225,6 @@ export const endpoints = makeApi([
         name: "search",
         type: "Query",
         schema: z.string().optional(),
-      },
-      {
-        name: "status",
-        type: "Query",
-        schema: z.boolean().optional(),
       },
       {
         name: "updated_at",
@@ -5144,6 +5531,179 @@ export const endpoints = makeApi([
     response: Branch,
   },
   {
+    method: "get",
+    path: "/api/branches/shifts/",
+    alias: "branches_shifts_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedShiftList,
+  },
+  {
+    method: "post",
+    path: "/api/branches/shifts/",
+    alias: "branches_shifts_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ShiftRequest,
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "get",
+    path: "/api/branches/shifts/:id/",
+    alias: "branches_shifts_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "put",
+    path: "/api/branches/shifts/:id/",
+    alias: "branches_shifts_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ShiftRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "patch",
+    path: "/api/branches/shifts/:id/",
+    alias: "branches_shifts_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedShiftRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "delete",
+    path: "/api/branches/shifts/:id/",
+    alias: "branches_shifts_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/branches/shifts/filter_options/",
+    alias: "branches_shifts_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Shift,
+  },
+  {
     method: "post",
     path: "/api/core/import-csv/",
     alias: "core_import_csv_create",
@@ -5327,7 +5887,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/complaints/",
     alias: "crm_complaints_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5397,7 +5958,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/complaints/",
     alias: "crm_complaints_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5412,7 +5974,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5427,7 +5990,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5447,7 +6011,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5467,7 +6032,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5959,7 +6525,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/documents/",
     alias: "crm_documents_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6029,7 +6596,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/documents/",
     alias: "crm_documents_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6044,7 +6612,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6059,7 +6628,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6079,7 +6649,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6099,7 +6670,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6122,7 +6694,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/interactions/",
     alias: "crm_interactions_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6192,7 +6765,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/interactions/",
     alias: "crm_interactions_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6207,7 +6781,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6222,7 +6797,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6242,7 +6818,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6262,7 +6839,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6285,7 +6863,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/opportunities/",
     alias: "crm_opportunities_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6360,7 +6939,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/opportunities/",
     alias: "crm_opportunities_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6375,7 +6955,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6390,7 +6971,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6410,7 +6992,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6430,7 +7013,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6451,9 +7035,100 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/crm/owned-resources/",
+    alias: "crm_owned_resources_retrieve",
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/crm/owned-resources/",
+    alias: "crm_owned_resources_create",
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/owned-resources/:id/",
+    alias: "crm_owned_resources_retrieve_2",
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "put",
+    path: "/api/crm/owned-resources/:id/",
+    alias: "crm_owned_resources_update",
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "patch",
+    path: "/api/crm/owned-resources/:id/",
+    alias: "crm_owned_resources_partial_update",
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "delete",
+    path: "/api/crm/owned-resources/:id/",
+    alias: "crm_owned_resources_destroy",
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/owned-resources/filter_options/",
+    alias: "crm_owned_resources_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/crm/subscriptions/",
     alias: "crm_subscriptions_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6528,7 +7203,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/subscriptions/",
     alias: "crm_subscriptions_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6543,7 +7219,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6558,7 +7235,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6578,7 +7256,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6598,7 +7277,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6621,7 +7301,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/tasks/",
     alias: "crm_tasks_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6711,7 +7392,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/crm/tasks/",
     alias: "crm_tasks_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6726,7 +7408,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6741,7 +7424,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6761,7 +7445,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6781,7 +7466,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for resources attached to a Customer.
+Restricts access to objects where the related customer is owned by the user.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6804,7 +7490,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/attendances/",
     alias: "hrm_attendances_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6814,6 +7500,11 @@ export const endpoints = makeApi([
       },
       {
         name: "check_out",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -6838,6 +7529,16 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -6857,6 +7558,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedAttendanceList,
   },
@@ -6864,7 +7570,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/attendances/",
     alias: "hrm_attendances_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6879,7 +7585,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/attendances/:id/",
     alias: "hrm_attendances_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6894,7 +7600,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/attendances/:id/",
     alias: "hrm_attendances_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6914,7 +7620,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/attendances/:id/",
     alias: "hrm_attendances_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6934,7 +7640,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/attendances/:id/",
     alias: "hrm_attendances_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7092,13 +7798,13 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/employees/",
     alias: "hrm_employees_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
         name: "department",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "hire_date_after",
@@ -7166,7 +7872,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/employees/",
     alias: "hrm_employees_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7181,7 +7887,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/employees/:id/",
     alias: "hrm_employees_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7196,7 +7902,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/employees/:id/",
     alias: "hrm_employees_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7216,7 +7922,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/employees/:id/",
     alias: "hrm_employees_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7236,7 +7942,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/employees/:id/",
     alias: "hrm_employees_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7259,9 +7965,14 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/leaves/",
     alias: "hrm_leaves_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "employee",
         type: "Query",
@@ -7276,6 +7987,16 @@ export const endpoints = makeApi([
         name: "id",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "leave_type",
@@ -7312,6 +8033,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedLeaveList,
   },
@@ -7319,7 +8045,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/leaves/",
     alias: "hrm_leaves_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7334,7 +8060,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/leaves/:id/",
     alias: "hrm_leaves_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7349,7 +8075,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/leaves/:id/",
     alias: "hrm_leaves_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7369,7 +8095,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/leaves/:id/",
     alias: "hrm_leaves_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7389,7 +8115,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/leaves/:id/",
     alias: "hrm_leaves_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7412,7 +8138,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/notifications/",
     alias: "hrm_notifications_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7429,6 +8155,16 @@ export const endpoints = makeApi([
         name: "id",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "is_read",
@@ -7465,6 +8201,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedNotificationList,
   },
@@ -7472,7 +8213,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/notifications/",
     alias: "hrm_notifications_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7487,7 +8228,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/notifications/:id/",
     alias: "hrm_notifications_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7502,7 +8243,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/notifications/:id/",
     alias: "hrm_notifications_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7522,7 +8263,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/notifications/:id/",
     alias: "hrm_notifications_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7542,7 +8283,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/notifications/:id/",
     alias: "hrm_notifications_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7565,7 +8306,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/payrolls/",
     alias: "hrm_payrolls_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7577,6 +8318,11 @@ export const endpoints = makeApi([
         name: "bonuses",
         type: "Query",
         schema: z.number().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
       },
       {
         name: "deductions",
@@ -7592,6 +8338,16 @@ export const endpoints = makeApi([
         name: "id",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "month",
@@ -7623,6 +8379,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedPayrollList,
   },
@@ -7630,7 +8391,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/payrolls/",
     alias: "hrm_payrolls_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7645,7 +8406,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/payrolls/:id/",
     alias: "hrm_payrolls_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7660,7 +8421,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/payrolls/:id/",
     alias: "hrm_payrolls_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7680,7 +8441,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/payrolls/:id/",
     alias: "hrm_payrolls_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7700,7 +8461,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/payrolls/:id/",
     alias: "hrm_payrolls_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7723,11 +8484,16 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/performance-reviews/",
     alias: "hrm_performance_reviews_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
         name: "comments",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -7740,6 +8506,16 @@ export const endpoints = makeApi([
         name: "id",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "ordering",
@@ -7771,6 +8547,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedPerformanceReviewList,
   },
@@ -7778,7 +8559,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/performance-reviews/",
     alias: "hrm_performance_reviews_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7793,7 +8574,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/performance-reviews/:id/",
     alias: "hrm_performance_reviews_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7808,7 +8589,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/performance-reviews/:id/",
     alias: "hrm_performance_reviews_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7828,7 +8609,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/performance-reviews/:id/",
     alias: "hrm_performance_reviews_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7848,7 +8629,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/performance-reviews/:id/",
     alias: "hrm_performance_reviews_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7871,9 +8652,14 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/tasks/",
     alias: "hrm_tasks_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "description",
         type: "Query",
@@ -7893,6 +8679,16 @@ export const endpoints = makeApi([
         name: "id",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "ordering",
@@ -7924,6 +8720,11 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedTaskList,
   },
@@ -7931,7 +8732,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/tasks/",
     alias: "hrm_tasks_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7946,7 +8747,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/tasks/:id/",
     alias: "hrm_tasks_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7961,7 +8762,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/tasks/:id/",
     alias: "hrm_tasks_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7981,7 +8782,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/tasks/:id/",
     alias: "hrm_tasks_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -8001,7 +8802,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/tasks/:id/",
     alias: "hrm_tasks_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -8542,7 +9343,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
     ],
-    response: PaginatedAttributesList,
+    response: PaginatedAttributeList,
   },
   {
     method: "post",
@@ -8554,10 +9355,10 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: AttributesRequest,
+        schema: AttributeRequest,
       },
     ],
-    response: Attributes,
+    response: Attribute,
   },
   {
     method: "get",
@@ -8572,7 +9373,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Attributes,
+    response: Attribute,
   },
   {
     method: "put",
@@ -8584,7 +9385,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: AttributesRequest,
+        schema: AttributeRequest,
       },
       {
         name: "id",
@@ -8592,7 +9393,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Attributes,
+    response: Attribute,
   },
   {
     method: "patch",
@@ -8604,7 +9405,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: PatchedAttributesRequest,
+        schema: PatchedAttributeRequest,
       },
       {
         name: "id",
@@ -8612,7 +9413,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Attributes,
+    response: Attribute,
   },
   {
     method: "delete",
@@ -8635,7 +9436,7 @@ export const endpoints = makeApi([
     alias: "products_attributes_filter_options_retrieve",
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
-    response: Attributes,
+    response: Attribute,
   },
   {
     method: "get",
@@ -8863,7 +9664,7 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
-        name: "parent_id",
+        name: "parent",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9442,7 +10243,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "variant_id",
+        name: "variant",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9763,7 +10564,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "variant_id",
+        name: "variant",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9881,7 +10682,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "category",
+        name: "categories",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9916,11 +10717,6 @@ export const endpoints = makeApi([
         schema: z.boolean().optional(),
       },
       {
-        name: "manufacturer",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "manufacturer_name",
         type: "Query",
         schema: z.string().optional(),
@@ -9952,11 +10748,6 @@ export const endpoints = makeApi([
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "supplier",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10505,7 +11296,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "stocks_id",
+        name: "stock",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10515,7 +11306,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
     ],
-    response: PaginatedStockMovementsList,
+    response: PaginatedStockMovementList,
   },
   {
     method: "post",
@@ -10527,10 +11318,10 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: StockMovementsRequest,
+        schema: StockMovementRequest,
       },
     ],
-    response: StockMovements,
+    response: StockMovement,
   },
   {
     method: "get",
@@ -10545,7 +11336,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: StockMovements,
+    response: StockMovement,
   },
   {
     method: "put",
@@ -10557,7 +11348,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: StockMovementsRequest,
+        schema: StockMovementRequest,
       },
       {
         name: "id",
@@ -10565,7 +11356,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: StockMovements,
+    response: StockMovement,
   },
   {
     method: "patch",
@@ -10577,7 +11368,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: PatchedStockMovementsRequest,
+        schema: PatchedStockMovementRequest,
       },
       {
         name: "id",
@@ -10585,7 +11376,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: StockMovements,
+    response: StockMovement,
   },
   {
     method: "delete",
@@ -10608,7 +11399,7 @@ export const endpoints = makeApi([
     alias: "products_stock_movements_filter_options_retrieve",
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
-    response: StockMovements,
+    response: StockMovement,
   },
   {
     method: "get",
@@ -10678,7 +11469,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "transfer_id",
+        name: "transfer",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10693,7 +11484,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "variant_id",
+        name: "variant",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10816,7 +11607,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "from_branch_id",
+        name: "from_branch",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10886,7 +11677,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "to_branch_id",
+        name: "to_branch",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -11014,7 +11805,7 @@ export const endpoints = makeApi([
         schema: z.number().optional(),
       },
       {
-        name: "branch_id",
+        name: "branch",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -11099,12 +11890,12 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "variant_id",
+        name: "variant",
         type: "Query",
         schema: z.string().optional(),
       },
     ],
-    response: PaginatedStocksList,
+    response: PaginatedStockList,
   },
   {
     method: "post",
@@ -11116,10 +11907,10 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: StocksRequest,
+        schema: StockRequest,
       },
     ],
-    response: Stocks,
+    response: Stock,
   },
   {
     method: "get",
@@ -11134,7 +11925,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Stocks,
+    response: Stock,
   },
   {
     method: "put",
@@ -11146,7 +11937,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: StocksRequest,
+        schema: StockRequest,
       },
       {
         name: "id",
@@ -11154,7 +11945,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Stocks,
+    response: Stock,
   },
   {
     method: "patch",
@@ -11166,7 +11957,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: PatchedStocksRequest,
+        schema: PatchedStockRequest,
       },
       {
         name: "id",
@@ -11174,7 +11965,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Stocks,
+    response: Stock,
   },
   {
     method: "delete",
@@ -11197,7 +11988,7 @@ export const endpoints = makeApi([
     alias: "products_stocks_filter_options_retrieve",
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
-    response: Stocks,
+    response: Stock,
   },
   {
     method: "get",
@@ -11594,7 +12385,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11729,7 +12520,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11744,7 +12535,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11759,7 +12550,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11779,7 +12570,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11799,7 +12590,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11814,7 +12605,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/invoices/:id/calculate_totals/",
     alias: "sales_invoices_calculate_totals_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11834,7 +12625,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/invoices/:id/confirm/",
     alias: "sales_invoices_confirm_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -11869,7 +12660,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/sales/orders/",
     alias: "sales_orders_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12024,7 +12815,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/orders/",
     alias: "sales_orders_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12039,7 +12830,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12054,7 +12845,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12074,7 +12865,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12094,7 +12885,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12109,7 +12900,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/orders/:id/calculate_totals/",
     alias: "sales_orders_calculate_totals_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12129,7 +12920,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/orders/:id/cancel/",
     alias: "sales_orders_cancel_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12149,7 +12940,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/orders/:id/confirm/",
     alias: "sales_orders_confirm_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12184,7 +12975,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/sales/payments/",
     alias: "sales_payments_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12254,7 +13045,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/sales/payments/",
     alias: "sales_payments_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12269,7 +13060,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12284,7 +13075,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12304,7 +13095,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12324,7 +13115,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation`,
     requestFormat: "json",
     parameters: [
       {
@@ -12988,6 +13779,14 @@ export const endpoints = makeApi([
     response: ContactUs,
   },
   {
+    method: "get",
+    path: "/api/users/health/",
+    alias: "users_health_retrieve",
+    description: `Health check endpoint to verify that the API is running.`,
+    requestFormat: "json",
+    response: z.object({ status: z.string() }).passthrough(),
+  },
+  {
     method: "post",
     path: "/api/users/login/",
     alias: "users_login_create",
@@ -13041,7 +13840,7 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "author_id",
+        name: "author",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -13479,7 +14278,7 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
-        name: "permission_id",
+        name: "permission",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -13489,7 +14288,7 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "role_id",
+        name: "role",
         type: "Query",
         schema: z.string().optional(),
       },

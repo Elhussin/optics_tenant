@@ -92,3 +92,8 @@ bun run build
 bun run start
 ```
 pdm run python manage.py showmigrations prescriptions
+
+
+
+
+

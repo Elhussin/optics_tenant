@@ -1,27 +1,27 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status,serializers
+from rest_framework import status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
-from drf_spectacular.utils import extend_schema , inline_serializer
+from drf_spectacular.utils import extend_schema, inline_serializer
 from django.db import connection
 from core.utils.set_token import set_token_cookies
 from django.conf import settings
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
-from django.utils.http import  urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.encoding import  force_bytes
-from .models import Role,Permission,RolePermission,User,ContactUs,TenantSettings ,Page, PageContent
+from django.utils.encoding import force_bytes
+from .models import Role, Permission, RolePermission, User, ContactUs, TenantSettings, Page, PageContent
 from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,
-                          TenantSettingsSerializer,RegisterSerializer, LoginSerializer,
-                          UserSerializer,ContactUsSerializer, PageSerializer, PageContentSerializer,PasswordResetConfirmSerializer,
-                         TenantSettings, HealthResponseSerializer)
+                          TenantSettingsSerializer, RegisterSerializer, LoginSerializer,
+                          UserSerializer, ContactUsSerializer, PageSerializer, PageContentSerializer, PasswordResetConfirmSerializer,
+                          TenantSettings, HealthResponseSerializer)
 from apps.tenants.models import Client
 
-from .contexts.index import USER_RELATED_FIELDS,USER_FIELD_LABELS,USER_FILTER_FIELDS
+from .contexts.index import USER_RELATED_FIELDS, USER_FIELD_LABELS, USER_FILTER_FIELDS
 from core.utils.email import send_password_reset_email
 
 from core.views import BaseViewSet
@@ -43,9 +43,9 @@ class HealthCheckView(APIView):
         return Response({"status": "ok"})
 
 
-
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+
     @extend_schema(
         request=RegisterSerializer,
         responses={200: inline_serializer(
@@ -59,9 +59,11 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            response = Response({"msg": "User created", "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
+            response = Response({"msg": "User created", "user": UserSerializer(
+                user).data}, status=status.HTTP_201_CREATED)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
@@ -88,13 +90,12 @@ class LoginView(APIView):
     # @check_active_tenant
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-     
+
         if serializer.is_valid():
             user = serializer.validated_data['user']
 
             if not user.is_active:
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
-   
 
             if user.role:
                 permissions = user.role.permissions.all()
@@ -105,16 +106,20 @@ class LoginView(APIView):
             refresh["role_id"] = user.role.id if user.role else None
             refresh["role"] = user.role.name if user.role else None
             refresh["tenant"] = connection.schema_name
-            refresh["permissions"] = list(permissions.values_list('code', flat=True))
+            refresh["permissions"] = list(
+                permissions.values_list('code', flat=True))
 
             response = Response({"msg": "Login successful"})
-            set_token_cookies(response, access=str(refresh.access_token), refresh=str(refresh))
+            set_token_cookies(response, access=str(
+                refresh.access_token), refresh=str(refresh))
             return response
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RefreshTokenView(APIView):
     permission_classes = [AllowAny]
+
     @extend_schema(
         responses={
             200: inline_serializer(
@@ -130,7 +135,6 @@ class RefreshTokenView(APIView):
             )
         }
     )
-
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
@@ -150,15 +154,19 @@ class RefreshTokenView(APIView):
 
             access["role_id"] = user.role.id if user.role else None
             access["role"] = user.role.name if user.role else None
-            access["tenant"] = refresh.payload.get("tenant", connection.schema_name)
-            access["permissions"] = list(permissions.values_list('code', flat=True))
+            access["tenant"] = refresh.payload.get(
+                "tenant", connection.schema_name)
+            access["permissions"] = list(
+                permissions.values_list('code', flat=True))
 
-            response = Response({"msg": "Token refreshed", "access": str(access)})
+            response = Response(
+                {"msg": "Token refreshed", "access": str(access)})
             set_token_cookies(response, access=str(access))
             return response
 
         except TokenError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class ProfileView(APIView):
     permission_classes = [IsAuthenticated]
@@ -167,12 +175,12 @@ class ProfileView(APIView):
         request=None,
         responses={
             200: UserSerializer,
-                401: inline_serializer(
-                    name='Unauthorized',
-                    fields={
-                        'error': serializers.CharField()
-                    }
-                )
+            401: inline_serializer(
+                name='Unauthorized',
+                fields={
+                    'error': serializers.CharField()
+                }
+            )
         },
         description="Get current authenticated user profile data"
     )
@@ -182,13 +190,15 @@ class ProfileView(APIView):
         """
         if request.user.is_authenticated:
             serializer = UserSerializer(request.user)
-            return Response(serializer.data,status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class RequestPasswordResetView(APIView):
     permission_classes = [AllowAny]
     from apps.tenants.models import Client
+
     @extend_schema(
         request=serializers.EmailField(),
         responses={
@@ -198,13 +208,12 @@ class RequestPasswordResetView(APIView):
             ),
             400: inline_serializer(
                 name='PasswordResetBadRequest',
-                fields={'email': serializers.ListField(child=serializers.CharField(), required=False)}
+                fields={'email': serializers.ListField(
+                    child=serializers.CharField(), required=False)}
             ),
         },
         description="Request password reset"
     )
-
-
     def post(self, request):
         email = request.data.get('data', {}).get('email')
 
@@ -212,12 +221,12 @@ class RequestPasswordResetView(APIView):
             return Response({"detail": "Email is required."}, status=400)
 
         tenant = request.headers.get('X-Tenant')
-        leng=request.headers.get('accept-language')or 'en'
-        
+        leng = request.headers.get('accept-language') or 'en'
+
         # CHANGED: Allow public tenant if header is missing or explicitly public, but Validate!
         if not tenant:
-             return Response({"detail": "Missing X-Tenant header."}, status=400)
-             
+            return Response({"detail": "Missing X-Tenant header."}, status=400)
+
         # CHANGED: Strict Validation to prevent Header Injection
         if tenant != "public" and not Client.objects.filter(schema_name=tenant, is_active=True).exists():
             return Response({"detail": "Invalid or inactive tenant."}, status=400)
@@ -229,10 +238,10 @@ class RequestPasswordResetView(APIView):
             token = default_token_generator.make_token(user)
             protocol = "https" if not settings.DEBUG else "http"
             port = ":3000" if settings.DEBUG else ""
-            
+
             # Construct URL safely
             addTenant = f"{tenant}." if tenant != "public" else ""
-            
+
             if user.is_active:
                 reset_url = f"{protocol}://{addTenant}{settings.TENANT_BASE_DOMAIN}{port}/{leng}/auth/reset-password/?uid={uid}&token={token}"
                 send_password_reset_email(email, reset_url)
@@ -254,6 +263,7 @@ class PasswordResetConfirmView(APIView):
         user.save()
 
         return Response({"detail": "Password has been reset successfully"}, status=200)
+
 
 class LogoutView(APIView):
     @extend_schema(
@@ -282,19 +292,34 @@ class LogoutView(APIView):
 
 
 class PermissionViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            super_roles=["admin", "owner"])
+    ]
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-    permission_classes = [IsAuthenticated]
+
 
 class RolePermissionViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            super_roles=["admin", "owner"])
+    ]
+
     queryset = RolePermission.objects.all()
     serializer_class = RolePermissionSerializer
-    permission_classes = [IsAuthenticated]
+
 
 class RoleViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            super_roles=["admin", "owner"])
+    ]
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class UserViewSet(BaseViewSet):
@@ -313,11 +338,11 @@ class UserViewSet(BaseViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.is_superuser:
+        # Allow superuser or users with specific roles (admin, owner, staff) to see everyone
+        if user.is_superuser or (getattr(user, 'role', None) and user.role.name in ["admin", "owner", "staff"]):
             return User.objects.all()
         # Users see themselves
         return User.objects.filter(id=user.id)
-
 
 
 class ContactUsViewSet(BaseViewSet):
@@ -325,10 +350,16 @@ class ContactUsViewSet(BaseViewSet):
     queryset = ContactUs.objects.all()
     serializer_class = ContactUsSerializer
 
+
 class TenantSettingsViewset(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            super_roles=["admin", "owner"])
+    ]
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
-    permission_classes = [IsAuthenticated]
+
 
 class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -340,18 +371,14 @@ class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
 
-
 class PageViewSet(BaseViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
     permission_classes = [
         IsAuthenticated,
-        RoleOrPermissionRequired(
-            allowed_roles=["OWNER"],
-            required_permissions=["view_users"]
-        )
+        RoleOrPermissionRequired.with_requirements(
+            super_roles=["admin", "owner"])
     ]
-
 
     def update(self, request, *args, **kwargs):
         data = request.data

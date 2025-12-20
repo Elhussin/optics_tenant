@@ -10,3 +10,4 @@ __pycache__/
 *.so
 .Python
 **/migrations/__pycache__/
+*__pypackages__
