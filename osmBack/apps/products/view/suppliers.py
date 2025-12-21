@@ -6,19 +6,32 @@ from apps.products.serializers.suppliers import (
     SupplierSerializer, ManufacturerSerializer, BrandSerializer
 )
 from core.views import BaseViewSet
+from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
-class SupplierViewSet(BaseViewSet):
+SUPPLY_MANAGERS = ["manager", "store_keeper"]
+SUPER_ROLES = ["admin", "owner"]
+
+
+class SupplierBaseViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=SUPPLY_MANAGERS,
+            super_roles=SUPER_ROLES
+        )
+    ]
+
+
+class SupplierViewSet(SupplierBaseViewSet):
     queryset = Supplier.objects.all()
     serializer_class = SupplierSerializer
-    permission_classes = [IsAuthenticated]
 
-class ManufacturerViewSet(BaseViewSet):
+
+class ManufacturerViewSet(SupplierBaseViewSet):
     queryset = Manufacturer.objects.all()
     serializer_class = ManufacturerSerializer
-    permission_classes = [IsAuthenticated]
 
-class BrandViewSet(BaseViewSet):
+
+class BrandViewSet(SupplierBaseViewSet):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    permission_classes = [IsAuthenticated]
-

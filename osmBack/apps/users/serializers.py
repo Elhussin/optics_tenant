@@ -29,12 +29,21 @@ class PermissionSerializer(serializers.ModelSerializer):
         model = Permission
         fields = ['id', 'code', 'description']
 
+
 class RoleSerializer(serializers.ModelSerializer):
+    # للعرض (GET) - يظهر التفاصيل الكاملة
     permissions = PermissionSerializer(many=True, read_only=True)
+    # للكتابة (POST/PUT) - يقبل قائمة IDs
+    permission_ids = serializers.PrimaryKeyRelatedField(
+        many=True, 
+        write_only=True, 
+        queryset=Permission.objects.all(), 
+        source='permissions' # هذا مهم، يربط الحقل بـ permissions model
+    )
 
     class Meta:
         model = Role
-        fields = ['id', 'name', 'permissions']
+        fields = ['id', 'name', 'permissions', 'permission_ids']
 
 # User Serializers
 class UserSerializer(serializers.ModelSerializer):
@@ -74,10 +83,11 @@ class RegisterSerializer(serializers.ModelSerializer):
     username = ReusableFields.username()
     email = ReusableFields.email()
     password = ReusableFields.password()
+    role = serializers.PrimaryKeyRelatedField(queryset=Role.objects.all(), required=False)
 
     class Meta:
         model = User
-        fields = [ 'id', 'username','password','email' ]
+        fields = [ 'id', 'username','password','email','role' ]
     
     def create(self, validated_data):
         password = validated_data.pop("password")

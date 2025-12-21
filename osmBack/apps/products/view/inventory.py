@@ -4,22 +4,37 @@ from apps.products.serializers import StockSerializer, StockMovementSerializer, 
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from core.views import BaseViewSet
-class StocksViewSet(BaseViewSet):
+from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
+
+INVENTORY_MANAGERS = ["manager", "store_keeper"]
+SUPER_ROLES = ["admin", "owner"]
+
+
+class InventoryBaseViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=INVENTORY_MANAGERS,
+            super_roles=SUPER_ROLES
+        )
+    ]
+
+
+class StocksViewSet(InventoryBaseViewSet):
     queryset = Stock.objects.all()
     serializer_class = StockSerializer
-    permission_classes = [IsAuthenticated]
 
-class StockMovementsViewSet(BaseViewSet):
+
+class StockMovementsViewSet(InventoryBaseViewSet):
     queryset = StockMovement.objects.all()
     serializer_class = StockMovementSerializer
-    permission_classes = [IsAuthenticated]
 
-class StockTransferViewSet(BaseViewSet):
+
+class StockTransferViewSet(InventoryBaseViewSet):
     queryset = StockTransfer.objects.all()
     serializer_class = StockTransferSerializer
-    permission_classes = [IsAuthenticated]
-    
-class StockTransferItemViewSet(BaseViewSet):
+
+
+class StockTransferItemViewSet(InventoryBaseViewSet):
     queryset = StockTransferItem.objects.all()
     serializer_class = StockTransferItemSerializer
-    permission_classes = [IsAuthenticated]

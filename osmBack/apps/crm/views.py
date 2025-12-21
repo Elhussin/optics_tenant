@@ -2,95 +2,99 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .filters import CustomerFilter
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 from .models import (
-    Customer, CustomerGroup, Opportunity, Interaction, 
+    Customer, CustomerGroup, Opportunity, Interaction,
     Complaint, Subscription, Task, Campaign, Document, Contact
 )
 from .serializers import (
-    CustomerSerializer, CustomerGroupSerializer, OpportunitySerializer, InteractionSerializer, 
+    CustomerSerializer, CustomerGroupSerializer, OpportunitySerializer, InteractionSerializer,
     ComplaintSerializer, SubscriptionSerializer, TaskSerializer, CampaignSerializer, DocumentSerializer, ContactSerializer
 )
 from core.views import BaseViewSet
 
+# Helper for CRM permissions
+# Sales, Customer Support, Admin, Owner
+CRM_ROLES = ["sales", "support"]
+SUPER_ROLES = ["admin", "owner"]
 
-class CustomerViewSet(BaseViewSet):
+
+class CRMBaseViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=CRM_ROLES,
+            super_roles=SUPER_ROLES
+        )
+    ]
+
+    def perform_create(self, serializer):
+        # Assign creator if the model supports it and user is authenticated
+        if hasattr(serializer.Meta.model, 'created_by'):
+            serializer.save(created_by=self.request.user)
+        else:
+            serializer.save()
+
+
+class CustomerViewSet(CRMBaseViewSet):
     serializer_class = CustomerSerializer
     queryset = Customer.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = CustomerFilter
- 
-    def get_queryset(self):
-        # Enforce ownership: only return customers created by the current user
-        return Customer.objects.filter(created_by=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(created_by=self.request.user)
-        
-
-class OwnedResourceViewSet(BaseViewSet):
-    """
-    Base ViewSet for resources attached to a Customer.
-    Restricts access to objects where the related customer is owned by the user.
-    """
-    def get_queryset(self):
-        # Filter objects where the related 'customer' was created by the current user
-        return self.queryset.filter(customer__created_by=self.request.user)
 
 
-class CustomerGroupViewSet(BaseViewSet):
+class CustomerGroupViewSet(CRMBaseViewSet):
     queryset = CustomerGroup.objects.all()
     serializer_class = CustomerGroupSerializer
 
-    def get_queryset(self):
-         # Assuming groups should also be private to the user/tenant context
-        return super().get_queryset()
 
-# OpportunityViewSet: get all Opportunities related to user's customers
-class OpportunityViewSet(OwnedResourceViewSet):
+class OpportunityViewSet(CRMBaseViewSet):
     queryset = Opportunity.objects.all()
     serializer_class = OpportunitySerializer
-    
-# InteractionViewSet: get all Interactions related to user's customers
-class InteractionViewSet(OwnedResourceViewSet):
+
+
+class InteractionViewSet(CRMBaseViewSet):
     queryset = Interaction.objects.all()
     serializer_class = InteractionSerializer
-    
-# ComplaintViewSet: get all Complaints related to user's customers
-class ComplaintViewSet(OwnedResourceViewSet):
+
+
+class ComplaintViewSet(CRMBaseViewSet):
     queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
-    
-# SubscriptionViewSet: get all Subscriptions related to user's customers
-class SubscriptionViewSet(OwnedResourceViewSet):
+
+
+class SubscriptionViewSet(CRMBaseViewSet):
     queryset = Subscription.objects.all()
     serializer_class = SubscriptionSerializer
-    
-# TaskViewSet: get all Tasks related to user's customers
-class TaskViewSet(OwnedResourceViewSet):
+
+
+class TaskViewSet(CRMBaseViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    
-# CampaignViewSet
-class CampaignViewSet(BaseViewSet):
+
+
+class CampaignViewSet(CRMBaseViewSet):
     queryset = Campaign.objects.all()
     serializer_class = CampaignSerializer
 
-    def get_queryset(self):
-        # Campaigns related to customers owned by this user
-        return Campaign.objects.filter(customers__created_by=self.request.user).distinct()
-    
-# DocumentViewSet: get all Documents related to user's customers
-class DocumentViewSet(OwnedResourceViewSet):
+
+class DocumentViewSet(CRMBaseViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    
+
+
 class ContactViewSet(BaseViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
     def get_permissions(self):
-        # 🔒 Security: Allow SUBMITTING (POST) anonymously, but reading (GET) requires auth
+        # 🔒 Security: Allow SUBMITTING (POST) anonymously (e.g. contact form), but reading (GET) requires auth
         if self.action == 'create':
-            return [permissions.AllowAny()]
-        return [permissions.IsAuthenticated()]
+            return [AllowAny()]
+        # Standard RoleOrPermissionRequired for other actions
+        return [
+            IsAuthenticated(),
+            RoleOrPermissionRequired(
+                super_roles=SUPER_ROLES, allowed_roles=CRM_ROLES)
+        ]

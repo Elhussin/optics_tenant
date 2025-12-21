@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError
+import traceback
 from django.db import transaction
 from django.core.management import call_command
 from django.utils import timezone
@@ -16,34 +18,31 @@ from apps.tenants.models import (
     Domain,
     SubscriptionPlan
 )
-from core.utils.email import send_activation_email, send_message_acount_activated,send_failed_activation_email
+from core.utils.email import send_activation_email, send_message_acount_activated, send_failed_activation_email
 from core.utils.expiration_date import expiration_date
 import threading
 paymant_logger = logging.getLogger('paypal')
 tenant_logger = logging.getLogger('tenant')
 
-import traceback
-from django.core.exceptions import ValidationError
-
-
 
 class ActivationStatus(Enum):
     SUCCESS = "success"
-    TOKEN_MISSING = "token_missing" 
+    TOKEN_MISSING = "token_missing"
     INVALID_TOKEN = "invalid_token"
     ALREADY_ACTIVATED = "already_activated"
     TOKEN_EXPIRED = "token_expired"
     CREATION_FAILED = "creation_failed"
     POST_SETUP_FAILED = "post_setup_failed"
 
+
 class TenantActivation:
     """
     Improved algorithm with better error handling and separation of concerns
     """
-    
+
     def __init__(self, logger=None):
         self.logger = logger or logging.getLogger('tenant')
-    
+
     def validate_token(self, token):
         """
         Algorithm: Token validation with early returns
@@ -51,17 +50,17 @@ class TenantActivation:
         """
         if not token:
             return None, ActivationStatus.TOKEN_MISSING
-        
+
         try:
             pending = PendingTenantRequest.objects.get(token=token)
         except PendingTenantRequest.DoesNotExist:
             return None, ActivationStatus.INVALID_TOKEN
-        
+
         if pending.is_activated:
             return pending, ActivationStatus.ALREADY_ACTIVATED
-            
+
         return pending, ActivationStatus.SUCCESS
-    
+
     def handle_token_expiration(self, pending):
         """
         Algorithm: Token expiration handling with automatic renewal
@@ -73,9 +72,6 @@ class TenantActivation:
             send_activation_email(pending.email, pending.token)
             return ActivationStatus.TOKEN_EXPIRED
         return ActivationStatus.SUCCESS
-    
-    
-
 
     def create_tenant_atomic(self, pending):
         """
@@ -140,7 +136,6 @@ class TenantActivation:
             self.logger.error(error_msg)
             return None, None, ActivationStatus.CREATION_FAILED
 
-
     def setup_user_permissions(self, pending, tenant):
         """
         Algorithm: User and permission setup outside main transaction
@@ -150,40 +145,59 @@ class TenantActivation:
             with schema_context(pending.schema_name):
                 from django.contrib.auth import get_user_model
                 from apps.users.models import Role, Permission, RolePermission
-                
+
                 # Create owner role and permissions
                 owner_role, _ = Role.objects.get_or_create(
-                    name="owner", 
+                    name="owner",
                     defaults={"description": "Owner role"}
                 )
                 all_permission, _ = Permission.objects.get_or_create(
-                    code="__all__", 
+                    code="__all__",
                     defaults={"description": "All permissions"}
                 )
                 RolePermission.objects.get_or_create(
-                    role_id=owner_role, 
-                    permission_id=all_permission
+                    role=owner_role,  # Correct field name usually 'role' not 'role_id' for FK object assignment
+                    permission=all_permission  # Correct field name usually 'permission' not 'permission_id'
                 )
-                
-                # Create superuser
+
+                # Create superuser manually for better control
                 User = get_user_model()
-                User.objects.create_superuser(
-                    username=pending.name,
+
+                # Use email as username or sanitize schema_name to avoid validation errors
+                username = pending.email.split('@')[0]
+
+                if User.objects.filter(email=pending.email).exists():
+                    self.logger.warning(
+                        f"User with email {pending.email} already exists in schema {pending.schema_name}")
+                    return ActivationStatus.POST_SETUP_FAILED
+
+                user = User(
+                    username=username,
                     email=pending.email,
-                    password=pending.password,
-                    role_id=owner_role,
-                    client=tenant
+                    first_name=pending.name[:30],  # Truncate to fit
+                    is_staff=True,
+                    is_superuser=True,
+                    is_active=True,
+                    role=owner_role,
+                    client=tenant,
+                    # client=tenant # Typically NOT needed for schema-isolated users unless you have a specific requirement
                 )
-                call_command('import_csv_with_foreign', schema=pending.schema_name, config="data/csv_config.json")
-                # call_command()
+                # Assign the already hashed password directly
+                user.password = pending.password
+                user.save()
+
+                # Run CSV import
+                call_command('import_csv_with_foreign',
+                             schema=pending.schema_name, config="data/csv_config.json")
+
             return ActivationStatus.SUCCESS
-            
+
         except Exception as e:
-            self.logger.warning(f"Post-activation setup failed: {str(e)}")
+            import traceback
+            traceback.print_exc()  # Print full trace to console for debugging
+            self.logger.error(
+                f"Post-activation setup failed for {pending.schema_name}: {str(e)}")
             return ActivationStatus.POST_SETUP_FAILED
-
-
-
 
 
 # OPTIMIZED VIEW IMPLEMENTATION
@@ -191,52 +205,53 @@ class TenantActivation:
 
 class ActivateTenantView(APIView):
     permission_classes = [AllowAny]
-    
+
     def __init__(self):
         super().__init__()
         self.tenantActivation = TenantActivation()
-    
+
     def get(self, request):
         """
         Main algorithm execution with improved flow control
         """
         token = request.query_params.get("token")
-        
+
         # Step 1: Validate token
         pending, status = self.tenantActivation.validate_token(token)
         if status != ActivationStatus.SUCCESS:
             return self._handle_validation_error(status, pending)
-        
+
         # Step 2: Check token expiration
-        expiration_status = self.tenantActivation.handle_token_expiration(pending)
+        expiration_status = self.tenantActivation.handle_token_expiration(
+            pending)
         if expiration_status == ActivationStatus.TOKEN_EXPIRED:
             return Response({
                 "detail": T("Activation link expired. New activation email sent.")
             }, status=400)
-        
+
         ResponseData = {
             "detail": T("Start creating your store. Please wait You will receive a confirmation email. "),
             # "tenant_domain": domain,
         }
 
-        
-        threading.Thread(target=self._background_activation, args=(pending,)).start()
+        threading.Thread(target=self._background_activation,
+                         args=(pending,)).start()
 
         return Response(ResponseData, status=200)
 
-
     def _background_activation(self, pending):
 
-        tenant, domain, creation_status = self.tenantActivation.create_tenant_atomic(pending)
-  
+        tenant, domain, creation_status = self.tenantActivation.create_tenant_atomic(
+            pending)
+
         if creation_status != ActivationStatus.SUCCESS:
             send_failed_activation_email(pending.email)
             return
 
         self.tenantActivation.setup_user_permissions(pending, tenant)
 
-        send_message_acount_activated(pending.email, pending.schema_name, pending.name)
-
+        send_message_acount_activated(
+            pending.email, pending.schema_name, pending.name)
 
     def _handle_validation_error(self, status, pending):
         """Helper method for handling validation errors"""
@@ -246,5 +261,3 @@ class ActivateTenantView(APIView):
             ActivationStatus.ALREADY_ACTIVATED: T("Your account is already activated. Please login."),
         }
         return Response({"detail": error_messages[status]}, status=400)
-
-

@@ -3,16 +3,20 @@ from .models import PrescriptionRecord
 from apps.crm.serializers import CustomerSerializer
 from apps.users.serializers import UserSerializer
 
+
 class PrescriptionRecordSerializer(serializers.ModelSerializer):
 
     # customer = CustomerSerializer(read_only=True)
     created_by = UserSerializer(read_only=True)
-    customer_name = serializers.CharField(source="customer.first_name", read_only=True)
-    created_by_username = serializers.CharField(source="created_by.username", read_only=True)
+    customer_name = serializers.CharField(
+        source="customer.first_name", read_only=True)
+    created_by_username = serializers.CharField(
+        source="created_by.username", read_only=True)
 
     class Meta:
         model = PrescriptionRecord
-        fields = '__all__'
+        exclude = ['is_deleted']
+        read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
         extra_kwargs = {
             'right_sphere': {'allow_null': True},
             'right_cylinder': {'allow_null': True},
@@ -32,7 +36,7 @@ class PrescriptionRecordSerializer(serializers.ModelSerializer):
             'visual_acuity_right', 'visual_acuity_left',
             'notes',
         ]
-        
+
         for field in fields_to_clean:
             if field in data and data[field] == "":
                 data[field] = None

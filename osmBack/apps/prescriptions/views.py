@@ -7,7 +7,7 @@ from rest_framework.filters import SearchFilter
 from core.views import BaseViewSet
 from .models import PrescriptionRecord
 from .serializers import PrescriptionRecordSerializer
-from core.utils.filters_utils import FilterOptionsGenerator,get_display_name
+from core.utils.filters_utils import FilterOptionsGenerator, get_display_name
 from core.utils.create_filterset import create_filterset_class
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
@@ -40,7 +40,8 @@ CUSTOMER_FILTER_FIELDS = {
 
 class PrescriptionViewSet(BaseViewSet):
     # Optimizing query: select_related is good practice here
-    queryset = PrescriptionRecord.objects.select_related("customer", "created_by").all()
+    queryset = PrescriptionRecord.objects.select_related(
+        "customer", "created_by").all()
     serializer_class = PrescriptionRecordSerializer
     search_fields = CUSTOMER_RELATED_FIELDS
     field_labels = CUSTOMER_FIELD_LABELS
@@ -48,8 +49,9 @@ class PrescriptionViewSet(BaseViewSet):
 
     permission_classes = [
         IsAuthenticated,
-        RoleOrPermissionRequired(
-            allowed_roles=["staff", "OWNER", "optometrist"], # Added optometrist if exists
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=["optometrist", "staff"],  # Specific roles
+            super_roles=["admin", "owner"],  # Super roles
             required_permissions=["view_prescriptions"]
         )
     ]

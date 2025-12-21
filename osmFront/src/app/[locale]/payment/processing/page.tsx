@@ -14,12 +14,11 @@ export default function PayPalProcessingPage() {
   useEffect(() => {
     const orderId = searchParams.get("orderID") || searchParams.get("token");
     const clientId = searchParams.get("client_id");
-    const planID = searchParams.get("plan");
+    const planID = searchParams.get("plan_id");
     const direction = searchParams.get("direction");
     const duration = searchParams.get("duration");
     const state = searchParams.get("status");
 
-    
     if (state === "cancelled") {
       router.replace("/payment/cancel");
       return;

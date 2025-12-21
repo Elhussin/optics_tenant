@@ -81,4 +81,4 @@ class Command(BaseCommand):
 # python manage.py create_public_tenant
 
 # تمرير بيانات مخصصة
-# python manage.py create_public_tenant --domain=localhost --name="Solo Vizion" --paid_until=2032-01-01 --trial
+# python manage.py create_public_tenant --domain=store5.localhost --name="Solo Vizion" --paid_until=2032-01-01 --trial

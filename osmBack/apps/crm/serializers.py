@@ -1,23 +1,24 @@
 from rest_framework import serializers
 from .models import (
-    Customer, CustomerGroup, Opportunity, Interaction, 
+    Customer, CustomerGroup, Opportunity, Interaction,
     Complaint, Subscription, Task, Campaign, Document, Contact
 )
 from django.contrib.auth import get_user_model
+
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = [
-            'id', 'phone','identification_number',
-           'first_name',
-            'last_name', 'email', 
+            'id', 'phone', 'identification_number',
+            'first_name',
+            'last_name', 'email',
             'customer_type', 'is_vip',
             'accepts_marketing', 'registration_number',
             'tax_number', 'preferred_contact', 'website',
             'description',
-             'address_line1', 'address_line2',
-               'city', 'postal_code','is_active','is_deleted'
+            'address_line1', 'address_line2',
+            'city', 'postal_code', 'is_active', 'is_deleted'
         ]
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by']
 
@@ -60,57 +61,65 @@ class CustomerSerializer(serializers.ModelSerializer):
             },
         }
 
+
 class InteractionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Interaction
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
 
 
 class ComplaintSerializer(serializers.ModelSerializer):
     class Meta:
         model = Complaint
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class OpportunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Opportunity
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class CampaignSerializer(serializers.ModelSerializer):
     class Meta:
         model = Campaign
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class DocumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Document
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subscription
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class CustomerGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomerGroup
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
+
 
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        fields = '__all__'
+        exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at', 'updated_at']
