@@ -34,16 +34,19 @@ export default function ForgotPasswordPage() {
     }
     setStatus("loading");
     setMessage(t("Resetting"));
-    formRequest.submitForm({ data });
+    formRequest.submitForm(data);
   };
 
   return (
-    <div className="h-screen">
+    <div className="h-screen bg-surface flex flex-col items-center justify-center">
       <header className="">
         <h1 className="title">{t("title")}</h1>
         <p className="subtitle">{t("description")}</p>
       </header>
-      <form onSubmit={formRequest.handleSubmit(onSubmit)} className="space-y-4">
+      <form
+        onSubmit={formRequest.handleSubmit(onSubmit)}
+        className="w-full max-w-md space-y-4"
+      >
         <div>
           <label className="label" htmlFor="email">
             {t("email")}
@@ -53,7 +56,7 @@ export default function ForgotPasswordPage() {
             required
             {...formRequest.register("email")}
             className="input-text"
-            placeholder="Enter email"
+            placeholder={t("emailPlaceholder")}
           />
           {formRequest.errors.email && (
             <p className="error-text">
@@ -67,9 +70,7 @@ export default function ForgotPasswordPage() {
           disabled={formRequest.isBusy}
           className="btn btn-primary"
         >
-          {formRequest.isBusy
-            ? t("sending")
-            : t("button")}
+          {formRequest.isBusy ? t("sending") : t("button")}
         </button>
 
         {status !== "idle" && (

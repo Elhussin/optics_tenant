@@ -35,7 +35,7 @@ import api from "../api/axios";
 import type { useFormRequestProps, UseApiFormReturn } from "../types";
 import { handleServerErrors } from "../utils/handleServerErrors";
 import { handleErrorStatus } from "../utils/handleErrorStatus";
-import { useTranslations } from 'next-intl';
+// import { useTranslations } from 'next-intl';
 function hasParameters(
   endpoint: any
 ): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
@@ -53,7 +53,7 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     skipCache = false,
     enabled = true, // Default to true to maintain backward compatibility
   } = options;
-  const t = useTranslations("errors")
+  // const t = useTranslations("errors")
 
   const queryClient = useQueryClient();
 
@@ -121,8 +121,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       onSuccess?.(data);
     },
     onError: (error: any) => {
-      handleServerErrors(error, methods.setError, { t, showToast });
-      const normalized = handleErrorStatus(error, t);
+      handleServerErrors(error, methods.setError, { showToast });
+      const normalized = handleErrorStatus(error,);
       onError?.(normalized);
     },
   });

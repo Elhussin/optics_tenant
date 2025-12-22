@@ -73,7 +73,7 @@ const FinancialPeriod = z
     name: z.string().max(50),
     start_date: z.string(),
     end_date: z.string(),
-    is_closed: z.boolean().optional(),
+    is_closed: z.boolean(),
   })
   .passthrough();
 const PaginatedFinancialPeriodList = z
@@ -89,7 +89,6 @@ const FinancialPeriodRequest = z
     name: z.string().min(1).max(50),
     start_date: z.string(),
     end_date: z.string(),
-    is_closed: z.boolean().optional(),
   })
   .passthrough();
 const PatchedFinancialPeriodRequest = z
@@ -97,7 +96,6 @@ const PatchedFinancialPeriodRequest = z
     name: z.string().min(1).max(50),
     start_date: z.string(),
     end_date: z.string(),
-    is_closed: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -163,7 +161,6 @@ const RecurringTransactionRequest = z
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     transaction_type: TransactionTypeEnum,
     interval: IntervalEnum,
-    next_execution: z.string(),
     account: z.number().int(),
   })
   .passthrough();
@@ -172,7 +169,6 @@ const PatchedRecurringTransactionRequest = z
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     transaction_type: TransactionTypeEnum,
     interval: IntervalEnum,
-    next_execution: z.string(),
     account: z.number().int(),
   })
   .partial()
@@ -268,7 +264,6 @@ const BranchUsers = z
     id: z.number().int(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
-    is_deleted: z.boolean().optional(),
     is_active: z.boolean().optional(),
     notes: z.string().nullish(),
     branch: z.number().int(),
@@ -285,7 +280,6 @@ const PaginatedBranchUsersList = z
   .passthrough();
 const BranchUsersRequest = z
   .object({
-    is_deleted: z.boolean().optional(),
     is_active: z.boolean().optional(),
     notes: z.string().nullish(),
     branch: z.number().int(),
@@ -294,7 +288,6 @@ const BranchUsersRequest = z
   .passthrough();
 const PatchedBranchUsersRequest = z
   .object({
-    is_deleted: z.boolean(),
     is_active: z.boolean(),
     notes: z.string().nullable(),
     branch: z.number().int(),
@@ -309,7 +302,6 @@ const Branch = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(100),
     branch_code: z.string(),
     branch_type: BranchTypeEnum,
@@ -334,7 +326,6 @@ const PaginatedBranchList = z
 const BranchRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
     branch_type: BranchTypeEnum,
     country: z.string().optional(),
@@ -350,7 +341,6 @@ const BranchRequest = z
 const PatchedBranchRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(100),
     branch_type: BranchTypeEnum,
     country: z.string(),
@@ -370,7 +360,6 @@ const Shift = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     start_time: z.string().datetime({ offset: true }),
     end_time: z.string().datetime({ offset: true }),
     notes: z.string().nullish(),
@@ -389,7 +378,6 @@ const PaginatedShiftList = z
 const ShiftRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     start_time: z.string().datetime({ offset: true }),
     end_time: z.string().datetime({ offset: true }),
     notes: z.string().nullish(),
@@ -400,7 +388,6 @@ const ShiftRequest = z
 const PatchedShiftRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     start_time: z.string().datetime({ offset: true }),
     end_time: z.string().datetime({ offset: true }),
     notes: z.string().nullable(),
@@ -415,7 +402,6 @@ const Campaign = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(255),
     description: z.string(),
     start_date: z.string(),
@@ -434,7 +420,6 @@ const PaginatedCampaignList = z
 const CampaignRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(255),
     description: z.string().min(1),
     start_date: z.string(),
@@ -445,7 +430,6 @@ const CampaignRequest = z
 const PatchedCampaignRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(255),
     description: z.string().min(1),
     start_date: z.string(),
@@ -461,7 +445,6 @@ const Complaint = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     description: z.string(),
     status: ComplaintStatusEnum.optional(),
     customer: z.number().int(),
@@ -478,7 +461,6 @@ const PaginatedComplaintList = z
 const ComplaintRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     description: z.string().min(1),
     status: ComplaintStatusEnum.optional(),
     customer: z.number().int(),
@@ -487,7 +469,6 @@ const ComplaintRequest = z
 const PatchedComplaintRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     description: z.string().min(1),
     status: ComplaintStatusEnum,
     customer: z.number().int(),
@@ -500,7 +481,6 @@ const Contact = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     email: z.string().max(254).email(),
     phone: z.string().max(20),
     name: z.string().max(100),
@@ -518,7 +498,6 @@ const PaginatedContactList = z
 const ContactRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     email: z.string().min(1).max(254).email(),
     phone: z.string().min(1).max(20),
     name: z.string().min(1).max(100),
@@ -528,7 +507,6 @@ const ContactRequest = z
 const PatchedContactRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     email: z.string().min(1).max(254).email(),
     phone: z.string().min(1).max(20),
     name: z.string().min(1).max(100),
@@ -542,7 +520,6 @@ const CustomerGroup = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(100),
     description: z.string().optional(),
     customers: z.array(z.number().int()),
@@ -559,7 +536,6 @@ const PaginatedCustomerGroupList = z
 const CustomerGroupRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
     description: z.string().optional(),
     customers: z.array(z.number().int()),
@@ -568,7 +544,6 @@ const CustomerGroupRequest = z
 const PatchedCustomerGroupRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(100),
     description: z.string(),
     customers: z.array(z.number().int()),
@@ -662,7 +637,6 @@ const Document = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     title: z.string().max(255),
     file: z.string().url(),
     customer: z.number().int().nullish(),
@@ -679,7 +653,6 @@ const PaginatedDocumentList = z
 const DocumentRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     title: z.string().min(1).max(255),
     file: z.instanceof(File),
     customer: z.number().int().nullish(),
@@ -688,7 +661,6 @@ const DocumentRequest = z
 const PatchedDocumentRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     title: z.string().min(1).max(255),
     file: z.instanceof(File),
     customer: z.number().int().nullable(),
@@ -702,7 +674,6 @@ const Interaction = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     interaction_type: InteractionTypeEnum,
     notes: z.string().nullish(),
     customer: z.number().int(),
@@ -719,7 +690,6 @@ const PaginatedInteractionList = z
 const InteractionRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     interaction_type: InteractionTypeEnum,
     notes: z.string().nullish(),
     customer: z.number().int(),
@@ -728,7 +698,6 @@ const InteractionRequest = z
 const PatchedInteractionRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     interaction_type: InteractionTypeEnum,
     notes: z.string().nullable(),
     customer: z.number().int(),
@@ -749,7 +718,6 @@ const Opportunity = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     title: z.string().max(255),
     stage: StageEnum.optional(),
     amount: z
@@ -770,7 +738,6 @@ const PaginatedOpportunityList = z
 const OpportunityRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     title: z.string().min(1).max(255),
     stage: StageEnum.optional(),
     amount: z
@@ -783,7 +750,6 @@ const OpportunityRequest = z
 const PatchedOpportunityRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     title: z.string().min(1).max(255),
     stage: StageEnum,
     amount: z
@@ -801,7 +767,6 @@ const Subscription = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     subscription_type: SubscriptionTypeEnum,
     start_date: z.string().datetime({ offset: true }).optional(),
     end_date: z.string().datetime({ offset: true }),
@@ -819,7 +784,6 @@ const PaginatedSubscriptionList = z
 const SubscriptionRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     subscription_type: SubscriptionTypeEnum,
     start_date: z.string().datetime({ offset: true }).optional(),
     end_date: z.string().datetime({ offset: true }),
@@ -829,7 +793,6 @@ const SubscriptionRequest = z
 const PatchedSubscriptionRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     subscription_type: SubscriptionTypeEnum,
     start_date: z.string().datetime({ offset: true }),
     end_date: z.string().datetime({ offset: true }),
@@ -844,7 +807,6 @@ const Task = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     title: z.string().max(255),
     description: z.string().nullish(),
     priority: PriorityEnum.optional(),
@@ -865,7 +827,6 @@ const PaginatedTaskList = z
 const TaskRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     title: z.string().min(1).max(255),
     description: z.string().nullish(),
     priority: PriorityEnum.optional(),
@@ -878,7 +839,6 @@ const TaskRequest = z
 const PatchedTaskRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     title: z.string().min(1).max(255),
     description: z.string().nullable(),
     priority: PriorityEnum,
@@ -895,7 +855,6 @@ const Attendance = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     date: z.string(),
     hours_worked: z.number().nullish(),
     check_in: z.string().nullish(),
@@ -914,7 +873,6 @@ const PaginatedAttendanceList = z
 const AttendanceRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     date: z.string(),
     hours_worked: z.number().nullish(),
     check_in: z.string().nullish(),
@@ -925,7 +883,6 @@ const AttendanceRequest = z
 const PatchedAttendanceRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     date: z.string(),
     hours_worked: z.number().nullable(),
     check_in: z.string().nullable(),
@@ -1048,7 +1005,6 @@ const Leave = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     leave_type: LeaveTypeEnum,
     start_date: z.string(),
     end_date: z.string().nullish(),
@@ -1067,7 +1023,6 @@ const PaginatedLeaveList = z
 const LeaveRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     leave_type: LeaveTypeEnum,
     end_date: z.string().nullish(),
     employee: z.number().int(),
@@ -1076,7 +1031,6 @@ const LeaveRequest = z
 const PatchedLeaveRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     leave_type: LeaveTypeEnum,
     end_date: z.string().nullable(),
     employee: z.number().int(),
@@ -1090,7 +1044,6 @@ const Notification = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     notification_type: NotificationTypeEnum,
     message: z.string().nullish(),
     is_read: z.boolean().optional(),
@@ -1108,7 +1061,6 @@ const PaginatedNotificationList = z
 const NotificationRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     notification_type: NotificationTypeEnum,
     message: z.string().nullish(),
     is_read: z.boolean().optional(),
@@ -1118,7 +1070,6 @@ const NotificationRequest = z
 const PatchedNotificationRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     notification_type: NotificationTypeEnum,
     message: z.string().nullable(),
     is_read: z.boolean(),
@@ -1132,7 +1083,6 @@ const Payroll = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     month: z.string().max(20),
     basic_salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     bonuses: z
@@ -1161,7 +1111,6 @@ const PaginatedPayrollList = z
 const PayrollRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     month: z.string().min(1).max(20),
     basic_salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     bonuses: z
@@ -1182,7 +1131,6 @@ const PayrollRequest = z
 const PatchedPayrollRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     month: z.string().min(1).max(20),
     basic_salary: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     bonuses: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
@@ -1208,7 +1156,6 @@ const PerformanceReview = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     review_date: z.string(),
     rating: RatingEnum,
     comments: z.string().nullish(),
@@ -1226,7 +1173,6 @@ const PaginatedPerformanceReviewList = z
 const PerformanceReviewRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     rating: RatingEnum,
     comments: z.string().nullish(),
     employee: z.number().int(),
@@ -1235,7 +1181,6 @@ const PerformanceReviewRequest = z
 const PatchedPerformanceReviewRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     rating: RatingEnum,
     comments: z.string().nullable(),
     employee: z.number().int(),
@@ -1947,7 +1892,6 @@ const PrescriptionRecord = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     right_sphere: z.union([RightSphereEnum, BlankEnum, NullEnum]).nullish(),
     right_cylinder: z.union([RightCylinderEnum, BlankEnum, NullEnum]).nullish(),
     right_axis: z.number().gte(0).lte(180).nullish(),
@@ -1983,7 +1927,6 @@ const PaginatedPrescriptionRecordList = z
 const PrescriptionRecordRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     right_sphere: z.union([RightSphereEnum, BlankEnum, NullEnum]).nullish(),
     right_cylinder: z.union([RightCylinderEnum, BlankEnum, NullEnum]).nullish(),
     right_axis: z.number().gte(0).lte(180).nullish(),
@@ -2011,7 +1954,6 @@ const PrescriptionRecordRequest = z
 const PatchedPrescriptionRecordRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     right_sphere: z.union([RightSphereEnum, BlankEnum, NullEnum]).nullable(),
     right_cylinder: z
       .union([RightCylinderEnum, BlankEnum, NullEnum])
@@ -2160,7 +2102,6 @@ const Brand = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(100),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
@@ -2180,7 +2121,6 @@ const PaginatedBrandList = z
 const BrandRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
@@ -2192,7 +2132,6 @@ const BrandRequest = z
 const PatchedBrandRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(100),
     country: z.string().max(50),
     website: z.string().max(200).url(),
@@ -2205,13 +2144,13 @@ const PatchedBrandRequest = z
 const Category = z
   .object({
     id: z.number().int(),
+    parent_name: z.string(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
     name: z.string().max(100),
     description: z.string().optional(),
     parent: z.number().int().nullish(),
-    parent_name: z.string(),
-    is_active: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
 const PaginatedCategoryList = z
@@ -2224,18 +2163,18 @@ const PaginatedCategoryList = z
   .passthrough();
 const CategoryRequest = z
   .object({
+    is_active: z.boolean().optional(),
     name: z.string().min(1).max(100),
     description: z.string().optional(),
     parent: z.number().int().nullish(),
-    is_active: z.boolean().optional(),
   })
   .passthrough();
 const PatchedCategoryRequest = z
   .object({
+    is_active: z.boolean(),
     name: z.string().min(1).max(100),
     description: z.string(),
     parent: z.number().int().nullable(),
-    is_active: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -2297,7 +2236,6 @@ const Manufacturer = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(100),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
@@ -2316,7 +2254,6 @@ const PaginatedManufacturerList = z
 const ManufacturerRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
@@ -2327,7 +2264,6 @@ const ManufacturerRequest = z
 const PatchedManufacturerRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(100),
     country: z.string().max(50),
     website: z.string().max(200).url(),
@@ -2457,11 +2393,11 @@ const PatchedProductVariantOfferRequest = z
 const ProductImage = z
   .object({
     id: z.number().int(),
-    variant: z.number().int(),
     image: z.string().url(),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
     is_primary: z.boolean().optional(),
+    variant: z.number().int(),
   })
   .passthrough();
 const PaginatedProductImageList = z
@@ -2474,20 +2410,20 @@ const PaginatedProductImageList = z
   .passthrough();
 const ProductImageRequest = z
   .object({
-    variant: z.number().int(),
     image: z.instanceof(File),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
     is_primary: z.boolean().optional(),
+    variant: z.number().int(),
   })
   .passthrough();
 const PatchedProductImageRequest = z
   .object({
-    variant: z.number().int(),
     image: z.instanceof(File),
     alt_text: z.string().max(200),
     order: z.number().int().gte(0).lte(2147483647),
     is_primary: z.boolean(),
+    variant: z.number().int(),
   })
   .partial()
   .passthrough();
@@ -2511,7 +2447,6 @@ const Product = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     model: z.string().max(50),
     name: z.string().max(200).optional(),
     description: z.string(),
@@ -2531,8 +2466,8 @@ const PaginatedProductList = z
   .passthrough();
 const ProductRequest = z
   .object({
+    variants_input: z.array(z.object({}).partial().passthrough()).optional(),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     model: z.string().min(1).max(50),
     name: z.string().max(200).optional(),
     variant_type: VariantTypeEnum.optional(),
@@ -2542,8 +2477,8 @@ const ProductRequest = z
   .passthrough();
 const PatchedProductRequest = z
   .object({
+    variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     model: z.string().min(1).max(50),
     name: z.string().max(200),
     variant_type: VariantTypeEnum,
@@ -2650,7 +2585,6 @@ const StockMovement = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     movement_type: MovementTypeEnum,
     quantity: z.number().int().gte(-2147483648).lte(2147483647),
     quantity_before: z.number().int().gte(0).lte(2147483647),
@@ -2676,7 +2610,6 @@ const PaginatedStockMovementList = z
 const StockMovementRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     movement_type: MovementTypeEnum,
     quantity: z.number().int().gte(-2147483648).lte(2147483647),
     quantity_before: z.number().int().gte(0).lte(2147483647),
@@ -2693,7 +2626,6 @@ const StockMovementRequest = z
 const PatchedStockMovementRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     movement_type: MovementTypeEnum,
     quantity: z.number().int().gte(-2147483648).lte(2147483647),
     quantity_before: z.number().int().gte(0).lte(2147483647),
@@ -2711,7 +2643,6 @@ const StockTransferItem = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity_requested: z.number().int().gte(0).lte(2147483647),
     quantity_sent: z.number().int().gte(0).lte(2147483647).optional(),
     quantity_received: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2735,7 +2666,6 @@ const PaginatedStockTransferItemList = z
 const StockTransferItemRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity_requested: z.number().int().gte(0).lte(2147483647),
     quantity_sent: z.number().int().gte(0).lte(2147483647).optional(),
     quantity_received: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2751,7 +2681,6 @@ const StockTransferItemRequest = z
 const PatchedStockTransferItemRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     quantity_requested: z.number().int().gte(0).lte(2147483647),
     quantity_sent: z.number().int().gte(0).lte(2147483647),
     quantity_received: z.number().int().gte(0).lte(2147483647),
@@ -2776,7 +2705,6 @@ const StockTransfer = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     transfer_number: z.string(),
     status: StockTransferStatusEnum.optional(),
     requested_by: z.string().max(100).optional(),
@@ -2801,7 +2729,6 @@ const PaginatedStockTransferList = z
 const StockTransferRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     status: StockTransferStatusEnum.optional(),
     requested_by: z.string().max(100).optional(),
     approved_by: z.string().max(100).optional(),
@@ -2816,7 +2743,6 @@ const StockTransferRequest = z
 const PatchedStockTransferRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     status: StockTransferStatusEnum,
     requested_by: z.string().max(100),
     approved_by: z.string().max(100),
@@ -2835,7 +2761,6 @@ const Stock = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity_in_stock: z.number().int().gte(0).lte(2147483647).optional(),
     reserved_quantity: z.number().int().gte(0).lte(2147483647).optional(),
     reorder_level: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2863,7 +2788,6 @@ const PaginatedStockList = z
 const StockRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity_in_stock: z.number().int().gte(0).lte(2147483647).optional(),
     reserved_quantity: z.number().int().gte(0).lte(2147483647).optional(),
     reorder_level: z.number().int().gte(0).lte(2147483647).optional(),
@@ -2883,7 +2807,6 @@ const StockRequest = z
 const PatchedStockRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     quantity_in_stock: z.number().int().gte(0).lte(2147483647),
     reserved_quantity: z.number().int().gte(0).lte(2147483647),
     reorder_level: z.number().int().gte(0).lte(2147483647),
@@ -2904,7 +2827,6 @@ const Supplier = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().max(50),
     contact_person: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
@@ -2926,7 +2848,6 @@ const PaginatedSupplierList = z
 const SupplierRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(50),
     contact_person: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
@@ -2940,7 +2861,6 @@ const SupplierRequest = z
 const PatchedSupplierRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     name: z.string().min(1).max(50),
     contact_person: z.string().max(100),
     email: z.string().max(254).email(),
@@ -2959,7 +2879,6 @@ const ProductVariant = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     sku: z.string().max(50).nullish(),
     usku: z.string(),
     last_purchase_price: z
@@ -2989,7 +2908,6 @@ const PaginatedProductVariantList = z
 const ProductVariantRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     sku: z.string().max(50).nullish(),
     last_purchase_price: z
       .string()
@@ -3009,7 +2927,6 @@ const ProductVariantRequest = z
 const PatchedProductVariantRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     sku: z.string().max(50).nullable(),
     last_purchase_price: z
       .string()
@@ -3033,7 +2950,6 @@ const InvoiceItem = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
     unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     total_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
@@ -3061,7 +2977,6 @@ const Invoice = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     subtotal: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     tax_rate: z
       .string()
@@ -3099,7 +3014,6 @@ const PaginatedInvoiceList = z
 const InvoiceItemRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
     unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     product_variant: z.number().int().nullish(),
@@ -3110,7 +3024,6 @@ const InvoiceRequest = z
   .object({
     items: z.array(InvoiceItemRequest),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     tax_rate: z
       .string()
       .regex(/^-?\d{0,1}(?:\.\d{0,4})?$/)
@@ -3135,7 +3048,6 @@ const PatchedInvoiceRequest = z
   .object({
     items: z.array(InvoiceItemRequest),
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     tax_rate: z.string().regex(/^-?\d{0,1}(?:\.\d{0,4})?$/),
     discount_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     paid_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
@@ -3154,7 +3066,6 @@ const OrderItem = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
     unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     total_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
@@ -3186,7 +3097,6 @@ const Order = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     subtotal: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     tax_rate: z
       .string()
@@ -3228,7 +3138,6 @@ const PaginatedOrderList = z
 const OrderItemRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
     unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     product_variant: z.number().int().nullish(),
@@ -3240,7 +3149,6 @@ const OrderRequest = z
   .object({
     items: z.array(OrderItemRequest),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     tax_rate: z
       .string()
       .regex(/^-?\d{0,1}(?:\.\d{0,4})?$/)
@@ -3269,7 +3177,6 @@ const PatchedOrderRequest = z
   .object({
     items: z.array(OrderItemRequest),
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     tax_rate: z.string().regex(/^-?\d{0,1}(?:\.\d{0,4})?$/),
     discount_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     paid_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
@@ -3293,7 +3200,6 @@ const Payment = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     payment_method: PaymentMethodEnum,
     invoice: z.number().int(),
@@ -3310,7 +3216,6 @@ const PaginatedPaymentList = z
 const PaymentRequest = z
   .object({
     is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     payment_method: PaymentMethodEnum,
     invoice: z.number().int(),
@@ -3319,7 +3224,6 @@ const PaymentRequest = z
 const PatchedPaymentRequest = z
   .object({
     is_active: z.boolean(),
-    is_deleted: z.boolean(),
     amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     payment_method: PaymentMethodEnum,
     invoice: z.number().int(),
@@ -3642,6 +3546,7 @@ const RegisterRequest = z
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     email: z.string().min(1).email(),
+    role: z.number().int().optional(),
   })
   .passthrough();
 const RegisterSuccessResponse = z
@@ -3693,9 +3598,17 @@ const PaginatedRoleList = z
     results: z.array(Role),
   })
   .passthrough();
-const RoleRequest = z.object({ name: z.string().min(1).max(50) }).passthrough();
+const RoleRequest = z
+  .object({
+    name: z.string().min(1).max(50),
+    permission_ids: z.array(z.number().int()),
+  })
+  .passthrough();
 const PatchedRoleRequest = z
-  .object({ name: z.string().min(1).max(50) })
+  .object({
+    name: z.string().min(1).max(50),
+    permission_ids: z.array(z.number().int()),
+  })
   .partial()
   .passthrough();
 const TenantSettings = z
@@ -4160,7 +4073,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/accounts/",
     alias: "accounting_accounts_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4230,7 +4144,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/accounts/",
     alias: "accounting_accounts_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4245,7 +4160,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4260,7 +4176,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4280,7 +4197,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4300,7 +4218,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/accounts/:id/",
     alias: "accounting_accounts_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4323,8 +4242,35 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/categories/",
     alias: "accounting_categories_list",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "category_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4335,6 +4281,16 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "parent",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedAccountingCategoryList,
   },
@@ -4342,6 +4298,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/categories/",
     alias: "accounting_categories_create",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4356,6 +4314,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_retrieve",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4370,6 +4330,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_update",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4389,6 +4351,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_partial_update",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4408,6 +4372,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_destroy",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4420,9 +4386,18 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/accounting/categories/filter_options/",
+    alias: "accounting_categories_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: AccountingCategory,
+  },
+  {
+    method: "get",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4477,7 +4452,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4492,7 +4468,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4507,7 +4484,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4527,7 +4505,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4547,7 +4526,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4570,7 +4550,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4635,7 +4616,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4650,7 +4632,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4665,7 +4648,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4685,7 +4669,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4705,7 +4690,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4728,7 +4714,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/recurring-transactions/",
     alias: "accounting_recurring_transactions_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4793,7 +4780,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/recurring-transactions/",
     alias: "accounting_recurring_transactions_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4808,7 +4796,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4823,7 +4812,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4843,7 +4833,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4863,7 +4854,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/recurring-transactions/:id/",
     alias: "accounting_recurring_transactions_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4886,8 +4878,40 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_list",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "effective_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "page",
         type: "Query",
@@ -4898,6 +4922,16 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.number().int().optional(),
       },
+      {
+        name: "rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedTaxList,
   },
@@ -4905,6 +4939,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_create",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4919,6 +4955,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_retrieve",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4933,6 +4971,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_update",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4952,6 +4992,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_partial_update",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4971,6 +5013,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_destroy",
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -4983,9 +5027,18 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/accounting/taxes/filter_options/",
+    alias: "accounting_taxes_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Tax,
+  },
+  {
+    method: "get",
     path: "/api/accounting/transactions/",
     alias: "accounting_transactions_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5075,7 +5128,8 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/transactions/",
     alias: "accounting_transactions_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5090,7 +5144,8 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5105,7 +5160,8 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5125,7 +5181,8 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5145,7 +5202,8 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/transactions/:id/",
     alias: "accounting_transactions_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for Accounting app.
+Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5193,11 +5251,6 @@ export const endpoints = makeApi([
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -5385,11 +5438,6 @@ export const endpoints = makeApi([
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "is_main_branch",
         type: "Query",
         schema: z.boolean().optional(),
@@ -5564,11 +5612,6 @@ export const endpoints = makeApi([
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -5748,11 +5791,6 @@ export const endpoints = makeApi([
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "name",
         type: "Query",
         schema: z.string().optional(),
@@ -5887,8 +5925,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/crm/complaints/",
     alias: "crm_complaints_list",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5913,11 +5950,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -5958,8 +5990,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/crm/complaints/",
     alias: "crm_complaints_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5974,8 +6005,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -5990,8 +6020,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6011,8 +6040,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6032,8 +6060,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/crm/complaints/:id/",
     alias: "crm_complaints_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6076,11 +6103,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -6249,11 +6271,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -6525,8 +6542,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/documents/",
     alias: "crm_documents_list",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6551,11 +6567,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -6596,8 +6607,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/crm/documents/",
     alias: "crm_documents_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6612,8 +6622,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6628,8 +6637,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6649,8 +6657,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6670,8 +6677,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/crm/documents/:id/",
     alias: "crm_documents_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6694,8 +6700,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/interactions/",
     alias: "crm_interactions_list",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6720,11 +6725,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -6765,8 +6765,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/crm/interactions/",
     alias: "crm_interactions_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6781,8 +6780,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6797,8 +6795,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6818,8 +6815,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6839,8 +6835,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/crm/interactions/:id/",
     alias: "crm_interactions_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6863,8 +6858,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/opportunities/",
     alias: "crm_opportunities_list",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6889,11 +6883,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -6939,8 +6928,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/crm/opportunities/",
     alias: "crm_opportunities_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6955,8 +6943,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6971,8 +6958,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -6992,8 +6978,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7013,8 +6998,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/crm/opportunities/:id/",
     alias: "crm_opportunities_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7035,100 +7019,9 @@ Restricts access to objects where the related customer is owned by the user.`,
   },
   {
     method: "get",
-    path: "/api/crm/owned-resources/",
-    alias: "crm_owned_resources_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "post",
-    path: "/api/crm/owned-resources/",
-    alias: "crm_owned_resources_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/crm/owned-resources/:id/",
-    alias: "crm_owned_resources_retrieve_2",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "put",
-    path: "/api/crm/owned-resources/:id/",
-    alias: "crm_owned_resources_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "patch",
-    path: "/api/crm/owned-resources/:id/",
-    alias: "crm_owned_resources_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "delete",
-    path: "/api/crm/owned-resources/:id/",
-    alias: "crm_owned_resources_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/crm/owned-resources/filter_options/",
-    alias: "crm_owned_resources_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: z.void(),
-  },
-  {
-    method: "get",
     path: "/api/crm/subscriptions/",
     alias: "crm_subscriptions_list",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7153,11 +7046,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -7203,8 +7091,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/crm/subscriptions/",
     alias: "crm_subscriptions_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7219,8 +7106,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7235,8 +7121,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7256,8 +7141,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7277,8 +7161,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/crm/subscriptions/:id/",
     alias: "crm_subscriptions_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7301,8 +7184,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/tasks/",
     alias: "crm_tasks_list",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7337,11 +7219,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -7392,8 +7269,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/crm/tasks/",
     alias: "crm_tasks_create",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7408,8 +7284,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_retrieve",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7424,8 +7299,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7445,8 +7319,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_partial_update",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7466,8 +7339,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/crm/tasks/:id/",
     alias: "crm_tasks_destroy",
-    description: `Base ViewSet for resources attached to a Customer.
-Restricts access to objects where the related customer is owned by the user.`,
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
       {
@@ -7530,11 +7402,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -7994,11 +7861,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "leave_type",
         type: "Query",
         schema: z.string().optional(),
@@ -8158,11 +8020,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -8345,11 +8202,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "month",
         type: "Query",
         schema: z.string().optional(),
@@ -8509,11 +8361,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -8682,11 +8529,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -9471,11 +9313,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "logo",
         type: "Query",
         schema: z.string().optional(),
@@ -9996,11 +9833,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -10712,11 +10544,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "manufacturer_name",
         type: "Query",
         schema: z.string().optional(),
@@ -10778,6 +10605,11 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "variants",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variants_input",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -11236,11 +11068,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "movement_date",
         type: "Query",
         schema: z.string().optional(),
@@ -11420,11 +11247,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -11618,11 +11440,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -11821,11 +11638,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -12033,11 +11845,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "name",
         type: "Query",
         schema: z.string().optional(),
@@ -12211,11 +12018,6 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.boolean().optional(),
       },
       {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "last_purchase_price",
         type: "Query",
         schema: z.number().optional(),
@@ -12385,7 +12187,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_list",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12435,11 +12237,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -12520,7 +12317,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12535,7 +12332,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_retrieve",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12550,7 +12347,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12570,7 +12367,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_partial_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12590,7 +12387,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_destroy",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12605,7 +12402,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/invoices/:id/calculate_totals/",
     alias: "sales_invoices_calculate_totals_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12625,7 +12422,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/invoices/:id/confirm/",
     alias: "sales_invoices_confirm_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12660,7 +12457,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/sales/orders/",
     alias: "sales_orders_list",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12710,11 +12507,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -12815,7 +12607,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/orders/",
     alias: "sales_orders_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12830,7 +12622,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_retrieve",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12845,7 +12637,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12865,7 +12657,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_partial_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12885,7 +12677,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_destroy",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12900,7 +12692,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/orders/:id/calculate_totals/",
     alias: "sales_orders_calculate_totals_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12920,7 +12712,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/orders/:id/cancel/",
     alias: "sales_orders_cancel_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12940,7 +12732,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/orders/:id/confirm/",
     alias: "sales_orders_confirm_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -12975,7 +12767,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/sales/payments/",
     alias: "sales_payments_list",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -13000,11 +12792,6 @@ Restricts access to objects where the related customer is owned by the user.`,
       },
       {
         name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -13045,7 +12832,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "post",
     path: "/api/sales/payments/",
     alias: "sales_payments_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -13060,7 +12847,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "get",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_retrieve",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -13075,7 +12862,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "put",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -13095,7 +12882,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "patch",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_partial_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -13115,7 +12902,7 @@ Restricts access to objects where the related customer is owned by the user.`,
     method: "delete",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_destroy",
-    description: `Base ViewSet for Sales to enforce Branch Isolation`,
+    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
     requestFormat: "json",
     parameters: [
       {
@@ -13197,7 +12984,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Client,
@@ -13217,7 +13004,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Client,
@@ -13237,7 +13024,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: Client,
@@ -13252,7 +13039,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "id",
         type: "Path",
-        schema: z.string(),
+        schema: z.number().int(),
       },
     ],
     response: z.void(),
@@ -14436,6 +14223,11 @@ Restricts access to objects where the related customer is owned by the user.`,
         schema: z.number().int().optional(),
       },
       {
+        name: "permission_ids",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "permissions",
         type: "Query",
         schema: z.string().optional(),
@@ -14458,7 +14250,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "body",
         type: "Body",
-        schema: z.object({ name: z.string().min(1).max(50) }).passthrough(),
+        schema: RoleRequest,
       },
     ],
     response: Role,
@@ -14488,7 +14280,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "body",
         type: "Body",
-        schema: z.object({ name: z.string().min(1).max(50) }).passthrough(),
+        schema: RoleRequest,
       },
       {
         name: "id",
@@ -14508,10 +14300,7 @@ Restricts access to objects where the related customer is owned by the user.`,
       {
         name: "body",
         type: "Body",
-        schema: z
-          .object({ name: z.string().min(1).max(50) })
-          .partial()
-          .passthrough(),
+        schema: PatchedRoleRequest,
       },
       {
         name: "id",

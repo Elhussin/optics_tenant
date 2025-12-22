@@ -1,7 +1,7 @@
 import { FormConfig } from "@/src/shared/types/formConfig";
 export const formsConfig: Record<string, FormConfig> = {
-// TENANT APP
-  "clients":{
+  // TENANT APP
+  "clients": {
     // schemaName: 'ClientRequest',
     listAlias: 'tenants_clients_list',
     // createAlias: 'tenants_register_create',
@@ -9,11 +9,11 @@ export const formsConfig: Record<string, FormConfig> = {
     // updateAlias: 'tenants_clients_partial_update',
     filterAlias: "tenants_clients_filter_options_retrieve",
     // hardDeleteAlias: 'tenants_clients_destroy',
-    fields:["name","max_branches","max_users"],
-    detailsField:[ "name","max_branches","max_users","website","is_active","paid_until", ],
-    isViweOnly:true
+    fields: ["name", "max_branches", "max_users"],
+    detailsField: ["name", "max_branches", "max_users", "website", "is_active", "paid_until",],
+    isViweOnly: true
   },
-  "register-tenants":{
+  "register-tenants": {
     schemaName: 'RegisterTenantRequest',
     listAlias: 'tenants_register_list',
     createAlias: 'tenants_register_create',
@@ -21,10 +21,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'tenants_register_partial_update',
     filterAlias: "tenants_register_filter_options_retrieve",
     hardDeleteAlias: 'tenants_register_destroy',
-    fields:["name","email"],
-    detailsField:["name","email",],
+    fields: ["name", "email"],
+    detailsField: ["name", "email",],
   },
-  'domains':{
+  'domains': {
     schemaName: 'DomainRequest',
     listAlias: 'tenants_domain_list',
     createAlias: 'tenants_domain_create',
@@ -32,10 +32,10 @@ export const formsConfig: Record<string, FormConfig> = {
     hardDeleteAlias: 'tenants_domain_destroy',
     retrieveAlias: 'tenants_domain_retrieve',
     filterAlias: "tenants_domain_filter_options_retrieve",
-    fields:["domain"],
-    detailsField:["domain","is_active"],
+    fields: ["domain"],
+    detailsField: ["domain", "is_active"],
   },
-  'payments':{
+  'payments': {
     // schemaName: 'PaymentRequest',
     listAlias: 'tenants_payments_list',
     // createAlias: 'tenants_payments_create',
@@ -43,11 +43,11 @@ export const formsConfig: Record<string, FormConfig> = {
     // hardDeleteAlias: 'tenants_payments_destroy',
     retrieveAlias: 'tenants_payments_retrieve',
     filterAlias: "tenants_payments_filter_options_retrieve",
-    fields:["amount","transaction_id","status","client"],
-    detailsField:["amount","transaction_id","status","client","created_at","updated_at","method","currency"],
-    isViweOnly:true
+    fields: ["amount", "transaction_id", "status", "client"],
+    detailsField: ["amount", "transaction_id", "status", "client", "created_at", "updated_at", "method", "currency"],
+    isViweOnly: true
   },
-  "subscription-plans":{
+  "subscription-plans": {
     schemaName: 'SubscriptionPlanRequest',
     listAlias: 'tenants_subscription_plans_list',
     createAlias: 'tenants_subscription_plans_create',
@@ -55,11 +55,11 @@ export const formsConfig: Record<string, FormConfig> = {
     retrieveAlias: 'tenants_subscription_plans_retrieve',
     hardDeleteAlias: 'tenants_subscription_plans_destroy',
     filterAlias: "tenants_subscription_plans_filter_options_retrieve",
-    fields:["name","max_users","max_branches","description"],
-    detailsField:["name","max_users","max_branches","description","month_price","year_price","currency","discount"],
+    fields: ["name", "max_users", "max_branches", "description"],
+    detailsField: ["name", "max_users", "max_branches", "description", "month_price", "year_price", "currency", "discount"],
   },
-    // USERS APP
-  'roles':{
+  // USERS APP
+  'roles': {
     schemaName: 'PatchedRoleRequest',
     listAlias: 'users_roles_list',
     createAlias: 'users_roles_create',
@@ -67,8 +67,8 @@ export const formsConfig: Record<string, FormConfig> = {
     filterAlias: 'users_roles_filter_options_retrieve',
     updateAlias: 'users_roles_partial_update',
     hardDeleteAlias: 'users_roles_destroy',
-    fields:["name","description"],
-    detailsField:["name","description","permissions","is_active","is_deleted"],
+    fields: ["name", "description"],
+    detailsField: ["name", "description", "permissions", "is_active"],
   },
   'users': {
     schemaName: 'UserRequest',
@@ -78,10 +78,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_users_partial_update',
     hardDeleteAlias: 'users_users_destroy',
     filterAlias: "users_users_filter_options_retrieve",
-    fields:["username","email","phone","role","is_active"],
-    detailsField:["username","email","phone","role","is_active","address","website"],
+    fields: ["username", "email", "phone", "role", "is_active"],
+    detailsField: ["username", "email", "phone", "role", "is_active", "address", "website"],
   },
-  'permissions':{
+  'permissions': {
     schemaName: 'PermissionRequest',
     listAlias: 'users_permissions_list',
     createAlias: 'users_permissions_create',
@@ -89,10 +89,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_permissions_partial_update',
     hardDeleteAlias: 'users_permissions_destroy',
     filterAlias: "users_permissions_filter_options_retrieve",
-    fields:["code","description"],
-    detailsField:["code","description","is_active"],
+    fields: ["code", "description"],
+    detailsField: ["code", "description", "is_active"],
   },
-  'role-permissions':{
+  'role-permissions': {
     schemaName: 'RolePermissionRequest',
     listAlias: 'users_role_permissions_list',
     createAlias: 'users_role_permissions_create',
@@ -100,10 +100,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_role_permissions_partial_update',
     hardDeleteAlias: 'users_role_permissions_destroy',
     filterAlias: "users_role_permissions_filter_options_retrieve",
-    fields:["role_name","permission_name"],
-    detailsField:["role_name","permission_name","is_active"],
+    fields: ["role_name", "permission_name"],
+    detailsField: ["role_name", "permission_name", "is_active"],
   },
-  'contact-us':{
+  'contact-us': {
     schemaName: 'ContactUsRequest',
     listAlias: 'users_contact_us_list',
     createAlias: 'users_contact_us_create',
@@ -111,10 +111,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_contact_us_partial_update',
     hardDeleteAlias: 'users_contact_us_destroy',
     filterAlias: "users_contact_us_filter_options_retrieve",
-    fields:["name","email","phone","message"],
-    detailsField:["name","email","phone","message","created_at","updated_at","is_deleted","is_active"],
+    fields: ["name", "email", "phone", "message"],
+    detailsField: ["name", "email", "phone", "message", "created_at", "updated_at", "is_active"],
   },
-  'tenant-settings':{
+  'tenant-settings': {
     schemaName: 'TenantSettingsRequest',
     listAlias: 'users_tenant_settings_list',
     createAlias: 'users_tenant_settings_create',
@@ -122,8 +122,8 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'users_tenant_settings_partial_update',
     hardDeleteAlias: 'users_tenant_settings_destroy',
     filterAlias: "users_tenant_settings_filter_options_retrieve",
-    fields:["business_name","phone","email"],
-    detailsField:["business_name","phone","email","facebook","instagram","twitter","linkedin","website","description","is_active","is_deleted"],
+    fields: ["business_name", "phone", "email"],
+    detailsField: ["business_name", "phone", "email", "facebook", "instagram", "twitter", "linkedin", "website", "description", "is_active"],
   },
   'departments': {
     schemaName: 'Department',
@@ -141,15 +141,15 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsTitle: 'Department Details',
     createTitle: 'Add Department',
     updateTitle: 'Update Department',
-    fields:["name","description"],
-    detailsField:["name","description","is_active","is_deleted"],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{},
+    fields: ["name", "description"],
+    detailsField: ["name", "description", "is_active"],
+    showResetButton: true,
+    showBackButton: true,
+    className: "",
+    userConfig: {},
 
   },
-  'employees':{
+  'employees': {
     schemaName: 'EmployeeRequest',
     listAlias: 'hrm_employees_list',
     createAlias: 'hrm_employees_create',
@@ -165,14 +165,14 @@ export const formsConfig: Record<string, FormConfig> = {
     detailsTitle: 'Employee Details',
     createTitle: 'Add Employee',
     updateTitle: 'Update Employee',
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","is_active","is_deleted"],
-    showResetButton:true,
-    showBackButton:true,
-    className:"",
-    userConfig:{},
+    fields: ["name", "email", "phone"],
+    detailsField: ["name", "email", "phone", "address", "is_active"],
+    showResetButton: true,
+    showBackButton: true,
+    className: "",
+    userConfig: {},
   },
-  'customers':{
+  'customers': {
     schemaName: 'CustomerRequest',
     listAlias: 'crm_customers_list',
     createAlias: 'crm_customers_create',
@@ -180,10 +180,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'crm_customers_partial_update',
     hardDeleteAlias: 'crm_customers_destroy',
     filterAlias: "crm_customers_filter_options_retrieve",
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","is_active","is_deleted"],
+    fields: ["name", "email", "phone"],
+    detailsField: ["name", "email", "phone", "address", "is_active"],
   },
-  'prescriptions':{
+  'prescriptions': {
     schemaName: 'PrescriptionRequest',
     listAlias: 'prescriptions_prescription_list',
     createAlias: 'prescriptions_prescription_create',
@@ -191,10 +191,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'prescriptions_prescription_partial_update',
     hardDeleteAlias: 'prescriptions_prescription_destroy',
     filterAlias: 'prescriptions_prescription_filter_options_retrieve',
-    fields:["customer_name","notes","user_name"],
-    detailsField:["customer_name","notes","user_name","is_active","is_deleted"],
+    fields: ["customer_name", "notes", "user_name"],
+    detailsField: ["customer_name", "notes", "user_name", "is_active"],
   },
-  "branch-users":{
+  "branch-users": {
     schemaName: 'BranchUsersRequest',
     listAlias: 'branches_branch_users_list',
     createAlias: 'branches_branch_users_create',
@@ -202,10 +202,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'branches_branch_users_partial_update',
     filterAlias: 'branches_branch_users_filter_options_retrieve',
     hardDeleteAlias: 'branches_branch_users_destroy',
-    fields:["branch_name","employee_name","status"],
-    detailsField:["branch_name","employee_name","status","is_active","is_deleted"],
+    fields: ["branch_name", "employee_name", "status"],
+    detailsField: ["branch_name", "employee_name", "status", "is_active"],
   },
-  'branches':{
+  'branches': {
     schemaName: 'BranchRequest',
     listAlias: 'branches_branches_list',
     createAlias: 'branches_branches_create',
@@ -213,10 +213,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'branches_branches_partial_update',
     filterAlias: 'branches_branches_filter_options_retrieve',
     hardDeleteAlias: 'branches_branches_destroy',
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","address","city","country","is_active","is_deleted"],
+    fields: ["name", "email", "phone"],
+    detailsField: ["name", "email", "phone", "address", "city", "country", "is_active"],
   },
-  'attributes':{
+  'attributes': {
     schemaName: 'AttributesRequest',
     listAlias: 'products_attributes_list',
     createAlias: 'products_attributes_create',
@@ -224,10 +224,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_attributes_partial_update',
     hardDeleteAlias: 'products_attributes_destroy',
     filterAlias: 'products_attributes_filter_options_retrieve',
-    fields:["name","is_active"],
-    detailsField:["name","description","values","is_active","is_deleted"],
+    fields: ["name", "is_active"],
+    detailsField: ["name", "description", "values", "is_active"],
   },
-  "attribute-values":{
+  "attribute-values": {
     schemaName: 'AttributeValueRequest',
     listAlias: 'products_attribute_values_list',
     createAlias: 'products_attribute_values_create',
@@ -235,10 +235,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_attribute_values_partial_update',
     hardDeleteAlias: 'products_attribute_values_destroy',
     filterAlias: 'products_attribute_values_filter_options_retrieve',
-    fields:["attribute_id","value","attribute_name","label"],
-    detailsField:["attribute_id","value","attribute_name","is_active","is_deleted"],
+    fields: ["attribute_id", "value", "attribute_name", "label"],
+    detailsField: ["attribute_id", "value", "attribute_name", "is_active"],
   },
-  'suppliers':{
+  'suppliers': {
     schemaName: 'SupplierRequest',
     listAlias: 'products_suppliers_list',
     createAlias: 'products_suppliers_create',
@@ -246,10 +246,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_suppliers_partial_update',
     hardDeleteAlias: 'products_suppliers_destroy',
     filterAlias: 'products_suppliers_filter_options_retrieve',
-    fields:["name","email","phone"],
-    detailsField:["name","contact_person","email","phone","address","country","website","payment_terms","is_active","is_deleted"],
+    fields: ["name", "email", "phone"],
+    detailsField: ["name", "contact_person", "email", "phone", "address", "country", "website", "payment_terms", "is_active"],
   },
-  "manufacturers":{
+  "manufacturers": {
     schemaName: 'ManufacturerRequest',
     listAlias: 'products_manufacturers_list',
     createAlias: 'products_manufacturers_create',
@@ -257,10 +257,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_manufacturers_partial_update',
     hardDeleteAlias: 'products_manufacturers_destroy',
     filterAlias: 'products_manufacturers_filter_options_retrieve',
-    fields:["name","email","phone"],
-    detailsField:["name","email","phone","country","website","is_active","is_deleted"],
+    fields: ["name", "email", "phone"],
+    detailsField: ["name", "email", "phone", "country", "website", "is_active"],
   },
-  "brands":{
+  "brands": {
     schemaName: 'BrandRequest',
     listAlias: 'products_brands_list',
     createAlias: 'products_brands_create',
@@ -268,10 +268,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_brands_partial_update',
     hardDeleteAlias: 'products_brands_destroy',
     filterAlias: 'products_brands_filter_options_retrieve',
-    fields:["name","email","phone"],
-    detailsField:["name","country","website","description","logo","is_active","is_deleted"],
+    fields: ["name", "email", "phone"],
+    detailsField: ["name", "country", "website", "description", "logo", "is_active"],
   },
-  "categories":{
+  "categories": {
     schemaName: 'CategoryRequest',
     listAlias: 'products_categories_list',
     createAlias: 'products_categories_create',
@@ -279,10 +279,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_categories_partial_update',
     hardDeleteAlias: 'products_categories_destroy',
     filterAlias: 'products_categories_filter_options_retrieve',
-    fields:["name","description","parent_name"],
-    detailsField:["name","description","parent_id","parent_name","is_active","is_deleted"],
+    fields: ["name", "description", "parent_name"],
+    detailsField: ["name", "description", "parent_id", "parent_name", "is_active"],
   },
-  "products":{
+  "products": {
     schemaName: 'ProductRequest',
     listAlias: 'products_products_list',
     createAlias: 'products_products_create',
@@ -290,10 +290,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_products_partial_update',
     hardDeleteAlias: 'products_products_destroy',
     filterAlias: 'products_products_filter_options_retrieve',
-    fields:["name","category_name","brand_name",],
-    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+    fields: ["name", "category_name", "brand_name",],
+    detailsField: ["name", "description", "category_name", "category_id", "brand_name", "brand_id", "manufacturer_name", "manufacturer_id", "supplier_name", "supplier_id", "model", "type", "is_active"],
   },
-  'product-variants':{
+  'product-variants': {
     schemaName: 'ProductVariantRequest',
     listAlias: 'products_product_variants_list',
     createAlias: 'products_product_variants_create',
@@ -301,10 +301,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_product_variants_partial_update',
     hardDeleteAlias: 'products_product_variants_destroy',
     filterAlias: 'products_product_variants_filter_options_retrieve',
-    fields:["name","category_name","brand_name",],
-    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+    fields: ["name", "category_name", "brand_name",],
+    detailsField: ["name", "description", "category_name", "category_id", "brand_name", "brand_id", "manufacturer_name", "manufacturer_id", "supplier_name", "supplier_id", "model", "type", "is_active"],
   },
-  "product-images":{
+  "product-images": {
     schemaName: 'ProductImageRequest',
     listAlias: 'products_product_images_list',
     createAlias: 'products_product_images_create',
@@ -312,10 +312,10 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_product_images_partial_update',
     hardDeleteAlias: 'products_product_images_destroy',
     filterAlias: 'products_product_images_filter_options_retrieve',
-    fields:["name","category_name","brand_name",],
-    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+    fields: ["name", "category_name", "brand_name",],
+    detailsField: ["name", "description", "category_name", "category_id", "brand_name", "brand_id", "manufacturer_name", "manufacturer_id", "supplier_name", "supplier_id", "model", "type", "is_active"],
   },
-  "flexible-prices":{
+  "flexible-prices": {
     schemaName: 'FlexiblePriceRequest',
     listAlias: 'products_flexible_prices_list',
     createAlias: 'products_flexible_prices_create',
@@ -323,22 +323,152 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'products_flexible_prices_partial_update',
     hardDeleteAlias: 'products_flexible_prices_destroy',
     filterAlias: 'products_flexible_prices_filter_options_retrieve',
-    fields:["name","category_name","brand_name",],
-    detailsField:["name","description","category_name","category_id","brand_name","brand_id","manufacturer_name","manufacturer_id","supplier_name","supplier_id","model","type","is_active","is_deleted"],
+    fields: ["name", "category_name", "brand_name",],
+    detailsField: ["name", "description", "category_name", "category_id", "brand_name", "brand_id", "manufacturer_name", "manufacturer_id", "supplier_name", "supplier_id", "model", "type", "is_active"],
+  },
+  // ACCOUNTING APP
+  "financial-periods": {
+    schemaName: 'FinancialPeriodRequest',
+    listAlias: 'accounting_financial_periods_list',
+    createAlias: 'accounting_financial_periods_create',
+    retrieveAlias: 'accounting_financial_periods_retrieve',
+    updateAlias: 'accounting_financial_periods_partial_update',
+    hardDeleteAlias: 'accounting_financial_periods_destroy',
+    filterAlias: 'accounting_financial_periods_filter_options_retrieve',
+    fields: ["name", "start_date", "end_date", "is_closed"],
+    detailsField: ["name", "start_date", "end_date", "is_closed", "is_active"],
+  },
+  "accounts": {
+    schemaName: 'AccountRequest',
+    listAlias: 'accounting_accounts_list',
+    createAlias: 'accounting_accounts_create',
+    retrieveAlias: 'accounting_accounts_retrieve',
+    updateAlias: 'accounting_accounts_partial_update',
+    hardDeleteAlias: 'accounting_accounts_destroy',
+    filterAlias: 'accounting_accounts_filter_options_retrieve',
+    fields: ["name", "code", "type", "balance"],
+    detailsField: ["name", "code", "type", "balance", "description", "currency", "is_active"],
+  },
+  "transactions": {
+    schemaName: 'TransactionRequest',
+    listAlias: 'accounting_transactions_list',
+    createAlias: 'accounting_transactions_create',
+    retrieveAlias: 'accounting_transactions_retrieve',
+    updateAlias: 'accounting_transactions_partial_update',
+    hardDeleteAlias: 'accounting_transactions_destroy',
+    filterAlias: 'accounting_transactions_filter_options_retrieve',
+    fields: ["description", "amount", "date", "type"],
+    detailsField: ["description", "amount", "date", "type", "reference_number", "account", "is_active"],
+  },
+  "taxes": {
+    schemaName: 'TaxRequest',
+    listAlias: 'accounting_taxes_list',
+    createAlias: 'accounting_taxes_create',
+    retrieveAlias: 'accounting_taxes_retrieve',
+    updateAlias: 'accounting_taxes_partial_update',
+    hardDeleteAlias: 'accounting_taxes_destroy',
+    filterAlias: 'accounting_taxes_filter_options_retrieve',
+    fields: ["name", "rate", "type"],
+    detailsField: ["name", "rate", "type", "description", "is_active"],
+  },
+
+  // SALES APP
+  "orders": {
+    schemaName: 'OrderRequest',
+    listAlias: 'sales_orders_list',
+    createAlias: 'sales_orders_create',
+    retrieveAlias: 'sales_orders_retrieve',
+    updateAlias: 'sales_orders_partial_update',
+    hardDeleteAlias: 'sales_orders_destroy',
+    filterAlias: 'sales_orders_filter_options_retrieve',
+    fields: ["order_number", "customer_name", "total_amount", "status"],
+    detailsField: ["order_number", "customer_name", "total_amount", "status", "payment_status", "order_date", "delivery_date"],
+  },
+  "invoices": {
+    schemaName: 'InvoiceRequest',
+    listAlias: 'sales_invoices_list',
+    createAlias: 'sales_invoices_create',
+    retrieveAlias: 'sales_invoices_retrieve',
+    updateAlias: 'sales_invoices_partial_update',
+    hardDeleteAlias: 'sales_invoices_destroy',
+    filterAlias: 'sales_invoices_filter_options_retrieve',
+    fields: ["invoice_number", "customer_name", "total_amount", "status", "due_date"],
+    detailsField: ["invoice_number", "customer_name", "total_amount", "status", "issue_date", "due_date", "is_paid"],
+  },
+  "sales-payments": { // Alias to avoid conflict with tenant payments
+    schemaName: 'PaymentRequest',
+    listAlias: 'sales_payments_list',
+    createAlias: 'sales_payments_create',
+    retrieveAlias: 'sales_payments_retrieve',
+    updateAlias: 'sales_payments_partial_update',
+    hardDeleteAlias: 'sales_payments_destroy',
+    filterAlias: 'sales_payments_filter_options_retrieve',
+    fields: ["payment_number", "invoice_number", "amount", "payment_date"],
+    detailsField: ["payment_number", "invoice_number", "amount", "payment_date", "payment_method", "reference_number"],
+  },
+
+  // INVENTORY (PRODUCTS APP)
+  "stocks": {
+    schemaName: 'StockRequest',
+    listAlias: 'products_stocks_list',
+    createAlias: 'products_stocks_create',
+    retrieveAlias: 'products_stocks_retrieve',
+    updateAlias: 'products_stocks_partial_update',
+    hardDeleteAlias: 'products_stocks_destroy',
+    filterAlias: 'products_stocks_filter_options_retrieve',
+    fields: ["product_name", "warehouse", "quantity_on_hand"],
+    detailsField: ["product_name", "warehouse", "quantity_on_hand", "quantity_reserved", "reorder_level"],
+  },
+  "stock-movements": {
+    schemaName: 'StockMovementRequest',
+    listAlias: 'products_stock_movements_list',
+    createAlias: 'products_stock_movements_create',
+    retrieveAlias: 'products_stock_movements_retrieve',
+    updateAlias: 'products_stock_movements_partial_update',
+    hardDeleteAlias: 'products_stock_movements_destroy',
+    filterAlias: 'products_stock_movements_filter_options_retrieve',
+    fields: ["product_name", "movement_type", "quantity", "date"],
+    detailsField: ["product_name", "movement_type", "quantity", "date", "reference", "description"],
+  },
+
+  // CRM (Extra)
+  "opportunities": {
+    schemaName: 'OpportunityRequest',
+    listAlias: 'crm_opportunities_list',
+    createAlias: 'crm_opportunities_create',
+    retrieveAlias: 'crm_opportunities_retrieve',
+    updateAlias: 'crm_opportunities_partial_update',
+    hardDeleteAlias: 'crm_opportunities_destroy',
+    filterAlias: 'crm_opportunities_filter_options_retrieve',
+    fields: ["name", "stage", "expected_revenue", "close_date"],
+    detailsField: ["name", "stage", "expected_revenue", "close_date", "customer", "probability"],
+  },
+
+  // HRM (Extra)
+  "leaves": {
+    schemaName: 'LeaveRequest',
+    listAlias: 'hrm_leaves_list',
+    createAlias: 'hrm_leaves_create',
+    retrieveAlias: 'hrm_leaves_retrieve',
+    updateAlias: 'hrm_leaves_partial_update',
+    hardDeleteAlias: 'hrm_leaves_destroy',
+    filterAlias: 'hrm_leaves_filter_options_retrieve',
+    fields: ["employee_name", "leave_type", "start_date", "end_date", "status"],
+    detailsField: ["employee_name", "leave_type", "start_date", "end_date", "status", "reason"],
   },
 };
 
 
-export const featuresConfig : Record<string, FormConfig> = {
-  "pages":{
-  schemaName: 'PageRequest',
-  listAlias: 'users_pages_list',
-  createAlias: 'users_pages_create',
-  retrieveAlias: 'users_pages_retrieve',
-  updateAlias: 'users_pages_partial_update',
-  hardDeleteAlias: 'users_pages_destroy',
-  fields:["name","slug","is_published",],
-  filterAlias: 'users_pages_filter_options_retrieve',
-  detailsField:["name","slug","is_published","is_active","is_deleted"],
-}
+export const featuresConfig: Record<string, FormConfig> = {
+  "pages": {
+    schemaName: 'PageRequest',
+    listAlias: 'users_pages_list',
+    createAlias: 'users_pages_create',
+    retrieveAlias: 'users_pages_retrieve',
+    updateAlias: 'users_pages_partial_update',
+    hardDeleteAlias: 'users_pages_destroy',
+    fields: ["name", "slug", "is_published",],
+    filterAlias: 'users_pages_filter_options_retrieve',
+    detailsField: ["name", "slug", "is_published", "is_active"],
+  }
 }

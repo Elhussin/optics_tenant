@@ -41,10 +41,9 @@ export default function LoginForm(props: formRequestProps) {
 
       if (mode === "login") {
         const res = await refetchUser();
-        console.log(res);
         if (res?.success) {
           safeToast(message || t("successMessage"), { type: "success" });
-          router.replace(redirect);
+          window.location.href = redirect;
         } else {
           safeToast(t("errorMessage"), { type: "error" });
         }
@@ -134,19 +133,21 @@ export default function LoginForm(props: formRequestProps) {
                 <>
                   <Link
                     href="./register"
-                    className=" w-full text-primary underline"
+                    title= {t("register")}
+                    className=" w-full text-primary hover:underline"
                   >
                     {t("register")}
                   </Link>
                   <Link
                     href="./forgot-password"
-                    className="w-full text-primary underline"
+                    title={t("forgotPassword")}
+                    className="w-full text-primary hover:underline"
                   >
                     {t("forgotPassword")}
                   </Link>
                 </>
               ) : (
-                <Link href="./login" className=" w-full text-primary underline">
+                <Link href="./login" title={t("button")} className=" w-full text-primary hover:underline">
                   {t("button")}
                 </Link>
               )}

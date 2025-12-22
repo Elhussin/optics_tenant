@@ -26,7 +26,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductImage
-        exclude = ['is_deleted']
+        fields = '__all__'
+        # exclude = ['is_deleted']
         read_only_fields = ['id', ]
         extra_kwargs = {
             'image': {'required': True}

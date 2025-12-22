@@ -44,8 +44,8 @@ export default function ActivatePage() {
 
   // formRquest token
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 px-4">
-      <div className="max-w-md w-full bg-white shadow-lg rounded-lg p-6 text-center space-y-4">
+    <div className="flex items-center justify-center min-h-screen bg-surface px-4">
+      <div className="max-w-md w-full bg-surface shadow-lg rounded-lg p-6 text-center space-y-4">
         {status === "loading" && (
           <div className="text-blue-600 font-medium animate-pulse">{message}</div>
         )}

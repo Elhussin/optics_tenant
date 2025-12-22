@@ -46,9 +46,9 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
 
       <div className="max-w-4xl mx-auto p-6" dir={currentLangInfo.dir}>
 
-        <article className="bg-white rounded-lg shadow-lg p-8">
+        <article className="bg-surface rounded-lg shadow-lg p-8">
           <header className="mb-8">
-            <h1 className={`text-4xl font-bold text-gray-900 mb-4 ${
+            <h1 className={`text-4xl font-bold text-main mb-4 ${
               currentLangInfo.dir === 'rtl' ? 'text-right font-arabic' : 'text-left'
             }`}>
               {currentTranslation.title}

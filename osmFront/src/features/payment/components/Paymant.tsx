@@ -14,7 +14,7 @@ export default function Payment(props:PayPalButtonProps) {
   const [paymentMethod, setPaymentMethod] = useState<"paypal" | "stripe" | "cash" | "bank" | "other">("paypal");
   return (
     <div className="min-h-screen flex items-center justify-center bg-surface p-6">
-      <div className="w-full max-w-lg bg-body rounded-2xl shadow-lg p-6 space-y-6">
+      <div className="w-full max-w-lg rounded-2xl shadow-lg p-6 space-y-6">
         
         {/* العنوان */}
         <h1 className="text-2xl font-bold text-center text-main">{t('title')}</h1>

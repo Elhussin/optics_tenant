@@ -1,4 +1,4 @@
-  // app/paypal/fail/page.tsx
+
   "use client";
 
 import {Link} from '@/src/app/i18n/navigation';

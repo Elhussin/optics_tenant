@@ -8,7 +8,7 @@ import {
   defaultConfig,
   ignoredFields,
 } from "@/src/features/formGenerator/constants/generatFormConfig";
-import { RenderField } from "./ RenderField";
+import { RenderField } from "./RenderField";
 import { cn } from "@/src/shared/utils/cn";
 import { CirclePlus, ArrowLeft } from "lucide-react";
 import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";

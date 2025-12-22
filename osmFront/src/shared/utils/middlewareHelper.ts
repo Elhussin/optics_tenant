@@ -26,9 +26,16 @@ export function getRequiredPermission(pathname: string): string | null {
     "/auth/activate",
     "/auth/forgot-password",
     "/auth/reset-password",
+    "/api/geo",
   ];
 
-  if (publicPaths.includes(cleanPath)) return null;
+
+
+  // Check strict matches or sub-paths for public routes
+  if (publicPaths.some(path => cleanPath === path || cleanPath.startsWith(`${path}/`))) {
+    return null;
+  }
+
   if (cleanPath === "/dashboard") {
     return "authenticated_user";
   }
@@ -49,6 +56,21 @@ export function getRequiredPermission(pathname: string): string | null {
 
     // Users كله يحتاج "view_users"
     [/^\/users(\/|$)/, "view_users"],
+
+    // Accounting
+    [/^\/dashboard\/accounting/, "view_accounting"], // Or granular permissions like view_transactions
+
+    // Products & Inventory
+    [/^\/dashboard\/products/, "view_products"],
+    [/^\/dashboard\/inventory/, "view_inventory"],
+
+    // Sales
+    [/^\/dashboard\/sales/, "view_sales"],
+    [/^\/dashboard\/orders/, "view_orders"],
+
+    // HRM & CRM
+    [/^\/dashboard\/hrm/, "view_employees"], // Or view_hrm
+    [/^\/dashboard\/crm/, "view_customers"], // Or view_crm
 
     // Prescriptions
     [/^\/prescriptions\/(create|new)/, "create_prescription"],
