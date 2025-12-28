@@ -75,6 +75,7 @@ class EmployeeViewSet(HRMBaseViewSet):
     serializer_class = EmployeeSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = EmployeeFilter
+    search_fields = ["user__username", "department__name", "position", "phone"]
 
     def get_permissions(self):
         # Everyone can list (directory), but only HR can create/edit

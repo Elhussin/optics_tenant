@@ -22,7 +22,10 @@ class FilterOptionsMixin:
         if explicit_class and issubclass(explicit_class, FilterSet):
             return explicit_class
 
-        model = self.queryset.model
+        if getattr(self, "queryset", None) is not None:
+            model = self.queryset.model
+        else:
+            model = self.get_queryset().model
         return create_filterset_class(
             model=model,
             fields=getattr(self, "filter_fields", {}),

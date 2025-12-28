@@ -53,14 +53,38 @@ export default function DesktopNavLinks({ subdomain }: { subdomain: string | nul
         {user ? (
           <>
             {isVisible && (
-              <ActionButton
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={toggleSearch}
-                type="button"
-                variant="link"
-                className="hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-900 dark:text-gray-400"
-                icon={isSearchVisible ? <X className="h-4 w-4 text-red-500" /> : <Search className="h-4 w-4" />}
+                className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400 transition-colors"
                 title={isSearchVisible ? t('closeSearch') : t('search')}
-              />
+              >
+                <div className="relative w-5 h-5 flex items-center justify-center">
+                  <motion.div
+                    animate={{ 
+                      opacity: isSearchVisible ? 0 : 1, 
+                      scale: isSearchVisible ? 0.5 : 1,
+                      rotate: isSearchVisible ? 90 : 0
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0"
+                  >
+                    <Search className="w-5 h-5" />
+                  </motion.div>
+                  <motion.div
+                    animate={{ 
+                      opacity: isSearchVisible ? 1 : 0, 
+                      scale: isSearchVisible ? 1 : 0.5,
+                      rotate: isSearchVisible ? 0 : -90
+                    }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute inset-0"
+                  >
+                    <X className="w-5 h-5 text-red-500" />
+                  </motion.div>
+                </div>
+              </motion.button>
             )}
           </>
         ) : (

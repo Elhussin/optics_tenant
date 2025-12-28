@@ -162,8 +162,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       return { success: true, data: response };
     } catch (error: any) {
 
-      handleServerErrors(error, methods.setError, { t });
-      const normalized = handleErrorStatus(error, t);
+      handleServerErrors(error, methods.setError);
+      const normalized = handleErrorStatus(error);
       onError?.(normalized);
       return { success: false, error: normalized };
     }

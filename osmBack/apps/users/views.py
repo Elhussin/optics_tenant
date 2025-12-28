@@ -215,13 +215,13 @@ class RequestPasswordResetView(APIView):
         description="Request password reset"
     )
     def post(self, request):
-        email = request.data.get('data', {}).get('email')
+        email = request.data.get('email')
 
         if not email:
             return Response({"detail": "Email is required."}, status=400)
 
         tenant = request.headers.get('X-Tenant')
-        leng = request.headers.get('accept-language') or 'en'
+        lang = request.headers.get('accept-language').split(',')[0].split('-')[0] or 'en'
 
         # CHANGED: Allow public tenant if header is missing or explicitly public, but Validate!
         if not tenant:
@@ -243,7 +243,7 @@ class RequestPasswordResetView(APIView):
             addTenant = f"{tenant}." if tenant != "public" else ""
 
             if user.is_active:
-                reset_url = f"{protocol}://{addTenant}{settings.TENANT_BASE_DOMAIN}{port}/{leng}/auth/reset-password/?uid={uid}&token={token}"
+                reset_url = f"{protocol}://{addTenant}{settings.TENANT_BASE_DOMAIN}{port}/{lang}/auth/reset-password/?uid={uid}&token={token}"
                 send_password_reset_email(email, reset_url)
 
         return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
@@ -257,7 +257,7 @@ class PasswordResetConfirmView(APIView):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data["user"]
-        password = serializer.validated_data["password"]
+        password = serializer.validated_data["new_password"]
 
         user.set_password(password)
         user.save()
@@ -310,6 +310,18 @@ class RolePermissionViewSet(BaseViewSet):
 
     queryset = RolePermission.objects.all()
     serializer_class = RolePermissionSerializer
+    
+    search_fields = ['role__name', 'permission__name']
+    filter_fields = {
+        'role__name': ['exact', 'icontains'],
+        'permission__name': ['exact', 'icontains'],
+        'role': ['exact'],
+        'permission': ['exact']
+    }
+    field_labels = {
+        'role__name': 'Role Name',
+        'permission__name': 'Permission Name'
+    }
 
 
 class RoleViewSet(BaseViewSet):

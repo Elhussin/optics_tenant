@@ -11,7 +11,7 @@ export const formsConfig: Record<string, FormConfig> = {
     // hardDeleteAlias: 'tenants_clients_destroy',
     fields: ["name", "max_branches", "max_users"],
     detailsField: ["name", "max_branches", "max_users", "website", "is_active", "paid_until",],
-    isViweOnly: true
+    isViewOnly: true
   },
   "register-tenants": {
     schemaName: 'RegisterTenantRequest',
@@ -34,6 +34,7 @@ export const formsConfig: Record<string, FormConfig> = {
     filterAlias: "tenants_domain_filter_options_retrieve",
     fields: ["domain"],
     detailsField: ["domain", "is_active"],
+    isViewOnly: true
   },
   'payments': {
     // schemaName: 'PaymentRequest',
@@ -45,7 +46,7 @@ export const formsConfig: Record<string, FormConfig> = {
     filterAlias: "tenants_payments_filter_options_retrieve",
     fields: ["amount", "transaction_id", "status", "client"],
     detailsField: ["amount", "transaction_id", "status", "client", "created_at", "updated_at", "method", "currency"],
-    isViweOnly: true
+    isViewOnly: true
   },
   "subscription-plans": {
     schemaName: 'SubscriptionPlanRequest',
@@ -101,7 +102,7 @@ export const formsConfig: Record<string, FormConfig> = {
     hardDeleteAlias: 'users_role_permissions_destroy',
     filterAlias: "users_role_permissions_filter_options_retrieve",
     fields: ["role_name", "permission_name"],
-    detailsField: ["role_name", "permission_name", "is_active"],
+    detailsField: ["role_name", "permission_name", "is_active", "role", "permission"],
   },
   'contact-us': {
     schemaName: 'ContactUsRequest',
@@ -202,8 +203,8 @@ export const formsConfig: Record<string, FormConfig> = {
     updateAlias: 'branches_branch_users_partial_update',
     filterAlias: 'branches_branch_users_filter_options_retrieve',
     hardDeleteAlias: 'branches_branch_users_destroy',
-    fields: ["branch_name", "employee_name", "status"],
-    detailsField: ["branch_name", "employee_name", "status", "is_active"],
+    fields: ["branch_name", "employee_name", "is_active"],
+    detailsField: ["branch_name","notes", "employee_name", "is_active","created_at","updated_at",],
   },
   'branches': {
     schemaName: 'BranchRequest',
@@ -214,7 +215,7 @@ export const formsConfig: Record<string, FormConfig> = {
     filterAlias: 'branches_branches_filter_options_retrieve',
     hardDeleteAlias: 'branches_branches_destroy',
     fields: ["name", "email", "phone"],
-    detailsField: ["name", "email", "phone", "address", "city", "country", "is_active"],
+    detailsField: ["name","branch_code", "branch_type", "allows_online_orders", "is_main_branch", "email", "phone", "address", "city", "country", "is_active"],
   },
   'attributes': {
     schemaName: 'AttributesRequest',

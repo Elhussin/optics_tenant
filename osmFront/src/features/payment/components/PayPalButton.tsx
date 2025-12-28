@@ -8,6 +8,9 @@ import { PayPalButtonProps } from "../types";
 import PaymentProcessingModal from "./PaymentProcessingModal";
 import { useTranslations } from "next-intl";
 import { safeToast } from "@/src/shared/utils/safeToast";
+import { motion } from "framer-motion";
+import { ExternalLink, CreditCard } from "lucide-react";
+
 export default function PayPalButton({
   clientId,
   planId,
@@ -35,7 +38,6 @@ export default function PayPalButton({
       );
 
       const data = res.data;
-      console.log("PayPal Order Response:", data);
 
       if (data.approval_url && data.order_id) {
         sessionStorage.setItem("paypal_order_id", data.order_id);
@@ -53,13 +55,30 @@ export default function PayPalButton({
   return (
     <>
       <PaymentProcessingModal isOpen={loading} message={t("processing")} />
-      <button
+
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={createOrder}
         disabled={loading}
-        className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        className="w-full relative group overflow-hidden py-3.5 px-6 bg-[#0070BA] hover:bg-[#005ea6] text-white rounded-xl font-bold shadow-lg shadow-blue-900/10 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
       >
-        {label || `${planDirection}`}
-      </button>
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-shimmer" />
+
+        {/* PayPal Icon / Label */}
+        {label ? (
+          <span className="flex items-center gap-2">
+            <CreditCard size={20} />
+            {label}
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            Pay with <span className="font-extrabold italic">PayPal</span>
+          </span>
+        )}
+
+        <ExternalLink size={16} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+      </motion.button>
     </>
   );
 }

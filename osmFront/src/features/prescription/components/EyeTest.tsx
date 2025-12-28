@@ -15,6 +15,7 @@ import {
 } from "../utils/handleEyeTestFormat";
 import { OtherEyeTestFailed } from "./OtherEyeTestFailed";
 import ContactLensViewer from "./ContactLensViewer";
+import { motion } from "framer-motion";
 
 export default function EyeTest(props: PrescriptionFormProps) {
   const [customers, setCustomers] = useState<any[]>([]);
@@ -25,14 +26,17 @@ export default function EyeTest(props: PrescriptionFormProps) {
 
   // API hooks
   const customersApi = useApiForm({ alias: "crm_customers_list" });
+  
   const prescriptionApi = useApiForm({
     alias: "prescriptions_prescription_retrieve",
     defaultValues: { id: Number(id) },
+    enabled: !!id, // Only fetch if ID exists
   });
 
   const updatePrescriptionApi = useApiForm({
     alias: "prescriptions_prescription_update",
   });
+  
   const {
     register,
     handleSubmit,
@@ -44,15 +48,13 @@ export default function EyeTest(props: PrescriptionFormProps) {
     reset,
   } = useApiForm({ alias: alias });
 
+  // Handle Prescription Data Load
   useEffect(() => {
-    if (!id) return;
-    async function fetchData() {
-      const prescriptionData = await prescriptionApi.query.refetch();
-      if (prescriptionData?.data) {
-        reset(prescriptionData.data);
-      }
-      const customer: any = prescriptionData?.data?.customer;
-
+    if (prescriptionApi.query.data) {
+      const data = prescriptionApi.query.data;
+      reset(data);
+      
+      const customer: any = data.customer;
       if (customer) {
         setValue(
           "customer",
@@ -60,20 +62,23 @@ export default function EyeTest(props: PrescriptionFormProps) {
         );
       }
     }
-    fetchData();
-  }, [id]);
+  }, [prescriptionApi.query.data, reset, setValue]);
 
-  // Fetch customers
+  // Handle Customers List Load
   useEffect(() => {
-    customersApi.query.refetch().then((res: any) => {
-      if (res?.data?.results) {
-        setCustomers(res.data.results.reverse());
-        if (!id && res.data.results.length > 0) {
-          setValue("customer", String(res.data.results[0].id));
-        }
+    if (customersApi.query.data?.results) {
+      const results = customersApi.query.data.results;
+      // Note: Assuming reverse() was intentional to show newest first? 
+      // Be careful if results is read-only from react-query, prefer creating a copy.
+      const reversed = [...results].reverse(); 
+      setCustomers(reversed);
+
+      // Set default customer only if creating new (no id) and field is empty
+      if (!id && reversed.length > 0 && !getValues("customer")) {
+        setValue("customer", String(reversed[0].id));
       }
-    });
-  }, [showModal]);
+    }
+  }, [customersApi.query.data, id, setValue, getValues]);
 
   // Submit Handler
   const onSubmit = async (data: any) => {
@@ -94,10 +99,15 @@ export default function EyeTest(props: PrescriptionFormProps) {
       }
 
       if (result?.success) {
-        reset();
-
+        // Only reset if creating new, or partial refresh logic? 
+        // Typically on edit we don't full reset to blank.
+        if (!id) reset(); // Reset if create
+        
         safeToast(message || "Saved successfully", { type: "success" });
-        reset(result.data);
+        if (result.data) {
+            // Optional: Update form with server response (e.g. calculated fields)
+            // Be careful not to wipe out user inputs if server returns partial
+        }
       }
     } catch (err: any) {
       safeToast(err.message || "Server error", { type: "error" });
@@ -106,98 +116,102 @@ export default function EyeTest(props: PrescriptionFormProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" dir="ltr">
-        {/* Eyes Block */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          <div className="grid grid-cols-1 gap-2">
-            <EyeTestLabel />
-            <EyeRow
-              side="right"
-              {...{
-                register,
-                isView,
-                setValue,
-                getValues,
-                fieldErrors,
-                setFieldErrors,
-              }}
-            />
-            <EyeRow
-              side="left"
-              {...{
-                register,
-                isView,
-                setValue,
-                getValues,
-                fieldErrors,
-                setFieldErrors,
-              }}
-            />
-          </div>
-          <div className="grid grid-cols-1 gap-2 mt-4 md:mt-0">
-            <EyeTestLabelProps />
-            <EyeExtraRow
-              side="right"
-              {...{
-                register,
-                isView,
-                setValue,
-                getValues,
-                fieldErrors,
-                setFieldErrors,
-              }}
-            />
-            <EyeExtraRow
-              side="left"
-              {...{
-                register,
-                isView,
-                setValue,
-                getValues,
-                fieldErrors,
-                setFieldErrors,
-              }}
-            />
-          </div>
-        </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 10 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ duration: 0.4 }}
+        className="max-w-6xl mx-auto"
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8" dir="ltr">
+          
+          {/* Main Prescription Card */}
+          <div className="bg-surface rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-8">
+               <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                 <span className="w-1.5 h-6 bg-primary rounded-full"></span>
+                 Prescription Values
+               </h2>
+               <div className="text-xs font-mono text-gray-400 bg-gray-50 dark:bg-gray-700/50 px-3 py-1 rounded-full">
+                 OD (Right) / OS (Left)
+               </div>
+            </div>
 
-        <OtherEyeTestFailed
-          {...{ register, customers, setShowModal, errors, isView }}
-        />
+            <div className="space-y-6">
+               {/* Label Headers - Desktop & Mobile */}
+               <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-2">
+                 <EyeTestLabel />
+                 <EyeTestLabelProps />
+               </div>
+      
+               {/* Right Eye Row */}
+               <div className="pb-6 border-b border-gray-100 dark:border-gray-700/50 border-dashed">
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-center">
+                    <EyeRow side="right" {...{ register, isView, setValue, getValues, fieldErrors, setFieldErrors }} />
+                    <EyeExtraRow side="right" {...{ register, isView, setValue, getValues, fieldErrors, setFieldErrors }} />
+                  </div>
+               </div>
 
-        <div className="flex gap-3 pt-4">
-          <ActionButton
-            onClick={handleSubmit(onSubmit)}
-            label={isBusy ? title + "..." : title}
-            disabled={isBusy}
-            variant="info"
-            title={submitText || "Save"}
-            icon={<CirclePlus size={16} />}
+               {/* Left Eye Row */}
+               <div>
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 items-center">
+                    <EyeRow side="left" {...{ register, isView, setValue, getValues, fieldErrors, setFieldErrors }} />
+                    <EyeExtraRow side="left" {...{ register, isView, setValue, getValues, fieldErrors, setFieldErrors }} />
+                  </div>
+               </div>
+            </div>
+          </div>
+
+
+          <OtherEyeTestFailed
+            {...{ register, customers, setShowModal, errors, isView }}
           />
-        </div>
-      </form>
 
-      {contactLensData && Object.keys(contactLensData).length > 0 && (
-        <ContactLensViewer
-          rightSphere={contactLensData.rightSphere}
-          leftSphere={contactLensData.leftSphere}
-          rightToric={contactLensData.rightToric}
-          leftToric={contactLensData.leftToric}
-        />
-      )}
-      {showModal && (
-        <DynamicFormDialog
-          entity="customer"
-          onClose={(newCustomer: any) => {
-            setShowModal(false);
-            if (newCustomer) {
-              setCustomers((prev) => [newCustomer, ...prev]);
-              setValue("customer", String(newCustomer.id));
-            }
-          }}
-          title="Add Customer"
-        />
-      )}
+          {/* Action Bar */}
+          <div className="flex items-center justify-end pt-4">
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <ActionButton
+                onClick={handleSubmit(onSubmit)}
+                label={isBusy ? "Saving..." : (submitText || "Save Prescription")}
+                disabled={isBusy}
+                variant="primary" 
+                className="px-8 py-3 rounded-xl text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/30 min-w-[160px]"
+                icon={isBusy ? undefined : <CirclePlus size={18} />}
+              />
+            </motion.div>
+          </div>
+        </form>
+
+        {/* Contact Lens Viewer (Read Only View) */}
+        {contactLensData && Object.keys(contactLensData).length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }}
+            className="mt-8"
+          >
+            <ContactLensViewer
+              rightSphere={contactLensData.rightSphere}
+              leftSphere={contactLensData.leftSphere}
+              rightToric={contactLensData.rightToric}
+              leftToric={contactLensData.leftToric}
+            />
+          </motion.div>
+        )}
+
+        {/* Customer Modal */}
+        {showModal && (
+          <DynamicFormDialog
+            entity="customers"
+            onClose={(newCustomer: any) => {
+              setShowModal(false);
+              if (newCustomer) {
+                setCustomers((prev) => [newCustomer, ...prev]);
+                setValue("customer", String(newCustomer.id));
+              }
+            }}
+            title="Register New Customer"
+          />
+        )}
+      </motion.div>
     </>
   );
 }

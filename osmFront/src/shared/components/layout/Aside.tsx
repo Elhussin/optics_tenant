@@ -39,7 +39,7 @@ export default function Aside() {
         initial={{ x: isRTL ? '100%' : '-100%' }}
         animate={{ x: isVisible ? '0%' : isRTL ? '100%' : '-100%' }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 ${isRTL ? 'right-0 border-l' : 'left-0 border-r'} h-full w-80 bg-white dark:bg-gray-950 border-gray-200 dark:border-gray-800 shadow-xl z-50 overflow-hidden flex flex-col`}
+        className={`fixed top-0 ${isRTL ? 'right-0 border-l' : 'left-0 border-r'} h-full w-80 bg-surface border-gray-200 dark:border-gray-800 shadow-xl z-50 overflow-hidden flex flex-col`}
       >
         <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
           <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Menu</span>
@@ -125,9 +125,9 @@ const AsidDeafualtContent = () => {
           {navUrl.map((item) => (
             <NavItem key={item.path} item={item} />
           ))}
-          <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-800 dark:to-gray-900 flex flex-col items-center text-center">
-            <Image src="/media/aside.png" alt="logo" width={120} height={60} className="mb-3 drop-shadow-sm" />
-            <p className="text-xs text-gray-500 dark:text-gray-400">Optics Store Management</p>
+          <div className="mt-8 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex flex-col items-center text-center overflow-hidden">
+            <Image src="/media/aside.png" alt="logo" width={120} height={60} className="w-full h-auto mb-3 drop-shadow-sm" />
+            <p className="text-xs text-gray-500 dark:text-gray-400 pb-4">Optics Store Management</p>
           </div>
         </>
       )}

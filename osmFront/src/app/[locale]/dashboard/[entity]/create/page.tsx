@@ -11,7 +11,7 @@ export default function EntityCreatePage() {
   const params = useParams();
   const entity = params.entity as string || '';
 
-
+console.log(entity)
   if (!(entity in formsConfig)) {
     return <NotFound error="Invalid entity" />;
   }

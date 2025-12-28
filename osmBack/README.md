@@ -59,12 +59,14 @@ pdm run python manage.py migrate_schemas --shared
 pdm run python manage.py migrate_schemas --tenant
 
 pdm run python manage.py create_public_tenant
+# create tenant and migrate
+ python manage.py create_tenant_and_migrate "My Store" store1
+
 pdm run python manage.py runserver
 
 
 pdm run python manage.py createsuperuser
 pdm run python manage.py migrate_all_tenants
-pdm run python manage.py migrate
 pdm run python manage.py collectstatic
 pdm run  python manage.py create_tenant_superuser --schema_name public --username admin --email admin@public.com
 #or pdm run  python manage.py create_tenant_superuser --schema_name public

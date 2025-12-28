@@ -95,6 +95,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const fetchDefaultData = useApiForm({
     alias: safeFetchAlias,
     defaultValues: { id: id },
+    enabled: !!id,
   });
 
   const onSubmit = async (data: any, e?: React.BaseSyntheticEvent) => {
@@ -182,11 +183,10 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
                 ? `${t("saving")}...`
                 : submitText || t("create")
             }
-            className={`${config.submitButtonClasses} ${
-              formRequest.formState.isSubmitting || !canSubmit
-                ? "opacity-50 cursor-not-allowed"
-                : ""
-            }`}
+            className={`${config.submitButtonClasses} ${formRequest.formState.isSubmitting || !canSubmit
+              ? "opacity-50 cursor-not-allowed"
+              : ""
+              }`}
             disabled={formRequest.formState.isSubmitting || !canSubmit}
             variant="info"
             title={submitText || t("create")}
@@ -196,7 +196,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
       </form>
       {showModal && (
         <DynamicFormDialog
-          entity={relationConfig.entityName || ""}
+          entity={relationConfig?.entityName || ""}
           onClose={() => {
             setShowModal(false);
             setFetchForginKey(true);

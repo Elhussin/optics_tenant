@@ -5,9 +5,9 @@
     "logoutError": "Failed to log out",
     "fetchError": "Failed to fetch user data"
   },
-  "loading":{
-    "loading":"Loading",
-    "message":"Please wait..."
+  "loading": {
+    "loading": "Loading",
+    "message": "Please wait..."
   },
   "login": {
     "title": "Login",
@@ -36,7 +36,11 @@
       "basic": "Basic",
       "pro": "Pro",
       "enterprise": "Enterprise"
-    }
+    },
+    "welcomeBack": "Welcome back!",
+    "createAccountDesc": "Create your account to get started",
+    "LoginNow": "Login Now",
+    "alreadyHaveAccount": "Already have an account?"
   },
   "register": {
     "title": "Register",
@@ -53,7 +57,10 @@
     "SuccessMessage": "If the email is valid, a password reset link will be sent to your email.",
     "ErrorMessage": "Sorry, we cannot send the email. Please try again later.",
     "emailRequired": "Email is required",
-    "email": "Email"
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "backToLogin": "Back to Login",
+    "sendSuccess": "Send successfully"
   },
   "resetPassword": {
     "title": "Reset Password",
@@ -72,6 +79,7 @@
     "button": "Profile",
     "message": "Profile successfully",
     "welcomeMessage": "Start Your Journey with O-S-M MR/S",
+    "welcomeMessageDescription": "Manage your account settings and subscription.",
     "userInformation": "User Information",
     "username": "Username",
     "email": "Email",
@@ -89,7 +97,13 @@
     "subscriptionActive": "Subscription Active",
     "subscriptionExpiresIn": "Subscription Expires In",
     "subscriptionExpired": "Subscription Expired",
-    "failedToLoad": "Failed to load profile data"
+    "failedToLoad": "Failed to load profile data",
+    "clientId": "Client ID",
+    "tenantSettings": "Tenant Settings",
+    "subscriptionCycle": "Subscription Cycle",
+    "noClientData": "No Client Data",
+    "upgradePlan": "Upgrade Plan",
+    "unlockMoreFeatures": "Unlock more features and limits."
   },
   "tenants": {
     "title": "Start Now",
@@ -136,6 +150,14 @@
     "pdf": "PDF",
     "updatedSuccessfully": "Updated Successfully",
     "errorUpdating": "Error Updating"
+  },
+  "activation": {
+    "loading": "Activating your account...",
+    "success": "Account activated successfully!",
+    "error": "Activation failed.",
+    "invalid": "Invalid activation token.",
+    "button": "Go to Login",
+    "backHome": "Back to Home"
   },
   "aside": {
     "Home": "Home",
@@ -195,7 +217,6 @@
     "startTrial": "Start Free Trial",
     "contactUs": "Contact Us"
   },
-
   "error": {
     "title": "Error",
     "message": "An error occurred. Please try again later.",
@@ -226,10 +247,19 @@
   "heroSection": {
     "title": "Manage Your Optical Stores with Ease",
     "description": "A powerful SaaS platform tailored for optical store management. Track sales, inventory, customers & more.",
-    "cta": "Start Free Trial"
+    "cta": "Start Free Trial",
+    "newVersion": "New Version 2.0 Released",
+    "learnMore": "Learn More",
+    "noCreditCard": "No credit card required",
+    "freeTrial": "30-day free trial",
+    "cancelAnytime": "Cancel anytime",
+    "dashboardPreview": "Dashboard Preview"
   },
   "featuresSection": {
     "title": "Key Features",
+    "subtitle": "Everything you need to run your business",
+    "description": "Experience seamless management with our advanced tools designed for efficiency.",
+    "subdescription": "Powerful features to help you manage inventory, customers, and sales all in one place.",
     "list": {
       "inventory": "Branch & Inventory Management",
       "sales": "Sales & Invoice Tracking",
@@ -255,6 +285,8 @@
   },
   "pricingSection": {
     "title": "Choose Your Plan",
+    "subtitle": "Simple, transparent pricing for every stage of your business.",
+    "mostPopular": "MOST POPULAR",
     "free": "Free",
     "choosePlan": "Choose Plan",
     "contactUs": "Contact Us",
@@ -264,33 +296,104 @@
     "maxBranches": "Max Branches",
     "maxProducts": "Max Products",
     "month": "Month",
+    "monthly": "Monthly",
+    "popular": "Popular",
+    "bestValue": "Best Value",
     "year": "Year",
+    "yearly": "Yearly",
     "trial": "Trial",
     "basic": "Basic",
     "premium": "Premium",
     "enterprise": "Enterprise",
+    "perfectForGrowingBusinesses": "Perfect for growing businesses",
+    "forLargeScaleOrganizations": "For large scale organizations",
+    "billedAnnually": "Billed annually",
     "plans": {
       "trial": {
         "name": "Trial",
         "description": "Try all features for free for a limited time (1 month)",
-        "features": ["Basic Inventory", "Sales Tracking"]
+        "features": [
+          "Basic Inventory",
+          "Sales Tracking"
+        ]
       },
       "basic": {
         "name": "Basic",
         "description": "For small businesses",
-        "features": ["Basic Inventory", "Sales Tracking"]
+        "features": [
+          "Basic Inventory",
+          "Sales Tracking"
+        ]
       },
       "premium": {
         "name": "Premium",
         "description": "For growing businesses",
-        "features": ["Advanced Inventory", "Reports & Analytics"]
-    },
-    "enterprise": {
-      "name": "Enterprise",
-      "description": "For large enterprises",
-      "features": ["Custom Features", "Priority Support"]
+        "features": [
+          "Advanced Inventory",
+          "Reports & Analytics"
+        ]
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "description": "For large enterprises",
+        "features": [
+          "Custom Features",
+          "Priority Support"
+        ]
+      }
     }
-    }
+  },
+  "testimonialsSection": {
+    "title": "Trusted by Optical Professionals",
+    "subtitle": "The testimonials from optical professionals who rely on OSM platform",
+    "testimonials": [
+      {
+        "name": "Ahmed Hassan",
+        "role": "Store Manager",
+        "content": "This system transformed how we manage our optical store. Tracking inventory has never been easier.",
+        "rating": 5
+      },
+      {
+        "name": "Sarah ",
+        "role": "Optometrist",
+        "content": "The patient records management is seamless. I can access history in seconds.",
+        "rating": 5
+      },
+      {
+        "name": "Mohammed Al-Fayed",
+        "role": "Business Owner",
+        "content": "Great value for money. The multi-branch support is exactly what we needed for expansion.",
+        "rating": 4
+      }
+    ]
+  },
+  "ctaSection": {
+    "title": "Ready to Streamline Your Optical Store?",
+    "description": "Join hundreds of optical shops managing their inventory and patients with ease.",
+    "button": "Get Started Now",
+    "cta": "Start Free Trial"
+  },
+  "faqSection": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Everything you need to know about our platform.",
+    "faq": [
+      {
+        "question": "Is there a free trial?",
+        "answer": "Yes, we offer a 30-day free trial for all new accounts. No credit card required."
+      },
+      {
+        "question": "Can I manage multiple branches?",
+        "answer": "Absolutely! Our system is designed to handle multiple branches with centralized inventory and reporting."
+      },
+      {
+        "question": "Is my data secure?",
+        "answer": "We use enterprise-grade encryption and perform daily backups to ensure your data is always safe and accessible."
+      },
+      {
+        "question": "Can I upgrade my plan later?",
+        "answer": "Yes, you can upgrade or downgrade your plan at any time from your account settings."
+      }
+    ]
   },
   "paymantPage": {
     "title": "Complete Your Payment",
@@ -308,17 +411,29 @@
     "other": "Please contact support for other payment options.",
     "sendEmail": "Send Email",
     "callUs": "Call Us",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "failedToCreateOrder": "Failed to create payment order. Please try again."
   },
   "paymentFail": {
     "title": "Payment Failed",
     "description": "Unfortunately, your payment could not be processed. Please try again or contact support.",
-    "button": "Try Again"
+    "button": "Try Again",
+    "contactSupport": "Contact Support"
+  },
+  "paymentProcessing": {
+    "title": "Processing Payment",
+    "description": "Please wait while we verify your transaction..."
   },
   "paymentCancel": {
     "title": "Payment Cancelled",
     "description": "You have cancelled the payment process. You can try again anytime to complete your subscription.",
-    "tryAgain": "Try Again"
+    "tryAgain": "Try Again",
+    "backToHome": "Back to Home"
+  },
+  "paymentSuccess": {
+    "title": "Payment Successful",
+    "description": "Thank you for your payment. Your subscription has been activated successfully.",
+    "button": "Go to Dashboard"
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -400,7 +515,6 @@
     "createNewPage": "Create Page",
     "publicPages": "Public Pages",
     "publicPagesDesc": "You can add public pages with default data like (About Us, Contact Us, Privacy Policy, Terms of Service, FAQ, Support, Careers, Blog) in the sidebar."
-  
   },
   "publicPagesList": {
     "about": "About Us",
@@ -442,35 +556,30 @@
     "metaKeywordsDesc": "Represents the keywords of the page for search engines.",
     "publish": "Publish Page",
     "cancel": "Cancel",
-    "update":"Update Page",
-    "create":"Create Page",
-    "save" :"Saving"
-
-},"MultilingualPageDisplay":{
-},
-"pagesList":{
+    "update": "Update Page",
+    "create": "Create Page",
+    "save": "Saving"
+  },
+  "MultilingualPageDisplay": {},
+  "pagesList": {
     "title": "Pages List",
     "description": "List of all pages",
     "slug": "Slug",
     "status": "Status",
     "seoTitle": "SEO Title",
-    "edit":"Edit",
-    "view":"View",
-    "isDeleted":"Is Deleted",
-    "isPublished":"Is Published",
-    "isActive":"Is Active",
-    "deletedMessage":"This item is deleted. You can restore it or delete it permanently.",
-    "draft":"Draft",
-    "published":"Published"
+    "edit": "Edit",
+    "view": "View",
+    "isDeleted": "Is Deleted",
+    "isPublished": "Is Published",
+    "isActive": "Is Active",
+    "deletedMessage": "This item is deleted. You can restore it or delete it permanently.",
+    "draft": "Draft",
+    "published": "Published"
   },
-
-  "useHardDeleteWithDialog":{
-    "title":"Confirm Deletion",
-    "message":"Are you sure you want to permanently delete this item?",
-    "successMessage":"Item permanently deleted Successfully",
-    "failedMessage":"Failed to delete item"
+  "useHardDeleteWithDialog": {
+    "title": "Confirm Deletion",
+    "message": "Are you sure you want to permanently delete this item?",
+    "successMessage": "Item permanently deleted Successfully",
+    "failedMessage": "Failed to delete item"
   }
-
-
-
 }

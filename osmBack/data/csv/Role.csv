@@ -1,12 +1,12 @@
 name,description
-GUEST,Guest permissions
-OWNER,Owner permissions
-ADMIN,All permissions
-BRANCH_MANAGER,Branch permissions
-TECHNICIAN,Product permissions
-SALESPERSON,Invoice permissions
-ACCOUNTANT,Payment permissions
-INVENTORY_MANAGER,Inventory permissions
-RECEPTIONIST,Appointment permissions
-CRM,Customer permissions
-CUSTOMER,Individual customer permissions
+owner,System Owner with full access to all modules and configurations
+admin,Administrator with access to most modules excluding sensitive tenant billing
+branch_manager,Manages a specific branch including sales staff and stock
+optometrist,Eye doctor/Technician who performs eye tests and creates prescriptions
+salesperson,Front desk staff handling sales orders and invoices
+inventory_manager,Responsible for stock levels purchasing and transfers
+accountant,Handles invoices payments and financial reporting
+receptionist,Handles appointments and basic customer queries
+crm_specialist,Focuses on customer relationships and marketing
+guest,Read-only access for temporary users
+customer,End-user access for the customer portal (if applicable)

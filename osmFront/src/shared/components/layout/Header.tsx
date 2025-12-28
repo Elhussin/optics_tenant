@@ -43,7 +43,7 @@ export default function Header() {
       }}
       animate={hidden ? "hidden" : "visible"}
       transition={{ duration: 0.35, ease: "easeInOut" }}
-      className="fixed top-0 z-40 w-full border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60"
+      className="fixed top-0 z-40 w-full border-b border-gray-200 bg-elevated backdrop-blur-md supports-[backdrop-filter]:bg-white/60 dark:supports-[backdrop-filter]:bg-gray-950/60"
     >
       <AutoHideSearchOnRouteChange />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -55,8 +55,8 @@ export default function Header() {
             <Link href="/" className="flex items-center gap-2 group transition-opacity hover:opacity-90">
               <div className="relative overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm">
                 <Image
-                  className="bg-amber-100 dark:bg-amber-900/20 object-cover"
-                  src="/media/logo.png"
+                  className="bg-amber-100 dark:bg-amber-900/20 object-cover h-auto w-auto"
+                  src="/media/icon.jpg"
                   alt="OSM Logo"
                   width={40}
                   height={40}

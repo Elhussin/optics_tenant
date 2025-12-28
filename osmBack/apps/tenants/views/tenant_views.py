@@ -71,7 +71,7 @@ class ClientViewSet(BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             super_roles=["admin", "owner"]),
-        # IsPublicTenant  # 👈 Restrict to Public Domain Only
+        # IsPublicTenant  # 👈 Restrict to Public Djomain Only
     ]
 
     def get_queryset(self):

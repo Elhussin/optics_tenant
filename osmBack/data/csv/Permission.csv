@@ -1,25 +1,52 @@
 code,description
-__all__,ADMIN
-view_profile,GUEST
-__all__,OWNER
-view_branch,BRANCH_MANAGER
-manage_employees,BRANCH_MANAGER
-view_sales,BRANCH_MANAGER
-create_prescription,TECHNICIAN
-edit_prescription,TECHNICIAN
-view_customer,TECHNICIAN
-view_products,SALESPERSON
-create_order,SALESPERSON
-create_invoice,SALESPERSON
-view_invoice,ACCOUNTANT
-manage_payments,ACCOUNTANT
-view_reports,ACCOUNTANT
-view_inventory,INVENTORY_MANAGER
-edit_inventory,INVENTORY_MANAGER
-stock_transfer,INVENTORY_MANAGER
-create_appointment,RECEPTIONIST
-view_customer,RECEPTIONIST
-view_customer,CRM
-follow_up,CRM
-view_customer,CUSTOMER
+# Core & Users
+view_dashboard,Can view the main dashboard
+view_user,Can view user list and details
+create_user,Can create new users
+edit_user,Can edit existing users
+delete_user,Can delete users
+manage_roles,Can create and assign roles
+view_activity_log,Can view system activity logs
 
+# Branches & Settings
+view_branch,Can view branch details
+create_branch,Can add new branches
+edit_branch,Can edit branch details
+manage_tenant_settings,Can edit company settings (logo business info)
+
+# Products & Inventory
+view_product,Can view product list
+create_product,Can create new products
+edit_product,Can edit product details
+delete_product,Can soft delete products
+view_cost_price,Can see the buying price/cost of products
+view_inventory,Can view stock levels
+adjust_inventory,Can manually adjust stock quantities
+transfer_stock,Can transfer stock between branches
+
+# Sales & Finance
+view_sale,Can view orders and invoices list
+create_sale,Can create new orders/sales
+edit_sale,Can edit existing orders
+cancel_sale,Can cancel orders
+view_invoice,Can view invoices
+create_payment,Can record payments
+view_financial_reports,Can view daily/monthly sales reports
+
+# Prescriptions (Optical)
+view_prescription,Can view patient prescriptions
+create_prescription,Can create new eye tests/prescriptions
+edit_prescription,Can edit existing prescriptions
+print_prescription,Can print prescription cards
+
+# CRM (Customers)
+view_customer,Can view customer profiles
+create_customer,Can add new customers
+edit_customer,Can edit customer details
+delete_customer,Can delete customers
+view_customer_history,Can view full purchase/medical history
+
+# HRM (Employees)
+view_employee,Can view employee list
+manage_employee,Can create/edit employees
+manage_attendance,Can manage schedules and attendance

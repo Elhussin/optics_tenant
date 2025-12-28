@@ -54,7 +54,7 @@ def create_filterset_class(
             filters[filter_key] = base_class(field_name=field_name, lookup_expr=lookup_expr)
 
     # meta = type("Meta", (), {"model": model, "fields": fields})
-    meta = type("Meta", (), {"model": model, "fields": list(fields.keys())})
+    meta = type("Meta", (), {"model": model, "fields": []})
     filterset_name = f"{getattr(model, '__name__', 'Dynamic')}FilterSet"
 
     return type(filterset_name, (FilterSet,), {**filters, "Meta": meta})

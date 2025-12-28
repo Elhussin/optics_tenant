@@ -26,6 +26,7 @@ class BranchUsersViewSet(BaseViewSet):
     ]
     queryset = BranchUsers.objects.all()
     serializer_class = BranchUsersSerializer
+    search_fields = ["branch__name", "employee__user__username"]
 
 
 class ShiftViewSet(BaseViewSet):

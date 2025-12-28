@@ -22,7 +22,7 @@ class RolePermissionSerializer(serializers.ModelSerializer):
     permission_name = serializers.CharField(source="permission.name", read_only=True)
     class Meta:
         model = RolePermission
-        fields = '__all__'
+        fields = ['id', 'role', 'permission', 'role_name', 'permission_name']
 
 class PermissionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -43,7 +43,7 @@ class RoleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Role
-        fields = ['id', 'name', 'permissions', 'permission_ids']
+        fields = ['id', 'name', 'permissions', 'permission_ids' , 'is_active','description']
 
 # User Serializers
 class UserSerializer(serializers.ModelSerializer):
@@ -203,7 +203,7 @@ class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs  
 
-        fields = ['email', 'phone', 'name', 'message']
+        fields = '__all__'
 
 class TenantSettingsSerializer(serializers.ModelSerializer):
     logo = serializers.ImageField(required=False, allow_null=True)
@@ -216,12 +216,12 @@ class TenantSettingsSerializer(serializers.ModelSerializer):
 class PasswordResetConfirmSerializer(serializers.Serializer):
     uid = serializers.CharField(write_only=True)
     token = serializers.CharField(write_only=True)
-    password = ReusableFields.password()
+    new_password = ReusableFields.password()
 
     def validate(self, data):
         uid = data.get("uid")
         token = data.get("token")
-        password = data.get("password")
+        password = data.get("new_password")
 
         try:
             from django.utils.encoding import force_str

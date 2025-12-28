@@ -10,10 +10,12 @@ class BranchSerializer(serializers.ModelSerializer):
 
 
 class BranchUsersSerializer(serializers.ModelSerializer):
+    branch_name = serializers.CharField(source='branch.name', read_only=True)
+    employee_name = serializers.CharField(source='employee.user.username', read_only=True)
     class Meta:
         model = BranchUsers
         exclude = ['is_deleted']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at','branch','branch_name','employee','employee_name','is_active']
 
 
 class ShiftSerializer(serializers.ModelSerializer):

@@ -2,13 +2,13 @@ import { PageData } from "@/src/features/pages/types";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 
 export type ApiError = {
-    [field: string]: string | string[];
-  };
+  [field: string]: string | string[];
+};
 
-  export type ApiSuccess = {
-    [field: string]: string | string[];
-  };
-  
+export type ApiSuccess = {
+  [field: string]: string | string[];
+};
+
 
 export interface FormApiOptions<T = any> {
   alias: string;
@@ -35,20 +35,20 @@ export interface CrudFormOptions {
 }
 
 //  ues in login and create and edit
-export interface formRequestProps extends CrudFormOptions  {
+export interface formRequestProps extends CrudFormOptions {
   onCancel?: () => void;
   showCancelButton?: boolean;
-  mode?: 'create' | 'edit'|'login';
+  mode?: 'create' | 'edit' | 'login';
   id?: string | number | undefined;
   submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
   istenant?: boolean;
   title?: string;
   message?: string;
-  
+
 }
 
 export interface useFormRequestProps {
-    alias?: string;
+  alias?: string;
   defaultValues?: any;
   onSuccess?: (res: any) => void;
   onError?: (err: any) => void;
@@ -70,14 +70,14 @@ export type UseFormRequestReturn = {
 };
 
 export type UseApiFormReturn = UseFormReturn<any, any, any> & {
- query: any, // للـ GET
- mutation: any, // للـ POST/PUT/DELETE
- submitForm: any, // دالة submit موحدة
- isBusy: boolean,
- resetForm: () => void,
- prefetch: (newValues: any) => Promise<void>,
- fetchDirect: () => Promise<{ success: boolean; error?: any }>,
- errors: any,
+  query: any, // للـ GET
+  mutation: any, // للـ POST/PUT/DELETE
+  submitForm: any, // دالة submit موحدة
+  isBusy: boolean,
+  resetForm: () => void,
+  prefetch: (newValues: any) => Promise<void>,
+  fetchDirect: () => Promise<{ success: boolean; error?: any }>,
+  errors: any,
 
 };
 export type UserContextType = {
@@ -122,7 +122,7 @@ export interface ViewCardProps {
   id?: string | number | undefined;
 }
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close'| 'warning';
+export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close' | 'warning' | 'ghost' | 'custom';
 
 
 export interface ButtonProps {
@@ -161,7 +161,7 @@ export type RenderButtonsProps = {
   alias: Alias;
   refetch: () => void;   // ✅ إضافة refetch
   navigatePath: string;
-  isViweOnly?: boolean;
+  isViewOnly?: boolean;
 };
 
 

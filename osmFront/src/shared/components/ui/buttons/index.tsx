@@ -1,23 +1,25 @@
 "use client";
 import React from "react";
-import { cn } from "@/src/shared/utils/cn"; 
+import { cn } from "@/src/shared/utils/cn";
 import { ButtonProps } from "@/src/shared/types";
 import { useRouter } from "@/src/app/i18n/navigation";
 
-  const variantClasses = {
-    primary: "btn-primary",
-    secondary: "btn-secondary",
-    danger: "btn-danger",
-    success: "btn-success",
-    info: "btn-info",
-    outline: "btn-outline",
-    link: "btn-link",
-    reset: "btn-reset",
-    cancel: "btn-cancel",
-    close: "btn-close",
-    warning: "btn-warning",
+const variantClasses = {
+  primary: "btn-primary",
+  secondary: "btn-secondary",
+  danger: "btn-danger",
+  success: "btn-success",
+  info: "btn-info",
+  outline: "btn-outline",
+  link: "btn-link",
+  reset: "btn-reset",
+  cancel: "btn-cancel",
+  close: "btn-close",
+  warning: "btn-warning",
+  ghost: "btn-ghost",
+  custom: "",
 
-  };
+};
 
 
 
@@ -72,5 +74,5 @@ export function ActionButton({
       {label && <span>{label}</span>}
     </button>
   );
-  
+
 }
