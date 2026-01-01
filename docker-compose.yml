@@ -30,6 +30,8 @@ services:
     restart: always
     env_file:
       - ./osmBack/.env
+    environment:
+      DB_HOST: optics_db
     volumes:
       - ./osmBack:/app
       - optics_static_volume:/app/staticfiles
