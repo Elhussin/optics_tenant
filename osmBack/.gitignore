@@ -11,3 +11,6 @@ __pycache__/
 .Python
 **/migrations/__pycache__/
 *__pypackages__
+.env
+.env.development
+.env.production
