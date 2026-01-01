@@ -76,7 +76,17 @@
     "products":"Products",
     "product-variants":"Product Variants",
     "product-images":"Product Images",
-    "flexible-prices":"Flexible Prices"
+    "flexible-prices":"Flexible Prices",
+    "customer-groups":"Customer Groups",
+    "opportunities":"Opportunities",
+    "interactions" : "Interactions",
+    "complaints" : "Complaints",
+    "subscriptions" : "Subscriptions",
+    "tasks" : "Tasks",
+    "campaigns" : "Campaigns",
+    "documents" : "Documents",
+    "contacts" : "Contacts",
+    "pages" : "Pages"
   },
   "clients": {
     "title": "Clients",
@@ -87,19 +97,25 @@
     "website": "Website",
     "paid_until": "Paid Until",
     "on_trial": "On Trial",
-    "max_products": "Max Products"
+    "max_products": "Max Products",
+    "updateDescription":"Update Client",
+    "createDescription":"Add New Client"
 
   },
   "register-tenants": {
     "title": "Register New Tenant",
     "detailsTitle": "Tenant Details",
     "name": "Tenant Name",
-    "email": "Subdomain"
+    "email": "Subdomain",
+    "updateDescription":"Update Tenant",
+    "createDescription":"Add New Tenant"
   },
   "domains": {
     "title": "Domains",
     "detailsTitle": "Domain Details",
-    "domain": "Domain"
+    "domain": "Domain",
+    "updateDescription":"Update Domain",
+    "createDescription":"Add New Domain"
   },
   "payments": {
     "title": "Payments",
@@ -109,7 +125,9 @@
     "status": "Status",
     "client": "Client",
     "method": "Method",
-    "currency": "Currency"
+    "currency": "Currency",
+    "updateDescription":"Update Payment",
+    "createDescription":"Add New Payment"
   },
   "subscription-plans": {
     "title": "Subscription Plans",
@@ -121,13 +139,18 @@
     "month_price": "Monthly Price",
     "year_price": "Yearly Price",
     "currency": "Currency",
-    "discount": "Discount"
+    "discount": "Discount",
+    "updateDescription":"Update Subscription Plan",
+    "createDescription":"Add New Subscription Plan" 
   },
   "roles": {
     "title": "Roles",
     "detailsTitle": "Role Details",
     "name": "Role Name",
-    "description": "Description"
+    "description": "Description",
+    "permissions": "Permissions",
+    "updateDescription":"Update Role",
+    "createDescription":"Add New Role"
   },
   "users": {
     "title": "Users",
@@ -137,20 +160,33 @@
     "phone": "Phone",
     "address": "Address",
     "website": "Website",
-    "role": "Role"
+    "role": "Role",
+    "updateDescription":"Update User",
+    "createDescription":"Add New User",
+    "last_name":"Last Name",
+    "first_name":"First Name",
+    "is_staff" : "Is Staff",
+    "is_active" : "Is Active",
+    "password" : "Password"
+
+
   },
   "permissions": {
     "title": "Permissions",
     "detailsTitle": "Permission Details",
     "code": "Code",
-    "description": "Description"
+    "description": "Description",
+    "updateDescription":"Update Permission",
+    "createDescription":"Add New Permission"
 
   },
   "role-permissions": {
     "title": "Role & Permissions",
     "detailsTitle": "Role & Permissions Details",
-    "role": "Role",
-    "permission": "Permission"
+    "role_name": "Role Name",
+    "permission_name": "Permission Name",
+    "updateDescription":"Update Role Permission",
+    "createDescription":"Add New Role Permission"
   },
   "contact_us": {
     "title": "Contact Us",
@@ -158,8 +194,9 @@
     "name": "Name",
     "email": "Email",
     "phone": "Phone",
-    "message": "Message"
-
+    "message": "Message",
+    "updateDescription":"Update Contact Us",
+    "createDescription":"Add New Contact Us"
   },
   "tenant-settings": {
     "title": "Tenant Settings",
@@ -172,13 +209,17 @@
     "instagram": "Instagram",
     "linkedin": "Linkedin",
     "description": "Description",
-    "website": "Website"
+    "website": "Website",
+    "updateDescription":"Update Tenant Settings",
+    "createDescription":"Add New Tenant Settings"
   },
   "departments": {
     "title": "Departments",
     "detailsTitle": "Department Details",
     "name": "Department Name",
-    "description": "Description"
+    "description": "Description",
+    "updateDescription":"Update Department",
+    "createDescription":"Add New Department"
   },
   "employees": {
     "title": "Employees",
@@ -186,7 +227,9 @@
     "name": "Employee Name",
     "email": "Email",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "updateDescription":"Update Employee",
+    "createDescription":"Add New Employee"
   },
   "customer": {
     "title": "Customers",
@@ -194,21 +237,113 @@
     "name": "Customer Name",
     "email": "Email",
     "phone": "Phone",
-    "address": "Address"
+    "address": "Address",
+    "updateDescription":"Update Customer",
+    "createDescription":"Add New Customer"
+  },
+  "customer-groups": {
+    "title": "Customer Groups",
+    "detailsTitle": "Customer Group Details",
+    "name": "Customer Group Name",
+    "description": "Description",
+    "updateDescription":"Update Customer Group",
+    "createDescription":"Add New Customer Group"
+  },
+  "opportunities": {
+    "title": "Opportunities",
+    "detailsTitle": "Opportunity Details",
+    "name": "Opportunity Name",
+    "description": "Description",
+    "updateDescription":"Update Opportunity",
+    "createDescription":"Add New Opportunity"
+  },
+  "interactions": {
+    "title": "Interactions",
+    "detailsTitle": "Interaction Details",
+    "name": "Interaction Name",
+    "description": "Description",
+    "updateDescription":"Update Interaction",
+    "createDescription":"Add New Interaction"
+  },
+  "complaints": {
+    "title": "Complaints",
+    "detailsTitle": "Complaint Details",
+    "name": "Complaint Name",
+    "description": "Description",
+    "updateDescription":"Update Complaint",
+    "createDescription":"Add New Complaint"
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "detailsTitle": "Subscription Details",
+    "name": "Subscription Name",
+    "description": "Description",
+    "updateDescription":"Update Subscription",
+    "createDescription":"Add New Subscription"
+  },
+  "tasks": {
+    "title": "Tasks",
+    "detailsTitle": "Task Details",
+    "name": "Task Name",
+    "description": "Description",
+    "updateDescription":"Update Task",
+    "createDescription":"Add New Task"
+  },
+  "campaigns": {
+    "title": "Campaigns",
+    "detailsTitle": "Campaign Details",
+    "name": "Campaign Name",
+    "description": "Description",
+    "updateDescription":"Update Campaign",
+    "createDescription":"Add New Campaign"
+  },
+  "documents": {
+    "title": "Documents",
+    "detailsTitle": "Document Details",
+    "name": "Document Name",
+    "customer_name": "Customer Name",
+    "description": "Description",
+    "file": "File",
+    "updateDescription":"Update Document",
+    "createDescription":"Add New Document"
+  },
+  "contacts": {
+    "title": "Contacts",
+    "detailsTitle": "Contact Details",
+    "name": "Contact Name",
+    "description": "Description",
+    "updateDescription":"Update Contact",
+    "createDescription":"Add New Contact"
+  },
+  "pages": {
+    "title": "Pages",
+    "detailsTitle": "Page Details",
+    "name": "Page Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "message": "Message",
+    "description": "Description",
+    "updateDescription":"Update Page",
+    "createDescription":"Add New Page"
   },
   "prescriptions": {
     "title": "Prescriptions",
     "detailsTitle": "Prescription Details",
     "customer_name": "Customer Name",
     "notes": "Notes",
-    "user_name": "User Name"
+    "user_name": "User Name",
+    "updateDescription":"Update Prescription",
+    "createDescription":"Add New Prescription"
   },
   "branch-users": {
     "title": "Branch Users",
     "detailsTitle": "Branch User Details",
     "branch_name": "Branch Name",
     "employee_name": "Employee Name",
-    "status": "Status"
+    "status": "Status",
+    "updateDescription":"Update Branch User",
+    "createDescription":"Add New Branch User"
   },
   "branches": {
     "title": "Branches",
@@ -218,19 +353,25 @@
     "phone": "Phone",
     "address": "Address",
     "city": "City",
-    "country": "Country"
+    "country": "Country",
+    "updateDescription":"Update Branch",
+    "createDescription":"Add New Branch"
   },
   "attributes": {
     "title": "Attributes",
     "detailsTitle": "Attribute Details",
     "name": "Attribute Name",
-    "description": "Description"
+    "description": "Description",
+    "updateDescription":"Update Attribute",
+    "createDescription":"Add New Attribute"
   },
   "attribute-values": {
     "title": "Attribute Values",
     "detailsTitle": "Attribute Value Details",
     "attribute_name": "Attribute Name",
-    "value": "Value"
+    "value": "Value",
+    "updateDescription":"Update Attribute Value",
+    "createDescription":"Add New Attribute Value"
   },
   "suppliers": {
     "title": "Suppliers",
@@ -242,7 +383,9 @@
     "contact_person": "Contact Person",
     "country": "Country",
     "website": "Website",
-    "payment_terms": "Payment Terms"
+    "payment_terms": "Payment Terms",
+    "updateDescription":"Update Supplier",
+    "createDescription":"Add New Supplier"
   },
   "manufacturers": {
     "title": "Manufacturers",
@@ -252,7 +395,9 @@
     "phone": "Phone",
     "address": "Address",
     "country": "Country",
-    "website": "Website"
+    "website": "Website",
+    "updateDescription":"Update Manufacturer",
+    "createDescription":"Add New Manufacturer"
   },
   "brands": {
     "title": "Brands",
@@ -264,20 +409,26 @@
     "country": "Country",
     "website": "Website",
     "description": "Description",
-    "logo": "Logo"
+    "logo": "Logo",
+    "updateDescription":"Update Brand",
+    "createDescription":"Add New Brand"
   },
   "categories": {
     "title": "Categories",
     "detailsTitle": "Category Details",
     "name": "Category Name",
     "description": "Description",
-    "parent_name": "Parent Category"
+    "parent_name": "Parent Category",
+    "updateDescription":"Update Category",
+    "createDescription":"Add New Category"
   },
   "lens-coatings": {
     "title": "Lens Coatings",
     "detailsTitle": "Lens Coating Details",
     "name": "Lens Coating Name",
-    "description": "Description"
+    "description": "Description",
+    "updateDescription":"Update Lens Coating",
+    "createDescription":"Add New Lens Coating"
   },
   "products": {
     "title": "Products",
@@ -289,7 +440,9 @@
     "supplier_name": "Supplier Name",
     "manufacturer_name": "Manufacturer Name",
     "model": "Model",
-    "type": "Type"
+    "type": "Type",
+    "updateDescription":"Update Product",
+    "createDescription":"Add New Product"
   },
   "product-variants": {
     "title": "Product Variants",
@@ -301,13 +454,17 @@
     "title": "Product Images",
     "detailsTitle": "Product Image Details",
     "name": "Product Image Name",
-    "description": "Description"
+    "description": "Description",
+    "updateDescription":"Update Product Image",
+    "createDescription":"Add New Product Image"
   },
   "flexible-prices": {
     "title": "Flexible Prices",
     "detailsTitle": "Flexible Price Details",
     "name": "Flexible Price Name",
-    "description": "Description"
+    "description": "Description",
+    "updateDescription":"Update Flexible Price",
+    "createDescription":"Add New Flexible Price"
   } 
 }
 

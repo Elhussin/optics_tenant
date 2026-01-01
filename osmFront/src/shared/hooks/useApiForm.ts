@@ -147,21 +147,61 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
 
     try {
 
-      if (!transform && Object.values(values).some(v => v instanceof File)) {
+      const isFile = (val: any) => {
+        return (
+          val instanceof File ||
+          (val && typeof val === "object" && val.name && val.size && val.type)
+        );
+      };
+
+      const hasFile = Object.values(values).some((v: any) => {
+        if (isFile(v)) return true;
+        if (
+          v instanceof FileList ||
+          (typeof FileList !== "undefined" && v instanceof FileList) ||
+          Array.isArray(v) ||
+          (v && typeof v === "object" && "length" in v)
+        ) {
+          // Check if first element is file-like
+          if (v.length > 0 && isFile(v[0])) return true;
+        }
+        return false;
+      });
+
+      if (!transform && hasFile) {
         const fd = new FormData();
-        Object.entries(values).forEach(([k, v]) => {
-          if (v instanceof File) fd.append(k, v);
-          else fd.append(k, JSON.stringify(v));
+        Object.entries(values).forEach(([k, v]: [string, any]) => {
+          if (isFile(v)) {
+            fd.append(k, v);
+          } else if (
+            v instanceof FileList ||
+            (typeof FileList !== "undefined" && v instanceof FileList) ||
+            (Array.isArray(v) && v.length > 0 && isFile(v[0])) || 
+             (v && typeof v === "object" && v.length > 0 && isFile(v[0]))
+          ) {
+            for (let i = 0; i < v.length; i++) {
+              fd.append(k, v[i]);
+            }
+          } else {
+            if (v !== null && v !== undefined) {
+              if (typeof v === "object" && !(v instanceof Date)) {
+                fd.append(k, JSON.stringify(v));
+              } else {
+                fd.append(k, String(v));
+              }
+            }
+          }
         });
         payload = fd;
       }
 
+      console.log("payload", payload);
       const response = await mutation.mutateAsync(payload);
 
       onSuccess?.(response);
       return { success: true, data: response };
     } catch (error: any) {
-
+      console.log("error", error);
       handleServerErrors(error, methods.setError);
       const normalized = handleErrorStatus(error);
       onError?.(normalized);

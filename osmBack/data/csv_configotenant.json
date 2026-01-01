@@ -37,7 +37,7 @@
       {
         "schema": "public",
         "app": "products",
-        "model": "Attributes",
+        "model": "Attribute",
         "csv": "csv/attribute.csv"
       },
       {
@@ -46,7 +46,7 @@
         "model": "AttributeValue",
         "csv": "csv/attribute_value.csv",
         "foreign_keys": {
-          "attribute_id": {
+          "attribute": {
             "lookup_field": "name",
             "create_if_missing": true
           }
@@ -88,19 +88,7 @@
         "model": "Product",
         "csv": "csv/product.csv",
         "foreign_keys": {
-          "brand_id": {
-            "lookup_field": "name",
-            "create_if_missing": true
-          },
-          "supplier_id": {
-            "lookup_field": "name",
-            "create_if_missing": true
-          },
-          "manufacturer_id": {
-            "lookup_field": "name",
-            "create_if_missing": true
-          },
-          "category_id": {
+          "brand": {
             "lookup_field": "name",
             "create_if_missing": true
           }
@@ -114,13 +102,13 @@
       },
       {
         "schema": "public",
-        "app": "HRM",
+        "app": "hrm",
         "model": "Department",
         "csv": "csv/department.csv"
       },
       {
         "schema": "public",
-        "app": "HRM",
+        "app": "hrm",
         "model": "Employee",
         "csv": "csv/employee.csv",
         "foreign_keys": {

@@ -58,7 +58,7 @@ export default function ViewCard({ entity }: { entity: string }) {
           )}
           <ActionButton
             variant="ghost"
-            className="bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border-0"
+            className="bg-secondary hover:bg-secondary/80 dark:hover:bg-secondary/80 border-0"
             icon={<ArrowLeft size={18} />}
             navigateTo={`/dashboard/`}
             title={t('back')}

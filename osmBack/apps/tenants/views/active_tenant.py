@@ -188,7 +188,7 @@ class TenantActivation:
 
                 # Run CSV import
                 call_command('import_csv_with_foreign',
-                             schema=pending.schema_name, config="data/csv_config.json")
+                             schema=pending.schema_name, config="data/csv_configotenant.json")
 
             return ActivationStatus.SUCCESS
 

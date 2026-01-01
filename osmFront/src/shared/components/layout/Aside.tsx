@@ -11,7 +11,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import {
   Home, Shield, Eye, User, Users, Building2,
-  BarChart3, Truck, Phone, Info, LogIn, UserPlus, Grid
+  BarChart3, Truck, Phone, Info, LogIn, UserPlus, Grid, LogOut
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -69,6 +69,7 @@ const AsidDeafualtContent = () => {
   const getIcon = (path: string) => {
     switch (path) {
       case '/': return <Home size={20} />;
+      case '/dashboard': return <Shield size={20} />;
       case '/admin': return <Shield size={20} />;
       case '/prescriptions': return <Eye size={20} />; // Or FileText
       case '/profile': return <User size={20} />;
@@ -79,6 +80,7 @@ const AsidDeafualtContent = () => {
       case '/products/supplier': return <Truck size={20} />;
       case '/contact': return <Phone size={20} />;
       case '/about': return <Info size={20} />;
+      case '/logout': return <LogOut size={20} />;
       case '/auth/login': return <LogIn size={20} />;
       case '/auth/register': return <UserPlus size={20} />;
       default: return <Grid size={20} />;

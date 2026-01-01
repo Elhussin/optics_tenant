@@ -14,18 +14,18 @@ import { FiMail } from "react-icons/fi";
 
 export const URLDATA = [
     { "path": "/", "name": "Home", },
-    { "path": "/auth/login", "name": "Login", },
-    { "path": "/auth/register", "name": "Register", },
+    { "path": "/dashboard", "name": "Dashboard", },
     { "path": "/profile", "name": "Profile", },
     { "path": "/admin", "name": "Admin", },
-    { "path": "/prescriptions", "name": "Prescriptions", },
-    { "path": "/about", "name": "About", },
-    { "path": "/contact", "name": "Contact", },
+    // { "path": "/prescriptions", "name": "Prescriptions", },
+    // { "path": "/about", "name": "About", },
+    // { "path": "/contact", "name": "Contact", },
     { "path": "/users", "name": "Users", },
-    { "path": "/tenants", "name": "Tenants", },
-    { "path": "/groups", "name": "Groups", },
-    { "path": "/crm", "name": "CRM", },
-    { "path": "/products/supplier", "name": "Suppliers", },
+    // { "path": "/tenants", "name": "Tenants", },
+    // { "path": "/groups", "name": "Groups", },
+    // { "path": "/crm", "name": "CRM", },
+    // { "path": "/products/supplier", "name": "Suppliers", },
+
   ]
 
 export const navUrl=[
@@ -36,6 +36,7 @@ export const navUrl=[
   {"path": "/terms", "name": "Terms", },
   {"path": "/faq", "name": "FAQ", },
   {"path": "/auth/register", "name": "Register", },  
+  {"path": "/auth/login", "name": "Login", },
 ]
 
 

@@ -27,7 +27,9 @@ export function buildPayload({config, formData, options = {}}: BuildPayloadProps
         const name = field.name;
         acc[name] = data?.[name] ?? "";
         return acc;
-      }, {});
+      }, {
+        ...(data?.id ? { id: data.id } : {}) // Always include ID if present
+      });
 
   const addInclude = (payload: any, data: any) => {
     include.forEach((name: any) => {

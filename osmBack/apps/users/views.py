@@ -311,10 +311,10 @@ class RolePermissionViewSet(BaseViewSet):
     queryset = RolePermission.objects.all()
     serializer_class = RolePermissionSerializer
     
-    search_fields = ['role__name', 'permission__name']
+    search_fields = ['role__name', 'permission__code']
     filter_fields = {
         'role__name': ['exact', 'icontains'],
-        'permission__name': ['exact', 'icontains'],
+        'permission__code': ['exact', 'icontains'],
         'role': ['exact'],
         'permission': ['exact']
     }

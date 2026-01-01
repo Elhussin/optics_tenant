@@ -84,7 +84,7 @@ export type UserContextType = {
   user: any | null;
   setUser: (user: any | null) => void;
   // fetchUser:UseFormRequestReturn;
-  refetchUser: () => Promise<{ success: boolean; error?: any }>;
+  refetchUser: () => Promise<{ success: boolean; error?: any; data?: any }>;
   loading: boolean;
   logout: () => Promise<void>;
 };

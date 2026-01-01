@@ -25,6 +25,7 @@ const fetcher = (url: string) => FetchData({ url });
 export default function Profile() {
   const { user } = useUser();
   const t = useTranslations("profilePage");
+  // console.log(user);
 
   const shouldFetch =
     user?.role?.name?.toLowerCase() === "owner" && !!user?.client;

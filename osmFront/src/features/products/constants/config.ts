@@ -48,19 +48,18 @@ export const ProductConfig: ProductConfigType[] = [
         required: false,
     },
     {
-        name: "category",
-        label: "Category",
+        name: "categories_ids",
+        label: "Categories",
         role: "all",
         filter: "categories",
-        title: "Select Main Category",
+        title: "Select Categories",
         subFilter: "",
         entityName: "categories",
         fieldName: "name",
-        type: "multiCheckbox",
-        placeholder: "Select Category...",
+        type: "multiSelect", // Changed from foreignkey to multiSelect for M2M
+        placeholder: "Select Categories...",
         required: true,
         mapOnly: true,
-
     },
     {
         name: "brand",
@@ -292,7 +291,7 @@ export const BasicVariantConfig: ProductConfigType[] = [
 
 export const FrameVariantConfig: ProductConfigType[] = [
   {
-    name: "frame_color_id",
+    name: "frame_color",
     label: "Frame Color",
     role: "FR",
     filter: "Color",
@@ -305,7 +304,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-    name: "lens_diameter_id",
+    name: "lens_diameter",
     label: "Lens Diameter",
     role: "all",
     filter: "Diameter",
@@ -318,7 +317,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-    name: "temple_length_id",
+    name: "temple_length",
     label: "Temple Length",
     role: "FR",
     filter: "Length",
@@ -331,7 +330,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-    name: "bridge_width_id",
+    name: "bridge_width",
     label: "Bridge Width",
     role: "FR",
     filter: "Width",
@@ -344,7 +343,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-    name: "frame_shape_id",
+    name: "frame_shape",
     label: "Frame Shape",
     role: "FR",
     filter: "Shape",
@@ -357,7 +356,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-    name: "frame_material_id",
+    name: "frame_material",
     label: "Frame Material",
     role: "FR",
     filter: "Material",
@@ -370,7 +369,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-    name: "lens_color_id",
+    name: "lens_color",
     label: "Lens Color",
     role: "all",
     filter: "Color",

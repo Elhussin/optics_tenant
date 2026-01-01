@@ -262,9 +262,11 @@ const PatchedTransactionRequest = z
 const BranchUsers = z
   .object({
     id: z.number().int(),
+    branch_name: z.string(),
+    employee_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
+    is_active: z.boolean(),
     notes: z.string().nullish(),
     branch: z.number().int(),
     employee: z.number().int(),
@@ -279,20 +281,11 @@ const PaginatedBranchUsersList = z
   })
   .passthrough();
 const BranchUsersRequest = z
-  .object({
-    is_active: z.boolean().optional(),
-    notes: z.string().nullish(),
-    branch: z.number().int(),
-    employee: z.number().int(),
-  })
+  .object({ notes: z.string().nullable() })
+  .partial()
   .passthrough();
 const PatchedBranchUsersRequest = z
-  .object({
-    is_active: z.boolean(),
-    notes: z.string().nullable(),
-    branch: z.number().int(),
-    employee: z.number().int(),
-  })
+  .object({ notes: z.string().nullable() })
   .partial()
   .passthrough();
 const BranchTypeEnum = z.enum(["store", "branch"]);
@@ -1199,6 +1192,8 @@ const Role = z
     id: z.number().int(),
     name: z.string().max(50),
     permissions: z.array(Permission),
+    is_active: z.boolean().optional(),
+    description: z.string().optional(),
   })
   .passthrough();
 const User = z
@@ -1209,12 +1204,12 @@ const User = z
     first_name: z.string().max(30),
     last_name: z.string().max(30),
     role: Role,
+    phone: z.string().regex(/^\+?\d{7,15}$/),
+    client: z.number().int().nullable(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
-    phone: z.string().regex(/^\+?\d{7,15}$/),
-    client: z.number().int().nullable(),
   })
   .passthrough();
 const RightSphereEnum = z.enum([
@@ -2438,10 +2433,8 @@ const VariantTypeEnum = z.enum([
 const Product = z
   .object({
     id: z.number().int(),
-    manufacturer_name: z.string(),
-    category_name: z.string(),
-    supplier_name: z.string(),
     brand_name: z.string(),
+    categories: z.array(Category),
     type: z.string(),
     variants: z.string(),
     created_at: z.string().datetime({ offset: true }),
@@ -2453,7 +2446,6 @@ const Product = z
     usku: z.string(),
     variant_type: VariantTypeEnum.optional(),
     brand: z.number().int(),
-    categories: z.array(z.number().int()),
   })
   .passthrough();
 const PaginatedProductList = z
@@ -2466,24 +2458,24 @@ const PaginatedProductList = z
   .passthrough();
 const ProductRequest = z
   .object({
+    categories_ids: z.array(z.number().int()),
     variants_input: z.array(z.object({}).partial().passthrough()).optional(),
     is_active: z.boolean().optional(),
     model: z.string().min(1).max(50),
     name: z.string().max(200).optional(),
     variant_type: VariantTypeEnum.optional(),
     brand: z.number().int(),
-    categories: z.array(z.number().int()),
   })
   .passthrough();
 const PatchedProductRequest = z
   .object({
+    categories_ids: z.array(z.number().int()),
     variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean(),
     model: z.string().min(1).max(50),
     name: z.string().max(200),
     variant_type: VariantTypeEnum,
     brand: z.number().int(),
-    categories: z.array(z.number().int()),
   })
   .partial()
   .passthrough();
@@ -2827,11 +2819,11 @@ const Supplier = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    name: z.string().max(50),
+    name: z.string().max(100),
     contact_person: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
-    address: z.string().optional(),
+    address: z.string().max(255).optional(),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
     payment_terms: z.string().max(100).optional(),
@@ -2848,11 +2840,11 @@ const PaginatedSupplierList = z
 const SupplierRequest = z
   .object({
     is_active: z.boolean().optional(),
-    name: z.string().min(1).max(50),
+    name: z.string().min(1).max(100),
     contact_person: z.string().max(100).optional(),
     email: z.string().max(254).email().optional(),
     phone: z.string().max(20).optional(),
-    address: z.string().optional(),
+    address: z.string().max(255).optional(),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
     payment_terms: z.string().max(100).optional(),
@@ -2861,11 +2853,11 @@ const SupplierRequest = z
 const PatchedSupplierRequest = z
   .object({
     is_active: z.boolean(),
-    name: z.string().min(1).max(50),
+    name: z.string().min(1).max(100),
     contact_person: z.string().max(100),
     email: z.string().max(254).email(),
     phone: z.string().max(20),
-    address: z.string(),
+    address: z.string().max(255),
     country: z.string().max(50),
     website: z.string().max(200).url(),
     payment_terms: z.string().max(100),
@@ -3314,6 +3306,37 @@ const PatchedClientRequest = z
   })
   .partial()
   .passthrough();
+const Domain = z
+  .object({
+    id: z.number().int(),
+    domain: z.string().max(253),
+    is_primary: z.boolean().optional(),
+    tenant: z.number().int(),
+  })
+  .passthrough();
+const PaginatedDomainList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Domain),
+  })
+  .passthrough();
+const DomainRequest = z
+  .object({
+    domain: z.string().min(1).max(253),
+    is_primary: z.boolean().optional(),
+    tenant: z.number().int(),
+  })
+  .passthrough();
+const PatchedDomainRequest = z
+  .object({
+    domain: z.string().min(1).max(253),
+    is_primary: z.boolean(),
+    tenant: z.number().int(),
+  })
+  .partial()
+  .passthrough();
 const RegisterTenant = z
   .object({ name: z.string().max(25), email: z.string().email() })
   .passthrough();
@@ -3394,6 +3417,11 @@ const PatchedSubscriptionPlanRequest = z
   .passthrough();
 const ContactUs = z
   .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     email: z.string().max(254).email(),
     phone: z.string().max(20),
     name: z.string().max(100),
@@ -3410,6 +3438,8 @@ const PaginatedContactUsList = z
   .passthrough();
 const ContactUsRequest = z
   .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     email: z.string().min(1).max(254).email(),
     phone: z.string().min(1).max(20),
     name: z.string().min(1).max(100),
@@ -3418,6 +3448,8 @@ const ContactUsRequest = z
   .passthrough();
 const PatchedContactUsRequest = z
   .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
     email: z.string().min(1).max(254).email(),
     phone: z.string().min(1).max(20),
     name: z.string().min(1).max(100),
@@ -3555,14 +3587,10 @@ const RegisterSuccessResponse = z
 const RolePermission = z
   .object({
     id: z.number().int(),
-    role_name: z.string(),
-    permission_name: z.string(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
     role: z.number().int(),
     permission: z.number().int(),
+    role_name: z.string(),
+    permission_name: z.string(),
   })
   .passthrough();
 const PaginatedRolePermissionList = z
@@ -3574,20 +3602,10 @@ const PaginatedRolePermissionList = z
   })
   .passthrough();
 const RolePermissionRequest = z
-  .object({
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    role: z.number().int(),
-    permission: z.number().int(),
-  })
+  .object({ role: z.number().int(), permission: z.number().int() })
   .passthrough();
 const PatchedRolePermissionRequest = z
-  .object({
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    role: z.number().int(),
-    permission: z.number().int(),
-  })
+  .object({ role: z.number().int(), permission: z.number().int() })
   .partial()
   .passthrough();
 const PaginatedRoleList = z
@@ -3602,12 +3620,16 @@ const RoleRequest = z
   .object({
     name: z.string().min(1).max(50),
     permission_ids: z.array(z.number().int()),
+    is_active: z.boolean().optional(),
+    description: z.string().optional(),
   })
   .passthrough();
 const PatchedRoleRequest = z
   .object({
     name: z.string().min(1).max(50),
     permission_ids: z.array(z.number().int()),
+    is_active: z.boolean(),
+    description: z.string(),
   })
   .partial()
   .passthrough();
@@ -3731,17 +3753,17 @@ const UserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
-    is_active: z.boolean().optional(),
-    is_staff: z.boolean().optional(),
-    password: z
-      .string()
-      .min(8)
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
-    is_deleted: z.boolean().optional(),
     phone: z
       .string()
       .min(1)
       .regex(/^\+?\d{7,15}$/),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+    is_active: z.boolean().optional(),
+    is_staff: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
   })
   .passthrough();
 const PatchedUserRequest = z
@@ -3750,17 +3772,17 @@ const PatchedUserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
-    is_active: z.boolean(),
-    is_staff: z.boolean(),
-    password: z
-      .string()
-      .min(8)
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
-    is_deleted: z.boolean(),
     phone: z
       .string()
       .min(1)
       .regex(/^\+?\d{7,15}$/),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+    is_active: z.boolean(),
+    is_staff: z.boolean(),
+    is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -4017,6 +4039,10 @@ export const schemas = {
   PaginatedClientList,
   ClientRequest,
   PatchedClientRequest,
+  Domain,
+  PaginatedDomainList,
+  DomainRequest,
+  PatchedDomainRequest,
   RegisterTenant,
   PaginatedRegisterTenantList,
   RegisterTenantRequest,
@@ -5235,12 +5261,22 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
+        name: "branch_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee_name",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -5297,7 +5333,10 @@ Enforces authentication and role-based access.`,
       {
         name: "body",
         type: "Body",
-        schema: BranchUsersRequest,
+        schema: z
+          .object({ notes: z.string().nullable() })
+          .partial()
+          .passthrough(),
       },
     ],
     response: BranchUsers,
@@ -5327,7 +5366,10 @@ Enforces authentication and role-based access.`,
       {
         name: "body",
         type: "Body",
-        schema: BranchUsersRequest,
+        schema: z
+          .object({ notes: z.string().nullable() })
+          .partial()
+          .passthrough(),
       },
       {
         name: "id",
@@ -5347,7 +5389,10 @@ Enforces authentication and role-based access.`,
       {
         name: "body",
         type: "Body",
-        schema: PatchedBranchUsersRequest,
+        schema: z
+          .object({ notes: z.string().nullable() })
+          .partial()
+          .passthrough(),
       },
       {
         name: "id",
@@ -8671,41 +8716,6 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "created_by__first_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_by__username",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__email",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__first_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__id",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "customer__last_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer__phone",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -8992,11 +9002,6 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "attribute_id__name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -9013,11 +9018,6 @@ Enforces authentication and role-based access.`,
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "value",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10519,7 +10519,7 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "category_name",
+        name: "categories_ids",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10542,11 +10542,6 @@ Enforces authentication and role-based access.`,
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "manufacturer_name",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "model",
@@ -10575,11 +10570,6 @@ Enforces authentication and role-based access.`,
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "supplier_name",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -12937,6 +12927,66 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "field_labels",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_paid",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_plan_expired",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "max_branches",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "max_products",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "max_users",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "on_trial",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -12952,7 +13002,22 @@ Enforces authentication and role-based access.`,
         schema: z.number().int().optional(),
       },
       {
+        name: "paid_until",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "plans",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "uuid",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -13062,9 +13127,157 @@ Enforces authentication and role-based access.`,
   {
     method: "get",
     path: "/api/tenants/domain/",
-    alias: "tenants_domain_retrieve",
+    alias: "tenants_domain_list",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
     requestFormat: "json",
+    parameters: [
+      {
+        name: "domain",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_primary",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tenant",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedDomainList,
+  },
+  {
+    method: "post",
+    path: "/api/tenants/domain/",
+    alias: "tenants_domain_create",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DomainRequest,
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "get",
+    path: "/api/tenants/domain/:id/",
+    alias: "tenants_domain_retrieve",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "put",
+    path: "/api/tenants/domain/:id/",
+    alias: "tenants_domain_update",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DomainRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "patch",
+    path: "/api/tenants/domain/:id/",
+    alias: "tenants_domain_partial_update",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedDomainRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "delete",
+    path: "/api/tenants/domain/:id/",
+    alias: "tenants_domain_destroy",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/domain/filter_options/",
+    alias: "tenants_domain_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Domain,
   },
   {
     method: "get",
@@ -13430,9 +13643,29 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "email",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "message",
@@ -13466,6 +13699,11 @@ Enforces authentication and role-based access.`,
       },
       {
         name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -14030,26 +14268,6 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -14070,27 +14288,12 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "permission_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "role",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "role_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -14198,9 +14401,19 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "id",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "name",
@@ -14622,27 +14835,12 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "email",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "email__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "first_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "first_name__icontains",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "last_name",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -14667,27 +14865,12 @@ Enforces authentication and role-based access.`,
         schema: z.number().int().optional(),
       },
       {
-        name: "phone",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "phone__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "role_id__name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "username",
         type: "Query",
         schema: z.string().optional(),
       },

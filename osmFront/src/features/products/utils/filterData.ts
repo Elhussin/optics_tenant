@@ -5,15 +5,17 @@ export const filterData = (
     data: any,
     item: any,
     selectedType: any,
-    subField?: string,
-    subFilter?: string
   ) => {
     const filterField = item.filter;
     const selectedData = selectRelatedData(data, filterField);
     let filteredData = selectedData;
-    if (subField && subFilter && filterField === subField) {
+
+    // Apply subFilter logic if defined in config
+    // Example: item.subFilter = "product_type", selectedType = "FR"
+    // We want brands where brand.product_type == "FR" or "All"
+    if (item.subFilter && selectedType) {
       filteredData = selectedData?.filter(
-        (v: any) => v[subFilter] === selectedType || v[subFilter] === "All"
+        (v: any) => v[item.subFilter] === selectedType || v[item.subFilter] === "All"
       );
     }
 

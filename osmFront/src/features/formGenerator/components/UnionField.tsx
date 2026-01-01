@@ -13,7 +13,7 @@ export function UnionField(props: UnionFieldProps) {
             : [];
 
     return (
-        <div className={`flex items-center gap-2 ${config.spacing}`}>
+        <div className={`col-span-1 ${config.spacing}`}>
             <label htmlFor={fieldName} className={config.labelClasses}>
                 {label}{required ? ' *' : ''}
             </label>

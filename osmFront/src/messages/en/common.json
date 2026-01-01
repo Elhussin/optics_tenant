@@ -191,7 +191,10 @@
     "Logout": "Logout",
     "DarkMode": "Dark Mode",
     "LightMode": "Light Mode",
-    "Language": "Language"
+    "Language": "Language",
+    "ar": "Arabic",
+    "en": "English",
+    "Dashboard": "Dashboard"
   },
   "unauthorized": {
     "title": "Unauthorized",

@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16
-    container_name: optics_db
+    container_name: optics_db_local
     env_file:
       - ./.env
     restart: always
@@ -11,9 +11,9 @@ services:
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
-      - optics_postgres_data:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - optics_postgres_data_local:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U $DB_USER -d $DB_NAME || exit 1" ]
       interval: 5s
@@ -25,19 +25,17 @@ services:
     build:
       context: ./osmBack
       dockerfile: Dockerfile
-    container_name: optics_backend
+    container_name: optics_backend_local
     command: python manage.py runserver 0.0.0.0:8000
     restart: always
     env_file:
       - ./osmBack/.env
     volumes:
       - ./osmBack:/app
-      - optics_static_volume:/app/staticfiles
-      - optics_media_volume:/app/media
-    expose:
-      - "8000"
-    networks:
-      - app-network
+      - optics_static_volume_local:/app/staticfiles
+      - optics_media_volume_local:/app/media
+    ports:
+      - "8000:8000"
     depends_on:
       db:
         condition: service_healthy
@@ -46,25 +44,20 @@ services:
     build:
       context: ./osmFront
       dockerfile: Dockerfile
-      target: runner
+      target: development
       args:
-        NEXT_PUBLIC_API_BASE: "https://osmbeta.cloud/api"
-    container_name: optics_frontend
-    command: node server.js
+        NEXT_PUBLIC_API_BASE: "http://localhost:8000"
+    container_name: optics_frontend_local
+    command: npm run dev
     restart: always
-    expose:
-      - "3000"
-    networks:
-      - app-network
+    volumes:
+      - ./osmFront:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
 
 volumes:
-  optics_postgres_data:
-  optics_static_volume:
-  optics_media_volume:
-  certbot_certs:
-    external: true
-
-networks:
-  app-network:
-    name: osm_shared_network
-    external: true
+  optics_postgres_data_local:
+  optics_static_volume_local:
+  optics_media_volume_local:

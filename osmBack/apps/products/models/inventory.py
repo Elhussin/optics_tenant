@@ -95,10 +95,25 @@ class Stock(BaseModel):
         return "In Stock"
 
     def reserve(self, quantity):
-        if self.available_quantity >= quantity or self.allow_backorder:
+        if self.allow_backorder:
             self.reserved_quantity = F('reserved_quantity') + quantity
             self.save(update_fields=['reserved_quantity'])
+            self.refresh_from_db() # Get the new value
             return True
+        
+        # Atomic update for non-backorder items
+        # We try to update ONLY if we have enough available quantity
+        # Condition: quantity_in_stock - reserved_quantity >= quantity
+        # Rearranged: quantity_in_stock >= reserved_quantity + quantity
+        updated = Stock.objects.filter(
+            id=self.id, 
+            quantity_in_stock__gte=F('reserved_quantity') + quantity
+        ).update(reserved_quantity=F('reserved_quantity') + quantity)
+        
+        if updated > 0:
+            self.refresh_from_db()
+            return True
+            
         return False
 
     def release_reserve(self, quantity):

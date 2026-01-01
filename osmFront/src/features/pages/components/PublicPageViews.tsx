@@ -3,18 +3,18 @@ import MultilingualPageDisplay from '@/src/features/pages/components/Multilingua
 import { useEffect, useState } from 'react';
 import { Language } from '@/src/features/pages/types';
 import { Loading4 } from '@/src/shared/components/ui/loding';
-import { NotFound} from '@/src/shared/components/views/NotFound';
+import { NotFound } from '@/src/shared/components/views/NotFound';
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
 
-export default  function PublicPageViews({slug,locale}: {slug: string,locale: string}) {
+export default function PublicPageViews({ slug, locale }: { slug: string, locale: string }) {
 
-  const pageRequest = useApiForm({ alias: `users_public_pages_retrieve`,defaultValues: { slug: slug } });
+  const pageRequest = useApiForm({ alias: `users_public_pages_retrieve`, defaultValues: { slug: slug } });
   const [pageData, setPageData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!slug) return;  
+    if (!slug) return;
     const fetchPage = async () => {
       try {
         const res = await pageRequest.query.refetch();
@@ -22,8 +22,6 @@ export default  function PublicPageViews({slug,locale}: {slug: string,locale: st
           setPageData(res.data);
         } else {
           setError('Page not found');
-
-         
         }
       } catch (err) {
         setError('Error loading page');
@@ -33,16 +31,12 @@ export default  function PublicPageViews({slug,locale}: {slug: string,locale: st
     };
     fetchPage();
   }, [slug]);
-// pageRequest
-  if (loading) return <Loading4/>;
-  if (error) {
-    return (
-      <>
 
-      <NotFound error={error} />;
-      </>
-    )
+  if (loading) return <Loading4 />;
+
+  if (error || !pageData) {
+    return <NotFound error={error || "Page not found"} />;
   }
-  
+
   return <MultilingualPageDisplay page={pageData} defaultLanguage={locale as Language} />;
 }

@@ -34,6 +34,8 @@ class CreatePaymentOrderView(APIView):
         lang_header = request.headers.get('accept-language', 'en')
         lang = lang_header.split(',')[0].split('-')[0] # 'en'
         serializer = CreatePaymentOrderSerializer(data=request.data)
+        print (request.data)
+        print (request.headers)
         if serializer.is_valid():
             client = serializer.validated_data["client"]
             plan = serializer.validated_data["plan"]
@@ -214,6 +216,11 @@ class PaymentListView(APIView):
             "currency": p.currency,
             "status": p.status,
             "created_at": p.created_at,
+            "updated_at": p.updated_at,
+            "method": p.method,
+            "direction": p.direction,
+            "transaction_id": p.transaction_id,
+            "client": p.client_id,
             "plan_name": p.plan.name if p.plan else "N/A"
         } for p in payments]
 

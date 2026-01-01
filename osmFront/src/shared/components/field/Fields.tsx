@@ -58,7 +58,7 @@ export const SwitchField = ({ fieldRow, field }: FieldsProps) => {
   return (
     <div className="flex justify-between items-center border p-2 rounded-md">
       <span>{fieldRow.placeholder}</span>
-      <Switch checked={field.value} onCheckedChange={field.onChange} />
+      <Switch  checked={field.value} onCheckedChange={field.onChange} />
     </div>
   );
 };
@@ -92,7 +92,10 @@ export const TextField = ({ fieldRow, field }: FieldsProps) => {
       placeholder={fieldRow.placeholder}
       value={field.defaultValue || ""}
       {...field}
-      className={fieldRow.className}
+      className={cn(
+        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        fieldRow.className
+      )}
     />
   );
 };
@@ -102,7 +105,7 @@ export const TextareaField = ({ fieldRow, field }: FieldsProps) => {
     <Textarea
       placeholder={fieldRow.placeholder}
       {...field}
-      className="w-full"
+      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
       required={fieldRow.required}
     />
   );
@@ -115,13 +118,13 @@ export const SelectField = ({
 }: SelectFieldsProps) => {
   return (
     <Select onValueChange={field.onChange} value={field.value}>
-      <SelectTrigger className="w-full">
+      <SelectTrigger className="w-full h-10 select__control">
         <SelectValue placeholder={fieldRow.placeholder || "Select"} />
       </SelectTrigger>
       <SelectContent>
         {(options || fieldRow.options || [{ value: "", label: "" }]).map(
           (opt: any, index: number) => (
-            <SelectItem key={index} value={opt.value}>
+            <SelectItem className="bg-surface" key={index} value={String(opt.value)}>
               {opt.label}
             </SelectItem>
           )
@@ -147,23 +150,28 @@ export function SearchableSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between h-10 px-3 font-normal"
         >
-          {selectedLabel || fieldRow.placeholder || "Select..."}
-          <ChevronsUpDown className="opacity-50 h-4 w-4" />
+          {selectedLabel ? (
+             <span className="truncate">{selectedLabel}</span>
+          ) : (
+            <span className="text-muted-foreground">{fieldRow.placeholder || "Select..."}</span>
+          )}
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-full p-0">
+      <PopoverContent className="w-[300px] p-0" align="start">
         <Command>
-          <CommandInput placeholder="Search..." />
+          <CommandInput placeholder={`Search ${fieldRow.label || "..."}`} />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options?.map((opt, index) => (
                 <CommandItem
+                  className="bg-surface"
                   key={index}
-                  value={String(opt.value)}
+                  value={opt.label} // Use label for searching
                   onSelect={() => {
                     field.onChange(opt.value); // 🔹 نحدث القيمة في الـ form
                     setOpen(false);
@@ -292,6 +300,7 @@ export function MultiSelectField({
                     <CommandGroup>
                       {options?.map((opt) => (
                         <CommandItem
+                        className="bg-surface"
                           key={opt.value}
                           onSelect={() => {
                             const newValue = value.includes(opt.value)

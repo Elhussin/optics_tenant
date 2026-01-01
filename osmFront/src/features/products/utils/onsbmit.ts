@@ -6,8 +6,10 @@ export const onSubmit = async (data: any, form: any, id?: string) => {
         let result;
         if (id) {
             result = await form.mutation.mutateAsync(data);
+            console.log("result", result);
         } else {
             result = await form.submitForm(data); // send final payload to API helper
+            console.log("result full:", JSON.stringify(result, null, 2));
         }
 
         if (result?.success) {

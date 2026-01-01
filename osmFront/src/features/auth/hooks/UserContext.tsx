@@ -66,10 +66,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
         try {
           const res = await fetchUser.query.refetch();
           if (res?.data) setUser(res.data);
-          return res;
-        } catch {
+          return {
+            success: res.isSuccess,
+            data: res.data,
+            error: res.error,
+          };
+        } catch (error) {
           setUser(null);
-          return null;
+          return { success: false, error };
         }
       },
       logout,

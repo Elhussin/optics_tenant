@@ -51,20 +51,22 @@ class Command(BaseCommand):
             self.import_csv_to_model(schema_name, app_label, model_name, csv_file_path, foreign_keys)
 
     def import_csv_to_model(self, schema_name, app_label, model_name, csv_file_path, foreign_keys):
-        self.stdout.write(f"\n🔄 Importing: {csv_file_path} ➜ {schema_name}.{app_label}.{model_name}")
+        self.stdout.write(f"\n[INFO] Importing: {csv_file_path} -> {schema_name}.{app_label}.{model_name}")
 
         with schema_context(schema_name):
             try:
                 model = apps.get_model(app_label=app_label, model_name=model_name)
             except LookupError:
-                self.stderr.write(f"❌ Model {app_label}.{model_name} not found.")
+                self.stderr.write(f"[ERROR] Model {app_label}.{model_name} not found.")
                 return
 
             created_count = 0
             skipped_count = 0
             failed_rows = []
-            print(csv_file_path)
-            print(os.path.abspath(csv_file_path))
+            
+            # Print path for debugging
+            # print(os.path.abspath(csv_file_path))
+
             with open(os.path.abspath(csv_file_path), newline='', encoding='utf-8') as csvfile:
                 reader = csv.DictReader(csvfile)
                 model_fields = {
@@ -84,6 +86,9 @@ class Command(BaseCommand):
                         if field.is_relation and field.many_to_one:
                             rel_model = field.related_model
                             fk_config = foreign_keys.get(field_name, {})
+                            # Check if the CSV header matches the foreign_keys config key (e.g. 'attribute' vs 'attribute_id')
+                            # or strictly follows model field name
+                            
                             lookup_field = fk_config.get("lookup_field", "id")
                             create_if_missing = fk_config.get("create_if_missing", False)
 
@@ -93,14 +98,14 @@ class Command(BaseCommand):
                                 if create_if_missing:
                                     try:
                                         rel_obj = rel_model.objects.create(**{lookup_field: row[field_name]})
-                                        self.stdout.write(f"🆕 Created new {rel_model.__name__}: {row[field_name]}")
+                                        self.stdout.write(f"[NEW] Created new {rel_model.__name__}: {row[field_name]}")
                                     except Exception as e:
-                                        self.stderr.write(f"❌ Failed to create {rel_model.__name__}: {e}")
+                                        self.stderr.write(f"[ERROR] Failed to create {rel_model.__name__}: {e}")
                                         failed_rows.append(row_num)
                                         skip_row = True
                                         break
                                 else:
-                                    self.stderr.write(f"⚠️ Row {row_num}: FK {field_name} not found: {row[field_name]}")
+                                    self.stderr.write(f"[WARN] Row {row_num}: FK {field_name} not found: {row[field_name]}")
                                     failed_rows.append(row_num)
                                     skip_row = True
                                     break
@@ -115,20 +120,20 @@ class Command(BaseCommand):
                     try:
                         obj, created = model.objects.get_or_create(**data)
                         if created:
-                            self.stdout.write(f"✅ Created: {obj}")
+                            self.stdout.write(f"[OK] Created: {obj}")
                             created_count += 1
                         else:
-                            self.stdout.write(f"🔁 Exists: {obj}")
+                            self.stdout.write(f"[SKIP] Exists: {obj}")
                             skipped_count += 1
                     except Exception as e:
-                        self.stderr.write(f"❌ Error on row {row_num}: {e}")
+                        self.stderr.write(f"[ERROR] Error on row {row_num}: {e}")
                         failed_rows.append(row_num)
 
-            self.stdout.write(f"\n📊 Summary for {model_name} in schema {schema_name}:")
-            self.stdout.write(f"✅ Created: {created_count}")
-            self.stdout.write(f"🔁 Skipped (Exists or Errors): {skipped_count}")
+            self.stdout.write(f"\n[SUMMARY] For {model_name} in schema {schema_name}:")
+            self.stdout.write(f"[OK] Created: {created_count}")
+            self.stdout.write(f"[SKIP] Skipped (Exists or Errors): {skipped_count}")
             if failed_rows:
-                self.stderr.write(f"❌ Failed Rows: {failed_rows}")
+                self.stderr.write(f"[ERROR] Failed Rows: {failed_rows}")
 
 
 # 

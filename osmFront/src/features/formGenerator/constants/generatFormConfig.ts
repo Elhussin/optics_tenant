@@ -1,15 +1,14 @@
 import { GeneratorConfig, FieldTemplate, RelationshipConfig } from '@/src/shared/types/DynamicFormTypes';
 
 export const defaultConfig: GeneratorConfig = {
-  baseClasses: "input-text",
-  labelClasses: "label",
-  errorClasses: "error-text",
-  submitButtonClasses: "btn btn-primary",
+  baseClasses: "w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-600 text-sm",
+  labelClasses: "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5",
+  errorClasses: "text-red-500 text-xs mt-1 ml-1 font-medium flex items-center gap-1",
+  submitButtonClasses: "w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2",
   submitButtonText: "Save",
   includeResetButton: true,
-  spacing: "mb-2",
-  containerClasses: "space-y-4"
-
+  spacing: "mb-0", // Spacing is handled by grid gap
+  containerClasses: "grid grid-cols-1 md:grid-cols-2 gap-6"
 };
 
 export const fieldTemplates: Record<string, FieldTemplate> = {
@@ -45,12 +44,6 @@ export const relationshipConfigs: RelationshipConfig = {
     searchField: 'name',
     entityName: 'register_tenants'
   },
-  domain: {
-    labelField: 'domain',
-    valueField: 'id',
-    searchField: 'domain',
-    entityName: 'domains'
-  },
   payment: {
     labelField: 'amount',
     valueField: 'id',
@@ -68,6 +61,7 @@ export const relationshipConfigs: RelationshipConfig = {
     valueField: 'id',
     searchField: 'name',
     entityName: 'roles',
+    
   },
   user: {
     labelField: 'username',
@@ -76,6 +70,12 @@ export const relationshipConfigs: RelationshipConfig = {
     entityName: 'users',
   },
   permission: {
+    labelField: 'code',
+    valueField: 'id',
+    searchField: 'code',
+    entityName: 'permissions',
+  },
+  permission_ids: {
     labelField: 'code',
     valueField: 'id',
     searchField: 'code',
@@ -107,15 +107,33 @@ export const relationshipConfigs: RelationshipConfig = {
   },
   employee: {
     labelField: 'user_name',
-    valueField: 'id',
+    valueField: 'permission_ids',
     searchField: 'name',
     entityName: 'employees',
   },
   customer: {
+    labelField: 'first_name',
+    valueField: 'id',
+    searchField: 'first_name',
+    entityName: 'customers',
+  },
+  customer_groups: {
     labelField: 'name',
     valueField: 'id',
     searchField: 'name',
+    entityName: 'customer-groups',
+  },
+  customers: {
+    labelField: 'first_name',
+    valueField: 'id',
+    searchField: 'first_name',
     entityName: 'customers',
+  },
+  opportunity: {
+    labelField: 'title',
+    valueField: 'id',
+    searchField: 'title',
+    entityName: 'opportunities',
   },
   prescription: {
     labelField: 'name',

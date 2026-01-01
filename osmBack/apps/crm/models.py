@@ -125,6 +125,7 @@ class Campaign(BaseModel):
         return self.name
 
 class Document(BaseModel):
+    
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="documents", null=True, blank=True)
     title = models.CharField(max_length=255)
     file = models.FileField(upload_to='documents/')

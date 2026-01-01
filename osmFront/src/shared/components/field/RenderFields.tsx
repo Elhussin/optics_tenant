@@ -23,40 +23,41 @@ export const RenderFields = (props: RenderFormProps) => {
     };
 
     return (
-        <>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {fields?.map((fieldRow, index) => {
                 let fieldName = fieldRow.name;
                 if (variantNumber !== undefined && attributeIndex !== undefined) {
-                fieldName = `variants.${variantNumber}.attributes.${attributeIndex}.${fieldRow.name}`;
+                    fieldName = `variants.${variantNumber}.attributes.${attributeIndex}.${fieldRow.name}`;
                 } else if (variantNumber !== undefined) {
-                fieldName = `variants.${variantNumber}.${fieldRow.name}`;
+                    fieldName = `variants.${variantNumber}.${fieldRow.name}`;
                 }
-                        
-            
-                    return (
+
+                return (
                     <FormField
                         key={index}
                         control={form.control}
                         name={fieldName}
                         rules={{ required: fieldRow.required ? `${fieldRow.label} is required` : false }}
-
                         render={({ field }) => {
-                                const handleChange = (value: any) => {
+                            const handleChange = (value: any) => {
                                 const finalValue = value?.target ? value.target.value : value;
                                 field.onChange(finalValue);
                                 if (variantNumber !== undefined) {
                                     handleVariantField(variantNumber, fieldRow.name, finalValue);
                                 }
-                                };
+                            };
 
+                            const isWideField = ["multiSelect", "multiCheckbox", "textarea"].includes(fieldRow.type || "");
+                            const gridSpanClass = isWideField ? "col-span-1 md:col-span-2 lg:col-span-3" : "col-span-1";
 
                             return (
-                                <FormItem>
-                                    <FormLabel>
-                                    {fieldRow.label} {fieldRow.required && <span className="text-red-500">*</span>}
-                                    <InfoPopover hint={fieldRow?.title || ""} />
-                                    
-                                    </FormLabel>
+                                <FormItem className={gridSpanClass}>
+                                    <div className="flex items-center gap-1 mb-1.5">
+                                        <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            {fieldRow.label} {fieldRow.required && <span className="text-red-500">*</span>}
+                                        </FormLabel>
+                                        <InfoPopover hint={fieldRow?.title || ""} />
+                                    </div>
                                     <FormControl>
                                         {(() => {
                                             switch (fieldRow.type) {
@@ -76,64 +77,54 @@ export const RenderFields = (props: RenderFormProps) => {
                                                     return <RadioField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
                                                 case "foreignkey":
                                                     return (
-                                                        <div className="flex ">
+                                                        <div className="flex gap-2">
                                                             <div className="flex-1">
                                                                 <SearchableSelect fieldRow={fieldRow} field={{ ...field, onChange: handleChange }}
-                                                                    options={
-                                                                        filterData(data, fieldRow, selectedType, "brands", "product_type" )}
+                                                                    options={filterData(data, fieldRow, selectedType)}
                                                                 />
                                                             </div>
-                                                            <div>
-                                                                <ActionButton
-                                                                    onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
-                                                                    variant="outline"
-                                                                    className="px-3 py-2 whitespace-nowrap"
-                                                                    icon={<CirclePlus size={18} color="green" />}
-                                                                    title={`Add ${fieldRow.filter}`}
-                                                                />
-                                                            </div>
+                                                            <ActionButton
+                                                                onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
+                                                                variant="outline"
+                                                                className="px-3 shrink-0"
+                                                                icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
+                                                                title={`Add ${fieldRow.filter}`}
+                                                            />
                                                         </div>
                                                     );
                                                 case "multiSelect":
                                                     return (
-                                                        <div className="flex ">
+                                                        <div className="flex gap-2">
                                                             <div className="flex-1">
                                                                 <MultiSelectField fieldName={fieldName}
                                                                     fieldRow={fieldRow}
-                                                                    options={parsedOptions(data?.[fieldRow.entityName].filter((v: any) => v[fieldRow.fieldName] === fieldRow.filter), fieldRow)}
-
+                                                                    options={filterData(data, fieldRow, selectedType)}
                                                                     control={form.control} />
                                                             </div>
-                                                            <div>
-                                                                <ActionButton
-                                                                    onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
-                                                                    variant="outline"
-                                                                    className="px-3 py-2 whitespace-nowrap"
-                                                                    icon={<CirclePlus size={18} color="green" />}
-                                                                    title={`Add ${fieldRow.filter}`}
-                                                                />
-                                                            </div>
-
+                                                            <ActionButton
+                                                                onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
+                                                                variant="outline"
+                                                                className="px-3 shrink-0"
+                                                                icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
+                                                                title={`Add ${fieldRow.filter}`}
+                                                            />
                                                         </div>
                                                     );
                                                 case "multiCheckbox":
                                                     return (
-                                                        <div className="flex w-full">
+                                                        <div className="flex gap-2 w-full">
                                                             <div className="flex-1">
                                                                 <MultiCheckbox fieldName={fieldName} fieldRow={fieldRow}
-                                                                    options={parsedOptions(data?.['attribute-values'].filter((v: any) => v.attribute_name === fieldRow.filter), fieldRow)}
+                                                                    options={filterData(data, fieldRow, selectedType)}
                                                                     control={form.control} />
                                                             </div>
-                                                            <div>
-                                                                <ActionButton
-                                                                    onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
-                                                                    variant="outline"
-                                                                    className="px-3 py-2 whitespace-nowrap"
-                                                                    icon={<CirclePlus size={18} color="green" />}
-                                                                    title={`Add ${fieldRow.filter}`}
-                                                                />
-                                                            </div>
-
+                                                            <ActionButton
+                                                                onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
+                                                                variant="outline"
+                                                                className="px-3 shrink-0"
+                                                                icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
+                                                                title={`Add ${fieldRow.filter}`}
+                                                            />
                                                         </div>
                                                     );
                                                 default:
@@ -141,16 +132,14 @@ export const RenderFields = (props: RenderFormProps) => {
                                             }
                                         })()}
                                     </FormControl>
-                                    <FormMessage />
+                                    <FormMessage className="text-xs text-red-500 mt-1" />
                                 </FormItem>
                             );
                         }}
                     />
-                )
-            }
-            )}
-
-        </>
+                );
+            })}
+        </div>
     );
 };
 
@@ -165,7 +154,7 @@ export const InfoPopover = ({hint}:{hint :string}) => (
     <PopoverTrigger>
       <InfoIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
     </PopoverTrigger>
-    <PopoverContent className="w-64">
+    <PopoverContent className="w-64 bg-surface">
       <p>{hint}</p>
     </PopoverContent>
   </Popover>

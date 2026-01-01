@@ -24,6 +24,7 @@ import { relationshipConfigs } from '../constants/generatFormConfig';
 export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string {
   const schema = unwrapSchema(rawSchema);
   if (relationshipConfigs[field]) {
+    if (schema instanceof z.ZodArray) return 'foreignkey-array';
     return 'foreignkey';
   }
   const fieldLower = field.toLowerCase();
@@ -31,6 +32,7 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
   if (fieldLower.includes('password')) return 'password';
   if (fieldLower.includes('phone') || fieldLower.includes('tel')) return 'tel';
   if (fieldLower.includes('url') || fieldLower.includes('website')) return 'url';
+  if (fieldLower.includes('file') || fieldLower.includes('image') || fieldLower.includes('avatar') || fieldLower.includes('logo')) return 'file';
   if (fieldLower.includes('color')) return 'color';
   if (fieldLower.includes('date')) return 'date';
   if (fieldLower.includes('time')) return 'time';

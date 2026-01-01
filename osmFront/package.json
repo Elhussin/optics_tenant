@@ -5,7 +5,7 @@
   "scripts": {
     "gen-ts": "openapi-typescript APIfILE.yaml -o lib/api/types.ts",
     "gen-ts1": "openapi-zod-client APIfILE.yaml -o lib/api/zodClient.ts",
-    "gen-zod": "openapi-zod-client http://store1.localhost:8000/api/schema -o src/shared/api/schemas.ts",
+    "gen-zod": "openapi-zod-client http://localhost:8000/api/schema -o src/shared/api/schemas.ts",
     "gen-zod-client": "openapi-zod-client http://store1.localhost:8000/api/schema -o src/shared/api/schemas.ts --client",
     "run": "next dev",
     "dev": "next dev  --turbopack",
@@ -27,6 +27,7 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.6",
+    "@radix-ui/react-tabs": "^1.1.13",
     "@tanstack/react-query": "^5.90.2",
     "@tiptap/extension-color": "^3.6.5",
     "@tiptap/extension-heading": "^3.6.5",
@@ -88,3 +89,6 @@
   },
   "packageManager": "bun@1.x"
 }
+
+
+

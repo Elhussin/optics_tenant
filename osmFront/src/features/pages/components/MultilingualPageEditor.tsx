@@ -43,6 +43,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
   const pageRequest = useApiForm({
     alias: `users_pages_retrieve`,
     defaultValues: { id: pageId },
+    enabled: !!pageId,
   });
   const createRequest = useApiForm({ alias: `users_pages_create` });
   const updateRequest = useApiForm({
@@ -212,8 +213,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
       );
       if (!defaultTranslation?.title.trim()) {
         safeToast(
-          `${t("pleaseProvideTitle")} (${
-            LANGUAGES[formData.default_language].name
+          `${t("pleaseProvideTitle")} (${LANGUAGES[formData.default_language].name
           })`,
           { type: "error" }
         );
@@ -263,7 +263,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-surface rounded-lg shadow-lg">
+      <div className=" rounded-lg shadow-lg">
         {/* Header with language tabs */}
         <div className="border-b border-gray-200 p-6">
           <div className="flex justify-between items-center mb-4">
@@ -282,9 +282,9 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
                   setFormData((prev) =>
                     prev
                       ? {
-                          ...prev,
-                          default_language: e.target.value as Language,
-                        }
+                        ...prev,
+                        default_language: e.target.value as Language,
+                      }
                       : prev
                   )
                 }
@@ -308,11 +308,10 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
                 <button
                   key={code}
                   onClick={() => setActiveLanguage(code as Language)}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${
-                    isActive
+                  className={`px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${isActive
                       ? "bg-blue-50 text-blue-700 border-blue-500"
                       : "bg-gray-50 text-gray-700 border-transparent hover:bg-gray-100"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     <span>{lang.flag}</span>
@@ -520,6 +519,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
                 <input
                   type="checkbox"
                   id="is_published"
+
                   checked={formData.is_published}
                   onChange={(e) =>
                     setFormData((prev) =>
@@ -559,8 +559,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
                 {saving
                   ? `${t("save")}... `
                   : pageId
-                  ? `${t("update")}`
-                  : `${t("create")}`}
+                    ? `${t("update")}`
+                    : `${t("create")}`}
               </button>
             </div>
           </div>

@@ -6,16 +6,16 @@ from core.views import BaseViewSet
 
 
 ATTRIBUTES_RELATED_FIELDS = [
-    "attribute_id__name",
+    "attribute__name",
 ]
 ATTRIBUTES_FIELD_LABELS = {
-    "attribute_id__name": "Attribute Name",
+    "attribute__name": "Attribute Name",
     "value": "Value",
 }
 
 
 ATTRIBUTES_FILTER_FIELDS = {
-    "attribute_id__name": ["icontains"],
+    "attribute__name": ["icontains"],
     "value": ["icontains"],
 }
 

@@ -83,6 +83,10 @@ class DocumentViewSet(CRMBaseViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
+    def create(self, request, *args, **kwargs):
+        print("Incoming Document Data:", request)
+        return super().create(request, *args, **kwargs)
+
 
 class ContactViewSet(BaseViewSet):
     queryset = Contact.objects.all()

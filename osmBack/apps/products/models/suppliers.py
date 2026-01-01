@@ -1,8 +1,6 @@
 from core.models import BaseModel
 from django.db import models
 
-
-
 class Manufacturer(BaseModel):
     """Manufacturer for glasses"""
     name = models.CharField(max_length=100, unique=True)
@@ -29,7 +27,7 @@ class Brand(BaseModel):
         ('All', 'All')
     ]
 
-    name = models.TextField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     country = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
     description = models.TextField(blank=True)
@@ -44,11 +42,11 @@ class Brand(BaseModel):
 
 class Supplier(BaseModel):
     """Suppliers"""
-    name = models.TextField(max_length=50, unique=True)
+    name = models.CharField(max_length=100, unique=True)
     contact_person = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)
     phone = models.CharField(max_length=20, blank=True)
-    address = models.TextField(blank=True)
+    address = models.CharField(max_length=255, blank=True) # Changed from TextField
     country = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
     payment_terms = models.CharField(max_length=100, blank=True)

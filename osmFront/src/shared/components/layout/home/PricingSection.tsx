@@ -15,7 +15,7 @@ export default function PricingSection() {
   const [isYearly, setIsYearly] = useState(false);
 
   return (
-    <section className="py-24 bg-gray-50 dark:bg-gray-900" id="pricing">
+    <section className="py-24 bg-surface" id="pricing">
       <div className="container mx-auto px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -23,7 +23,7 @@ export default function PricingSection() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-main">
             {t('title')}
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
@@ -32,7 +32,7 @@ export default function PricingSection() {
 
           {/* Toggle */}
           <div className="flex items-center justify-center gap-4">
-            <span className={`text-sm font-medium ${!isYearly ? 'text-gray-900 dark:text-white' : 'text-gray-500'}`}>{t('monthly') || "Monthly"}</span>
+            <span className={`text-sm font-medium ${!isYearly ? 'text-main' : 'text-gray-500'}`}>{t('monthly') || "Monthly"}</span>
             <button
               dir="ltr"
               onClick={() => setIsYearly(!isYearly)}
@@ -42,7 +42,7 @@ export default function PricingSection() {
                 className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isYearly !== isRtl ? 'translate-x-6' : 'translate-x-1'}`}
               />
             </button>
-            <span className={`text-sm font-medium ${isYearly ? 'text-gray-900 dark:text-white' : 'text-gray-500'}`}>
+            <span className={`text-sm font-medium ${isYearly ? 'text-main' : 'text-gray-500'}`}>
               {t('yearly') || "Yearly"} <span className="text-green-500 text-xs ml-1">(Save 20%)</span>
             </span>
           </div>
@@ -87,7 +87,7 @@ export default function PricingSection() {
                   </p>
 
                   <div className="my-6">
-                    <p className="text-4xl font-bold text-gray-900 dark:text-white">
+                    <p className="text-4xl font-bold text-main">
                       {planData.price_month === 0 ? t('free') : `$${price}`}
                       {planData.price_month !== 0 && <span className="text-base font-normal text-gray-500 ml-1">/{period}</span>}
                     </p>
@@ -121,7 +121,7 @@ export default function PricingSection() {
                   href={`/auth/register?plan=${plan}`}
                   className={`mt-8 w-full py-3 px-4 rounded-xl font-bold transition-all transform active:scale-95 ${isPopular
                     ? 'bg-primary text-white hover:bg-primary-dark shadow-lg hover:shadow-primary/30'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-gray-100 dark:bg-gray-700 text-main hover:bg-gray-200 dark:hover:bg-gray-600'
                     }`}
                 >
                   {plan === 'enterprise' ? t('contactUs') : t('choosePlan')}

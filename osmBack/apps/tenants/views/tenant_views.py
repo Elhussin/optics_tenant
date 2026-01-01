@@ -11,7 +11,8 @@ from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 from apps.tenants.models import (
     Client,
     SubscriptionPlan,
-    PendingTenantRequest
+    PendingTenantRequest,
+    Domain
 )
 from apps.tenants.serializers import (
     RegisterTenantSerializer,
@@ -51,14 +52,22 @@ class RegisterTenantView(APIView):
 # ==============================================================
 # View Domain
 # =============================================================
-class DomainView(APIView):
-    def get(self, request):
-        tenant = get_tenant(request)
-        if tenant.schema_name != 'public':
-            return HttpResponseForbidden("Not allowed on tenant domains.")
-
-        serializer = DomainSerializer(tenant)
-        return Response(serializer.data)
+class DomainViewSet(BaseViewSet):
+    """
+    ViewSet to manage domains.
+    Only accessible on the public tenant.
+    Allows listing, creating, and managing domains and subdomains.
+    """
+    queryset = Domain.objects.all()
+    serializer_class = DomainSerializer
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            super_roles=["admin", "owner"]),
+        IsPublicTenant
+    ]
+    filterset_fields = ['tenant', 'is_primary']
+    search_fields = ['domain', 'tenant__name']
 
 # ==============================================================
 # ClientViewSet

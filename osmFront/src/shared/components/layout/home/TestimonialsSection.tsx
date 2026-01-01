@@ -70,7 +70,7 @@ export default function TestimonialsSection() {
                                     />
                                 ))}
                             </div>
-                            <p className="text-gray-700 dark:text-gray-300 mb-6 italic">"{item.content}"</p>
+                            <p className="text-gray-700 dark:text-gray-300 mb-6 italic">&ldquo;{item.content}&rdquo;</p>
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                                     <User className="w-6 h-6 text-gray-500 dark:text-gray-400" />

@@ -1,6 +1,3 @@
-from rest_framework import serializers
-from drf_spectacular.utils import extend_schema_field
-from rest_framework.request import Request
 from apps.products.models import (
     Category, Product, ProductVariant,
     ProductImage, FlexiblePrice, ProductVariantOffer
@@ -34,43 +31,26 @@ class ProductBaseViewSet(BaseViewSet):
 class CategoryViewSet(ProductBaseViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
-# class LensCoatingViewSet(BaseViewSet):
-#     queryset = LensCoating.objects.all()
-#     serializer_class = LensCoatingSerializer
-#     permission_classes = [IsAuthenticated]
+    search_fields = ["name", "parent__name", "description"]
 
 
 class ProductVariantViewSet(ProductBaseViewSet):
     queryset = ProductVariant.objects.all()
     serializer_class = ProductVariantSerializer
 
-# class ProductVariantViewSet(viewsets.ModelViewSet):
-#     queryset = ProductVariant.objects.all()
-
-#     def get_serializer_class(self):
-#         variant = self.get_object() if self.action in ['retrieve', 'update', 'partial_update'] else None
-#         if variant:
-#             return get_variant_serializer_class(variant.product_id.type)
-
-#         # في حالة create، نقرأ نوع المنتج من البيانات القادمة
-#         product_type = self.request.data.get('product_type')
-#         return get_variant_serializer_class(product_type)
-
 
 class ProductViewSet(ProductBaseViewSet):
-
     queryset = (
         Product.objects.all()
-        .select_related(
-            'manufacturer_id',
-            'category_id',
-            'supplier_id',
-            'brand_id'
-        )  # للعلاقات ForeignKey
-        .prefetch_related('variants')  # للعلاقات العكسية (OneToMany)
-    )
+        # .select_related('brand')  # Removed incorrect comments, kept valid logic
+        .prefetch_related(
+            'variants',
+            'categories'
+        ) 
+    ).select_related('brand') # Chained correctly
+    
     serializer_class = ProductSerializer
+    search_fields = ["name", "description", "model", "brand__name", "categories__name"]
 
 
 class ProductImageViewSet(ProductBaseViewSet):

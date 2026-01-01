@@ -133,40 +133,43 @@ api.customRequest = async function (alias: string, data: any = {}) {
     pathParamNames.push(match[1]);
   }
 
-  if (data && typeof data === "object") {
+  const config: any = {
+    method: method,
+  };
 
-    Object.entries(data).forEach(([key, value]) => {
-      if (value === undefined || value === null) return; // ✅ تجاهل القيم غير المعرفة
-      if (pathParamNames.includes(key)) {
-        pathParams[key] = value;
-      } else {
-        otherParams[key] = value;
+  if (data instanceof FormData) {
+    pathParamNames.forEach((name) => {
+      const val = data.get(name);
+      if (val !== null) {
+        pathParams[name] = val.toString();
       }
     });
-    
-    // Object.entries(data).forEach(([key, value]) => {
-    //   if (pathParamNames.includes(key)) {
-    //     pathParams[key] = value;
-    //   } else {
-    //     otherParams[key] = value;
-    //   }
-    // });
+
+    config.data = data;
+    config.headers = { ...config.headers, "Content-Type": undefined };
+  } else {
+    if (data && typeof data === "object") {
+      Object.entries(data).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        if (pathParamNames.includes(key)) {
+          pathParams[key] = value;
+        } else {
+          otherParams[key] = value;
+        }
+      });
+    }
+
+    if (method === "GET" || method === "DELETE") {
+      if (Object.keys(otherParams).length > 0) {
+        config.params = otherParams;
+      }
+    } else {
+      config.data = otherParams;
+    }
   }
 
   url = replacePathParams(url, pathParams);
-
-  const config: any = {
-    method: method,
-    url: url,
-  };
-
-  if (method === "GET" || method === "DELETE") {
-    if (Object.keys(otherParams).length > 0) {
-      config.params = otherParams;
-    }
-  } else {
-    config.data = otherParams;
-  }
+  config.url = url;
 
   try {
     const response = await axiosInstance(config);

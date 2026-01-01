@@ -9,8 +9,8 @@ import { ForeignKeyFieldProps } from '../types';
 import { useFilteredListRequest } from '@/src/shared/hooks/useFilteredListRequest';
 import { formsConfig } from '@/src/features/formGenerator/constants/entityConfig';
 
-export function ForeignKeyField(props: ForeignKeyFieldProps) {
-  const { fieldName, register, config, label, required, errors, form, setShowModal, fetchForginKey, setFetchForginKey } = props;
+export function ForeignKeyField(props: ForeignKeyFieldProps & { isMulti?: boolean }) {
+  const { fieldName, register, config, label, required, errors, form, setShowModal, fetchForginKey, setFetchForginKey, isMulti } = props;
 
   const relationConfig = relationshipConfigs[fieldName];
   const alias = formsConfig[relationConfig?.entityName]?.listAlias;
@@ -44,14 +44,14 @@ export function ForeignKeyField(props: ForeignKeyFieldProps) {
   if (!relationConfig) return null;
 
   return (
-    <>
+    <div className={`col-span-1 ${config.spacing}`}>
       {label && (
-        <label htmlFor={fieldName} className="block font-medium text-sm m-1">
+        <label htmlFor={fieldName} className={config.labelClasses}>
           {label}
           {required ? <span className="text-red-500"> *</span> : ''}
         </label>
       )}
-      <div className={`flex items-center gap-2 ${config.spacing}`}>
+      <div className="flex items-center gap-2">
 
         <RHFSelect
           name={fieldName}
@@ -59,19 +59,20 @@ export function ForeignKeyField(props: ForeignKeyFieldProps) {
           parsedOptions={parsedOptions}
           label={label}
           required={required}
-          placeholder="Select a country"
+          placeholder="Select a value"
           className="flex-1"
+          isMulti={isMulti}
         />
 
         <ActionButton
           onClick={() => setShowModal(true)}
           variant="outline"
-          className="px-4 py-2" // padding مناسب للزر
-          icon={<CirclePlus size={18} color="green" />}
-          title="Add"
+          className="px-3 py-2" // padding مناسب للزر
+          icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
+          title="Add New"
         />
       </div>
-    </>
+    </div>
   );
 }
 

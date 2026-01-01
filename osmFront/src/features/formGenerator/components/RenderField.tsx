@@ -9,13 +9,13 @@ import { ForeignKeyField } from "./ForeignKeyField";
 import { UnionField } from "./UnionField";
 import { useFieldOptions } from "../hooks/useFieldOptions";
 import { unwrapSchema } from "../utils/unwrapSchema";
-import { getFieldLabel,isFieldRequired } from "../utils";
+import { getFieldLabel, isFieldRequired } from "../utils";
 import { fieldTemplates } from "../constants/generatFormConfig";
 import { RHFSelect } from "./RHFSelect";
 // ============================
 // RenderField Component
 // ============================
-export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal,fetchForginKey,setFetchForginKey,t }: any) => {
+export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setShowModal, fetchForginKey, setFetchForginKey, t }: any) => {
   const fieldType = detectFieldType(fieldName, fieldSchema);
   const template =
     fieldTemplates[fieldType] || fieldTemplates["text"] || {
@@ -57,7 +57,8 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
   // Renders by fieldType
   // ============================
   // foreignkey
-  if (fieldType === "foreignkey") {
+  // foreignkey
+  if (fieldType === "foreignkey" || fieldType === "foreignkey-array") {
     return (
       <ForeignKeyField
         key={fieldName}
@@ -71,6 +72,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
         setShowModal={setShowModal}
         fetchForginKey={fetchForginKey}
         setFetchForginKey={setFetchForginKey}
+        isMulti={fieldType === "foreignkey-array"}
       />
     );
   }
@@ -92,7 +94,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
   // checkbox
   if (template.wrapper === "checkbox") {
     return (
-      <div key={fieldName} className={config.spacing}>
+      <div key={fieldName} className={`col-span-1 ${config.spacing}`}>
         <div className="flex items-center space-x-2">
           <input
             id={fieldName}
@@ -117,9 +119,9 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
   if (fieldType === "select") {
 
     return (
-      <>
+      <div key={fieldName} className={`col-span-1 ${config.spacing}`}>
         {label && (
-          <label htmlFor={fieldName} className="block font-medium text-sm m-1">
+          <label htmlFor={fieldName} className={config.labelClasses}>
             {label}
             {required ? <span className="text-red-500"> *</span> : ''}
           </label>
@@ -134,13 +136,13 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
           placeholder="Select a value"
           className="flex-1" // يملأ المساحة المتبقية
         />
-      </>
+      </div>
     )
   }
   // textarea
   if (fieldType === "textarea") {
     return (
-      <div key={fieldName} className={config.spacing}>
+      <div key={fieldName} className={`col-span-1 md:col-span-2 ${config.spacing}`}>
         <label htmlFor={fieldName} className={config.labelClasses}>
           {label}
           {required && <span className="text-red-500">*</span>}
@@ -149,7 +151,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
           id={fieldName}
           {...form.register(fieldName)}
           className={config.baseClasses}
-          rows={template.props?.rows || 2}
+          rows={template.props?.rows || 3}
           placeholder={`${label}...`}
           autoComplete="off"
         />
@@ -165,7 +167,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
   // array
   if (fieldType === "array") {
     return (
-      <div key={fieldName} className={config.spacing}>
+      <div key={fieldName} className={`col-span-1 md:col-span-2 ${config.spacing}`}>
         <label htmlFor={fieldName} className={config.labelClasses}>
           {label}
           {required && <span className="text-red-500">*</span>}
@@ -178,8 +180,8 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
           placeholder="add values separated by commas"
           autoComplete="off"
         />
-        <p className="text-xs text-gray-500">
-          add values separated by commas
+        <p className="text-xs text-gray-500 mt-1">
+          {/* add values separated by commas */}
         </p>
         {form.formState.errors[fieldName] && (
           <p className={config.errorClasses}>
@@ -193,7 +195,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
   // object
   if (fieldType === "object") {
     return (
-      <div key={fieldName} className={config.spacing}>
+      <div key={fieldName} className={`col-span-1 md:col-span-2 ${config.spacing}`}>
         <label htmlFor={fieldName} className={config.labelClasses}>
           {label}
           {required && <span className="text-red-500">*</span>}
@@ -222,7 +224,7 @@ export const RenderField = ({ fieldName, fieldSchema, form, config, mode, setSho
     (fieldName === "username" || fieldName === "password");
 
   return (
-    <div key={fieldName} className={config.spacing}>
+    <div key={fieldName} className={`col-span-1 ${config.spacing}`}>
       <label htmlFor={fieldName} className={config.labelClasses}>
         {label}
         {required && <span className="text-red-500">*</span>}

@@ -8,10 +8,10 @@ from .views import (
     PayPalCancelView,
     PayPalWebhookView,
     ClientViewSet,
-    DomainView,
+    DomainViewSet,
     SubscriptionPlanViewSet,
     PaymentListView,
-    RegisterTenantViewSet
+    RegisterTenantViewSet,
 )
 from rest_framework.routers import DefaultRouter
 
@@ -19,11 +19,11 @@ router = DefaultRouter()
 router.register(r'clients', ClientViewSet, basename='clients')
 router.register(r'subscription-plans', SubscriptionPlanViewSet, basename='subscription-plans')
 router.register(r'registers', RegisterTenantViewSet, basename='register-tenant')
+router.register(r'domain', DomainViewSet, basename='domains')
 urlpatterns = [
     path("", include(router.urls)),
     path('register/', RegisterTenantView.as_view()),
     path('activate/', ActivateTenantView.as_view()),
-    path("domain/", DomainView.as_view(), name="domain"),
     # Create payment order
     path('create-payment-order/', CreatePaymentOrderView.as_view(), name="create-payment-order"),
     # PayPal specific

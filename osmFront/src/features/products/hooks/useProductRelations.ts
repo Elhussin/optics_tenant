@@ -1,56 +1,3 @@
-
-"use client";
-
-// import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
-// import { useProductFormStore } from "../store/useProductFormStore";
-// import { useEffect } from "react";
-
-// export function useProductRelations() {
-//   const fetchAttributes = useFilteredListRequest({ alias: "products_attribute_values_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-//   const fetchSuppliers = useFilteredListRequest({ alias: "products_suppliers_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-//   const fetchManufacturers = useFilteredListRequest({ alias: "products_manufacturers_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-//   const fetchBrands = useFilteredListRequest({ alias: "products_brands_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-//   const fetchCategories = useFilteredListRequest({ alias: "products_categories_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-
-//   const { setData } = useProductFormStore();
-
-//   const isLoading =
-//     fetchAttributes.isLoading ||
-//     fetchSuppliers.isLoading ||
-//     fetchManufacturers.isLoading ||
-//     fetchBrands.isLoading ||
-//     fetchCategories.isLoading;
-
-//   useEffect(() => {
-//     // ✅ نتحقق أن البيانات وصلت فعلًا قبل التحديث
-//     if (!isLoading) {
-//       if (fetchAttributes.data?.length) setData("attribute-values", fetchAttributes.data);
-//       if (fetchSuppliers.data?.length) setData("suppliers", fetchSuppliers.data);
-//       if (fetchManufacturers.data?.length) setData("manufacturers", fetchManufacturers.data);
-//       if (fetchBrands.data?.length) setData("brands", fetchBrands.data);
-//       if (fetchCategories.data?.length) setData("categories", fetchCategories.data);
-//     }
-//   }, [
-//     isLoading,
-//     fetchAttributes.data,
-//     fetchSuppliers.data,
-//     fetchManufacturers.data,
-//     fetchBrands.data,
-//     fetchCategories.data,
-//     setData,
-//   ]);
-
-//   // const data = {
-//   //   attributes: fetchAttributes.data || [],
-//   //   suppliers: fetchSuppliers.data || [],
-//   //   manufacturers: fetchManufacturers.data || [],
-//   //   brands: fetchBrands.data || [],
-//   //   categories: fetchCategories.data || [],
-//   // };
-
-//   return {isLoading };
-// }
-
 "use client";
 
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
@@ -58,33 +5,65 @@ import { useProductFormStore } from "../store/useProductFormStore";
 import { useEffect } from "react";
 
 export function useProductRelations() {
-  const fetchAttributes = useFilteredListRequest({ alias: "products_attribute_values_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-  const fetchSuppliers = useFilteredListRequest({ alias: "products_suppliers_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-  const fetchManufacturers = useFilteredListRequest({ alias: "products_manufacturers_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-  const fetchBrands = useFilteredListRequest({ alias: "products_brands_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
-  const fetchCategories = useFilteredListRequest({ alias: "products_categories_list", defaultPage: 1, defaultAll: true, defaultPageSize: 1000 });
+  // TODO: For scalability, consider fetching attribute values lazily or by type 
+  // instead of fetching all at once ('defaultAll: true').
+  const fetchAttributes = useFilteredListRequest({ 
+    alias: "products_attribute_values_list", 
+    defaultPage: 1, 
+    defaultAll: true 
+  });
+  
+  const fetchSuppliers = useFilteredListRequest({ 
+    alias: "products_suppliers_list", 
+    defaultPage: 1, 
+    defaultAll: true 
+  });
+  
+  const fetchManufacturers = useFilteredListRequest({ 
+    alias: "products_manufacturers_list", 
+    defaultPage: 1, 
+    defaultAll: true 
+  });
+  
+  const fetchBrands = useFilteredListRequest({ 
+    alias: "products_brands_list", 
+    defaultPage: 1, 
+    defaultAll: true 
+  });
+  
+  const fetchCategories = useFilteredListRequest({ 
+    alias: "products_categories_list", 
+    defaultPage: 1, 
+    defaultAll: true 
+  });
 
   const { setData } = useProductFormStore();
 
+  // Helper to sync data only when fetched
+  const syncData = (key: string, data: any[]) => {
+    if (data && data.length > 0) {
+      setData(key, data);
+    }
+  };
 
   useEffect(() => {
-    if (fetchAttributes.data?.length) setData("attribute-values", fetchAttributes.data.reverse());
+    syncData("attribute-values", fetchAttributes.data || []);
   }, [fetchAttributes.data]);
   
   useEffect(() => {
-    if (fetchSuppliers.data?.length) setData("suppliers", fetchSuppliers.data.reverse());
+    syncData("suppliers", fetchSuppliers.data || []);
   }, [fetchSuppliers.data]);
   
   useEffect(() => {
-    if (fetchManufacturers.data?.length) setData("manufacturers", fetchManufacturers.data.reverse());
+    syncData("manufacturers", fetchManufacturers.data || []);
   }, [fetchManufacturers.data]);
   
   useEffect(() => {
-    if (fetchBrands.data?.length) setData("brands", fetchBrands.data.reverse());
+    syncData("brands", fetchBrands.data || []);
   }, [fetchBrands.data]);
   
   useEffect(() => {
-    if (fetchCategories.data?.length) setData("categories", fetchCategories.data.reverse());
+    syncData("categories", fetchCategories.data || []);
   }, [fetchCategories.data]);
 
   

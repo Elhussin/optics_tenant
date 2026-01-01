@@ -123,7 +123,7 @@ export default function PricingPlans({ clientId }: PricingPlansProps) {
           )}
         </div>
 
-        <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 max-w-7xl mx-auto">
+        <div className="grid gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 max-w-7xl mx-auto">
           {plans?.length > 0 &&
             plans.map((plan: any, index: number) => {
               const style = getPlanStyle(plan.name);
