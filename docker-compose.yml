@@ -26,7 +26,7 @@ services:
       context: ./osmBack
       dockerfile: Dockerfile
     container_name: optics_backend
-    command: python manage.py runserver 0.0.0.0:8000
+    # command: python manage.py runserver 0.0.0.0:8000 # Removed to use entrypoint.sh default (gunicorn)
     restart: always
     env_file:
       - ./osmBack/.env
@@ -61,8 +61,11 @@ services:
 
 volumes:
   optics_postgres_data:
+    name: optics_postgres_data
   optics_static_volume:
+    name: optics_static_volume
   optics_media_volume:
+    name: optics_media_volume
   certbot_certs:
     external: true
 
