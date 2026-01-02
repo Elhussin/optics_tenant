@@ -21,23 +21,33 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const fetchUser = useApiForm({ alias: "users_profile_retrieve" });
+  const fetchUser = useApiForm({
+    alias: "users_profile_retrieve",
+    // Ensure it doesn't auto-fetch if you want manual control, 
+    // OR simply rely on it and sync state. 
+    // Assuming useApiForm wraps useQuery, it might auto-fetch by default.
+  });
+
+  // Sync state when data changes
   useEffect(() => {
-    (async () => {
+    if (fetchUser.query.data) {
+      setUser(fetchUser.query.data);
+      setLoading(false);
+    } else if (fetchUser.query.isError) {
+      setUser(null);
+      setLoading(false);
+    } else if (fetchUser.query.isLoading) {
       setLoading(true);
-      try {
-        const res = await fetchUser.query.refetch();
-        if (res?.data) {
-          setUser(res.data);
-        } else {
-          setUser(null);
-        }
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    }
+  }, [fetchUser.query.data, fetchUser.query.isError, fetchUser.query.isLoading]);
+
+  // Initial fetch if not triggered automatically (depends on useApiForm implementation)
+  // If useApiForm uses React Query with default enabled:true, this is not needed.
+  // If it needs manual trigger:
+  useEffect(() => {
+    if (!fetchUser.query.data && !fetchUser.query.isLoading && !fetchUser.query.isError) {
+      fetchUser.query.refetch();
+    }
   }, []);
 
   const logoutRequest = useApiForm({

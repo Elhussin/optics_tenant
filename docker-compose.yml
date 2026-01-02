@@ -1,5 +1,5 @@
 services:
-  db:
+  tenant_db:
     image: postgres:16
     container_name: optics_db
     env_file:
@@ -31,7 +31,7 @@ services:
     env_file:
       - ./osmBack/.env
     environment:
-      DB_HOST: optics_db
+      DB_HOST: tenant_db
     volumes:
       - ./osmBack:/app
       - optics_static_volume:/app/staticfiles
@@ -41,7 +41,7 @@ services:
     networks:
       - app-network
     depends_on:
-      db:
+      tenant_db:
         condition: service_healthy
 
   frontend:
