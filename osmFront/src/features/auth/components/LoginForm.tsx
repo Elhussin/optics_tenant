@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams, useRouter } from "next/navigation";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { cn } from "@/src/shared/utils/cn";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Link } from "@/src/app/i18n/navigation";
 import { useLocale } from "next-intl";
@@ -30,39 +30,72 @@ export default function LoginForm(props: formRequestProps) {
   const locale = useLocale() || "en";
   const [showPassword, setShowPassword] = useState(false);
 
-  // 🧩 نستخدم useMemo لتثبيت redirect حتى لا يعاد تغييره كل render
-  const redirect = useMemo(() => {
-    return searchParams.get("redirect") || `/${locale}/profile`;
-  }, [searchParams, locale]);
+  // We'll compute redirect dynamically in onSubmit to ensure it's up-to-date
 
   const { handleSubmit, submitForm, errors, isBusy, register } = useApiForm({
     alias,
   });
 
-  const onSubmit = async (data: any) => {
-    try {
-      const result = await submitForm(data);
-      if (!result?.success) return;
+  // const onSubmit = async (data: any) => {
+  //   try {
+  //     const result = await submitForm(data);
+  //     if (!result?.success) return;
 
-      if (mode === "login") {
-        const res = await refetchUser();
-        // Check both if success is true OR if we have data with an id/email
-        if (res?.success || res?.data) {
-          safeToast(message || t("successMessage"), { type: "success" });
-          router.replace(redirect);
-        } else {
-          // Sometimes refetchUser might fail silently or return cached null
-          safeToast(t("errorMessage"), { type: "error" });
-        }
-      } else if (mode === "create") {
+  //     if (mode === "login") {
+  //       const res = await refetchUser();
+  //       console.log(res);
+  //       // Compute redirect dynamically to avoid stale memoized value
+  //       const redirect = searchParams.get("redirect") || `/${locale}/profile`;
+  //       // Check both if success is true OR if we have data with an id/email
+  //       if (res?.success || res?.data) {
+  //         safeToast(message || t("successMessage"), { type: "success" });
+  //         // Navigate to the target page and then refresh to load fresh data
+  //         router.replace(redirect);
+  //         router.refresh();
+
+  //       } else {
+  //         // Sometimes refetchUser might fail silently or return cached null
+  //         safeToast(t("errorMessage"), { type: "error" });
+  //       }
+  //     } else if (mode === "create") {
+  //       safeToast(message || t("successMessage"), { type: "success" });
+  //       router.replace(`/${locale}/auth/login`);
+  //       router.refresh();
+  //     }
+  //   } catch {
+  //     safeToast(t("errorMessage"), { type: "error" });
+  //   }
+  // };
+
+// src/features/auth/components/LoginForm.tsx
+const onSubmit = async (data: any) => {
+  try {
+    const result = await submitForm(data);
+    if (!result?.success) return;
+
+    if (mode === "login") {
+      // 1️⃣ جلب المستخدم بعد تسجيل الدخول
+      const res = await refetchUser();   // ← الآن يرسل الكوكي الجديد
+      // 2️⃣ احسب الـ redirect في نفس اللحظة
+      const redirect = searchParams.get("redirect") || `/${locale}/profile`;
+
+      if (res?.success || res?.data) {
         safeToast(message || t("successMessage"), { type: "success" });
-        router.replace(`/${locale}/auth/login`);
+        // 3️⃣ تحديث router قبل التحويل
+        // router.refresh();               // يضمن أن الـ auth state محدث
+        router.replace(redirect);       // أو router.push(redirect) حسب تفضيلك
+      } else {
+        safeToast(t("errorMessage"), { type: "error" });
       }
-    } catch {
-      safeToast(t("errorMessage"), { type: "error" });
+    } else if (mode === "create") {
+      safeToast(message || t("successMessage"), { type: "success" });
+      router.refresh();
+      router.replace(`/${locale}/auth/login`);
     }
-  };
-
+  } catch {
+    safeToast(t("errorMessage"), { type: "error" });
+  }
+};
 
 
   return (

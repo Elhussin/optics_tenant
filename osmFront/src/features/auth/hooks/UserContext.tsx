@@ -1,5 +1,4 @@
-"use client";
-
+// src/features/auth/hooks/UserContext.tsx
 import {
   createContext,
   useContext,
@@ -13,6 +12,7 @@ import { useRouter } from "@/src/app/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { UserContextType, User } from "@/src/shared/types";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
@@ -21,16 +21,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // 1️⃣ منع الجلب التلقائي – نحتاج إلى جلب يدوي بعد تسجيل الدخول
   const fetchUser = useApiForm({
     alias: "users_profile_retrieve",
-    // Ensure it doesn't auto-fetch if you want manual control, 
-    // OR simply rely on it and sync state. 
-    // Assuming useApiForm wraps useQuery, it might auto-fetch by default.
+    // إذا كان useApiForm يمرّر الخيارات إلى react‑query:
+    enabled: false,          // <-- مهم
+    retry: false,
+    staleTime: 0,
   });
 
-  // Sync state when data changes
+  // 2️⃣ تحديث الـ state عندما ينجح الجلب اليدوي
   useEffect(() => {
-    if (fetchUser.query.data) {
+    if (fetchUser.query.isSuccess && fetchUser.query.data) {
       setUser(fetchUser.query.data);
       setLoading(false);
     } else if (fetchUser.query.isError) {
@@ -39,17 +42,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } else if (fetchUser.query.isLoading) {
       setLoading(true);
     }
-  }, [fetchUser.query.data, fetchUser.query.isError, fetchUser.query.isLoading]);
+  }, [
+    fetchUser.query.isSuccess,
+    fetchUser.query.data,
+    fetchUser.query.isError,
+    fetchUser.query.isLoading,
+  ]);
 
-  // Initial fetch if not triggered automatically (depends on useApiForm implementation)
-  // If useApiForm uses React Query with default enabled:true, this is not needed.
-  // If it needs manual trigger:
-  useEffect(() => {
-    if (!fetchUser.query.data && !fetchUser.query.isLoading && !fetchUser.query.isError) {
-      fetchUser.query.refetch();
-    }
-  }, []);
-
+  // لا نحتاج إلى effect آخر لتشغيل الجلب تلقائيًا – نستخدم refetch فقط
   const logoutRequest = useApiForm({
     alias: "users_logout_create",
     onSuccess: () => {
@@ -72,14 +72,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       user,
       setUser,
       loading,
+      // 3️⃣ جلب المستخدم يدوياً بعد تسجيل الدخول
       refetchUser: async () => {
         try {
-          const res = await fetchUser.query.refetch();
+          const res = await fetchUser.query.refetch(); // ← يرسل الكوكي الجديد
           if (res?.data) setUser(res.data);
           return {
-            success: res.isSuccess,
-            data: res.data,
-            error: res.error,
+            success: res?.isSuccess ?? false,
+            data: res?.data,
+            error: res?.error,
           };
         } catch (error) {
           setUser(null);
