@@ -134,7 +134,7 @@ export default function LocaleSwitcher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-4 z-50 origin-top-right"
+            className="absolute end-0 top-full mt-2 w-80 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-4 z-50 ltr:origin-top-right rtl:origin-top-left"
           >
             {/* Tabs */}
             <div className="flex p-1 mb-4 bg-gray-100 dark:bg-gray-800 rounded-lg">

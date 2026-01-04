@@ -63,6 +63,7 @@ export default function ThemeToggle() {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           "p-2 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50",
@@ -82,7 +83,7 @@ export default function ThemeToggle() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute right-0 mt-2 w-48 py-2 bg-elevated border border-border-main rounded-xl shadow-xl z-50 overflow-hidden"
+            className="absolute end-0 mt-2 w-48 py-2 bg-elevated border border-border-main rounded-xl shadow-xl z-50 overflow-hidden"
           >
             <div className="px-3 py-2 text-xs font-semibold text-secondary uppercase tracking-wider mb-1 border-b border-border-main/50">
               {"Select Theme"}

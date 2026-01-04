@@ -28,6 +28,7 @@ export default function ActivatePage() {
       setStatus("error");
       setMessage(detail);
     },
+    enabled: !!token,
   });
 
   const submitted = useRef(false);

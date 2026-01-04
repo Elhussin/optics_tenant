@@ -189,7 +189,7 @@ VARIANT_SERIALIZER_MAPPING = {
     "stockLenses": StokLensVariantSerializer,
     "rxLenses": RxLensVariantSerializer,
     "contactLenses": ContactLensVariantSerializer,
-    "custom": ExtraVariantAttributeSerializer, # This might need review if custom uses regular variant + EAV
+    "custom": ProductVariantSerializer, 
 }
 
 VARIANT_MODEL_MAPPING = {
@@ -198,6 +198,7 @@ VARIANT_MODEL_MAPPING = {
     "stockLenses": StokLensVariant,
     "rxLenses": RxLensVariant,
     "contactLenses": ContactLensVariant,
+    "custom": ProductVariant,
 }
 
 
@@ -211,15 +212,17 @@ class ProductSerializer(serializers.ModelSerializer):
         write_only=True
     )
     
-    type = serializers.SerializerMethodField()
+    # Use CharField with source for read, but allow write on 'type' model field
+    # Actually, default ModelSerializer behavior for 'type' (a choice field) is fine.
+    # We only override it if we want the DISPLAY value in GET.
+    # Let's use a separate field for display to keep 'type' writable.
+    type_display = serializers.CharField(source='get_type_display', read_only=True)
+
     # 👈 variants READ logic
     variants = serializers.SerializerMethodField()
     # 👈 variants WRITE logic (input)
     variants_input = serializers.ListField(child=serializers.DictField(
     ), write_only=True, required=False, source='variants')
-
-    def get_type(self, obj):
-        return obj.get_type_display()
 
     def get_variants(self, obj):
         # We need to cast variants to their specific subclass (Polymorphism manual handling)
@@ -231,21 +234,15 @@ class ProductSerializer(serializers.ModelSerializer):
         
         # When fetching related variants using reverse relation, Django returns base ProductVariant instances
         # unless we explicitly downcast.
-        # A simple way for API is to let the serializer serialize common fields, 
-        # or fetch specific tables if needed. 
-        # For full detail, standard practice without external lib is to iterate and downcast or fetch separately.
         
         variants_qs = obj.variants.all()
-        # Note: This simply serializes base fields if querying base model, 
-        # UNLESS the QuerySet is already specific.
-        # Since we just want data, let's use the generic serializer or specific one 
-        # BUT bear in mind fields existing only on subclass return null/error if accessed on base obj.
-        
-        # Safe approach: Serialize as base + extra simple Dict or just use base if simple.
-        # If we want full fields, we need to correct the queryset or serialization strategy.
-        # For now, keeping logic but warning: `frame_color` access on a base `ProductVariant` instance will fail
-        # unless that instance is actually a `FrameVariant`.
-        
+        # Retrieve specific instances to ensure we get subclass fields
+        if variant_type and variant_type in VARIANT_MODEL_MAPPING:
+             ModelClass = VARIANT_MODEL_MAPPING[variant_type]
+             # IDs of variants related to this product
+             ids = variants_qs.values_list('id', flat=True)
+             variants_qs = ModelClass.objects.filter(id__in=ids)
+
         return serializer_class(variants_qs, many=True, context=self.context).data
 
     class Meta:
@@ -295,29 +292,64 @@ class ProductSerializer(serializers.ModelSerializer):
         sent_variant_ids = [v.get('id') for v in variants_data if v.get('id')]
 
         # Delete removed variants
-        # Note: If switching types, this logic presumes type prevents mixing variants?
-        # Ideally, we delete variants that are not in the new list.
         for variant in product.variants.all():
             if variant.id not in sent_variant_ids:
                 variant.delete()
 
         for vdata in variants_data:
             variant_id = vdata.get('id')
+            attributes_data = vdata.pop('attributes', [])  # Handle custom attributes
             
-            # Clean vdata from 'amenities' or other non-model fields or mismatched IDs? 
-            # (Assuming vdata matches ModelClass fields after validation)
-            
+            # 1. Create/Update Variant
+            current_variant = None
             if variant_id and variant_id in existing_variant_ids:
-                # Update
                 try:
-                    # We must get the specific instance to update specific fields
-                    variant = ModelClass.objects.get(id=variant_id, product=product)
+                    current_variant = ModelClass.objects.get(id=variant_id, product=product)
                     for attr, value in vdata.items():
-                         if hasattr(variant, attr): # Security check
-                            setattr(variant, attr, value)
-                    variant.save()
+                         if hasattr(current_variant, attr): 
+                            setattr(current_variant, attr, value)
+                    current_variant.save()
                 except ModelClass.DoesNotExist:
-                     pass # Should handle error or mismatch
+                     pass 
             else:
-                # Create
-                ModelClass.objects.create(product=product, **vdata)
+                current_variant = ModelClass.objects.create(product=product, **vdata)
+            
+            # 2. Handle Extra Attributes
+            # Pop variant_type if it exists in vdata (for custom variants) to prevent error on base model
+            custom_variant_type_id = vdata.pop('variant_type', None)
+
+            if current_variant and attributes_data:
+                # If variant_type was not in vdata (e.g. not 'custom' type, or not passed), 
+                # we might accept it inside attributes_data if structured that way?
+                # But form sends flat variant_type.
+                # If custom_variant_type_id is None, and we are in 'custom' mode, we can't save ExtraVariantAttribute properly
+                # unless we fetch an existing one? 
+                
+                # For now, we proceed only if we have data.
+                
+                # Sync logic: Delete attributes not in the new list??
+                # Implementing simple add/update for now.
+                
+                for attr_item in attributes_data:
+                    # attr_item: { 'attribute': ID, 'value': ID, 'id': ID? }
+                    attr_id = attr_item.get('attribute')
+                    val_id = attr_item.get('value')
+                    
+                    if not attr_id or not val_id:
+                        continue
+
+                    # We need variant_type. Check if it's in attr_item or use common one
+                    v_type_id = attr_item.get('variant_type') or custom_variant_type_id
+                    
+                    if not v_type_id:
+                        # Fallback: maybe the user meant the Product's variant_type is mapped to this?
+                        # Unlikely. If missing, skip to avoid IntegrityError.
+                        continue
+
+                    ExtraVariantAttribute.objects.update_or_create(
+                        variant=current_variant,
+                        attribute_id=attr_id,
+                        variant_type_id=v_type_id,
+                        defaults={'value_id': val_id}
+                    )
+

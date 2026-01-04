@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.fields import CharField
+
 class CSVImportView(APIView):
     
     def post(self, request):
@@ -116,7 +117,15 @@ class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
         if getattr(self, "_filter_fields", None):
             return self._filter_fields
         # توليد كل الحقول مع lookup 'exact' تلقائيًا
-        return {f: ["exact"] for f in self.serializer_class().fields.keys()}
+        # Ensure we only include fields that actually exist on the model
+        model = self.queryset.model
+        model_field_names = {f.name for f in model._meta.get_fields()}
+        
+        return {
+            f: ["exact"] 
+            for f in self.serializer_class().fields.keys() 
+            if f in model_field_names
+        }
 
     def get_queryset(self):
         return super().get_queryset()

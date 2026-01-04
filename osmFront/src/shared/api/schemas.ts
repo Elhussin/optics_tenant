@@ -262,8 +262,8 @@ const PatchedTransactionRequest = z
 const BranchUsers = z
   .object({
     id: z.number().int(),
-    branch_name: z.string(),
-    employee_name: z.string(),
+    branch__name: z.string(),
+    employee__name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean(),
@@ -350,6 +350,8 @@ const PatchedBranchRequest = z
 const Shift = z
   .object({
     id: z.number().int(),
+    branch__name: z.string(),
+    employee__user__username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -392,6 +394,7 @@ const PatchedShiftRequest = z
 const Campaign = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -435,6 +438,7 @@ const ComplaintStatusEnum = z.enum(["open", "resolved"]);
 const Complaint = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -510,6 +514,7 @@ const PatchedContactRequest = z
 const CustomerGroup = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.array(z.string()),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -627,6 +632,7 @@ const PatchedCustomerRequest = z
 const Document = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -664,6 +670,7 @@ const InteractionTypeEnum = z.enum(["call", "email", "meeting"]);
 const Interaction = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -708,6 +715,7 @@ const StageEnum = z.enum([
 const Opportunity = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -757,6 +765,7 @@ const SubscriptionTypeEnum = z.enum(["monthly", "yearly", "lifetime"]);
 const Subscription = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -797,6 +806,7 @@ const PriorityEnum = z.enum(["low", "medium", "high"]);
 const Task = z
   .object({
     id: z.number().int(),
+    customer__first_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -845,6 +855,7 @@ const PatchedTaskRequest = z
 const Attendance = z
   .object({
     id: z.number().int(),
+    employee__user__username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -995,6 +1006,7 @@ const LeaveStatusEnum = z.enum(["pending", "approved", "rejected"]);
 const Leave = z
   .object({
     id: z.number().int(),
+    employee__user__username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -1034,6 +1046,7 @@ const NotificationTypeEnum = z.enum(["leave", "task", "payroll"]);
 const Notification = z
   .object({
     id: z.number().int(),
+    employee__user__username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -1073,6 +1086,7 @@ const PatchedNotificationRequest = z
 const Payroll = z
   .object({
     id: z.number().int(),
+    employee__user__username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -1146,6 +1160,7 @@ const RatingEnum = z.union([
 const PerformanceReview = z
   .object({
     id: z.number().int(),
+    employee__user__username: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -5261,22 +5276,12 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "branch_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "employee",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "employee_name",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9506,11 +9511,6 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "parent_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
@@ -9629,11 +9629,6 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "branch_id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "currency",
         type: "Query",
         schema: z.string().optional(),
@@ -9645,11 +9640,6 @@ Enforces authentication and role-based access.`,
       },
       {
         name: "customer_group",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer_group_id",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10509,17 +10499,7 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "brand_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "categories",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "categories_ids",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10595,11 +10575,6 @@ Enforces authentication and role-based access.`,
       },
       {
         name: "variants",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "variants_input",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -12033,11 +12008,6 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
-        name: "product_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "product_type",
         type: "Query",
         schema: z.string().optional(),
@@ -12927,66 +12897,6 @@ Enforces authentication and role-based access.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "field_labels",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_paid",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_plan_expired",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "max_branches",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "max_products",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "max_users",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "on_trial",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -13002,22 +12912,7 @@ Enforces authentication and role-based access.`,
         schema: z.number().int().optional(),
       },
       {
-        name: "paid_until",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "plans",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "uuid",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -13476,11 +13371,6 @@ Allows listing, creating, and managing domains and subdomains.`,
       },
       {
         name: "duration_years",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "field_labels",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -14436,11 +14326,6 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: z.number().int().optional(),
       },
       {
-        name: "permission_ids",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "permissions",
         type: "Query",
         schema: z.string().optional(),
@@ -14630,11 +14515,6 @@ Allows listing, creating, and managing domains and subdomains.`,
       },
       {
         name: "linkedin",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "logo",
         type: "Query",
         schema: z.string().optional(),
       },

@@ -63,6 +63,8 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class InteractionSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Interaction
         exclude = ['is_deleted']
@@ -70,6 +72,8 @@ class InteractionSerializer(serializers.ModelSerializer):
 
 
 class ComplaintSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Complaint
         exclude = ['is_deleted']
@@ -77,6 +81,8 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
 
 class OpportunitySerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Opportunity
         exclude = ['is_deleted']
@@ -84,6 +90,8 @@ class OpportunitySerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Task
         exclude = ['is_deleted']
@@ -91,6 +99,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class CampaignSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Campaign
         exclude = ['is_deleted']
@@ -98,6 +108,8 @@ class CampaignSerializer(serializers.ModelSerializer):
 
 
 class DocumentSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Document
         exclude = ['is_deleted']
@@ -105,6 +117,8 @@ class DocumentSerializer(serializers.ModelSerializer):
 
 
 class SubscriptionSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Subscription
         exclude = ['is_deleted']
@@ -112,6 +126,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
 
 class CustomerGroupSerializer(serializers.ModelSerializer):
+    customer__first_name = serializers.StringRelatedField(many=True, source='customers', read_only=True)
     class Meta:
         model = CustomerGroup
         exclude = ['is_deleted']

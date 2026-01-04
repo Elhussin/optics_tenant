@@ -105,12 +105,13 @@ export const relationshipConfigs: RelationshipConfig = {
     searchField: 'name',
     entityName: 'departments',
   },
-  employee: {
+    employee: {
     labelField: 'user_name',
     valueField: 'permission_ids',
     searchField: 'name',
     entityName: 'employees',
   },
+
   customer: {
     labelField: 'first_name',
     valueField: 'id',

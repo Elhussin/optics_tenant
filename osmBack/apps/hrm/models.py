@@ -39,7 +39,6 @@ class Employee(BaseModel):
     def __str__(self):
         return self.user.username
 
-
 class Leave(BaseModel):
     LEAVE_TYPES = [
         ('sick', 'Sick Leave'),
@@ -60,8 +59,6 @@ class Leave(BaseModel):
     def __str__(self):
         return f"{self.leave_type} for {self.employee.user.username}"
     
-
-
 class Attendance(BaseModel):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE, related_name="attendance")
     date = models.DateField()

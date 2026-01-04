@@ -70,7 +70,7 @@ class Command(BaseCommand):
         domain_obj, domain_created = DomainModel.objects.get_or_create(
             domain=domain,
             tenant=tenant,
-            is_primary=True
+            is_primary=Truecd
         )
 
         if domain_created:
@@ -82,3 +82,5 @@ class Command(BaseCommand):
 
 # تمرير بيانات مخصصة
 # 
+
+# docker exec -it optics_backend python manage.py create_public_tenant --domain osmbeta.cloud --password Ah@0540919725
