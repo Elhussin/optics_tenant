@@ -1,4 +1,5 @@
 import { useFieldArray, useFormContext } from "react-hook-form";
+import { useEffect } from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/src/shared/components/shadcn/ui/accordion";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { RenderFields } from "@/src/shared/components/field/RenderFields";
@@ -7,63 +8,70 @@ import { veriantConfig } from "@/src/features/products/constants/config";
 import { CustomVariantMainConfig } from "@/src/features/products/constants/config";
 import { AttributesSection } from "./AttributesSection";
 
-export const VariantRender = ({ variant_type, productType,form }: any) => {
+export const VariantRender = ({ variant_type, productType, form }: any) => {
   const store = useProductFormStore();
 
 
   // قائمة الـ variants
   const { fields: variants, append: addVariant } = useFieldArray({
-    control:form.control,
+    control: form.control,
     name: "variants",
   });
 
+  // Ensure at least one variant exists initially
+  useEffect(() => {
+    if (variants.length === 0) {
+      addVariant({ name: "", sku: "", attributes: [] });
+    }
+  }, [variants.length, addVariant]);
+
   return (
     <div className="space-y-4">
-    <Accordion
-      type="single"
-      collapsible
-      className="w-full space-y-4"
-      value={store.openVariantIndex !== null ? String(store.openVariantIndex) : undefined}
-      onValueChange={(val) => {
-        const idx = val ? Number(val) : null;
-        store.setOpenVariantIndex(idx);
-      }}
-    >
-      {variants.map((variant, variantIndex) => (
-        <AccordionItem 
-            key={variant.id || variantIndex} 
+      <Accordion
+        type="single"
+        collapsible
+        className="w-full space-y-4"
+        value={store.openVariantIndex !== null ? String(store.openVariantIndex) : undefined}
+        onValueChange={(val) => {
+          const idx = val ? Number(val) : null;
+          store.setOpenVariantIndex(idx);
+        }}
+      >
+        {variants.map((variant, variantIndex) => (
+          <AccordionItem
+            key={variant.id || variantIndex}
             value={String(variantIndex)}
             className="border rounded-xl bg-white dark:bg-gray-800 shadow-sm overflow-hidden px-2"
-        >
-          <AccordionTrigger className="hover:no-underline py-4 px-2">
-            <div className="flex items-center gap-4 w-full">
+          >
+            <AccordionTrigger className="hover:no-underline py-4 px-2">
+              <div className="flex items-center gap-4 w-full">
                 <span className="flex items-center justify-center h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-bold text-sm">
-                    {variantIndex + 1}
+                  {variantIndex + 1}
                 </span>
                 <div className="text-left flex-1">
-                    <h4 className="font-semibold text-gray-900 dark:text-gray-100">Variant #{variantIndex + 1}</h4>
-                    <p className="text-xs text-gray-500 font-normal">Click to expand details</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100">Variant #{variantIndex + 1}</h4>
+                  <p className="text-xs text-gray-500 font-normal">Click to expand details</p>
                 </div>
-            </div>
-          </AccordionTrigger>
+              </div>
+            </AccordionTrigger>
 
-          <AccordionContent className="p-4 pt-0 border-t border-gray-100 dark:border-gray-700 mt-2">
-            <div className="py-4 space-y-6">
+            <AccordionContent className="p-4 pt-0 border-t border-gray-100 dark:border-gray-700 mt-2">
+              <div className="py-4 space-y-6">
                 {/* --- حقول الـ variant الأساسية --- */}
                 <RenderFields
-                    form={form}
-                    fields={variant_type === "custom" ? CustomVariantMainConfig : veriantConfig(variant_type)}
-                    variantNumber={variantIndex}
-                    selectedType={productType}
+                  form={form}
+                  fields={variant_type === "custom" ? CustomVariantMainConfig : veriantConfig(variant_type)}
+                  variantNumber={variantIndex}
+                  selectedType={productType}
                 />
 
                 {/* --- الحقول الخاصة بالـ attributes داخل هذا الـ variant --- */}
-                <AttributesSection variantIndex={variantIndex} form={form}/>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
+                <AttributesSection variantIndex={variantIndex} form={form} />
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
 
       <Button
         type="button"

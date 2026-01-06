@@ -32,6 +32,18 @@ export const fieldTemplates: Record<string, FieldTemplate> = {
 };
 
 export const relationshipConfigs: RelationshipConfig = {
+  categories_ids: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'categories'
+  },
+  variants_input: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'attributes'
+  },
   client: {
     labelField: 'name',
     valueField: 'id',

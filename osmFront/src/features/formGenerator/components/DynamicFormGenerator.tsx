@@ -30,7 +30,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const { entity, id, setData, defaultValues } = props;
   const [loading, setLoading] = useState(false);
   const [fetchForginKey, setFetchForginKey] = useState(false);
-
+  console.log(entity);
   if (!entity) throw new Error("entity is required");
   // const t = useTranslations('formsConfig');
   const t = useMergedTranslations(["viewDetailsCard", entity, "formsConfig"]);

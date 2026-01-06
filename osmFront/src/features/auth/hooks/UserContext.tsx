@@ -22,13 +22,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 1️⃣ منع الجلب التلقائي – نحتاج إلى جلب يدوي بعد تسجيل الدخول
+  // 1️⃣ جلب تلقائي عند تحميل التطبيق (للحفاظ على الجلسة عند التحديث)
   const fetchUser = useApiForm({
     alias: "users_profile_retrieve",
-    // إذا كان useApiForm يمرّر الخيارات إلى react‑query:
-    enabled: false,          // <-- مهم
-    retry: false,
-    staleTime: 0,
+    enabled: true,          // <-- غيرنا هذا إلى true ليتم الجلب عند بدء التشغيل
+    // retry: false,
+    // staleTime: 5 * 60 * 1000, // يمكن استخدام cache بسيط
   });
 
   // 2️⃣ تحديث الـ state عندما ينجح الجلب اليدوي

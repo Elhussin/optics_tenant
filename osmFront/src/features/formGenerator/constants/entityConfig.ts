@@ -639,7 +639,7 @@ export const formsConfig: Record<string, FormConfig> = {
       "is_active",
     ],
   },
-  products: {
+  product: {
     schemaName: "ProductRequest",
     listAlias: "products_products_list",
     createAlias: "products_products_create",

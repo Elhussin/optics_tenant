@@ -36,10 +36,10 @@
   }
 
   .btn {
-    @apply items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-md bg-button-bg text-button-text cursor-pointer;
+    @apply items-center gap-2 px-4 py-2 text-sm font-medium transition-all rounded-md text-button-text cursor-pointer;
   }
   .btn:hover {
-    @apply hover:bg-primary;
+    @apply hover:bg-primary/50;
   }
 
   .btn-danger {

@@ -15,7 +15,7 @@ export default function CreateProductPage() {
       }
     >
       <ProductForm
-        alias="products_product_create"
+        alias="products_products_create"
 
       />
     </Suspense>

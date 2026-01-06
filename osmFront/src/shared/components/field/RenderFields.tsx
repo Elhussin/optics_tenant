@@ -9,7 +9,7 @@ import { RenderFormProps } from "@/src/features/products/types";
 import { parsedOptions } from "@/src/features/products/utils/parsedOptions";
 
 export const RenderFields = (props: RenderFormProps) => {
-    const { fields, form, selectedType, variantNumber ,attributeIndex} = props;
+    const { fields, form, selectedType, variantNumber, attributeIndex } = props;
     const { setShowModal, setEntityName, setCurrentFieldName, setVariantField, data } = useProductFormStore();
     // console.log(fields, selectedType, variantNumber)
     const handleClick = (entity: string, fieldName: string) => {
@@ -67,7 +67,7 @@ export const RenderFields = (props: RenderFormProps) => {
                                                     return <TextField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
                                                 case "select":
                                                     return <SelectField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} options={
-                                                        fieldRow.options?.filter((opt: any) => opt.role === selectedType || opt.role === "all")
+                                                        fieldRow.options?.filter((opt: any) => !opt.role || opt.role === selectedType || opt.role === "all")
                                                     } />;
                                                 case "checkbox":
                                                     return <CheckboxField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
@@ -149,13 +149,13 @@ export const RenderFields = (props: RenderFormProps) => {
 import { Popover, PopoverTrigger, PopoverContent } from "@/src/shared/components/shadcn/ui/popover";
 import { InfoIcon } from "lucide-react";
 
-export const InfoPopover = ({hint}:{hint :string}) => (
-  <Popover>
-    <PopoverTrigger>
-      <InfoIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-    </PopoverTrigger>
-    <PopoverContent className="w-64 bg-surface">
-      <p>{hint}</p>
-    </PopoverContent>
-  </Popover>
+export const InfoPopover = ({ hint }: { hint: string }) => (
+    <Popover>
+        <PopoverTrigger>
+            <InfoIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
+        </PopoverTrigger>
+        <PopoverContent className="w-64 bg-surface">
+            <p>{hint}</p>
+        </PopoverContent>
+    </Popover>
 );

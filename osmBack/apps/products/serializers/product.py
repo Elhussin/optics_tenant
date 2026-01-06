@@ -293,57 +293,56 @@ class ProductSerializer(serializers.ModelSerializer):
 
         # Delete removed variants
         for variant in product.variants.all():
-            if variant.id not in sent_variant_ids:
+            if str(variant.id) not in [str(x) for x in sent_variant_ids]:
                 variant.delete()
 
         for vdata in variants_data:
             variant_id = vdata.get('id')
-            attributes_data = vdata.pop('attributes', [])  # Handle custom attributes
+            attributes_data = vdata.pop('attributes', [])
+            
+            # Clean vdata: remove empty strings/nulls for optional fields to avoid validation errors
+            # or keep them if model handles blank=True correctly (it usually does for CharField, but FKs need None)
+            clean_vdata = {}
+            for k, v in vdata.items():
+                if v == "" or v is None:
+                    continue
+                clean_vdata[k] = v
             
             # 1. Create/Update Variant
             current_variant = None
-            if variant_id and variant_id in existing_variant_ids:
+            if variant_id and int(variant_id) in existing_variant_ids:
                 try:
                     current_variant = ModelClass.objects.get(id=variant_id, product=product)
-                    for attr, value in vdata.items():
+                    for attr, value in clean_vdata.items():
                          if hasattr(current_variant, attr): 
                             setattr(current_variant, attr, value)
                     current_variant.save()
                 except ModelClass.DoesNotExist:
                      pass 
             else:
-                current_variant = ModelClass.objects.create(product=product, **vdata)
+                # Remove 'id' from create data if present and empty/invalid
+                if 'id' in clean_vdata:
+                    del clean_vdata['id']
+                
+                # Create
+                current_variant = ModelClass.objects.create(product=product, **clean_vdata)
             
             # 2. Handle Extra Attributes
-            # Pop variant_type if it exists in vdata (for custom variants) to prevent error on base model
-            custom_variant_type_id = vdata.pop('variant_type', None)
+            custom_variant_type_id = clean_vdata.get('variant_type', None) # Don't pop, might need it? actually pop is safer if not fields
 
             if current_variant and attributes_data:
-                # If variant_type was not in vdata (e.g. not 'custom' type, or not passed), 
-                # we might accept it inside attributes_data if structured that way?
-                # But form sends flat variant_type.
-                # If custom_variant_type_id is None, and we are in 'custom' mode, we can't save ExtraVariantAttribute properly
-                # unless we fetch an existing one? 
-                
-                # For now, we proceed only if we have data.
-                
-                # Sync logic: Delete attributes not in the new list??
-                # Implementing simple add/update for now.
-                
                 for attr_item in attributes_data:
-                    # attr_item: { 'attribute': ID, 'value': ID, 'id': ID? }
                     attr_id = attr_item.get('attribute')
                     val_id = attr_item.get('value')
                     
                     if not attr_id or not val_id:
                         continue
 
-                    # We need variant_type. Check if it's in attr_item or use common one
                     v_type_id = attr_item.get('variant_type') or custom_variant_type_id
                     
+                    # If we still don't have variant_type_id (e.g. basic product with extra attrs?), default to something?
+                    # Or maybe skip.
                     if not v_type_id:
-                        # Fallback: maybe the user meant the Product's variant_type is mapped to this?
-                        # Unlikely. If missing, skip to avoid IntegrityError.
                         continue
 
                     ExtraVariantAttribute.objects.update_or_create(

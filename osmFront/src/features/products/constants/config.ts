@@ -1,186 +1,186 @@
 import { ProductConfigType } from "@/src/features/products/types";
 import { generateLensOptions } from "@/src/features/products/utils/generateLensOptions";
 
-
-
-
 export const PRODUCT_TYPE_CHOICES = [
-    { value: "CL", label: "Contact Lens" },
-    { value: "SL", label: "Spectacle Lens" },
-    { value: "FR", label: "Frames" },
-    { value: "AX", label: "Accessories" },
-    { value: "DV", label: "Devices" },
-    { value: "OT", label: "Other" }
-]
+  { value: "CL", label: "Contact Lens" },
+  { value: "SL", label: "Spectacle Lens" },
+  { value: "FR", label: "Frames" },
+  { value: "AX", label: "Accessories" },
+  { value: "DV", label: "Devices" },
+  { value: "OT", label: "Other" },
+];
 
 export const VARIANT_TYPE_CHOICES = [
-    { value: "basic", label: "Basic" , role:"all"},
-    { value: "frames", label: "Frames" ,role:"FR"},
-    { value: "stockLenses", label: "Stock Lenses" ,role:"SL"},
-    { value: "rxLenses", label: "Rx Lenses" ,role:"SL"},
-    { value: "contactLenses", label: "Contact Lenses" ,role:"CL"},
-    { value: "custom", label: "Custom" ,role:"all"}
-]
+  { value: "basic", label: "Basic", role: "all" },
+  { value: "frames", label: "Frames", role: "FR" },
+  { value: "stockLenses", label: "Stock Lenses", role: "SL" },
+  { value: "rxLenses", label: "Rx Lenses", role: "SL" },
+  { value: "contactLenses", label: "Contact Lenses", role: "CL" },
+  { value: "custom", label: "Custom", role: "all" },
+];
 
 export const ProductConfig: ProductConfigType[] = [
-    {
-        name: "model",
-        label: "Model",
-        type: "text",
-        role: "all",
-        filter: "Model",
-        title: "Enter Product Model | Model Number",
-        entityName: "",
-        fieldName: "",
-        placeholder: "Model...",
-        required: true,
-    },
-    {
-        name: "name",
-        label: "Name",
-        role: "all",
-        filter: "Name",
-        title: "Enter Product Name",
-        entityName: "",
-        fieldName: "",
-        type: "text",
-        placeholder: "Name...",
-        required: false,
-    },
-    {
-        name: "categories_ids",
-        label: "Categories",
-        role: "all",
-        filter: "categories",
-        title: "Select Categories",
-        subFilter: "",
-        entityName: "categories",
-        fieldName: "name",
-        type: "multiSelect", // Changed from foreignkey to multiSelect for M2M
-        placeholder: "Select Categories...",
-        required: true,
-        mapOnly: true,
-    },
-    {
-        name: "brand",
-        label: "Brand",
-        role: "all",
-        filter: "brands",
-        subFilter: "product_type",
-        title: "Select Brand | Brand Name",
-        entityName: "brands",
-        fieldName: "name",
-        type: "foreignkey",
-        required: true,
-        mapOnly: true,
-    },
-    {
-        name: "is_active",
-        label: "Is Active",
-        role: "all",
-        filter: "Is Active",
-        subFilter: "",
-        title: "Is Active | True | False",
-        entityName: "",
-        fieldName: "is_active",
-        type: "switch",
-        placeholder: "Select Is Active...",
-        required: false,
-
-    },
-]
-
-export const MainFieldConfig : ProductConfigType[] = [
-    {
-        name: "type",
-        label: "Type",
-        role: "all",
-        filter: "Type",
-        title: "Select Product Type",
-        entityName: "products",
-        fieldName: "type",
-        type: "select",
-        placeholder: "Select Product Type...",
-        required: true,
-        options: PRODUCT_TYPE_CHOICES,
-    },
-    {
-        name: "variant_count",
-        label: "Variant Count",
-        role: "all",
-        filter: "Variant Count",
-        title: "Select Variant Count",
-        entityName: "products",
-        fieldName: "variant_count",
-        type: "number",
-        placeholder: "Select Variant Count...",
-        required: true,
-        defaultValue: 1,
-        className:"w-full",
-        // onChange: (value: any) => {setVariantCount(Number(value))}
-    },
-        {
-        name: "variant_type",
-        label: "Variant Type",
-        role: "all",
-        filter: "Variant Type",
-        title: "Select Variant Type",
-        entityName: "products",
-        fieldName: "variant_type",
-        type: "select",
-        placeholder: "Select Variant Type...",
-        required: true,
-        options: VARIANT_TYPE_CHOICES,
-    },
-    {name:"attribute_count",label:"Attribute Count",type:"number",role:"all",filter:"",entityName:"",fieldName:"",required:true},
-
-  ]
-
-export const ProductTypeEnum=[
-  {value:"SV-ST",label:"Single Stock", filter:"SL",
+  {
+    name: "model",
+    label: "Model",
+    type: "text",
+    role: "all",
+    filter: "Model",
+    title: "Enter Product Model | Model Number",
+    entityName: "",
+    fieldName: "",
+    placeholder: "Model...",
+    required: true,
   },
   {
-    value:"SV-RX",
-    label:"Single RX",
-    filter:"SL",
+    name: "name",
+    label: "Name",
+    role: "all",
+    filter: "Name",
+    title: "Enter Product Name",
+    entityName: "",
+    fieldName: "",
+    type: "text",
+    placeholder: "Name...",
+    required: false,
   },
   {
-    value:"MF-RX",
-    label:"Multi Focal ",
-    filter:"SL",
+    name: "categories_ids",
+    label: "Categories",
+    role: "all",
+    filter: "categories",
+    title: "Select Categories",
+    subFilter: "",
+    entityName: "categories",
+    fieldName: "name",
+    type: "multiSelect", // Changed from foreignkey to multiSelect for M2M
+    placeholder: "Select Categories...",
+    required: true,
+    mapOnly: true,
   },
   {
-    value:"BF-RX",
-    label:"Bifocal RX",
-    filter:"SL",
+    name: "brand",
+    label: "Brand",
+    role: "all",
+    filter: "brands",
+    subFilter: "product_type",
+    title: "Select Brand | Brand Name",
+    entityName: "brands",
+    fieldName: "name",
+    type: "foreignkey",
+    required: true,
+    mapOnly: true,
+  },
+  {
+    name: "is_active",
+    label: "Is Active",
+    role: "all",
+    filter: "Is Active",
+    subFilter: "",
+    title: "Is Active | True | False",
+    entityName: "",
+    fieldName: "is_active",
+    type: "switch",
+    placeholder: "Select Is Active...",
+    required: false,
+  },
+];
+
+export const MainFieldConfig: ProductConfigType[] = [
+  {
+    name: "type",
+    label: "Type",
+    role: "all",
+    filter: "Type",
+    title: "Select Product Type",
+    entityName: "products",
+    fieldName: "type",
+    type: "select",
+    placeholder: "Select Product Type...",
+    required: true,
+    options: PRODUCT_TYPE_CHOICES,
+  },
+  {
+    name: "variant_count",
+    label: "Variant Count",
+    role: "all",
+    filter: "Variant Count",
+    title: "Select Variant Count",
+    entityName: "products",
+    fieldName: "variant_count",
+    type: "number",
+    placeholder: "Select Variant Count...",
+    required: true,
+    defaultValue: 1,
+    className: "w-full",
+    // onChange: (value: any) => {setVariantCount(Number(value))}
+  },
+  {
+    name: "variant_type",
+    label: "Variant Type",
+    role: "all",
+    filter: "Variant Type",
+    title: "Select Variant Type",
+    entityName: "products",
+    fieldName: "variant_type",
+    type: "select",
+    placeholder: "Select Variant Type...",
+    required: true,
+    options: VARIANT_TYPE_CHOICES,
+  },
+  {
+    name: "attribute_count",
+    label: "Attribute Count",
+    type: "number",
+    role: "all",
+    filter: "",
+    entityName: "",
+    fieldName: "",
+    required: true,
+  },
+];
+
+export const ProductTypeEnum = [
+  { value: "SV-ST", label: "Single Stock", filter: "SL" },
+  {
+    value: "SV-RX",
+    label: "Single RX",
+    filter: "SL",
+  },
+  {
+    value: "MF-RX",
+    label: "Multi Focal ",
+    filter: "SL",
+  },
+  {
+    value: "BF-RX",
+    label: "Bifocal RX",
+    filter: "SL",
   },
 
   {
-    value:"CL-Cl",
-    label:"Contact Lens Clear",
-    filter:"CL",
+    value: "CL-Cl",
+    label: "Contact Lens Clear",
+    filter: "CL",
   },
   {
-    value:"CL-CO",
-    label:"Contact Lens Colored",
-    filter:"CL",
+    value: "CL-CO",
+    label: "Contact Lens Colored",
+    filter: "CL",
   },
   {
-    value:"FR-SG",
-    label:"Frames Sun Glasses",
-    filter:"FR",
+    value: "FR-SG",
+    label: "Frames Sun Glasses",
+    filter: "FR",
   },
   {
-    value:"FR-SP",
-    label:"Frames Spectacle Glasses",
-    filter:"FR",
-  }
-]
-
-
+    value: "FR-SP",
+    label: "Frames Spectacle Glasses",
+    filter: "FR",
+  },
+];
 
 export const BasicVariantConfig: ProductConfigType[] = [
-
   {
     label: "SKU",
     name: "sku",
@@ -285,9 +285,8 @@ export const BasicVariantConfig: ProductConfigType[] = [
     type: "number",
     placeholder: "Enter discount percentage (%)",
     required: true,
-  
-  }
-]
+  },
+];
 
 export const FrameVariantConfig: ProductConfigType[] = [
   {
@@ -381,8 +380,7 @@ export const FrameVariantConfig: ProductConfigType[] = [
     placeholder: "Select lens color...",
     required: true,
   },
-]
-
+];
 
 export const BaseLensVariantConfig: ProductConfigType[] = [
   {
@@ -425,47 +423,46 @@ export const BaseLensVariantConfig: ProductConfigType[] = [
     required: true,
   },
   {
-  name: "lens_coatings",
-  label: "Lens Coatings",
-  role: "all",
-  filter: "Coatings",
-  subFilter: "",
-  title: "Lens Coatings | Anti-reflective | UV Protection | Scratch Resistant |...",
-  entityName: "attribute-values",
-  fieldName: "attribute_name",
-  type: "multiCheckbox",
-  placeholder: "Select coatings...",
-  required: true,
-},
-{
-  name: "is_active",
-  label: "Is Active",
-  role: "all",
-  filter: "Is Active",
-  subFilter: "",
-  title: "Is Active | True | False",
-  entityName: "",
-  fieldName: "is_active",
-  type: "checkbox",
-  placeholder: "Select Is Active...",
-  required: false,
-  
-},
-]
+    name: "lens_coatings",
+    label: "Lens Coatings",
+    role: "all",
+    filter: "Coatings",
+    subFilter: "",
+    title:
+      "Lens Coatings | Anti-reflective | UV Protection | Scratch Resistant |...",
+    entityName: "attribute-values",
+    fieldName: "attribute_name",
+    type: "multiCheckbox",
+    placeholder: "Select coatings...",
+    required: true,
+  },
+  {
+    name: "is_active",
+    label: "Is Active",
+    role: "all",
+    filter: "Is Active",
+    subFilter: "",
+    title: "Is Active | True | False",
+    entityName: "",
+    fieldName: "is_active",
+    type: "checkbox",
+    placeholder: "Select Is Active...",
+    required: false,
+  },
+];
 
-// Base Lens | Stock Lenses 
+// Base Lens | Stock Lenses
 export const StockLensVariantConfig: ProductConfigType[] = [
   {
     name: "spherical",
     label: "SPH",
     role: "SL",
     filter: "",
+    fieldName: "spherical",
     subFilter: "SL-ST",
     title: "SPH | -60 | -50 | -40 |...",
     entityName: "products",
-    fieldName: "spherical",
     type: "select",
-    placeholder: "Select SPH...",
     required: true,
     options: generateLensOptions(-60, 60),
   },
@@ -483,7 +480,7 @@ export const StockLensVariantConfig: ProductConfigType[] = [
     required: false,
     options: generateLensOptions(-12, 12),
   },
-]
+];
 
 // Base Lens | Rx Lenses
 export const RxLensVariantConfig: ProductConfigType[] = [
@@ -514,7 +511,7 @@ export const RxLensVariantConfig: ProductConfigType[] = [
     placeholder: "Select ADD...",
     required: false,
   },
-]
+];
 
 // Base Lens | Stock Lenses + Rx Lenses
 export const ContactLensVariantConfig: ProductConfigType[] = [
@@ -584,11 +581,9 @@ export const ContactLensVariantConfig: ProductConfigType[] = [
     placeholder: "Select Expiration Date...",
     required: true,
   },
-]
+];
 
-
-
-export const CustomVariantMainConfig: ProductConfigType[]=[
+export const CustomVariantMainConfig: ProductConfigType[] = [
   {
     name: "variant_type",
     label: "Product Variant Name",
@@ -596,21 +591,20 @@ export const CustomVariantMainConfig: ProductConfigType[]=[
     filter: "",
     subFilter: "",
     title: "Variant Name Should be unique",
-    entityName: "attribute",
+    entityName: "attributes",
     fieldName: "name",
     type: "foreignkey",
     // placeholder: "Select Attribute...",
     required: true,
   },
-]
+];
 
-
-export const CustomVariantConfig: ProductConfigType[]=[
+export const CustomVariantConfig: ProductConfigType[] = [
   {
     name: "attribute",
     label: "Attribute",
     role: "all",
-    filter: "",
+    filter: "Custom",
     subFilter: "",
     title: "attribute | ...",
     entityName: "attributes",
@@ -632,34 +626,44 @@ export const CustomVariantConfig: ProductConfigType[]=[
     // placeholder: "Select Value...",
     required: true,
   },
+];
 
-]
-
-
-export const veriantConfig = (variant_type:string)=>{
-    let config: any[] = [];
-    switch (variant_type) {
-        case "basic":
-            config = BasicVariantConfig ;
-            break;
-        case "frames":
-            config =  [ ...FrameVariantConfig, ...BasicVariantConfig];
-            break;
-        case "stockLenses":
-            config = [ ...StockLensVariantConfig, ...BaseLensVariantConfig, ...BasicVariantConfig];
-            break;
-        case "rxLenses":
-            config = [ ...RxLensVariantConfig, ...BaseLensVariantConfig, ...BasicVariantConfig];
-            break;
-        case "contactLenses":
-            config = [ ...ContactLensVariantConfig, ...BaseLensVariantConfig, ...BasicVariantConfig];
-            break;
-        case "custom":
-            config = BasicVariantConfig
-            break;
-        default:
-            config = [];
-            break;
-    }
-    return config;
-}
+export const veriantConfig = (variant_type: string) => {
+  let config: any[] = [];
+  switch (variant_type) {
+    case "basic":
+      config = BasicVariantConfig;
+      break;
+    case "frames":
+      config = [...FrameVariantConfig, ...BasicVariantConfig];
+      break;
+    case "stockLenses":
+      config = [
+        ...StockLensVariantConfig,
+        ...BaseLensVariantConfig,
+        ...BasicVariantConfig,
+      ];
+      break;
+    case "rxLenses":
+      config = [
+        ...RxLensVariantConfig,
+        ...BaseLensVariantConfig,
+        ...BasicVariantConfig,
+      ];
+      break;
+    case "contactLenses":
+      config = [
+        ...ContactLensVariantConfig,
+        ...BaseLensVariantConfig,
+        ...BasicVariantConfig,
+      ];
+      break;
+    case "custom":
+      config = BasicVariantConfig;
+      break;
+    default:
+      config = [];
+      break;
+  }
+  return config;
+};
