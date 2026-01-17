@@ -30,19 +30,22 @@ export const ForeignKeyField = React.memo(
           />
         </div>
         {onAddNew && (
-
           <ActionButton
             onClick={() => onAddNew(fieldRow.entityName, fieldRow.name)}
             variant="icon-success"
             size="md"
             icon={<Plus size={18} />}
-     
-            className={cn("rounded-xl mt-0.5 shrink-0", "transition-smooth hover-scale", "border-2 hover:border-primary/50")}
+            className={cn(
+              "rounded-xl mt-0.5 shrink-0",
+              "transition-smooth hover-scale",
+              "border-2 hover:border-primary/50",
+            )}
             title={`Add ${fieldRow.filter}`}
           />
         )}
       </div>
     );
-  }
+  },
 );
-           
+
+ForeignKeyField.displayName = "ForeignKeyField";

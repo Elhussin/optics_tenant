@@ -42,14 +42,18 @@ export const MultiSelectFieldWrapper = React.memo(
             onClick={() => onAddNew(fieldRow.entityName, fieldRow.name)}
             variant="icon-success"
             size="md"
-            className={cn("rounded-xl mt-0.5 shrink-0", "transition-smooth hover-scale", "border-2 hover:border-primary/50")}
-
+            className={cn(
+              "rounded-xl mt-0.5 shrink-0",
+              "transition-smooth hover-scale",
+              "border-2 hover:border-primary/50",
+            )}
             icon={<Plus size={18} />}
             title={`Add ${fieldRow.filter}`}
           />
         )}
       </div>
     );
-  }
+  },
 );
- 
+
+MultiSelectFieldWrapper.displayName = "MultiSelectFieldWrapper";

@@ -1,0 +1,31 @@
+$ next build
+   ▲ Next.js 15.5.4
+   - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 62s
+   Linting and checking validity of types ...
+
+./src/features/accounting/pages/FinancialReportsPage.tsx
+108:5  Warning: Unused eslint-disable directive (no problems were reported from 'react-hooks/exhaustive-deps').
+
+./src/shared/components/LazyComponent.tsx
+26:3  Warning: Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any').
+155:7  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+Failed to compile.
+
+./src/features/products/variant/AddVariant.tsx:90:13
+Type error: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ product: number; }'.
+  No index signature with a parameter of type 'string' was found on type '{ product: number; }'.
+
+[0m [90m 88 |[39m       [90m// Remove undefined values[39m
+ [90m 89 |[39m       [33mObject[39m[33m.[39mkeys(payload)[33m.[39mforEach((key) [33m=>[39m {
+[31m[1m>[22m[39m[90m 90 |[39m         [36mif[39m (payload[key] [33m===[39m undefined) {
+ [90m    |[39m             [31m[1m^[22m[39m
+ [90m 91 |[39m           [36mdelete[39m payload[key][33m;[39m
+ [90m 92 |[39m         }
+ [90m 93 |[39m       })[33m;[39m[0m
+Next.js build worker exited with code: 1 and signal: null
+error: script "build" exited with code 1

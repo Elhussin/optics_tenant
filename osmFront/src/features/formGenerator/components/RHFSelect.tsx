@@ -35,7 +35,7 @@ export const RHFSelect = (props: RHFSelectProps & { isMulti?: boolean }) => {
               <div
                 className={cn(
                   "rounded-xl transition-all duration-200",
-                  hasError && "ring-2 ring-danger/20"
+                  hasError && "ring-2 ring-danger/20",
                 )}
               >
                 <ReactSelect
@@ -55,7 +55,7 @@ export const RHFSelect = (props: RHFSelectProps & { isMulti?: boolean }) => {
                       ? parsedOptions.filter((o) =>
                           Array.isArray(field.value)
                             ? field.value.includes(o.value)
-                            : false
+                            : false,
                         )
                       : parsedOptions.find((o) => o.value === field.value) ||
                         null
@@ -70,7 +70,7 @@ export const RHFSelect = (props: RHFSelectProps & { isMulti?: boolean }) => {
               {hasError && (
                 <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
                   <AlertCircle size={14} />
-                  {fieldState.error.message}
+                  {fieldState.error?.message}
                 </p>
               )}
             </div>

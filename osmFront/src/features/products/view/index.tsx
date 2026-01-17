@@ -34,7 +34,7 @@ const TYPE_VARIANTS: Record<
   SL: "warning",
   AX: "danger",
   DV: "primary",
-  OT: "neutral",
+  OT: "primary", // Changed from "neutral" to "primary"
 };
 
 interface ProductViewProps {
@@ -91,7 +91,7 @@ export function ProductView({ productId }: ProductViewProps) {
                   "w-16 h-16 rounded-xl shrink-0",
                   "bg-gradient-to-br from-primary to-blue-600",
                   "flex items-center justify-center",
-                  "shadow-lg shadow-primary/30"
+                  "shadow-lg shadow-primary/30",
                 )}
               >
                 <Package className="w-8 h-8 text-white" />

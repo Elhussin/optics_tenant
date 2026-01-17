@@ -80,7 +80,7 @@ export function AddVariant({
       }
 
       // Build the final payload - merge variant data directly (no variants wrapper)
-      const payload = {
+      const payload: Record<string, any> = {
         product: productId,
         ...variantData, // Spread variant fields directly
       };

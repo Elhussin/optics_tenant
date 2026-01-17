@@ -115,7 +115,7 @@ function replacePathParams(url: string, params: Record<string, any>): string {
 
 
 api.customRequest = async function (alias: string, data: any = {}) {
-  let endpoint: any = endpoints.find((e) => e.alias === alias);
+  const endpoint: any = endpoints.find((e) => e.alias === alias);
 
   // If endpoint not found, try to build from alias pattern
   // Pattern: app_resource_action or app_resource-name_action

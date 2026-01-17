@@ -67,7 +67,7 @@ export function FinancialReportsPage() {
 
   const [activeTab, setActiveTab] = useState<ReportType>("trial-balance");
   const [asOfDate, setAsOfDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
   const [startDate, setStartDate] = useState(() => {
     const date = new Date();
@@ -76,7 +76,7 @@ export function FinancialReportsPage() {
     return date.toISOString().split("T")[0];
   });
   const [endDate, setEndDate] = useState(
-    new Date().toISOString().split("T")[0]
+    new Date().toISOString().split("T")[0],
   );
 
   // Report data
@@ -105,7 +105,8 @@ export function FinancialReportsPage() {
 
   useEffect(() => {
     fetchReport();
-  }, [activeTab]); // eslint-disable-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   const handlePrint = () => {
     window.print();
@@ -270,7 +271,7 @@ export function FinancialReportsPage() {
             <Card className="border-0 shadow-lg">
               <CardContent className="py-12 text-center text-gray-400">
                 <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                <p>اضغط "تحديث" لعرض التقرير</p>
+                <p>اضغط &quot;تحديث&quot; لعرض التقرير</p>
               </CardContent>
             </Card>
           )}

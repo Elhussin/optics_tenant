@@ -70,10 +70,10 @@ const MenuButton = ({
     className={cn(
       "p-2 rounded-lg transition-all duration-200 flex items-center justify-center",
       "hover:scale-105 active:scale-95",
-      isActive
+            isActive
         ? "bg-primary/10 text-primary shadow-sm"
         : "text-secondary hover:bg-elevated hover:text-main",
-      disabled && "opacity-30 cursor-not-allowed hover:scale-100"
+      disabled && "opacity-30 cursor-not-allowed hover:scale-100",
     )}
   >
     {children}
@@ -113,7 +113,7 @@ const UrlPopover = ({
             "flex-1 px-3 py-2 text-sm rounded-lg transition-all duration-200",
             "border-2 border-border-main bg-white dark:bg-gray-800",
             "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
-            "text-main placeholder:text-secondary"
+            "text-main placeholder:text-secondary",
           )}
           autoFocus
           onKeyDown={(e) => {
@@ -153,7 +153,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   const currentLang = LANGUAGES[language];
   const isRTL = currentLang.dir === "rtl";
   const [activeUrlInput, setActiveUrlInput] = useState<"link" | "image" | null>(
-    null
+    null,
   );
 
   const editor = useEditor({
@@ -194,7 +194,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         dir: currentLang.dir,
         class: cn(
           "prose max-w-none focus:outline-none min-h-[150px] px-4 py-3",
-          isRTL && "prose-rtl"
+          isRTL && "prose-rtl",
         ),
       },
     },
@@ -208,7 +208,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
       setActiveUrlInput(null);
     },
-    [editor]
+    [editor],
   );
 
   const setLink = useCallback(
@@ -225,7 +225,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
       }
       setActiveUrlInput(null);
     },
-    [editor]
+    [editor],
   );
 
   if (!editor) {
@@ -256,7 +256,6 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               <h3 className="text-sm font-semibold text-main">
                 {currentLang.name}
               </h3>
-              <p className="text-xs text-secondary">{currentLang.nativeName}</p>
             </div>
           </div>
           <Badge variant={editable ? "warning" : "info"} size="sm">
@@ -296,7 +295,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div
             className={cn(
               "flex flex-wrap gap-1 w-full items-center",
-              isRTL && "flex-row-reverse"
+              isRTL && "flex-row-reverse",
             )}
           >
             {/* Basic Formatting */}
@@ -449,7 +448,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <div
               className={cn(
                 "absolute top-4 px-4 pointer-events-none text-secondary/50",
-                isRTL ? "right-0" : "left-0"
+                isRTL ? "right-0" : "left-0",
               )}
             >
               {placeholder}
@@ -463,7 +462,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
               "prose-headings:text-main prose-p:text-main",
               "prose-strong:text-main prose-code:text-main",
               "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
-              isRTL ? "text-right" : "text-left"
+              isRTL ? "text-right" : "text-left",
             )}
             style={{ direction: currentLang.dir }}
           />

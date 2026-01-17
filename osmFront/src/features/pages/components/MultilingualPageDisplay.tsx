@@ -42,7 +42,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
     return (
       <div className="max-w-4xl mx-auto p-6">
         <EmptyState
-          type="warning"
+          type="default"
           title="Content not available"
           description="Content is not available in this language."
         />
@@ -54,7 +54,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
 
   // Get available languages for this page
   const availableLanguages = page.translations.filter(
-    (t) => t && t.title && t.title.trim() && t.content && t.content.trim()
+    (t) => t && t.title && t.title.trim() && t.content && t.content.trim(),
   );
 
   return (
@@ -146,7 +146,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
                   <h1
                     className={cn(
                       "text-4xl md:text-5xl font-bold text-main leading-tight flex-1",
-                      currentLangInfo.dir === "rtl" && "font-arabic"
+                      currentLangInfo.dir === "rtl" && "font-arabic",
                     )}
                   >
                     {currentTranslation.title}
@@ -165,10 +165,10 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
                     <span>
                       {currentLangInfo.dir === "rtl"
                         ? `آخر تحديث: ${new Date(
-                            page.updated_at
+                            page.updated_at,
                           ).toLocaleDateString("ar-SA")}`
                         : `Last updated: ${new Date(
-                            page.updated_at
+                            page.updated_at,
                           ).toLocaleDateString()}`}
                     </span>
                   </div>
@@ -189,7 +189,7 @@ const MultilingualPageDisplay: React.FC<MultilingualPageDisplayProps> = ({
                   "prose-img:rounded-xl prose-img:shadow-lg",
                   currentLangInfo.dir === "rtl"
                     ? "prose-rtl [&>*]:text-right prose-blockquote:border-r-primary prose-blockquote:border-l-0"
-                    : "prose-ltr"
+                    : "prose-ltr",
                 )}
                 dir={currentLangInfo.dir}
                 dangerouslySetInnerHTML={{ __html: currentTranslation.content }}

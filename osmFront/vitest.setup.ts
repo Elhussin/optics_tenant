@@ -1,6 +1,6 @@
 // vitest.setup.ts
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
@@ -58,7 +58,7 @@ Object.defineProperty(navigator, 'vibrate', {
 });
 
 // Mock scrollTo
-window.scrollTo = vi.fn();
+window.scrollTo = vi.fn() as any;
 
 // Mock localStorage
 const localStorageMock = (() => {

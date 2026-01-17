@@ -71,7 +71,7 @@ export default function RootNotFoundPage() {
               transition={{ delay: 0.4 }}
               className="text-gray-600 dark:text-gray-300 mb-8 text-lg"
             >
-              The page you are looking for doesn't exist or has been moved.
+              The page you are looking for doesn&apos;t exist or has been moved.
             </motion.p>
 
             {/* Action Buttons */}

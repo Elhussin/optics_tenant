@@ -83,10 +83,12 @@ export function CreateOrder() {
   const store = useOrderFormStore();
 
   // جلب بيانات المستخدم الحالي لتحديد الفرع ومندوب المبيعات تلقائياً
-  const { data: currentUser } = useApiForm({
+  const { query: userQuery } = useApiForm({
     alias: "users_profile_retrieve",
     enabled: true,
   });
+
+  const currentUser = userQuery.data;
 
   // تحديد الفرع ومندوب المبيعات تلقائياً
   React.useEffect(() => {
@@ -113,15 +115,15 @@ export function CreateOrder() {
   // Step validation
   const canProceedToStep2 = useMemo(
     () => !!store.customerId,
-    [store.customerId]
+    [store.customerId],
   );
   const canProceedToStep3 = useMemo(
     () => !!store.customerId,
-    [store.customerId]
+    [store.customerId],
   ); // Prescription is optional
   const canProceedToStep4 = useMemo(
     () => store.items.length > 0,
-    [store.items]
+    [store.items],
   );
 
   const handleNext = () => {
@@ -200,7 +202,7 @@ export function CreateOrder() {
           errors.payment_type
         ) {
           const errorMsg = String(
-            errors.discount_amount || errors.paid_amount || errors.payment_type
+            errors.discount_amount || errors.paid_amount || errors.payment_type,
           );
           safeToast(errorMsg, { type: "error" });
           setCurrentStep(4);
