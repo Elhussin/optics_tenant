@@ -34,7 +34,13 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/src/shared/components/shadcn/ui/command";
-import { Check, ChevronsUpDown, X } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  X,
+  CheckSquare,
+  AlertCircle,
+} from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
 import {
   FieldsProps,
@@ -45,46 +51,87 @@ import { Badge } from "@/src/shared/components/shadcn/ui/badge";
 import { useForm, Controller } from "react-hook-form";
 import { StringToBoolean } from "class-variance-authority/types";
 
+/**
+ * ✨ CheckboxField - حقل Checkbox محسّن مع Premium Design
+ */
 export const CheckboxField = ({ fieldRow, field }: FieldsProps) => {
   return (
-    <div className="flex items-center space-x-2">
-      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-      <span>{fieldRow.placeholder}</span>
+    <div className="flex items-start gap-3 px-4 py-2 border border-primary/50 rounded-lg bg-surface transition-all duration-300 cursor-pointer hover:border-primary/70 hover:shadow-sm animate-fade-in-up group">
+      <Checkbox
+        id={fieldRow.name}
+        checked={field.value}
+        onCheckedChange={field.onChange}
+        className="mt-0.5 transition-all duration-300 data-[state=checked]:scale-110"
+      />
+      <div className="flex-1">
+        <label
+          htmlFor={fieldRow.name}
+          className="cursor-pointer text-sm font-medium text-foreground flex items-center gap-2 select-none"
+        >
+          <CheckSquare
+            size={16}
+            className="text-primary group-hover:scale-110 transition-transform"
+          />
+          {fieldRow.placeholder || fieldRow.label}
+          {fieldRow.required && (
+            <span className="text-destructive text-xs">*</span>
+          )}
+        </label>
+      </div>
     </div>
   );
 };
 
+/**
+ * ✨ SwitchField - حقل Switch محسّن مع glass effect
+ */
 export const SwitchField = ({ fieldRow, field }: FieldsProps) => {
   return (
-    <div className="flex justify-between items-center border p-2 rounded-md">
-      <span>{fieldRow.placeholder}</span>
-      <Switch  checked={field.value} onCheckedChange={field.onChange} />
+    <div className="flex justify-between items-center gap-3 px-4 py-2 border border-primary/50 rounded-lg bg-surface transition-all duration-300 cursor-pointer hover:border-primary/70 hover:shadow-sm animate-fade-in-up">
+      <span className="text-sm font-medium">{fieldRow.placeholder}</span>
+      <Switch
+        checked={field.value}
+        onCheckedChange={field.onChange}
+        className="transition-all duration-300 data-[state=checked]:scale-105"
+      />
     </div>
   );
 };
 
+/**
+ * ✨ RadioField - حقل Radio محسّن مع animations
+ */
 export const RadioField = ({ fieldRow, field }: FieldsProps) => {
   return (
     <RadioGroup
       onValueChange={field.onChange}
       value={field.value}
-      className="flex gap-3"
+      className="flex gap-3 flex-wrap animate-fade-in-up"
     >
-      {(fieldRow.options || []).map((opt) => (
+      {(fieldRow.options || []).map((opt, index) => (
         <FormItem
           key={String(opt.value)}
-          className="flex items-center space-x-2"
+          className="flex items-center gap-2 px-4 py-2 border border-primary/50 rounded-lg bg-surface transition-all duration-300 cursor-pointer hover:border-primary/70 hover:shadow-sm"
+          style={{ animationDelay: `${index * 50}ms` }}
         >
           <FormControl>
-            <RadioGroupItem value={String(opt.value)} />
+            <RadioGroupItem
+              value={String(opt.value)}
+              className="transition-all duration-300 data-[state=checked]:scale-110"
+            />
           </FormControl>
-          <FormLabel className="!mt-0">{opt.label}</FormLabel>
+          <FormLabel className="!mt-0 cursor-pointer select-none text-sm font-medium">
+            {opt.label}
+          </FormLabel>
         </FormItem>
       ))}
     </RadioGroup>
   );
 };
 
+/**
+ * ✨ TextField - حقل نص محسّن مع double border focus effects
+ */
 export const TextField = ({ fieldRow, field }: FieldsProps) => {
   return (
     <Input
@@ -93,24 +140,31 @@ export const TextField = ({ fieldRow, field }: FieldsProps) => {
       value={field.defaultValue || ""}
       {...field}
       className={cn(
-        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        fieldRow.className
+        "w-full h-11 px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 placeholder:text-secondary focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 animate-fade-in-up",
+        "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+        fieldRow.className,
       )}
     />
   );
 };
 
+/**
+ * ✨ TextareaField - حقل نص متعدد الأسطر محسّن مع double border
+ */
 export const TextareaField = ({ fieldRow, field }: FieldsProps) => {
   return (
     <Textarea
       placeholder={fieldRow.placeholder}
       {...field}
-      className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+      className="w-full min-h-[100px] px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 placeholder:text-secondary focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 resize-none scrollbar-thin animate-fade-in-up"
       required={fieldRow.required}
     />
   );
 };
 
+/**
+ * ✨ SelectField - حقل اختيار محسّن مع double border
+ */
 export const SelectField = ({
   fieldRow,
   field,
@@ -118,23 +172,29 @@ export const SelectField = ({
 }: SelectFieldsProps) => {
   return (
     <Select onValueChange={field.onChange} value={field.value}>
-      <SelectTrigger className="w-full h-10 select__control">
+      <SelectTrigger className="w-full h-11 px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm cursor-pointer animate-fade-in-up">
         <SelectValue placeholder={fieldRow.placeholder || "Select"} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="border border-primary/50 bg-surface animate-fade-in-down">
         {(options || fieldRow.options || [{ value: "", label: "" }]).map(
           (opt: any, index: number) => (
-            <SelectItem className="bg-surface" key={index} value={String(opt.value)}>
+            <SelectItem
+              className="cursor-pointer transition-colors bg-surface hover:bg-primary/10 hover:text-primary focus:bg-primary/10 focus:text-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary data-[state=checked]:font-semibold"
+              key={index}
+              value={String(opt.value)}
+            >
               {opt.label}
             </SelectItem>
-          )
+          ),
         )}
       </SelectContent>
     </Select>
   );
 };
 
-// لاحظ أننا نحذف useState للـ value لأنها ستأتي من form
+/**
+ * ✨ SearchableSelect - حقل اختيار قابل للبحث مع animations
+ */
 export function SearchableSelect({
   fieldRow,
   options,
@@ -150,42 +210,73 @@ export function SearchableSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-10 px-3 font-normal"
+          className={cn(
+            "w-full justify-between h-11 px-4 font-normal rounded-lg transition-all duration-300 bg-surface border border-primary/50 focus:outline-none hover:border-primary/70 hover:shadow-sm animate-fade-in-up",
+            open && "border-primary ring-1 ring-primary/20",
+          )}
         >
           {selectedLabel ? (
-             <span className="truncate">{selectedLabel}</span>
+            <span className="truncate font-medium">{selectedLabel}</span>
           ) : (
-            <span className="text-muted-foreground">{fieldRow.placeholder || "Select..."}</span>
+            <span className="text-muted-foreground">
+              {fieldRow.placeholder || "Select..."}
+            </span>
           )}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown
+            className={cn(
+              "ml-2 h-4 w-4 shrink-0 opacity-50 transition-transform",
+              open && "rotate-180",
+            )}
+          />
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[300px] p-0" align="start">
-        <Command>
-          <CommandInput placeholder={`Search ${fieldRow.label || "..."}`} />
-          <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
+      <PopoverContent
+        className="w-[300px] p-0 border border-primary/50 bg-surface animate-fade-in-down"
+        align="start"
+      >
+        <Command className="bg-surface">
+          <CommandInput
+            placeholder={`Search ${fieldRow.label || "..."}...`}
+            className="h-11 px-4 border-b border-primary/20"
+          />
+          <CommandList className="scrollbar-thin">
+            <CommandEmpty className="py-6 text-center text-muted-foreground">
+              No results found.
+            </CommandEmpty>
             <CommandGroup>
-              {options?.map((opt, index) => (
-                <CommandItem
-                  className="bg-surface"
-                  key={index}
-                  value={opt.label} // Use label for searching
-                  onSelect={() => {
-                    field.onChange(opt.value); // 🔹 نحدث القيمة في الـ form
-                    setOpen(false);
-                  }}
-                >
-                  <Check
+              {options?.map((opt, index) => {
+                const isSelected = field.value === opt.value;
+                return (
+                  <CommandItem
                     className={cn(
-                      "mr-2 h-4 w-4",
-                      field.value === opt.value ? "opacity-100" : "opacity-0"
+                      "cursor-pointer px-4 py-2.5 transition-colors hover:bg-primary/10 animate-fade-in-left",
+                      isSelected && "bg-primary/10 font-semibold text-primary",
                     )}
-                  />
-                  {opt.label}
-                </CommandItem>
-              ))}
+                    style={{ animationDelay: `${index * 30}ms` }}
+                    key={index}
+                    value={opt.label}
+                    onSelect={() => {
+                      field.onChange(opt.value);
+                      setOpen(false);
+                    }}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4 transition-all",
+                        isSelected
+                          ? "opacity-100 scale-110 text-primary"
+                          : "opacity-0 scale-75",
+                      )}
+                    />
+                    <span
+                      className={cn(isSelected && "font-semibold text-primary")}
+                    >
+                      {opt.label}
+                    </span>
+                  </CommandItem>
+                );
+              })}
             </CommandGroup>
           </CommandList>
         </Command>
@@ -194,84 +285,121 @@ export function SearchableSelect({
   );
 }
 
+/**
+ * ✨ MultiCheckbox - مربعات اختيار متعددة محسّنة مع Premium Design
+ */
 export const MultiCheckbox = ({
   fieldName,
   fieldRow,
   control,
   options,
 }: MultiSelectFieldProps) => {
-  // console.log("MultiCheckbox", options)
   const DefaultOptions = options || fieldRow.options || [];
   return (
     <Controller
       name={fieldName}
       control={control}
-      defaultValue={[]as any} // ✅ يضمن أن field.value يكون [] وليس undefined
+      defaultValue={[] as any}
       render={({ field }) => (
-        <div className="space-y-2 grid grid-cols-3 gap-1.5">
-          {DefaultOptions?.map((opt: any, index: number) => (
-            <div key={index} className="flex items-center space-x-2">
-              <Checkbox
-                id={opt.value}
-                checked={(field.value || []).includes(opt.value)} // ✅ حماية إضافية
-                onCheckedChange={(checked) => {
-                  const currentValues = field.value || [];
-                  const newValue = checked
-                    ? [...currentValues, opt.value]
-                    : currentValues.filter((v: string) => v !== opt.value);
-                  field.onChange(newValue);
-                }}
-              />
-              <label htmlFor={opt.value} className="text-sm font-medium">
-                {opt.label}
-              </label>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-fade-in-up">
+          {DefaultOptions?.map((opt: any, index: number) => {
+            const isSelected = (field.value || []).includes(opt.value);
+
+            return (
+              <div
+                key={index}
+                className={cn(
+                  "flex items-start gap-3 px-4 py-2 border border-primary/50 rounded-lg bg-surface transition-all duration-300 cursor-pointer hover:border-primary/70 hover:shadow-sm group",
+                  isSelected && "border-primary bg-primary/10",
+                )}
+                style={{ animationDelay: `${index * 40}ms` }}
+              >
+                <Checkbox
+                  id={opt.value}
+                  checked={isSelected}
+                  onCheckedChange={(checked) => {
+                    const currentValues = field.value || [];
+                    const newValue = checked
+                      ? [...currentValues, opt.value]
+                      : currentValues.filter((v: string) => v !== opt.value);
+                    field.onChange(newValue);
+                  }}
+                  className="mt-0.5 transition-all duration-300 data-[state=checked]:scale-110"
+                />
+                <div className="flex-1">
+                  <label
+                    htmlFor={opt.value}
+                    className="cursor-pointer text-sm font-medium text-foreground flex items-center gap-2 select-none"
+                  >
+                    <CheckSquare
+                      size={16}
+                      className={cn(
+                        "transition-transform",
+                        isSelected
+                          ? "text-primary scale-110"
+                          : "text-muted-foreground group-hover:text-primary group-hover:scale-110",
+                      )}
+                    />
+                    {opt.label}
+                  </label>
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     />
   );
 };
 
+/**
+ * ✨ MultiSelectField - حقل اختيار متعدد محسّن مع badges
+ */
 export function MultiSelectField({
   control,
   fieldName,
   options,
 }: MultiSelectFieldProps) {
+  const [open, setOpen] = useState(false);
+
   return (
     <Controller
       name={fieldName}
       control={control}
-      defaultValue={[] as any} // ✅ يضمن أن field.value لن يكون undefined
+      defaultValue={[] as any}
       render={({ field }) => {
         const value = (field.value || []) as Array<string | number>;
-
         const selected =
           options?.filter((opt: any) => value.includes(opt.value)) || [];
 
         return (
-          <div className="flex flex-col gap-2">
-            <Popover>
+          <div className="flex flex-col gap-2 animate-fade-in-up">
+            <Popover open={open} onOpenChange={setOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-between text-left font-normal"
+                  className={cn(
+                    "w-full justify-between h-auto min-h-[2.75rem] px-4 font-normal rounded-lg transition-all duration-300 bg-surface border border-primary/50 focus:outline-none hover:border-primary/70 hover:shadow-sm animate-fade-in-up",
+                    open && "border-primary ring-1 ring-primary/20",
+                  )}
                   type="button"
                 >
                   {selected.length > 0 ? (
-                    <div className="flex flex-wrap gap-1">
-                      {selected.map((s) => (
+                    <div className="flex flex-wrap gap-1.5 py-1">
+                      {selected.map((s, index) => (
                         <Badge
                           key={s.value}
-                          className="text-xs flex items-center gap-1"
+                          variant="secondary"
+                          className="text-xs flex items-center gap-1.5 px-2.5 py-1 transition-all duration-200 hover:scale-105 animate-fade-in-left"
+                          style={{ animationDelay: `${index * 30}ms` }}
                         >
-                          {s.label}
+                          <span className="font-medium">{s.label}</span>
                           <X
-                            className="w-3 h-3 cursor-pointer"
+                            className="w-3.5 h-3.5 cursor-pointer hover:text-destructive transition-colors"
                             onClick={(e) => {
                               e.stopPropagation();
                               field.onChange(
-                                value.filter((v) => v !== s.value)
+                                value.filter((v) => v !== s.value),
                               );
                             }}
                           />
@@ -279,47 +407,76 @@ export function MultiSelectField({
                       ))}
                     </div>
                   ) : (
-                    <span className="text-muted-foreground">
+                    <span className="text-muted-foreground py-1">
                       Select options...
                     </span>
                   )}
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 ml-2">
                     {selected.length > 0 && (
-                      <span className="text-xs text-muted-foreground">
-                        ({selected.length})
-                      </span>
+                      <Badge
+                        variant="outline"
+                        className="text-xs px-2 py-0.5 font-semibold animate-scale-in"
+                      >
+                        {selected.length}
+                      </Badge>
                     )}
-                    <ChevronsUpDown className="w-4 h-4 opacity-50" />
+                    <ChevronsUpDown
+                      className={cn(
+                        "w-4 h-4 opacity-50 transition-transform flex-shrink-0",
+                        open && "rotate-180",
+                      )}
+                    />
                   </div>
                 </Button>
               </PopoverTrigger>
 
-              <PopoverContent className="p-0 w-[250px]">
-                <Command>
-                  <CommandList>
+              <PopoverContent className="p-0 w-[300px] border border-primary/50 bg-surface animate-fade-in-down">
+                <Command className="bg-surface">
+                  <CommandInput
+                    placeholder="Search options..."
+                    className="h-11 px-4 border-b border-primary/20"
+                  />
+                  <CommandList className="scrollbar-thin max-h-64">
+                    <CommandEmpty className="py-6 text-center text-muted-foreground">
+                      No options found.
+                    </CommandEmpty>
                     <CommandGroup>
-                      {options?.map((opt) => (
-                        <CommandItem
-                        className="bg-surface"
-                          key={opt.value}
-                          onSelect={() => {
-                            const newValue = value.includes(opt.value)
-                              ? value.filter((v) => v !== opt.value)
-                              : [...value, opt.value];
-                            field.onChange(newValue);
-                          }}
-                        >
-                          <Check
+                      {options?.map((opt, index) => {
+                        const isSelected = value.includes(opt.value);
+                        return (
+                          <CommandItem
                             className={cn(
-                              "mr-2 h-4 w-4",
-                              value.includes(opt.value)
-                                ? "opacity-100"
-                                : "opacity-0"
+                              "cursor-pointer px-4 py-2.5 transition-colors hover:bg-primary/10 animate-fade-in-left",
+                              isSelected &&
+                                "bg-primary/10 font-semibold text-primary",
                             )}
-                          />
-                          {opt.label}
-                        </CommandItem>
-                      ))}
+                            style={{ animationDelay: `${index * 30}ms` }}
+                            key={opt.value}
+                            onSelect={() => {
+                              const newValue = isSelected
+                                ? value.filter((v) => v !== opt.value)
+                                : [...value, opt.value];
+                              field.onChange(newValue);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                "mr-2 h-4 w-4 transition-all",
+                                isSelected
+                                  ? "opacity-100 scale-110 text-primary"
+                                  : "opacity-0 scale-75",
+                              )}
+                            />
+                            <span
+                              className={cn(
+                                isSelected && "font-semibold text-primary",
+                              )}
+                            >
+                              {opt.label}
+                            </span>
+                          </CommandItem>
+                        );
+                      })}
                     </CommandGroup>
                   </CommandList>
                 </Command>

@@ -1,140 +1,368 @@
-'use client';
-import { useAside } from '@/src/shared/contexts/AsideContext';
-import React from 'react';
-import { Link } from '@/src/app/i18n/navigation';
+/**
+ * ✨ Aside Component - محسّن مع Animations و UI/UX Enhancements
+ * @description Sidebar navigation محسّن مع glassmorphism وanimations متقدمة
+ */
+
+"use client";
+
+import { useAside } from "@/src/shared/contexts/AsideContext";
+import React from "react";
+import { Link } from "@/src/app/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { useUser } from '@/src/features/auth/hooks/UserContext';
-import { X } from 'lucide-react';
-import { URLDATA, navUrl } from '@/src/shared/constants/url';
-import Image from 'next/image';
-import { useTranslations, useLocale } from 'next-intl';
-import { usePathname } from 'next/navigation';
+import { useUser } from "@/src/features/auth/hooks/UserContext";
+import { X, ChevronRight, Sparkles } from "lucide-react";
+import { URLDATA, navUrl } from "@/src/shared/constants/url";
+import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
+import { usePathname } from "next/navigation";
 import {
-  Home, Shield, Eye, User, Users, Building2,
-  BarChart3, Truck, Phone, Info, LogIn, UserPlus, Grid, LogOut
-} from 'lucide-react';
-import clsx from 'clsx';
+  Home,
+  Shield,
+  Eye,
+  User,
+  Users,
+  Building2,
+  BarChart3,
+  Truck,
+  Phone,
+  Info,
+  LogIn,
+  UserPlus,
+  Grid,
+  LogOut,
+} from "lucide-react";
+import { cn } from "@/src/shared/utils/cn";
 
 export default function Aside() {
   const locale = useLocale();
-  const isRTL = locale === 'ar';
-
+  const isRTL = locale === "ar";
   const { isVisible, asideContent, toggleAside } = useAside();
 
   return (
     <>
+      {/* ✨ Enhanced Backdrop */}
       <AnimatePresence>
         {isVisible && (
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.5 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={toggleAside}
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
           />
         )}
       </AnimatePresence>
 
+      {/* ✨ Enhanced Sidebar */}
       <motion.aside
-        initial={{ x: isRTL ? '100%' : '-100%' }}
-        animate={{ x: isVisible ? '0%' : isRTL ? '100%' : '-100%' }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 ${isRTL ? 'right-0 border-l' : 'left-0 border-r'} h-full w-80 bg-surface border-gray-200 dark:border-gray-800 shadow-xl z-50 overflow-hidden flex flex-col`}
+        initial={{ x: isRTL ? "100%" : "-100%" }}
+        animate={{ x: isVisible ? "0%" : isRTL ? "100%" : "-100%" }}
+        transition={{
+          duration: 0.3,
+          ease: [0.4, 0, 0.2, 1],
+          type: "spring",
+          stiffness: 300,
+          damping: 30,
+        }}
+        className={cn(
+          "fixed top-0 h-full w-80 z-50",
+          "bg-background/95 backdrop-blur-xl",
+          "border-2 border-border shadow-2xl",
+          "overflow-hidden flex flex-col",
+          isRTL ? "right-0" : "left-0"
+        )}
       >
-        <div className="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800">
-          <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Menu</span>
-          <button
+        {/* ✨ Enhanced Header */}
+        <div
+          className={cn(
+            "flex items-center justify-between p-4",
+            "border-b-2 border-border",
+            "bg-elevated/50"
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <div
+              className={cn(
+                "p-2 rounded-lg",
+                "bg-gradient-to-br from-primary/20 to-primary/10",
+                "animate-pulse-slow"
+              )}
+            >
+              <Sparkles className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-lg font-bold text-foreground">Menu</span>
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={toggleAside}
-            className="p-2 text-gray-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors"
+            className={cn(
+              "p-2 rounded-xl",
+              "text-muted-foreground hover:text-destructive",
+              "hover:bg-destructive/10",
+              "transition-all duration-200"
+            )}
+            aria-label="Close menu"
           >
             <X size={20} />
-          </button>
+          </motion.button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4">
-          {asideContent ? asideContent : <AsidDeafualtContent />}
+        {/* ✨ Enhanced Content Area */}
+        <div className={cn("flex-1 overflow-y-auto p-4", "scrollbar-thin")}>
+          {asideContent ? asideContent : <AsideDefaultContent />}
         </div>
       </motion.aside>
     </>
   );
 }
 
-
-const AsidDeafualtContent = () => {
-  const t = useTranslations('aside');
+/**
+ * ✨ AsideDefaultContent - محسّن مع staggered animations
+ */
+const AsideDefaultContent = () => {
+  const t = useTranslations("aside");
   const { user } = useUser();
   const pathname = usePathname();
+  const locale = useLocale();
+  const isRTL = locale === "ar";
 
-  // Helper to get icon based on path (simple mapping)
+  // Helper to get icon based on path
   const getIcon = (path: string) => {
+    const iconProps = { size: 20, strokeWidth: 2 };
     switch (path) {
-      case '/': return <Home size={20} />;
-      case '/dashboard': return <Shield size={20} />;
-      case '/admin': return <Shield size={20} />;
-      case '/prescriptions': return <Eye size={20} />; // Or FileText
-      case '/profile': return <User size={20} />;
-      case '/users': return <Users size={20} />;
-      case '/tenants': return <Building2 size={20} />;
-      case '/groups': return <Users size={20} />;
-      case '/crm': return <BarChart3 size={20} />;
-      case '/products/supplier': return <Truck size={20} />;
-      case '/contact': return <Phone size={20} />;
-      case '/about': return <Info size={20} />;
-      case '/logout': return <LogOut size={20} />;
-      case '/auth/login': return <LogIn size={20} />;
-      case '/auth/register': return <UserPlus size={20} />;
-      default: return <Grid size={20} />;
+      case "/":
+        return <Home {...iconProps} />;
+      case "/dashboard":
+        return <Shield {...iconProps} />;
+      case "/admin":
+        return <Shield {...iconProps} />;
+      case "/prescriptions":
+        return <Eye {...iconProps} />;
+      case "/profile":
+        return <User {...iconProps} />;
+      case "/users":
+        return <Users {...iconProps} />;
+      case "/tenants":
+        return <Building2 {...iconProps} />;
+      case "/groups":
+        return <Users {...iconProps} />;
+      case "/crm":
+        return <BarChart3 {...iconProps} />;
+      case "/products/supplier":
+        return <Truck {...iconProps} />;
+      case "/contact":
+        return <Phone {...iconProps} />;
+      case "/about":
+        return <Info {...iconProps} />;
+      case "/logout":
+        return <LogOut {...iconProps} />;
+      case "/auth/login":
+        return <LogIn {...iconProps} />;
+      case "/auth/register":
+        return <UserPlus {...iconProps} />;
+      default:
+        return <Grid {...iconProps} />;
     }
   };
 
-  const NavItem = ({ item }: { item: { path: string, name: string } }) => {
+  /**
+   * ✨ Enhanced NavItem with animations
+   */
+  const NavItem = ({
+    item,
+    index,
+  }: {
+    item: { path: string; name: string };
+    index: number;
+  }) => {
     const isActive = pathname === item.path;
+
     return (
-      <Link
-        href={item.path}
-        className={clsx(
-          "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group",
-          isActive
-            ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-medium"
-            : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200"
+      <motion.div
+        initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: index * 0.05 }}
+      >
+        <Link
+          href={item.path}
+          className={cn(
+            "flex items-center gap-3 px-4 py-3 rounded-xl",
+            "transition-all duration-200 group relative overflow-hidden",
+            isActive
+              ? [
+                  "bg-primary/10 text-primary",
+                  "font-semibold shadow-sm",
+                  "border-2 border-primary/20",
+                ]
+              : [
+                  "text-muted-foreground hover:text-foreground",
+                  "hover:bg-elevated hover:shadow-sm",
+                  "border-2 border-transparent hover:border-border",
+                ]
+          )}
+        >
+          {/* Active indicator */}
+          {isActive && (
+            <motion.div
+              layoutId="active-sidebar"
+              className={cn(
+                "absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent",
+                "rounded-xl"
+              )}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
+          )}
+
+          {/* Icon */}
+          <span
+            className={cn(
+              "relative z-10 transition-all duration-200",
+              "group-hover:scale-110 group-hover:rotate-3",
+              isActive && "text-primary scale-110"
+            )}
+          >
+            {getIcon(item.path)}
+          </span>
+
+          {/* Label */}
+          <span className="relative z-10 flex-1">{t(item.name)}</span>
+
+          {/* Arrow indicator */}
+          <ChevronRight
+            className={cn(
+              "relative z-10 w-0 opacity-0 transition-all duration-200",
+              "group-hover:w-4 group-hover:opacity-100",
+              isRTL && "rotate-180"
+            )}
+            size={16}
+          />
+        </Link>
+      </motion.div>
+    );
+  };
+
+  /**
+   * ✨ User Profile Card (للـ logged in users)
+   */
+  const UserProfileCard = () => {
+    if (!user) return null;
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className={cn(
+          "mb-6 p-4 rounded-2xl",
+          "bg-gradient-to-br from-primary/10 via-primary/5 to-transparent",
+          "border-2 border-primary/20",
+          "shadow-sm"
         )}
       >
-        <span className={clsx("transition-transform group-hover:scale-110", isActive && "text-primary-600 dark:text-primary-500")}>
-          {getIcon(item.path)}
-        </span>
-        <span>{t(item.name)}</span>
-        {isActive && (
-          <motion.div
-            layoutId="active-sidebar"
-            className="ml-auto w-1.5 h-1.5 rounded-full bg-primary-600 dark:bg-primary-500"
-          />
+        <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              "relative w-12 h-12 rounded-full",
+              "bg-gradient-to-br from-primary to-primary/70",
+              "flex items-center justify-center",
+              "text-primary-foreground font-bold text-lg",
+              "shadow-md ring-2 ring-primary/20"
+            )}
+          >
+            {user.username?.[0]?.toUpperCase() || "U"}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-foreground truncate">
+              {user.username}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {user.email}
+            </p>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
+  /**
+   * ✨ Brand Card (للـ guest users)
+   */
+  const BrandCard = () => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2 }}
+        className={cn(
+          "mt-8 rounded-2xl overflow-hidden",
+          "bg-gradient-to-br from-primary/10 via-primary/5 to-transparent",
+          "border-2 border-primary/20",
+          "shadow-lg"
         )}
-      </Link>
+      >
+        <div className="p-4 text-center">
+          <div
+            className={cn(
+              "relative w-24 h-24 mx-auto mb-3",
+              "bg-gradient-to-br from-primary/20 to-primary/10",
+              "rounded-2xl p-2",
+              "shadow-sm"
+            )}
+          >
+            <Image
+              src="/media/aside.png"
+              alt="logo"
+              width={120}
+              height={60}
+              className="w-full h-full object-contain drop-shadow-sm"
+            />
+          </div>
+          <h3 className="font-semibold text-foreground mb-1">Optics Store</h3>
+          <p className="text-xs text-muted-foreground">Management System</p>
+        </div>
+      </motion.div>
     );
   };
 
   return (
-    <nav className="flex flex-col gap-1.5">
+    <nav className="flex flex-col gap-2">
       {user ? (
         <>
-          <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Dashboard</div>
-          {URLDATA.map((item) => (
-            <NavItem key={item.path} item={item} />
+          {/* User Profile Card */}
+          <UserProfileCard />
+
+          {/* Section Header */}
+          <div
+            className={cn(
+              "px-4 py-2 mb-1",
+              "flex items-center gap-2",
+              "text-xs font-bold uppercase tracking-wider",
+              "text-muted-foreground"
+            )}
+          >
+            <div className="h-px flex-1 bg-border" />
+            <span>Dashboard</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+
+          {/* Navigation Items */}
+          {URLDATA.map((item, index) => (
+            <NavItem key={item.path} item={item} index={index} />
           ))}
         </>
       ) : (
         <>
-          {navUrl.map((item) => (
-            <NavItem key={item.path} item={item} />
+          {/* Guest Navigation */}
+          {navUrl.map((item, index) => (
+            <NavItem key={item.path} item={item} index={index} />
           ))}
-          <div className="mt-8 rounded-2xl bg-gradient-to-br from-primary-50 to-primary-100 flex flex-col items-center text-center overflow-hidden">
-            <Image src="/media/aside.png" alt="logo" width={120} height={60} className="w-full h-auto mb-3 drop-shadow-sm" />
-            <p className="text-xs text-gray-500 dark:text-gray-400 pb-4">Optics Store Management</p>
-          </div>
+
+          {/* Brand Card */}
+          <BrandCard />
         </>
       )}
     </nav>
   );
-}
-
-
+};

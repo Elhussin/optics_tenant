@@ -4,3 +4,8 @@
 [2025-12-22 00:04:33,007] INFO paypal: PayPal payment executed successfully: 92995422FF732314R
 [2025-12-30 02:55:42,790] INFO paypal: Successfully applied plan premium (49.00 USD) to client hussain
 [2025-12-30 02:55:42,791] INFO paypal: PayPal payment executed successfully: 5KL81624GY6287500
+[2026-01-11 19:24:13,139] INFO paypal: Successfully applied plan premium (49.00 USD) to client store20
+[2026-01-11 19:24:13,140] INFO paypal: PayPal payment executed successfully: 45923660J77320019
+[2026-01-15 20:52:07,592] ERROR paypal: Payment not completed
+[2026-01-15 20:52:07,627] INFO paypal: Successfully applied plan basic (19.00 USD) to client store20
+[2026-01-15 20:52:07,627] INFO paypal: PayPal payment executed successfully: 43650913940507701

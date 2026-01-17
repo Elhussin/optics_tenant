@@ -31,6 +31,9 @@ import {
   Tags,
   Image as ImageIcon,
   DollarSign,
+  ShoppingCart,
+  Warehouse,
+  BarChart3,
 } from "lucide-react";
 
 export default function DashboardLinks() {
@@ -91,7 +94,6 @@ export default function DashboardLinks() {
     </div>
   );
 }
-
 
 const links = [
   // Tenant
@@ -423,5 +425,45 @@ const links = [
     group: "Pages",
     isTenant: true,
     icon: FileText,
+  },
+  // Orders & Sales
+  {
+    href: "orders",
+    roles: ["owner", "admin", "sales", "cashier", "manager"],
+    group: "Sales",
+    isTenant: true,
+    icon: ShoppingCart,
+  },
+  // Wholesale (New!)
+  {
+    href: "wholesale",
+    roles: ["owner", "admin", "sales", "manager"],
+    group: "Sales",
+    isTenant: true,
+    icon: Truck,
+  },
+  // Inventory
+  {
+    href: "inventory",
+    roles: ["owner", "admin", "store_keeper", "manager"],
+    group: "Inventory",
+    isTenant: true,
+    icon: Warehouse,
+  },
+  // Reports
+  {
+    href: "reports",
+    roles: ["owner", "admin", "manager", "accountant"],
+    group: "Reports",
+    isTenant: true,
+    icon: BarChart3,
+  },
+  // Accounting (New!)
+  {
+    href: "accounting",
+    roles: ["owner", "admin", "accountant"],
+    group: "Accounting",
+    isTenant: true,
+    icon: DollarSign,
   },
 ];

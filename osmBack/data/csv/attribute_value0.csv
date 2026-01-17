@@ -154,15 +154,21 @@ Base Curve,11.5,+11.50
 Base Curve,12,+12.00
 Base Curve,12.5,+12.50
 
-Product Type,"SV-ST",Single Stock
-Product Type,"SV-RX",Single RX
-Product Type,"MF-RX",Multi  Focal RX
-Product Type,"BF-RX",Bifocal RX
-Product Type,"TF-RX",Triple Focal RX
+Product Type,"SL-ST",Single Stock
+Product Type,"SL-RX",Single RX
+Product Type,"SL-MF",Multi  Focal RX
+Product Type,"SL-BF",Bifocal RX
+Product Type,"SL-TF",Triple Focal RX
 Product Type,"CL-Cl",Contact Lens Clear
 Product Type,"CL-CO",Contact Lens Colored 
 Product Type,"FR-SG",Frames Sun Glasses
 Product Type,"FR-SP",Frames Spectacle Glasses
+Product Type,"FR-OT",Frames Other
+Product Type,"FR-DV",Frames Devices
+Product Type,"AX-OT",Accessories 
+Product Type,"OT-OT",Other
+Product Type,"DV-DV",Devices 
+Product Type,"All",All
 
 
 

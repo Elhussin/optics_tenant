@@ -13,4 +13,7 @@ urlpatterns = [
     path('crm/', include('apps.crm.urls')),
     path('prescriptions/', include('apps.prescriptions.urls')),
     path('tenants/', include('apps.tenants.urls')),
+
+    # Mobile APIs
+    path('', include('apps.api.urls')),
 ]

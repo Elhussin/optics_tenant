@@ -115,13 +115,41 @@ function replacePathParams(url: string, params: Record<string, any>): string {
 
 
 api.customRequest = async function (alias: string, data: any = {}) {
-  const endpoint: any = endpoints.find((e) => e.alias === alias);
+  let endpoint: any = endpoints.find((e) => e.alias === alias);
+
+  // If endpoint not found, try to build from alias pattern
+  // Pattern: app_resource_action or app_resource-name_action
+  // Example: sales_reports_financial-dashboard -> /api/sales/reports/financial-dashboard/
+  let method = 'GET';
+  let url: string;
+
   if (!endpoint) {
-    throw new Error(`Endpoint with alias "${alias}" not found.`);
+    // Parse alias to build URL
+    const parts = alias.split('_');
+    if (parts.length >= 2) {
+      // Determine method from common patterns
+      const lastPart = parts[parts.length - 1];
+      if (['create', 'post'].includes(lastPart)) {
+        method = 'POST';
+        parts.pop();
+      } else if (['update', 'put', 'patch'].includes(lastPart)) {
+        method = 'PUT';
+        parts.pop();
+      } else if (['delete', 'destroy'].includes(lastPart)) {
+        method = 'DELETE';
+        parts.pop();
+      }
+
+      // Build URL from remaining parts
+      url = `/api/${parts.join('/').replace(/_/g, '-')}/`;
+    } else {
+      throw new Error(`Endpoint with alias "${alias}" not found.`);
+    }
+  } else {
+    method = endpoint.method.toUpperCase();
+    url = endpoint.path;
   }
 
-  const method = endpoint.method.toUpperCase();
-  let url: string = endpoint.path;
   const pathParams: Record<string, any> = {};
   const otherParams: Record<string, any> = {};
 

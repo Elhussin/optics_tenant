@@ -28,6 +28,7 @@ CUSTOMER_FIELD_LABELS = {
 
 # 👇 تعريف الحقول للفلترة الدقيقة
 CUSTOMER_FILTER_FIELDS = {
+    "customer": ["exact"],  # ✅ للفلترة المباشرة بـ customer ID
     "customer__id": ["exact"],
     "customer__phone": ["icontains"],
     "customer__email": ["icontains"],
@@ -43,9 +44,12 @@ class PrescriptionViewSet(BaseViewSet):
     queryset = PrescriptionRecord.objects.select_related(
         "customer", "created_by").all()
     serializer_class = PrescriptionRecordSerializer
+
+    # ✅ تعريف حقول الفلترة والبحث
     search_fields = CUSTOMER_RELATED_FIELDS
     field_labels = CUSTOMER_FIELD_LABELS
-    filter_fields = CUSTOMER_FILTER_FIELDS
+    # ✅ استخدام filterset_fields بدلاً من filter_fields
+    filterset_fields = CUSTOMER_FILTER_FIELDS
 
     permission_classes = [
         IsAuthenticated,

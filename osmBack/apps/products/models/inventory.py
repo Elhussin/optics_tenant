@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.db.models import Sum, F
 from django.contrib.auth.models import User
-from apps.branches.models import Branch,BranchUsers
+from apps.branches.models import Branch, BranchUsers
 from apps.crm.models import Customer
 from core.models import BaseModel
 from apps.products.models import Product, ProductVariant
@@ -15,35 +15,37 @@ import uuid
 
 # --- Managers & QuerySets ---
 
+
 class StockQuerySet(models.QuerySet):
     def for_branch(self, branch):
         return self.filter(branch=branch)
-    
+
     def low_stock(self):
         return self.filter(quantity_in_stock__lte=models.F('reorder_level'))
-    
+
     def out_of_stock(self):
         return self.filter(quantity_in_stock__lte=models.F('reserved_quantity'))
-    
+
     def in_stock(self):
         return self.filter(quantity_in_stock__gt=models.F('reserved_quantity'))
+
 
 class StockManager(models.Manager):
     def get_queryset(self):
         return StockQuerySet(self.model, using=self._db)
-    
+
     def for_branch(self, branch):
         return self.get_queryset().for_branch(branch)
-    
+
     def low_stock(self):
         return self.get_queryset().low_stock()
-    
+
     def get_total_stock(self, variant):
         """Get total stock across all branches for a variant"""
         return self.filter(variant=variant).aggregate(
             total=models.Sum('quantity_in_stock')
         )['total'] or 0
-    
+
     def get_available_branches(self, variant, min_quantity=1):
         """Get branches that have the variant in stock"""
         return self.filter(
@@ -53,16 +55,21 @@ class StockManager(models.Manager):
 
 # --- Models ---
 
+
 class Stock(BaseModel):
     branch = models.ForeignKey("branches.Branch", on_delete=models.CASCADE)
-    variant = models.ForeignKey("ProductVariant", on_delete=models.CASCADE, related_name='stocks')
+    variant = models.ForeignKey(
+        "ProductVariant", on_delete=models.CASCADE, related_name='stocks')
     # Stock quantities
     quantity_in_stock = models.PositiveIntegerField(default=0)
     reserved_quantity = models.PositiveIntegerField(default=0)
     reorder_level = models.PositiveIntegerField(default=5)
     max_stock_level = models.PositiveIntegerField(default=100)
     min_stock_level = models.PositiveIntegerField(default=0)
-    average_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    average_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    last_cost = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0, help_text="Last purchase cost per unit")
     # Stock tracking
     last_restocked = models.DateTimeField(null=True, blank=True)
     last_sale = models.DateTimeField(null=True, blank=True)
@@ -76,8 +83,8 @@ class Stock(BaseModel):
             models.Index(fields=['branch', 'quantity_in_stock']),
             models.Index(fields=['branch', 'is_active']),
         ]
-    
-    def __str__(self):  
+
+    def __str__(self):
         return f"{self.branch.name} - {self.variant} ({self.available_quantity} available)"
 
     @property
@@ -98,38 +105,38 @@ class Stock(BaseModel):
         if self.allow_backorder:
             self.reserved_quantity = F('reserved_quantity') + quantity
             self.save(update_fields=['reserved_quantity'])
-            self.refresh_from_db() # Get the new value
+            self.refresh_from_db()  # Get the new value
             return True
-        
+
         # Atomic update for non-backorder items
         # We try to update ONLY if we have enough available quantity
         # Condition: quantity_in_stock - reserved_quantity >= quantity
         # Rearranged: quantity_in_stock >= reserved_quantity + quantity
         updated = Stock.objects.filter(
-            id=self.id, 
+            id=self.id,
             quantity_in_stock__gte=F('reserved_quantity') + quantity
         ).update(reserved_quantity=F('reserved_quantity') + quantity)
-        
+
         if updated > 0:
             self.refresh_from_db()
             return True
-            
+
         return False
 
     def release_reserve(self, quantity):
         self.reserved_quantity = max(0, self.reserved_quantity - quantity)
         self.save(update_fields=['reserved_quantity'])
-    
+
     def update_average_cost(self, new_quantity, new_cost):
         """تحديث التكلفة المتوسطة"""
         if self.quantity_in_stock > 0:
-            total_cost = (self.quantity_in_stock * self.average_cost) + (new_quantity * new_cost)
+            total_cost = (self.quantity_in_stock *
+                          self.average_cost) + (new_quantity * new_cost)
             total_quantity = self.quantity_in_stock + new_quantity
             self.average_cost = total_cost / total_quantity if total_quantity > 0 else new_cost
         else:
             self.average_cost = new_cost
         self.last_cost = new_cost
-    
 
 
 class StockMovement(BaseModel):
@@ -144,16 +151,23 @@ class StockMovement(BaseModel):
         RETURN = 'return', 'Customer Return'
         RESERVE = 'reserve', 'Reserve Stock'
         RELEASE = 'release', 'Release Reserved'
-    
-    stock = models.ForeignKey("Stock", on_delete=models.CASCADE, related_name='movements')
-    movement_type = models.CharField(max_length=20, choices=MovementType.choices)
+
+    stock = models.ForeignKey(
+        "Stock", on_delete=models.CASCADE, related_name='movements')
+    movement_type = models.CharField(
+        max_length=20, choices=MovementType.choices)
     quantity = models.IntegerField()
     quantity_before = models.PositiveIntegerField()
     quantity_after = models.PositiveIntegerField()
     reference_number = models.CharField(max_length=50, blank=True)
     notes = models.TextField(blank=True)
     movement_date = models.DateTimeField(auto_now_add=True)
-    cost_per_unit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cost_per_unit = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    created_by = models.ForeignKey(
+        'users.User', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_movements', help_text="User who created this movement"
+    )
 
     class Meta:
         ordering = ['-created_at']
@@ -161,7 +175,7 @@ class StockMovement(BaseModel):
             models.Index(fields=['stock', '-created_at']),
             models.Index(fields=['movement_type', '-created_at']),
         ]
-    
+
     def __str__(self):
         return f"{self.stock} - {self.movement_type} ({self.quantity})"
 
@@ -176,7 +190,7 @@ class StockMovement(BaseModel):
 
 class StockTransfer(BaseModel):
     """Stock transfers between branches"""
-    
+
     class Status(models.TextChoices):
         PENDING = 'pending', 'Pending'
         SUBMITTED = 'submitted', 'Submitted'
@@ -184,12 +198,15 @@ class StockTransfer(BaseModel):
         RECEIVED = 'received', 'Received'
         COMPLETED = 'completed', 'Completed'
         CANCELLED = 'cancelled', 'Cancelled'
-        
-    
-    from_branch = models.ForeignKey("branches.Branch", on_delete=models.CASCADE, related_name='outgoing_transfers')
-    to_branch = models.ForeignKey("branches.Branch", on_delete=models.CASCADE, related_name='incoming_transfers')
-    transfer_number = models.CharField(max_length=50, unique=True, editable=False)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+
+    from_branch = models.ForeignKey(
+        "branches.Branch", on_delete=models.CASCADE, related_name='outgoing_transfers')
+    to_branch = models.ForeignKey(
+        "branches.Branch", on_delete=models.CASCADE, related_name='incoming_transfers')
+    transfer_number = models.CharField(
+        max_length=50, unique=True, editable=False)
+    status = models.CharField(
+        max_length=20, choices=Status.choices, default=Status.PENDING)
     requested_by = models.CharField(max_length=100, blank=True)
     approved_by = models.CharField(max_length=100, blank=True)
 
@@ -208,7 +225,6 @@ class StockTransfer(BaseModel):
 
     def __str__(self):
         return f"{self.transfer_number} | {self.from_branch.code} → {self.to_branch.code}"
-    
 
     def execute_shipment(self):
         """ينفذ عملية الشحن (يخصم الكميات من الفرع المرسل)"""
@@ -224,7 +240,8 @@ class StockTransfer(BaseModel):
                     variant=item.variant
                 )
                 if from_stock.quantity_in_stock < item.quantity_requested:
-                    raise ValueError(f"Insufficient stock for variant {item.variant}")
+                    raise ValueError(
+                        f"Insufficient stock for variant {item.variant}")
 
                 from_stock.quantity_in_stock -= item.quantity_requested
                 from_stock.save()
@@ -279,7 +296,8 @@ class StockTransfer(BaseModel):
 
 
 class StockTransferItem(BaseModel):
-    transfer = models.ForeignKey(StockTransfer, on_delete=models.CASCADE, related_name='items')
+    transfer = models.ForeignKey(
+        StockTransfer, on_delete=models.CASCADE, related_name='items')
     variant = models.ForeignKey(ProductVariant, on_delete=models.CASCADE)
     quantity_requested = models.PositiveIntegerField()
     quantity_sent = models.PositiveIntegerField(default=0)

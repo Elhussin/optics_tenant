@@ -1,6 +1,15 @@
 "use client";
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ChevronDown } from "lucide-react";
-import { useTranslations } from 'next-intl';
+
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronDown,
+  List,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { cn } from "@/src/shared/utils/cn";
 
 interface PaginationProps {
   page: number;
@@ -17,6 +26,8 @@ export function Pagination({
   pageSize = 10,
   onPageSizeChange,
 }: PaginationProps) {
+  const t = useTranslations();
+
   const getPages = () => {
     const pages: (number | string)[] = [];
 
@@ -25,7 +36,11 @@ export function Pagination({
     } else {
       pages.push(1);
       if (page > 3) pages.push("...");
-      for (let i = Math.max(2, page - 1); i <= Math.min(totalPages - 1, page + 1); i++) {
+      for (
+        let i = Math.max(2, page - 1);
+        i <= Math.min(totalPages - 1, page + 1);
+        i++
+      ) {
         pages.push(i);
       }
       if (page < totalPages - 2) pages.push("...");
@@ -36,95 +51,140 @@ export function Pagination({
   };
 
   return (
-    <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-8 w-full select-none px-1">
-
+    <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 mt-8 w-full select-none animate-fade-in">
       {/* Items Per Page Selector */}
       {onPageSizeChange && (
-        <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400 font-medium bg-white dark:bg-gray-800 py-1.5 px-3 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm transition-all hover:border-gray-300 dark:hover:border-gray-600">
-          <span className="whitespace-nowrap">Rows per page:</span>
-          <div className="relative">
-            <select
-              value={pageSize}
-              onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="appearance-none bg-transparent pl-2 pr-6 py-0.5 focus:outline-none cursor-pointer text-gray-800 dark:text-gray-200 font-semibold"
-            >
-              {[5, 10, 20, 50, 100].map((size) => (
-                <option key={size} value={size} className="bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200">
-                  {size}
-                </option>
-              ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" />
+        <div className="glass px-4 py-2.5 rounded-xl border border-border-main shadow-soft hover:shadow-md transition-all duration-200 group">
+          <div className="flex items-center gap-3 text-sm">
+            <List size={16} className="text-primary shrink-0" />
+            <span className="text-secondary font-medium whitespace-nowrap">
+              {t("rowsPerPage") || "Rows per page"}:
+            </span>
+            <div className="relative">
+              <select
+                value={pageSize}
+                onChange={(e) => onPageSizeChange(Number(e.target.value))}
+                className={cn(
+                  "appearance-none bg-transparent pl-2 pr-7 py-0.5",
+                  "focus:outline-none cursor-pointer",
+                  "text-main font-semibold",
+                  "transition-colors"
+                )}
+              >
+                {[5, 10, 20, 50, 100].map((size) => (
+                  <option
+                    key={size}
+                    value={size}
+                    className="bg-elevated text-main"
+                  >
+                    {size}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                size={14}
+                className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-secondary transition-transform group-hover:translate-y-[-40%]"
+              />
+            </div>
           </div>
         </div>
       )}
 
       {/* Pagination Controls */}
-      <nav className="flex items-center gap-1 p-1.5 rounded-2xl bg-white dark:bg-gray-800 shadow-sm border border-gray-100 dark:border-gray-700">
+      <nav className="glass p-2 rounded-2xl border border-border-main shadow-soft">
+        <div className="flex items-center gap-1">
+          {/* First & Prev */}
+          <div className="flex items-center gap-1 mr-1 pr-2 border-r border-border-main/50">
+            <button
+              onClick={() => onPageChange(1)}
+              disabled={page === 1}
+              className={cn(
+                "p-2 rounded-xl transition-all duration-200",
+                "hover:bg-primary/10 hover:text-primary",
+                "disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed",
+                "active:scale-95",
+                page === 1 ? "text-secondary" : "text-main"
+              )}
+              title={t("firstPage") || "First Page"}
+            >
+              <ChevronsLeft size={18} />
+            </button>
+            <button
+              onClick={() => onPageChange(Math.max(1, page - 1))}
+              disabled={page === 1}
+              className={cn(
+                "p-2 rounded-xl transition-all duration-200",
+                "hover:bg-primary/10 hover:text-primary",
+                "disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed",
+                "active:scale-95",
+                page === 1 ? "text-secondary" : "text-main"
+              )}
+              title={t("previousPage") || "Previous"}
+            >
+              <ChevronLeft size={18} />
+            </button>
+          </div>
 
-        {/* First & Prev */}
-        <div className="flex items-center mr-1">
-          <button
-            onClick={() => onPageChange(1)}
-            disabled={page === 1}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-blue-600 dark:hover:text-blue-400 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200"
-            title="First Page"
-          >
-            <ChevronsLeft size={18} />
-          </button>
-          <button
-            onClick={() => onPageChange(Math.max(1, page - 1))}
-            disabled={page === 1}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-blue-600 dark:hover:text-blue-400 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200"
-            title="Previous Page"
-          >
-            <ChevronLeft size={18} />
-          </button>
-        </div>
+          {/* Page Numbers */}
+          <div className="flex items-center gap-1 px-1">
+            {getPages().map((p, idx) =>
+              p === "..." ? (
+                <span
+                  key={`dots-${idx}`}
+                  className="px-2 text-secondary/50 text-sm pb-1 select-none"
+                >
+                  •••
+                </span>
+              ) : (
+                <button
+                  key={p}
+                  onClick={() => onPageChange(Number(p))}
+                  className={cn(
+                    "min-w-[40px] h-10 px-2 rounded-xl text-sm font-semibold",
+                    "transition-all duration-300 flex items-center justify-center",
+                    "active:scale-95",
+                    p === page
+                      ? "bg-primary text-white shadow-lg shadow-primary/30 scale-105 hover:shadow-xl"
+                      : "text-main hover:bg-primary/10 hover:text-primary hover:scale-105"
+                  )}
+                >
+                  {p}
+                </button>
+              )
+            )}
+          </div>
 
-        {/* Page Numbers */}
-        <div className="flex items-center gap-1 px-1">
-          {getPages().map((p, idx) =>
-            p === "..." ? (
-              <span key={`dots-${idx}`} className="px-2 text-gray-300 dark:text-gray-600 text-sm pb-2">
-                •••
-              </span>
-            ) : (
-              <button
-                key={p}
-                onClick={() => onPageChange(Number(p))}
-                className={`
-                  min-w-[36px] h-9 px-1 rounded-xl text-sm font-semibold transition-all duration-300 flex items-center justify-center
-                  ${p === page
-                    ? "bg-gradient-to-tr from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/30 scale-105"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-blue-600 dark:hover:text-blue-400"
-                  }
-                `}
-              >
-                {p}
-              </button>
-            )
-          )}
-        </div>
-
-        {/* Next & Last */}
-        <div className="flex items-center ml-1">
-          <button
-            onClick={() => onPageChange(Math.min(totalPages, page + 1))}
-            disabled={page === totalPages}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-blue-600 dark:hover:text-blue-400 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200"
-            title="Next Page"
-          >
-            <ChevronRight size={18} />
-          </button>
-          <button
-            onClick={() => onPageChange(totalPages)}
-            disabled={page === totalPages}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 hover:text-blue-600 dark:hover:text-blue-400 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-gray-500 transition-all duration-200"
-            title="Last Page"
-          >
-            <ChevronsRight size={18} />
-          </button>
+          {/* Next & Last */}
+          <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border-main/50">
+            <button
+              onClick={() => onPageChange(Math.min(totalPages, page + 1))}
+              disabled={page === totalPages}
+              className={cn(
+                "p-2 rounded-xl transition-all duration-200",
+                "hover:bg-primary/10 hover:text-primary",
+                "disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed",
+                "active:scale-95",
+                page === totalPages ? "text-secondary" : "text-main"
+              )}
+              title={t("nextPage") || "Next"}
+            >
+              <ChevronRight size={18} />
+            </button>
+            <button
+              onClick={() => onPageChange(totalPages)}
+              disabled={page === totalPages}
+              className={cn(
+                "p-2 rounded-xl transition-all duration-200",
+                "hover:bg-primary/10 hover:text-primary",
+                "disabled:opacity-30 disabled:hover:bg-transparent disabled:cursor-not-allowed",
+                "active:scale-95",
+                page === totalPages ? "text-secondary" : "text-main"
+              )}
+              title={t("lastPage") || "Last Page"}
+            >
+              <ChevronsRight size={18} />
+            </button>
+          </div>
         </div>
       </nav>
     </div>

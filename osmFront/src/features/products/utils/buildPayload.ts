@@ -1,5 +1,5 @@
 // buildPayload.ts
-type BuildPayloadOptions= {
+type BuildPayloadOptions = {
   role?: string;
   prefix?: string;
   include?: string[];
@@ -12,7 +12,7 @@ interface BuildPayloadProps {
   options?: BuildPayloadOptions;
 }
 
-export function buildPayload({config, formData, options = {}}: BuildPayloadProps) {
+export function buildPayload({ config, formData, options = {} }: BuildPayloadProps) {
   const {
     role,
     prefix = "",
@@ -20,8 +20,14 @@ export function buildPayload({config, formData, options = {}}: BuildPayloadProps
     multiple = false,
   } = options;
 
-  const buildSingle = (data: any) =>
-    config
+  console.log("🔧 buildPayload called with:");
+  console.log("  - formData:", formData);
+  console.log("  - config fields:", config?.map((c: any) => c.name));
+  console.log("  - options:", options);
+
+  const buildSingle = (data: any) => {
+    console.log("  🔨 buildSingle processing:", data);
+    const result = config
       .filter((field: any) => field.role === "all" || !role || field.role === role)
       .reduce((acc: any, field: any) => {
         const name = field.name;
@@ -30,6 +36,9 @@ export function buildPayload({config, formData, options = {}}: BuildPayloadProps
       }, {
         ...(data?.id ? { id: data.id } : {}) // Always include ID if present
       });
+    console.log("  🔨 buildSingle result:", result);
+    return result;
+  };
 
   const addInclude = (payload: any, data: any) => {
     include.forEach((name: any) => {
@@ -44,9 +53,15 @@ export function buildPayload({config, formData, options = {}}: BuildPayloadProps
     if (Array.isArray(formData)) dataArray = formData;
     else if (prefix && formData && Array.isArray(formData[prefix])) dataArray = formData[prefix];
     else if (Array.isArray(formData?.variants)) dataArray = formData.variants;
-    return dataArray.map((item: any) => addInclude(buildSingle(item), item));
+    console.log("  📝 dataArray to process:", dataArray);
+    const result = dataArray.map((item: any) => addInclude(buildSingle(item), item));
+    console.log("  ✅ buildPayload multiple result:", result);
+    return result;
   }
 
   const targetData = prefix ? (formData?.[prefix] || {}) : formData || {};
-  return addInclude(buildSingle(targetData), targetData);
+  const result = addInclude(buildSingle(targetData), targetData);
+  console.log("  ✅ buildPayload single result:", result);
+  return result;
 }
+

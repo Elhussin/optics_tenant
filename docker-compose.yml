@@ -20,6 +20,11 @@ services:
       timeout: 3s
       retries: 10
       start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 1G
 
   backend:
     build:
@@ -43,6 +48,11 @@ services:
     depends_on:
       tenant_db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.80'
+          memory: 1G
 
   frontend:
     build:
@@ -58,6 +68,11 @@ services:
       - "3000"
     networks:
       - app-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 500M
 
 volumes:
   optics_postgres_data:

@@ -7,6 +7,7 @@ export interface ProductConfigType {
   role: string;
   filter: string;
   subFilter?: string;
+  subFilterType?: "exact" | "prefix";  // 'exact' = default, 'prefix' = match by prefix
   title?: string;
   entityName: string;
   fieldName: string;
@@ -44,6 +45,8 @@ export interface RenderFormProps {
   selectedType?: string;
   variantNumber?: number;
   attributeIndex?: number;
+  onAddNew?: (entityName: string, fieldName: string) => void;
+  onVariantFieldChange?: (variantNumber: number, fieldName: string, value: any) => void;
 }
 // Fields
 export interface FieldsProps {
@@ -56,11 +59,11 @@ export interface SelectFieldsProps extends FieldsProps {
 }
 // MultiSelectField
 export interface MultiSelectFieldProps {
-    fieldName: string;
-    control: any;
-    fieldRow: ProductConfigType;
-    options: OptionsProps;
-    
+  fieldName: string;
+  control: any;
+  fieldRow: ProductConfigType;
+  options: OptionsProps;
+
 }
 
 

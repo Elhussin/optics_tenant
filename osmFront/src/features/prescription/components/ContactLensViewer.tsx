@@ -1,5 +1,7 @@
 import React from "react";
-import { Eye, Ruler, Activity } from "lucide-react";
+import { Eye, Activity, Sparkles } from "lucide-react";
+import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { Badge } from "@/src/shared/components/ui/Badge";
 
 type LensData = {
   SPH: string;
@@ -24,42 +26,78 @@ const ContactLensViewer: React.FC<Props> = ({
   rightToric,
   leftToric,
 }) => {
-  const renderSection = (title: string, data: LensData, side: "right" | "left") => {
-    const isRight = side === "right";
-    const bgClass = isRight ? "bg-blue-50/50 dark:bg-blue-900/10" : "bg-green-50/50 dark:bg-green-900/10";
-    const borderClass = isRight ? "border-blue-100 dark:border-blue-800" : "border-green-100 dark:border-green-800";
-    const textClass = isRight ? "text-blue-700 dark:text-blue-300" : "text-green-700 dark:text-green-300";
-
+  const renderSection = (
+    title: string,
+    data: LensData,
+    side: "right" | "left",
+    variant: "info" | "success"
+  ) => {
     return (
-      <div className={`rounded-2xl border ${borderClass} ${bgClass} overflow-hidden`}>
-        <div className={`px-4 py-3 border-b ${borderClass} flex items-center gap-2`}>
-           <Eye className={`w-4 h-4 ${textClass}`} />
-           <h3 className={`font-semibold text-sm ${textClass}`}>{title}</h3>
-        </div>
-        <div className="p-4 space-y-3">
-          {Object.entries(data).map(([key, value]) => (
-            <div key={key} className="flex justify-between items-center text-sm">
-              <span className="text-gray-500 dark:text-gray-400 font-medium text-xs uppercase tracking-wide">{key}</span>
-              <span className="font-mono font-semibold text-gray-900 dark:text-gray-100">{value}</span>
+      <div className="relative group">
+        {/* Subtle glow */}
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+
+        <GlassCard
+          className="h-full hover:shadow-lg transition-all duration-300"
+          padding="none"
+        >
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-border-main/30 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Eye size={16} className="text-primary" />
+              <h3 className="font-semibold text-sm text-main">{title}</h3>
             </div>
-          ))}
-        </div>
+            <Badge variant={variant} size="sm">
+              {side === "right" ? "OD" : "OS"}
+            </Badge>
+          </div>
+
+          {/* Data */}
+          <div className="p-4 space-y-2">
+            {Object.entries(data).map(([key, value], index) => (
+              <div
+                key={key}
+                className="flex justify-between items-center p-2 rounded-lg bg-elevated/30 hover:bg-elevated/50 transition-colors"
+              >
+                <span className="text-secondary font-medium text-xs uppercase tracking-wide">
+                  {key}
+                </span>
+                <span className="font-mono font-semibold text-main">
+                  {value}
+                </span>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
       </div>
     );
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-2 px-1">
-         <Activity className="w-5 h-5 text-primary" />
-         <h2 className="text-lg font-bold text-gray-900 dark:text-white">Calculated Contact Lens Values</h2>
+    <div className="space-y-6">
+      {/* Background Pattern */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
       </div>
-      
+
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-primary/10 rounded-xl">
+          <Activity className="w-6 h-6 text-primary" />
+        </div>
+        <h2 className="text-xl font-bold text-main flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" />
+          Calculated Contact Lens Values
+        </h2>
+      </div>
+
+      {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {renderSection("OD (Right) Sphere", rightSphere, "right")}
-        {renderSection("OS (Left) Sphere", leftSphere, "left")}
-        {renderSection("OD (Right) Toric", rightToric, "right")}
-        {renderSection("OS (Left) Toric", leftToric, "left")}
+        {renderSection("Right Sphere", rightSphere, "right", "info")}
+        {renderSection("Left Sphere", leftSphere, "left", "success")}
+        {renderSection("Right Toric", rightToric, "right", "info")}
+        {renderSection("Left Toric", leftToric, "left", "success")}
       </div>
     </div>
   );

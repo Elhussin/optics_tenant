@@ -35,8 +35,24 @@ class CategoryViewSet(ProductBaseViewSet):
 
 
 class ProductVariantViewSet(ProductBaseViewSet):
-    queryset = ProductVariant.objects.all()
+    queryset = ProductVariant.objects.select_related(
+        'product', 'product__brand').all()
     serializer_class = ProductVariantSerializer
+    # حقول البحث الفعلية - استخدم product__name للعلاقات
+    search_fields = [
+        "sku",
+        "usku",
+        "product__name",
+        "product__model",
+        "product__brand__name",
+    ]
+
+    def get_serializer_class(self):
+        """Use CreateProductVariantSerializer for creation"""
+        if self.action == 'create':
+            from apps.products.serializers import CreateProductVariantSerializer
+            return CreateProductVariantSerializer
+        return self.serializer_class
 
 
 class ProductViewSet(ProductBaseViewSet):
@@ -46,11 +62,12 @@ class ProductViewSet(ProductBaseViewSet):
         .prefetch_related(
             'variants',
             'categories'
-        ) 
-    ).select_related('brand') # Chained correctly
-    
+        )
+    ).select_related('brand')  # Chained correctly
+
     serializer_class = ProductSerializer
-    search_fields = ["name", "description", "model", "brand__name", "categories__name"]
+    search_fields = ["name", "description",
+                     "model", "brand__name", "categories__name"]
 
 
 class ProductImageViewSet(ProductBaseViewSet):

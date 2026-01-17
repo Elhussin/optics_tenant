@@ -1,45 +1,14 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
-const AccountCurrencyEnum = z.enum(["USD", "EUR", "SAR"]);
-const Account = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(255),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    currency: AccountCurrencyEnum.optional(),
-    balance_currency: z.string(),
-    balance: z.string().regex(/^-?\d{0,17}(?:\.\d{0,2})?$/),
-    user: z.number().int(),
-  })
-  .passthrough();
-const PaginatedAccountList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(Account),
-  })
-  .passthrough();
-const AccountRequest = z
-  .object({
-    name: z.string().min(1).max(255),
-    currency: AccountCurrencyEnum.optional(),
-  })
-  .passthrough();
-const PatchedAccountRequest = z
-  .object({ name: z.string().min(1).max(255), currency: AccountCurrencyEnum })
-  .partial()
-  .passthrough();
 const CategoryTypeEnum = z.enum(["income", "expense"]);
 const AccountingCategory = z
   .object({
     id: z.number().int(),
     name: z.string().max(100),
     category_type: CategoryTypeEnum,
-    description: z.string().nullish(),
     parent: z.number().int().nullish(),
+    description: z.string().nullish(),
   })
   .passthrough();
 const PaginatedAccountingCategoryList = z
@@ -54,16 +23,119 @@ const AccountingCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
     category_type: CategoryTypeEnum,
-    description: z.string().nullish(),
     parent: z.number().int().nullish(),
+    description: z.string().nullish(),
   })
   .passthrough();
 const PatchedAccountingCategoryRequest = z
   .object({
     name: z.string().min(1).max(100),
     category_type: CategoryTypeEnum,
-    description: z.string().nullable(),
     parent: z.number().int().nullable(),
+    description: z.string().nullable(),
+  })
+  .partial()
+  .passthrough();
+const AccountTypeEnum = z.enum([
+  "asset",
+  "liability",
+  "equity",
+  "revenue",
+  "expense",
+  "cogs",
+]);
+const AccountSubtypeEnum = z.enum([
+  "cash",
+  "bank",
+  "receivable",
+  "inventory",
+  "prepaid",
+  "fixed_asset",
+  "payable",
+  "accrued",
+  "tax_payable",
+  "deferred",
+  "loan",
+  "capital",
+  "retained",
+  "reserves",
+  "sales",
+  "service",
+  "other_income",
+  "salary",
+  "rent",
+  "utilities",
+  "supplies",
+  "marketing",
+  "other_expense",
+  "cost_of_goods",
+]);
+const BlankEnum = z.unknown();
+const NormalBalanceEnum = z.enum(["debit", "credit"]);
+const ChartOfAccounts = z
+  .object({
+    id: z.number().int(),
+    code: z.string().max(10),
+    name: z.string().max(200),
+    name_en: z.string().max(200).optional(),
+    account_type: AccountTypeEnum,
+    account_type_display: z.string(),
+    account_subtype: z.union([AccountSubtypeEnum, BlankEnum]).optional(),
+    parent: z.number().int().nullish(),
+    parent_name: z.string(),
+    description: z.string().optional(),
+    opening_balance: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    current_balance: z.string().regex(/^-?\d{0,12}(?:\.\d{0,2})?$/),
+    is_header: z.boolean().optional(),
+    normal_balance: NormalBalanceEnum.optional(),
+    normal_balance_display: z.string(),
+    full_path: z.string(),
+    is_active: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PaginatedChartOfAccountsList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ChartOfAccounts),
+  })
+  .passthrough();
+const ChartOfAccountsRequest = z
+  .object({
+    code: z.string().min(1).max(10),
+    name: z.string().min(1).max(200),
+    name_en: z.string().max(200).optional(),
+    account_type: AccountTypeEnum,
+    account_subtype: z.union([AccountSubtypeEnum, BlankEnum]).optional(),
+    parent: z.number().int().nullish(),
+    description: z.string().optional(),
+    opening_balance: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    is_header: z.boolean().optional(),
+    normal_balance: NormalBalanceEnum.optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedChartOfAccountsRequest = z
+  .object({
+    code: z.string().min(1).max(10),
+    name: z.string().min(1).max(200),
+    name_en: z.string().max(200),
+    account_type: AccountTypeEnum,
+    account_subtype: z.union([AccountSubtypeEnum, BlankEnum]),
+    parent: z.number().int().nullable(),
+    description: z.string(),
+    opening_balance: z.string().regex(/^-?\d{0,12}(?:\.\d{0,2})?$/),
+    is_header: z.boolean(),
+    normal_balance: NormalBalanceEnum,
+    is_active: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -73,7 +145,7 @@ const FinancialPeriod = z
     name: z.string().max(50),
     start_date: z.string(),
     end_date: z.string(),
-    is_closed: z.boolean(),
+    is_closed: z.boolean().optional(),
   })
   .passthrough();
 const PaginatedFinancialPeriodList = z
@@ -89,6 +161,7 @@ const FinancialPeriodRequest = z
     name: z.string().min(1).max(50),
     start_date: z.string(),
     end_date: z.string(),
+    is_closed: z.boolean().optional(),
   })
   .passthrough();
 const PatchedFinancialPeriodRequest = z
@@ -96,80 +169,150 @@ const PatchedFinancialPeriodRequest = z
     name: z.string().min(1).max(50),
     start_date: z.string(),
     end_date: z.string(),
+    is_closed: z.boolean(),
   })
   .partial()
   .passthrough();
-const JournalEntry = z
+const SourceTypeEnum = z.enum([
+  "manual",
+  "sales_invoice",
+  "purchase_invoice",
+  "payment",
+  "receipt",
+  "return",
+  "adjustment",
+  "payroll",
+]);
+const GeneralJournalList = z
   .object({
     id: z.number().int(),
-    debit_currency: z.string(),
-    debit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    credit_currency: z.string(),
-    credit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction: z.number().int(),
-    account: z.number().int(),
+    entry_number: z.string(),
+    entry_date: z.string(),
+    source_type: SourceTypeEnum.optional(),
+    description: z.string(),
+    total_debit: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    is_posted: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
-const PaginatedJournalEntryList = z
+const PaginatedGeneralJournalListList = z
   .object({
     count: z.number().int(),
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
-    results: z.array(JournalEntry),
+    results: z.array(GeneralJournalList),
   })
   .passthrough();
-const JournalEntryRequest = z
+const EntryTypeEnum = z.enum([
+  "standard",
+  "adjustment",
+  "closing",
+  "opening",
+  "reversal",
+]);
+const JournalLineRequest = z
   .object({
-    debit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    credit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction: z.number().int(),
     account: z.number().int(),
+    debit: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    credit: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    description: z.string().max(500).optional(),
+    cost_center: z.string().max(50).optional(),
   })
   .passthrough();
-const PatchedJournalEntryRequest = z
+const GeneralJournalCreateRequest = z
   .object({
-    debit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    credit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction: z.number().int(),
-    account: z.number().int(),
+    entry_date: z.string(),
+    entry_type: EntryTypeEnum.optional(),
+    source_type: SourceTypeEnum.optional(),
+    source_document: z.string().max(100).optional(),
+    description: z.string().min(1),
+    notes: z.string().optional(),
+    lines: z.array(JournalLineRequest),
   })
-  .partial()
   .passthrough();
-const TransactionTypeEnum = z.enum(["income", "expense"]);
-const IntervalEnum = z.enum(["monthly", "yearly"]);
-const RecurringTransaction = z
+const JournalLine = z
   .object({
     id: z.number().int(),
-    amount_currency: z.string(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_type: TransactionTypeEnum,
-    interval: IntervalEnum,
-    next_execution: z.string(),
     account: z.number().int(),
+    account_code: z.string(),
+    account_name: z.string(),
+    debit: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    credit: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    description: z.string().max(500).optional(),
+    cost_center: z.string().max(50).optional(),
   })
   .passthrough();
-const PaginatedRecurringTransactionList = z
+const GeneralJournalCreate = z
   .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(RecurringTransaction),
+    entry_date: z.string(),
+    entry_type: EntryTypeEnum.optional(),
+    source_type: SourceTypeEnum.optional(),
+    source_document: z.string().max(100).optional(),
+    description: z.string(),
+    notes: z.string().optional(),
+    lines: z.array(JournalLine),
   })
   .passthrough();
-const RecurringTransactionRequest = z
+const GeneralJournal = z
   .object({
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_type: TransactionTypeEnum,
-    interval: IntervalEnum,
-    account: z.number().int(),
+    id: z.number().int(),
+    entry_number: z.string(),
+    entry_date: z.string(),
+    entry_type: EntryTypeEnum.optional(),
+    entry_type_display: z.string(),
+    source_type: SourceTypeEnum.optional(),
+    source_type_display: z.string(),
+    source_document: z.string().max(100).optional(),
+    source_id: z.number().int().gte(0).lte(2147483647).nullish(),
+    description: z.string(),
+    total_debit: z.string().regex(/^-?\d{0,12}(?:\.\d{0,2})?$/),
+    total_credit: z.string().regex(/^-?\d{0,12}(?:\.\d{0,2})?$/),
+    is_posted: z.boolean(),
+    posted_at: z.string().datetime({ offset: true }).nullable(),
+    posted_by: z.number().int().nullish(),
+    posted_by_name: z.string(),
+    notes: z.string().optional(),
+    lines: z.array(JournalLine),
+    created_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
-const PatchedRecurringTransactionRequest = z
+const GeneralJournalRequest = z
   .object({
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_type: TransactionTypeEnum,
-    interval: IntervalEnum,
-    account: z.number().int(),
+    entry_date: z.string(),
+    entry_type: EntryTypeEnum.optional(),
+    source_type: SourceTypeEnum.optional(),
+    source_document: z.string().max(100).optional(),
+    source_id: z.number().int().gte(0).lte(2147483647).nullish(),
+    description: z.string().min(1),
+    posted_by: z.number().int().nullish(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PatchedGeneralJournalRequest = z
+  .object({
+    entry_date: z.string(),
+    entry_type: EntryTypeEnum,
+    source_type: SourceTypeEnum,
+    source_document: z.string().max(100),
+    source_id: z.number().int().gte(0).lte(2147483647).nullable(),
+    description: z.string().min(1),
+    posted_by: z.number().int().nullable(),
+    notes: z.string(),
   })
   .partial()
   .passthrough();
@@ -207,55 +350,6 @@ const PatchedTaxRequest = z
     effective_date: z.string(),
     is_active: z.boolean(),
     description: z.string().nullable(),
-  })
-  .partial()
-  .passthrough();
-const Transaction = z
-  .object({
-    id: z.number().int(),
-    date: z.string(),
-    amount_currency: z.string(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_type: TransactionTypeEnum,
-    description: z.string().nullish(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    account: z.number().int(),
-    period: z.number().int(),
-    category: z.number().int().nullish(),
-    tax_rate: z.number().int().nullish(),
-  })
-  .passthrough();
-const PaginatedTransactionList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(Transaction),
-  })
-  .passthrough();
-const TransactionRequest = z
-  .object({
-    date: z.string(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_type: TransactionTypeEnum,
-    description: z.string().nullish(),
-    account: z.number().int(),
-    period: z.number().int(),
-    category: z.number().int().nullish(),
-    tax_rate: z.number().int().nullish(),
-  })
-  .passthrough();
-const PatchedTransactionRequest = z
-  .object({
-    date: z.string(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    transaction_type: TransactionTypeEnum,
-    description: z.string().nullable(),
-    account: z.number().int(),
-    period: z.number().int(),
-    category: z.number().int().nullable(),
-    tax_rate: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
@@ -434,6 +528,105 @@ const PatchedCampaignRequest = z
   })
   .partial()
   .passthrough();
+const DocumentTypeEnum = z.enum([
+  "prescription",
+  "invoice",
+  "report",
+  "authorization",
+  "other",
+]);
+const ClaimDocument = z
+  .object({
+    id: z.number().int(),
+    claim: z.number().int(),
+    document_type: DocumentTypeEnum,
+    document_type_display: z.string(),
+    title: z.string().max(200),
+    file: z.string().url(),
+    notes: z.string().optional(),
+    created_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PaginatedClaimDocumentList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ClaimDocument),
+  })
+  .passthrough();
+const ClaimDocumentRequest = z
+  .object({
+    claim: z.number().int(),
+    document_type: DocumentTypeEnum,
+    title: z.string().min(1).max(200),
+    file: z.instanceof(File),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PatchedClaimDocumentRequest = z
+  .object({
+    claim: z.number().int(),
+    document_type: DocumentTypeEnum,
+    title: z.string().min(1).max(200),
+    file: z.instanceof(File),
+    notes: z.string(),
+  })
+  .partial()
+  .passthrough();
+const ClaimItem = z
+  .object({
+    id: z.number().int(),
+    claim: z.number().int(),
+    order_item: z.number().int().nullish(),
+    description: z.string().max(200),
+    quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    total_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    approved_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    insurance_code: z.string().max(50).optional(),
+  })
+  .passthrough();
+const PaginatedClaimItemList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ClaimItem),
+  })
+  .passthrough();
+const ClaimItemRequest = z
+  .object({
+    claim: z.number().int(),
+    order_item: z.number().int().nullish(),
+    description: z.string().min(1).max(200),
+    quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    approved_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    insurance_code: z.string().max(50).optional(),
+  })
+  .passthrough();
+const PatchedClaimItemRequest = z
+  .object({
+    claim: z.number().int(),
+    order_item: z.number().int().nullable(),
+    description: z.string().min(1).max(200),
+    quantity: z.number().int().gte(0).lte(2147483647),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    approved_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    insurance_code: z.string().max(50),
+  })
+  .partial()
+  .passthrough();
 const ComplaintStatusEnum = z.enum(["open", "resolved"]);
 const Complaint = z
   .object({
@@ -548,7 +741,116 @@ const PatchedCustomerGroupRequest = z
   })
   .partial()
   .passthrough();
-const CustomerTypeEnum = z.enum(["individual", "company", "agent", "supplier"]);
+const CustomerPartnerLink = z
+  .object({
+    id: z.number().int(),
+    customer: z.number().int(),
+    customer_name: z.string(),
+    partner: z.number().int(),
+    partner_name: z.string(),
+    partner_type: z.string(),
+    member_id: z.string().max(50).optional(),
+    policy_number: z.string().max(50).optional(),
+    coverage_start: z.string().nullish(),
+    coverage_end: z.string().nullish(),
+    annual_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .nullish(),
+    remaining_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .nullish(),
+    copay_percentage: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullish(),
+    copay_fixed: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    coverage_class: z.string().max(50).optional(),
+    is_active: z.boolean().optional(),
+    is_coverage_active: z.boolean(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PaginatedCustomerPartnerLinkList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(CustomerPartnerLink),
+  })
+  .passthrough();
+const CustomerPartnerLinkRequest = z
+  .object({
+    customer: z.number().int(),
+    partner: z.number().int(),
+    member_id: z.string().max(50).optional(),
+    policy_number: z.string().max(50).optional(),
+    coverage_start: z.string().nullish(),
+    coverage_end: z.string().nullish(),
+    annual_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .nullish(),
+    remaining_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .nullish(),
+    copay_percentage: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullish(),
+    copay_fixed: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    coverage_class: z.string().max(50).optional(),
+    is_active: z.boolean().optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PatchedCustomerPartnerLinkRequest = z
+  .object({
+    customer: z.number().int(),
+    partner: z.number().int(),
+    member_id: z.string().max(50),
+    policy_number: z.string().max(50),
+    coverage_start: z.string().nullable(),
+    coverage_end: z.string().nullable(),
+    annual_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .nullable(),
+    remaining_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .nullable(),
+    copay_percentage: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullable(),
+    copay_fixed: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
+    coverage_class: z.string().max(50),
+    is_active: z.boolean(),
+    notes: z.string(),
+  })
+  .partial()
+  .passthrough();
+const CustomerTypeEnum = z.enum([
+  "individual",
+  "company",
+  "agent",
+  "supplier",
+  "wholesaler",
+  "retailer",
+  "distributor",
+]);
 const PreferredContactEnum = z.enum(["email", "phone", "sms"]);
 const Customer = z
   .object({
@@ -666,6 +968,130 @@ const PatchedDocumentRequest = z
   })
   .partial()
   .passthrough();
+const Status644Enum = z.enum([
+  "draft",
+  "submitted",
+  "under_review",
+  "approved",
+  "partial",
+  "rejected",
+  "paid",
+  "cancelled",
+]);
+const InsuranceClaimList = z
+  .object({
+    id: z.number().int(),
+    claim_number: z.string(),
+    order_number: z.string(),
+    partner_name: z.string(),
+    claim_date: z.string(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    approved_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    status: Status644Enum.optional(),
+    status_display: z.string(),
+  })
+  .passthrough();
+const PaginatedInsuranceClaimListList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(InsuranceClaimList),
+  })
+  .passthrough();
+const InsuranceClaimCreateRequest = z
+  .object({
+    order: z.number().int(),
+    partner: z.number().int(),
+    customer_partner_link: z.number().int().nullish(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const InsuranceClaimCreate = z
+  .object({
+    order: z.number().int(),
+    partner: z.number().int(),
+    customer_partner_link: z.number().int().nullish(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const InsuranceClaim = z
+  .object({
+    id: z.number().int(),
+    claim_number: z.string(),
+    external_claim_number: z.string().max(100).optional(),
+    order: z.number().int(),
+    order_number: z.string(),
+    partner: z.number().int(),
+    partner_name: z.string(),
+    customer_partner_link: z.number().int().nullish(),
+    customer_name: z.string(),
+    claim_date: z.string(),
+    submission_date: z.string().nullable(),
+    response_date: z.string().nullable(),
+    payment_date: z.string().nullable(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    approved_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    paid_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_share: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    status: Status644Enum.optional(),
+    status_display: z.string(),
+    rejection_reason: z.string().optional(),
+    partial_reason: z.string().optional(),
+    notes: z.string().optional(),
+    internal_notes: z.string().optional(),
+    items: z.array(ClaimItem),
+    attached_documents: z.array(ClaimDocument),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const InsuranceClaimRequest = z
+  .object({
+    external_claim_number: z.string().max(100).optional(),
+    order: z.number().int(),
+    partner: z.number().int(),
+    customer_partner_link: z.number().int().nullish(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_share: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    status: Status644Enum.optional(),
+    rejection_reason: z.string().optional(),
+    partial_reason: z.string().optional(),
+    notes: z.string().optional(),
+    internal_notes: z.string().optional(),
+  })
+  .passthrough();
+const PatchedInsuranceClaimRequest = z
+  .object({
+    external_claim_number: z.string().max(100),
+    order: z.number().int(),
+    partner: z.number().int(),
+    customer_partner_link: z.number().int().nullable(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    claim_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_share: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    status: Status644Enum,
+    rejection_reason: z.string(),
+    partial_reason: z.string(),
+    notes: z.string(),
+    internal_notes: z.string(),
+  })
+  .partial()
+  .passthrough();
 const InteractionTypeEnum = z.enum(["call", "email", "meeting"]);
 const Interaction = z
   .object({
@@ -758,6 +1184,383 @@ const PatchedOpportunityRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
     customer: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const PartnerBranch = z
+  .object({
+    id: z.number().int(),
+    partner: z.number().int(),
+    partner_name: z.string(),
+    branch: z.number().int(),
+    branch_name: z.string(),
+    special_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullish(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PaginatedPartnerBranchList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PartnerBranch),
+  })
+  .passthrough();
+const PartnerBranchRequest = z
+  .object({
+    partner: z.number().int(),
+    branch: z.number().int(),
+    special_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullish(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedPartnerBranchRequest = z
+  .object({
+    partner: z.number().int(),
+    branch: z.number().int(),
+    special_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullable(),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
+const PartnerPriceListItem = z
+  .object({
+    id: z.number().int(),
+    price_list: z.number().int(),
+    product: z.number().int().nullish(),
+    product_name: z.string(),
+    variant: z.number().int().nullish(),
+    variant_sku: z.string(),
+    category: z.number().int().nullish(),
+    category_name: z.string(),
+    special_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    special_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullish(),
+  })
+  .passthrough();
+const PaginatedPartnerPriceListItemList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PartnerPriceListItem),
+  })
+  .passthrough();
+const PartnerPriceListItemRequest = z
+  .object({
+    price_list: z.number().int(),
+    product: z.number().int().nullish(),
+    variant: z.number().int().nullish(),
+    category: z.number().int().nullish(),
+    special_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    special_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullish(),
+  })
+  .passthrough();
+const PatchedPartnerPriceListItemRequest = z
+  .object({
+    price_list: z.number().int(),
+    product: z.number().int().nullable(),
+    variant: z.number().int().nullable(),
+    category: z.number().int().nullable(),
+    special_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
+    special_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .nullable(),
+  })
+  .partial()
+  .passthrough();
+const PriceTypeEnum = z.enum(["discount", "fixed", "markup"]);
+const PartnerPriceList = z
+  .object({
+    id: z.number().int(),
+    partner: z.number().int(),
+    partner_name: z.string(),
+    name: z.string().max(100),
+    description: z.string().optional(),
+    price_type: PriceTypeEnum.optional(),
+    adjustment_value: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    valid_from: z.string().nullish(),
+    valid_until: z.string().nullish(),
+    applies_to_all: z.boolean().optional(),
+    items: z.array(PartnerPriceListItem),
+    items_count: z.string(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PaginatedPartnerPriceListList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PartnerPriceList),
+  })
+  .passthrough();
+const PartnerPriceListRequest = z
+  .object({
+    partner: z.number().int(),
+    name: z.string().min(1).max(100),
+    description: z.string().optional(),
+    price_type: PriceTypeEnum.optional(),
+    adjustment_value: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    valid_from: z.string().nullish(),
+    valid_until: z.string().nullish(),
+    applies_to_all: z.boolean().optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedPartnerPriceListRequest = z
+  .object({
+    partner: z.number().int(),
+    name: z.string().min(1).max(100),
+    description: z.string(),
+    price_type: PriceTypeEnum,
+    adjustment_value: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    valid_from: z.string().nullable(),
+    valid_until: z.string().nullable(),
+    applies_to_all: z.boolean(),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
+const PartnerSettlementStatusEnum = z.enum([
+  "pending",
+  "confirmed",
+  "paid",
+  "disputed",
+]);
+const PartnerSettlement = z
+  .object({
+    id: z.number().int(),
+    settlement_number: z.string().max(50),
+    partner: z.number().int(),
+    partner_name: z.string(),
+    settlement_date: z.string(),
+    period_start: z.string(),
+    period_end: z.string(),
+    total_claims: z.number().int().gte(0).lte(2147483647).optional(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    adjustments: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    net_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    status: PartnerSettlementStatusEnum.optional(),
+    status_display: z.string(),
+    payment_date: z.string().nullish(),
+    payment_reference: z.string().max(100).optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PaginatedPartnerSettlementList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PartnerSettlement),
+  })
+  .passthrough();
+const PartnerSettlementRequest = z
+  .object({
+    settlement_number: z.string().min(1).max(50),
+    partner: z.number().int(),
+    period_start: z.string(),
+    period_end: z.string(),
+    total_claims: z.number().int().gte(0).lte(2147483647).optional(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    adjustments: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    net_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    status: PartnerSettlementStatusEnum.optional(),
+    payment_date: z.string().nullish(),
+    payment_reference: z.string().max(100).optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PatchedPartnerSettlementRequest = z
+  .object({
+    settlement_number: z.string().min(1).max(50),
+    partner: z.number().int(),
+    period_start: z.string(),
+    period_end: z.string(),
+    total_claims: z.number().int().gte(0).lte(2147483647),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    adjustments: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    net_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    status: PartnerSettlementStatusEnum,
+    payment_date: z.string().nullable(),
+    payment_reference: z.string().max(100),
+    notes: z.string(),
+  })
+  .partial()
+  .passthrough();
+const PartnerTypeEnum = z.enum([
+  "insurance",
+  "bnpl",
+  "corporate",
+  "wholesaler",
+  "agent",
+]);
+const PartnerList = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(200),
+    partner_type: PartnerTypeEnum,
+    partner_type_display: z.string(),
+    code: z.string().max(20).optional(),
+    is_active: z.boolean().optional(),
+    default_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    current_balance: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+  })
+  .passthrough();
+const PaginatedPartnerListList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PartnerList),
+  })
+  .passthrough();
+const PaymentTermsEnum = z.enum([
+  "immediate",
+  "7_days",
+  "15_days",
+  "30_days",
+  "60_days",
+  "90_days",
+]);
+const PartnerRequest = z
+  .object({
+    name: z.string().min(1).max(200),
+    name_en: z.string().max(200).optional(),
+    partner_type: PartnerTypeEnum,
+    logo: z.instanceof(File).nullish(),
+    contact_person: z.string().max(100).optional(),
+    phone: z.string().max(20).optional(),
+    email: z.string().max(254).email().optional(),
+    website: z.string().max(200).url().optional(),
+    address: z.string().optional(),
+    contract_number: z.string().max(50).optional(),
+    contract_start: z.string().nullish(),
+    contract_end: z.string().nullish(),
+    payment_terms: PaymentTermsEnum.optional(),
+    default_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    credit_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    current_balance: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    patient_share_percentage: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    tax_number: z.string().max(50).optional(),
+    notes: z.string().optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const Partner = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(200),
+    name_en: z.string().max(200).optional(),
+    partner_type: PartnerTypeEnum,
+    partner_type_display: z.string(),
+    code: z.string(),
+    logo: z.string().url().nullish(),
+    contact_person: z.string().max(100).optional(),
+    phone: z.string().max(20).optional(),
+    email: z.string().max(254).email().optional(),
+    website: z.string().max(200).url().optional(),
+    address: z.string().optional(),
+    contract_number: z.string().max(50).optional(),
+    contract_start: z.string().nullish(),
+    contract_end: z.string().nullish(),
+    payment_terms: PaymentTermsEnum.optional(),
+    default_discount: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    credit_limit: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    current_balance: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    available_credit: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_share_percentage: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    tax_number: z.string().max(50).optional(),
+    notes: z.string().optional(),
+    is_active: z.boolean().optional(),
+    is_contract_active: z.boolean(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PatchedPartnerRequest = z
+  .object({
+    name: z.string().min(1).max(200),
+    name_en: z.string().max(200),
+    partner_type: PartnerTypeEnum,
+    logo: z.instanceof(File).nullable(),
+    contact_person: z.string().max(100),
+    phone: z.string().max(20),
+    email: z.string().max(254).email(),
+    website: z.string().max(200).url(),
+    address: z.string(),
+    contract_number: z.string().max(50),
+    contract_start: z.string().nullable(),
+    contract_end: z.string().nullable(),
+    payment_terms: PaymentTermsEnum,
+    default_discount: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
+    credit_limit: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    current_balance: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_share_percentage: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
+    tax_number: z.string().max(50),
+    notes: z.string(),
+    is_active: z.boolean(),
   })
   .partial()
   .passthrough();
@@ -1470,7 +2273,6 @@ const RightSphereEnum = z.enum([
   "+29.75",
   "+30.00",
 ]);
-const BlankEnum = z.unknown();
 const NullEnum = z.unknown();
 const RightCylinderEnum = z.enum([
   "-15.00",
@@ -2437,6 +3239,7 @@ const PatchedProductImageRequest = z
   })
   .partial()
   .passthrough();
+const TypeEnum = z.enum(["CL", "SL", "FR", "AX", "OT", "DV"]);
 const VariantTypeEnum = z.enum([
   "basic",
   "frames",
@@ -2450,13 +3253,14 @@ const Product = z
     id: z.number().int(),
     brand_name: z.string(),
     categories: z.array(Category),
-    type: z.string(),
+    type_display: z.string(),
     variants: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     model: z.string().max(50),
-    name: z.string().max(200).optional(),
+    type: TypeEnum,
+    name: z.string().max(200),
     description: z.string(),
     usku: z.string(),
     variant_type: VariantTypeEnum.optional(),
@@ -2477,7 +3281,8 @@ const ProductRequest = z
     variants_input: z.array(z.object({}).partial().passthrough()).optional(),
     is_active: z.boolean().optional(),
     model: z.string().min(1).max(50),
-    name: z.string().max(200).optional(),
+    type: TypeEnum,
+    name: z.string().max(200),
     variant_type: VariantTypeEnum.optional(),
     brand: z.number().int(),
   })
@@ -2488,6 +3293,7 @@ const PatchedProductRequest = z
     variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean(),
     model: z.string().min(1).max(50),
+    type: TypeEnum,
     name: z.string().max(200),
     variant_type: VariantTypeEnum,
     brand: z.number().int(),
@@ -2589,13 +3395,16 @@ const MovementTypeEnum = z.enum([
 const StockMovement = z
   .object({
     id: z.number().int(),
+    stock_info: z.string(),
+    movement_type_display: z.string(),
+    created_by_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     movement_type: MovementTypeEnum,
     quantity: z.number().int().gte(-2147483648).lte(2147483647),
-    quantity_before: z.number().int().gte(0).lte(2147483647),
-    quantity_after: z.number().int().gte(0).lte(2147483647),
+    quantity_before: z.number().int(),
+    quantity_after: z.number().int(),
     reference_number: z.string().max(50).optional(),
     notes: z.string().optional(),
     movement_date: z.string().datetime({ offset: true }),
@@ -2604,6 +3413,7 @@ const StockMovement = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     stock: z.number().int(),
+    created_by: z.number().int().nullish(),
   })
   .passthrough();
 const PaginatedStockMovementList = z
@@ -2614,13 +3424,37 @@ const PaginatedStockMovementList = z
     results: z.array(StockMovement),
   })
   .passthrough();
+const StockMovementCreateRequest = z
+  .object({
+    stock: z.number().int(),
+    movement_type: MovementTypeEnum,
+    quantity: z.number().int().gte(-2147483648).lte(2147483647),
+    cost_per_unit: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    reference_number: z.string().max(50).optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const StockMovementCreate = z
+  .object({
+    stock: z.number().int(),
+    movement_type: MovementTypeEnum,
+    quantity: z.number().int().gte(-2147483648).lte(2147483647),
+    cost_per_unit: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    reference_number: z.string().max(50).optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
 const StockMovementRequest = z
   .object({
     is_active: z.boolean().optional(),
     movement_type: MovementTypeEnum,
     quantity: z.number().int().gte(-2147483648).lte(2147483647),
-    quantity_before: z.number().int().gte(0).lte(2147483647),
-    quantity_after: z.number().int().gte(0).lte(2147483647),
     reference_number: z.string().max(50).optional(),
     notes: z.string().optional(),
     cost_per_unit: z
@@ -2628,6 +3462,7 @@ const StockMovementRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     stock: z.number().int(),
+    created_by: z.number().int().nullish(),
   })
   .passthrough();
 const PatchedStockMovementRequest = z
@@ -2635,24 +3470,26 @@ const PatchedStockMovementRequest = z
     is_active: z.boolean(),
     movement_type: MovementTypeEnum,
     quantity: z.number().int().gte(-2147483648).lte(2147483647),
-    quantity_before: z.number().int().gte(0).lte(2147483647),
-    quantity_after: z.number().int().gte(0).lte(2147483647),
     reference_number: z.string().max(50),
     notes: z.string(),
     cost_per_unit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     stock: z.number().int(),
+    created_by: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
 const StockTransferItem = z
   .object({
     id: z.number().int(),
+    variant_name: z.string(),
+    variant_sku: z.string(),
+    product_name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     quantity_requested: z.number().int().gte(0).lte(2147483647),
-    quantity_sent: z.number().int().gte(0).lte(2147483647).optional(),
-    quantity_received: z.number().int().gte(0).lte(2147483647).optional(),
+    quantity_sent: z.number().int(),
+    quantity_received: z.number().int(),
     unit_cost: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -2674,8 +3511,6 @@ const StockTransferItemRequest = z
   .object({
     is_active: z.boolean().optional(),
     quantity_requested: z.number().int().gte(0).lte(2147483647),
-    quantity_sent: z.number().int().gte(0).lte(2147483647).optional(),
-    quantity_received: z.number().int().gte(0).lte(2147483647).optional(),
     unit_cost: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -2689,8 +3524,6 @@ const PatchedStockTransferItemRequest = z
   .object({
     is_active: z.boolean(),
     quantity_requested: z.number().int().gte(0).lte(2147483647),
-    quantity_sent: z.number().int().gte(0).lte(2147483647),
-    quantity_received: z.number().int().gte(0).lte(2147483647),
     unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     notes: z.string(),
     transfer: z.number().int(),
@@ -2709,6 +3542,13 @@ const StockTransferStatusEnum = z.enum([
 const StockTransfer = z
   .object({
     id: z.number().int(),
+    from_branch_name: z.string(),
+    from_branch_code: z.string(),
+    to_branch_name: z.string(),
+    to_branch_code: z.string(),
+    status_display: z.string(),
+    items: z.array(StockTransferItem),
+    items_count: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -2717,9 +3557,9 @@ const StockTransfer = z
     requested_by: z.string().max(100).optional(),
     approved_by: z.string().max(100).optional(),
     requested_date: z.string().datetime({ offset: true }),
-    approved_date: z.string().datetime({ offset: true }).nullish(),
-    shipped_date: z.string().datetime({ offset: true }).nullish(),
-    received_date: z.string().datetime({ offset: true }).nullish(),
+    approved_date: z.string().datetime({ offset: true }).nullable(),
+    shipped_date: z.string().datetime({ offset: true }).nullable(),
+    received_date: z.string().datetime({ offset: true }).nullable(),
     notes: z.string().optional(),
     from_branch: z.number().int(),
     to_branch: z.number().int(),
@@ -2733,15 +3573,28 @@ const PaginatedStockTransferList = z
     results: z.array(StockTransfer),
   })
   .passthrough();
+const StockTransferCreateRequest = z
+  .object({
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
+    notes: z.string().optional(),
+    items: z.array(z.object({}).partial().passthrough()).min(1),
+  })
+  .passthrough();
+const StockTransferCreate = z
+  .object({
+    from_branch: z.number().int(),
+    to_branch: z.number().int(),
+    notes: z.string().optional(),
+    items: z.array(z.object({}).partial().passthrough()).min(1),
+  })
+  .passthrough();
 const StockTransferRequest = z
   .object({
     is_active: z.boolean().optional(),
     status: StockTransferStatusEnum.optional(),
     requested_by: z.string().max(100).optional(),
     approved_by: z.string().max(100).optional(),
-    approved_date: z.string().datetime({ offset: true }).nullish(),
-    shipped_date: z.string().datetime({ offset: true }).nullish(),
-    received_date: z.string().datetime({ offset: true }).nullish(),
     notes: z.string().optional(),
     from_branch: z.number().int(),
     to_branch: z.number().int(),
@@ -2753,9 +3606,6 @@ const PatchedStockTransferRequest = z
     status: StockTransferStatusEnum,
     requested_by: z.string().max(100),
     approved_by: z.string().max(100),
-    approved_date: z.string().datetime({ offset: true }).nullable(),
-    shipped_date: z.string().datetime({ offset: true }).nullable(),
-    received_date: z.string().datetime({ offset: true }).nullable(),
     notes: z.string(),
     from_branch: z.number().int(),
     to_branch: z.number().int(),
@@ -2765,6 +3615,14 @@ const PatchedStockTransferRequest = z
 const Stock = z
   .object({
     id: z.number().int(),
+    branch_name: z.string(),
+    branch_code: z.string(),
+    branch_type: z.string(),
+    variant_sku: z.string(),
+    variant_name: z.string(),
+    product_name: z.string(),
+    stock_status: z.string(),
+    available_quantity: z.number().int(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -2777,8 +3635,12 @@ const Stock = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    last_restocked: z.string().datetime({ offset: true }).nullish(),
-    last_sale: z.string().datetime({ offset: true }).nullish(),
+    last_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    last_restocked: z.string().datetime({ offset: true }).nullable(),
+    last_sale: z.string().datetime({ offset: true }).nullable(),
     allow_backorder: z.boolean().optional(),
     branch: z.number().int(),
     variant: z.number().int(),
@@ -2804,8 +3666,10 @@ const StockRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    last_restocked: z.string().datetime({ offset: true }).nullish(),
-    last_sale: z.string().datetime({ offset: true }).nullish(),
+    last_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
     allow_backorder: z.boolean().optional(),
     branch: z.number().int(),
     variant: z.number().int(),
@@ -2820,8 +3684,7 @@ const PatchedStockRequest = z
     max_stock_level: z.number().int().gte(0).lte(2147483647),
     min_stock_level: z.number().int().gte(0).lte(2147483647),
     average_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    last_restocked: z.string().datetime({ offset: true }).nullable(),
-    last_sale: z.string().datetime({ offset: true }).nullable(),
+    last_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     allow_backorder: z.boolean(),
     branch: z.number().int(),
     variant: z.number().int(),
@@ -2888,6 +3751,7 @@ const ProductVariant = z
     is_active: z.boolean().optional(),
     sku: z.string().max(50).nullish(),
     usku: z.string(),
+    description: z.string(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -2910,6 +3774,51 @@ const PaginatedProductVariantList = z
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
     results: z.array(ProductVariant),
+  })
+  .passthrough();
+const CreateProductVariantRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    sku: z.string().max(50).nullish(),
+    last_purchase_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    discount_percentage: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    product: z.number().int(),
+    product_type: z.number().int(),
+    warranty: z.number().int().nullish(),
+    weight: z.number().int().nullish(),
+    dimensions: z.number().int().nullish(),
+  })
+  .passthrough();
+const CreateProductVariant = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    sku: z.string().max(50).nullish(),
+    usku: z.string(),
+    description: z.string(),
+    last_purchase_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    discount_percentage: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    product: z.number().int(),
+    product_type: z.number().int(),
+    warranty: z.number().int().nullish(),
+    weight: z.number().int().nullish(),
+    dimensions: z.number().int().nullish(),
   })
   .passthrough();
 const ProductVariantRequest = z
@@ -2948,6 +3857,57 @@ const PatchedProductVariantRequest = z
     warranty: z.number().int().nullable(),
     weight: z.number().int().nullable(),
     dimensions: z.number().int().nullable(),
+  })
+  .partial()
+  .passthrough();
+const InstallmentStatusEnum = z.enum([
+  "pending",
+  "due",
+  "paid",
+  "overdue",
+  "cancelled",
+]);
+const Installment = z
+  .object({
+    id: z.number().int(),
+    payment: z.number().int(),
+    installment_number: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    due_date: z.string(),
+    status: InstallmentStatusEnum.optional(),
+    status_display: z.string(),
+    paid_at: z.string().datetime({ offset: true }).nullish(),
+    paid_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+  })
+  .passthrough();
+const PaginatedInstallmentList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Installment),
+  })
+  .passthrough();
+const InstallmentRequest = z
+  .object({
+    due_date: z.string(),
+    status: InstallmentStatusEnum.optional(),
+    paid_at: z.string().datetime({ offset: true }).nullish(),
+    paid_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+  })
+  .passthrough();
+const PatchedInstallmentRequest = z
+  .object({
+    due_date: z.string(),
+    status: InstallmentStatusEnum,
+    paid_at: z.string().datetime({ offset: true }).nullable(),
+    paid_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
   })
   .partial()
   .passthrough();
@@ -3024,7 +3984,6 @@ const InvoiceItemRequest = z
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
     unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     product_variant: z.number().int().nullish(),
-    invoice: z.number().int(),
   })
   .passthrough();
 const InvoiceRequest = z
@@ -3081,7 +4040,14 @@ const OrderItem = z
     prescription: z.number().int().nullish(),
   })
   .passthrough();
-const OrderTypeEnum = z.enum(["cash", "credit", "insurance"]);
+const OrderTypeEnum = z.enum([
+  "cash",
+  "credit",
+  "insurance",
+  "bnpl",
+  "corporate",
+  "wholesale",
+]);
 const OrderStatusEnum = z.enum([
   "pending",
   "confirmed",
@@ -3096,11 +4062,26 @@ const PaymentStatusEnum = z.enum([
   "refunded",
   "disputed",
 ]);
-const PaymentTypeEnum = z.enum(["cash", "credit", "insurance"]);
+const OrderPaymentMethodEnum = z.enum([
+  "cash",
+  "card",
+  "bank_transfer",
+  "mada",
+  "visa",
+  "master",
+  "apple_pay",
+  "stc_pay",
+  "tabby",
+  "tamara",
+  "insurance",
+  "credit",
+  "mixed",
+]);
 const Order = z
   .object({
     id: z.number().int(),
     items: z.array(OrderItem),
+    remaining_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -3123,7 +4104,15 @@ const Order = z
     order_number: z.string(),
     status: OrderStatusEnum.optional(),
     payment_status: PaymentStatusEnum.optional(),
-    payment_type: PaymentTypeEnum.optional(),
+    payment_method: OrderPaymentMethodEnum.optional(),
+    partner_share: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    customer_share: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     notes: z.string().optional(),
     internal_notes: z.string().optional(),
     confirmed_at: z.string().datetime({ offset: true }).nullable(),
@@ -3131,6 +4120,8 @@ const Order = z
     expected_delivery: z.string().datetime({ offset: true }).nullish(),
     branch: z.number().int().nullish(),
     customer: z.number().int(),
+    partner: z.number().int().nullish(),
+    customer_partner_link: z.number().int().nullish(),
     sales_person: z.number().int().nullish(),
   })
   .passthrough();
@@ -3148,7 +4139,6 @@ const OrderItemRequest = z
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
     unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     product_variant: z.number().int().nullish(),
-    order: z.number().int(),
     prescription: z.number().int().nullish(),
   })
   .passthrough();
@@ -3171,12 +4161,22 @@ const OrderRequest = z
     order_type: OrderTypeEnum.optional(),
     status: OrderStatusEnum.optional(),
     payment_status: PaymentStatusEnum.optional(),
-    payment_type: PaymentTypeEnum.optional(),
+    payment_method: OrderPaymentMethodEnum.optional(),
+    partner_share: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    customer_share: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     notes: z.string().optional(),
     internal_notes: z.string().optional(),
     expected_delivery: z.string().datetime({ offset: true }).nullish(),
     branch: z.number().int().nullish(),
     customer: z.number().int(),
+    partner: z.number().int().nullish(),
+    customer_partner_link: z.number().int().nullish(),
     sales_person: z.number().int().nullish(),
   })
   .passthrough();
@@ -3190,60 +4190,215 @@ const PatchedOrderRequest = z
     order_type: OrderTypeEnum,
     status: OrderStatusEnum,
     payment_status: PaymentStatusEnum,
-    payment_type: PaymentTypeEnum,
+    payment_method: OrderPaymentMethodEnum,
+    partner_share: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    customer_share: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     notes: z.string(),
     internal_notes: z.string(),
     expected_delivery: z.string().datetime({ offset: true }).nullable(),
     branch: z.number().int().nullable(),
     customer: z.number().int(),
+    partner: z.number().int().nullable(),
+    customer_partner_link: z.number().int().nullable(),
     sales_person: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
-const PaymentMethodEnum = z.enum(["cash", "card"]);
-const Payment = z
+const PaymentMethodBabEnum = z.enum([
+  "cash",
+  "card",
+  "bank_transfer",
+  "cheque",
+  "mada",
+  "visa",
+  "mastercard",
+  "amex",
+  "apple_pay",
+  "stc_pay",
+  "urpay",
+  "tabby",
+  "tamara",
+  "postpay",
+  "spotii",
+  "insurance",
+  "credit",
+  "partner",
+]);
+const Status839Enum = z.enum([
+  "pending",
+  "processing",
+  "completed",
+  "failed",
+  "cancelled",
+  "refunded",
+  "partially_refunded",
+]);
+const PaymentList = z
   .object({
     id: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    currency: z.string().max(3).optional(),
+    payment_method: PaymentMethodBabEnum,
+    payment_method_display: z.string(),
+    status: Status839Enum.optional(),
+    status_display: z.string(),
+    is_installment: z.boolean().optional(),
+    paid_at: z.string().datetime({ offset: true }).nullish(),
     created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    payment_method: PaymentMethodEnum,
-    invoice: z.number().int(),
   })
   .passthrough();
-const PaginatedPaymentList = z
+const PaginatedPaymentListList = z
   .object({
     count: z.number().int(),
     next: z.string().url().nullish(),
     previous: z.string().url().nullish(),
-    results: z.array(Payment),
+    results: z.array(PaymentList),
+  })
+  .passthrough();
+const PaymentCreateRequest = z
+  .object({
+    invoice: z.number().int().nullish(),
+    order: z.number().int().nullish(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    currency: z.string().min(1).max(3).optional(),
+    payment_method: PaymentMethodBabEnum,
+    partner: z.number().int().nullish(),
+    is_installment: z.boolean().optional(),
+    installments_count: z.number().int().gte(0).lte(2147483647).optional(),
+    card_last_four: z.string().max(4).optional(),
+    card_brand: z.string().max(20).optional(),
+    cheque_number: z.string().max(50).optional(),
+    cheque_bank: z.string().max(100).optional(),
+    cheque_date: z.string().nullish(),
+    transfer_reference: z.string().max(100).optional(),
+    transfer_bank: z.string().max(100).optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const PaymentCreate = z
+  .object({
+    invoice: z.number().int().nullish(),
+    order: z.number().int().nullish(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    currency: z.string().max(3).optional(),
+    payment_method: PaymentMethodBabEnum,
+    partner: z.number().int().nullish(),
+    is_installment: z.boolean().optional(),
+    installments_count: z.number().int().gte(0).lte(2147483647).optional(),
+    card_last_four: z.string().max(4).optional(),
+    card_brand: z.string().max(20).optional(),
+    cheque_number: z.string().max(50).optional(),
+    cheque_bank: z.string().max(100).optional(),
+    cheque_date: z.string().nullish(),
+    transfer_reference: z.string().max(100).optional(),
+    transfer_bank: z.string().max(100).optional(),
+    notes: z.string().optional(),
+  })
+  .passthrough();
+const Payment = z
+  .object({
+    id: z.number().int(),
+    invoice: z.number().int().nullish(),
+    invoice_number: z.string(),
+    order: z.number().int().nullish(),
+    order_number: z.string(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    currency: z.string().max(3).optional(),
+    payment_method: PaymentMethodBabEnum,
+    payment_method_display: z.string(),
+    status: Status839Enum.optional(),
+    status_display: z.string(),
+    partner: z.number().int().nullish(),
+    partner_name: z.string(),
+    gateway_transaction_id: z.string(),
+    gateway_reference: z.string().max(100).optional(),
+    is_installment: z.boolean().optional(),
+    installments_count: z.number().int().gte(0).lte(2147483647).optional(),
+    installment_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    bnpl_order_id: z.string().max(100).optional(),
+    card_last_four: z.string().max(4).optional(),
+    card_brand: z.string().max(20).optional(),
+    cheque_number: z.string().max(50).optional(),
+    cheque_bank: z.string().max(100).optional(),
+    cheque_date: z.string().nullish(),
+    transfer_reference: z.string().max(100).optional(),
+    transfer_bank: z.string().max(100).optional(),
+    paid_at: z.string().datetime({ offset: true }).nullable(),
+    refunded_at: z.string().datetime({ offset: true }).nullable(),
+    refund_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    notes: z.string().optional(),
+    installments: z.string(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
 const PaymentRequest = z
   .object({
-    is_active: z.boolean().optional(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    payment_method: PaymentMethodEnum,
-    invoice: z.number().int(),
+    invoice: z.number().int().nullish(),
+    order: z.number().int().nullish(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    currency: z.string().min(1).max(3).optional(),
+    payment_method: PaymentMethodBabEnum,
+    status: Status839Enum.optional(),
+    partner: z.number().int().nullish(),
+    gateway_reference: z.string().max(100).optional(),
+    is_installment: z.boolean().optional(),
+    installments_count: z.number().int().gte(0).lte(2147483647).optional(),
+    installment_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    bnpl_order_id: z.string().max(100).optional(),
+    card_last_four: z.string().max(4).optional(),
+    card_brand: z.string().max(20).optional(),
+    cheque_number: z.string().max(50).optional(),
+    cheque_bank: z.string().max(100).optional(),
+    cheque_date: z.string().nullish(),
+    transfer_reference: z.string().max(100).optional(),
+    transfer_bank: z.string().max(100).optional(),
+    refund_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    notes: z.string().optional(),
   })
   .passthrough();
 const PatchedPaymentRequest = z
   .object({
-    is_active: z.boolean(),
-    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    payment_method: PaymentMethodEnum,
-    invoice: z.number().int(),
+    invoice: z.number().int().nullable(),
+    order: z.number().int().nullable(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    currency: z.string().min(1).max(3),
+    payment_method: PaymentMethodBabEnum,
+    status: Status839Enum,
+    partner: z.number().int().nullable(),
+    gateway_reference: z.string().max(100),
+    is_installment: z.boolean(),
+    installments_count: z.number().int().gte(0).lte(2147483647),
+    installment_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
+    bnpl_order_id: z.string().max(100),
+    card_last_four: z.string().max(4),
+    card_brand: z.string().max(20),
+    cheque_number: z.string().max(50),
+    cheque_bank: z.string().max(100),
+    cheque_date: z.string().nullable(),
+    transfer_reference: z.string().max(100),
+    transfer_bank: z.string().max(100),
+    refund_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    notes: z.string(),
   })
   .partial()
   .passthrough();
-const SubscriptionPlanCurrencyEnum = z.enum([
-  "usd",
-  "egp",
-  "sar",
-  "aud",
-  "eur",
-]);
+const CurrencyEnum = z.enum(["usd", "egp", "sar", "aud", "eur"]);
 const SubscriptionPlan = z
   .object({
     id: z.number().int(),
@@ -3261,7 +4416,7 @@ const SubscriptionPlan = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    currency: SubscriptionPlanCurrencyEnum.optional(),
+    currency: CurrencyEnum.optional(),
     discount: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -3408,7 +4563,7 @@ const SubscriptionPlanRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
-    currency: SubscriptionPlanCurrencyEnum.optional(),
+    currency: CurrencyEnum.optional(),
     discount: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -3425,7 +4580,7 @@ const PatchedSubscriptionPlanRequest = z
     max_products: z.number().int().gte(0).lte(2147483647),
     month_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     year_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    currency: SubscriptionPlanCurrencyEnum,
+    currency: CurrencyEnum,
     discount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
   })
   .partial()
@@ -3803,38 +4958,38 @@ const PatchedUserRequest = z
   .passthrough();
 
 export const schemas = {
-  AccountCurrencyEnum,
-  Account,
-  PaginatedAccountList,
-  AccountRequest,
-  PatchedAccountRequest,
   CategoryTypeEnum,
   AccountingCategory,
   PaginatedAccountingCategoryList,
   AccountingCategoryRequest,
   PatchedAccountingCategoryRequest,
+  AccountTypeEnum,
+  AccountSubtypeEnum,
+  BlankEnum,
+  NormalBalanceEnum,
+  ChartOfAccounts,
+  PaginatedChartOfAccountsList,
+  ChartOfAccountsRequest,
+  PatchedChartOfAccountsRequest,
   FinancialPeriod,
   PaginatedFinancialPeriodList,
   FinancialPeriodRequest,
   PatchedFinancialPeriodRequest,
-  JournalEntry,
-  PaginatedJournalEntryList,
-  JournalEntryRequest,
-  PatchedJournalEntryRequest,
-  TransactionTypeEnum,
-  IntervalEnum,
-  RecurringTransaction,
-  PaginatedRecurringTransactionList,
-  RecurringTransactionRequest,
-  PatchedRecurringTransactionRequest,
+  SourceTypeEnum,
+  GeneralJournalList,
+  PaginatedGeneralJournalListList,
+  EntryTypeEnum,
+  JournalLineRequest,
+  GeneralJournalCreateRequest,
+  JournalLine,
+  GeneralJournalCreate,
+  GeneralJournal,
+  GeneralJournalRequest,
+  PatchedGeneralJournalRequest,
   Tax,
   PaginatedTaxList,
   TaxRequest,
   PatchedTaxRequest,
-  Transaction,
-  PaginatedTransactionList,
-  TransactionRequest,
-  PatchedTransactionRequest,
   BranchUsers,
   PaginatedBranchUsersList,
   BranchUsersRequest,
@@ -3852,6 +5007,15 @@ export const schemas = {
   PaginatedCampaignList,
   CampaignRequest,
   PatchedCampaignRequest,
+  DocumentTypeEnum,
+  ClaimDocument,
+  PaginatedClaimDocumentList,
+  ClaimDocumentRequest,
+  PatchedClaimDocumentRequest,
+  ClaimItem,
+  PaginatedClaimItemList,
+  ClaimItemRequest,
+  PatchedClaimItemRequest,
   ComplaintStatusEnum,
   Complaint,
   PaginatedComplaintList,
@@ -3865,6 +5029,10 @@ export const schemas = {
   PaginatedCustomerGroupList,
   CustomerGroupRequest,
   PatchedCustomerGroupRequest,
+  CustomerPartnerLink,
+  PaginatedCustomerPartnerLinkList,
+  CustomerPartnerLinkRequest,
+  PatchedCustomerPartnerLinkRequest,
   CustomerTypeEnum,
   PreferredContactEnum,
   Customer,
@@ -3875,6 +5043,14 @@ export const schemas = {
   PaginatedDocumentList,
   DocumentRequest,
   PatchedDocumentRequest,
+  Status644Enum,
+  InsuranceClaimList,
+  PaginatedInsuranceClaimListList,
+  InsuranceClaimCreateRequest,
+  InsuranceClaimCreate,
+  InsuranceClaim,
+  InsuranceClaimRequest,
+  PatchedInsuranceClaimRequest,
   InteractionTypeEnum,
   Interaction,
   PaginatedInteractionList,
@@ -3885,6 +5061,31 @@ export const schemas = {
   PaginatedOpportunityList,
   OpportunityRequest,
   PatchedOpportunityRequest,
+  PartnerBranch,
+  PaginatedPartnerBranchList,
+  PartnerBranchRequest,
+  PatchedPartnerBranchRequest,
+  PartnerPriceListItem,
+  PaginatedPartnerPriceListItemList,
+  PartnerPriceListItemRequest,
+  PatchedPartnerPriceListItemRequest,
+  PriceTypeEnum,
+  PartnerPriceList,
+  PaginatedPartnerPriceListList,
+  PartnerPriceListRequest,
+  PatchedPartnerPriceListRequest,
+  PartnerSettlementStatusEnum,
+  PartnerSettlement,
+  PaginatedPartnerSettlementList,
+  PartnerSettlementRequest,
+  PatchedPartnerSettlementRequest,
+  PartnerTypeEnum,
+  PartnerList,
+  PaginatedPartnerListList,
+  PaymentTermsEnum,
+  PartnerRequest,
+  Partner,
+  PatchedPartnerRequest,
   SubscriptionTypeEnum,
   Subscription,
   PaginatedSubscriptionList,
@@ -3932,7 +5133,6 @@ export const schemas = {
   Role,
   User,
   RightSphereEnum,
-  BlankEnum,
   NullEnum,
   RightCylinderEnum,
   LeftSphereEnum,
@@ -3986,6 +5186,7 @@ export const schemas = {
   PaginatedProductImageList,
   ProductImageRequest,
   PatchedProductImageRequest,
+  TypeEnum,
   VariantTypeEnum,
   Product,
   PaginatedProductList,
@@ -4002,6 +5203,8 @@ export const schemas = {
   MovementTypeEnum,
   StockMovement,
   PaginatedStockMovementList,
+  StockMovementCreateRequest,
+  StockMovementCreate,
   StockMovementRequest,
   PatchedStockMovementRequest,
   StockTransferItem,
@@ -4011,6 +5214,8 @@ export const schemas = {
   StockTransferStatusEnum,
   StockTransfer,
   PaginatedStockTransferList,
+  StockTransferCreateRequest,
+  StockTransferCreate,
   StockTransferRequest,
   PatchedStockTransferRequest,
   Stock,
@@ -4023,8 +5228,15 @@ export const schemas = {
   PatchedSupplierRequest,
   ProductVariant,
   PaginatedProductVariantList,
+  CreateProductVariantRequest,
+  CreateProductVariant,
   ProductVariantRequest,
   PatchedProductVariantRequest,
+  InstallmentStatusEnum,
+  Installment,
+  PaginatedInstallmentList,
+  InstallmentRequest,
+  PatchedInstallmentRequest,
   InvoiceItem,
   InvoiceTypeEnum,
   InvoiceStatusEnum,
@@ -4037,18 +5249,22 @@ export const schemas = {
   OrderTypeEnum,
   OrderStatusEnum,
   PaymentStatusEnum,
-  PaymentTypeEnum,
+  OrderPaymentMethodEnum,
   Order,
   PaginatedOrderList,
   OrderItemRequest,
   OrderRequest,
   PatchedOrderRequest,
-  PaymentMethodEnum,
+  PaymentMethodBabEnum,
+  Status839Enum,
+  PaymentList,
+  PaginatedPaymentListList,
+  PaymentCreateRequest,
+  PaymentCreate,
   Payment,
-  PaginatedPaymentList,
   PaymentRequest,
   PatchedPaymentRequest,
-  SubscriptionPlanCurrencyEnum,
+  CurrencyEnum,
   SubscriptionPlan,
   Client,
   PaginatedClientList,
@@ -4112,179 +5328,9 @@ export const schemas = {
 export const endpoints = makeApi([
   {
     method: "get",
-    path: "/api/accounting/accounts/",
-    alias: "accounting_accounts_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "balance",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "balance_currency",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "currency",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "user",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedAccountList,
-  },
-  {
-    method: "post",
-    path: "/api/accounting/accounts/",
-    alias: "accounting_accounts_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: AccountRequest,
-      },
-    ],
-    response: Account,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/accounts/:id/",
-    alias: "accounting_accounts_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Account,
-  },
-  {
-    method: "put",
-    path: "/api/accounting/accounts/:id/",
-    alias: "accounting_accounts_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: AccountRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Account,
-  },
-  {
-    method: "patch",
-    path: "/api/accounting/accounts/:id/",
-    alias: "accounting_accounts_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedAccountRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Account,
-  },
-  {
-    method: "delete",
-    path: "/api/accounting/accounts/:id/",
-    alias: "accounting_accounts_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/accounting/accounts/filter_options/",
-    alias: "accounting_accounts_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: Account,
-  },
-  {
-    method: "get",
     path: "/api/accounting/categories/",
     alias: "accounting_categories_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفئات المحاسبية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4339,8 +5385,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/accounting/categories/",
     alias: "accounting_categories_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفئات المحاسبية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4355,8 +5400,7 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفئات المحاسبية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4371,8 +5415,7 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفئات المحاسبية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4392,8 +5435,7 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفئات المحاسبية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4413,8 +5455,7 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفئات المحاسبية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4435,10 +5476,241 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
+    path: "/api/accounting/chart-of-accounts/",
+    alias: "accounting_chart_of_accounts_list",
+    description: `ViewSet لدليل الحسابات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_subtype",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "account_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "current_balance",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_header",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name_en",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "normal_balance",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "opening_balance",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "parent",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedChartOfAccountsList,
+  },
+  {
+    method: "post",
+    path: "/api/accounting/chart-of-accounts/",
+    alias: "accounting_chart_of_accounts_create",
+    description: `ViewSet لدليل الحسابات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ChartOfAccountsRequest,
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "get",
+    path: "/api/accounting/chart-of-accounts/:id/",
+    alias: "accounting_chart_of_accounts_retrieve",
+    description: `ViewSet لدليل الحسابات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "put",
+    path: "/api/accounting/chart-of-accounts/:id/",
+    alias: "accounting_chart_of_accounts_update",
+    description: `ViewSet لدليل الحسابات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ChartOfAccountsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "patch",
+    path: "/api/accounting/chart-of-accounts/:id/",
+    alias: "accounting_chart_of_accounts_partial_update",
+    description: `ViewSet لدليل الحسابات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedChartOfAccountsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "delete",
+    path: "/api/accounting/chart-of-accounts/:id/",
+    alias: "accounting_chart_of_accounts_destroy",
+    description: `ViewSet لدليل الحسابات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/accounting/chart-of-accounts/by_type/",
+    alias: "accounting_chart_of_accounts_by_type_retrieve",
+    description: `الحسابات حسب النوع`,
+    requestFormat: "json",
+    response: ChartOfAccounts,
+  },
+  {
+    method: "get",
+    path: "/api/accounting/chart-of-accounts/choices/",
+    alias: "accounting_chart_of_accounts_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: ChartOfAccounts,
+  },
+  {
+    method: "get",
+    path: "/api/accounting/chart-of-accounts/filter_options/",
+    alias: "accounting_chart_of_accounts_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ChartOfAccounts,
+  },
+  {
+    method: "post",
+    path: "/api/accounting/chart-of-accounts/setup_defaults/",
+    alias: "accounting_chart_of_accounts_setup_defaults_create",
+    description: `إعداد الحسابات الافتراضية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ChartOfAccountsRequest,
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "get",
+    path: "/api/accounting/chart-of-accounts/tree/",
+    alias: "accounting_chart_of_accounts_tree_retrieve",
+    description: `عرض دليل الحسابات كشجرة هرمية`,
+    requestFormat: "json",
+    response: ChartOfAccounts,
+  },
+  {
+    method: "get",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفترات المالية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4493,8 +5765,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفترات المالية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4509,8 +5780,7 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفترات المالية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4525,8 +5795,7 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفترات المالية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4546,8 +5815,7 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفترات المالية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4567,8 +5835,7 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للفترات المالية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4578,6 +5845,14 @@ Enforces authentication and role-based access.`,
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/accounting/financial-periods/current/",
+    alias: "accounting_financial_periods_current_retrieve",
+    description: `الفترة المالية الحالية`,
+    requestFormat: "json",
+    response: FinancialPeriod,
   },
   {
     method: "get",
@@ -4591,37 +5866,51 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet لقيود اليومية`,
     requestFormat: "json",
     parameters: [
       {
-        name: "account",
+        name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "credit",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "credit_currency",
+        name: "description",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "debit",
+        name: "entry_date",
         type: "Query",
-        schema: z.number().optional(),
+        schema: z.string().optional(),
       },
       {
-        name: "debit_currency",
+        name: "entry_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "entry_type",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_posted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "lines",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -4641,40 +5930,68 @@ Enforces authentication and role-based access.`,
         schema: z.number().int().optional(),
       },
       {
+        name: "posted_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "posted_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "transaction",
+        name: "source_document",
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "source_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "source_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "total_credit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_debit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
     ],
-    response: PaginatedJournalEntryList,
+    response: PaginatedGeneralJournalListList,
   },
   {
     method: "post",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet لقيود اليومية`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: JournalEntryRequest,
+        schema: GeneralJournalCreateRequest,
       },
     ],
-    response: JournalEntry,
+    response: GeneralJournalCreate,
   },
   {
     method: "get",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet لقيود اليومية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4683,20 +6000,19 @@ Enforces authentication and role-based access.`,
         schema: z.number().int(),
       },
     ],
-    response: JournalEntry,
+    response: GeneralJournal,
   },
   {
     method: "put",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet لقيود اليومية`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: JournalEntryRequest,
+        schema: GeneralJournalRequest,
       },
       {
         name: "id",
@@ -4704,20 +6020,19 @@ Enforces authentication and role-based access.`,
         schema: z.number().int(),
       },
     ],
-    response: JournalEntry,
+    response: GeneralJournal,
   },
   {
     method: "patch",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet لقيود اليومية`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: PatchedJournalEntryRequest,
+        schema: PatchedGeneralJournalRequest,
       },
       {
         name: "id",
@@ -4725,14 +6040,13 @@ Enforces authentication and role-based access.`,
         schema: z.number().int(),
       },
     ],
-    response: JournalEntry,
+    response: GeneralJournal,
   },
   {
     method: "delete",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet لقيود اليومية`,
     requestFormat: "json",
     parameters: [
       {
@@ -4742,6 +6056,62 @@ Enforces authentication and role-based access.`,
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/accounting/journal-entries/:id/post_entry/",
+    alias: "accounting_journal_entries_post_entry_create",
+    description: `ترحيل القيد`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: GeneralJournalRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: GeneralJournal,
+  },
+  {
+    method: "post",
+    path: "/api/accounting/journal-entries/:id/reverse_entry/",
+    alias: "accounting_journal_entries_reverse_entry_create",
+    description: `عكس القيد`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: GeneralJournalRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: GeneralJournal,
+  },
+  {
+    method: "get",
+    path: "/api/accounting/journal-entries/by_source/",
+    alias: "accounting_journal_entries_by_source_retrieve",
+    description: `القيود حسب المصدر`,
+    requestFormat: "json",
+    response: GeneralJournal,
+  },
+  {
+    method: "get",
+    path: "/api/accounting/journal-entries/choices/",
+    alias: "accounting_journal_entries_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: GeneralJournal,
   },
   {
     method: "get",
@@ -4749,158 +6119,41 @@ Enforces authentication and role-based access.`,
     alias: "accounting_journal_entries_filter_options_retrieve",
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
-    response: JournalEntry,
+    response: GeneralJournal,
   },
   {
     method: "get",
-    path: "/api/accounting/recurring-transactions/",
-    alias: "accounting_recurring_transactions_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    path: "/api/accounting/journal-entries/unposted/",
+    alias: "accounting_journal_entries_unposted_retrieve",
+    description: `القيود غير المرحّلة`,
     requestFormat: "json",
-    parameters: [
-      {
-        name: "account",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "amount_currency",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "interval",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "next_execution",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "transaction_type",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedRecurringTransactionList,
-  },
-  {
-    method: "post",
-    path: "/api/accounting/recurring-transactions/",
-    alias: "accounting_recurring_transactions_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: RecurringTransactionRequest,
-      },
-    ],
-    response: RecurringTransaction,
+    response: GeneralJournal,
   },
   {
     method: "get",
-    path: "/api/accounting/recurring-transactions/:id/",
-    alias: "accounting_recurring_transactions_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    path: "/api/accounting/reports/balance-sheet/",
+    alias: "accounting_reports_balance_sheet_retrieve",
+    description: `الميزانية العمومية`,
     requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: RecurringTransaction,
+    response: z.void(),
   },
   {
-    method: "put",
-    path: "/api/accounting/recurring-transactions/:id/",
-    alias: "accounting_recurring_transactions_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    method: "get",
+    path: "/api/accounting/reports/income-statement/",
+    alias: "accounting_reports_income_statement_retrieve",
+    description: `قائمة الدخل`,
     requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: RecurringTransactionRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: RecurringTransaction,
+    response: z.void(),
   },
   {
-    method: "patch",
-    path: "/api/accounting/recurring-transactions/:id/",
-    alias: "accounting_recurring_transactions_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    method: "get",
+    path: "/api/accounting/reports/ledger/:account_id/",
+    alias: "accounting_reports_ledger_retrieve",
+    description: `دفتر الأستاذ لحساب معين`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: PatchedRecurringTransactionRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: RecurringTransaction,
-  },
-  {
-    method: "delete",
-    path: "/api/accounting/recurring-transactions/:id/",
-    alias: "accounting_recurring_transactions_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
+        name: "account_id",
         type: "Path",
         schema: z.number().int(),
       },
@@ -4909,18 +6162,17 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
-    path: "/api/accounting/recurring-transactions/filter_options/",
-    alias: "accounting_recurring_transactions_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
+    path: "/api/accounting/reports/trial-balance/",
+    alias: "accounting_reports_trial_balance_retrieve",
+    description: `ميزان المراجعة`,
     requestFormat: "json",
-    response: RecurringTransaction,
+    response: z.void(),
   },
   {
     method: "get",
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للضرائب`,
     requestFormat: "json",
     parameters: [
       {
@@ -4980,8 +6232,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للضرائب`,
     requestFormat: "json",
     parameters: [
       {
@@ -4996,8 +6247,7 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للضرائب`,
     requestFormat: "json",
     parameters: [
       {
@@ -5012,8 +6262,7 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للضرائب`,
     requestFormat: "json",
     parameters: [
       {
@@ -5033,8 +6282,7 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للضرائب`,
     requestFormat: "json",
     parameters: [
       {
@@ -5054,8 +6302,7 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
+    description: `ViewSet للضرائب`,
     requestFormat: "json",
     parameters: [
       {
@@ -5073,195 +6320,6 @@ Enforces authentication and role-based access.`,
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Tax,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/transactions/",
-    alias: "accounting_transactions_list",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "account",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "amount_currency",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "category",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "period",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "tax_rate",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "transaction_type",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedTransactionList,
-  },
-  {
-    method: "post",
-    path: "/api/accounting/transactions/",
-    alias: "accounting_transactions_create",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: TransactionRequest,
-      },
-    ],
-    response: Transaction,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/transactions/:id/",
-    alias: "accounting_transactions_retrieve",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Transaction,
-  },
-  {
-    method: "put",
-    path: "/api/accounting/transactions/:id/",
-    alias: "accounting_transactions_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: TransactionRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Transaction,
-  },
-  {
-    method: "patch",
-    path: "/api/accounting/transactions/:id/",
-    alias: "accounting_transactions_partial_update",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedTransactionRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Transaction,
-  },
-  {
-    method: "delete",
-    path: "/api/accounting/transactions/:id/",
-    alias: "accounting_transactions_destroy",
-    description: `Base ViewSet for Accounting app.
-Enforces authentication and role-based access.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/accounting/transactions/filter_options/",
-    alias: "accounting_transactions_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: Transaction,
   },
   {
     method: "get",
@@ -5973,6 +7031,337 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
+    path: "/api/crm/claim-documents/",
+    alias: "crm_claim_documents_list",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "claim",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "document_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "file",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedClaimDocumentList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/claim-documents/",
+    alias: "crm_claim_documents_create",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimDocumentRequest,
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "get",
+    path: "/api/crm/claim-documents/:id/",
+    alias: "crm_claim_documents_retrieve",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "put",
+    path: "/api/crm/claim-documents/:id/",
+    alias: "crm_claim_documents_update",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimDocumentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/claim-documents/:id/",
+    alias: "crm_claim_documents_partial_update",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedClaimDocumentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/claim-documents/:id/",
+    alias: "crm_claim_documents_destroy",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/claim-documents/filter_options/",
+    alias: "crm_claim_documents_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ClaimDocument,
+  },
+  {
+    method: "get",
+    path: "/api/crm/claim-items/",
+    alias: "crm_claim_items_list",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "approved_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "claim",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "claim_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "insurance_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order_item",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "quantity",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "total_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "unit_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+    ],
+    response: PaginatedClaimItemList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/claim-items/",
+    alias: "crm_claim_items_create",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimItemRequest,
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "get",
+    path: "/api/crm/claim-items/:id/",
+    alias: "crm_claim_items_retrieve",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "put",
+    path: "/api/crm/claim-items/:id/",
+    alias: "crm_claim_items_update",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/claim-items/:id/",
+    alias: "crm_claim_items_partial_update",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedClaimItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/claim-items/:id/",
+    alias: "crm_claim_items_destroy",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/claim-items/filter_options/",
+    alias: "crm_claim_items_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ClaimItem,
+  },
+  {
+    method: "get",
     path: "/api/crm/complaints/",
     alias: "crm_complaints_list",
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
@@ -6452,6 +7841,227 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
+    path: "/api/crm/customer-partner-links/",
+    alias: "crm_customer_partner_links_list",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "annual_limit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "copay_fixed",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "copay_percentage",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "coverage_class",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "coverage_end",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "coverage_start",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "member_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "policy_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "remaining_limit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerPartnerLinkList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/customer-partner-links/",
+    alias: "crm_customer_partner_links_create",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerPartnerLinkRequest,
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
+    path: "/api/crm/customer-partner-links/:id/",
+    alias: "crm_customer_partner_links_retrieve",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "put",
+    path: "/api/crm/customer-partner-links/:id/",
+    alias: "crm_customer_partner_links_update",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerPartnerLinkRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/customer-partner-links/:id/",
+    alias: "crm_customer_partner_links_partial_update",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCustomerPartnerLinkRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/customer-partner-links/:id/",
+    alias: "crm_customer_partner_links_destroy",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/crm/customer-partner-links/:id/deactivate/",
+    alias: "crm_customer_partner_links_deactivate_create",
+    description: `تعطيل الربط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerPartnerLinkRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
+    path: "/api/crm/customer-partner-links/by_customer/",
+    alias: "crm_customer_partner_links_by_customer_retrieve",
+    description: `جلب ارتباطات عميل معين`,
+    requestFormat: "json",
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
+    path: "/api/crm/customer-partner-links/filter_options/",
+    alias: "crm_customer_partner_links_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
     path: "/api/crm/customers/",
     alias: "crm_customers_list",
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
@@ -6745,6 +8355,353 @@ Enforces authentication and role-based access.`,
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Document,
+  },
+  {
+    method: "get",
+    path: "/api/crm/insurance-claims/",
+    alias: "crm_insurance_claims_list",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "approved_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "attached_documents",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "claim_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "claim_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "claim_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer_partner_link",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "external_claim_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "internal_notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "paid_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "partial_reason",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "patient_share",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "payment_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "rejection_reason",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "response_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "submission_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInsuranceClaimListList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/insurance-claims/",
+    alias: "crm_insurance_claims_create",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimCreateRequest,
+      },
+    ],
+    response: InsuranceClaimCreate,
+  },
+  {
+    method: "get",
+    path: "/api/crm/insurance-claims/:id/",
+    alias: "crm_insurance_claims_retrieve",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "put",
+    path: "/api/crm/insurance-claims/:id/",
+    alias: "crm_insurance_claims_update",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/insurance-claims/:id/",
+    alias: "crm_insurance_claims_partial_update",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/insurance-claims/:id/",
+    alias: "crm_insurance_claims_destroy",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/crm/insurance-claims/:id/approve/",
+    alias: "crm_insurance_claims_approve_create",
+    description: `اعتماد المطالبة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "post",
+    path: "/api/crm/insurance-claims/:id/mark_paid/",
+    alias: "crm_insurance_claims_mark_paid_create",
+    description: `تسجيل السداد`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "post",
+    path: "/api/crm/insurance-claims/:id/reject/",
+    alias: "crm_insurance_claims_reject_create",
+    description: `رفض المطالبة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "post",
+    path: "/api/crm/insurance-claims/:id/submit/",
+    alias: "crm_insurance_claims_submit_create",
+    description: `تقديم المطالبة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "get",
+    path: "/api/crm/insurance-claims/approved_unpaid/",
+    alias: "crm_insurance_claims_approved_unpaid_retrieve",
+    description: `المطالبات المعتمدة غير المسددة`,
+    requestFormat: "json",
+    response: InsuranceClaim,
+  },
+  {
+    method: "get",
+    path: "/api/crm/insurance-claims/choices/",
+    alias: "crm_insurance_claims_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: InsuranceClaim,
+  },
+  {
+    method: "get",
+    path: "/api/crm/insurance-claims/filter_options/",
+    alias: "crm_insurance_claims_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: InsuranceClaim,
+  },
+  {
+    method: "get",
+    path: "/api/crm/insurance-claims/pending/",
+    alias: "crm_insurance_claims_pending_retrieve",
+    description: `المطالبات المعلقة`,
+    requestFormat: "json",
+    response: InsuranceClaim,
   },
   {
     method: "get",
@@ -7066,6 +9023,1048 @@ Enforces authentication and role-based access.`,
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Opportunity,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-branches/",
+    alias: "crm_partner_branches_list",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "special_discount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+    ],
+    response: PaginatedPartnerBranchList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-branches/",
+    alias: "crm_partner_branches_create",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerBranchRequest,
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-branches/:id/",
+    alias: "crm_partner_branches_retrieve",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "put",
+    path: "/api/crm/partner-branches/:id/",
+    alias: "crm_partner_branches_update",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerBranchRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/partner-branches/:id/",
+    alias: "crm_partner_branches_partial_update",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerBranchRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/partner-branches/:id/",
+    alias: "crm_partner_branches_destroy",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-branches/filter_options/",
+    alias: "crm_partner_branches_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PartnerBranch,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-price-list-items/",
+    alias: "crm_partner_price_list_items_list",
+    description: `عناصر قوائم الأسعار`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "category",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "price_list",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "product",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "special_discount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "special_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerPriceListItemList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-price-list-items/",
+    alias: "crm_partner_price_list_items_create",
+    description: `عناصر قوائم الأسعار`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerPriceListItemRequest,
+      },
+    ],
+    response: PartnerPriceListItem,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-price-list-items/:id/",
+    alias: "crm_partner_price_list_items_retrieve",
+    description: `عناصر قوائم الأسعار`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerPriceListItem,
+  },
+  {
+    method: "put",
+    path: "/api/crm/partner-price-list-items/:id/",
+    alias: "crm_partner_price_list_items_update",
+    description: `عناصر قوائم الأسعار`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerPriceListItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerPriceListItem,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/partner-price-list-items/:id/",
+    alias: "crm_partner_price_list_items_partial_update",
+    description: `عناصر قوائم الأسعار`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerPriceListItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerPriceListItem,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/partner-price-list-items/:id/",
+    alias: "crm_partner_price_list_items_destroy",
+    description: `عناصر قوائم الأسعار`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-price-list-items/filter_options/",
+    alias: "crm_partner_price_list_items_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PartnerPriceListItem,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-price-lists/",
+    alias: "crm_partner_price_lists_list",
+    description: `قوائم أسعار الشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "adjustment_value",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "applies_to_all",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "price_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "valid_from",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "valid_until",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerPriceListList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-price-lists/",
+    alias: "crm_partner_price_lists_create",
+    description: `قوائم أسعار الشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerPriceListRequest,
+      },
+    ],
+    response: PartnerPriceList,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-price-lists/:id/",
+    alias: "crm_partner_price_lists_retrieve",
+    description: `قوائم أسعار الشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerPriceList,
+  },
+  {
+    method: "put",
+    path: "/api/crm/partner-price-lists/:id/",
+    alias: "crm_partner_price_lists_update",
+    description: `قوائم أسعار الشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerPriceListRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerPriceList,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/partner-price-lists/:id/",
+    alias: "crm_partner_price_lists_partial_update",
+    description: `قوائم أسعار الشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerPriceListRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerPriceList,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/partner-price-lists/:id/",
+    alias: "crm_partner_price_lists_destroy",
+    description: `قوائم أسعار الشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-price-lists/filter_options/",
+    alias: "crm_partner_price_lists_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PartnerPriceList,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-settlements/",
+    alias: "crm_partner_settlements_list",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "adjustments",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "net_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "payment_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "payment_reference",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "period_end",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "period_start",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "settlement_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "settlement_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_claims",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerSettlementList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-settlements/",
+    alias: "crm_partner_settlements_create",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-settlements/:id/",
+    alias: "crm_partner_settlements_retrieve",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "put",
+    path: "/api/crm/partner-settlements/:id/",
+    alias: "crm_partner_settlements_update",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/partner-settlements/:id/",
+    alias: "crm_partner_settlements_partial_update",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/partner-settlements/:id/",
+    alias: "crm_partner_settlements_destroy",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-settlements/:id/calculate/",
+    alias: "crm_partner_settlements_calculate_create",
+    description: `حساب التسوية من المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-settlements/:id/confirm/",
+    alias: "crm_partner_settlements_confirm_create",
+    description: `تأكيد التسوية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partner-settlements/:id/mark_paid/",
+    alias: "crm_partner_settlements_mark_paid_create",
+    description: `تسجيل سداد التسوية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partner-settlements/filter_options/",
+    alias: "crm_partner_settlements_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PartnerSettlement,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/",
+    alias: "crm_partners_list",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "address",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "contact_person",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "contract_end",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "contract_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "contract_start",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "credit_limit",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "current_balance",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "default_discount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "logo",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name_en",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "patient_share_percentage",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "payment_terms",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "website",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerListList,
+  },
+  {
+    method: "post",
+    path: "/api/crm/partners/",
+    alias: "crm_partners_create",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerRequest,
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/:id/",
+    alias: "crm_partners_retrieve",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "put",
+    path: "/api/crm/partners/:id/",
+    alias: "crm_partners_update",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "patch",
+    path: "/api/crm/partners/:id/",
+    alias: "crm_partners_partial_update",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "delete",
+    path: "/api/crm/partners/:id/",
+    alias: "crm_partners_destroy",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/:id/claims_summary/",
+    alias: "crm_partners_claims_summary_retrieve",
+    description: `ملخص مطالبات الشريك`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/:id/customers/",
+    alias: "crm_partners_customers_retrieve",
+    description: `العملاء المرتبطين بهذا الشريك`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/bnpl_providers/",
+    alias: "crm_partners_bnpl_providers_retrieve",
+    description: `شركات التقسيط (Tabby, Tamara)`,
+    requestFormat: "json",
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/by_type/",
+    alias: "crm_partners_by_type_retrieve",
+    description: `جلب الشركاء حسب النوع`,
+    requestFormat: "json",
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/choices/",
+    alias: "crm_partners_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/filter_options/",
+    alias: "crm_partners_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/crm/partners/insurance_companies/",
+    alias: "crm_partners_insurance_companies_retrieve",
+    description: `شركات التأمين فقط`,
+    requestFormat: "json",
+    response: Partner,
   },
   {
     method: "get",
@@ -8712,6 +11711,79 @@ Enforces authentication and role-based access.`,
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Task,
+  },
+  {
+    method: "get",
+    path: "/api/mobile/customers/search/",
+    alias: "mobile_customers_search_retrieve",
+    description: `بحث سريع عن العملاء للموبايل`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/mobile/dashboard/",
+    alias: "mobile_dashboard_retrieve",
+    description: `لوحة تحكم للموبايل - كل البيانات في طلب واحد
+
+يجمع:
+- إحصائيات اليوم
+- آخر الطلبات
+- التنبيهات
+- أداء المستخدم`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/mobile/orders/:order_id/",
+    alias: "mobile_orders_retrieve",
+    description: `تفاصيل الطلب للموبايل - محسن`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "order_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/mobile/products/search/",
+    alias: "mobile_products_search_retrieve",
+    description: `بحث سريع عن المنتجات للموبايل
+
+يعيد فقط الحقول المطلوبة لتقليل حجم البيانات`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/mobile/quick-sale/",
+    alias: "mobile_quick_sale_create",
+    description: `بيع سريع من الموبايل
+
+Request Body:
+{
+    &quot;customer_id&quot;: 1,
+    &quot;items&quot;: [{&quot;variant_id&quot;: 1, &quot;quantity&quot;: 1, &quot;price&quot;: &quot;100.00&quot;}],
+    &quot;payment_method&quot;: &quot;cash&quot;,
+    &quot;discount&quot;: &quot;0.00&quot;
+}`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/mobile/sync/",
+    alias: "mobile_sync_retrieve",
+    description: `مزامنة البيانات للموبايل (offline-first)
+
+يعيد فقط التغييرات منذ آخر مزامنة`,
+    requestFormat: "json",
+    response: z.void(),
   },
   {
     method: "get",
@@ -11009,7 +14081,12 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/products/stock-movements/",
     alias: "products_stock_movements_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة حركات المخزون
+
+Endpoints:
+- GET /stock-movements/ - قائمة الحركات
+- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
+- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11019,6 +14096,11 @@ Enforces authentication and role-based access.`,
       },
       {
         name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -11104,22 +14186,27 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/products/stock-movements/",
     alias: "products_stock_movements_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `إنشاء حركة مخزون جديدة مع تسجيل المستخدم`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: StockMovementRequest,
+        schema: StockMovementCreateRequest,
       },
     ],
-    response: StockMovement,
+    response: StockMovementCreate,
   },
   {
     method: "get",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة حركات المخزون
+
+Endpoints:
+- GET /stock-movements/ - قائمة الحركات
+- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
+- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11134,7 +14221,12 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة حركات المخزون
+
+Endpoints:
+- GET /stock-movements/ - قائمة الحركات
+- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
+- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11154,7 +14246,12 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة حركات المخزون
+
+Endpoints:
+- GET /stock-movements/ - قائمة الحركات
+- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
+- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11174,7 +14271,12 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة حركات المخزون
+
+Endpoints:
+- GET /stock-movements/ - قائمة الحركات
+- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
+- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11186,6 +14288,36 @@ Enforces authentication and role-based access.`,
     response: z.void(),
   },
   {
+    method: "post",
+    path: "/api/products/stock-movements/adjustment/",
+    alias: "products_stock_movements_adjustment_create",
+    description: `تعديل المخزون (زيادة أو نقصان)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementRequest,
+      },
+    ],
+    response: StockMovement,
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-movements/by-stock/:stock_id/",
+    alias: "products_stock_movements_by_stock_retrieve",
+    description: `حركات مخزون معين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "stock_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovement,
+  },
+  {
     method: "get",
     path: "/api/products/stock-movements/filter_options/",
     alias: "products_stock_movements_filter_options_retrieve",
@@ -11194,10 +14326,25 @@ Enforces authentication and role-based access.`,
     response: StockMovement,
   },
   {
+    method: "post",
+    path: "/api/products/stock-movements/purchase/",
+    alias: "products_stock_movements_purchase_create",
+    description: `إضافة عملية شراء جديدة (إضافة للمخزون)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementRequest,
+      },
+    ],
+    response: StockMovement,
+  },
+  {
     method: "get",
     path: "/api/products/stock-transfer-items/",
     alias: "products_stock_transfer_items_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة عناصر التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11282,7 +14429,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/products/stock-transfer-items/",
     alias: "products_stock_transfer_items_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة عناصر التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11297,7 +14444,7 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة عناصر التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11312,7 +14459,7 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة عناصر التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11332,7 +14479,7 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة عناصر التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11352,7 +14499,7 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة عناصر التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11375,7 +14522,19 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/products/stock-transfers/",
     alias: "products_stock_transfers_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة التحويلات بين الفروع
+
+يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
+(سواء كفرع مرسل أو مستلم).
+
+Endpoints:
+- GET /stock-transfers/ - قائمة التحويلات
+- POST /stock-transfers/ - إنشاء تحويل جديد
+- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
+- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
+- POST /stock-transfers/{id}/ship/ - شحن التحويل
+- POST /stock-transfers/{id}/receive/ - استلام التحويل
+- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11407,6 +14566,11 @@ Enforces authentication and role-based access.`,
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
       },
       {
         name: "notes",
@@ -11480,22 +14644,46 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/products/stock-transfers/",
     alias: "products_stock_transfers_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة التحويلات بين الفروع
+
+يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
+(سواء كفرع مرسل أو مستلم).
+
+Endpoints:
+- GET /stock-transfers/ - قائمة التحويلات
+- POST /stock-transfers/ - إنشاء تحويل جديد
+- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
+- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
+- POST /stock-transfers/{id}/ship/ - شحن التحويل
+- POST /stock-transfers/{id}/receive/ - استلام التحويل
+- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: StockTransferRequest,
+        schema: StockTransferCreateRequest,
       },
     ],
-    response: StockTransfer,
+    response: StockTransferCreate,
   },
   {
     method: "get",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة التحويلات بين الفروع
+
+يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
+(سواء كفرع مرسل أو مستلم).
+
+Endpoints:
+- GET /stock-transfers/ - قائمة التحويلات
+- POST /stock-transfers/ - إنشاء تحويل جديد
+- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
+- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
+- POST /stock-transfers/{id}/ship/ - شحن التحويل
+- POST /stock-transfers/{id}/receive/ - استلام التحويل
+- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11510,7 +14698,19 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة التحويلات بين الفروع
+
+يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
+(سواء كفرع مرسل أو مستلم).
+
+Endpoints:
+- GET /stock-transfers/ - قائمة التحويلات
+- POST /stock-transfers/ - إنشاء تحويل جديد
+- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
+- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
+- POST /stock-transfers/{id}/ship/ - شحن التحويل
+- POST /stock-transfers/{id}/receive/ - استلام التحويل
+- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11530,7 +14730,19 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة التحويلات بين الفروع
+
+يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
+(سواء كفرع مرسل أو مستلم).
+
+Endpoints:
+- GET /stock-transfers/ - قائمة التحويلات
+- POST /stock-transfers/ - إنشاء تحويل جديد
+- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
+- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
+- POST /stock-transfers/{id}/ship/ - شحن التحويل
+- POST /stock-transfers/{id}/receive/ - استلام التحويل
+- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11550,7 +14762,19 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة التحويلات بين الفروع
+
+يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
+(سواء كفرع مرسل أو مستلم).
+
+Endpoints:
+- GET /stock-transfers/ - قائمة التحويلات
+- POST /stock-transfers/ - إنشاء تحويل جديد
+- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
+- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
+- POST /stock-transfers/{id}/ship/ - شحن التحويل
+- POST /stock-transfers/{id}/receive/ - استلام التحويل
+- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
     requestFormat: "json",
     parameters: [
       {
@@ -11562,6 +14786,106 @@ Enforces authentication and role-based access.`,
     response: z.void(),
   },
   {
+    method: "post",
+    path: "/api/products/stock-transfers/:id/approve/",
+    alias: "products_stock_transfers_approve_create",
+    description: `الموافقة على التحويل`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-transfers/:id/cancel/",
+    alias: "products_stock_transfers_cancel_create",
+    description: `إلغاء التحويل`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-transfers/:id/receive/",
+    alias: "products_stock_transfers_receive_create",
+    description: `استلام التحويل - يضيف للفرع المستلم`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-transfers/:id/ship/",
+    alias: "products_stock_transfers_ship_create",
+    description: `شحن التحويل - يخصم من الفرع المرسل`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/products/stock-transfers/:id/submit/",
+    alias: "products_stock_transfers_submit_create",
+    description: `تقديم التحويل للموافقة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
     method: "get",
     path: "/api/products/stock-transfers/filter_options/",
     alias: "products_stock_transfers_filter_options_retrieve",
@@ -11571,9 +14895,41 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
+    path: "/api/products/stock-transfers/incoming/",
+    alias: "products_stock_transfers_incoming_retrieve",
+    description: `التحويلات الواردة للفرع الحالي`,
+    requestFormat: "json",
+    response: StockTransfer,
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-transfers/outgoing/",
+    alias: "products_stock_transfers_outgoing_retrieve",
+    description: `التحويلات الصادرة من الفرع الحالي`,
+    requestFormat: "json",
+    response: StockTransfer,
+  },
+  {
+    method: "get",
+    path: "/api/products/stock-transfers/pending/",
+    alias: "products_stock_transfers_pending_retrieve",
+    description: `التحويلات المعلقة`,
+    requestFormat: "json",
+    response: StockTransfer,
+  },
+  {
+    method: "get",
     path: "/api/products/stocks/",
     alias: "products_stocks_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة المخزون
+
+Endpoints:
+- GET /stocks/ - قائمة المخزون
+- GET /stocks/{id}/ - تفاصيل مخزون
+- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
+- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
+- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
+- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11605,6 +14961,11 @@ Enforces authentication and role-based access.`,
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
+      },
+      {
+        name: "last_cost",
+        type: "Query",
+        schema: z.number().optional(),
       },
       {
         name: "last_restocked",
@@ -11678,7 +15039,15 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/products/stocks/",
     alias: "products_stocks_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة المخزون
+
+Endpoints:
+- GET /stocks/ - قائمة المخزون
+- GET /stocks/{id}/ - تفاصيل مخزون
+- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
+- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
+- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
+- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11693,7 +15062,15 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة المخزون
+
+Endpoints:
+- GET /stocks/ - قائمة المخزون
+- GET /stocks/{id}/ - تفاصيل مخزون
+- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
+- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
+- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
+- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11708,7 +15085,15 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة المخزون
+
+Endpoints:
+- GET /stocks/ - قائمة المخزون
+- GET /stocks/{id}/ - تفاصيل مخزون
+- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
+- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
+- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
+- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11728,7 +15113,15 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة المخزون
+
+Endpoints:
+- GET /stocks/ - قائمة المخزون
+- GET /stocks/{id}/ - تفاصيل مخزون
+- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
+- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
+- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
+- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11748,7 +15141,15 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet لإدارة المخزون
+
+Endpoints:
+- GET /stocks/ - قائمة المخزون
+- GET /stocks/{id}/ - تفاصيل مخزون
+- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
+- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
+- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
+- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
     requestFormat: "json",
     parameters: [
       {
@@ -11761,9 +15162,48 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
+    path: "/api/products/stocks/by-branch/:branch_id/",
+    alias: "products_stocks_by_branch_retrieve",
+    description: `مخزون فرع معين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stock,
+  },
+  {
+    method: "get",
     path: "/api/products/stocks/filter_options/",
     alias: "products_stocks_filter_options_retrieve",
     description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Stock,
+  },
+  {
+    method: "get",
+    path: "/api/products/stocks/low_stock/",
+    alias: "products_stocks_low_stock_retrieve",
+    description: `المنتجات منخفضة المخزون`,
+    requestFormat: "json",
+    response: Stock,
+  },
+  {
+    method: "get",
+    path: "/api/products/stocks/out_of_stock/",
+    alias: "products_stocks_out_of_stock_retrieve",
+    description: `المنتجات نفدت من المخزون`,
+    requestFormat: "json",
+    response: Stock,
+  },
+  {
+    method: "get",
+    path: "/api/products/stocks/stores_only/",
+    alias: "products_stocks_stores_only_retrieve",
+    description: `المستودعات فقط (الفروع التي يمكن إضافة المخزون لها)`,
     requestFormat: "json",
     response: Stock,
   },
@@ -11963,6 +15403,11 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "dimensions",
         type: "Query",
         schema: z.string().optional(),
@@ -12060,10 +15505,10 @@ Enforces authentication and role-based access.`,
       {
         name: "body",
         type: "Body",
-        schema: ProductVariantRequest,
+        schema: CreateProductVariantRequest,
       },
     ],
-    response: ProductVariant,
+    response: CreateProductVariant,
   },
   {
     method: "get",
@@ -12145,9 +15590,218 @@ Enforces authentication and role-based access.`,
   },
   {
     method: "get",
+    path: "/api/sales/installments/",
+    alias: "sales_installments_list",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "due_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "installment_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "paid_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "paid_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "payment",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInstallmentList,
+  },
+  {
+    method: "post",
+    path: "/api/sales/installments/",
+    alias: "sales_installments_create",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InstallmentRequest,
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "get",
+    path: "/api/sales/installments/:id/",
+    alias: "sales_installments_retrieve",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "put",
+    path: "/api/sales/installments/:id/",
+    alias: "sales_installments_update",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InstallmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "patch",
+    path: "/api/sales/installments/:id/",
+    alias: "sales_installments_partial_update",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInstallmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "delete",
+    path: "/api/sales/installments/:id/",
+    alias: "sales_installments_destroy",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/sales/installments/:id/mark_paid/",
+    alias: "sales_installments_mark_paid_create",
+    description: `تسجيل سداد القسط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InstallmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "get",
+    path: "/api/sales/installments/filter_options/",
+    alias: "sales_installments_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Installment,
+  },
+  {
+    method: "get",
+    path: "/api/sales/installments/overdue/",
+    alias: "sales_installments_overdue_retrieve",
+    description: `الأقساط المتأخرة`,
+    requestFormat: "json",
+    response: Installment,
+  },
+  {
+    method: "post",
+    path: "/api/sales/inventory/damage/",
+    alias: "sales_inventory_damage_create",
+    description: `تسجيل تلف/إتلاف منتجات
+
+Request Body:
+{
+    &quot;branch_id&quot;: 1,
+    &quot;items&quot;: [
+        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 5, &quot;reason&quot;: &quot;كسر&quot;}
+    ],
+    &quot;reason&quot;: &quot;سبب عام&quot;
+}`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_list",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12277,7 +15931,8 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12292,7 +15947,8 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_retrieve",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12307,7 +15963,8 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12327,7 +15984,8 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_partial_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12347,7 +16005,8 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/sales/invoices/:id/",
     alias: "sales_invoices_destroy",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12362,7 +16021,8 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/invoices/:id/calculate_totals/",
     alias: "sales_invoices_calculate_totals_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12382,7 +16042,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/invoices/:id/confirm/",
     alias: "sales_invoices_confirm_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `تأكيد الفاتورة وخصم المخزون`,
     requestFormat: "json",
     parameters: [
       {
@@ -12396,6 +16056,14 @@ Enforces authentication and role-based access.`,
         schema: z.number().int(),
       },
     ],
+    response: Invoice,
+  },
+  {
+    method: "get",
+    path: "/api/sales/invoices/by_order/",
+    alias: "sales_invoices_by_order_retrieve",
+    description: `جلب فواتير طلب معين`,
+    requestFormat: "json",
     response: Invoice,
   },
   {
@@ -12417,7 +16085,8 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/sales/orders/",
     alias: "sales_orders_list",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12439,6 +16108,16 @@ Enforces authentication and role-based access.`,
         name: "customer",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "customer_partner_link",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer_share",
+        type: "Query",
+        schema: z.number().optional(),
       },
       {
         name: "delivered_at",
@@ -12511,12 +16190,22 @@ Enforces authentication and role-based access.`,
         schema: z.number().optional(),
       },
       {
-        name: "payment_status",
+        name: "partner",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "payment_type",
+        name: "partner_share",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "payment_method",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "payment_status",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -12567,7 +16256,8 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/orders/",
     alias: "sales_orders_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12582,7 +16272,8 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_retrieve",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12597,7 +16288,8 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12617,7 +16309,8 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_partial_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12637,7 +16330,8 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/sales/orders/:id/",
     alias: "sales_orders_destroy",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12652,7 +16346,8 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/orders/:id/calculate_totals/",
     alias: "sales_orders_calculate_totals_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12672,7 +16367,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/orders/:id/cancel/",
     alias: "sales_orders_cancel_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `إلغاء الطلب وتحرير المخزون`,
     requestFormat: "json",
     parameters: [
       {
@@ -12692,7 +16387,7 @@ Enforces authentication and role-based access.`,
     method: "post",
     path: "/api/sales/orders/:id/confirm/",
     alias: "sales_orders_confirm_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `تأكيد الطلب وحجز المخزون`,
     requestFormat: "json",
     parameters: [
       {
@@ -12707,6 +16402,70 @@ Enforces authentication and role-based access.`,
       },
     ],
     response: Order,
+  },
+  {
+    method: "post",
+    path: "/api/sales/orders/:id/deliver/",
+    alias: "sales_orders_deliver_create",
+    description: `توصيل الطلب وخصم المخزون وإنشاء الفاتورة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Order,
+  },
+  {
+    method: "post",
+    path: "/api/sales/orders/:id/ready/",
+    alias: "sales_orders_ready_create",
+    description: `تجهيز الطلب للتسليم`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Order,
+  },
+  {
+    method: "post",
+    path: "/api/sales/orders/:order_id/return/",
+    alias: "sales_orders_return_create",
+    description: `إنشاء مرتجع مبيعات
+
+Request Body:
+{
+    &quot;items&quot;: [
+        {&quot;order_item_id&quot;: 1, &quot;quantity&quot;: 2},
+        {&quot;order_item_id&quot;: 2, &quot;quantity&quot;: 1}
+    ],
+    &quot;reason&quot;: &quot;سبب الإرجاع&quot;
+}`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "order_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
   },
   {
     method: "get",
@@ -12727,7 +16486,7 @@ Enforces authentication and role-based access.`,
     method: "get",
     path: "/api/sales/payments/",
     alias: "sales_payments_list",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `ViewSet للدفعات`,
     requestFormat: "json",
     parameters: [
       {
@@ -12736,7 +16495,52 @@ Enforces authentication and role-based access.`,
         schema: z.number().optional(),
       },
       {
+        name: "bnpl_order_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "card_brand",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "card_last_four",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "cheque_bank",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "cheque_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "cheque_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "gateway_reference",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "gateway_transaction_id",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -12746,14 +16550,39 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
+        name: "installment_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "installments",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "installments_count",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "invoice",
         type: "Query",
         schema: z.string().optional(),
       },
       {
-        name: "is_active",
+        name: "is_installment",
         type: "Query",
         schema: z.boolean().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -12771,7 +16600,27 @@ Enforces authentication and role-based access.`,
         schema: z.number().int().optional(),
       },
       {
+        name: "paid_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "payment_method",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "refund_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "refunded_at",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -12781,33 +16630,48 @@ Enforces authentication and role-based access.`,
         schema: z.string().optional(),
       },
       {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "transfer_bank",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "transfer_reference",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "updated_at",
         type: "Query",
         schema: z.string().optional(),
       },
     ],
-    response: PaginatedPaymentList,
+    response: PaginatedPaymentListList,
   },
   {
     method: "post",
     path: "/api/sales/payments/",
     alias: "sales_payments_create",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `ViewSet للدفعات`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: PaymentRequest,
+        schema: PaymentCreateRequest,
       },
     ],
-    response: Payment,
+    response: PaymentCreate,
   },
   {
     method: "get",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_retrieve",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `ViewSet للدفعات`,
     requestFormat: "json",
     parameters: [
       {
@@ -12822,7 +16686,7 @@ Enforces authentication and role-based access.`,
     method: "put",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `ViewSet للدفعات`,
     requestFormat: "json",
     parameters: [
       {
@@ -12842,7 +16706,7 @@ Enforces authentication and role-based access.`,
     method: "patch",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_partial_update",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `ViewSet للدفعات`,
     requestFormat: "json",
     parameters: [
       {
@@ -12862,7 +16726,7 @@ Enforces authentication and role-based access.`,
     method: "delete",
     path: "/api/sales/payments/:id/",
     alias: "sales_payments_destroy",
-    description: `Base ViewSet for Sales to enforce Branch Isolation &amp; RBAC`,
+    description: `ViewSet للدفعات`,
     requestFormat: "json",
     parameters: [
       {
@@ -12874,12 +16738,294 @@ Enforces authentication and role-based access.`,
     response: z.void(),
   },
   {
+    method: "post",
+    path: "/api/sales/payments/:id/mark_completed/",
+    alias: "sales_payments_mark_completed_create",
+    description: `تحديد الدفعة كمكتملة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "post",
+    path: "/api/sales/payments/:id/mark_failed/",
+    alias: "sales_payments_mark_failed_create",
+    description: `تحديد الدفعة كفاشلة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "post",
+    path: "/api/sales/payments/:id/refund/",
+    alias: "sales_payments_refund_create",
+    description: `استرجاع دفعة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "post",
+    path: "/api/sales/payments/bnpl_callback/",
+    alias: "sales_payments_bnpl_callback_create",
+    description: `Webhook callback من BNPL providers`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRequest,
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "get",
+    path: "/api/sales/payments/choices/",
+    alias: "sales_payments_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: Payment,
+  },
+  {
+    method: "post",
+    path: "/api/sales/payments/create_bnpl_session/",
+    alias: "sales_payments_create_bnpl_session_create",
+    description: `إنشاء جلسة دفع BNPL (Tabby/Tamara)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRequest,
+      },
+    ],
+    response: Payment,
+  },
+  {
     method: "get",
     path: "/api/sales/payments/filter_options/",
     alias: "sales_payments_filter_options_retrieve",
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Payment,
+  },
+  {
+    method: "get",
+    path: "/api/sales/payments/summary/",
+    alias: "sales_payments_summary_retrieve",
+    description: `ملخص الدفعات`,
+    requestFormat: "json",
+    response: Payment,
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/branch-comparison/",
+    alias: "sales_reports_branch_comparison_retrieve",
+    description: `مقارنة أداء الفروع`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/financial-dashboard/",
+    alias: "sales_reports_financial_dashboard_retrieve",
+    description: `لوحة المعلومات المالية الشاملة
+تشمل:
+- إجمالي الفواتير
+- إجمالي المدفوعات
+- المبالغ المعلقة (غير المدفوعة)
+- الخصومات
+- الضرائب`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/inventory-summary/",
+    alias: "sales_reports_inventory_summary_retrieve",
+    description: `ملخص المخزون`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/pending-orders/",
+    alias: "sales_reports_pending_orders_retrieve",
+    description: `الطلبات المعلقة (غير المسلمة)`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/receivables-aging/",
+    alias: "sales_reports_receivables_aging_retrieve",
+    description: `تقرير أعمار الذمم المدينة (المبالغ المستحقة)
+يوضح الفواتير غير المدفوعة حسب العمر`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/sales-by-date/",
+    alias: "sales_reports_sales_by_date_retrieve",
+    description: `المبيعات حسب التاريخ (للرسوم البيانية)`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/sales-summary/",
+    alias: "sales_reports_sales_summary_retrieve",
+    description: `ملخص المبيعات
+Parameters:
+    - branch_id: optional
+    - from_date: YYYY-MM-DD
+    - to_date: YYYY-MM-DD
+    - period: today, week, month, year`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/stock-movements/",
+    alias: "sales_reports_stock_movements_retrieve",
+    description: `تقرير حركات المخزون`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/reports/top-products/",
+    alias: "sales_reports_top_products_retrieve",
+    description: `أكثر المنتجات مبيعاً`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/sales/wholesale/create-order/",
+    alias: "sales_wholesale_create_order_create",
+    description: `إنشاء طلب جملة
+
+Request Body:
+{
+    &quot;customer_id&quot;: 1,
+    &quot;branch_id&quot;: 1,
+    &quot;items&quot;: [
+        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 10},
+        {&quot;variant_id&quot;: 2, &quot;quantity&quot;: 5}
+    ],
+    &quot;payment_method&quot;: &quot;credit&quot;,  // credit, cash, card, etc.
+    &quot;notes&quot;: &quot;ملاحظات&quot;
+}`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/sales/wholesale/customer/:customer_id/credit/",
+    alias: "sales_wholesale_customer_credit_create",
+    description: `تحديث ائتمان العميل`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "customer_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/wholesale/customer/:customer_id/statement/",
+    alias: "sales_wholesale_customer_statement_retrieve",
+    description: `كشف حساب العميل`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "customer_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/wholesale/customers/",
+    alias: "sales_wholesale_customers_retrieve",
+    description: `قائمة عملاء الجملة`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/wholesale/dashboard/",
+    alias: "sales_wholesale_dashboard_retrieve",
+    description: `لوحة تحكم البيع بالجملة`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/sales/wholesale/pricing/",
+    alias: "sales_wholesale_pricing_create",
+    description: `حساب تسعير الجملة لعميل معين
+
+Request Body:
+{
+    &quot;customer_id&quot;: 1,
+    &quot;items&quot;: [
+        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 10},
+        {&quot;variant_id&quot;: 2, &quot;quantity&quot;: 5}
+    ],
+    &quot;branch_id&quot;: 1  // اختياري
+}`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/sales/wholesale/validate/",
+    alias: "sales_wholesale_validate_create",
+    description: `التحقق من صحة طلب الجملة قبل إنشائه`,
+    requestFormat: "json",
+    response: z.void(),
   },
   {
     method: "get",

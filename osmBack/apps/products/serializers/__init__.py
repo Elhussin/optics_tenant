@@ -1,10 +1,14 @@
 from .attributes import AttributeSerializer, AttributeValueSerializer
 from .marketing import ProductVariantMarketingSerializer
 from .product_support import ProductVariantReviewSerializer, ProductVariantQuestionSerializer, ProductVariantAnswerSerializer, ProductVariantOfferSerializer
-from .product import CategorySerializer, ProductSerializer, ProductVariantSerializer, ProductImageSerializer,FlexiblePriceSerializer
+from .product import CategorySerializer, ProductSerializer, ProductVariantSerializer, CreateProductVariantSerializer, ProductImageSerializer, FlexiblePriceSerializer
 from .suppliers import SupplierSerializer, ManufacturerSerializer, BrandSerializer
 
-from .inventory import StockMovementSerializer, StockSerializer, StockTransferSerializer, StockTransferItemSerializer
+from .inventory import (
+    StockMovementSerializer, StockMovementCreateSerializer,
+    StockSerializer, StockTransferSerializer, StockTransferItemSerializer,
+    StockTransferCreateSerializer
+)
 __all__ = [
     "ProductSerializer", "ProductVariantSerializer", "CategorySerializer",
     "StockMovementSerializer", "StockSerializer", "StockTransferSerializer", "StockTransferItemSerializer",

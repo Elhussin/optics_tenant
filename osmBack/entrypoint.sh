@@ -56,7 +56,7 @@ else
     echo "Starting Gunicorn..."
     exec gunicorn optics_tenant.wsgi:application \
         --bind 0.0.0.0:8000 \
-        --workers 4 \
+        --workers 2 \
         --threads 2 \
         --worker-class gthread \
         --worker-tmp-dir /dev/shm \

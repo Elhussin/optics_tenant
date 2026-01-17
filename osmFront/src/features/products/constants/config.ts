@@ -2,24 +2,52 @@ import { ProductConfigType } from "@/src/features/products/types";
 import { generateLensOptions } from "@/src/features/products/utils/generateLensOptions";
 
 export const PRODUCT_TYPE_CHOICES = [
-  { value: "CL", label: "Contact Lens" },
-  { value: "SL", label: "Spectacle Lens" },
   { value: "FR", label: "Frames" },
-  { value: "AX", label: "Accessories" },
+  { value: "SL", label: "Spectacle Lens" },
+  { value: "CL", label: "Contact Lens" },
   { value: "DV", label: "Devices" },
+  { value: "AX", label: "Accessories" },
   { value: "OT", label: "Other" },
 ];
 
 export const VARIANT_TYPE_CHOICES = [
-  { value: "basic", label: "Basic", role: "all" },
   { value: "frames", label: "Frames", role: "FR" },
   { value: "stockLenses", label: "Stock Lenses", role: "SL" },
   { value: "rxLenses", label: "Rx Lenses", role: "SL" },
   { value: "contactLenses", label: "Contact Lenses", role: "CL" },
-  { value: "custom", label: "Custom", role: "all" },
+  { value: "basic", label: "Basic", role: "all" },
+  // { value: "custom", label: "Custom", role: "all" },
 ];
 
 export const ProductConfig: ProductConfigType[] = [
+  {
+    name: "categories_ids",
+    label: "Categories",
+    role: "all",
+    filter: "categories",
+    title: "Select Categories",
+    subFilter: "",
+    entityName: "categories",
+    fieldName: "name",
+    type: "multiSelect", // Changed from foreignkey to multiSelect for M2M
+    placeholder: "Select Categories...",
+    required: true,
+    mapOnly: true,
+  },
+
+  {
+    name: "brand",
+    label: "Brand",
+    role: "all",
+    filter: "brands",
+    subFilter: "product_type",
+    title: "Select Brand | Brand Name",
+    entityName: "brands",
+    fieldName: "name",
+    type: "foreignkey",
+    required: true,
+    mapOnly: true,
+  },
   {
     name: "model",
     label: "Model",
@@ -45,33 +73,6 @@ export const ProductConfig: ProductConfigType[] = [
     required: false,
   },
   {
-    name: "categories_ids",
-    label: "Categories",
-    role: "all",
-    filter: "categories",
-    title: "Select Categories",
-    subFilter: "",
-    entityName: "categories",
-    fieldName: "name",
-    type: "multiSelect", // Changed from foreignkey to multiSelect for M2M
-    placeholder: "Select Categories...",
-    required: true,
-    mapOnly: true,
-  },
-  {
-    name: "brand",
-    label: "Brand",
-    role: "all",
-    filter: "brands",
-    subFilter: "product_type",
-    title: "Select Brand | Brand Name",
-    entityName: "brands",
-    fieldName: "name",
-    type: "foreignkey",
-    required: true,
-    mapOnly: true,
-  },
-  {
     name: "is_active",
     label: "Is Active",
     role: "all",
@@ -80,8 +81,8 @@ export const ProductConfig: ProductConfigType[] = [
     title: "Is Active | True | False",
     entityName: "",
     fieldName: "is_active",
-    type: "switch",
-    placeholder: "Select Is Active...",
+    type: "checkbox",
+    placeholder: "Is Active",
     required: false,
   },
 ];
@@ -181,6 +182,59 @@ export const ProductTypeEnum = [
 ];
 
 export const BasicVariantConfig: ProductConfigType[] = [
+    {
+    name: "product_type",
+    label: "Product Type",
+    role: "all",
+    filter: "Product Type",  // Matches Attribute name in database
+    subFilter: "value",      // Filter by the 'value' field
+    subFilterType: "prefix", // Use prefix matching (e.g., "FR-SG" starts with "FR")
+    title: "Product Type Sun Glasses, Color Contact lens, etc.",
+    entityName: "attribute-values",
+    fieldName: "attribute_name",
+    type: "foreignkey",
+    placeholder: "Select product type...",
+    required: true,
+  },
+    {
+    label: "Last Purchase Price",
+    name: "last_purchase_price",
+    role: "all",
+    filter: "Last Purchase Price",
+    subFilter: "",
+    title: "Last Purchase Price | 100 | 200 | 300 |...",
+    entityName: "attribute-values",
+    fieldName: "attribute_name",
+    type: "text",
+    placeholder: "Enter last purchase price...",
+    required: true,
+  },
+  {
+    label: "Selling Price",
+    name: "selling_price",
+    role: "all",
+    filter: "Selling Price",
+    subFilter: "",
+    title: "Selling Price | 100 | 200 | 300 |...",
+    entityName: "attribute-values",
+    fieldName: "attribute_name",
+    type: "text",
+    placeholder: "Enter selling price...",
+    required: true,
+  },
+  {
+    label: "Discount Percentage",
+    name: "discount_percentage",
+    role: "all",
+    filter: "Discount Percentage",
+    subFilter: "",
+    title: "Discount Percentage | 10 | 20 | 30 |...",
+    entityName: "attribute-values",
+    fieldName: "attribute_name",
+    type: "number",
+    placeholder: "Enter discount percentage (%)",
+    required: true,
+  },
   {
     label: "SKU",
     name: "sku",
@@ -193,20 +247,6 @@ export const BasicVariantConfig: ProductConfigType[] = [
     type: "text",
     placeholder: "Enter SKU...",
     required: false,
-  },
-  {
-    name: "product_type",
-    label: "Product Type",
-    role: "all",
-    filter: "Product Type",
-    subFilter: "",
-    title: "Product Type Sun Glasses ,Color Contact lens",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "foreignkey",
-    placeholder: "Select product type...",
-    required: true,
-    options: ProductTypeEnum,
   },
   {
     name: "warranty",
@@ -246,46 +286,8 @@ export const BasicVariantConfig: ProductConfigType[] = [
     type: "foreignkey",
     placeholder: "Select dimensions...",
     required: false,
-  },
-  {
-    label: "Last Purchase Price",
-    name: "last_purchase_price",
-    role: "all",
-    filter: "Last Purchase Price",
-    subFilter: "",
-    title: "Last Purchase Price | 100 | 200 | 300 |...",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "text",
-    placeholder: "Enter last purchase price...",
-    required: true,
-  },
-  {
-    label: "Selling Price",
-    name: "selling_price",
-    role: "all",
-    filter: "Selling Price",
-    subFilter: "",
-    title: "Selling Price | 100 | 200 | 300 |...",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "text",
-    placeholder: "Enter selling price...",
-    required: true,
-  },
-  {
-    label: "Discount Percentage",
-    name: "discount_percentage",
-    role: "all",
-    filter: "Discount Percentage",
-    subFilter: "",
-    title: "Discount Percentage | 10 | 20 | 30 |...",
-    entityName: "attribute-values",
-    fieldName: "attribute_name",
-    type: "number",
-    placeholder: "Enter discount percentage (%)",
-    required: true,
-  },
+  }
+
 ];
 
 export const FrameVariantConfig: ProductConfigType[] = [
@@ -446,7 +448,7 @@ export const BaseLensVariantConfig: ProductConfigType[] = [
     entityName: "",
     fieldName: "is_active",
     type: "checkbox",
-    placeholder: "Select Is Active...",
+    placeholder: "Is Active",
     required: false,
   },
 ];
@@ -460,11 +462,11 @@ export const StockLensVariantConfig: ProductConfigType[] = [
     filter: "",
     fieldName: "spherical",
     subFilter: "SL-ST",
-    title: "SPH | -60 | -50 | -40 |...",
+    title: "SPH Between -20 | +20 ",
     entityName: "products",
     type: "select",
     required: true,
-    options: generateLensOptions(-60, 60),
+    options: generateLensOptions(-20, 20),
   },
   {
     name: "cylinder",
@@ -472,13 +474,13 @@ export const StockLensVariantConfig: ProductConfigType[] = [
     role: "SL",
     filter: "",
     subFilter: "SL-ST",
-    title: "CYL | -12 | -11 | -10 |...",
+    title: "CYL Between -00.25 | -08.00",
     entityName: "products",
     fieldName: "cylinder",
     type: "select",
     placeholder: "Select CYL...",
     required: false,
-    options: generateLensOptions(-12, 12),
+    options: generateLensOptions(-8, -0.25),
   },
 ];
 
@@ -489,7 +491,7 @@ export const RxLensVariantConfig: ProductConfigType[] = [
     label: "Lens Base Curve",
     role: "all",
     filter: "Base Curve",
-    subFilter: "RX-CL",
+    subFilter: "",  // Removed invalid subFilter - was "RX-CL" which is not a field
     title: "Lens Base Curve",
     entityName: "attribute-values",
     fieldName: "attribute_name",
@@ -503,18 +505,90 @@ export const RxLensVariantConfig: ProductConfigType[] = [
     role: "SL",
     filter: "",
     subFilter: "SL-ST",
-    title: "ADD | 1 | 2 | 3 |...",
+    title: "ADD between 0.25 | 6",
     entityName: "products",
     fieldName: "addition",
-    options: generateLensOptions(1, 6),
+    options: generateLensOptions(0.25, 6),
     type: "select",
     placeholder: "Select ADD...",
     required: false,
   },
+  {
+    name: "right_or_left",
+    label: "Right or Left",
+    role: "all",
+    filter: "",
+    subFilter: "",
+    title: "Right or Left",
+    entityName: "products",
+    fieldName: "right_or_left",
+    options: [
+      { value: "R", label: "Right" },
+      { value: "L", label: "Left" },
+    ],
+    type: "select",
+    placeholder: "Select Right or Left...",
+    required: false,
+  }
 ];
 
 // Base Lens | Stock Lenses + Rx Lenses
 export const ContactLensVariantConfig: ProductConfigType[] = [
+  {
+    name: "spherical",
+    label: "SPH",
+    role: "SL",
+    filter: "",
+    fieldName: "spherical",
+    subFilter: "SL-ST",
+    title: "SPH Between -20 | +20 ",
+    entityName: "products",
+    type: "select",
+    required: true,
+    options: generateLensOptions(-20, 20),
+  },
+  {
+    name: "cylinder",
+    label: "CYL",
+    role: "SL",
+    filter: "",
+    subFilter: "SL-ST",
+    title: "CYL Between -00.25 | -08.00",
+    entityName: "products",
+    fieldName: "cylinder",
+    type: "select",
+    placeholder: "Select CYL...",
+    required: false,
+    options: generateLensOptions(-8, -0.25),
+  },
+  {
+    name: "axis",
+    label: "AXIS",
+    role: "SL",
+    filter: "",
+    subFilter: "SL-ST",
+    title: "AXIS | 0 | 1 | 2 |...",
+    entityName: "products",
+    fieldName: "axis",
+    options: generateLensOptions(0, 180, 1, false),
+    type: "select",
+    placeholder: "Select AXIS...",
+    required: true,
+  },
+  {
+    name: "addition",
+    label: "ADD",
+    role: "SL",
+    filter: "",
+    subFilter: "SL-ST",
+    title: "ADD between 0.25 | 6",
+    entityName: "products",
+    fieldName: "addition",
+    options: generateLensOptions(0.25, 6),
+    type: "select",
+    placeholder: "Select ADD...",
+    required: false,
+  },
   {
     name: "lens_water_content",
     label: "Lens Water Content",
@@ -554,20 +628,7 @@ export const ContactLensVariantConfig: ProductConfigType[] = [
     placeholder: "Select unit...",
     required: true,
   },
-  {
-    name: "axis",
-    label: "AXIS",
-    role: "SL",
-    filter: "",
-    subFilter: "SL-ST",
-    title: "AXIS | 0 | 1 | 2 |...",
-    entityName: "products",
-    fieldName: "axis",
-    options: generateLensOptions(0, 180, 1, false),
-    type: "select",
-    placeholder: "Select AXIS...",
-    required: true,
-  },
+
   {
     name: "expiration_date",
     label: "Expiration Date",
@@ -586,16 +647,31 @@ export const ContactLensVariantConfig: ProductConfigType[] = [
 export const CustomVariantMainConfig: ProductConfigType[] = [
   {
     name: "variant_type",
-    label: "Product Variant Name",
+    label: "نوع المتغير المخصص",  // Custom Variant Type
     role: "all",
-    filter: "",
+    filter: "attributes",
     subFilter: "",
-    title: "Variant Name Should be unique",
+    title: "اختر نوع السمة للمتغير المخصص",
     entityName: "attributes",
     fieldName: "name",
     type: "foreignkey",
-    // placeholder: "Select Attribute...",
+    placeholder: "اختر نوع السمة...",
     required: true,
+    mapOnly: true,  // ✅ إظهار كل الـ attributes
+  },
+  {
+    name: "product_type",
+    label: "Product Type",
+    role: "all",
+    filter: "product_type",
+    subFilter: "",
+    title: "Product Type",
+    entityName: "product-types",
+    fieldName: "name",
+    type: "foreignkey",
+    placeholder: "Select product type...",
+    required: true,
+    mapOnly: true,  // ✅ إظهار كل الـ product types
   },
 ];
 
@@ -604,27 +680,29 @@ export const CustomVariantConfig: ProductConfigType[] = [
     name: "attribute",
     label: "Attribute",
     role: "all",
-    filter: "Custom",
+    filter: "attributes",  // Changed to match selectRelatedData
     subFilter: "",
-    title: "attribute | ...",
+    title: "Select any attribute",
     entityName: "attributes",
     fieldName: "name",
     type: "foreignkey",
-    // placeholder: "",
+    placeholder: "Select attribute...",
     required: true,
+    mapOnly: true,  // Show all attributes without filtering
   },
   {
     name: "value",
     label: "Value",
     role: "all",
-    filter: "Value",
+    filter: "attribute-values",  // Changed to match selectRelatedData default
     subFilter: "",
-    title: "Value | ...",
+    title: "Select attribute value",
     entityName: "attribute-values",
-    fieldName: "attribute_name",
+    fieldName: "value",  // Changed to use 'value' field for label
     type: "foreignkey",
-    // placeholder: "Select Value...",
+    placeholder: "Select value...",
     required: true,
+    mapOnly: true,  // Show all values - filtering should be done dynamically based on selected attribute
   },
 ];
 
@@ -635,27 +713,30 @@ export const veriantConfig = (variant_type: string) => {
       config = BasicVariantConfig;
       break;
     case "frames":
-      config = [...FrameVariantConfig, ...BasicVariantConfig];
+      config = [...BasicVariantConfig,...FrameVariantConfig];
       break;
     case "stockLenses":
       config = [
+        ...BasicVariantConfig,
         ...StockLensVariantConfig,
         ...BaseLensVariantConfig,
-        ...BasicVariantConfig,
+
       ];
       break;
     case "rxLenses":
       config = [
+        ...BasicVariantConfig,
         ...RxLensVariantConfig,
         ...BaseLensVariantConfig,
-        ...BasicVariantConfig,
+
       ];
       break;
     case "contactLenses":
       config = [
+        ...BasicVariantConfig,
         ...ContactLensVariantConfig,
         ...BaseLensVariantConfig,
-        ...BasicVariantConfig,
+
       ];
       break;
     case "custom":

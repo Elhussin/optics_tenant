@@ -1,161 +1,281 @@
+/**
+ * ✨ RenderFields Component - محسّن مع Architecture Improvements
+ * @description مكون محسّن لعرض الحقول الديناميكية مع performance optimization
+ */
 
-import { FormField, FormItem, FormLabel, FormMessage, FormControl } from "@/src/shared/components/shadcn/ui/form";
-import { TextField, CheckboxField, SwitchField, RadioField, SelectField, SearchableSelect, MultiSelectField, MultiCheckbox } from "./Fields";
+"use client";
+
+import React, { useMemo, useCallback } from "react";
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  FormControl,
+} from "@/src/shared/components/shadcn/ui/form";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/src/shared/components/shadcn/ui/popover";
+import { InfoIcon } from "lucide-react";
+import { cn } from "@/src/shared/utils/cn";
 import { filterData } from "../../../features/products/utils/filterData";
-import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
-import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { CirclePlus } from "lucide-react";
 import { RenderFormProps } from "@/src/features/products/types";
-import { parsedOptions } from "@/src/features/products/utils/parsedOptions";
+import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
+import {
+  getFieldComponent,
+  isRegisteredFieldType,
+} from "./registry/fieldRegistry";
+import {
+  getFieldName,
+  extractFieldValue,
+  getGridSpanClass,
+} from "./utils/fieldUtils";
 
-export const RenderFields = (props: RenderFormProps) => {
-    const { fields, form, selectedType, variantNumber, attributeIndex } = props;
-    const { setShowModal, setEntityName, setCurrentFieldName, setVariantField, data } = useProductFormStore();
-    // console.log(fields, selectedType, variantNumber)
-    const handleClick = (entity: string, fieldName: string) => {
-        setEntityName(entity);
-        setCurrentFieldName(fieldName);
-        setShowModal(true);
-    };
+/**
+ * ✨ Single Field Renderer - مُحسّن مع Memoization
+ */
+const FieldRenderer = React.memo(
+  ({
+    fieldRow,
+    fieldName,
+    form,
+    selectedType,
+    data,
+    onAddNew,
+    onVariantFieldChange,
+    variantNumber,
+    index,
+  }: any) => {
+    // Get filtered options (memoized)
+    const filteredOptions = useMemo(() => {
+      if (fieldRow.type === "select") {
+        return fieldRow.options?.filter(
+          (opt: any) =>
+            !opt.role || opt.role === selectedType || opt.role === "all"
+        );
+      }
 
-    const handleVariantField = (variantNumber: number, fieldName: string, value: any) => {
-        setVariantField(variantNumber, fieldName, value);
-    };
+      if (
+        ["foreignkey", "multiSelect", "multiCheckbox"].includes(fieldRow.type)
+      ) {
+        return filterData(data, fieldRow, selectedType);
+      }
+
+      return fieldRow.options;
+    }, [fieldRow, selectedType, data]);
+
+    // Get field component
+    const FieldComponent = getFieldComponent(fieldRow.type);
+
+    if (!FieldComponent) {
+      console.warn(`Unknown field type: ${fieldRow.type}`);
+      return null;
+    }
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {fields?.map((fieldRow, index) => {
-                let fieldName = fieldRow.name;
-                if (variantNumber !== undefined && attributeIndex !== undefined) {
-                    fieldName = `variants.${variantNumber}.attributes.${attributeIndex}.${fieldRow.name}`;
-                } else if (variantNumber !== undefined) {
-                    fieldName = `variants.${variantNumber}.${fieldRow.name}`;
-                }
+      <FormField
+        control={form.control}
+        name={fieldName}
+        rules={{
+          required: fieldRow.required ? `${fieldRow.label} is required` : false,
+        }}
+        render={({ field }) => {
+          const handleChange = (value: any) => {
+            const finalValue = extractFieldValue(value);
+            field.onChange(finalValue);
 
-                return (
-                    <FormField
-                        key={index}
-                        control={form.control}
-                        name={fieldName}
-                        rules={{ required: fieldRow.required ? `${fieldRow.label} is required` : false }}
-                        render={({ field }) => {
-                            const handleChange = (value: any) => {
-                                const finalValue = value?.target ? value.target.value : value;
-                                field.onChange(finalValue);
-                                if (variantNumber !== undefined) {
-                                    handleVariantField(variantNumber, fieldRow.name, finalValue);
-                                }
-                            };
+            if (variantNumber !== undefined && onVariantFieldChange) {
+              onVariantFieldChange(variantNumber, fieldRow.name, finalValue);
+            }
+          };
 
-                            const isWideField = ["multiSelect", "multiCheckbox", "textarea"].includes(fieldRow.type || "");
-                            const gridSpanClass = isWideField ? "col-span-1 md:col-span-2 lg:col-span-3" : "col-span-1";
+          const gridSpanClass = getGridSpanClass(fieldRow.type || "");
 
-                            return (
-                                <FormItem className={gridSpanClass}>
-                                    <div className="flex items-center gap-1 mb-1.5">
-                                        <FormLabel className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                            {fieldRow.label} {fieldRow.required && <span className="text-red-500">*</span>}
-                                        </FormLabel>
-                                        <InfoPopover hint={fieldRow?.title || ""} />
-                                    </div>
-                                    <FormControl>
-                                        {(() => {
-                                            switch (fieldRow.type) {
-                                                case "text":
-                                                case "email":
-                                                case "number":
-                                                    return <TextField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
-                                                case "select":
-                                                    return <SelectField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} options={
-                                                        fieldRow.options?.filter((opt: any) => !opt.role || opt.role === selectedType || opt.role === "all")
-                                                    } />;
-                                                case "checkbox":
-                                                    return <CheckboxField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
-                                                case "switch":
-                                                    return <SwitchField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
-                                                case "radio":
-                                                    return <RadioField fieldRow={fieldRow} field={{ ...field, onChange: handleChange }} />;
-                                                case "foreignkey":
-                                                    return (
-                                                        <div className="flex gap-2">
-                                                            <div className="flex-1">
-                                                                <SearchableSelect fieldRow={fieldRow} field={{ ...field, onChange: handleChange }}
-                                                                    options={filterData(data, fieldRow, selectedType)}
-                                                                />
-                                                            </div>
-                                                            <ActionButton
-                                                                onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
-                                                                variant="outline"
-                                                                className="px-3 shrink-0"
-                                                                icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
-                                                                title={`Add ${fieldRow.filter}`}
-                                                            />
-                                                        </div>
-                                                    );
-                                                case "multiSelect":
-                                                    return (
-                                                        <div className="flex gap-2">
-                                                            <div className="flex-1">
-                                                                <MultiSelectField fieldName={fieldName}
-                                                                    fieldRow={fieldRow}
-                                                                    options={filterData(data, fieldRow, selectedType)}
-                                                                    control={form.control} />
-                                                            </div>
-                                                            <ActionButton
-                                                                onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
-                                                                variant="outline"
-                                                                className="px-3 shrink-0"
-                                                                icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
-                                                                title={`Add ${fieldRow.filter}`}
-                                                            />
-                                                        </div>
-                                                    );
-                                                case "multiCheckbox":
-                                                    return (
-                                                        <div className="flex gap-2 w-full">
-                                                            <div className="flex-1">
-                                                                <MultiCheckbox fieldName={fieldName} fieldRow={fieldRow}
-                                                                    options={filterData(data, fieldRow, selectedType)}
-                                                                    control={form.control} />
-                                                            </div>
-                                                            <ActionButton
-                                                                onClick={() => handleClick(fieldRow.entityName, fieldRow.name)}
-                                                                variant="outline"
-                                                                className="px-3 shrink-0"
-                                                                icon={<CirclePlus size={18} className="text-blue-600 dark:text-blue-400" />}
-                                                                title={`Add ${fieldRow.filter}`}
-                                                            />
-                                                        </div>
-                                                    );
-                                                default:
-                                                    return null;
-                                            }
-                                        })()}
-                                    </FormControl>
-                                    <FormMessage className="text-xs text-red-500 mt-1" />
-                                </FormItem>
-                            );
-                        }}
-                    />
-                );
-            })}
-        </div>
+          return (
+            <FormItem
+              className={cn(gridSpanClass, "animate-fade-in-up")}
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {/* ✨ Enhanced Label with InfoPopover */}
+              <div className="flex items-center gap-2 mb-2">
+                <FormLabel
+                  className={cn(
+                    "text-sm font-semibold text-foreground",
+                    "transition-colors"
+                  )}
+                >
+                  {fieldRow.label}
+                  {fieldRow.required && (
+                    <span className="text-destructive ml-1 animate-pulse-slow text-danger">
+                      *
+                    </span>
+                  )}
+                </FormLabel>
+                {fieldRow?.title && <InfoPopover hint={fieldRow.title} />}
+              </div>
+
+              <FormControl>
+                <FieldComponent
+                  fieldRow={fieldRow}
+                  fieldName={fieldName}
+                  field={{ ...field, onChange: handleChange }}
+                  options={filteredOptions}
+                  control={form.control}
+                  onAddNew={onAddNew}
+                />
+              </FormControl>
+
+              {/* ✨ Enhanced Error Message */}
+              <FormMessage
+                className={cn(
+                  "text-xs text-destructive mt-1.5",
+                  "animate-fade-in-up font-medium"
+                )}
+              />
+            </FormItem>
+          );
+        }}
+      />
     );
+  }
+);
+
+FieldRenderer.displayName = "FieldRenderer";
+
+/**
+ * ✨ RenderFields - المكون الرئيسي المحسّن
+ */
+export const RenderFields = ({
+  fields,
+  form,
+  selectedType,
+  variantNumber,
+  attributeIndex,
+  onAddNew,
+  onVariantFieldChange,
+}: RenderFormProps) => {
+  // Memoize field names
+  const fieldsWithNames = useMemo(() => {
+    return fields?.map((fieldRow) => ({
+      ...fieldRow,
+      fullName: getFieldName(fieldRow.name, variantNumber, attributeIndex),
+    }));
+  }, [fields, variantNumber, attributeIndex]);
+
+  // Callback for adding new items
+  const handleAddNew = useCallback(
+    (entityName: string, fieldName: string) => {
+      if (onAddNew) {
+        onAddNew(entityName, fieldName);
+      }
+    },
+    [onAddNew]
+  );
+
+  // Callback for variant field changes
+  const handleVariantFieldChange = useCallback(
+    (varNum: number, fieldName: string, value: any) => {
+      if (onVariantFieldChange) {
+        onVariantFieldChange(varNum, fieldName, value);
+      }
+    },
+    [onVariantFieldChange]
+  );
+
+  // ✨ Get data from store - FIXED with correct path!
+  const store = useProductFormStore();
+  const data = useMemo(() => {
+    return {
+      categories: store.data.categories || [],
+      brands: store.data.brands || [],
+      suppliers: store.data.suppliers || [],
+      manufacturers: store.data.manufacturers || [],
+      attributes: store.data.attributes || [],
+      "attribute-values": store.data["attribute-values"] || [],
+    };
+  }, [
+    store.data.categories,
+    store.data.brands,
+    store.data.suppliers,
+    store.data.manufacturers,
+    store.data.attributes,
+    store.data["attribute-values"],
+  ]);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {fieldsWithNames?.map((fieldRow, index) => {
+        // Skip unregistered field types
+        if (!isRegisteredFieldType(fieldRow.type || "")) {
+          return null;
+        }
+
+        return (
+          <FieldRenderer
+            key={fieldRow.fullName}
+            fieldRow={fieldRow}
+            fieldName={fieldRow.fullName}
+            form={form}
+            selectedType={selectedType}
+            data={data}
+            onAddNew={handleAddNew}
+            onVariantFieldChange={handleVariantFieldChange}
+            variantNumber={variantNumber}
+            index={index}
+          />
+        );
+      })}
+    </div>
+  );
 };
 
+/**
+ * ✨ InfoPopover - محسّن مع animations و hover effects
+ */
+export const InfoPopover = React.memo(({ hint }: { hint: string }) => {
+  if (!hint) return null;
 
-
-
-import { Popover, PopoverTrigger, PopoverContent } from "@/src/shared/components/shadcn/ui/popover";
-import { InfoIcon } from "lucide-react";
-
-export const InfoPopover = ({ hint }: { hint: string }) => (
+  return (
     <Popover>
-        <PopoverTrigger>
-            <InfoIcon className="w-5 h-5 text-gray-500 cursor-pointer" />
-        </PopoverTrigger>
-        <PopoverContent className="w-64 bg-surface">
-            <p>{hint}</p>
-        </PopoverContent>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className={cn(
+            "inline-flex items-center justify-center",
+            "w-5 h-5 rounded-full",
+            "text-muted-foreground hover:text-primary",
+            "transition-smooth hover-scale",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          )}
+          aria-label="More information"
+        >
+          <InfoIcon className="w-4 h-4" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        className={cn(
+          "w-72 p-4",
+          "bg-elevated border-2 border-border",
+          "rounded-lg shadow-lg",
+          "animate-fade-in-down"
+        )}
+        align="start"
+        sideOffset={8}
+      >
+        <div className="space-y-2">
+          <h4 className="font-semibold text-sm text-foreground flex items-center gap-2">
+            <InfoIcon className="w-4 h-4 text-primary" />
+            معلومات إضافية
+          </h4>
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {hint}
+          </p>
+        </div>
+      </PopoverContent>
     </Popover>
-);
+  );
+});
+
+InfoPopover.displayName = "InfoPopover";

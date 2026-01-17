@@ -26,9 +26,14 @@ class FilterOptionsMixin:
             model = self.queryset.model
         else:
             model = self.get_queryset().model
+
+        # ✅ دعم كلاً من filterset_fields و filter_fields
+        fields = getattr(self, "filterset_fields", None) or getattr(
+            self, "filter_fields", {})
+
         return create_filterset_class(
             model=model,
-            fields=getattr(self, "filter_fields", {}),
+            fields=fields,
             serializer_class=getattr(self, "serializer_class", None),
         )
 
@@ -43,7 +48,8 @@ class FilterOptionsMixin:
             filterset_class=FilterSet,
             query_params=request.query_params,
         )
-        options = generator.generate_options(getattr(self, "search_fields", []))
+        options = generator.generate_options(
+            getattr(self, "search_fields", []))
 
         formatted_options = [
             {

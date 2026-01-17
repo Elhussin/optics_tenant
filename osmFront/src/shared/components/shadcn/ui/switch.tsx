@@ -1,9 +1,13 @@
-"use client"
+/**
+ * ✨ Switch - محسّن مع Theme Colors و Enhanced Animations
+ * @description Enhanced switch component مع gradient و smooth transitions
+ */
 
-import * as React from "react"
-import * as SwitchPrimitive from "@radix-ui/react-switch"
+"use client";
 
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import * as SwitchPrimitive from "@radix-ui/react-switch";
+import { cn } from "@/src/shared/utils/cn";
 
 function Switch({
   className,
@@ -13,7 +17,39 @@ function Switch({
     <SwitchPrimitive.Root
       data-slot="switch"
       className={cn(
-        "peer data-[state=checked]:bg-primary data-[state=unchecked]:bg-input focus-visible:border-ring focus-visible:ring-ring/50 dark:data-[state=unchecked]:bg-input/80 inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-xs transition-all outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+        // ✨ Base styles
+        "peer inline-flex h-6 w-11 shrink-0 items-center",
+        "rounded-full border-2 transition-all duration-300",
+        "outline-none cursor-pointer",
+        
+        // ✨ Checked state - Gradient background
+        "data-[state=checked]:bg-gradient-to-r",
+        "data-[state=checked]:from-primary",
+        "data-[state=checked]:to-blue-600",
+        "data-[state=checked]:border-primary",
+        "data-[state=checked]:shadow-lg",
+        "data-[state=checked]:shadow-primary/40",
+        
+        // ✨ Unchecked state - Theme colors
+        "data-[state=unchecked]:bg-border",
+        "data-[state=unchecked]:border-border",
+        "data-[state=unchecked]:shadow-md",
+        
+        // ✨ Hover states
+        "hover:shadow-xl",
+        "data-[state=checked]:hover:scale-105",
+        "data-[state=unchecked]:hover:bg-border/80",
+        
+        // ✨ Focus states
+        "focus-visible:ring-4",
+        "focus-visible:ring-primary/20",
+        "focus-visible:border-primary",
+        
+        // ✨ Disabled state
+        "disabled:cursor-not-allowed",
+        "disabled:opacity-50",
+        "disabled:hover:scale-100",
+        
         className
       )}
       {...props}
@@ -21,11 +57,25 @@ function Switch({
       <SwitchPrimitive.Thumb
         data-slot="switch-thumb"
         className={cn(
-          "bg-background dark:data-[state=unchecked]:bg-foreground dark:data-[state=checked]:bg-primary-foreground pointer-events-none block size-4 rounded-full ring-0 transition-transform data-[state=checked]:translate-x-[calc(100%-2px)] data-[state=unchecked]:translate-x-0"
+          // ✨ Base styles
+          "pointer-events-none block h-5 w-5",
+          "rounded-full shadow-lg",
+          "ring-0 transition-all duration-300",
+          
+          // ✨ Background colors
+          "bg-white",
+          "data-[state=checked]:bg-white",
+          
+          // ✨ Position animation
+          "data-[state=checked]:translate-x-5",
+          "data-[state=unchecked]:translate-x-0",
+          
+          // ✨ Scale effect
+          "data-[state=checked]:scale-110"
         )}
       />
     </SwitchPrimitive.Root>
-  )
+  );
 }
 
-export { Switch }
+export { Switch };

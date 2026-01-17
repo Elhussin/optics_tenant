@@ -297,6 +297,12 @@ LOGGING = {
             'filename': os.path.join(BASE_DIR, 'logs', 'tenant.log'),
             'formatter': 'verbose',
         },
+        'product_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'product.log'),
+            'formatter': 'verbose',
+        },
     },
 
     # loggers
@@ -308,6 +314,11 @@ LOGGING = {
         },
         'tenant': {  # جديد
             'handlers': ['tenant_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'product': {  # جديد
+            'handlers': ['product_file'],
             'level': 'INFO',
             'propagate': False,
         },

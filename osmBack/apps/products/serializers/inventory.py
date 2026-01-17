@@ -1,30 +1,278 @@
 from rest_framework import serializers
+from django.db import transaction
 from apps.products.models import Stock, StockMovement, StockTransfer, StockTransferItem
+from apps.branches.models import Branch
 
 
 class StockSerializer(serializers.ModelSerializer):
+    branch_name = serializers.CharField(source='branch.name', read_only=True)
+    branch_code = serializers.CharField(
+        source='branch.branch_code', read_only=True)
+    branch_type = serializers.CharField(
+        source='branch.branch_type', read_only=True)
+    variant_sku = serializers.CharField(source='variant.sku', read_only=True)
+    variant_name = serializers.SerializerMethodField()
+    product_name = serializers.CharField(
+        source='variant.product.name', read_only=True)
+    stock_status = serializers.CharField(read_only=True)
+    available_quantity = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = Stock
         exclude = ['is_deleted']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at',
+                            'updated_at', 'last_restocked', 'last_sale']
+
+    def get_variant_name(self, obj):
+        return str(obj.variant)
+
+    def validate_branch(self, value):
+        """تأكد أن الفرع من نوع STORE فقط عند إضافة المخزون"""
+        if value.branch_type != 'store':
+            raise serializers.ValidationError(
+                "لا يمكن إضافة المخزون إلا للفروع من نوع 'مستودع' (Store). "
+                f"الفرع '{value.name}' من نوع '{value.get_branch_type_display()}'."
+            )
+        return value
 
 
 class StockMovementSerializer(serializers.ModelSerializer):
+    stock_info = serializers.SerializerMethodField(read_only=True)
+    movement_type_display = serializers.CharField(
+        source='get_movement_type_display', read_only=True)
+    created_by_name = serializers.CharField(
+        source='created_by.get_full_name', read_only=True)
+
     class Meta:
         model = StockMovement
         exclude = ['is_deleted']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at',
+                            'quantity_before', 'quantity_after', 'movement_date']
+
+    def get_stock_info(self, obj):
+        return {
+            'branch_name': obj.stock.branch.name,
+            'variant_name': str(obj.stock.variant),
+            'product_name': obj.stock.variant.product.name,
+        }
+
+    def validate(self, data):
+        """التحقق من صحة البيانات"""
+        movement_type = data.get('movement_type')
+        cost_per_unit = data.get('cost_per_unit', 0)
+
+        # إجبار إدخال سعر الشراء عند الشراء/إعادة التخزين
+        if movement_type == 'purchase' and (cost_per_unit is None or cost_per_unit <= 0):
+            raise serializers.ValidationError({
+                'cost_per_unit': 'يجب إدخال سعر الشراء (أكبر من صفر) عند إضافة مخزون جديد.'
+            })
+
+        # التحقق من الكمية المتاحة عند السحب
+        if movement_type in ['sale', 'transfer_out', 'damage']:
+            stock = data.get('stock')
+            quantity = abs(data.get('quantity', 0))
+            if stock and stock.available_quantity < quantity:
+                raise serializers.ValidationError({
+                    'quantity': f'الكمية المطلوبة ({quantity}) أكبر من الكمية المتاحة ({stock.available_quantity}).'
+                })
+
+        return data
 
 
-class StockTransferSerializer(serializers.ModelSerializer):
+class StockMovementCreateSerializer(serializers.ModelSerializer):
+    """Serializer for creating stock movements with auto-calculation of before/after"""
+
     class Meta:
-        model = StockTransfer
-        exclude = ['is_deleted']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        model = StockMovement
+        fields = ['stock', 'movement_type', 'quantity',
+                  'cost_per_unit', 'reference_number', 'notes']
+
+    def validate(self, data):
+        """التحقق وحساب الكميات"""
+        movement_type = data.get('movement_type')
+        cost_per_unit = data.get('cost_per_unit', 0)
+        stock = data.get('stock')
+        quantity = data.get('quantity', 0)
+
+        # التحقق من نوع الفرع للشراء
+        if movement_type == 'purchase':
+            if stock.branch.branch_type != 'store':
+                raise serializers.ValidationError({
+                    'stock': f"لا يمكن إضافة المخزون إلا للفروع من نوع 'مستودع' (Store)."
+                })
+            if cost_per_unit is None or cost_per_unit <= 0:
+                raise serializers.ValidationError({
+                    'cost_per_unit': 'يجب إدخال سعر الشراء (أكبر من صفر).'
+                })
+
+        # التحقق من الكمية المتاحة عند السحب
+        if movement_type in ['sale', 'transfer_out', 'damage']:
+            if stock.available_quantity < abs(quantity):
+                raise serializers.ValidationError({
+                    'quantity': f'الكمية المطلوبة أكبر من المتاحة ({stock.available_quantity}).'
+                })
+
+        return data
+
+    def create(self, validated_data):
+        stock = validated_data['stock']
+        movement_type = validated_data['movement_type']
+        quantity = validated_data['quantity']
+
+        # حساب الكميات قبل وبعد
+        quantity_before = stock.quantity_in_stock
+
+        # تحديد الكمية الفعلية (موجبة أو سالبة)
+        # adjustment يمكن أن يكون موجب (إضافة) أو سالب (نقصان)
+        if movement_type == 'adjustment':
+            # للتعديل: نستخدم القيمة كما هي (موجبة للإضافة، سالبة للنقصان)
+            actual_quantity = quantity
+            quantity_after = quantity_before + actual_quantity
+        elif movement_type in ['purchase', 'transfer_in', 'return']:
+            actual_quantity = abs(quantity)
+            quantity_after = quantity_before + actual_quantity
+        else:  # sale, transfer_out, damage, reserve
+            actual_quantity = -abs(quantity)
+            quantity_after = quantity_before + actual_quantity
+
+        validated_data['quantity'] = actual_quantity
+        validated_data['quantity_before'] = quantity_before
+        validated_data['quantity_after'] = max(0, quantity_after)
+
+        # إضافة المستخدم الذي أنشأ الحركة
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user
+
+        with transaction.atomic():
+            # تحديث المخزون
+            stock.quantity_in_stock = max(0, quantity_after)
+
+            # تحديث التكلفة المتوسطة للشراء
+            if movement_type == 'purchase' and validated_data.get('cost_per_unit', 0) > 0:
+                stock.update_average_cost(
+                    abs(quantity), validated_data['cost_per_unit'])
+                from django.utils import timezone
+                stock.last_restocked = timezone.now()
+
+            stock.save()
+
+            return super().create(validated_data)
 
 
 class StockTransferItemSerializer(serializers.ModelSerializer):
+    variant_name = serializers.SerializerMethodField(read_only=True)
+    variant_sku = serializers.CharField(source='variant.sku', read_only=True)
+    product_name = serializers.CharField(
+        source='variant.product.name', read_only=True)
+
     class Meta:
         model = StockTransferItem
         exclude = ['is_deleted']
-        read_only_fields = ['id', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at',
+                            'updated_at', 'quantity_sent', 'quantity_received']
+
+    def get_variant_name(self, obj):
+        return str(obj.variant)
+
+
+class StockTransferSerializer(serializers.ModelSerializer):
+    from_branch_name = serializers.CharField(
+        source='from_branch.name', read_only=True)
+    from_branch_code = serializers.CharField(
+        source='from_branch.branch_code', read_only=True)
+    to_branch_name = serializers.CharField(
+        source='to_branch.name', read_only=True)
+    to_branch_code = serializers.CharField(
+        source='to_branch.branch_code', read_only=True)
+    status_display = serializers.CharField(
+        source='get_status_display', read_only=True)
+    items = StockTransferItemSerializer(many=True, read_only=True)
+    items_count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = StockTransfer
+        exclude = ['is_deleted']
+        read_only_fields = [
+            'id', 'created_at', 'updated_at', 'transfer_number',
+            'approved_date', 'shipped_date', 'received_date'
+        ]
+
+    def get_items_count(self, obj):
+        return obj.items.count()
+
+    def validate(self, data):
+        from_branch = data.get('from_branch')
+        to_branch = data.get('to_branch')
+
+        if from_branch and to_branch and from_branch == to_branch:
+            raise serializers.ValidationError({
+                'to_branch': 'لا يمكن التحويل إلى نفس الفرع.'
+            })
+
+        return data
+
+
+class StockTransferCreateSerializer(serializers.Serializer):
+    """Serializer for creating a transfer with items in one request"""
+    from_branch = serializers.PrimaryKeyRelatedField(
+        queryset=Branch.objects.all())
+    to_branch = serializers.PrimaryKeyRelatedField(
+        queryset=Branch.objects.all())
+    notes = serializers.CharField(required=False, allow_blank=True)
+    items = serializers.ListField(
+        child=serializers.DictField(),
+        min_length=1,
+        help_text="قائمة المنتجات: [{'variant': id, 'quantity_requested': int, 'unit_cost': decimal}]"
+    )
+
+    def validate(self, data):
+        from_branch = data.get('from_branch')
+        to_branch = data.get('to_branch')
+
+        if from_branch == to_branch:
+            raise serializers.ValidationError({
+                'to_branch': 'لا يمكن التحويل إلى نفس الفرع.'
+            })
+
+        # التحقق من توفر الكميات
+        items = data.get('items', [])
+        for item in items:
+            variant_id = item.get('variant')
+            quantity = item.get('quantity_requested', 0)
+
+            try:
+                stock = Stock.objects.get(
+                    branch=from_branch, variant_id=variant_id)
+                if stock.available_quantity < quantity:
+                    raise serializers.ValidationError({
+                        'items': f'الكمية المطلوبة للمنتج {variant_id} غير متوفرة. المتاح: {stock.available_quantity}'
+                    })
+            except Stock.DoesNotExist:
+                raise serializers.ValidationError({
+                    'items': f'المنتج {variant_id} غير موجود في مخزون الفرع المرسل.'
+                })
+
+        return data
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')
+
+        with transaction.atomic():
+            transfer = StockTransfer.objects.create(
+                from_branch=validated_data['from_branch'],
+                to_branch=validated_data['to_branch'],
+                notes=validated_data.get('notes', ''),
+                requested_by=self.context['request'].user.get_full_name(
+                ) or self.context['request'].user.username
+            )
+
+            for item_data in items_data:
+                StockTransferItem.objects.create(
+                    transfer=transfer,
+                    variant_id=item_data['variant'],
+                    quantity_requested=item_data['quantity_requested'],
+                    unit_cost=item_data.get('unit_cost', 0)
+                )
+
+            return transfer

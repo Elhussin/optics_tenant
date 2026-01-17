@@ -10,12 +10,29 @@ import {
   LANGUAGES,
 } from "@/src/features/pages/types";
 import { safeToast } from "@/src/shared/utils/safeToast";
-import { Loading4 } from "@/src/shared/components/ui/loding";
 import { defaultPublicPages } from "@/src/shared/constants/defaultPublicPages";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { getBaseUrl } from "@/src/shared/utils/getBaseUrl";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
+import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { Badge } from "@/src/shared/components/ui/Badge";
+import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { Skeleton, SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
+import { cn } from "@/src/shared/utils/cn";
+import {
+  Save,
+  ArrowLeft,
+  Globe,
+  Check,
+  AlertCircle,
+  Link as LinkIcon,
+  FileText,
+  Search,
+  Hash,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 interface MultilingualPageEditorProps {
   pageId?: string;
   defaultPage?: string | null;
@@ -154,8 +171,7 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
         slug: "",
       });
     }
-  }, [pageId]);
-  // defaultPage
+  }, [pageId, defaultPage]);
 
   const loadPage = useCallback(async () => {
     try {
@@ -213,7 +229,8 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
       );
       if (!defaultTranslation?.title.trim()) {
         safeToast(
-          `${t("pleaseProvideTitle")} (${LANGUAGES[formData.default_language].name
+          `${t("pleaseProvideTitle")} (${
+            LANGUAGES[formData.default_language].name
           })`,
           { type: "error" }
         );
@@ -250,8 +267,25 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
   };
 
   const baseUrl = getBaseUrl();
+
+  // Enhanced Loading State
   if (loading || !formData) {
-    return <Loading4 />;
+    return (
+      <div className="max-w-6xl mx-auto p-6 animate-fade-in">
+        <GlassCard padding="lg">
+          <div className="space-y-6">
+            <Skeleton variant="title" width="40%" height={32} />
+            <div className="flex gap-2">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} variant="button" width={120} height={40} />
+              ))}
+            </div>
+            <Skeleton variant="text" width="100%" height={44} />
+            <SkeletonGroup type="list-item" count={5} />
+          </div>
+        </GlassCard>
+      </div>
+    );
   }
 
   const currentTranslation = getCurrentTranslation();
@@ -262,309 +296,371 @@ const MultilingualPageEditor: React.FC<MultilingualPageEditorProps> = ({
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <div className=" rounded-lg shadow-lg">
-        {/* Header with language tabs */}
-        <div className="border-b border-gray-200 p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold">
-              {pageId ? t("editPage") : t("createNewPage")}
-            </h1>
+    <div className="max-w-6xl mx-auto p-6 animate-fade-in">
+      {/* Background Glow */}
+      <div className="relative group">
+        <div className="absolute -inset-2 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
 
-            {/* Default Language Selector */}
-            <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">
-                {t("defaultLanguage")}:
-              </label>
-              <select
-                value={formData.default_language}
-                onChange={(e) =>
-                  setFormData((prev) =>
-                    prev
-                      ? {
-                        ...prev,
-                        default_language: e.target.value as Language,
-                      }
-                      : prev
-                  )
-                }
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-              >
-                {Object.entries(LANGUAGES).map(([code, lang]) => (
-                  <option className="bg-surface" key={code} value={code}>
-                    {lang.flag} {lang.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Language Tabs */}
-          <div className="flex space-x-1">
-            {Object.entries(LANGUAGES).map(([code, lang]) => {
-              const completeness = getTranslationCompleteness(code as Language);
-              const isActive = activeLanguage === code;
-              return (
-                <button
-                  key={code}
-                  onClick={() => setActiveLanguage(code as Language)}
-                  className={`px-4 py-2 text-sm font-medium rounded-t-lg border-b-2 transition-colors ${isActive
-                      ? "bg-blue-50 text-blue-700 border-blue-500"
-                      : "bg-gray-50 text-gray-700 border-transparent hover:bg-gray-100"
-                    }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <span>{lang.flag}</span>
-                    <span>{lang.name}</span>
-                    {formData.default_language === code && (
-                      <span className="text-xs bg-green-100 text-green-800 px-1 rounded">
-                        {t("default")}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    {completeness}% {t("complete")}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Page URL Field */}
-          <div className="mt-4">
-            <label className="block font-medium">{t("pageURL")}</label>
-            <span className="text-xs text-gray-500 mt-1">
-              {t("pageURLDesc")}
-            </span>
-
-            <input
-              type="text"
-              title={t("pageURLDesc")}
-              value={pageId ? `${baseUrl}/${formData.slug}` : formData.slug}
-              onChange={(e) => {
-                if (!pageId) {
-                  setFormData((prev) =>
-                    prev ? { ...prev, slug: e.target.value } : prev
-                  );
-                }
-              }}
-              disabled={!!pageId}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
-              placeholder={t("pageURLDesc")}
-              dir={currentLangInfo.dir}
-            />
-            {formErrors?.slug?.message && (
-              <p className="text-red-500 text-sm mt-1">
-                {formErrors.slug.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Content for active language */}
-        <div
-          className={`p-6 ${locale === "ar" ? "text-right" : "text-left"}`}
-          dir={locale === "ar" ? "rtl" : "ltr"}
+        <GlassCard
+          className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300"
+          padding="none"
         >
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("pageTitle")} ({currentLangInfo.name})
+          {/* Gradient Header Strip */}
+          <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-primary animate-shimmer bg-[length:200%_100%]" />
+
+          {/* Header */}
+          <div className="glass border-b border-border-main/50 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold text-main flex items-center gap-3">
+                <FileText className="w-8 h-8 text-primary" />
+                {pageId ? t("editPage") : t("createNewPage")}
+              </h1>
+
+              {/* Default Language Selector */}
+              <div className="glass px-4 py-2 rounded-xl border border-border-main shadow-soft flex items-center gap-3">
+                <Globe size={16} className="text-primary" />
+                <label className="text-sm font-medium text-secondary">
+                  {t("defaultLanguage")}:
                 </label>
+                <select
+                  value={formData.default_language}
+                  onChange={(e) =>
+                    setFormData((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            default_language: e.target.value as Language,
+                          }
+                        : prev
+                    )
+                  }
+                  className={cn(
+                    "px-3 py-1.5 rounded-lg text-sm font-medium",
+                    "bg-elevated border border-border-main",
+                    "focus:outline-none focus:ring-2 focus:ring-primary/20",
+                    "cursor-pointer transition-all"
+                  )}
+                >
+                  {Object.entries(LANGUAGES).map(([code, lang]) => (
+                    <option className="bg-elevated" key={code} value={code}>
+                      {lang.flag} {lang.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {/* Language Tabs */}
+            <div className="flex gap-2 flex-wrap">
+              {Object.entries(LANGUAGES).map(([code, lang]) => {
+                const completeness = getTranslationCompleteness(
+                  code as Language
+                );
+                const isActive = activeLanguage === code;
+                return (
+                  <button
+                    key={code}
+                    onClick={() => setActiveLanguage(code as Language)}
+                    className={cn(
+                      "px-4 py-3 rounded-xl transition-all duration-200",
+                      "border-2 hover:scale-105 active:scale-95",
+                      isActive
+                        ? "bg-primary text-white border-primary shadow-lg shadow-primary/30"
+                        : "bg-elevated hover:bg-elevated/80 text-secondary border-border-main"
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{lang.flag}</span>
+                      <span className="font-semibold">{lang.name}</span>
+                      {formData.default_language === code && (
+                        <Badge variant="success" size="sm">
+                          <Check size={10} />
+                          {t("default")}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 mt-1">
+                      <div className="w-16 h-1.5 bg-white/20 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-white transition-all duration-300"
+                          style={{ width: `${completeness}%` }}
+                        />
+                      </div>
+                      <span className="text-xs opacity-90">
+                        {completeness}%
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Page URL Field */}
+            <div className="mt-6 space-y-2">
+              <label className="flex items-center gap-2 text-sm font-semibold text-main">
+                <LinkIcon size={16} className="text-primary" />
+                {t("pageURL")}
+              </label>
+              <p className="text-xs text-secondary">{t("pageURLDesc")}</p>
+              <div className="relative">
                 <input
                   type="text"
-                  title={t("pageTitleDesc")}
-                  value={currentTranslation.title}
-                  onChange={(e) =>
-                    updateTranslation(activeLanguage, "title", e.target.value)
-                  }
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={`${t("pageTitleDesc")} ${currentLangInfo.name}`}
+                  value={pageId ? `${baseUrl}/${formData.slug}` : formData.slug}
+                  onChange={(e) => {
+                    if (!pageId) {
+                      setFormData((prev) =>
+                        prev ? { ...prev, slug: e.target.value } : prev
+                      );
+                    }
+                  }}
+                  disabled={!!pageId}
+                  className={cn(
+                    "w-full px-4 py-3 rounded-xl transition-all duration-200",
+                    "border-2 bg-white dark:bg-gray-800",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
+                    formErrors?.slug
+                      ? "border-danger/50 focus:border-danger focus:ring-danger/20"
+                      : "border-border-main focus:border-primary focus:ring-primary/20"
+                  )}
+                  placeholder={t("pageURLDesc")}
                   dir={currentLangInfo.dir}
                 />
-                {formErrors?.title && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {formErrors.title.message as string}
+                {formErrors?.slug?.message && (
+                  <p className="text-sm text-danger flex items-center gap-1.5 mt-2 animate-fade-in">
+                    <AlertCircle size={14} />
+                    {formErrors.slug.message}
                   </p>
                 )}
               </div>
             </div>
+          </div>
 
-            {/* Content Editor */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("content")} ({currentLangInfo.name})
-              </label>
-              {activeLanguage === "en" && (
-                <RichTextEditor
-                  content={currentTranslation.content}
-                  onChange={(content) =>
-                    updateTranslation(activeLanguage, "content", content)
-                  }
-                  language={activeLanguage}
-                  placeholder={`${t("contentDesc")} ${currentLangInfo.name}...`}
-                />
-              )}
-              {activeLanguage === "ar" && (
-                <RichTextEditor
-                  content={currentTranslation.content}
-                  onChange={(content) =>
-                    updateTranslation(activeLanguage, "content", content)
-                  }
-                  language={activeLanguage}
-                  placeholder={`${t("contentDesc")} ${currentLangInfo.name}...`}
-                />
-              )}
-              {formErrors?.content && (
-                <p className="text-red-500 text-sm mt-1">
-                  {formErrors.content.message as string}
-                </p>
-              )}
-            </div>
-
-            {/* SEO Fields */}
-            <div className="border-t pt-6">
-              <h3 className="text-lg font-semibold mb-4">
-                {t("seoSettings")} ({currentLangInfo.name})
-              </h3>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("seoTitle")}
-                  </label>
-                  <input
-                    type="text"
-                    title={t("seoTitleDesc")}
-                    value={currentTranslation.seo_title}
-                    onChange={(e) =>
-                      updateTranslation(
-                        activeLanguage,
-                        "seo_title",
-                        e.target.value
-                      )
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={`${t("seoTitleDesc")} ${currentLangInfo.name}`}
-                    dir={currentLangInfo.dir}
-                  />
-                  {formErrors?.seo_title && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formErrors.seo_title.message as string}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("metaDescription")}
-                  </label>
-                  <textarea
-                    title={t("metaDescriptionDesc")}
-                    value={currentTranslation.meta_description}
-                    onChange={(e) =>
-                      updateTranslation(
-                        activeLanguage,
-                        "meta_description",
-                        e.target.value
-                      )
-                    }
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={t("metaDescription")}
-                    dir={currentLangInfo.dir}
-                  />
-                  {formErrors?.meta_description && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formErrors.meta_description.message as string}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("metaKeywords")}
-                  </label>
-                  <input
-                    type="text"
-                    title={t("metaKeywordsDesc")}
-                    value={currentTranslation.meta_keywords}
-                    onChange={(e) =>
-                      updateTranslation(
-                        activeLanguage,
-                        "meta_keywords",
-                        e.target.value
-                      )
-                    }
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder={`keyword1, keyword2, keyword3, ${t(
-                      "metaKeywordsDesc"
-                    )}`}
-                    dir={currentLangInfo.dir}
-                  />
-                  {formErrors.meta_keywords && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {formErrors.meta_keywords.message as string}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Publication Settings */}
-            <div className="border-t pt-6">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_published"
-
-                  checked={formData.is_published}
-                  onChange={(e) =>
-                    setFormData((prev) =>
-                      prev ? { ...prev, is_published: e.target.checked } : prev
-                    )
-                  }
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="is_published"
-                  className="ml-2 text-sm font-medium text-gray-700"
-                >
-                  {t("publish")}
+          {/* Content for active language */}
+          <div
+            className={`p-6 ${locale === "ar" ? "text-right" : "text-left"}`}
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          >
+            <div className="space-y-6">
+              {/* Page Title */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-main">
+                  <FileText size={16} className="text-primary" />
+                  {t("pageTitle")} ({currentLangInfo.name})
                 </label>
+                <input
+                  type="text"
+                  value={currentTranslation.title}
+                  onChange={(e) =>
+                    updateTranslation(activeLanguage, "title", e.target.value)
+                  }
+                  className={cn(
+                    "w-full px-4 py-3 rounded-xl transition-all duration-200",
+                    "border-2 bg-white dark:bg-gray-800",
+                    "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                    formErrors?.title
+                      ? "border-danger/50 focus:border-danger focus:ring-danger/20"
+                      : "border-border-main focus:border-primary focus:ring-primary/20"
+                  )}
+                  placeholder={`${t("pageTitleDesc")} ${currentLangInfo.name}`}
+                  dir={currentLangInfo.dir}
+                />
+                {formErrors?.title && (
+                  <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
+                    <AlertCircle size={14} />
+                    {formErrors.title.message as string}
+                  </p>
+                )}
               </div>
-              {formErrors.root && (
-                <p className="error-text">
-                  {formErrors.root.message as string}
-                </p>
-              )}
-            </div>
 
-            {/* Actions */}
-            <div className="flex justify-between pt-6 border-t">
-              <button
-                onClick={() => router.back()}
-                className="px-6 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t("cancel")}
-              </button>
+              {/* Content Editor */}
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-main">
+                  <FileText size={16} className="text-primary" />
+                  {t("content")} ({currentLangInfo.name})
+                </label>
+                <RichTextEditor
+                  content={currentTranslation.content}
+                  onChange={(content) =>
+                    updateTranslation(activeLanguage, "content", content)
+                  }
+                  language={activeLanguage}
+                  placeholder={`${t("contentDesc")} ${currentLangInfo.name}...`}
+                />
+                {formErrors?.content && (
+                  <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
+                    <AlertCircle size={14} />
+                    {formErrors.content.message as string}
+                  </p>
+                )}
+              </div>
 
-              <button
-                onClick={handleSave}
-                disabled={saving || !currentTranslation.title.trim()}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
-              >
-                {saving
-                  ? `${t("save")}... `
-                  : pageId
-                    ? `${t("update")}`
-                    : `${t("create")}`}
-              </button>
+              {/* SEO Section */}
+              <div className="pt-6 border-t border-border-main/50">
+                <h3 className="text-xl font-bold text-main mb-4 flex items-center gap-2">
+                  <Search size={20} className="text-primary" />
+                  {t("seoSettings")} ({currentLangInfo.name})
+                </h3>
+
+                <div className="space-y-4">
+                  {/* SEO Title */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-main">
+                      {t("seoTitle")}
+                    </label>
+                    <input
+                      type="text"
+                      value={currentTranslation.seo_title}
+                      onChange={(e) =>
+                        updateTranslation(
+                          activeLanguage,
+                          "seo_title",
+                          e.target.value
+                        )
+                      }
+                      className={cn(
+                        "w-full px-4 py-3 rounded-xl transition-all duration-200",
+                        "border-2 bg-white dark:bg-gray-800",
+                        "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                        "border-border-main focus:border-primary focus:ring-primary/20"
+                      )}
+                      placeholder={`${t("seoTitleDesc")} ${
+                        currentLangInfo.name
+                      }`}
+                      dir={currentLangInfo.dir}
+                    />
+                  </div>
+
+                  {/* Meta Description */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-main">
+                      {t("metaDescription")}
+                    </label>
+                    <textarea
+                      value={currentTranslation.meta_description}
+                      onChange={(e) =>
+                        updateTranslation(
+                          activeLanguage,
+                          "meta_description",
+                          e.target.value
+                        )
+                      }
+                      rows={3}
+                      className={cn(
+                        "w-full px-4 py-3 rounded-xl transition-all duration-200",
+                        "border-2 bg-white dark:bg-gray-800",
+                        "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                        "border-border-main focus:border-primary focus:ring-primary/20"
+                      )}
+                      placeholder={t("metaDescription")}
+                      dir={currentLangInfo.dir}
+                    />
+                  </div>
+
+                  {/* Meta Keywords */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold text-main flex items-center gap-2">
+                      <Hash size={14} className="text-primary" />
+                      {t("metaKeywords")}
+                    </label>
+                    <input
+                      type="text"
+                      value={currentTranslation.meta_keywords}
+                      onChange={(e) =>
+                        updateTranslation(
+                          activeLanguage,
+                          "meta_keywords",
+                          e.target.value
+                        )
+                      }
+                      className={cn(
+                        "w-full px-4 py-3 rounded-xl transition-all duration-200",
+                        "border-2 bg-white dark:bg-gray-800",
+                        "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                        "border-border-main focus:border-primary focus:ring-primary/20"
+                      )}
+                      placeholder="keyword1, keyword2, keyword3"
+                      dir={currentLangInfo.dir}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Publication Settings */}
+              <div className="pt-6 border-t border-border-main/50">
+                <div
+                  className={cn(
+                    "flex items-center gap-3 p-4 rounded-xl",
+                    "border-2 transition-all duration-200",
+                    formData.is_published
+                      ? "border-success/30 bg-success/5"
+                      : "border-border-main bg-elevated/30"
+                  )}
+                >
+                  <input
+                    type="checkbox"
+                    id="is_published"
+                    checked={formData.is_published}
+                    onChange={(e) =>
+                      setFormData((prev) =>
+                        prev
+                          ? { ...prev, is_published: e.target.checked }
+                          : prev
+                      )
+                    }
+                    className="h-5 w-5 text-primary focus:ring-2 focus:ring-primary/20 rounded cursor-pointer"
+                  />
+                  <label
+                    htmlFor="is_published"
+                    className="text-sm font-semibold text-main flex items-center gap-2 cursor-pointer flex-1"
+                  >
+                    {formData.is_published ? (
+                      <Eye size={16} className="text-success" />
+                    ) : (
+                      <EyeOff size={16} className="text-secondary" />
+                    )}
+                    {t("publish")}
+                  </label>
+                  {formData.is_published && (
+                    <Badge variant="success" size="sm">
+                      <Check size={12} />
+                      Published
+                    </Badge>
+                  )}
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex justify-between items-center pt-6 border-t border-border-main/50">
+                <ActionButton
+                  onClick={() => router.back()}
+                  variant="ghost"
+                  size="lg"
+                  icon={<ArrowLeft size={20} />}
+                  label={t("cancel")}
+                  className="rounded-xl"
+                />
+
+                <ActionButton
+                  onClick={handleSave}
+                  disabled={saving || !currentTranslation.title.trim()}
+                  variant={pageId ? "warning" : "success"}
+                  size="lg"
+                  icon={<Save size={20} />}
+                  label={
+                    saving
+                      ? `${t("save")}...`
+                      : pageId
+                      ? t("update")
+                      : t("create")
+                  }
+                  isLoading={saving}
+                  className="rounded-xl shadow-lg hover:shadow-xl min-w-[200px]"
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </GlassCard>
       </div>
     </div>
   );

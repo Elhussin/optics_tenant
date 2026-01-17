@@ -1,29 +1,52 @@
+/**
+ * ✨ ThemeToggle - محسّن مع Animations و UI/UX Enhancements
+ * @description Modern theme switcher مع color previews و enhanced design
+ */
 
+"use client";
 
-"use client"
 import { useEffect, useState, useRef } from "react";
 import { Palette, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { cn } from "@/src/shared/utils/cn";
 
-export const themes: { id: string; label: string }[] = [
-  { id: "theme-light", label: "Light" },
-  { id: "dark", label: "Dark" },
-  { id: "theme-ocean", label: "Ocean" },
-  { id: "theme-green", label: "Green" },
-  { id: "theme-warm", label: "Warm" },
-  { id: "theme-forest", label: "Forest" },
-  { id: "theme-olive", label: "Olive" },
+export const themes: { id: string; label: string; colors: string[] }[] = [
+  {
+    id: "theme-light",
+    label: "Light",
+    colors: ["#3b82f6", "#f3f4f6", "#1f2937"],
+  },
+  { id: "dark", label: "Dark", colors: ["#3b82f6", "#1f2937", "#f3f4f6"] },
+  {
+    id: "theme-ocean",
+    label: "Ocean",
+    colors: ["#0ea5e9", "#0c4a6e", "#e0f2fe"],
+  },
+  {
+    id: "theme-green",
+    label: "Green",
+    colors: ["#10b981", "#065f46", "#d1fae5"],
+  },
+  {
+    id: "theme-warm",
+    label: "Warm",
+    colors: ["#f59e0b", "#78350f", "#fef3c7"],
+  },
+  {
+    id: "theme-forest",
+    label: "Forest",
+    colors: ["#059669", "#064e3b", "#d1fae5"],
+  },
+  {
+    id: "theme-olive",
+    label: "Olive",
+    colors: ["#84cc16", "#365314", "#ecfccb"],
+  },
 ];
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 /**
  * Theme toggle component
  * @description A modern, accessible dropdown to toggle the application theme.
- * usage: <ThemeToggle />
  * @returns {JSX.Element}
  */
 export default function ThemeToggle() {
@@ -45,7 +68,10 @@ export default function ThemeToggle() {
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -60,54 +86,122 @@ export default function ThemeToggle() {
     setIsOpen(false);
   };
 
+  const activeTheme = themes.find((t) => t.id === theme);
+
   return (
     <div className="relative" ref={dropdownRef}>
+      {/* ✨ Enhanced Trigger Button */}
       <button
-
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "p-2 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/50",
-          isOpen ? "bg-primary/10 text-primary" : "text-main hover:bg-surface hover:text-primary"
+          "p-2.5 rounded-xl",
+          "border-1 transition-all duration-200  border-primary/50",
+          "focus:outline-none focus:ring-2 focus:ring-primary/50",
+          isOpen
+            ? "bg-primary/10 text-primary"
+            : "bg-background  text-foreground hover:bg-elevated hover:border-primary/30"
         )}
-        title={"Theme"}
+        title="Theme"
         aria-label="Toggle theme"
         aria-expanded={isOpen}
       >
         <Palette className="w-5 h-5" />
       </button>
 
+      {/* ✨ Enhanced Dropdown */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            initial={{ opacity: 0, y: 8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute end-0 mt-2 w-48 py-2 bg-elevated border border-border-main rounded-xl shadow-xl z-50 overflow-hidden"
+            exit={{ opacity: 0, y: 8, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className={cn(
+              "absolute end-0 top-full mt-2 w-64",
+              "bg-surface backdrop-blur-xl",
+              "border-2 border-primary/50",
+              "rounded-2xl shadow-2xl",
+              "overflow-hidden z-50"
+            )}
           >
-            <div className="px-3 py-2 text-xs font-semibold text-secondary uppercase tracking-wider mb-1 border-b border-border-main/50">
-              {"Select Theme"}
+            {/* Header */}
+            <div
+              className={cn(
+                "px-4 py-3",
+                "bg-elevated/50 backdrop-blur-md",
+                "border-b-2 border-primary/50"
+              )}
+            >
+              <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">
+                Select Theme
+              </p>
+              {activeTheme && (
+                <p className="text-sm font-semibold text-foreground mt-1">
+                  Current: {activeTheme.label}
+                </p>
+              )}
             </div>
-            <div className="max-h-[300px] overflow-y-auto scrollbar-hide">
-              {themes.map((t) => (
-                <button
-                  title={t.label}
+
+            {/* ✨ Enhanced Theme Options */}
+            <div
+              className={cn(
+                "max-h-[320px] overflow-y-auto",
+                "scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent",
+                "p-2"
+              )}
+            >
+              {themes.map((t, index) => (
+                <motion.button
                   key={t.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.05 }}
                   onClick={() => handleThemeChange(t.id)}
                   className={cn(
-                    "w-full px-4 py-2 text-sm text-left flex items-center justify-between transition-colors cursor-pointer",
+                    "w-full px-3 py-3 mb-2 rounded-xl",
+                    "flex items-center justify-between gap-3",
+                    "transition-all duration-200",
+                    "border-2",
                     theme === t.id
-                      ? "bg-primary/10 text-main/90 font-medium"
-                      : "text-main hover:bg-surface hover:text-primary"
+                      ? "bg-primary/10 border-primary/30 text-primary"
+                      : "border-transparent hover:bg-elevated hover:border-primary/50"
                   )}
+                  title={t.label}
                 >
-                  <span className="flex items-center gap-2">
-                    {/* Optional: Add a colored dot representing the theme colors if hardcoded logic existed, 
-                            but for now just the label is fine. */}
-                    {t.label}
-                  </span>
-                  {theme === t.id && <Check className="w-4 h-4" />}
-                </button>
+                  <div className="flex items-center gap-3 flex-1">
+                    {/* ✨ Color Preview */}
+                    <div className="flex gap-1">
+                      {t.colors.map((color, i) => (
+                        <div
+                          key={i}
+                          className="w-4 h-4 rounded-full border-2 border-white/20 shadow-sm"
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Label */}
+                    <span
+                      className={cn(
+                        "text-sm font-semibold",
+                        theme === t.id ? "text-primary" : "text-foreground"
+                      )}
+                    >
+                      {t.label}
+                    </span>
+                  </div>
+
+                  {/* Check Icon */}
+                  {theme === t.id && (
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 500 }}
+                    >
+                      <Check className="w-5 h-5 text-primary" />
+                    </motion.div>
+                  )}
+                </motion.button>
               ))}
             </div>
           </motion.div>

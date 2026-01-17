@@ -67,7 +67,10 @@
 .ProseMirror li {
   @apply my-1;
 }
-
+.prose-rtl {
+  direction: rtl;
+  text-align: right;
+}
 [dir="rtl"] .ProseMirror ul,
 [dir="rtl"] .ProseMirror ol {
   @apply ml-0 mr-6 pr-2;

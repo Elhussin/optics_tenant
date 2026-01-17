@@ -473,8 +473,8 @@ export const formsConfig: Record<string, FormConfig> = {
       "updated_at",
     ],
   },
-  // prescriptions
-  prescriptions: {
+
+  "prescriptions": {
     schemaName: "PrescriptionRequest",
     listAlias: "prescriptions_prescription_list",
     createAlias: "prescriptions_prescription_create",

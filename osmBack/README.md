@@ -99,3 +99,8 @@ pdm run python manage.py showmigrations prescriptions
 
 
 
+<!-- 
+📂 كيفية الوصول واستخدام التوثيق الجديد:
+يمكنك تشغيل مركز التوثيق محلياً لمشاهدة العمل الفني الذي تم بناؤه: -->
+cd osmBack
+pdm run mkdocs serve

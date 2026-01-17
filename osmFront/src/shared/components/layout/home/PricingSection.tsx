@@ -1,54 +1,140 @@
+/**
+ * ✨ PricingSection - محسّن مع Animations و UI/UX Enhancements
+ * @description Pricing section مع enhanced cards و smooth transitions
+ */
+
 "use client";
-import { useState } from 'react';
-import { useTranslations, useFormatter, useLocale } from 'next-intl';
-import { Link } from '@/src/app/i18n/navigation';
-import { PLAN_LIMITS } from '@/src/shared/constants/plans';
-import { Users, Store, Package, Check, Crown } from 'lucide-react';
-import { motion } from 'framer-motion';
+
+import { useState } from "react";
+import { useTranslations, useFormatter, useLocale } from "next-intl";
+import { Link } from "@/src/app/i18n/navigation";
+import { PLAN_LIMITS } from "@/src/shared/constants/plans";
+import {
+  Users,
+  Store,
+  Package,
+  Check,
+  Crown,
+  Sparkles,
+  Zap,
+} from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/src/shared/utils/cn";
 
 export default function PricingSection() {
-  const t = useTranslations('pricingSection');
+  const t = useTranslations("pricingSection");
   const format = useFormatter();
   const locale = useLocale();
-  const isRtl = locale === 'ar';
+  const isRtl = locale === "ar";
   const plans = Object.keys(PLAN_LIMITS) as (keyof typeof PLAN_LIMITS)[];
   const [isYearly, setIsYearly] = useState(false);
 
   return (
-    <section className="py-24 bg-surface" id="pricing">
-      <div className="container mx-auto px-4 text-center">
+    <section
+      className={cn("relative py-24 lg:py-32 overflow-hidden", "bg-background")}
+      id="pricing"
+    >
+      {/* ✨ Background decoration */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl" />
+      </div>
+
+      {/* Grid pattern */}
+      <div className="absolute inset-0 bg-grid-primary/[0.02] bg-[size:32px_32px]" />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-12"
+          className="text-center mb-16 lg:mb-20"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-main">
-            {t('title')}
+          {/* ✨ Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className={cn(
+              "inline-flex items-center gap-2 px-4 py-2 mb-6",
+              "rounded-full border-2 border-primary/20",
+              "bg-primary/10 backdrop-blur-sm"
+            )}
+          >
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold uppercase tracking-wider text-primary">
+              PRICING
+            </span>
+          </motion.div>
+
+          {/* Title */}
+          <h2
+            className={cn(
+              "text-4xl sm:text-5xl lg:text-6xl font-black mb-6",
+              "text-foreground"
+            )}
+          >
+            {t("title")}
           </h2>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            {t('subtitle') || "Simple, transparent pricing for every stage of your business."}
+
+          {/* Subtitle */}
+          <p className="text-lg lg:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            {t("subtitle") ||
+              "Simple, transparent pricing for every stage of your business."}
           </p>
 
-          {/* Toggle */}
-          <div className="flex items-center justify-center gap-4">
-            <span className={`text-sm font-medium ${!isYearly ? 'text-main' : 'text-gray-500'}`}>{t('monthly') || "Monthly"}</span>
+          {/* ✨ Enhanced Toggle */}
+          <div
+            className={cn(
+              "inline-flex items-center gap-4 p-1.5 rounded-full",
+              "bg-elevated border-2 border-border",
+              "shadow-lg"
+            )}
+          >
+            <span
+              className={cn(
+                "text-sm font-bold px-4 transition-colors",
+                !isYearly ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              {t("monthly") || "Monthly"}
+            </span>
+
             <button
               dir="ltr"
               onClick={() => setIsYearly(!isYearly)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${isYearly ? 'bg-primary' : 'bg-gray-200'}`}
+              className={cn(
+                "relative inline-flex h-8 w-16 items-center rounded-full ",
+                "transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                isYearly
+                  ? "bg-primary shadow-lg shadow-primary/30"
+                  : "bg-border bg-primary/20"
+              )}
+              aria-label="Toggle pricing"
             >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isYearly !== isRtl ? 'translate-x-6' : 'translate-x-1'}`}
+              <motion.span
+                animate={{ x: isYearly !== isRtl ? 32 : 4 }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                className="inline-block h-6 w-6 rounded-full bg-white shadow-md"
               />
             </button>
-            <span className={`text-sm font-medium ${isYearly ? 'text-main' : 'text-gray-500'}`}>
-              {t('yearly') || "Yearly"} <span className="text-green-500 text-xs ml-1">(Save 20%)</span>
+
+            <span
+              className={cn(
+                "text-sm font-bold px-4 transition-colors",
+                isYearly ? "text-foreground" : "text-muted-foreground"
+              )}
+            >
+              {t("yearly") || "Yearly"}
+              <span className="text-green-500 text-xs ml-2 font-bold">
+                (Save 20%)
+              </span>
             </span>
           </div>
         </motion.div>
 
-        <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 md:grid-cols-3 max-w-7xl mx-auto">
+        {/* ✨ Enhanced Pricing Cards */}
+        <div className="grid gap-6 lg:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-7xl mx-auto">
           {plans.map((plan, index) => {
             const data = t.raw(`plans.${plan}`) as {
               name: string;
@@ -56,80 +142,183 @@ export default function PricingSection() {
               features: string[];
             };
             const planData = PLAN_LIMITS[plan];
-            const isPopular = plan === 'premium';
+            const isPopular = plan === "premium";
             const price = isYearly ? planData.price_year : planData.price_month;
-            const period = isYearly ? t('year') || "Year" : t('month') || "Month";
+            const period = isYearly
+              ? t("year") || "Year"
+              : t("month") || "Month";
 
             return (
               <motion.div
                 key={plan}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`relative bg-white dark:bg-gray-800 rounded-2xl p-6 flex flex-col justify-between border transition-all duration-300 ${isPopular
-                  ? 'border-primary shadow-xl scale-105 z-10'
-                  : 'border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg'
-                  }`}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: index * 0.1, duration: 0.5 }}
+                className={cn(
+                  "relative rounded-3xl p-8 flex flex-col justify-between",
+                  "border-2 transition-all duration-300",
+                  "bg-elevated",
+                  isPopular
+                    ? [
+                        "border-primary shadow-2xl shadow-primary/20",
+                        "scale-105 z-10",
+                        "bg-gradient-to-b from-primary/5 to-transparent",
+                      ]
+                    : "border-border hover:border-primary/30 hover:shadow-xl hover:-translate-y-1"
+                )}
               >
+                {/* ✨ Enhanced Popular Badge */}
                 {isPopular && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                    <Crown size={12} fill="currentColor" /> {t('mostPopular') || "MOST POPULAR"}
-                  </div>
+                  <motion.div
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className={cn(
+                      "absolute -top-4 left-1/2 -translate-x-1/2",
+                      "px-4 py-2 rounded-full",
+                      "bg-gradient-to-r from-primary to-blue-500",
+                      "text-white text-xs font-black uppercase tracking-wider",
+                      "shadow-lg flex items-center gap-1.5"
+                    )}
+                  >
+                    <Crown size={14} className="fill-white" />
+                    {t("mostPopular") || "MOST POPULAR"}
+                  </motion.div>
                 )}
 
                 <div>
-                  <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">
+                  {/* Plan name */}
+                  <h3 className="text-2xl font-black text-foreground mb-3">
                     {data.name}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 min-h-[40px]">
+
+                  {/* Description */}
+                  <p className="text-sm text-muted-foreground mb-6 min-h-[40px]">
                     {data.description}
                   </p>
 
-                  <div className="my-6">
-                    <p className="text-4xl font-bold text-main">
-                      {planData.price_month === 0 ? t('free') : `$${price}`}
-                      {planData.price_month !== 0 && <span className="text-base font-normal text-gray-500 ml-1">/{period}</span>}
-                    </p>
+                  {/* ✨ Enhanced Price */}
+                  <div className="mb-8">
+                    {planData.price_month === 0 ? (
+                      <p className="text-5xl font-black text-foreground">
+                        {t("free")}
+                      </p>
+                    ) : (
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-5xl font-black text-foreground">
+                          ${price}
+                        </span>
+                        <span className="text-base font-semibold text-muted-foreground">
+                          /{period}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="h-px w-full bg-gray-100 dark:bg-gray-700 mb-6" />
+                  {/* Divider */}
+                  <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent mb-8" />
 
-                  <ul className="text-sm text-start space-y-3 text-gray-700 dark:text-gray-300">
+                  {/* ✨ Enhanced Features List */}
+                  <ul className="space-y-4">
+                    {/* Core limits */}
                     <li className="flex items-center gap-3">
-                      <Users className="w-5 h-5 text-blue-500 shrink-0" />
-                      <span>{t('maxUsers')}: <strong>{planData.max_users}</strong></span>
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center shrink-0">
+                        <Users className="w-4 h-4 text-blue-500" />
+                      </div>
+                      <span className="text-sm">
+                        <strong className="text-foreground">
+                          {planData.max_users}
+                        </strong>
+                        <span className="text-muted-foreground ml-1">
+                          {t("maxUsers")}
+                        </span>
+                      </span>
                     </li>
+
                     <li className="flex items-center gap-3">
-                      <Store className="w-5 h-5 text-purple-500 shrink-0" />
-                      <span>{t('maxBranches')}: <strong>{planData.max_branches}</strong></span>
+                      <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                        <Store className="w-4 h-4 text-purple-500" />
+                      </div>
+                      <span className="text-sm">
+                        <strong className="text-foreground">
+                          {planData.max_branches}
+                        </strong>
+                        <span className="text-muted-foreground ml-1">
+                          {t("maxBranches")}
+                        </span>
+                      </span>
                     </li>
+
                     <li className="flex items-center gap-3">
-                      <Package className="w-5 h-5 text-green-500 shrink-0" />
-                      <span>{t('maxProducts')}: <strong>{format.number(planData.max_products)}</strong></span>
+                      <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+                        <Package className="w-4 h-4 text-green-500" />
+                      </div>
+                      <span className="text-sm">
+                        <strong className="text-foreground">
+                          {format.number(planData.max_products)}
+                        </strong>
+                        <span className="text-muted-foreground ml-1">
+                          {t("maxProducts")}
+                        </span>
+                      </span>
                     </li>
-                    {data.features.map((feature, index) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <span className="leading-tight">{feature}</span>
+
+                    {/* Additional features */}
+                    {data.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-start gap-3">
+                        <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                          <Check className="w-3 h-3 text-primary" />
+                        </div>
+                        <span className="text-sm text-muted-foreground leading-tight">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
+                {/* ✨ Enhanced CTA Button */}
                 <Link
-                  href={`/auth/register?plan=${plan}`}
-                  className={`mt-8 w-full py-3 px-4 rounded-xl font-bold transition-all transform active:scale-95 ${isPopular
-                    ? 'bg-primary text-white hover:bg-primary-dark shadow-lg hover:shadow-primary/30'
-                    : 'bg-gray-100 dark:bg-gray-700 text-main hover:bg-gray-200 dark:hover:bg-gray-600'
-                    }`}
+                  href={plan === "enterprise" ? "/contact" : `/auth/register?plan=${plan}`}
+                  className={cn(
+                    "group relative mt-8 w-full py-4 px-6 rounded-xl overflow-hidden",
+                    "font-bold text-center",
+                    "transition-all duration-300",
+                    "hover:scale-105 active:scale-95",
+                    isPopular
+                      ? [
+                          "bg-gradient-to-r from-primary to-blue-500",
+                          "text-white shadow-lg hover:shadow-xl hover:shadow-primary/40",
+                        ]
+                      : "bg-elevated border-2 border-border text-foreground hover:bg-background hover:border-primary/50"
+                  )}
                 >
-                  {plan === 'enterprise' ? t('contactUs') : t('choosePlan')}
+                  {/* Shine effect for popular plan */}
+                  {isPopular && (
+                    <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                  )}
+
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    {isPopular && <Zap className="w-4 h-4" />}
+                    {plan === "enterprise" ?  t("contactUs") : t("choosePlan")}
+                  </span>
                 </Link>
               </motion.div>
             );
           })}
         </div>
+
+        {/* ✨ Optional notice */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.6 }}
+          className="text-center text-sm text-muted-foreground mt-12"
+        >
+          All plans include 24/7 support and updates
+        </motion.p>
       </div>
     </section>
   );

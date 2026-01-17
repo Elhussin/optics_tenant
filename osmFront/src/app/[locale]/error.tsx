@@ -1,10 +1,19 @@
-'use client';
+"use client";
 
-import { useTranslations } from 'next-intl';
-import { useRouter } from '@/src/app/i18n/navigation'; // Assuming this maps to next/navigation or similar
-import { motion } from 'framer-motion';
-import { AlertTriangle, Home, RefreshCw, ArrowLeft } from 'lucide-react';
-import { useEffect } from 'react';
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/src/app/i18n/navigation";
+import { motion } from "framer-motion";
+import {
+  AlertTriangle,
+  Home,
+  RefreshCw,
+  Sparkles,
+  AlertCircle,
+} from "lucide-react";
+import { useEffect } from "react";
+import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { Badge } from "@/src/shared/components/ui/Badge";
 
 export default function Error({
   error,
@@ -13,7 +22,7 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const t = useTranslations('error');
+  const t = useTranslations("error");
   const router = useRouter();
 
   useEffect(() => {
@@ -23,73 +32,113 @@ export default function Error({
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center p-4">
+      {/* Background Pattern */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-danger/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-warning/5 rounded-full blur-3xl" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-lg w-full bg-white dark:bg-gray-800 shadow-2xl rounded-2xl p-8 text-center border border-gray-100 dark:border-gray-700 relative overflow-hidden"
+        className="max-w-lg w-full relative"
       >
-        {/* Background Pattern */}
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-red-500 to-orange-500" />
+        {/* Background Glow */}
+        <div className="absolute -inset-2 bg-gradient-to-r from-danger/20 to-warning/20 rounded-3xl blur-2xl opacity-50" />
 
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="mx-auto flex items-center justify-center h-20 w-20 rounded-full bg-red-50 dark:bg-red-900/20 mb-6"
+        <GlassCard
+          className="relative overflow-hidden shadow-2xl text-center"
+          padding="none"
         >
-          <AlertTriangle className="h-10 w-10 text-red-500" />
-        </motion.div>
+          {/* Gradient Top Strip */}
+          <div className="h-1.5 bg-gradient-to-r from-danger via-warning to-danger animate-shimmer bg-[length:200%_100%]" />
 
-        <motion.h1
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="text-3xl font-bold text-gray-900 dark:text-white mb-2"
-        >
-          {t('title')}
-        </motion.h1>
+          <div className="p-8">
+            {/* Icon */}
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="relative mx-auto flex items-center justify-center h-24 w-24 rounded-full mb-6"
+            >
+              <div className="absolute inset-0 bg-danger/10 rounded-full animate-ping" />
+              <div className="relative bg-danger/10 h-24 w-24 rounded-full flex items-center justify-center">
+                <AlertTriangle className="h-12 w-12 text-danger" />
+              </div>
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="mb-8"
-        >
-          <p className="text-gray-600 dark:text-gray-300 mb-2 text-lg">
-            {t('message')}
-          </p>
-          {/* Display technical error message in development or if appropriate */}
-          <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-900/20 inline-block max-w-full overflow-hidden text-ellipsis">
-            <p className="text-red-600 dark:text-red-400 text-sm font-mono truncate">
-              {error.message || "Unknown error occurred"}
-            </p>
+            {/* Title */}
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl font-bold text-main mb-2 flex items-center justify-center gap-2"
+            >
+              <Sparkles className="w-7 h-7 text-danger" />
+              {t("title")}
+            </motion.h1>
+
+            {/* Description */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mb-8 space-y-4"
+            >
+              <p className="text-secondary text-lg">{t("message")}</p>
+
+              {/* Error Message Badge */}
+              <div className="p-4 rounded-xl bg-danger/5 border-2 border-danger/20 animate-fade-in">
+                <div className="flex items-start gap-3">
+                  <AlertCircle
+                    size={20}
+                    className="text-danger shrink-0 mt-0.5"
+                  />
+                  <div className="flex-1 text-left">
+                    <p className="text-xs text-secondary font-medium uppercase mb-1">
+                      Error Details
+                    </p>
+                    <p className="text-sm text-danger font-mono break-words">
+                      {error.message || "Unknown error occurred"}
+                    </p>
+                    {error.digest && (
+                      <p className="text-xs text-secondary mt-2">
+                        Error ID: {error.digest}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Action Buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="flex flex-col sm:flex-row justify-center gap-4"
+            >
+              <ActionButton
+                onClick={() => reset()}
+                variant="danger"
+                size="lg"
+                icon={<RefreshCw size={18} />}
+                label={t("tryAgain") || "Try Again"}
+                className="rounded-xl shadow-lg hover:shadow-xl"
+              />
+
+              <ActionButton
+                onClick={() => router.push("/")}
+                variant="ghost"
+                size="lg"
+                icon={<Home size={18} />}
+                label={t("homeButton")}
+                className="rounded-xl"
+              />
+            </motion.div>
           </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="flex flex-col sm:flex-row justify-center gap-3"
-        >
-          <button
-            onClick={() => reset()}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-primary hover:bg-primary/90 text-white rounded-xl font-medium transition-transform active:scale-95 shadow-lg shadow-primary/25"
-          >
-            <RefreshCw size={18} />
-            {/* You might need to add a translation for 'tryAgain' or use a generic one */}
-            Try Again
-          </button>
-
-          <button
-            onClick={() => router.push('/')}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 rounded-xl font-medium transition-colors"
-          >
-            <Home size={18} />
-            {t('homeButton')}
-          </button>
-        </motion.div>
+        </GlassCard>
       </motion.div>
     </div>
   );

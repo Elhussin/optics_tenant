@@ -48,7 +48,7 @@
     "noData": "لم يتم العثور على بيانات",
     "success": "تم بنجاح",
     "failed": "فشل في",
-    "thisFormDoesNotExist":"هذا النموذج غير موجود أو غير مسموح به",
+    "thisFormDoesNotExist": "هذا النموذج غير موجود أو غير مسموح به",
     "clients": "المستاجرين",
     "register-tenants": "تسجيل المستأجر",
     "domains": "النطاقات",
@@ -77,16 +77,39 @@
     "product-variants": "تفاصيل المنتجات",
     "product-images": "صور المنتجات",
     "flexible-prices": "السعر المرن",
-    "customer-groups":"مجموعات العملاء",
-    "opportunities":"فرص",
-    "interactions" : "التفاعل",
-    "complaints" : "الشكاوى",
-    "subscriptions" : "الاشتراكات",
-    "tasks" : "المهام",
-    "campaigns" : "حملات",
-    "documents" : "مستندات",
-    "contacts" : "اتصالات",
-    "pages" : "الصفحات" 
+    "customer-groups": "مجموعات العملاء",
+    "opportunities": "فرص",
+    "interactions": "التفاعل",
+    "complaints": "الشكاوى",
+    "subscriptions": "الاشتراكات",
+    "tasks": "المهام",
+    "campaigns": "حملات",
+    "documents": "مستندات",
+    "contacts": "اتصالات",
+    "pages": "الصفحات",
+    "wholesale": "البيع بالجملة",
+    "wholesale-customers": "عملاء الجملة",
+    "wholesale-orders": "طلبات الجملة",
+    "wholesale-statement": "كشف الحساب",
+    "accounting": "المحاسبة",
+    "chart-of-accounts": "دليل الحسابات",
+    "journal-entries": "قيود اليومية",
+    "financial-reports": "التقارير المالية",
+    "orders": "الطلبات",
+    "inventory": "المخزون",
+    "reports": "التقارير",
+    "partners": "الشركاء والتأمين",
+    "insurance-claims": "مطالبات التأمين",
+    "partner-customers": "عملاء الشركاء",
+    "payments": "المدفوعات",
+    "installments": "الأقساط",
+    "payment-methods": "طرق الدفع",
+    "bnpl": "ادفع لاحقاً",
+    "sales-report": "تقرير المبيعات",
+    "wholesale-report": "تقرير الجملة",
+    "receivables-report": "تقرير الذمم المدينة",
+    "inventory-report": "تقرير المخزون",
+    "insurance-report": "تقرير التأمين"
   },
   "clients": {
     "title": "العملاء",
@@ -98,25 +121,23 @@
     "paid_until": "تاريخ الانتهاء",
     "max_products": "عدد المنتجات",
     "on_trial": "تجريبي",
-    "updateDescription":"تحديث بيانات العميل",
-    "createDescription":"إضافة عميل جديد"
-
+    "updateDescription": "تحديث بيانات العميل",
+    "createDescription": "إضافة عميل جديد"
   },
   "register_tenants": {
     "title": "تسجيل مستأجر جديد",
     "detailsTitle": "تفاصيل المستأجر",
     "name": "اسم المستأجر",
     "email": "النطاق الفرعي",
-    "updateDescription":"تحديث بيانات المستأجر",
-    "createDescription":"إضافة مستأجر جديد"
-
+    "updateDescription": "تحديث بيانات المستأجر",
+    "createDescription": "إضافة مستأجر جديد"
   },
   "domains": {
     "title": "النطاقات",
     "detailsTitle": "تفاصيل النطاق",
     "domain": "النطاق",
-    "updateDescription":"تحديث بيانات النطاق",
-    "createDescription":"إضافة نطاق جديد"
+    "updateDescription": "تحديث بيانات النطاق",
+    "createDescription": "إضافة نطاق جديد"
   },
   "payments": {
     "title": "الدفعات",
@@ -127,8 +148,8 @@
     "client": "العميل",
     "method": "نوع العملية",
     "currency": "العملة",
-    "updateDescription":"تحديث بيانات الدفع",
-    "createDescription":"إضافة دفع جديد"
+    "updateDescription": "تحديث بيانات الدفع",
+    "createDescription": "إضافة دفع جديد"
   },
   "subscription-plans": {
     "title": "خطط الاشتراك",
@@ -141,18 +162,18 @@
     "year_price": "السعر السنوي",
     "currency": "العملة",
     "discount": "الخصم",
-    "updateDescription":"تحديث بيانات الخطة",
-    "createDescription":"إضافة خطة جديدة"
+    "updateDescription": "تحديث بيانات الخطة",
+    "createDescription": "إضافة خطة جديدة"
   },
   "roles": {
     "title": "الادوار",
     "detailsTitle": "تفاصيل الدور",
     "name": "الاسم",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الدور",
-    "createDescription":"إضافة دور جديد",
+    "updateDescription": "تحديث بيانات الدور",
+    "createDescription": "إضافة دور جديد",
     "permission_ids": "الصلاحيات",
-    "permissions" :"الصلاحيات"
+    "permissions": "الصلاحيات"
   },
   "users": {
     "title": "المستخدمين",
@@ -163,30 +184,29 @@
     "address": "العنوان",
     "website": "الموقع الإلكتروني",
     "role": "الدور",
-    "updateDescription":"تحديث بيانات المستخدم",
-    "createDescription":"إضافة مستخدم جديد",
-    "last_name":"اسم العائلة ",
-    "first_name":"الاسم الاول",
-    "is_staff" : "موظف",
-    "is_active" : "نشط",
-    "password" : "كلمة المرور"
+    "updateDescription": "تحديث بيانات المستخدم",
+    "createDescription": "إضافة مستخدم جديد",
+    "last_name": "اسم العائلة ",
+    "first_name": "الاسم الاول",
+    "is_staff": "موظف",
+    "is_active": "نشط",
+    "password": "كلمة المرور"
   },
   "permissions": {
     "title": "الصلاحيات",
     "detailsTitle": "تفاصيل الصلاحية",
     "code": "الكود",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الصلاحية",
-    "createDescription":"إضافة صلاحية جديدة"
-
+    "updateDescription": "تحديث بيانات الصلاحية",
+    "createDescription": "إضافة صلاحية جديدة"
   },
   "role-permissions": {
     "title": " الصلاحيات والادوار",
     "detailsTitle": "تفاصيل الصلاحيات والادوار",
     "role_name": "اسم الدور",
     "permission_name": "اسم الصلاحية",
-    "updateDescription":"تحديث بيانات الصلاحيات والادوار",
-    "createDescription":"إضافة صلاحية جديدة"
+    "updateDescription": "تحديث بيانات الصلاحيات والادوار",
+    "createDescription": "إضافة صلاحية جديدة"
   },
   "contact-us": {
     "title": "تواصل",
@@ -195,9 +215,8 @@
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "message": "الرسالة",
-    "updateDescription":"تحديث بيانات الرسالة",
-    "createDescription":"إضافة رسالة جديدة"
-
+    "updateDescription": "تحديث بيانات الرسالة",
+    "createDescription": "إضافة رسالة جديدة"
   },
   "tenant-settings": {
     "title": "الأعدادت الأساسية",
@@ -211,16 +230,16 @@
     "linkedin": "لينكدإن",
     "description": "الوصف",
     "website": "الموقع الإلكتروني",
-    "updateDescription":"تحديث بيانات الأعدادت الأساسية",
-    "createDescription":"إضافة اعدادت جديدة"
+    "updateDescription": "تحديث بيانات الأعدادت الأساسية",
+    "createDescription": "إضافة اعدادت جديدة"
   },
   "departments": {
     "title": "الاقسام",
     "detailsTitle": "تفاصيل القسم",
     "name": "اسم القسم",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات القسم",
-    "createDescription":"إضافة قسم جديد"
+    "updateDescription": "تحديث بيانات القسم",
+    "createDescription": "إضافة قسم جديد"
   },
   "employees": {
     "title": "الموظفين",
@@ -229,8 +248,8 @@
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "address": "العنوان",
-    "updateDescription":"تحديث بيانات الموظف",
-    "createDescription":"إضافة موظف جديد"
+    "updateDescription": "تحديث بيانات الموظف",
+    "createDescription": "إضافة موظف جديد"
   },
   "customer": {
     "title": "العملاء",
@@ -239,64 +258,64 @@
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "address": "العنوان",
-    "updateDescription":"تحديث بيانات العميل",
-    "createDescription":"إضافة عميل جديد"
+    "updateDescription": "تحديث بيانات العميل",
+    "createDescription": "إضافة عميل جديد"
   },
   "customer-groups": {
     "title": "مجموعات العملاء",
     "detailsTitle": "تفاصيل مجموعة العملاء",
     "name": "اسم مجموعة العملاء",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات مجموعة العملاء",
-    "createDescription":"إضافة مجموعة عملاء جديدة"
+    "updateDescription": "تحديث بيانات مجموعة العملاء",
+    "createDescription": "إضافة مجموعة عملاء جديدة"
   },
   "opportunities": {
     "title": "فرص",
     "detailsTitle": "تفاصيل الفرصة",
     "name": "اسم الفرصة",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الفرصة",
-    "createDescription":"إضافة فرصة جديدة"
+    "updateDescription": "تحديث بيانات الفرصة",
+    "createDescription": "إضافة فرصة جديدة"
   },
   "interactions": {
     "title": "التفاعلات",
     "detailsTitle": "تفاصيل التفاعل",
     "name": "اسم ",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات التفاعل",
-    "createDescription":"إضافة تفاعل جديد"
+    "updateDescription": "تحديث بيانات التفاعل",
+    "createDescription": "إضافة تفاعل جديد"
   },
   "complaints": {
     "title": "الشكاوى",
     "detailsTitle": "تفاصيل الشكوى",
     "name": "اسم الشكوى",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الشكوى",
-    "createDescription":"إضافة شكوى جديدة"
+    "updateDescription": "تحديث بيانات الشكوى",
+    "createDescription": "إضافة شكوى جديدة"
   },
   "subscriptions": {
     "title": "الاشتراكات",
     "detailsTitle": "تفاصيل الاشتراك",
     "name": "اسم الاشتراك",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الاشتراك",
-    "createDescription":"إضافة اشتراك جديد"
+    "updateDescription": "تحديث بيانات الاشتراك",
+    "createDescription": "إضافة اشتراك جديد"
   },
   "tasks": {
     "title": "المهام",
     "detailsTitle": "تفاصيل المهمة",
     "name": "اسم المهمة",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات المهمة",
-    "createDescription":"إضافة مهمة جديدة"
+    "updateDescription": "تحديث بيانات المهمة",
+    "createDescription": "إضافة مهمة جديدة"
   },
   "campaigns": {
     "title": "حملات",
     "detailsTitle": "تفاصيل الحملة",
     "name": "اسم الحملة",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الحملة",
-    "createDescription":"إضافة حملة جديدة"
+    "updateDescription": "تحديث بيانات الحملة",
+    "createDescription": "إضافة حملة جديدة"
   },
   "documents": {
     "title": "مستندات",
@@ -305,16 +324,16 @@
     "customer_name": "اسم العميل",
     "description": "الوصف",
     "file": "الملف",
-    "updateDescription":"تحديث بيانات المستند",
-    "createDescription":"إضافة مستند جديد"
+    "updateDescription": "تحديث بيانات المستند",
+    "createDescription": "إضافة مستند جديد"
   },
   "contacts": {
     "title": "اتصالات",
     "detailsTitle": "تفاصيل اتصال",
     "name": "اسم اتصال",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات اتصال",
-    "createDescription":"إضافة اتصال جديد"
+    "updateDescription": "تحديث بيانات اتصال",
+    "createDescription": "إضافة اتصال جديد"
   },
   "pages": {
     "title": "الصفحات",
@@ -325,8 +344,8 @@
     "address": "العنوان",
     "message": "الرسالة",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الصفحة",
-    "createDescription":"إضافة صفحة جديدة"
+    "updateDescription": "تحديث بيانات الصفحة",
+    "createDescription": "إضافة صفحة جديدة"
   },
   "prescriptions": {
     "title": "الفحوصات",
@@ -334,8 +353,8 @@
     "customer_name": "اسم المريض",
     "notes": "الملاحظات",
     "user_name": "اسم المستخدم",
-    "updateDescription":"تحديث بيانات الفحص",
-    "createDescription":"إضافة فحص جديد"
+    "updateDescription": "تحديث بيانات الفحص",
+    "createDescription": "إضافة فحص جديد"
   },
   "branch-users": {
     "title": "مستخدم الفرع",
@@ -343,8 +362,8 @@
     "branch_name": "الفرع",
     "employee_name": "الموظف",
     "status": "الحالة",
-    "updateDescription":"تحديث بيانات المستخدم",
-    "createDescription":"إضافة مستخدم جديد"
+    "updateDescription": "تحديث بيانات المستخدم",
+    "createDescription": "إضافة مستخدم جديد"
   },
   "branches": {
     "title": "الفروع",
@@ -355,25 +374,25 @@
     "address": "العنوان",
     "city": "المدينة",
     "country": "البلد",
-    "updateDescription":"تحديث بيانات الفرع",
-    "createDescription":"إضافة فرع جديد"
+    "updateDescription": "تحديث بيانات الفرع",
+    "createDescription": "إضافة فرع جديد"
   },
   "attributes": {
     "title": "الخصائص",
     "detailsTitle": "تفاصيل الخصائص",
     "name": "اسم الخصائص",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات الخصائص",
-    "createDescription":"إضافة خصائص جديدة"
+    "updateDescription": "تحديث بيانات الخصائص",
+    "createDescription": "إضافة خصائص جديدة"
   },
   "attribute-values": {
     "title": "قيم الخصائص",
     "detailsTitle": "تفاصيل قيمة الخصائص",
     "attribute_name": "اسم قيمة الخصائص",
     "value": "الوصف",
-    "updateDescription":"تحديث بيانات قيمة الخصائص",
-    "createDescription":"إضافة قيمة خصائص جديدة"
-  },  
+    "updateDescription": "تحديث بيانات قيمة الخصائص",
+    "createDescription": "إضافة قيمة خصائص جديدة"
+  },
   "suppliers": {
     "title": "الموردين",
     "detailsTitle": "تفاصيل المورد",
@@ -385,8 +404,8 @@
     "country": "البلد",
     "website": "الموقع الإلكتروني",
     "payment_terms": "شروط الدفع",
-    "updateDescription":"تحديث بيانات المورد",
-    "createDescription":"إضافة مورد جديد"
+    "updateDescription": "تحديث بيانات المورد",
+    "createDescription": "إضافة مورد جديد"
   },
   "manufacturers": {
     "title": "المصنع",
@@ -397,8 +416,8 @@
     "address": "العنوان",
     "country": "البلد",
     "website": "الموقع الإلكتروني",
-    "updateDescription":"تحديث بيانات المصنع",
-    "createDescription":"إضافة مصنع جديد"
+    "updateDescription": "تحديث بيانات المصنع",
+    "createDescription": "إضافة مصنع جديد"
   },
   "brands": {
     "title": "العلامات التجارية",
@@ -411,8 +430,8 @@
     "website": "الموقع الإلكتروني",
     "description": "الوصف",
     "logo": "الشعار",
-    "updateDescription":"تحديث بيانات العلامة التجارية",
-    "createDescription":"إضافة علامة تجارية جديدة"
+    "updateDescription": "تحديث بيانات العلامة التجارية",
+    "createDescription": "إضافة علامة تجارية جديدة"
   },
   "categories": {
     "title": "الاقسام",
@@ -420,16 +439,16 @@
     "name": "اسم القسم",
     "description": "الوصف",
     "parent_name": "القسم الرئيسي",
-    "updateDescription":"تحديث بيانات القسم",
-    "createDescription":"إضافة قسم جديد"
+    "updateDescription": "تحديث بيانات القسم",
+    "createDescription": "إضافة قسم جديد"
   },
   "lens-coatings": {
     "title": "طبقات الحماية",
     "detailsTitle": "تفاصيل طبقة الحماية",
     "name": "اسم طبقة الحماية",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات طبقة الحماية",
-    "createDescription":"إضافة طبقة حماية جديدة"
+    "updateDescription": "تحديث بيانات طبقة الحماية",
+    "createDescription": "إضافة طبقة حماية جديدة"
   },
   "products": {
     "title": "المنتجات",
@@ -442,31 +461,31 @@
     "manufacturer_name": "المصنع",
     "model": "الموديل",
     "type": "النوع",
-    "updateDescription":"تحديث بيانات المنتج",
-    "createDescription":"إضافة منتج جديد"
+    "updateDescription": "تحديث بيانات المنتج",
+    "createDescription": "إضافة منتج جديد"
   },
   "product-variants": {
     "title": "  تفاصيل المنتجات ",
     "detailsTitle": "تفاصيل اضافات المنتج",
     "name": "اسم اضافات المنتج",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات اضافات المنتج",
-    "createDescription":"إضافة اضافات منتج جديدة"
+    "updateDescription": "تحديث بيانات اضافات المنتج",
+    "createDescription": "إضافة اضافات منتج جديدة"
   },
   "product-images": {
     "title": "صور المنتج",
     "detailsTitle": "تفاصيل صورة المنتج",
     "name": "اسم صورة المنتج",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات صورة المنتج",
-    "createDescription":"إضافة صورة منتج جديدة"
+    "updateDescription": "تحديث بيانات صورة المنتج",
+    "createDescription": "إضافة صورة منتج جديدة"
   },
   "flexible-prices": {
     "title": "السعر المرن",
     "detailsTitle": "تفاصيل السعر المرن",
     "name": "اسم السعر المرن",
     "description": "الوصف",
-    "updateDescription":"تحديث بيانات السعر المرن",
-    "createDescription":"إضافة سعر مرن جديد"
+    "updateDescription": "تحديث بيانات السعر المرن",
+    "createDescription": "إضافة سعر مرن جديد"
   }
 }

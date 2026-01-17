@@ -1,12 +1,13 @@
 "use client";
-import { X, Trash2, Pencil, ArrowLeft, Check, RotateCcw } from "lucide-react";
-import { useHardDeleteWithDialog } from "@/src/shared/hooks/useHardDeleteWithDialog";
 
+import { X, Trash2, Pencil, Check, RotateCcw } from "lucide-react";
+import { useHardDeleteWithDialog } from "@/src/shared/hooks/useHardDeleteWithDialog";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useTranslations } from "next-intl";
 import { RenderButtonsProps } from "@/src/shared/types";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
+import { cn } from "@/src/shared/utils/cn";
 
 export const RenderButtons = ({
   data,
@@ -21,12 +22,14 @@ export const RenderButtons = ({
     alias: alias.editAlias,
     onSuccess: () => {
       safeToast(t("updatedSuccessfully"), { type: "success" });
-      refetch(); // ✅ تحديث البيانات بدل refresh()
+      refetch();
     },
     onError: () => {
       safeToast(t("errorUpdating"), { type: "error" });
     },
   });
+
+  const isLoading = editRequest.mutation.isPending;
 
   const handleDelete = () =>
     editRequest.mutation.mutateAsync({
@@ -65,81 +68,91 @@ export const RenderButtons = ({
     }
   );
 
-  const deleteButton = (
-    <ActionButton
-      icon={<Trash2 size={18} />}
-      variant="custom"
-      className="h-9 w-9 p-0 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/40 transition-colors"
-      title={t("delete")}
-      onCrud={handleDelete}
-    />
-  );
-  const hardDeleteButton = (
-    <ActionButton
-      icon={<Trash2 size={18} />}
-      variant="custom"
-      className="h-9 w-9 p-0 rounded-lg bg-red-100 text-red-700 hover:bg-red-200 dark:bg-red-900/40 dark:text-red-300 dark:hover:bg-red-900/60 transition-colors border border-red-200 dark:border-red-800"
-      title={t("deleteTitle")}
-      onClick={() => confirmHardDelete(data.id)}
-    />
-  );
-  const editButton = (
-    <ActionButton
-      icon={<Pencil size={18} />}
-      variant="custom"
-      className="h-9 w-9 p-0 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40 transition-colors"
-      title={t("edit")}
-      navigateTo={`${navigatePath}/${data?.id}/edit`}
-    />
-  );
-  const activateButton = (
-    <ActionButton
-      icon={<Check size={18} />}
-      variant="custom"
-      className="h-9 w-9 p-0 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 dark:bg-green-900/20 dark:text-green-400 dark:hover:bg-green-900/40 transition-colors"
-      title={t("activate")}
-      onCrud={handleActivate}
-    />
-  );
-  const deactivateButton = (
-    <ActionButton
-      icon={<X size={18} />}
-      variant="custom"
-      className="h-9 w-9 p-0 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 transition-colors"
-      title={t("deactivate")}
-      onCrud={handleDeactivate}
-    />
-  );
-  const restoreButton = (
-    <ActionButton
-      icon={<RotateCcw size={18} />}
-      variant="custom"
-      className="h-9 w-9 p-0 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/40 transition-colors"
-      title={t("restoreTitle")}
-      onCrud={handleRestore}
-    />
-  );
-  // Back button removed as it's now handled in ViewDetailsCard header
+  // مجموعة أزرار العنصر المحذوف
+  if (data?.is_deleted) {
+    return (
+      <>
+        <div className="flex items-center gap-2 p-1.5 bg-elevated/50 rounded-xl border border-border-main">
+          {/* Restore Button */}
+          <ActionButton
+            variant="icon-success"
+            size="sm"
+            icon={<RotateCcw size={18} />}
+            title={t("restoreTitle")}
+            onCrud={handleRestore}
+            isLoading={isLoading}
+            className="rounded-lg"
+          />
 
-  return (
-    <div className="flex items-center gap-2">
-      {!isViewOnly && (
-        <>
-          {data?.is_deleted ? (
-            <>
-              {restoreButton}
-              {hardDeleteButton}
-            </>
+          {/* Hard Delete Button */}
+          <ActionButton
+            variant="icon-delete"
+            size="sm"
+            icon={<Trash2 size={18} />}
+            title={t("deleteTitle")}
+            onClick={() => confirmHardDelete(data.id)}
+            className="rounded-lg border-2"
+          />
+        </div>
+        {ConfirmDialogComponent}
+      </>
+    );
+  }
+
+  // مجموعة أزرار العنصر النشط
+  if (!isViewOnly) {
+    return (
+      <>
+        <div className="flex items-center gap-2 p-1.5 bg-elevated/50 rounded-xl border border-border-main">
+          {/* Edit Button */}
+          <ActionButton
+            variant="icon-edit"
+            size="sm"
+            icon={<Pencil size={18} />}
+            title={t("edit")}
+            navigateTo={`${navigatePath}/${data?.id}/edit`}
+            className="rounded-lg"
+          />
+
+          {/* Activate/Deactivate Toggle */}
+          {data?.is_active ? (
+            <ActionButton
+              variant="icon-info"
+              size="sm"
+              icon={<X size={18} />}
+              title={t("deactivate")}
+              onCrud={handleDeactivate}
+              isLoading={isLoading}
+              className="rounded-lg"
+            />
           ) : (
-            <>
-              {editButton}
-              {data?.is_active ? deactivateButton : activateButton}
-              {deleteButton}
-            </>
+            <ActionButton
+              variant="icon-success"
+              size="sm"
+              icon={<Check size={18} />}
+              title={t("activate")}
+              onCrud={handleActivate}
+              isLoading={isLoading}
+              className="rounded-lg"
+            />
           )}
-          {ConfirmDialogComponent}
-        </>
-      )}
-    </div>
-  );
+
+          {/* Delete Button */}
+          <ActionButton
+            variant="icon-delete"
+            size="sm"
+            icon={<Trash2 size={18} />}
+            title={t("delete")}
+            onCrud={handleDelete}
+            isLoading={isLoading}
+            className="rounded-lg"
+          />
+        </div>
+        {ConfirmDialogComponent}
+      </>
+    );
+  }
+
+  // عرض فارغ للـ view-only
+  return null;
 };

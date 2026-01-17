@@ -221,7 +221,8 @@ class RequestPasswordResetView(APIView):
             return Response({"detail": "Email is required."}, status=400)
 
         tenant = request.headers.get('X-Tenant')
-        lang = request.headers.get('accept-language').split(',')[0].split('-')[0] or 'en'
+        lang = request.headers.get(
+            'accept-language').split(',')[0].split('-')[0] or 'en'
 
         # CHANGED: Allow public tenant if header is missing or explicitly public, but Validate!
         if not tenant:
@@ -310,7 +311,7 @@ class RolePermissionViewSet(BaseViewSet):
 
     queryset = RolePermission.objects.all()
     serializer_class = RolePermissionSerializer
-    
+
     search_fields = ['role__name', 'permission__code']
     filter_fields = {
         'role__name': ['exact', 'icontains'],
@@ -386,11 +387,19 @@ class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
 class PageViewSet(BaseViewSet):
     queryset = Page.objects.all()
     serializer_class = PageSerializer
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
-    ]
+
+    def get_permissions(self):
+        """
+        Allow authenticated users to view/list pages.
+        Only admin/owner can create/update/delete.
+        """
+        if self.action in ['list', 'retrieve']:
+            return [IsAuthenticated()]
+        return [
+            IsAuthenticated(),
+            RoleOrPermissionRequired.with_requirements(
+                super_roles=["admin", "owner"])
+        ]
 
     def update(self, request, *args, **kwargs):
         data = request.data

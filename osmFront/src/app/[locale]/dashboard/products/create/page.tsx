@@ -1,10 +1,13 @@
 "use client";
 import React, { Suspense } from "react";
 import { LoadingSpinner } from "@/src/shared/components/ui/loding";
-const ProductForm = React.lazy(
-  () => import("@/src/features/products/components/ProductForm")
-);
+// const ProductForm = React.lazy(
+//   () => import("@/src/features/products/components/ProductForm")
+// );
 
+const ProductForm = React.lazy(
+  () => import("@/src/features/products/add")
+);
 export default function CreateProductPage() {
   return (
     <Suspense

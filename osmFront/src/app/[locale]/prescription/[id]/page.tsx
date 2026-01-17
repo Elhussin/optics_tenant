@@ -14,6 +14,7 @@ export default function EditPrescription() {
             submitText="Edit Prescription"
             id={pageId}
             isView={true}
+            showContactLens={true}
           />
   );
 }

@@ -138,3 +138,7 @@ class Command(BaseCommand):
 
 # 
 # python manage.py import_csv_with_foreign --config data/csv_configo0.json --schema store1
+
+
+# تشغيل الاستيراد من سطر الأوامر
+# pdm run python manage.py import_csv_with_foreign --config data/csv_configotenant.json --schema store20

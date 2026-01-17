@@ -26,7 +26,7 @@ def generate_sku_code(instance):
 
     # Join all fields to create a base string
     base_string = "-".join(fields)
-    hash_value = hashlib.sha256(base_string.encode()).hexdigest()[:6].upper()
+    hash_value = hashlib.sha256(base_string.encode()).hexdigest()[:8].upper()
 
     # Human Readable Part
     type_code = product.type
@@ -42,4 +42,5 @@ def generate_sku_code(instance):
     brand_code = brand_name[:2].upper()
     model_code = (product.model or '')[:4].upper()
     
-    return f"{type_code}-{brand_code}-{model_code}-{hash_value}"
+    prefix = "P" if not variant else "V"
+    return f"{prefix}-{type_code}-{brand_code}-{model_code}-{hash_value}"

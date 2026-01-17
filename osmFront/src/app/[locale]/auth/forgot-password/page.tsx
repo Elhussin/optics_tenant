@@ -4,11 +4,23 @@ import { useState } from "react";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
-import { KeyRound, ArrowLeft, Mail, Loader2, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  KeyRound,
+  ArrowLeft,
+  Mail,
+  CheckCircle,
+  AlertCircle,
+  Sparkles,
+} from "lucide-react";
 import { Link } from "@/src/app/i18n/navigation";
+import { cn } from "@/src/shared/utils/cn";
+import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { ActionButton } from "@/src/shared/components/ui/buttons";
 
 export default function ForgotPasswordPage() {
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error" | "invalid">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "loading" | "success" | "error" | "invalid"
+  >("idle");
   const [message, setMessage] = useState<string>("");
   const t = useTranslations("forgotPassword");
   const alias = "users_password_reset_create";
@@ -22,7 +34,9 @@ export default function ForgotPasswordPage() {
     },
     onError: async (err) => {
       console.log(err);
-      const detail = err.response?.data?.detail || "Password reset failed. Please try again.";
+      const detail =
+        err.response?.data?.detail ||
+        "Password reset failed. Please try again.";
       setStatus("error");
       setMessage(t("ErrorMessage"));
     },
@@ -38,107 +52,177 @@ export default function ForgotPasswordPage() {
     setStatus("loading");
     setMessage(t("Resetting"));
     // Add artificial delay for better UX
-
-    await new Promise(resolve => setTimeout(resolve, 800));
+    await new Promise((resolve) => setTimeout(resolve, 800));
     formRequest.submitForm(data);
   };
 
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center p-4">
+      {/* Background Pattern */}
+      <div className="fixed inset-0 -z-10 overflow-hidden">
+        <div className="absolute top-1/4 -left-48 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-48 w-96 h-96 bg-secondary/5 rounded-full blur-3xl" />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+        className="w-full max-w-md relative"
       >
-        {/* Decorative Top Bar */}
-        <div className="h-2 bg-gradient-to-r from-blue-500 to-indigo-600" />
+        {/* Background Glow */}
+        <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-3xl blur-2xl opacity-50" />
 
-        <div className="p-8">
-          <div className="text-center mb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20, delay: 0.1 }}
-              className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mx-auto mb-6"
-            >
-              <KeyRound className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            </motion.div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{t("title")}</h1>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-              {t("description")}
-            </p>
-          </div>
+        <GlassCard
+          className="relative overflow-hidden shadow-2xl"
+          padding="none"
+        >
+          {/* Gradient Top Strip */}
+          <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-primary animate-shimmer bg-[length:200%_100%]" />
 
-          <form onSubmit={formRequest.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300 block ml-1">
-                {t("email")}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                  <Mail size={18} />
+          <div className="p-8">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                  delay: 0.1,
+                }}
+                className="relative w-20 h-20 mx-auto mb-6"
+              >
+                <div className="absolute inset-0 bg-primary/10 rounded-2xl animate-pulse" />
+                <div className="relative w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center">
+                  <KeyRound className="w-10 h-10 text-primary" />
                 </div>
-                <input
-                  id="email"
-                  type="email"
-                  {...formRequest.register("email")}
-                  className={`w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-900/50 border rounded-xl outline-none transition-all duration-200 focus:ring-2 focus:ring-blue-500/20 ${formRequest.errors.email ? "border-red-300 focus:border-red-500" : "border-gray-200 dark:border-gray-700 focus:border-blue-500"
-                    }`}
-                  placeholder={t("emailPlaceholder")}
-                />
-              </div>
-              {formRequest.errors.email && (
-                <motion.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className="text-xs text-red-500 font-medium ml-1 flex items-center gap-1"
-                >
-                  <AlertCircle size={12} />
-                  {formRequest.errors.email.message as string}
-                </motion.p>
-              )}
+              </motion.div>
+
+              <h1 className="text-3xl font-bold text-main mb-2 flex items-center justify-center gap-2">
+                <Sparkles className="w-6 h-6 text-primary" />
+                {t("title")}
+              </h1>
+              <p className="text-secondary leading-relaxed">
+                {t("description")}
+              </p>
             </div>
 
-            <AnimatePresence mode="wait">
-              {status !== "idle" && message && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className={`p-3 rounded-lg text-sm flex items-start gap-2 ${status === "success" ? "bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300" :
-                      status === "error" || status === "invalid" ? "bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-300" :
-                        "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300"
-                    }`}
+            <form
+              onSubmit={formRequest.handleSubmit(onSubmit)}
+              className="space-y-6"
+            >
+              {/* Email Field */}
+              <div className="space-y-2">
+                <label
+                  htmlFor="email"
+                  className="text-sm font-semibold text-main flex items-center gap-2 ml-1"
                 >
-                  {status === "success" ? <CheckCircle size={16} className="mt-0.5 shrink-0" /> :
-                    status === "loading" ? <Loader2 size={16} className="mt-0.5 shrink-0 animate-spin" /> :
-                      <AlertCircle size={16} className="mt-0.5 shrink-0" />}
-                  <span>{message}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  <Mail size={14} className="text-primary" />
+                  {t("email")}
+                </label>
 
-            <button
-              type="submit"
-              disabled={status === "loading" || status === "success"}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-xl font-semibold shadow-lg shadow-blue-600/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-            >
-              {status === "loading" && <Loader2 size={18} className="animate-spin" />}
-              {status === "success" ? t("sendSuccess") : status === "loading" ? t("sending") : t("button")}
-            </button>
-          </form>
+                <div className="relative group">
+                  <div
+                    className={cn(
+                      "absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors",
+                      formRequest.errors.email
+                        ? "text-danger"
+                        : "text-secondary group-focus-within:text-primary"
+                    )}
+                  >
+                    <Mail size={18} />
+                  </div>
 
-          <div className="mt-8 text-center">
-            <Link
-              href="/auth/login"
-              className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors group"
-            >
-              <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-              {t("backToLogin")}
-            </Link>
+                  <input
+                    id="email"
+                    type="email"
+                    {...formRequest.register("email")}
+                    className={cn(
+                      "w-full pl-12 pr-4 py-3.5 rounded-xl transition-all duration-200",
+                      "border-2 bg-white dark:bg-gray-800",
+                      "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                      formRequest.errors.email
+                        ? "border-danger/50 focus:border-danger focus:ring-danger/20"
+                        : "border-border-main focus:border-primary focus:ring-primary/20"
+                    )}
+                    placeholder={t("emailPlaceholder")}
+                  />
+                </div>
+
+                {formRequest.errors.email && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="text-sm text-danger flex items-center gap-1.5 animate-fade-in"
+                  >
+                    <AlertCircle size={14} />
+                    {formRequest.errors.email.message as string}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Status Messages */}
+              <AnimatePresence mode="wait">
+                {status !== "idle" && message && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className={cn(
+                      "p-4 rounded-xl text-sm flex items-start gap-2 border-2",
+                      status === "success"
+                        ? "bg-success/5 text-success border-success/20"
+                        : status === "error" || status === "invalid"
+                        ? "bg-danger/5 text-danger border-danger/20"
+                        : "bg-primary/5 text-primary border-primary/20"
+                    )}
+                  >
+                    {status === "success" ? (
+                      <CheckCircle size={18} className="mt-0.5 shrink-0" />
+                    ) : (
+                      <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                    )}
+                    <span className="flex-1">{message}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Submit Button */}
+              <ActionButton
+                type="submit"
+                variant="primary"
+                size="lg"
+                isLoading={status === "loading"}
+                disabled={status === "loading" || status === "success"}
+                icon={<Mail size={18} />}
+                label={
+                  status === "success"
+                    ? t("sendSuccess")
+                    : status === "loading"
+                    ? t("sending")
+                    : t("button")
+                }
+                className="w-full rounded-xl shadow-lg hover:shadow-xl"
+              />
+            </form>
+
+            {/* Back to Login Link */}
+            <div className="mt-8 text-center">
+              <Link href="/auth/login">
+                <ActionButton
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  icon={<ArrowLeft size={16} />}
+                  label={t("backToLogin")}
+                  className="inline-flex"
+                />
+              </Link>
+            </div>
           </div>
-        </div>
+        </GlassCard>
       </motion.div>
     </div>
   );

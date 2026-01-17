@@ -196,8 +196,8 @@ Weight,200g,200g
 Weight,300g,300g
 Weight,400g,400g
 Weight,500g,500g
-Uint,1P,1P
-Uint,2P,2P
-Uint,10P,10P
-Uint,30P,30P
-Uint,90P,90P
+Unit,1P,1P
+Unit,2P,2P
+Unit,10P,10P
+Unit,30P,30P
+Unit,90P,90P

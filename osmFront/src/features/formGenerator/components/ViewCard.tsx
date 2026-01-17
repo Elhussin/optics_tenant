@@ -1,111 +1,216 @@
-
-
 "use client";
+
+import { useEffect } from "react";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { SearchFilterForm } from "../../../shared/components/search/SearchFilterForm";
 import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { ArrowLeft, Eye, Pencil, Plus } from "lucide-react";
-import { NotFound } from '../../../shared/components/views/NotFound';
-import { Loading4 } from "../../../shared/components/ui/loding";
-import { useTranslations } from 'next-intl';
-import { useMergedTranslations } from '@/src/shared/utils/useMergedTranslations';
+import { ArrowLeft, Eye, Pencil, Plus, ListFilter } from "lucide-react";
+import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
 import { formatRelatedValue } from "@/src/shared/utils/formatRelatedValue";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { Pagination } from "../../../shared/components/views/Pagination";
 import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
-import { useEffect } from "react";
+
+// New Premium UI Components
+import {
+  GlassCard,
+  GlassCardHeader,
+} from "@/src/shared/components/ui/GlassCard";
+import { Badge } from "@/src/shared/components/ui/Badge";
+import { SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
+import { EmptyState } from "@/src/shared/components/ui/EmptyState";
+import { cn } from "@/src/shared/utils/cn";
+
 export default function ViewCard({ entity }: { entity: string }) {
-  console.log(entity);
   const { filterAlias, listAlias, fields, isViewOnly } = formsConfig[entity];
-  const t = useMergedTranslations(['viewCard', entity]);
-  const { data, count, page, setPage, setFilters, isLoading, page_size, setPageSize, totalPages } = useFilteredListRequest({ alias: listAlias || "" });
-  // show search button
+  const t = useMergedTranslations(["viewCard", entity]);
+
+  const {
+    data,
+    count,
+    page,
+    setPage,
+    setFilters,
+    isLoading,
+    page_size,
+    setPageSize,
+    totalPages,
+  } = useFilteredListRequest({ alias: listAlias || "" });
+
   const { show } = useSearchButton();
 
   useEffect(() => {
     show();
-  }, []);
+  }, [show]);
 
-  const { fields: filterFields, isLoading: isFieldsLoading } = useFilterDataOptions(filterAlias || "", {
-    enabled: !!filterAlias,
-  });
+  const { fields: filterFields, isLoading: isFieldsLoading } =
+    useFilterDataOptions(filterAlias || "", {
+      enabled: !!filterAlias,
+    });
 
-  if (isLoading || isFieldsLoading) return <Loading4 />;
-  if (!data) return <NotFound error={t("noDataFound")} />;
-  console.log(data);
-  return (
-    <div className="space-y-6">
-      <SearchFilterForm fields={filterFields} setFilters={setFilters} />
-
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
-        <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-          <span className="w-1.5 h-6 bg-blue-500 rounded-full" />
-          {t("title")}
-          <span className="text-sm font-normal text-gray-500 bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-md">
-            {count}
-          </span>
-        </h2>
-        <div className="flex gap-2">
-          {!isViewOnly && (
-            <ActionButton
-              variant="success"
-              icon={<Plus size={18} />}
-              navigateTo={`/dashboard/${entity}/create`}
-              title={`${t('createTitle')} ${entity}`}
-              className="px-4 py-2"
-            />
-          )}
-          <ActionButton
-            variant="ghost"
-            className="bg-secondary hover:bg-secondary/80 dark:hover:bg-secondary/80 border-0"
-            icon={<ArrowLeft size={18} />}
-            navigateTo={`/dashboard/`}
-            title={t('back')}
-          />
+  // 1. Loading State with Skeletons
+  if (isLoading || isFieldsLoading) {
+    return (
+      <div className="space-y-8 animate-pulse">
+        <div className="h-16 w-full bg-elevated/50 rounded-2xl" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <SkeletonGroup type="card" count={8} />
         </div>
       </div>
+    );
+  }
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {data?.map((item: any) => (
-          <div key={item.id} className="group bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm hover:shadow-xl border border-gray-100 dark:border-gray-700 transition-all duration-300 transform hover:-translate-y-1">
-            <div className="space-y-3 mb-4">
-              {fields?.slice(0, 4).map((field, index) => { // Show first 4 fields only to keep card neat
-                const value = item[field];
-                return (
-                  <div key={field} className="flex justify-between items-center text-sm border-b border-gray-50 dark:border-gray-700/50 pb-2 last:border-0 last:pb-0">
-                    <span className="font-medium text-gray-500 dark:text-gray-400 capitalize">{t(field)}</span>
-                    <span className={`font-semibold text-gray-800 dark:text-gray-200 truncate max-w-[60%] ${index === 0 ? "text-lg text-blue-600 dark:text-blue-400" : ""}`}>
-                      {formatRelatedValue(value, field, t)}
-                    </span>
-                  </div>
-                );
-              })}
+  // 2. Empty State
+  if (!data || data.length === 0) {
+    return (
+      <div className="space-y-6">
+        <SearchFilterForm fields={filterFields} setFilters={setFilters} />
+        <EmptyState
+          type="search"
+          title={t("noDataFound")}
+          description={t("tryAdjustingFilters")}
+          action={
+            !isViewOnly && (
+              <ActionButton
+                variant="primary"
+                icon={<Plus size={18} />}
+                navigateTo={`/dashboard/${entity}/create`}
+                title={`${t("createTitle")} ${entity}`}
+              />
+            )
+          }
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-8 animate-fade-in">
+      {/* 3. Header Section with Glassmorphism */}
+      <div className="relative">
+        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 blur-xl opacity-50" />
+        <GlassCard
+          className="relative border-none overflow-visible"
+          padding="sm"
+        >
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-2xl bg-primary/10 text-primary">
+                <ListFilter size={24} />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold flex items-center gap-3">
+                  {t("title")}
+                  <Badge variant="neutral" className="font-mono">
+                    {count}
+                  </Badge>
+                </h2>
+                <p className="text-sm text-secondary">
+                  {t("manageAndView")} {entity}
+                </p>
+              </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 mt-2 border-t border-gray-100 dark:border-gray-700">
-              <ActionButton
-                className="h-9 w-9 p-0 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50"
-                variant="custom" // Using custom to override defaults safely
-                navigateTo={`/dashboard/${entity}/${item.id}`}
-                icon={<Eye size={16} />}
-                title={`${t('view')} ${entity}`}
-              />
+            <div className="flex gap-3">
               {!isViewOnly && (
                 <ActionButton
-                  className="h-9 w-9 p-0 rounded-full bg-amber-50 text-amber-600 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:hover:bg-amber-900/50"
-                  variant="custom"
-                  navigateTo={`/dashboard/${entity}/${item.id}/edit`}
-                  icon={<Pencil size={16} />}
-                  title={`${t('edit')} ${entity}`}
+                  variant="success"
+                  size="md"
+                  icon={<Plus size={20} />}
+                  label={t("createNew")}
+                  navigateTo={`/dashboard/${entity}/create`}
+                  title={t("createTitle")}
+                  className="shadow-lg shadow-success/30 hover:shadow-xl hover:shadow-success/40 rounded-xl"
                 />
               )}
+              <ActionButton
+                variant="secondary"
+                size="md"
+                icon={<ArrowLeft size={20} />}
+                navigateTo={`/dashboard/`}
+                title={t("backToDashboard")}
+              />
             </div>
           </div>
+        </GlassCard>
+      </div>
+
+      {/* 4. Filter Form */}
+      <SearchFilterForm fields={filterFields} setFilters={setFilters} />
+
+      {/* 5. Enhanced Grid with GlassCards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {data.map((item: any, idx: number) => (
+          <GlassCard
+            key={item.id}
+            hover
+            className="group hover-lift shadow-soft hover:shadow-glow-primary border-border-main/50"
+            animate="slide-up"
+            padding="none"
+          >
+            {/* Card Content */}
+            <div className="p-5 space-y-4">
+              <div className="space-y-3">
+                {fields?.slice(0, 5).map((field, index) => {
+                  const value = item[field];
+                  const isPrimary = index === 0;
+
+                  return (
+                    <div
+                      key={field}
+                      className={cn(
+                        "flex justify-between items-start gap-2",
+                        !isPrimary &&
+                          "text-sm border-b border-border-main/30 pb-2 last:border-0 last:pb-0"
+                      )}
+                    >
+                      <span className="text-secondary font-medium shrink-0">
+                        {t(field)}
+                      </span>
+                      <span
+                        className={cn(
+                          "font-semibold text-main text-left truncate",
+                          isPrimary ? "text-lg text-primary" : "text-sm",
+                          field.includes("status") &&
+                            "px-2 py-0.5 rounded-full bg-primary/5 text-primary text-xs"
+                        )}
+                      >
+                        {formatRelatedValue(value, field, t)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Action Buttons - Using semantic variants for consistency */}
+              <div className="flex justify-end gap-3 pt-4 border-t border-border-main/50">
+                <ActionButton
+                  variant="icon-view"
+                  size="sm"
+                  navigateTo={`/dashboard/${entity}/${item.id}`}
+                  icon={<Eye size={18} />}
+                  title={t("view")}
+                  className="rounded-xl"
+                />
+                {!isViewOnly && (
+                  <ActionButton
+                    variant="icon-edit"
+                    size="sm"
+                    navigateTo={`/dashboard/${entity}/${item.id}/edit`}
+                    icon={<Pencil size={18} />}
+                    title={t("edit")}
+                    className="rounded-xl"
+                  />
+                )}
+              </div>
+            </div>
+          </GlassCard>
         ))}
       </div>
 
-      <div className="mt-8 flex justify-center">
+      {/* 6. Footer/Pagination */}
+      <div className="mt-10 py-6 border-t border-border-main/30 animate-fade-in">
         <Pagination
           page={page}
           totalPages={totalPages}

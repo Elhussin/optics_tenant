@@ -122,7 +122,28 @@ export interface ViewCardProps {
   id?: string | number | undefined;
 }
 
-export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'success' | 'info' | 'outline' | 'link' | 'reset' | 'cancel' | 'close' | 'warning' | 'ghost' | 'custom';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'danger'
+  | 'success'
+  | 'info'
+  | 'outline'
+  | 'link'
+  | 'reset'
+  | 'cancel'
+  | 'close'
+  | 'warning'
+  | 'ghost'
+  | 'custom'
+  | 'glass'
+  // Icon Button Variants
+  | 'icon-view'
+  | 'icon-edit'
+  | 'icon-delete'
+  | 'icon-info'
+  | 'icon-success';
+
 
 
 export interface ButtonProps {
