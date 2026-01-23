@@ -37,6 +37,7 @@ export interface ChartOfAccount {
     parent_name?: string;
     is_active: boolean;
     is_system: boolean;
+    is_header?: boolean;
     current_balance: string;
     description?: string;
     children?: ChartOfAccount[];
@@ -106,20 +107,26 @@ export interface JournalEntryCreate {
 }
 
 export interface TrialBalanceItem {
-    account_id: number;
     account_code: string;
     account_name: string;
-    account_type: AccountType;
-    debit_balance: string;
-    credit_balance: string;
+    account_type: string;
+    debit: number | string;
+    credit: number | string;
 }
 
 export interface TrialBalance {
     as_of_date: string;
-    items: TrialBalanceItem[];
-    total_debit: string;
-    total_credit: string;
-    is_balanced: boolean;
+    accounts: TrialBalanceItem[];
+    totals: {
+        debit: number | string;
+        credit: number | string;
+        is_balanced: boolean;
+    };
+    // Computed properties for compatibility
+    items?: TrialBalanceItem[];
+    total_debit?: string;
+    total_credit?: string;
+    is_balanced?: boolean;
 }
 
 export interface IncomeStatementSection {
@@ -185,20 +192,15 @@ export interface LedgerEntry {
 
 export interface AccountLedger {
     account: {
-        id: number;
         code: string;
         name: string;
-        normal_balance: NormalBalance;
     };
-    period: {
-        start_date: string;
-        end_date: string;
-    };
-    opening_balance: string;
+    opening_balance: string | number;
     entries: LedgerEntry[];
-    closing_balance: string;
-    total_debit: string;
-    total_credit: string;
+    closing_balance: string | number;
+    // Optional computed fields
+    total_debit?: string;
+    total_credit?: string;
 }
 
 export interface FinancialPeriod {

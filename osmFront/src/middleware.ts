@@ -100,19 +100,20 @@ export async function middleware(request: NextRequest) {
       const { payload } = await jwtVerify(token, new TextEncoder().encode(secret));
       const userTenant = payload.tenant as string;
       const permissions = (payload.permissions as string[]) || [];
+      const roles = (payload.roles as string[]) || [];
 
       // Guard: Tenant Isolation
-      // Allow 'public' tenant users to access public/root domain logic if needed,
-      // but usually strict comparison is safer.
       if (userTenant !== subdomain) {
-        // Special case: If user is "owner"/platform admin, they might access tenant domains? 
-        // Usually NO, they should login to the tenant context.
-        // Sticking to strict isolation for security.
         throw new Error("Tenant mismatch");
       }
 
       // Guard: Permissions
+      // Super roles (Owner/Admin) get full access
+      const isSuperUser = roles.includes("TenantOwner") || roles.includes("TenantAdmin");
+
       const hasPermission =
+        isSuperUser ||
+        permissions.includes("*") ||
         permissions.includes("__all__") ||
         permissions.includes(requiredPermission) ||
         requiredPermission === "authenticated_user";

@@ -1,0 +1,59 @@
+{
+  "orders": {
+    "title": "Orders",
+    "description": "Manage orders and payments",
+    "create": "New Order",
+    "refresh": "Refresh",
+    "totalCount": "Total",
+    "currency": "SAR",
+    "filters": {
+      "searchPlaceholder": "Search by order number or customer...",
+      "status": "Status",
+      "paymentStatus": "Payment Status",
+      "apply": "Apply",
+      "reset": "Reset"
+    },
+    "table": {
+      "orderNumber": "Order #",
+      "customer": "Customer",
+      "status": "Status",
+      "total": "Total",
+      "date": "Date",
+      "paymentStatus": "Payment Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "cancel": "Cancel"
+    },
+    "dialogs": {
+      "cancelTitle": "Cancel order?",
+      "cancelMessage": "This will cancel the order and release reserved stock.",
+      "confirm": "Confirm",
+      "close": "Close"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "ready": "Ready",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "paymentStatus": {
+      "pending": "Pending",
+      "partial": "Partial",
+      "paid": "Paid",
+      "refunded": "Refunded",
+      "disputed": "Disputed"
+    },
+    "toasts": {
+      "cancelSuccess": "Order cancelled successfully",
+      "cancelError": "Failed to cancel order"
+    },
+    "empty": {
+      "title": "No orders",
+      "description": "No orders match your filters"
+    }
+  }
+}

@@ -1,12 +1,11 @@
 {
-
-  "viewCard":{
-    "view":"View",
-    "edit":"Edit",
-    "createTitle":"Create",
-    "updateTitle":"Update",
-    "back":"Back",
-    "errorGetFormData":"Invalid entity Detected",
+  "viewCard": {
+    "view": "View",
+    "edit": "Edit",
+    "createTitle": "Create",
+    "updateTitle": "Update",
+    "back": "Back",
+    "errorGetFormData": "Invalid entity Detected",
     "is_active": "Active",
     "values": {
       "is_active": {
@@ -15,16 +14,18 @@
       }
     }
   },
-  "viewDetailsCard":{
-    "print":"Print Details",
-    "copy":"Copy Details",
-    "pdf":"PDF Details",
-    "entityError":"Invalid entity Or ID",
-    "noConfigError":"Invalid entity - No config Detected",
-    "errorLoadingData":"Error loading data",
-    "deletedItem":"This item is deleted. You can restore it or delete it permanently.",
+  "viewDetailsCard": {
+    "print": "Print Details",
+    "copy": "Copy Details",
+    "pdf": "PDF Details",
+    "entityError": "Invalid entity Or ID",
+    "noConfigError": "Invalid entity - No config Detected",
+    "errorLoadingData": "Error loading data",
+    "deletedItem": "This item is deleted. You can restore it or delete it permanently.",
     "is_active": "Active",
     "is_deleted": "Deleted",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
     "values": {
       "is_active": {
         "true": "Active",
@@ -35,58 +36,133 @@
         "false": "Not Deleted"
       }
     }
- 
   },
-  "formsConfig":{
-    "create":"Add",
-    "update":"Update",
-    "back":"Back",
-    "reset":"Reset",
-    "submit":"Submit",
-    "saving":"Saving",
-    "loading":"Loading...",
-    "noData":"No Data Found",
-    "success":"Successfully",
-    "failed":"Failed to",
-    "thisFormDoesNotExist":"This form does not exist OR  not Allowed",
-    "clients":"Clients",
-    "register-tenants":"Register Tenants",
-    "domains":"Domains",
-    "payments":"Payments",
-    "subscription-plans":"Subscription Plans",
-    "roles":"Roles",
-    "users":"Users",
-    "permissions":"Permissions",
-    "role-permissions":"Role & Permissions",
-    "contact-us":"Contact Us",
-    "tenant-settings":"Tenant Settings",
-    "departments":"Departments",
-    "employees":"Employees",
-    "customers":"Customers",
-    "prescriptions":"Prescriptions",
-    "branches":"Branches",
-    "branch-users":"Branch Users",
-    "attributes":"Attributes",
-    "attribute-values":"Attribute Values",
-    "suppliers":"Suppliers",
-    "manufacturers":"Manufacturers",
-    "brands":"Brands",
-    "categories":"Categories",
-    "lens-coatings":"Lens Coatings",
-    "products":"Products",
-    "product-variants":"Product Variants",
-    "product-images":"Product Images",
-    "flexible-prices":"Flexible Prices",
-    "customer-groups":"Customer Groups",
-    "opportunities":"Opportunities",
-    "interactions" : "Interactions",
-    "complaints" : "Complaints",
-    "subscriptions" : "Subscriptions",
-    "tasks" : "Tasks",
-    "campaigns" : "Campaigns",
-    "documents" : "Documents",
-    "contacts" : "Contacts",
-    "pages" : "Pages"
+  "formsConfig": {
+    "create": "Add",
+    "update": "Update",
+    "back": "Back",
+    "reset": "Reset",
+    "submit": "Submit",
+    "saving": "Saving",
+    "loading": "Loading...",
+    "noData": "No Data Found",
+    "success": "Successfully",
+    "failed": "Failed to",
+    "thisFormDoesNotExist": "This form does not exist OR  not Allowed",
+    "clients": "Clients",
+    "register-tenants": "Register Tenants",
+    "domains": "Domains",
+    "payments": "Payments",
+    "subscription-plans": "Subscription Plans",
+    "roles": "Roles",
+    "users": "Users",
+    "permissions": "Permissions",
+    "role-permissions": "Role & Permissions",
+    "contact-us": "Contact Us",
+    "tenant-settings": "Tenant Settings",
+    "hrm-departments": "Departments",
+    "hrm-employees": "Employees",
+    "customers": "Customers",
+    "prescriptions": "Prescriptions",
+    "branches": "Branches",
+    "branch-users": "Branch Users",
+    "attributes": "Attributes",
+    "attribute-values": "Attribute Values",
+    "suppliers": "Suppliers",
+    "manufacturers": "Manufacturers",
+    "brands": "Brands",
+    "categories": "Categories",
+    "lens-coatings": "Lens Coatings",
+    "product": "Products",
+    "product-variants": "Product Variants",
+    "product-images": "Product Images",
+    "flexible-prices": "Flexible Prices",
+    "crm-customer-groups": "Customer Groups",
+    "crm-opportunities": "Opportunities",
+    "crm-interactions": "Interactions",
+    "crm-complaints": "Complaints",
+    "crm-subscriptions": "Subscriptions",
+    "crm-tasks": "Tasks",
+    "crm-campaigns": "Campaigns",
+    "crm-documents": "Documents",
+    "crm-contacts": "Contacts",
+    "pages": "Pages",
+    "wholesale": "البيع بالجملة",
+    "wholesale-customers": "عملاء الجملة",
+    "wholesale-orders": "طلبات الجملة",
+    "wholesale-statement": "كشف الحساب",
+    "accounting": "المحاسبة",
+    "chart-of-accounts": "دليل الحسابات",
+    "journal-entries": "قيود اليومية",
+    "financial-reports": "التقارير المالية",
+    "orders": "الطلبات",
+    "inventory": "المخزون",
+    "reports": "التقارير",
+    "partners": "Partners & Insurance",
+    "insurance-claims": "Insurance Claims",
+    "partner-customers": "Partner Customers",
+    "installments": "Installments",
+    "bnpl": "BNPL",
+    "sales-report": "Sales Report",
+    "wholesale-report": "Wholesale Report",
+    "receivables-report": "Receivables Report",
+    "inventory-report": "Inventory Report",
+    "insurance-report": "Insurance Report",
+    "branches-shift": "Branch Shifts",
+    "product-supplier": "Product Supplier",
+    "invoices": "Invoices",
+    "sales-payments": "Sales Payments",
+    "stocks": "Stocks",
+    "stock-movements": "Stock Movements",
+    "payment-methods": "Payment Methods",
+    "hrm-employee-leave": "Leaves",
+    "hrm-attendance": "Attendance",
+    "hrm-performance-review": "Performance Review",
+    "hrm-payroll": "Payroll",
+    "hrm-tasks": "Employee Tasks",
+    "hrm-notifications": "Notifications"
+  },
+  "partners": {
+    "title": "Partners & Insurance",
+    "detailsTitle": "Partner Details",
+    "name": "Partner Name",
+    "name_en": "English Name",
+    "partner_type": "Partner Type",
+    "code": "Partner Code",
+    "contact_person": "Contact Person",
+    "phone": "Phone Number",
+    "email": "Email Address",
+    "website": "Website",
+    "address": "Address",
+    "contract_number": "Contract Number",
+    "contract_start": "Contract Start",
+    "contract_end": "Contract End",
+    "payment_terms": "Payment Terms",
+    "default_discount": "Default Discount %",
+    "credit_limit": "Credit Limit",
+    "current_balance": "Current Balance",
+    "patient_share_percentage": "Patient Share %",
+    "tax_number": "Tax Number",
+    "notes": "Notes",
+    "updateDescription": "Update Partner details",
+    "createDescription": "Add a new Business Partner",
+    "values": {
+      "partner_type": {
+        "insurance": "Insurance Company",
+        "bnpl": "Installment Service (BNPL)",
+        "corporate": "Corporate Client",
+        "wholesaler": "Wholesaler",
+        "agent": "Agent"
+      },
+      "payment_terms": {
+        "immediate": "Immediate",
+        "7_days": "7 Days",
+        "15_days": "15 Days",
+        "30_days": "30 Days",
+        "60_days": "60 Days",
+        "90_days": "90 Days"
+      }
+    }
   },
   "clients": {
     "title": "Clients",
@@ -98,24 +174,23 @@
     "paid_until": "Paid Until",
     "on_trial": "On Trial",
     "max_products": "Max Products",
-    "updateDescription":"Update Client",
-    "createDescription":"Add New Client"
-
+    "updateDescription": "Update Client",
+    "createDescription": "Add New Client"
   },
   "register-tenants": {
     "title": "Register New Tenant",
     "detailsTitle": "Tenant Details",
     "name": "Tenant Name",
     "email": "Subdomain",
-    "updateDescription":"Update Tenant",
-    "createDescription":"Add New Tenant"
+    "updateDescription": "Update Tenant",
+    "createDescription": "Add New Tenant"
   },
   "domains": {
     "title": "Domains",
     "detailsTitle": "Domain Details",
     "domain": "Domain",
-    "updateDescription":"Update Domain",
-    "createDescription":"Add New Domain"
+    "updateDescription": "Update Domain",
+    "createDescription": "Add New Domain"
   },
   "payments": {
     "title": "Payments",
@@ -126,8 +201,8 @@
     "client": "Client",
     "method": "Method",
     "currency": "Currency",
-    "updateDescription":"Update Payment",
-    "createDescription":"Add New Payment"
+    "updateDescription": "Update Payment",
+    "createDescription": "Add New Payment"
   },
   "subscription-plans": {
     "title": "Subscription Plans",
@@ -140,17 +215,18 @@
     "year_price": "Yearly Price",
     "currency": "Currency",
     "discount": "Discount",
-    "updateDescription":"Update Subscription Plan",
-    "createDescription":"Add New Subscription Plan" 
+    "updateDescription": "Update Subscription Plan",
+    "createDescription": "Add New Subscription Plan"
   },
   "roles": {
     "title": "Roles",
     "detailsTitle": "Role Details",
     "name": "Role Name",
     "description": "Description",
+    "updateDescription": "Update Role",
     "permissions": "Permissions",
-    "updateDescription":"Update Role",
-    "createDescription":"Add New Role"
+    "permission_ids": "Permissions",
+    "createDescription": "Add New Role"
   },
   "users": {
     "title": "Users",
@@ -160,33 +236,31 @@
     "phone": "Phone",
     "address": "Address",
     "website": "Website",
-    "role": "Role",
-    "updateDescription":"Update User",
-    "createDescription":"Add New User",
-    "last_name":"Last Name",
-    "first_name":"First Name",
-    "is_staff" : "Is Staff",
-    "is_active" : "Is Active",
-    "password" : "Password"
-
-
+    "roles": "Roles",
+    "role_ids": "Select Roles",
+    "updateDescription": "Update User",
+    "createDescription": "Add New User",
+    "last_name": "Last Name",
+    "first_name": "First Name",
+    "is_staff": "Is Staff",
+    "is_active": "Is Active",
+    "password": "Password"
   },
   "permissions": {
     "title": "Permissions",
     "detailsTitle": "Permission Details",
     "code": "Code",
     "description": "Description",
-    "updateDescription":"Update Permission",
-    "createDescription":"Add New Permission"
-
+    "updateDescription": "Update Permission",
+    "createDescription": "Add New Permission"
   },
   "role-permissions": {
     "title": "Role & Permissions",
     "detailsTitle": "Role & Permissions Details",
     "role_name": "Role Name",
     "permission_name": "Permission Name",
-    "updateDescription":"Update Role Permission",
-    "createDescription":"Add New Role Permission"
+    "updateDescription": "Update Role Permission",
+    "createDescription": "Add New Role Permission"
   },
   "contact_us": {
     "title": "Contact Us",
@@ -195,8 +269,8 @@
     "email": "Email",
     "phone": "Phone",
     "message": "Message",
-    "updateDescription":"Update Contact Us",
-    "createDescription":"Add New Contact Us"
+    "updateDescription": "Update Contact Us",
+    "createDescription": "Add New Contact Us"
   },
   "tenant-settings": {
     "title": "Tenant Settings",
@@ -210,110 +284,199 @@
     "linkedin": "Linkedin",
     "description": "Description",
     "website": "Website",
-    "updateDescription":"Update Tenant Settings",
-    "createDescription":"Add New Tenant Settings"
+    "updateDescription": "Update Tenant Settings",
+    "createDescription": "Add New Tenant Settings"
   },
-  "departments": {
+  "hrm-departments": {
     "title": "Departments",
     "detailsTitle": "Department Details",
     "name": "Department Name",
     "description": "Description",
-    "updateDescription":"Update Department",
-    "createDescription":"Add New Department"
+    "updateDescription": "Update Department",
+    "createDescription": "Add New Department"
   },
-  "employees": {
+  "hrm-employees": {
     "title": "Employees",
     "detailsTitle": "Employee Details",
     "name": "Employee Name",
     "email": "Email",
     "phone": "Phone",
     "address": "Address",
-    "updateDescription":"Update Employee",
-    "createDescription":"Add New Employee"
+    "user_name": "Username",
+    "department_name": "Department",
+    "hire_date": "Hire Date",
+    "salary": "Salary",
+    "position": "Position",
+    "updateDescription": "Update Employee",
+    "createDescription": "Add New Employee"
   },
-  "customer": {
+  "hrm-employee-leave": {
+    "title": "Leaves",
+    "detailsTitle": "Leave Details",
+    "updateDescription": "Update Leave",
+    "createDescription": "Add New Leave"
+  },
+  "hrm-attendance": {
+    "title": "Attendance",
+    "detailsTitle": "Attendance Details",
+    "employee_name": "Employee Name",
+    "date": "Date",
+    "hours_worked": "Hours Worked",
+    "check_in": "Check In",
+    "check_out": "Check Out",
+    "updateDescription": "Update Attendance",
+    "createDescription": "Record Attendance"
+  },
+  "hrm-performance-review": {
+    "title": "Performance Review",
+    "detailsTitle": "Review Details",
+    "employee_name": "Employee Name",
+    "month": "Month",
+    "review_date": "Review Date",
+    "rating": "Rating",
+    "comments": "Comments",
+    "updateDescription": "Update Review",
+    "createDescription": "Add New Review"
+  },
+  "hrm-payroll": {
+    "title": "Payroll",
+    "detailsTitle": "Payroll Details",
+    "employee_name": "Employee Name",
+    "month": "Month",
+    "basic_salary": "Basic Salary",
+    "bonuses": "Bonuses",
+    "deductions": "Deductions",
+    "net_salary": "Net Salary",
+    "updateDescription": "Update Payroll",
+    "createDescription": "Add New Payroll"
+  },
+  "hrm-tasks": {
+    "title": "Employee Tasks",
+    "detailsTitle": "Task Details",
+    "updateDescription": "Update Task",
+    "createDescription": "Add New Task"
+  },
+  "hrm-notifications": {
+    "title": "Notifications",
+    "detailsTitle": "Notification Details",
+    "notification_type": "Notification Type",
+    "message": "Message",
+    "is_read": "Read",
+    "updateDescription": "Update Notification",
+    "createDescription": "Add New Notification"
+  },
+  "customers": {
     "title": "Customers",
     "detailsTitle": "Customer Details",
     "name": "Customer Name",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "identification_number": "ID Number",
     "email": "Email",
     "phone": "Phone",
+    "date_of_birth": "Date of Birth",
+    "is_vip": "Is VIP",
     "address": "Address",
-    "updateDescription":"Update Customer",
-    "createDescription":"Add New Customer"
+    "updateDescription": "Update Customer",
+    "createDescription": "Add New Customer"
   },
-  "customer-groups": {
+  "crm-customer-groups": {
     "title": "Customer Groups",
     "detailsTitle": "Customer Group Details",
     "name": "Customer Group Name",
     "description": "Description",
-    "updateDescription":"Update Customer Group",
-    "createDescription":"Add New Customer Group"
+    "customers_name": "Customer Names",
+    "updateDescription": "Update Customer Group",
+    "createDescription": "Add New Customer Group"
   },
-  "opportunities": {
+  "crm-opportunities": {
     "title": "Opportunities",
     "detailsTitle": "Opportunity Details",
     "name": "Opportunity Name",
+    "customer_name": "Customer Name",
+    "stage": "Stage",
+    "expected_revenue": "Expected Revenue",
+    "close_date": "Close Date",
+    "title": "Title",
+    "amount": "Amount",
     "description": "Description",
-    "updateDescription":"Update Opportunity",
-    "createDescription":"Add New Opportunity"
+    "updateDescription": "Update Opportunity",
+    "createDescription": "Add New Opportunity"
   },
-  "interactions": {
+  "crm-interactions": {
     "title": "Interactions",
     "detailsTitle": "Interaction Details",
     "name": "Interaction Name",
+    "customer_name": "Customer Name",
+    "interaction_type": "Interaction Type",
+    "notes": "Notes",
     "description": "Description",
-    "updateDescription":"Update Interaction",
-    "createDescription":"Add New Interaction"
+    "updateDescription": "Update Interaction",
+    "createDescription": "Add New Interaction"
   },
-  "complaints": {
+  "crm-complaints": {
     "title": "Complaints",
     "detailsTitle": "Complaint Details",
     "name": "Complaint Name",
+    "customer_name": "Customer Name",
     "description": "Description",
-    "updateDescription":"Update Complaint",
-    "createDescription":"Add New Complaint"
+    "status": "Status",
+    "updateDescription": "Update Complaint",
+    "createDescription": "Add New Complaint"
   },
-  "subscriptions": {
+  "crm-subscriptions": {
     "title": "Subscriptions",
     "detailsTitle": "Subscription Details",
     "name": "Subscription Name",
     "description": "Description",
-    "updateDescription":"Update Subscription",
-    "createDescription":"Add New Subscription"
+    "updateDescription": "Update Subscription",
+    "createDescription": "Add New Subscription"
   },
-  "tasks": {
+  "crm-tasks": {
     "title": "Tasks",
     "detailsTitle": "Task Details",
     "name": "Task Name",
+    "customer_name": "Customer Name",
+    "title": "Title",
+    "opportunity": "Opportunity",
+    "priority": "Priority",
+    "completed": "Completed",
+    "due_date": "Due Date",
     "description": "Description",
-    "updateDescription":"Update Task",
-    "createDescription":"Add New Task"
+    "updateDescription": "Update Task",
+    "createDescription": "Add New Task"
   },
-  "campaigns": {
+  "crm-campaigns": {
     "title": "Campaigns",
     "detailsTitle": "Campaign Details",
     "name": "Campaign Name",
     "description": "Description",
-    "updateDescription":"Update Campaign",
-    "createDescription":"Add New Campaign"
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "updateDescription": "Update Campaign",
+    "createDescription": "Add New Campaign"
   },
-  "documents": {
+  "crm-documents": {
     "title": "Documents",
     "detailsTitle": "Document Details",
     "name": "Document Name",
     "customer_name": "Customer Name",
+    "title": "Title",
     "description": "Description",
     "file": "File",
-    "updateDescription":"Update Document",
-    "createDescription":"Add New Document"
+    "updateDescription": "Update Document",
+    "createDescription": "Add New Document"
   },
-  "contacts": {
+  "crm-contacts": {
     "title": "Contacts",
     "detailsTitle": "Contact Details",
     "name": "Contact Name",
     "description": "Description",
-    "updateDescription":"Update Contact",
-    "createDescription":"Add New Contact"
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "updateDescription": "Update Contact",
+    "createDescription": "Add New Contact"
   },
   "pages": {
     "title": "Pages",
@@ -324,8 +487,8 @@
     "address": "Address",
     "message": "Message",
     "description": "Description",
-    "updateDescription":"Update Page",
-    "createDescription":"Add New Page"
+    "updateDescription": "Update Page",
+    "createDescription": "Add New Page"
   },
   "prescriptions": {
     "title": "Prescriptions",
@@ -333,8 +496,8 @@
     "customer_name": "Customer Name",
     "notes": "Notes",
     "user_name": "User Name",
-    "updateDescription":"Update Prescription",
-    "createDescription":"Add New Prescription"
+    "updateDescription": "Update Prescription",
+    "createDescription": "Add New Prescription"
   },
   "branch-users": {
     "title": "Branch Users",
@@ -342,8 +505,8 @@
     "branch_name": "Branch Name",
     "employee_name": "Employee Name",
     "status": "Status",
-    "updateDescription":"Update Branch User",
-    "createDescription":"Add New Branch User"
+    "updateDescription": "Update Branch User",
+    "createDescription": "Add New Branch User"
   },
   "branches": {
     "title": "Branches",
@@ -354,24 +517,24 @@
     "address": "Address",
     "city": "City",
     "country": "Country",
-    "updateDescription":"Update Branch",
-    "createDescription":"Add New Branch"
+    "updateDescription": "Update Branch",
+    "createDescription": "Add New Branch"
   },
   "attributes": {
     "title": "Attributes",
     "detailsTitle": "Attribute Details",
     "name": "Attribute Name",
     "description": "Description",
-    "updateDescription":"Update Attribute",
-    "createDescription":"Add New Attribute"
+    "updateDescription": "Update Attribute",
+    "createDescription": "Add New Attribute"
   },
   "attribute-values": {
     "title": "Attribute Values",
     "detailsTitle": "Attribute Value Details",
     "attribute_name": "Attribute Name",
     "value": "Value",
-    "updateDescription":"Update Attribute Value",
-    "createDescription":"Add New Attribute Value"
+    "updateDescription": "Update Attribute Value",
+    "createDescription": "Add New Attribute Value"
   },
   "suppliers": {
     "title": "Suppliers",
@@ -384,8 +547,8 @@
     "country": "Country",
     "website": "Website",
     "payment_terms": "Payment Terms",
-    "updateDescription":"Update Supplier",
-    "createDescription":"Add New Supplier"
+    "updateDescription": "Update Supplier",
+    "createDescription": "Add New Supplier"
   },
   "manufacturers": {
     "title": "Manufacturers",
@@ -396,8 +559,8 @@
     "address": "Address",
     "country": "Country",
     "website": "Website",
-    "updateDescription":"Update Manufacturer",
-    "createDescription":"Add New Manufacturer"
+    "updateDescription": "Update Manufacturer",
+    "createDescription": "Add New Manufacturer"
   },
   "brands": {
     "title": "Brands",
@@ -410,8 +573,8 @@
     "website": "Website",
     "description": "Description",
     "logo": "Logo",
-    "updateDescription":"Update Brand",
-    "createDescription":"Add New Brand"
+    "updateDescription": "Update Brand",
+    "createDescription": "Add New Brand"
   },
   "categories": {
     "title": "Categories",
@@ -419,16 +582,16 @@
     "name": "Category Name",
     "description": "Description",
     "parent_name": "Parent Category",
-    "updateDescription":"Update Category",
-    "createDescription":"Add New Category"
+    "updateDescription": "Update Category",
+    "createDescription": "Add New Category"
   },
   "lens-coatings": {
     "title": "Lens Coatings",
     "detailsTitle": "Lens Coating Details",
     "name": "Lens Coating Name",
     "description": "Description",
-    "updateDescription":"Update Lens Coating",
-    "createDescription":"Add New Lens Coating"
+    "updateDescription": "Update Lens Coating",
+    "createDescription": "Add New Lens Coating"
   },
   "products": {
     "title": "Products",
@@ -441,8 +604,8 @@
     "manufacturer_name": "Manufacturer Name",
     "model": "Model",
     "type": "Type",
-    "updateDescription":"Update Product",
-    "createDescription":"Add New Product"
+    "updateDescription": "Update Product",
+    "createDescription": "Add New Product"
   },
   "product-variants": {
     "title": "Product Variants",
@@ -455,17 +618,230 @@
     "detailsTitle": "Product Image Details",
     "name": "Product Image Name",
     "description": "Description",
-    "updateDescription":"Update Product Image",
-    "createDescription":"Add New Product Image"
+    "updateDescription": "Update Product Image",
+    "createDescription": "Add New Product Image"
   },
   "flexible-prices": {
     "title": "Flexible Prices",
     "detailsTitle": "Flexible Price Details",
     "name": "Flexible Price Name",
     "description": "Description",
-    "updateDescription":"Update Flexible Price",
-    "createDescription":"Add New Flexible Price"
-  } 
+    "updateDescription": "Update Flexible Price",
+    "createDescription": "Add New Flexible Price"
+  },
+  "payment-methods": {
+    "title": "Payment Methods",
+    "detailsTitle": "Payment Method Details",
+    "name_ar": "Name (Arabic)",
+    "name_en": "Name (English)",
+    "code": "Code",
+    "is_active": "Is Active",
+    "icon": "Icon",
+    "provider_fees_percent": "Provider Fees (%)",
+    "is_installment": "Is Installment (BNPL)",
+    "updateDescription": "Update Payment Method",
+    "createDescription": "Add New Payment Method"
+  },
+  "chart-of-accounts": {
+    "title": "Chart of Accounts",
+    "detailsTitle": "Account Details",
+    "code": "Account Code",
+    "name": "Account Name",
+    "name_en": "English Name",
+    "account_type": "Account Type",
+    "account_subtype": "Account Subtype",
+    "parent": "Parent Account",
+    "parent_name": "Parent Account",
+    "normal_balance": "Normal Balance",
+    "opening_balance": "Opening Balance",
+    "current_balance": "Current Balance",
+    "description": "Description",
+    "is_header": "Is Header",
+    "updateDescription": "Update Account",
+    "createDescription": "Add New Account",
+    "values": {
+      "account_type": {
+        "asset": "Asset",
+        "liability": "Liability",
+        "equity": "Equity",
+        "revenue": "Revenue",
+        "expense": "Expense",
+        "cogs": "Cost of Goods Sold"
+      },
+      "normal_balance": {
+        "debit": "Debit",
+        "credit": "Credit"
+      }
+    }
+  },
+  "journal-entries": {
+    "title": "Journal Entries",
+    "detailsTitle": "Entry Details",
+    "entry_number": "Entry Number",
+    "entry_date": "Entry Date",
+    "entry_type": "Entry Type",
+    "source_type": "Source Type",
+    "source_document": "Source Document",
+    "source_id": "Source ID",
+    "description": "Description",
+    "total_debit": "Total Debit",
+    "total_credit": "Total Credit",
+    "is_posted": "Is Posted",
+    "posted_by_name": "Posted By",
+    "posted_at": "Posted At",
+    "notes": "Notes",
+    "updateDescription": "Update Entry",
+    "createDescription": "Add New Entry",
+    "values": {
+      "entry_type": {
+        "standard": "Standard Entry",
+        "adjustment": "Adjustment Entry",
+        "closing": "Closing Entry",
+        "opening": "Opening Entry",
+        "reversal": "Reversal Entry"
+      },
+      "source_type": {
+        "manual": "Manual",
+        "sales_invoice": "Sales Invoice",
+        "purchase_invoice": "Purchase Invoice",
+        "payment": "Payment",
+        "receipt": "Receipt",
+        "return": "Return",
+        "adjustment": "Inventory Adjustment",
+        "payroll": "Payroll"
+      },
+      "is_posted": {
+        "true": "Posted",
+        "false": "Not Posted"
+      }
+    }
+  },
+  "financial-periods": {
+    "title": "Financial Periods",
+    "detailsTitle": "Financial Period Details",
+    "name": "Period Name",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "is_closed": "Is Closed",
+    "updateDescription": "Update Period",
+    "createDescription": "Add New Financial Period",
+    "values": {
+      "is_closed": {
+        "true": "Closed",
+        "false": "Open"
+      }
+    }
+  },
+  "accounting-taxes": {
+    "title": "Taxes",
+    "detailsTitle": "Tax Details",
+    "name": "Tax Name",
+    "rate": "Rate %",
+    "effective_date": "Effective Date",
+    "description": "Description",
+    "updateDescription": "Update Tax",
+    "createDescription": "Add New Tax"
+  },
+  "accounting-categories": {
+    "title": "Accounting Categories",
+    "detailsTitle": "Category Details",
+    "name": "Category Name",
+    "category_type": "Category Type",
+    "parent": "Parent Category",
+    "description": "Description",
+    "updateDescription": "Update Category",
+    "createDescription": "Add New Category",
+    "values": {
+      "category_type": {
+        "income": "Income",
+        "expense": "Expense"
+      }
+    }
+  },
+  "branches-shift": {
+    "title": "Branch Shifts",
+    "detailsTitle": "Shift Details",
+    "branch_name": "Branch Name",
+    "employee_name": "Employee Name",
+    "is_active": "Active",
+    "notes": "Notes",
+    "updateDescription": "Update Shift",
+    "createDescription": "Add New Shift"
+  },
+  "product-supplier": {
+    "title": "Product Suppliers",
+    "detailsTitle": "Product Supplier Details",
+    "name": "Product Supplier Name",
+    "category_name": "Category Name",
+    "brand_name": "Brand Name",
+    "description": "Description",
+    "supplier_name": "Supplier Name",
+    "manufacturer_name": "Manufacturer Name",
+    "model": "Model",
+    "type": "Type",
+    "updateDescription": "Update Product Supplier",
+    "createDescription": "Add New Product Supplier"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "detailsTitle": "Invoice Details",
+    "invoice_number": "Invoice Number",
+    "customer_name": "Customer Name",
+    "total_amount": "Total Amount",
+    "status": "Status",
+    "issue_date": "Issue Date",
+    "due_date": "Due Date",
+    "is_paid": "Is Paid",
+    "updateDescription": "Update Invoice",
+    "createDescription": "Add New Invoice"
+  },
+  "sales-payments": {
+    "title": "Sales Payments",
+    "detailsTitle": "Sales Payment Details",
+    "payment_number": "Payment Number",
+    "invoice_number": "Invoice Number",
+    "amount": "Amount",
+    "payment_method": "Payment Method",
+    "payment_date": "Payment Date",
+    "reference_number": "Reference Number",
+    "updateDescription": "Update Payment",
+    "createDescription": "Add New Payment"
+  },
+  "stocks": {
+    "title": "Stocks",
+    "detailsTitle": "Stock Details",
+    "product_name": "Product Name",
+    "warehouse": "Warehouse",
+    "quantity_on_hand": "Quantity on Hand",
+    "quantity_reserved": "Quantity Reserved",
+    "reorder_level": "Reorder Level",
+    "updateDescription": "Update Stock",
+    "createDescription": "Add New Stock"
+  },
+  "stock-movements": {
+    "title": "Stock Movements",
+    "detailsTitle": "Stock Movement Details",
+    "product_name": "Product Name",
+    "movement_type": "Movement Type",
+    "quantity": "Quantity",
+    "date": "Date",
+    "reference": "Reference",
+    "description": "Description",
+    "updateDescription": "Update Stock Movement",
+    "createDescription": "Add New Stock Movement"
+  },
+  "orders": {
+    "title": "Orders",
+    "detailsTitle": "Order Details",
+    "order_number": "Order Number",
+    "customer_name": "Customer Name",
+    "total_amount": "Total Amount",
+    "status": "Status",
+    "payment_status": "Payment Status",
+    "payment_method": "Payment Method",
+    "order_date": "Order Date",
+    "delivery_date": "Delivery Date",
+    "updateDescription": "Update Order",
+    "createDescription": "Add New Order"
+  }
 }
-
-

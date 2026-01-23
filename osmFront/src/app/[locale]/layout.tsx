@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     default: 'OSM - Optical Store Management',
   },
   description: "Advanced Optical Store Management Solution",
+  manifest: "/manifest.webmanifest",
   icons: {
     icon: "/media/icon.jpg",
     shortcut: "/media/icon.jpg",

@@ -28,6 +28,12 @@ import {
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { Loading4 } from "@/src/shared/components/ui/loding";
 
+// New Components
+import { StatusTimeline } from "./components/StatusTimeline";
+import { InvoicesSection } from "./components/InvoicesSection";
+import { PaymentsSection } from "./components/PaymentsSection";
+import { OrderActions } from "./components/OrderActions";
+
 // Status badge component
 const StatusBadge = ({ status }: { status: string }) => {
   const statusConfig: Record<
@@ -108,6 +114,14 @@ export function ViewOrder({ orderId }: ViewOrderProps) {
 
   const order = query.data;
 
+  const handleActionComplete = () => {
+    query.refetch();
+  };
+
+  const remainingAmount = order
+    ? parseFloat(order.total_amount || 0) - parseFloat(order.paid_amount || 0)
+    : 0;
+
   if (isBusy || !order) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -166,6 +180,28 @@ export function ViewOrder({ orderId }: ViewOrderProps) {
               <PaymentBadge status={order.payment_status} />
             </CardContent>
           </Card>
+        </div>
+
+        {/* Order Actions */}
+        <div className="mb-6">
+          <OrderActions
+            orderId={orderId}
+            status={order.status}
+            paymentStatus={order.payment_status}
+            remainingAmount={remainingAmount}
+            onActionComplete={handleActionComplete}
+          />
+        </div>
+
+        {/* Status Timeline */}
+        <div className="mb-6">
+          <StatusTimeline
+            createdAt={order.created_at}
+            confirmedAt={order.confirmed_at}
+            readyAt={order.ready_at}
+            deliveredAt={order.delivered_at}
+            status={order.status}
+          />
         </div>
 
         {/* Main Content Grid */}
@@ -274,6 +310,12 @@ export function ViewOrder({ orderId }: ViewOrderProps) {
                 </CardContent>
               </Card>
             )}
+
+            {/* Invoices Section */}
+            <InvoicesSection orderId={orderId} />
+
+            {/* Payments Section */}
+            <PaymentsSection orderId={orderId} />
           </div>
 
           {/* Right Column - Summary */}
@@ -367,7 +409,7 @@ export function ViewOrder({ orderId }: ViewOrderProps) {
                     <span className="text-secondary">موعد التسليم</span>
                     <span>
                       {new Date(order.expected_delivery).toLocaleDateString(
-                        "ar-SA"
+                        "ar-SA",
                       )}
                     </span>
                   </div>

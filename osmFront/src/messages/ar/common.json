@@ -251,10 +251,10 @@
     "cta": "ابدأ التجربة المجانية",
     "newVersion": "الاصدار 2.0 ",
     "learnMore": "المزيد",
-    "noCreditCard" : "لا تطلب بطاقة ائتمان",
-    "freeTrial" : "30 يوما مجانا",
-    "cancelAnytime" : "إلغاء في أي وقت",
-    "dashboardPreview" : " لوحة التحكم"
+    "noCreditCard": "لا تطلب بطاقة ائتمان",
+    "freeTrial": "30 يوما مجانا",
+    "cancelAnytime": "إلغاء في أي وقت",
+    "dashboardPreview": " لوحة التحكم"
   },
   "featuresSection": {
     "title": "المزايا الرئيسية",
@@ -314,34 +314,22 @@
       "trial": {
         "name": "تجربة مجانية",
         "description": "جرب جميع الميزات مجاناً لفترة محدودة (1 شهر)",
-        "features": [
-          "المخزون الأساسي",
-          "تتبع المبيعات"
-        ]
+        "features": ["المخزون الأساسي", "تتبع المبيعات"]
       },
       "basic": {
         "name": "أساسية",
         "description": "للمؤسسات الصغيرة",
-        "features": [
-          "المخزون الأساسي",
-          "تتبع المبيعات"
-        ]
+        "features": ["المخزون الأساسي", "تتبع المبيعات"]
       },
       "premium": {
         "name": "احترافية",
         "description": "للشركات الصغيرة المتوسطة",
-        "features": [
-          "المخزون المتقدم",
-          "التقارير والتحليلات"
-        ]
+        "features": ["المخزون المتقدم", "التقارير والتحليلات"]
       },
       "enterprise": {
         "name": "مؤسسات",
         "description": "للشركات الكبيرة",
-        "features": [
-          "الميزات المخصصة",
-          "الدعم الأولي"
-        ]
+        "features": ["الميزات المخصصة", "الدعم الأولي"]
       }
     }
   },
@@ -583,5 +571,38 @@
     "message": "هل أنت متأكد من حذف هذا العنصر بشكل نهائي؟",
     "successMessage": "تم حذف العنصر بشكل نهائي بنجاح",
     "failedMessage": "فشل حذف العنصر"
-  }
+  },
+  "rolesPage": {
+    "title": "الأدوار والصلاحيات",
+    "description": "إدارة التحكم في الوصول وصلاحيات الأدوار في مؤسستك.",
+    "userManagement": "إدارة المستخدمين",
+    "systemRoles": "أدوار النظام",
+    "newRole": "دور جديد",
+    "editRole": "تعديل الدور",
+    "createRole": "إنشاء دور",
+    "roleName": "اسم الدور",
+    "roleDescription": "وصف الدور",
+    "isActive": "نشط",
+    "permissions": "الصلاحيات",
+    "searchPermissions": "البحث في الصلاحيات",
+    "saveRole": "حفظ الدور",
+    "cancel": "إلغاء",
+    "deleteRoleConfirm": "هل أنت متأكد من حذف هذا الدور؟",
+    "noPermissionsFound": "لم يتم العثور على صلاحيات تطابق بحثك.",
+    "selectRoleToManage": "اختر دوراً من القائمة الجانبية لإدارة صلاحيات الوصول الخاصة به.",
+    "managePermissions": "إدارة الصلاحيات"
+  },
+  "importProducts": "استيراد المنتجات",
+  "importProductsDescription": "قم برفع ملف CSV لاستيراد المنتجات بالجملة. يجب أن يتبع الملف التنسيق المطلوب.",
+  "uploadCSV": "رفع ملف CSV",
+  "uploadCSVDescription": "اسحب وأفلت الملف هنا، أو انقر للاختيار.",
+  "selectFile": "اختيار ملف",
+  "startImport": "بدء الاستيراد",
+  "importSuccess": "تم الاستيراد بنجاح",
+  "importFailed": "فشل الاستيراد",
+  "importResult": "نتيجة الاستيراد",
+  "created": "تم إنشاؤها",
+  "skipped": "تم تخطيها",
+  "failed": "فشلت",
+  "errorLog": "سجل الأخطاء"
 }

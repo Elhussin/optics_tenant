@@ -4,7 +4,8 @@ export async function getTrenMessagesFiles(locale: string) {
       const common = (await import(`@/src/messages/${locale}/common.json`)).default;
       const formGenerator = (await import(`@/src/messages/${locale}/formGenerator.json`)).default;  
       const products = (await import(`@/src/messages/${locale}/products.json`)).default;  
-      return { ...common, ...formGenerator, ...products };
+      const orders = (await import(`@/src/messages/${locale}/orders.json`)).default;
+      return { ...common, ...formGenerator, ...products, ...orders };
     } catch (error) {
       notFound();
     }

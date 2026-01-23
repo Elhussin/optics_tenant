@@ -73,7 +73,7 @@ export const relationshipConfigs: RelationshipConfig = {
     valueField: 'id',
     searchField: 'name',
     entityName: 'roles',
-    
+
   },
   user: {
     labelField: 'username',
@@ -115,13 +115,13 @@ export const relationshipConfigs: RelationshipConfig = {
     labelField: 'name',
     valueField: 'id',
     searchField: 'name',
-    entityName: 'departments',
+    entityName: 'hrm-departments',
   },
-    employee: {
+  employee: {
     labelField: 'user_name',
-    valueField: 'permission_ids',
+    valueField: 'id',
     searchField: 'name',
-    entityName: 'employees',
+    entityName: 'hrm-employees',
   },
 
   customer: {
@@ -134,7 +134,7 @@ export const relationshipConfigs: RelationshipConfig = {
     labelField: 'name',
     valueField: 'id',
     searchField: 'name',
-    entityName: 'customer-groups',
+    entityName: 'crm-customer-groups',
   },
   customers: {
     labelField: 'first_name',
@@ -146,7 +146,7 @@ export const relationshipConfigs: RelationshipConfig = {
     labelField: 'title',
     valueField: 'id',
     searchField: 'title',
-    entityName: 'opportunities',
+    entityName: 'crm-opportunities',
   },
   prescription: {
     labelField: 'name',
@@ -176,7 +176,7 @@ export const relationshipConfigs: RelationshipConfig = {
     labelField: 'name',
     valueField: 'id',
     searchField: 'name',
-    entityName: 'attribute_values',
+    entityName: 'attribute-values',
   },
   supplier: {
     labelField: 'name',
@@ -208,17 +208,29 @@ export const relationshipConfigs: RelationshipConfig = {
     searchField: 'name',
     entityName: 'categories',
   },
+  role_ids: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'roles',
+  },
+  payment_method: {
+    labelField: 'name_ar',
+    valueField: 'id',
+    searchField: 'name_en',
+    entityName: 'payment-methods',
+  },
   lens_coating: {
     labelField: 'name',
     valueField: 'id',
     searchField: 'name',
-    entityName: 'lens-coatings',
+    entityName: 'lens-coatings', // Assuming this exists in formsConfig or will be added
   },
   product: {
     labelField: 'name',
     valueField: 'id',
     searchField: 'name',
-    entityName: 'products',
+    entityName: 'product', // Changed from 'products' to match formsConfig key if applicable, but referring to `product` key in formsConfig
   },
   product_variant: {
     labelField: 'name',
@@ -245,11 +257,46 @@ export const relationshipConfigs: RelationshipConfig = {
     searchField: 'name',
     entityName: 'clients'
   },
-
-
+  partner: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'partners'
+  },
+  // Accounting relationships
+  account: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'code',
+    entityName: 'chart-of-accounts'
+  },
+  chart_of_account: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'code',
+    entityName: 'chart-of-accounts'
+  },
+  financial_period: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'financial-periods'
+  },
+  tax: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'accounting-taxes'
+  },
+  accounting_category: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'accounting-categories'
+  },
 };
 
-export const ignoredFields: string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_active', 'is_deleted', 'deleted_at', 'branch_code', 'logo', 'primary_color', 'secondary_color', 'paid_until'];
+export const ignoredFields: string[] = ['id', 'created_at', 'updated_at', 'owner', 'tenant', 'group', 'is_deleted', 'deleted_at', 'branch_code', 'logo', 'primary_color', 'secondary_color', 'paid_until'];
 
 
 export const customConfig = {

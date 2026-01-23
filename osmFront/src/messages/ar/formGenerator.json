@@ -60,8 +60,8 @@
     "role-permissions": "امتيازات الصلاحيات",
     "contact-us": "تواصل معنا",
     "tenant-settings": "اعدادات المستأجر",
-    "departments": "الاقسام",
-    "employees": "الموظفين",
+    "hrm-departments": "الاقسام",
+    "hrm-employees": "الموظفين",
     "customers": "العملاء",
     "prescriptions": "كشف النظر",
     "branches": "الفروع",
@@ -73,19 +73,19 @@
     "brands": "العلامات التجارية",
     "categories": "الاقسام",
     "lens-coatings": "طبقات الحماية",
-    "products": "المنتجات",
+    "product": "المنتجات",
     "product-variants": "تفاصيل المنتجات",
     "product-images": "صور المنتجات",
     "flexible-prices": "السعر المرن",
-    "customer-groups": "مجموعات العملاء",
-    "opportunities": "فرص",
-    "interactions": "التفاعل",
-    "complaints": "الشكاوى",
-    "subscriptions": "الاشتراكات",
-    "tasks": "المهام",
-    "campaigns": "حملات",
-    "documents": "مستندات",
-    "contacts": "اتصالات",
+    "crm-customer-groups": "مجموعات العملاء",
+    "crm-opportunities": "فرص",
+    "crm-interactions": "التفاعل",
+    "crm-complaints": "الشكاوى",
+    "crm-subscriptions": "الاشتراكات",
+    "crm-tasks": "المهام",
+    "crm-campaigns": "حملات",
+    "crm-documents": "مستندات",
+    "crm-contacts": "اتصالات",
     "pages": "الصفحات",
     "wholesale": "البيع بالجملة",
     "wholesale-customers": "عملاء الجملة",
@@ -101,15 +101,68 @@
     "partners": "الشركاء والتأمين",
     "insurance-claims": "مطالبات التأمين",
     "partner-customers": "عملاء الشركاء",
-    "payments": "المدفوعات",
     "installments": "الأقساط",
-    "payment-methods": "طرق الدفع",
     "bnpl": "ادفع لاحقاً",
     "sales-report": "تقرير المبيعات",
     "wholesale-report": "تقرير الجملة",
     "receivables-report": "تقرير الذمم المدينة",
     "inventory-report": "تقرير المخزون",
-    "insurance-report": "تقرير التأمين"
+    "insurance-report": "تقرير التأمين",
+    "branches-shift": "مناوبات الفرع",
+    "product-supplier": "موردي المنتجات",
+    "invoices": "الفواتير",
+    "sales-payments": "دفعات المبيعات",
+    "stocks": "المخزون",
+    "stock-movements": "حركات المخزون",
+    "payment-methods": "طرق الدفع",
+    "hrm-employee-leave": "الإجازات",
+    "hrm-attendance": "الحضور والانصراف",
+    "hrm-performance-review": "تقييم الأداء",
+    "hrm-payroll": "الرواتب",
+    "hrm-tasks": "مهام الموظفين",
+    "hrm-notifications": "الإشعارات"
+  },
+  "partners": {
+    "title": "الشركاء والتأمين",
+    "detailsTitle": "تفاصيل الشريك",
+    "name": "اسم الشريك",
+    "name_en": "الاسم بالإنجليزية",
+    "partner_type": "نوع الشريك",
+    "code": "رمز الشريك",
+    "contact_person": "مسؤول التواصل",
+    "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
+    "website": "الموقع الإلكتروني",
+    "address": "العنوان",
+    "contract_number": "رقم العقد",
+    "contract_start": "بداية العقد",
+    "contract_end": "نهاية العقد",
+    "payment_terms": "شروط الدفع",
+    "default_discount": "نسبة الخصم %",
+    "credit_limit": "حد الائتمان",
+    "current_balance": "الرصيد الحالي",
+    "patient_share_percentage": "نسبة مشاركة العميل %",
+    "tax_number": "الرقم الضريبي",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات الشريك",
+    "createDescription": "إضافة شريك جديد",
+    "values": {
+      "partner_type": {
+        "insurance": "شركة تأمين",
+        "bnpl": "شركة تقسيط",
+        "corporate": "شركة عملاء",
+        "wholesaler": "تاجر جملة",
+        "agent": "وكيل"
+      },
+      "payment_terms": {
+        "immediate": "فوري",
+        "7_days": "7 أيام",
+        "15_days": "15 يوم",
+        "30_days": "30 يوم",
+        "60_days": "60 يوم",
+        "90_days": "90 يوم"
+      }
+    }
   },
   "clients": {
     "title": "العملاء",
@@ -183,7 +236,8 @@
     "phone": "رقم الهاتف",
     "address": "العنوان",
     "website": "الموقع الإلكتروني",
-    "role": "الدور",
+    "roles": "الأدوار",
+    "role_ids": "اختر الأدوار",
     "updateDescription": "تحديث بيانات المستخدم",
     "createDescription": "إضافة مستخدم جديد",
     "last_name": "اسم العائلة ",
@@ -233,7 +287,7 @@
     "updateDescription": "تحديث بيانات الأعدادت الأساسية",
     "createDescription": "إضافة اعدادت جديدة"
   },
-  "departments": {
+  "hrm-departments": {
     "title": "الاقسام",
     "detailsTitle": "تفاصيل القسم",
     "name": "اسم القسم",
@@ -241,59 +295,138 @@
     "updateDescription": "تحديث بيانات القسم",
     "createDescription": "إضافة قسم جديد"
   },
-  "employees": {
+  "hrm-employees": {
     "title": "الموظفين",
     "detailsTitle": "تفاصيل الموظف",
     "name": "اسم الموظف",
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
     "address": "العنوان",
+    "user_name": "اسم المستخدم",
+    "department_name": "القسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "hire_date": "تاريخ التعيين",
+    "salary": "الراتب",
+    "position": "المنصب",
     "updateDescription": "تحديث بيانات الموظف",
     "createDescription": "إضافة موظف جديد"
   },
-  "customer": {
+  "hrm-employee-leave": {
+    "title": "الإجازات",
+    "detailsTitle": "تفاصيل الإجازة",
+    "updateDescription": "تحديث بيانات الإجازة",
+    "createDescription": "إضافة إجازة جديدة"
+  },
+  "hrm-attendance": {
+    "title": "الحضور والانصراف",
+    "detailsTitle": "تفاصيل الحضور",
+    "employee_name": "اسم الموظف",
+    "date": "التاريخ",
+    "hours_worked": "ساعات العمل",
+    "check_in": "وقت الدخول",
+    "check_out": "وقت الخروج",
+    "updateDescription": "تحديث بيانات الحضور",
+    "createDescription": "تسجيل حضور جديد"
+  },
+  "hrm-performance-review": {
+    "title": "تقييم الأداء",
+    "detailsTitle": "تفاصيل التقييم",
+    "employee_name": "اسم الموظف",
+    "month": "الشهر",
+    "review_date": "تاريخ التقييم",
+    "rating": "التقييم",
+    "comments": "ملاحظات",
+    "updateDescription": "تحديث التقييم",
+    "createDescription": "إضافة تقييم جديد"
+  },
+  "hrm-payroll": {
+    "title": "الرواتب",
+    "detailsTitle": "تفاصيل الراتب",
+    "employee_name": "اسم الموظف",
+    "month": "الشهر",
+    "basic_salary": "الراتب الأساسي",
+    "bonuses": "المكافآت",
+    "deductions": "الخصومات",
+    "net_salary": "صافي الراتب",
+    "updateDescription": "تحديث الراتب",
+    "createDescription": "إضافة راتب جديد"
+  },
+  "hrm-tasks": {
+    "title": "المهام",
+    "detailsTitle": "تفاصيل المهمة",
+    "updateDescription": "تحديث المهمة",
+    "createDescription": "إضافة مهمة جديدة"
+  },
+  "hrm-notifications": {
+    "title": "الإشعارات",
+    "detailsTitle": "تفاصيل الإشعار",
+    "notification_type": "نوع الإشعار",
+    "message": "الرسالة",
+    "is_read": "مقروء",
+    "updateDescription": "تحديث الإشعار",
+    "createDescription": "إضافة إشعار جديد"
+  },
+  "customers": {
     "title": "العملاء",
     "detailsTitle": "تفاصيل العميل",
     "name": "اسم العميل",
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "identification_number": "رقم الهوية",
     "email": "البريد الإلكتروني",
     "phone": "رقم الهاتف",
+    "date_of_birth": "تاريخ الميلاد",
+    "is_vip": "عميل مميز (VIP)",
     "address": "العنوان",
     "updateDescription": "تحديث بيانات العميل",
     "createDescription": "إضافة عميل جديد"
   },
-  "customer-groups": {
+  "crm-customer-groups": {
     "title": "مجموعات العملاء",
     "detailsTitle": "تفاصيل مجموعة العملاء",
     "name": "اسم مجموعة العملاء",
     "description": "الوصف",
+    "customers_name": "أسماء العملاء",
     "updateDescription": "تحديث بيانات مجموعة العملاء",
     "createDescription": "إضافة مجموعة عملاء جديدة"
   },
-  "opportunities": {
+  "crm-opportunities": {
     "title": "فرص",
     "detailsTitle": "تفاصيل الفرصة",
     "name": "اسم الفرصة",
+    "customer_name": "اسم العميل",
+    "stage": "المرحلة",
+    "expected_revenue": "الإيراد المتوقع",
+    "close_date": "تاريخ الإغلاق",
+    "title": "العنوان",
+    "amount": "المبلغ",
     "description": "الوصف",
     "updateDescription": "تحديث بيانات الفرصة",
     "createDescription": "إضافة فرصة جديدة"
   },
-  "interactions": {
+  "crm-interactions": {
     "title": "التفاعلات",
     "detailsTitle": "تفاصيل التفاعل",
     "name": "اسم ",
+    "customer_name": "اسم العميل",
+    "interaction_type": "نوع التفاعل",
+    "notes": "ملاحظات",
     "description": "الوصف",
     "updateDescription": "تحديث بيانات التفاعل",
     "createDescription": "إضافة تفاعل جديد"
   },
-  "complaints": {
+  "crm-complaints": {
     "title": "الشكاوى",
     "detailsTitle": "تفاصيل الشكوى",
     "name": "اسم الشكوى",
+    "customer_name": "اسم العميل",
     "description": "الوصف",
+    "status": "الحالة",
     "updateDescription": "تحديث بيانات الشكوى",
     "createDescription": "إضافة شكوى جديدة"
   },
-  "subscriptions": {
+  "crm-subscriptions": {
     "title": "الاشتراكات",
     "detailsTitle": "تفاصيل الاشتراك",
     "name": "اسم الاشتراك",
@@ -301,36 +434,48 @@
     "updateDescription": "تحديث بيانات الاشتراك",
     "createDescription": "إضافة اشتراك جديد"
   },
-  "tasks": {
+  "crm-tasks": {
     "title": "المهام",
     "detailsTitle": "تفاصيل المهمة",
     "name": "اسم المهمة",
+    "customer_name": "اسم العميل",
+    "title": "العنوان",
+    "opportunity": "الفرصة",
+    "priority": "الأولوية",
+    "completed": "مكتملة",
+    "due_date": "تاريخ الاستحقاق",
     "description": "الوصف",
     "updateDescription": "تحديث بيانات المهمة",
     "createDescription": "إضافة مهمة جديدة"
   },
-  "campaigns": {
+  "crm-campaigns": {
     "title": "حملات",
     "detailsTitle": "تفاصيل الحملة",
     "name": "اسم الحملة",
     "description": "الوصف",
+    "start_date": "تاريخ البداية",
+    "end_date": "تاريخ النهاية",
     "updateDescription": "تحديث بيانات الحملة",
     "createDescription": "إضافة حملة جديدة"
   },
-  "documents": {
+  "crm-documents": {
     "title": "مستندات",
     "detailsTitle": "تفاصيل المستند",
     "name": "اسم المستند",
+    "title": "العنوان",
     "customer_name": "اسم العميل",
     "description": "الوصف",
     "file": "الملف",
     "updateDescription": "تحديث بيانات المستند",
     "createDescription": "إضافة مستند جديد"
   },
-  "contacts": {
+  "crm-contacts": {
     "title": "اتصالات",
     "detailsTitle": "تفاصيل اتصال",
     "name": "اسم اتصال",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "message": "الرسالة",
     "description": "الوصف",
     "updateDescription": "تحديث بيانات اتصال",
     "createDescription": "إضافة اتصال جديد"
@@ -487,5 +632,220 @@
     "description": "الوصف",
     "updateDescription": "تحديث بيانات السعر المرن",
     "createDescription": "إضافة سعر مرن جديد"
+  },
+  "payment-methods": {
+    "title": "طرق الدفع",
+    "detailsTitle": "تفاصيل طريقة الدفع",
+    "name_ar": "الاسم (بالعربي)",
+    "name_en": "الاسم (بالإنجليزي)",
+    "code": "الكود البرمجي",
+    "is_active": "نشطة",
+    "icon": "الأيقونة",
+    "provider_fees_percent": "رسوم المزود (%)",
+    "is_installment": "تقسيط (BNPL)",
+    "updateDescription": "تحديث بيانات طريقة الدفع",
+    "createDescription": "إضافة طريقة دفع جديدة"
+  },
+  "chart-of-accounts": {
+    "title": "دليل الحسابات",
+    "detailsTitle": "تفاصيل الحساب",
+    "code": "رمز الحساب",
+    "name": "اسم الحساب",
+    "name_en": "الاسم بالإنجليزية",
+    "account_type": "نوع الحساب",
+    "account_subtype": "النوع الفرعي",
+    "parent": "الحساب الأب",
+    "parent_name": "الحساب الرئيسي",
+    "normal_balance": "الطبيعة",
+    "opening_balance": "الرصيد الافتتاحي",
+    "current_balance": "الرصيد الحالي",
+    "description": "الوصف",
+    "is_header": "حساب رئيسي",
+    "updateDescription": "تحديث بيانات الحساب",
+    "createDescription": "إضافة حساب جديد",
+    "values": {
+      "account_type": {
+        "asset": "أصل",
+        "liability": "التزام",
+        "equity": "حقوق ملكية",
+        "revenue": "إيراد",
+        "expense": "مصروف",
+        "cogs": "تكلفة البضاعة"
+      },
+      "normal_balance": {
+        "debit": "مدين",
+        "credit": "دائن"
+      }
+    }
+  },
+  "journal-entries": {
+    "title": "قيود اليومية",
+    "detailsTitle": "تفاصيل القيد",
+    "entry_number": "رقم القيد",
+    "entry_date": "تاريخ القيد",
+    "entry_type": "نوع القيد",
+    "source_type": "مصدر القيد",
+    "source_document": "رقم المستند",
+    "source_id": "معرف المستند",
+    "description": "الوصف",
+    "total_debit": "إجمالي المدين",
+    "total_credit": "إجمالي الدائن",
+    "is_posted": "مرحل",
+    "posted_by_name": "بواسطة",
+    "posted_at": "تاريخ الترحيل",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات القيد",
+    "createDescription": "إضافة قيد جديد",
+    "values": {
+      "entry_type": {
+        "standard": "قيد عادي",
+        "adjustment": "قيد تسوية",
+        "closing": "قيد إقفال",
+        "opening": "قيد افتتاحي",
+        "reversal": "قيد عكسي"
+      },
+      "source_type": {
+        "manual": "يدوي",
+        "sales_invoice": "فاتورة مبيعات",
+        "purchase_invoice": "فاتورة مشتريات",
+        "payment": "دفعة",
+        "receipt": "قبض",
+        "return": "مرتجع",
+        "adjustment": "تسوية مخزون",
+        "payroll": "رواتب"
+      },
+      "is_posted": {
+        "true": "مرحل",
+        "false": "غير مرحل"
+      }
+    }
+  },
+  "financial-periods": {
+    "title": "الفترات المالية",
+    "detailsTitle": "تفاصيل الفترة المالية",
+    "name": "اسم الفترة",
+    "start_date": "تاريخ البداية",
+    "end_date": "تاريخ النهاية",
+    "is_closed": "مغلقة",
+    "updateDescription": "تحديث بيانات الفترة",
+    "createDescription": "إضافة فترة مالية جديدة",
+    "values": {
+      "is_closed": {
+        "true": "مغلقة",
+        "false": "مفتوحة"
+      }
+    }
+  },
+  "accounting-taxes": {
+    "title": "الضرائب",
+    "detailsTitle": "تفاصيل الضريبة",
+    "name": "اسم الضريبة",
+    "rate": "النسبة %",
+    "effective_date": "تاريخ السريان",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الضريبة",
+    "createDescription": "إضافة ضريبة جديدة"
+  },
+  "accounting-categories": {
+    "title": "فئات المحاسبة",
+    "detailsTitle": "تفاصيل الفئة",
+    "name": "اسم الفئة",
+    "category_type": "نوع الفئة",
+    "parent": "الفئة الأب",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الفئة",
+    "createDescription": "إضافة فئة جديدة",
+    "values": {
+      "category_type": {
+        "income": "إيراد",
+        "expense": "مصروف"
+      }
+    }
+  },
+  "branches-shift": {
+    "title": "مناوبات الفرع",
+    "detailsTitle": "تفاصيل المناوبة",
+    "branch_name": "اسم الفرع",
+    "employee_name": "اسم الموظف",
+    "is_active": "نشط",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات المناوبة",
+    "createDescription": "إضافة مناوبة جديدة"
+  },
+  "product-supplier": {
+    "title": "موردي المنتجات",
+    "detailsTitle": "تفاصيل مورد المنتج",
+    "name": "اسم مورد المنتج",
+    "category_name": "التصنيف",
+    "brand_name": "العلامة التجارية",
+    "description": "الوصف",
+    "supplier_name": "المورد",
+    "manufacturer_name": "المصنع",
+    "model": "الموديل",
+    "type": "النوع",
+    "updateDescription": "تحديث بيانات مورد المنتج",
+    "createDescription": "إضافة مورد منتج جديد"
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "detailsTitle": "تفاصيل الفاتورة",
+    "invoice_number": "رقم الفاتورة",
+    "customer_name": "اسم العميل",
+    "total_amount": "المبلغ الإجمالي",
+    "status": "الحالة",
+    "issue_date": "تاريخ الإصدار",
+    "due_date": "تاريخ الاستحقاق",
+    "is_paid": "مدفوعة",
+    "updateDescription": "تحديث بيانات الفاتورة",
+    "createDescription": "إضافة فاتورة جديدة"
+  },
+  "sales-payments": {
+    "title": "دفعات المبيعات",
+    "detailsTitle": "تفاصيل دفعة المبيعات",
+    "payment_number": "رقم الدفعة",
+    "invoice_number": "رقم الفاتورة",
+    "amount": "المبلغ",
+    "payment_method": "طريقة الدفع",
+    "payment_date": "تاريخ الدفع",
+    "reference_number": "رقم المرجع",
+    "updateDescription": "تحديث بيانات الدفعة",
+    "createDescription": "إضافة دفعة جديدة"
+  },
+  "stocks": {
+    "title": "المخزون",
+    "detailsTitle": "تفاصيل المخزون",
+    "product_name": "اسم المنتج",
+    "warehouse": "المستودع",
+    "quantity_on_hand": "الكمية المتاحة",
+    "quantity_reserved": "الكمية المحجوزة",
+    "reorder_level": "حد إعادة الطلب",
+    "updateDescription": "تحديث بيانات المخزون",
+    "createDescription": "إضافة مخزون جديد"
+  },
+  "stock-movements": {
+    "title": "حركات المخزون",
+    "detailsTitle": "تفاصيل حركة المخزون",
+    "product_name": "اسم المنتج",
+    "movement_type": "نوع الحركة",
+    "quantity": "الكمية",
+    "date": "التاريخ",
+    "reference": "المرجع",
+    "description": "الوصف",
+    "updateDescription": "تحديث حركة المخزون",
+    "createDescription": "إضافة حركة مخزون جديدة"
+  },
+  "orders": {
+    "title": "الطلبات",
+    "detailsTitle": "تفاصيل الطلب",
+    "order_number": "رقم الطلب",
+    "customer_name": "اسم العميل",
+    "total_amount": "المبلغ الإجمالي",
+    "status": "الحالة",
+    "payment_status": "حالة الدفع",
+    "payment_method": "طريقة الدفع",
+    "order_date": "تاريخ الطلب",
+    "delivery_date": "تاريخ التوصيل",
+    "updateDescription": "تحديث بيانات الطلب",
+    "createDescription": "إضافة طلب جديد"
   }
 }

@@ -1,0 +1,59 @@
+{
+  "orders": {
+    "title": "الطلبات",
+    "description": "إدارة الطلبات والمدفوعات",
+    "create": "طلب جديد",
+    "refresh": "تحديث",
+    "totalCount": "الإجمالي",
+    "currency": "ر.س",
+    "filters": {
+      "searchPlaceholder": "ابحث برقم الطلب أو العميل...",
+      "status": "حالة الطلب",
+      "paymentStatus": "حالة الدفع",
+      "apply": "تطبيق",
+      "reset": "إعادة ضبط"
+    },
+    "table": {
+      "orderNumber": "رقم الطلب",
+      "customer": "العميل",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "date": "التاريخ",
+      "paymentStatus": "حالة الدفع",
+      "actions": "الإجراءات"
+    },
+    "actions": {
+      "view": "عرض",
+      "edit": "تعديل",
+      "cancel": "إلغاء"
+    },
+    "dialogs": {
+      "cancelTitle": "إلغاء الطلب؟",
+      "cancelMessage": "سيتم إلغاء الطلب وتحرير المخزون المحجوز.",
+      "confirm": "تأكيد",
+      "close": "إغلاق"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "ready": "جاهز",
+      "delivered": "تم التسليم",
+      "cancelled": "ملغي"
+    },
+    "paymentStatus": {
+      "pending": "قيد الانتظار",
+      "partial": "مدفوع جزئياً",
+      "paid": "مدفوع",
+      "refunded": "مسترد",
+      "disputed": "متنازع عليه"
+    },
+    "toasts": {
+      "cancelSuccess": "تم إلغاء الطلب بنجاح",
+      "cancelError": "فشل إلغاء الطلب"
+    },
+    "empty": {
+      "title": "لا توجد طلبات",
+      "description": "لا توجد طلبات مطابقة للفلاتر"
+    }
+  }
+}

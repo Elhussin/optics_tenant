@@ -33,8 +33,28 @@ export default function Profile() {
   const { user } = useUser();
   const t = useTranslations("profilePage");
 
-  const shouldFetch =
-    user?.role?.name?.toLowerCase() === "owner" && !!user?.client;
+  // Check if user has TenantOwner role (supports both single object and multiple roles array)
+  const isOwner = useMemo(() => {
+    const roles = user?.roles || [];
+    const primaryRoleName = user?.role?.name;
+
+    // Normalize everything into an array of names safely
+    const allRoleNames: string[] = [];
+
+    if (primaryRoleName) allRoleNames.push(primaryRoleName);
+
+    roles.forEach((r: any) => {
+      if (typeof r === "string") {
+        allRoleNames.push(r);
+      } else if (r && typeof r.name === "string") {
+        allRoleNames.push(r.name);
+      }
+    });
+
+    return allRoleNames.some((name) => name.toLowerCase() === "tenantowner");
+  }, [user]);
+
+  const shouldFetch = isOwner && !!user?.client;
 
   const {
     data: clientData,
@@ -46,7 +66,7 @@ export default function Profile() {
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000,
-    }
+    },
   );
 
   const { daysLeft, statusVariant, progressWidth, statusText, statusIcon } =
@@ -189,7 +209,7 @@ export default function Profile() {
                     </div>
                   </div>
 
-                  {user?.role?.name?.toLowerCase() === "owner" && (
+                  {isOwner && (
                     <div className="flex items-center gap-3 text-secondary p-3 bg-elevated rounded-xl border border-border-main/30">
                       <Store size={18} className="text-primary shrink-0" />
                       <div className="flex-1 min-w-0">
@@ -205,7 +225,7 @@ export default function Profile() {
                 </div>
 
                 {/* Settings button */}
-                {user?.role?.name?.toLowerCase() === "owner" && (
+                {isOwner && (
                   <div className="mt-6 pt-6 border-t border-border-main/30">
                     <Link href="/dashboard/tenant-settings">
                       <ActionButton
@@ -230,7 +250,7 @@ export default function Profile() {
           transition={{ delay: 0.2 }}
           className="lg:col-span-2 space-y-6"
         >
-          {user?.role?.name?.toLowerCase() === "owner" && (
+          {isOwner && (
             <div className="relative group">
               {/* Glow effect */}
               <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
@@ -319,7 +339,7 @@ export default function Profile() {
                           <p className="text-lg font-bold text-main flex items-center sm:justify-end gap-2">
                             <Calendar size={16} className="text-primary" />
                             {new Date(
-                              clientData.paid_until
+                              clientData.paid_until,
                             ).toLocaleDateString()}
                           </p>
                         </div>
@@ -347,7 +367,7 @@ export default function Profile() {
                               "h-full rounded-full transition-all",
                               daysLeft && daysLeft <= 7
                                 ? "bg-danger"
-                                : "bg-success"
+                                : "bg-success",
                             )}
                           />
                         </div>
@@ -366,7 +386,7 @@ export default function Profile() {
           )}
 
           {/* Pricing Section */}
-          {user?.role?.name?.toLowerCase() === "owner" &&
+          {isOwner &&
             clientData &&
             (clientData.plans?.name === "trial" ||
               (daysLeft !== null && daysLeft <= 15)) && (

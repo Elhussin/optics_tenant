@@ -1,10 +1,10 @@
 // app/[locale]/dashboard/accounting/page.tsx
 /**
- * Accounting Dashboard - Redirects to Chart of Accounts
+ * Accounting Dashboard - Main Entry Point
  */
 
-import { ChartOfAccountsPage } from "@/src/features/accounting";
+import { AccountingDashboard } from "@/src/features/accounting";
 
 export default function AccountingPage() {
-  return <ChartOfAccountsPage />;
+  return <AccountingDashboard />;
 }

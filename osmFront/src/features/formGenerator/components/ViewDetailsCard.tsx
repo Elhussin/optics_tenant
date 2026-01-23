@@ -109,6 +109,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
       </div>
     );
   }
+  console.log(data);
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 p-4 animate-fade-in">

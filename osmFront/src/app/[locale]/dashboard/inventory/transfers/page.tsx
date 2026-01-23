@@ -1,5 +1,5 @@
-import Transfers from "@/src/features/inventory/transfer";
+import TransfersList from "@/src/features/inventory/transfer/TransfersList";
 
 export default function TransfersPage() {
-  return <Transfers />;
+  return <TransfersList />;
 }

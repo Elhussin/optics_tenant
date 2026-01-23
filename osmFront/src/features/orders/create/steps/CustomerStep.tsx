@@ -8,10 +8,12 @@ import { Card, CardContent } from "@/src/shared/components/shadcn/ui/card";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../../store/useOrderFormStore";
 import { Loading4 } from "@/src/shared/components/ui/loding";
-
+import {ActionButton} from "@/src/shared/components/ui/buttons"
+import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 export function CustomerStep() {
   const [searchTerm, setSearchTerm] = useState("");
   const [customers, setCustomers] = useState<any[]>([]);
+    const [showModal, setShowModal] = useState(false);
   const store = useOrderFormStore();
 
   // Search customers
@@ -49,6 +51,8 @@ export function CustomerStep() {
         <Label className="text-lg font-semibold flex items-center gap-2">
           <User size={20} />
           اختيار العميل
+          <ActionButton variant="success" icon={<User size={20} />} onClick={() => setShowModal(true)}/>
+            
         </Label>
 
         {/* Selected Customer */}
@@ -122,7 +126,16 @@ export function CustomerStep() {
           </div>
         )}
       </div>
-
+                {showModal && (
+        <DynamicFormDialog
+          entity={"customers"}
+          onClose={() => {
+            setShowModal(false);
+            query.refetch();
+            // setFetchForginKey(true);
+          }}
+        />
+      )}
       {/* Note about branch and sales person */}
       <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm">
         <p className="text-blue-700 dark:text-blue-300">

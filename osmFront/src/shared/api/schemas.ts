@@ -375,11 +375,18 @@ const PaginatedBranchUsersList = z
   })
   .passthrough();
 const BranchUsersRequest = z
-  .object({ notes: z.string().nullable() })
-  .partial()
+  .object({
+    notes: z.string().nullish(),
+    branch: z.number().int(),
+    employee: z.number().int(),
+  })
   .passthrough();
 const PatchedBranchUsersRequest = z
-  .object({ notes: z.string().nullable() })
+  .object({
+    notes: z.string().nullable(),
+    branch: z.number().int(),
+    employee: z.number().int(),
+  })
   .partial()
   .passthrough();
 const BranchTypeEnum = z.enum(["store", "branch"]);
@@ -2021,7 +2028,7 @@ const User = z
     email: z.string().email(),
     first_name: z.string().max(30),
     last_name: z.string().max(30),
-    role: Role,
+    roles: z.array(Role),
     phone: z.string().regex(/^\+?\d{7,15}$/),
     client: z.number().int().nullable(),
     is_active: z.boolean().optional(),
@@ -3778,44 +3785,51 @@ const PaginatedProductVariantList = z
   .passthrough();
 const CreateProductVariantRequest = z
   .object({
-    is_active: z.boolean().optional(),
-    sku: z.string().max(50).nullish(),
+    is_active: z.boolean().nullable(),
+    sku: z.string().max(50).nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullish(),
-    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+      .nullable(),
+    selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullish(),
-    product: z.number().int(),
-    product_type: z.number().int(),
-    warranty: z.number().int().nullish(),
-    weight: z.number().int().nullish(),
-    dimensions: z.number().int().nullish(),
+      .nullable(),
+    product: z.number().int().nullable(),
+    product_type: z.number().int().nullable(),
+    warranty: z.number().int().nullable(),
+    weight: z.number().int().nullable(),
+    dimensions: z.number().int().nullable(),
   })
+  .partial()
   .passthrough();
 const CreateProductVariant = z
   .object({
     id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }).nullable(),
+    updated_at: z.string().datetime({ offset: true }).nullable(),
+    is_active: z.boolean().nullish(),
     sku: z.string().max(50).nullish(),
-    usku: z.string(),
-    description: z.string(),
+    usku: z.string().nullable(),
+    description: z.string().nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
-    selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
-    product: z.number().int(),
-    product_type: z.number().int(),
+    product: z.number().int().nullish(),
+    product_type: z.number().int().nullish(),
     warranty: z.number().int().nullish(),
     weight: z.number().int().nullish(),
     dimensions: z.number().int().nullish(),
@@ -4062,26 +4076,12 @@ const PaymentStatusEnum = z.enum([
   "refunded",
   "disputed",
 ]);
-const OrderPaymentMethodEnum = z.enum([
-  "cash",
-  "card",
-  "bank_transfer",
-  "mada",
-  "visa",
-  "master",
-  "apple_pay",
-  "stc_pay",
-  "tabby",
-  "tamara",
-  "insurance",
-  "credit",
-  "mixed",
-]);
 const Order = z
   .object({
     id: z.number().int(),
     items: z.array(OrderItem),
     remaining_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    payment_method_display: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -4104,7 +4104,6 @@ const Order = z
     order_number: z.string(),
     status: OrderStatusEnum.optional(),
     payment_status: PaymentStatusEnum.optional(),
-    payment_method: OrderPaymentMethodEnum.optional(),
     partner_share: z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
@@ -4120,6 +4119,7 @@ const Order = z
     expected_delivery: z.string().datetime({ offset: true }).nullish(),
     branch: z.number().int().nullish(),
     customer: z.number().int(),
+    payment_method: z.number().int().nullish(),
     partner: z.number().int().nullish(),
     customer_partner_link: z.number().int().nullish(),
     sales_person: z.number().int().nullish(),
@@ -4161,7 +4161,6 @@ const OrderRequest = z
     order_type: OrderTypeEnum.optional(),
     status: OrderStatusEnum.optional(),
     payment_status: PaymentStatusEnum.optional(),
-    payment_method: OrderPaymentMethodEnum.optional(),
     partner_share: z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
@@ -4175,6 +4174,7 @@ const OrderRequest = z
     expected_delivery: z.string().datetime({ offset: true }).nullish(),
     branch: z.number().int().nullish(),
     customer: z.number().int(),
+    payment_method: z.number().int().nullish(),
     partner: z.number().int().nullish(),
     customer_partner_link: z.number().int().nullish(),
     sales_person: z.number().int().nullish(),
@@ -4190,7 +4190,6 @@ const PatchedOrderRequest = z
     order_type: OrderTypeEnum,
     status: OrderStatusEnum,
     payment_status: PaymentStatusEnum,
-    payment_method: OrderPaymentMethodEnum,
     partner_share: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     customer_share: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     notes: z.string(),
@@ -4198,49 +4197,90 @@ const PatchedOrderRequest = z
     expected_delivery: z.string().datetime({ offset: true }).nullable(),
     branch: z.number().int().nullable(),
     customer: z.number().int(),
+    payment_method: z.number().int().nullable(),
     partner: z.number().int().nullable(),
     customer_partner_link: z.number().int().nullable(),
     sales_person: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
-const PaymentMethodBabEnum = z.enum([
-  "cash",
-  "card",
-  "bank_transfer",
-  "cheque",
-  "mada",
-  "visa",
-  "mastercard",
-  "amex",
-  "apple_pay",
-  "stc_pay",
-  "urpay",
-  "tabby",
-  "tamara",
-  "postpay",
-  "spotii",
-  "insurance",
-  "credit",
-  "partner",
-]);
-const Status839Enum = z.enum([
+const PaymentMethod = z
+  .object({
+    id: z.number().int(),
+    name_ar: z.string().max(100),
+    name_en: z.string().max(100),
+    code: z
+      .string()
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    is_active: z.boolean().optional(),
+    icon: z.string().url().nullish(),
+    provider_fees_percent: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    is_installment: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const PaginatedPaymentMethodList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PaymentMethod),
+  })
+  .passthrough();
+const PaymentMethodRequest = z
+  .object({
+    name_ar: z.string().min(1).max(100),
+    name_en: z.string().min(1).max(100),
+    code: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    is_active: z.boolean().optional(),
+    icon: z.instanceof(File).nullish(),
+    provider_fees_percent: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
+    is_installment: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedPaymentMethodRequest = z
+  .object({
+    name_ar: z.string().min(1).max(100),
+    name_en: z.string().min(1).max(100),
+    code: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    is_active: z.boolean(),
+    icon: z.instanceof(File).nullable(),
+    provider_fees_percent: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
+    is_installment: z.boolean(),
+  })
+  .partial()
+  .passthrough();
+const Status577Enum = z.enum([
   "pending",
-  "processing",
-  "completed",
-  "failed",
-  "cancelled",
+  "partial",
+  "paid",
   "refunded",
-  "partially_refunded",
+  "disputed",
 ]);
 const PaymentList = z
   .object({
     id: z.number().int(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().max(3).optional(),
-    payment_method: PaymentMethodBabEnum,
+    payment_method: z.number().int().nullish(),
     payment_method_display: z.string(),
-    status: Status839Enum.optional(),
+    status: Status577Enum.optional(),
     status_display: z.string(),
     is_installment: z.boolean().optional(),
     paid_at: z.string().datetime({ offset: true }).nullish(),
@@ -4261,7 +4301,7 @@ const PaymentCreateRequest = z
     order: z.number().int().nullish(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().min(1).max(3).optional(),
-    payment_method: PaymentMethodBabEnum,
+    payment_method: z.number().int().nullish(),
     partner: z.number().int().nullish(),
     is_installment: z.boolean().optional(),
     installments_count: z.number().int().gte(0).lte(2147483647).optional(),
@@ -4281,7 +4321,7 @@ const PaymentCreate = z
     order: z.number().int().nullish(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().max(3).optional(),
-    payment_method: PaymentMethodBabEnum,
+    payment_method: z.number().int().nullish(),
     partner: z.number().int().nullish(),
     is_installment: z.boolean().optional(),
     installments_count: z.number().int().gte(0).lte(2147483647).optional(),
@@ -4304,9 +4344,11 @@ const Payment = z
     order_number: z.string(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().max(3).optional(),
-    payment_method: PaymentMethodBabEnum,
+    payment_method: z.number().int().nullish(),
     payment_method_display: z.string(),
-    status: Status839Enum.optional(),
+    payment_method_name_en: z.string(),
+    payment_method_code: z.string(),
+    status: Status577Enum.optional(),
     status_display: z.string(),
     partner: z.number().int().nullish(),
     partner_name: z.string(),
@@ -4344,8 +4386,8 @@ const PaymentRequest = z
     order: z.number().int().nullish(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().min(1).max(3).optional(),
-    payment_method: PaymentMethodBabEnum,
-    status: Status839Enum.optional(),
+    payment_method: z.number().int().nullish(),
+    status: Status577Enum.optional(),
     partner: z.number().int().nullish(),
     gateway_reference: z.string().max(100).optional(),
     is_installment: z.boolean().optional(),
@@ -4375,8 +4417,8 @@ const PatchedPaymentRequest = z
     order: z.number().int().nullable(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().min(1).max(3),
-    payment_method: PaymentMethodBabEnum,
-    status: Status839Enum,
+    payment_method: z.number().int().nullable(),
+    status: Status577Enum,
     partner: z.number().int().nullable(),
     gateway_reference: z.string().max(100),
     is_installment: z.boolean(),
@@ -4416,6 +4458,10 @@ const SubscriptionPlan = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
+    has_hr_module: z.boolean().optional(),
+    has_inventory_module: z.boolean().optional(),
+    has_eye_test_module: z.boolean().optional(),
+    has_crm_module: z.boolean().optional(),
     currency: CurrencyEnum.optional(),
     discount: z
       .string()
@@ -4563,6 +4609,10 @@ const SubscriptionPlanRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
+    has_hr_module: z.boolean().optional(),
+    has_inventory_module: z.boolean().optional(),
+    has_eye_test_module: z.boolean().optional(),
+    has_crm_module: z.boolean().optional(),
     currency: CurrencyEnum.optional(),
     discount: z
       .string()
@@ -4580,6 +4630,10 @@ const PatchedSubscriptionPlanRequest = z
     max_products: z.number().int().gte(0).lte(2147483647),
     month_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     year_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    has_hr_module: z.boolean(),
+    has_inventory_module: z.boolean(),
+    has_eye_test_module: z.boolean(),
+    has_crm_module: z.boolean(),
     currency: CurrencyEnum,
     discount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
   })
@@ -4748,7 +4802,7 @@ const RegisterRequest = z
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     email: z.string().min(1).email(),
-    role: z.number().int().optional(),
+    role_ids: z.array(z.number().int()).optional(),
   })
   .passthrough();
 const RegisterSuccessResponse = z
@@ -4923,6 +4977,7 @@ const UserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
+    role_ids: z.array(z.number().int()).optional(),
     phone: z
       .string()
       .min(1)
@@ -4942,6 +4997,7 @@ const PatchedUserRequest = z
     email: z.string().min(1).email(),
     first_name: z.string().min(1).max(30),
     last_name: z.string().min(1).max(30),
+    role_ids: z.array(z.number().int()),
     phone: z
       .string()
       .min(1)
@@ -5249,14 +5305,16 @@ export const schemas = {
   OrderTypeEnum,
   OrderStatusEnum,
   PaymentStatusEnum,
-  OrderPaymentMethodEnum,
   Order,
   PaginatedOrderList,
   OrderItemRequest,
   OrderRequest,
   PatchedOrderRequest,
-  PaymentMethodBabEnum,
-  Status839Enum,
+  PaymentMethod,
+  PaginatedPaymentMethodList,
+  PaymentMethodRequest,
+  PatchedPaymentMethodRequest,
+  Status577Enum,
   PaymentList,
   PaginatedPaymentListList,
   PaymentCreateRequest,
@@ -5336,22 +5394,7 @@ export const endpoints = makeApi([
       {
         name: "category_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.enum(["expense", "income"]).optional(),
       },
       {
         name: "ordering",
@@ -5367,11 +5410,6 @@ export const endpoints = makeApi([
         name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
-      },
-      {
-        name: "parent",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "search",
@@ -5484,37 +5522,41 @@ export const endpoints = makeApi([
       {
         name: "account_subtype",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum([
+            "accrued",
+            "bank",
+            "capital",
+            "cash",
+            "cost_of_goods",
+            "deferred",
+            "fixed_asset",
+            "inventory",
+            "loan",
+            "marketing",
+            "other_expense",
+            "other_income",
+            "payable",
+            "prepaid",
+            "receivable",
+            "rent",
+            "reserves",
+            "retained",
+            "salary",
+            "sales",
+            "service",
+            "supplies",
+            "tax_payable",
+            "utilities",
+          ])
+          .optional(),
       },
       {
         name: "account_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "code",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "current_balance",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum(["asset", "cogs", "equity", "expense", "liability", "revenue"])
+          .optional(),
       },
       {
         name: "is_active",
@@ -5525,26 +5567,6 @@ export const endpoints = makeApi([
         name: "is_header",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name_en",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "normal_balance",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "opening_balance",
-        type: "Query",
-        schema: z.number().optional(),
       },
       {
         name: "ordering",
@@ -5560,11 +5582,6 @@ export const endpoints = makeApi([
         name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
-      },
-      {
-        name: "parent",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "search",
@@ -5870,49 +5887,21 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "entry_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "entry_number",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "entry_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum(["adjustment", "closing", "opening", "reversal", "standard"])
+          .optional(),
       },
       {
         name: "is_posted",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "lines",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -5930,44 +5919,25 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
-        name: "posted_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "posted_by",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "source_document",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "source_id",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "source_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "total_credit",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "total_debit",
-        type: "Query",
-        schema: z.number().optional(),
+        schema: z
+          .enum([
+            "adjustment",
+            "manual",
+            "payment",
+            "payroll",
+            "purchase_invoice",
+            "receipt",
+            "return",
+            "sales_invoice",
+          ])
+          .optional(),
       },
     ],
     response: PaginatedGeneralJournalListList,
@@ -6176,29 +6146,9 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "effective_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -6214,11 +6164,6 @@ export const endpoints = makeApi([
         name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
-      },
-      {
-        name: "rate",
-        type: "Query",
-        schema: z.number().optional(),
       },
       {
         name: "search",
@@ -6396,10 +6341,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: z
-          .object({ notes: z.string().nullable() })
-          .partial()
-          .passthrough(),
+        schema: BranchUsersRequest,
       },
     ],
     response: BranchUsers,
@@ -6429,10 +6371,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: z
-          .object({ notes: z.string().nullable() })
-          .partial()
-          .passthrough(),
+        schema: BranchUsersRequest,
       },
       {
         name: "id",
@@ -6452,10 +6391,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: z
-          .object({ notes: z.string().nullable() })
-          .partial()
-          .passthrough(),
+        schema: PatchedBranchUsersRequest,
       },
       {
         name: "id",
@@ -7039,32 +6975,14 @@ export const endpoints = makeApi([
       {
         name: "claim",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "document_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "file",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum(["authorization", "invoice", "other", "prescription", "report"])
+          .optional(),
       },
       {
         name: "ordering",
@@ -7083,11 +7001,6 @@ export const endpoints = makeApi([
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "title",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -7195,39 +7108,9 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "approved_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
         name: "claim",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "claim_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "insurance_code",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "order_item",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "ordering",
@@ -7245,24 +7128,9 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
-        name: "quantity",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
-      },
-      {
-        name: "total_price",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "unit_price",
-        type: "Query",
-        schema: z.number().optional(),
       },
     ],
     response: PaginatedClaimItemList,
@@ -7847,59 +7715,14 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "annual_limit",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "copay_fixed",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "copay_percentage",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "coverage_class",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "coverage_end",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "coverage_start",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "customer",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "member_id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -7919,17 +7742,7 @@ export const endpoints = makeApi([
       {
         name: "partner",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "policy_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "remaining_limit",
-        type: "Query",
-        schema: z.number().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
@@ -8364,69 +8177,9 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "approved_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "attached_documents",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "claim_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "claim_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "claim_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "customer_partner_link",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "external_claim_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "internal_notes",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "items",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "order",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "ordering",
@@ -8444,39 +8197,9 @@ export const endpoints = makeApi([
         schema: z.number().int().optional(),
       },
       {
-        name: "paid_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "partial_reason",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "partner",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "patient_share",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "payment_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "rejection_reason",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "response_date",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
@@ -8486,22 +8209,18 @@ export const endpoints = makeApi([
       {
         name: "status",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "submission_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "total_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "paid",
+            "partial",
+            "rejected",
+            "submitted",
+            "under_review",
+          ])
+          .optional(),
       },
     ],
     response: PaginatedInsuranceClaimListList,
@@ -9034,12 +8753,7 @@ export const endpoints = makeApi([
       {
         name: "branch",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "is_active",
@@ -9064,17 +8778,12 @@ export const endpoints = makeApi([
       {
         name: "partner",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
-      },
-      {
-        name: "special_discount",
-        type: "Query",
-        schema: z.number().optional(),
       },
     ],
     response: PaginatedPartnerBranchList,
@@ -9182,12 +8891,7 @@ export const endpoints = makeApi([
       {
         name: "category",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "ordering",
@@ -9207,30 +8911,15 @@ export const endpoints = makeApi([
       {
         name: "price_list",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "product",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "special_discount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "special_price",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "variant",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9338,39 +9027,9 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "adjustment_value",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "applies_to_all",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "items",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -9390,25 +9049,15 @@ export const endpoints = makeApi([
       {
         name: "partner",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "price_type",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.enum(["discount", "fixed", "markup"]).optional(),
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "valid_from",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "valid_until",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -9516,26 +9165,6 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "adjustments",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "net_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -9553,27 +9182,7 @@ export const endpoints = makeApi([
       {
         name: "partner",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "payment_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "payment_reference",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "period_end",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "period_start",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
@@ -9581,29 +9190,9 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
-        name: "settlement_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "settlement_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "status",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "total_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "total_claims",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.enum(["confirmed", "disputed", "paid", "pending"]).optional(),
       },
     ],
     response: PaginatedPartnerSettlementList,
@@ -9769,89 +9358,9 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "address",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "code",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "contact_person",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "contract_end",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "contract_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "contract_start",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "credit_limit",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "current_balance",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "default_discount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "email",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "logo",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name_en",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -9871,40 +9380,12 @@ export const endpoints = makeApi([
       {
         name: "partner_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "patient_share_percentage",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "payment_terms",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "phone",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
       },
       {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "tax_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "website",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -10579,7 +10060,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/departments/",
     alias: "hrm_departments_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10614,7 +10095,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/hrm/departments/",
     alias: "hrm_departments_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10629,7 +10110,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/hrm/departments/:id/",
     alias: "hrm_departments_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10644,7 +10125,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/hrm/departments/:id/",
     alias: "hrm_departments_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10664,7 +10145,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/hrm/departments/:id/",
     alias: "hrm_departments_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -10684,7 +10165,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/hrm/departments/:id/",
     alias: "hrm_departments_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11792,6 +11273,11 @@ Request Body:
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "ordering",
         type: "Query",
@@ -13747,6 +13233,15 @@ Request Body:
     response: Product,
   },
   {
+    method: "post",
+    path: "/api/products/products/import-csv/",
+    alias: "products_products_import_csv_create",
+    description: `API View مخصص لاستيراد المنتجات فقط.
+يعتمد إجبارياً على إعدادات &#x27;products.Product&#x27; الموجودة في ملف &#x27;csv_configotenant.json&#x27;.`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
     method: "get",
     path: "/api/products/questions/",
     alias: "products_questions_list",
@@ -14090,44 +13585,21 @@ Endpoints:
     requestFormat: "json",
     parameters: [
       {
-        name: "cost_per_unit",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_by",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "movement_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "movement_type",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum([
+            "adjustment",
+            "damage",
+            "purchase",
+            "release",
+            "reserve",
+            "return",
+            "sale",
+            "transfer_in",
+            "transfer_out",
+          ])
+          .optional(),
       },
       {
         name: "ordering",
@@ -14145,26 +13617,6 @@ Endpoints:
         schema: z.number().int().optional(),
       },
       {
-        name: "quantity",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "quantity_after",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "quantity_before",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "reference_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
@@ -14172,12 +13624,7 @@ Endpoints:
       {
         name: "stock",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedStockMovementList,
@@ -14348,26 +13795,6 @@ Endpoints:
     requestFormat: "json",
     parameters: [
       {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -14383,21 +13810,6 @@ Endpoints:
         schema: z.number().int().optional(),
       },
       {
-        name: "quantity_received",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "quantity_requested",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "quantity_sent",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
@@ -14405,22 +13817,7 @@ Endpoints:
       {
         name: "transfer",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "unit_cost",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "variant",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedStockTransferItemList,
@@ -14538,44 +13935,9 @@ Endpoints:
     requestFormat: "json",
     parameters: [
       {
-        name: "approved_by",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "approved_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "from_branch",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "items",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "ordering",
@@ -14593,49 +13955,28 @@ Endpoints:
         schema: z.number().int().optional(),
       },
       {
-        name: "received_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "requested_by",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "requested_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "shipped_date",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "status",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
       },
       {
         name: "to_branch",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "transfer_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedStockTransferList,
@@ -14933,59 +14274,14 @@ Endpoints:
     requestFormat: "json",
     parameters: [
       {
-        name: "allow_backorder",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "average_cost",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
         name: "branch",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "is_active",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "last_cost",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "last_restocked",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "last_sale",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "max_stock_level",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "min_stock_level",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -15003,34 +14299,14 @@ Endpoints:
         schema: z.number().int().optional(),
       },
       {
-        name: "quantity_in_stock",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "reorder_level",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "reserved_quantity",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "variant",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedStockList,
@@ -15596,26 +14872,6 @@ Endpoints:
     requestFormat: "json",
     parameters: [
       {
-        name: "amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "due_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "installment_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "ordering",
         type: "Query",
         schema: z.string().optional(),
@@ -15631,19 +14887,9 @@ Endpoints:
         schema: z.number().int().optional(),
       },
       {
-        name: "paid_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "paid_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "payment",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
@@ -15653,7 +14899,9 @@ Endpoints:
       {
         name: "status",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum(["cancelled", "due", "overdue", "paid", "pending"])
+          .optional(),
       },
     ],
     response: PaginatedInstallmentList,
@@ -16484,105 +15732,20 @@ Request Body:
   },
   {
     method: "get",
-    path: "/api/sales/payments/",
-    alias: "sales_payments_list",
-    description: `ViewSet للدفعات`,
+    path: "/api/sales/payment-methods/",
+    alias: "sales_payment_methods_list",
+    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
     requestFormat: "json",
     parameters: [
       {
-        name: "amount",
+        name: "is_active",
         type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "bnpl_order_id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "card_brand",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "card_last_four",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "cheque_bank",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "cheque_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "cheque_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "currency",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "gateway_reference",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "gateway_transaction_id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "installment_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "installments",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "installments_count",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "invoice",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.boolean().optional(),
       },
       {
         name: "is_installment",
         type: "Query",
         schema: z.boolean().optional(),
-      },
-      {
-        name: "notes",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "order",
-        type: "Query",
-        schema: z.string().optional(),
       },
       {
         name: "ordering",
@@ -16600,29 +15763,152 @@ Request Body:
         schema: z.number().int().optional(),
       },
       {
-        name: "paid_at",
+        name: "search",
         type: "Query",
         schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPaymentMethodList,
+  },
+  {
+    method: "post",
+    path: "/api/sales/payment-methods/",
+    alias: "sales_payment_methods_create",
+    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentMethodRequest,
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "get",
+    path: "/api/sales/payment-methods/:id/",
+    alias: "sales_payment_methods_retrieve",
+    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "put",
+    path: "/api/sales/payment-methods/:id/",
+    alias: "sales_payment_methods_update",
+    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentMethodRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "patch",
+    path: "/api/sales/payment-methods/:id/",
+    alias: "sales_payment_methods_partial_update",
+    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPaymentMethodRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "delete",
+    path: "/api/sales/payment-methods/:id/",
+    alias: "sales_payment_methods_destroy",
+    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/payment-methods/filter_options/",
+    alias: "sales_payment_methods_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PaymentMethod,
+  },
+  {
+    method: "get",
+    path: "/api/sales/payments/",
+    alias: "sales_payments_list",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "invoice",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_installment",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
       },
       {
         name: "partner",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "payment_method",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "refund_amount",
-        type: "Query",
-        schema: z.number().optional(),
-      },
-      {
-        name: "refunded_at",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
       {
         name: "search",
@@ -16632,22 +15918,9 @@ Request Body:
       {
         name: "status",
         type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "transfer_bank",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "transfer_reference",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
+        schema: z
+          .enum(["disputed", "paid", "partial", "pending", "refunded"])
+          .optional(),
       },
     ],
     response: PaginatedPaymentListList,
@@ -17090,7 +16363,7 @@ Request Body:
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Client,
@@ -17110,7 +16383,7 @@ Request Body:
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Client,
@@ -17130,7 +16403,7 @@ Request Body:
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: Client,
@@ -17145,7 +16418,7 @@ Request Body:
       {
         name: "id",
         type: "Path",
-        schema: z.number().int(),
+        schema: z.string(),
       },
     ],
     response: z.void(),
@@ -17175,16 +16448,6 @@ Allows listing, creating, and managing domains and subdomains.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "domain",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
         name: "is_primary",
         type: "Query",
         schema: z.boolean().optional(),
@@ -17212,7 +16475,7 @@ Allows listing, creating, and managing domains and subdomains.`,
       {
         name: "tenant",
         type: "Query",
-        schema: z.string().optional(),
+        schema: z.number().int().optional(),
       },
     ],
     response: PaginatedDomainList,
@@ -17519,6 +16782,26 @@ Allows listing, creating, and managing domains and subdomains.`,
         name: "duration_years",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "has_crm_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "has_eye_test_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "has_hr_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "has_inventory_module",
+        type: "Query",
+        schema: z.boolean().optional(),
       },
       {
         name: "id",
@@ -17902,6 +17185,11 @@ Allows listing, creating, and managing domains and subdomains.`,
     parameters: [
       {
         name: "author",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "client",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18606,6 +17894,11 @@ Allows listing, creating, and managing domains and subdomains.`,
       },
       {
         name: "city",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "client",
         type: "Query",
         schema: z.string().optional(),
       },

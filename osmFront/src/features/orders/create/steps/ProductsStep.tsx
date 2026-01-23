@@ -153,7 +153,7 @@ export function ProductsStep() {
                     // Edit Mode
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <p className="font-medium">{item.product_name}</p>
+                        <p className="font-medium">{item?.product_name}</p>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>

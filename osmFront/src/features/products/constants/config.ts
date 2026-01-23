@@ -142,20 +142,25 @@ export const MainFieldConfig: ProductConfigType[] = [
 ];
 
 export const ProductTypeEnum = [
-  { value: "SV-ST", label: "Single Stock", filter: "SL" },
+  { value: "SL-ST", label: "Single Stock", filter: "SL" },
   {
-    value: "SV-RX",
+    value: "SL-RX",
     label: "Single RX",
     filter: "SL",
   },
   {
-    value: "MF-RX",
+    value: "SL-MF",
     label: "Multi Focal ",
     filter: "SL",
   },
   {
-    value: "BF-RX",
+    value: "SL-BF",
     label: "Bifocal RX",
+    filter: "SL",
+  },
+  {
+    value: "SL-TF",
+    label: "Triple Focal RX",
     filter: "SL",
   },
 
@@ -178,6 +183,21 @@ export const ProductTypeEnum = [
     value: "FR-SP",
     label: "Frames Spectacle Glasses",
     filter: "FR",
+  },
+  {
+    value: "OT",
+    label: "Other",
+    filter: "OT",
+  },
+  {
+    value: "DV",
+    label: "Devices",
+    filter: "DV",
+  },
+  {
+    value: "AX",
+    label: "Accessories",
+    filter: "AX",
   },
 ];
 

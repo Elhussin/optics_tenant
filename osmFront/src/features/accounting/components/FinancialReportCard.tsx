@@ -28,6 +28,12 @@ import type {
 
 // Trial Balance Card
 export function TrialBalanceCard({ data }: { data: TrialBalance }) {
+  // Handle both API response formats
+  const accounts = data.accounts || data.items || [];
+  const isBalanced = data.totals?.is_balanced ?? data.is_balanced ?? true;
+  const totalDebit = data.totals?.debit ?? data.total_debit ?? 0;
+  const totalCredit = data.totals?.credit ?? data.total_credit ?? 0;
+
   return (
     <Card className="border-0 shadow-lg">
       <CardHeader className="pb-3">
@@ -38,69 +44,72 @@ export function TrialBalanceCard({ data }: { data: TrialBalance }) {
           </span>
           <span
             className={`text-sm px-2 py-1 rounded ${
-              data.is_balanced
+              isBalanced
                 ? "bg-green-100 text-green-700"
                 : "bg-red-100 text-red-700"
             }`}
           >
-            {data.is_balanced ? "متوازن" : "غير متوازن"}
+            {isBalanced ? "متوازن" : "غير متوازن"}
           </span>
         </CardTitle>
         <p className="text-sm text-gray-500">بتاريخ {data.as_of_date}</p>
       </CardHeader>
 
       <CardContent>
-        <div className="max-h-[400px] overflow-auto">
-          <table className="w-full text-sm">
-            <thead className="sticky top-0 bg-white dark:bg-gray-900">
-              <tr className="border-b">
-                <th className="text-right py-2 font-semibold">الحساب</th>
-                <th className="text-left py-2 font-semibold w-28">مدين</th>
-                <th className="text-left py-2 font-semibold w-28">دائن</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.items.map((item) => (
-                <tr
-                  key={item.account_id}
-                  className="border-b hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <td className="py-2">
-                    <span className="text-xs text-gray-400 mr-2">
-                      {item.account_code}
-                    </span>
-                    {item.account_name}
-                  </td>
-                  <td className="py-2 text-left">
-                    {parseFloat(item.debit_balance) > 0 && (
-                      <span>
-                        {parseFloat(item.debit_balance).toLocaleString()}
+        {accounts.length === 0 ? (
+          <div className="py-8 text-center text-gray-400">
+            <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-30" />
+            <p>لا توجد بيانات</p>
+          </div>
+        ) : (
+          <div className="max-h-[400px] overflow-auto">
+            <table className="w-full text-sm">
+              <thead className="sticky top-0 bg-white dark:bg-gray-900">
+                <tr className="border-b">
+                  <th className="text-right py-2 font-semibold">الحساب</th>
+                  <th className="text-left py-2 font-semibold w-28">مدين</th>
+                  <th className="text-left py-2 font-semibold w-28">دائن</th>
+                </tr>
+              </thead>
+              <tbody>
+                {accounts.map((item, index) => (
+                  <tr
+                    key={item.account_code || index}
+                    className="border-b hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <td className="py-2">
+                      <span className="text-xs text-gray-400 mr-2">
+                        {item.account_code}
                       </span>
-                    )}
+                      {item.account_name}
+                    </td>
+                    <td className="py-2 text-left">
+                      {Number(item.debit) > 0 && (
+                        <span>{Number(item.debit).toLocaleString()}</span>
+                      )}
+                    </td>
+                    <td className="py-2 text-left">
+                      {Number(item.credit) > 0 && (
+                        <span>{Number(item.credit).toLocaleString()}</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot className="sticky bottom-0 bg-gray-100 dark:bg-gray-800 font-bold">
+                <tr>
+                  <td className="py-3">المجموع</td>
+                  <td className="py-3 text-left">
+                    {Number(totalDebit).toLocaleString()}
                   </td>
-                  <td className="py-2 text-left">
-                    {parseFloat(item.credit_balance) > 0 && (
-                      <span>
-                        {parseFloat(item.credit_balance).toLocaleString()}
-                      </span>
-                    )}
+                  <td className="py-3 text-left">
+                    {Number(totalCredit).toLocaleString()}
                   </td>
                 </tr>
-              ))}
-            </tbody>
-            <tfoot className="sticky bottom-0 bg-gray-100 dark:bg-gray-800 font-bold">
-              <tr>
-                <td className="py-3">المجموع</td>
-                <td className="py-3 text-left">
-                  {parseFloat(data.total_debit).toLocaleString()}
-                </td>
-                <td className="py-3 text-left">
-                  {parseFloat(data.total_credit).toLocaleString()}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+              </tfoot>
+            </table>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

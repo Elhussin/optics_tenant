@@ -197,7 +197,7 @@ export function EditOrder({ orderId }: EditOrderProps) {
         branch: store.branchId,
         sales_person: store.salesPersonId,
         order_type: store.orderType,
-        payment_type: store.paymentType,
+        payment_method: store.paymentMethodId,
         status: store.status,
         discount_amount: store.discountAmount.toFixed(2),
         tax_rate: store.taxRate.toFixed(4),

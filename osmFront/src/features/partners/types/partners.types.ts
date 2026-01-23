@@ -37,6 +37,7 @@ export interface Partner {
     contract_start_date?: string;
     contract_end_date?: string;
     created_at: string;
+    website?:string;
 }
 
 export interface PartnerCustomer {

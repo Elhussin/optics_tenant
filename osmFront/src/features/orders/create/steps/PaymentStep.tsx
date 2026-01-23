@@ -25,12 +25,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/shared/components/shadcn/ui/card";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../../store/useOrderFormStore";
-import { PAYMENT_TYPE_OPTIONS, ORDER_TYPE_OPTIONS } from "../../types";
+import type { PaymentMethod } from "../../types";
+import { ORDER_TYPE_OPTIONS } from "../../types";
 import { cn } from "@/src/shared/utils/cn";
 
 export function PaymentStep() {
   const store = useOrderFormStore();
+
+  const { query: paymentMethodsQuery } = useApiForm({
+    alias: "sales_payment_methods_list",
+    defaultValues: {
+      is_active: true,
+      page_size: 200,
+      ordering: "name_ar",
+    },
+    enabled: true,
+  });
+
+  const paymentMethods: PaymentMethod[] = useMemo(() => {
+    const data: any = paymentMethodsQuery.data;
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    return Array.isArray(data.results) ? data.results : [];
+  }, [paymentMethodsQuery.data]);
 
   // حساب الحد الأقصى للخصم بناءً على المنتجات
   const maxAllowedDiscount = useMemo(() => {
@@ -150,8 +169,10 @@ export function PaymentStep() {
             طريقة الدفع
           </Label>
           <Select
-            value={store.paymentType}
-            onValueChange={(value) => store.setPaymentType(value as any)}
+            value={store.paymentMethodId ? String(store.paymentMethodId) : ""}
+            onValueChange={(value) =>
+              store.setPaymentMethodId(value ? parseInt(value, 10) : null)
+            }
           >
             <SelectTrigger
               className={cn(
@@ -167,17 +188,17 @@ export function PaymentStep() {
               <SelectValue placeholder="اختر طريقة الدفع" />
             </SelectTrigger>
             <SelectContent className="animate-fade-in-down border-2 border-primary/50">
-              {PAYMENT_TYPE_OPTIONS.map((option) => (
+              {paymentMethods.map((method) => (
                 <SelectItem
-                  key={option.value}
-                  value={option.value}
+                  key={method.id}
+                  value={String(method.id)}
                   className={cn(
                     "cursor-pointer transition-colors bg-surface",
                     "focus:bg-primary/10 focus:text-primary",
                     "data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary data-[state=checked]:font-semibold"
                   )}
                 >
-                  {option.label}
+                  {method.name_ar || method.name_en || method.code}
                 </SelectItem>
               ))}
             </SelectContent>

@@ -315,34 +315,22 @@
       "trial": {
         "name": "Trial",
         "description": "Try all features for free for a limited time (1 month)",
-        "features": [
-          "Basic Inventory",
-          "Sales Tracking"
-        ]
+        "features": ["Basic Inventory", "Sales Tracking"]
       },
       "basic": {
         "name": "Basic",
         "description": "For small businesses",
-        "features": [
-          "Basic Inventory",
-          "Sales Tracking"
-        ]
+        "features": ["Basic Inventory", "Sales Tracking"]
       },
       "premium": {
         "name": "Premium",
         "description": "For growing businesses",
-        "features": [
-          "Advanced Inventory",
-          "Reports & Analytics"
-        ]
+        "features": ["Advanced Inventory", "Reports & Analytics"]
       },
       "enterprise": {
         "name": "Enterprise",
         "description": "For large enterprises",
-        "features": [
-          "Custom Features",
-          "Priority Support"
-        ]
+        "features": ["Custom Features", "Priority Support"]
       }
     }
   },
@@ -584,5 +572,38 @@
     "message": "Are you sure you want to permanently delete this item?",
     "successMessage": "Item permanently deleted Successfully",
     "failedMessage": "Failed to delete item"
-  }
+  },
+  "rolesPage": {
+    "title": "Roles & Permissions",
+    "description": "Manage your organization's access control and role-based permissions.",
+    "userManagement": "User Management",
+    "systemRoles": "System Roles",
+    "newRole": "New Role",
+    "editRole": "Edit Role",
+    "createRole": "Create Role",
+    "roleName": "Role Name",
+    "roleDescription": "Role Description",
+    "isActive": "Is Active",
+    "permissions": "Permissions",
+    "searchPermissions": "Search Permissions",
+    "saveRole": "Save Role",
+    "cancel": "Cancel",
+    "deleteRoleConfirm": "Are you sure you want to delete this role?",
+    "noPermissionsFound": "No permissions found matching your search.",
+    "selectRoleToManage": "Select a role from the list on the left to manage its specific access rights.",
+    "managePermissions": "Manage Permissions"
+  },
+  "importProducts": "Import Products",
+  "importProductsDescription": "Upload a CSV file to bulk import products. The file must follow the required format.",
+  "uploadCSV": "Upload CSV File",
+  "uploadCSVDescription": "Drag and drop your CSV file here, or click to browse.",
+  "selectFile": "Select File",
+  "startImport": "Start Import",
+  "importSuccess": "Import completed successfully",
+  "importFailed": "Import failed",
+  "importResult": "Import Result",
+  "created": "Created",
+  "skipped": "Skipped",
+  "failed": "Failed",
+  "errorLog": "Error Log"
 }

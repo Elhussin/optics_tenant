@@ -57,7 +57,7 @@ export default function InventoryPage() {
       const response = await api.customRequest("products_stocks_list", {});
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Fetch pending transfers
@@ -66,11 +66,11 @@ export default function InventoryPage() {
     async () => {
       const response = await api.customRequest(
         "products_stock_transfers_list",
-        { status: "pending" }
+        { status: "pending" },
       );
       return extractArrayData<StockTransfer>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Fetch low stock
@@ -79,11 +79,11 @@ export default function InventoryPage() {
     async () => {
       const response = await api.customRequest(
         "products_stocks_low_stock_retrieve",
-        {}
+        {},
       );
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Filter stocks - with useMemo for performance
@@ -425,9 +425,13 @@ export default function InventoryPage() {
                               {getStockStatusBadge(stock.stock_status)}
                             </td>
                             <td className="text-center py-3 px-4">
-                              <Button variant="ghost" size="sm">
-                                <Eye className="w-4 h-4" />
-                              </Button>
+                              <Link
+                                href={`/dashboard/inventory/stocks/${stock.id}`}
+                              >
+                                <Button variant="ghost" size="sm">
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </Link>
                             </td>
                           </tr>
                         ))}

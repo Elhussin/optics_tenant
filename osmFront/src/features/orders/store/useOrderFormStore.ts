@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { OrderItem, OrderType, PaymentType, OrderStatus, PaymentStatus } from "../types";
+import { OrderItem, OrderType, OrderStatus, PaymentStatus } from "../types";
 
 interface OrderFormState {
     // Order ID (for edit mode)
@@ -25,7 +25,7 @@ interface OrderFormState {
 
     // Order details
     orderType: OrderType;
-    paymentType: PaymentType;
+    paymentMethodId: number | null;
 
     // Items
     items: OrderItem[];
@@ -50,7 +50,7 @@ interface OrderFormState {
     setBranch: (id: number | null) => void;
     setPrescription: (id: number | null) => void;
     setOrderType: (type: OrderType) => void;
-    setPaymentType: (type: PaymentType) => void;
+    setPaymentMethodId: (id: number | null) => void;
     setStatus: (status: OrderStatus) => void;
 
     // Item actions
@@ -91,7 +91,7 @@ const initialState = {
     branchId: null,
     prescriptionId: null,
     orderType: "cash" as const,
-    paymentType: "cash" as const,
+    paymentMethodId: null,
     items: [],
     subtotal: 0,
     taxRate: 0.15,
@@ -113,7 +113,7 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
     setBranch: (id) => set({ branchId: id }),
     setPrescription: (id) => set({ prescriptionId: id }),
     setOrderType: (type) => set({ orderType: type }),
-    setPaymentType: (type) => set({ paymentType: type }),
+    setPaymentMethodId: (id) => set({ paymentMethodId: id }),
     setStatus: (status) => set({ status }),
 
     addItem: (item) => {
@@ -210,7 +210,10 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
             salesPersonId: order.sales_person?.id || order.sales_person,
             prescriptionId: order.prescription?.id || order.prescription,
             orderType: order.order_type || "cash",
-            paymentType: order.payment_type || "cash",
+            paymentMethodId:
+                (typeof order.payment_method === "object"
+                    ? order.payment_method?.id
+                    : order.payment_method) ?? null,
             items,
             subtotal: parseFloat(order.subtotal) || 0,
             taxRate: parseFloat(order.tax_rate) || 0.15,

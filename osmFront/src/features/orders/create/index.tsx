@@ -26,6 +26,7 @@ import { useOrderFormStore } from "../store/useOrderFormStore";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
 
+
 // Step Components
 import { CustomerStep } from "./steps/CustomerStep";
 import { PrescriptionStep } from "./steps/PrescriptionStep";
@@ -79,6 +80,7 @@ const STEPS = [
 export function CreateOrder() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
   const store = useOrderFormStore();
 
@@ -154,7 +156,7 @@ export function CreateOrder() {
         branch: store.branchId,
         sales_person: store.salesPersonId,
         order_type: store.orderType,
-        payment_type: store.paymentType,
+        payment_method: store.paymentMethodId,
         discount_amount: store.discountAmount.toFixed(2),
         tax_rate: store.taxRate.toFixed(4),
         paid_amount: store.paidAmount.toFixed(2),
@@ -199,10 +201,10 @@ export function CreateOrder() {
         else if (
           errors.discount_amount ||
           errors.paid_amount ||
-          errors.payment_type
+          errors.payment_method
         ) {
           const errorMsg = String(
-            errors.discount_amount || errors.paid_amount || errors.payment_type,
+            errors.discount_amount || errors.paid_amount || errors.payment_method,
           );
           safeToast(errorMsg, { type: "error" });
           setCurrentStep(4);
@@ -323,6 +325,8 @@ export function CreateOrder() {
               </div>
             </Form>
           </CardContent>
+
+          
         </Card>
 
         {/* Order Summary (sticky on desktop) */}

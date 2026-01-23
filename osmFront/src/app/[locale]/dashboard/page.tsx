@@ -38,16 +38,16 @@ import {
 
 export default function DashboardLinks() {
   const { user } = useUser();
+
   const t = useTranslations("formsConfig");
 
   const subdomain = getSubdomain();
-  const userRole = user?.role?.name?.toLowerCase();
-  console.log(user, userRole);
+  const userRoles = user?.roles?.map((r: any) => r.name) || [];
+  console.log(user, userRoles);
   const allowedLinks = links.filter((link) => {
     // 1. فلترة حسب الصلاحية
-    if (userRole && !link.roles.includes(userRole)) return false;
-    // إذا لم يتم تحميل المستخدم بعد، نخفي الروابط أو ننتظر (هنا نخفيها مؤقتاً)
-    if (!userRole) return false;
+    const hasAccess = link.roles.some((role) => userRoles.includes(role));
+    if (!hasAccess) return false;
 
     // 2. فلترة حسب النطاق (Subdomain)
     if (subdomain) {
@@ -99,28 +99,28 @@ const links = [
   // Tenant
   {
     href: "clients",
-    roles: ["owner"],
+    roles: ["TenantOwner"],
     group: "Tenant",
     isTenant: false,
     icon: Users,
   },
   {
     href: "register-tenants",
-    roles: ["owner"],
+    roles: ["TenantOwner"],
     group: "Tenant",
     isTenant: false,
     icon: UserPlus,
   },
   {
     href: "domain",
-    roles: ["owner"],
+    roles: ["TenantOwner"],
     group: "Tenant",
     isTenant: false,
     icon: Globe,
   },
   {
     href: "payments",
-    roles: ["owner"],
+    roles: ["TenantOwner"],
     group: "Billing",
     isTenant: false,
     icon: CreditCard,
@@ -128,50 +128,51 @@ const links = [
   // Billing
   {
     href: "subscription-plans",
-    roles: ["owner"],
+    roles: ["TenantOwner"],
     group: "Billing",
     isTenant: false,
     icon: LayoutList,
   },
-  // Users
+  // Access Control
   {
     href: "roles",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Access Control",
     isTenant: true,
     icon: Shield,
   },
   {
     href: "users",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Access Control",
     isTenant: true,
     icon: Users,
   },
   {
     href: "permissions",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Access Control",
     isTenant: true,
     icon: Key,
   },
   {
     href: "role-permissions",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Access Control",
     isTenant: true,
     icon: ShieldCheck,
   },
+  // Support & Settings
   {
     href: "contact-us",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Support",
     isTenant: true,
     icon: Headphones,
   },
   {
     href: "tenant-settings",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Settings",
     isTenant: true,
     icon: Settings,
@@ -179,70 +180,75 @@ const links = [
   // CRM
   {
     href: "customers",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist", "SalesClerk"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-interactions",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
+    href: "partners",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist", "FinanceOfficer"],
+    group: "Customer",
+    isTenant: true,
+    icon: Building2,
+  },
+  {
     href: "crm-complaints",
-    roles: ["owner", "admin", "crm"],
+    roles: [
+      "TenantOwner",
+      "TenantAdmin",
+      "CRMSpecialist",
+      "CustomerServiceRep",
+    ],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-opportunities",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-tasks",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-campaigns",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-documents",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-subscriptions",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
   },
   {
     href: "crm-customer-groups",
-    roles: ["owner", "admin", "crm"],
-    group: "Customer",
-    isTenant: true,
-    icon: Smile,
-  },
-  {
-    href: "crm-contacts",
-    roles: ["owner", "admin", "crm"],
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
     group: "Customer",
     isTenant: true,
     icon: Smile,
@@ -250,63 +256,56 @@ const links = [
   // HRM
   {
     href: "hrm-departments",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Building2,
   },
   {
     href: "hrm-employees",
-    roles: ["owner", "admin", "hrm"],
-    group: "Hrm",
-    isTenant: true,
-    icon: Briefcase,
-  },
-  {
-    href: "hrm-employees",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
   },
   {
     href: "hrm-employee-leave",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
   },
   {
     href: "hrm-attendance",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
   },
   {
     href: "hrm-performance-review",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
   },
   {
     href: "hrm-payroll",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager", "FinanceOfficer"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
   },
   {
     href: "hrm-tasks",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
   },
   {
     href: "hrm-notifications",
-    roles: ["owner", "admin", "hrm"],
+    roles: ["TenantOwner", "TenantAdmin", "HRManager"],
     group: "Hrm",
     isTenant: true,
     icon: Briefcase,
@@ -314,7 +313,7 @@ const links = [
   // Prescriptions
   {
     href: "prescriptions",
-    roles: ["owner", "admin", "prescriptions"],
+    roles: ["TenantOwner", "TenantAdmin", "Optometrist"],
     group: "Prescriptions",
     isTenant: true,
     icon: FileText,
@@ -322,21 +321,21 @@ const links = [
   // Branch
   {
     href: "branch-users",
-    roles: ["owner", "admin", "branch"],
+    roles: ["TenantOwner", "TenantAdmin", "BranchManager"],
     group: "Branch",
     isTenant: true,
     icon: UserCog,
   },
   {
     href: "branches",
-    roles: ["owner", "admin", "branch"],
+    roles: ["TenantOwner", "TenantAdmin", "BranchManager"],
     group: "Branch",
     isTenant: true,
     icon: Store,
   },
   {
     href: "branches-shift",
-    roles: ["owner", "admin", "branch"],
+    roles: ["TenantOwner", "TenantAdmin", "BranchManager"],
     group: "Branch",
     isTenant: true,
     icon: Store,
@@ -344,84 +343,76 @@ const links = [
   // Product
   {
     href: "attributes",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: Grid,
   },
   {
     href: "attribute-values",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: List,
   },
   {
     href: "suppliers",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: Truck,
   },
   {
     href: "manufacturers",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: Factory,
   },
   {
     href: "brands",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: Star,
   },
   {
     href: "categories",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: Layers,
   },
-  // {
-  //   href: "lens-coatings",
-  //   roles: ["owner"],
-  //   group: "Product",
-  //   isTenant: true,
-  //   icon: Eye,
-  // },
   {
-    href: "products",
-    roles: ["owner"],
+    href: "product",
+    roles: [
+      "TenantOwner",
+      "TenantAdmin",
+      "InventoryManager",
+      "BranchManager",
+      "SalesClerk",
+    ],
     group: "Product",
     isTenant: true,
     icon: Package,
   },
-  // {
-  //   href: "product-variants",
-  //   roles: ["owner"],
-  //   group: "Product",
-  //   isTenant: true,
-  //   icon: Tags,
-  // },
   {
     href: "product-images",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
     group: "Product",
     isTenant: true,
     icon: ImageIcon,
   },
   {
     href: "flexible-prices",
-    roles: ["owner"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager", "BranchManager"],
     group: "Product",
     isTenant: true,
     icon: DollarSign,
   },
   {
     href: "pages",
-    roles: ["owner", "admin"],
+    roles: ["TenantOwner", "TenantAdmin"],
     group: "Pages",
     isTenant: true,
     icon: FileText,
@@ -429,15 +420,15 @@ const links = [
   // Orders & Sales
   {
     href: "orders",
-    roles: ["owner", "admin", "sales", "cashier", "manager"],
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk", "BranchManager"],
     group: "Sales",
     isTenant: true,
     icon: ShoppingCart,
   },
-  // Wholesale (New!)
+  // Wholesale
   {
     href: "wholesale",
-    roles: ["owner", "admin", "sales", "manager"],
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk", "BranchManager"],
     group: "Sales",
     isTenant: true,
     icon: Truck,
@@ -445,7 +436,7 @@ const links = [
   // Inventory
   {
     href: "inventory",
-    roles: ["owner", "admin", "store_keeper", "manager"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager", "BranchManager"],
     group: "Inventory",
     isTenant: true,
     icon: Warehouse,
@@ -453,15 +444,15 @@ const links = [
   // Reports
   {
     href: "reports",
-    roles: ["owner", "admin", "manager", "accountant"],
+    roles: ["TenantOwner", "TenantAdmin", "BranchManager", "FinanceOfficer"],
     group: "Reports",
     isTenant: true,
     icon: BarChart3,
   },
-  // Accounting (New!)
+  // Accounting
   {
     href: "accounting",
-    roles: ["owner", "admin", "accountant"],
+    roles: ["TenantOwner", "TenantAdmin", "FinanceOfficer"],
     group: "Accounting",
     isTenant: true,
     icon: DollarSign,
