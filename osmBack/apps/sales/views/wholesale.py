@@ -21,15 +21,14 @@ from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 # الأدوار المسموحة
-WHOLESALE_ROLES = ["sales", "manager", "wholesale_manager"]
-SUPER_ROLES = ["admin", "owner"]
+WHOLESALE_ROLES = ["SalesClerk", "BranchManager"]
 
 
 @api_view(['POST'])
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=WHOLESALE_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=WHOLESALE_ROLES
     )
 ])
 def get_wholesale_pricing(request):
@@ -124,7 +123,7 @@ def get_wholesale_pricing(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=WHOLESALE_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=WHOLESALE_ROLES
     )
 ])
 def validate_wholesale_order(request):
@@ -184,7 +183,7 @@ def validate_wholesale_order(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=WHOLESALE_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=WHOLESALE_ROLES
     )
 ])
 def create_wholesale_order(request):
@@ -280,7 +279,7 @@ def create_wholesale_order(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=WHOLESALE_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=WHOLESALE_ROLES
     )
 ])
 def customer_statement(request, customer_id):
@@ -337,7 +336,7 @@ def customer_statement(request, customer_id):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=WHOLESALE_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=WHOLESALE_ROLES
     )
 ])
 def wholesale_customers(request):
@@ -361,7 +360,7 @@ def wholesale_customers(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=WHOLESALE_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=WHOLESALE_ROLES
     )
 ])
 def wholesale_dashboard(request):
@@ -431,7 +430,7 @@ def wholesale_dashboard(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=['accountant', 'manager'], super_roles=SUPER_ROLES
+        allowed_roles=['FinanceOfficer', 'BranchManager']
     )
 ])
 def update_customer_credit(request, customer_id):

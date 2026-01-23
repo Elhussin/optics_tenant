@@ -16,8 +16,9 @@ from core.views import BaseViewSet
 
 # Helper for CRM permissions
 # Sales, Customer Support, Admin, Owner
-CRM_ROLES = ["sales", "support"]
-SUPER_ROLES = ["admin", "owner"]
+CRM_ROLES = ["SalesClerk", "CustomerServiceRep",
+             "CRMSpecialist", "BranchManager"]
+# SUPER_ROLES = ["admin", "owner"]
 
 
 class CRMBaseViewSet(BaseViewSet):
@@ -25,7 +26,7 @@ class CRMBaseViewSet(BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             allowed_roles=CRM_ROLES,
-            super_roles=SUPER_ROLES
+            required_permissions=["view_customer"]
         )
     ]
 
@@ -100,5 +101,5 @@ class ContactViewSet(BaseViewSet):
         return [
             IsAuthenticated(),
             RoleOrPermissionRequired(
-                super_roles=SUPER_ROLES, allowed_roles=CRM_ROLES)
+                allowed_roles=CRM_ROLES)
         ]

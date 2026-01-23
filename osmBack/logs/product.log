@@ -110,3 +110,142 @@
 [2026-01-14 23:10:45,723] INFO product: clean_vdata for variant: {'id': 29, 'product_type_id': 209, 'last_purchase_price': '250.00', 'selling_price': '600.00', 'discount_percentage': '10.00', 'sku': '395004599', 'warranty_id': 170, 'weight_id': 193, 'dimensions_id': 171, 'spherical': '-01.00', 'cylinder': '-00.50', 'lens_diameter_id': 112, 'lens_color_id': 210, 'lens_material_id': 5, 'lens_coatings': [182, 190], 'is_active': True}
 [2026-01-14 23:10:45,784] INFO product: Updated M2M field lens_coatings = [182, 190]
 [2026-01-14 23:10:45,870] INFO product: ✅ Updated description after M2M fields
+[2026-01-22 20:55:24,563] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 20:55:24,567] INFO product: 📦 variants in validated_data: [{'product_type': 171, 'last_purchase_price': '50', 'selling_price': '500', 'discount_percentage': '10', 'sku': '1313111212', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-01-22 20:55:24,567] INFO product: 📦 variants_data after pop: [{'product_type': 171, 'last_purchase_price': '50', 'selling_price': '500', 'discount_percentage': '10', 'sku': '1313111212', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-01-22 20:55:24,575] INFO product: ✅ Product created: 4 - evetor
+[2026-01-22 20:55:24,604] INFO product: 🔍 _manage_variants called for product 4 (evetor)
+[2026-01-22 20:55:24,604] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '50', 'selling_price': '500', 'discount_percentage': '10', 'sku': '1313111212', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-01-22 20:55:24,625] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-22 20:55:24,625] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-22 20:55:24,626] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 20:55:24,626] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 20:55:24,626] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 20:55:24,626] INFO product: Converted FK field: frame_color=18 -> frame_color_id=18
+[2026-01-22 20:55:24,627] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-01-22 20:55:24,627] INFO product: Converted FK field: temple_length=19 -> temple_length_id=19
+[2026-01-22 20:55:24,627] INFO product: Converted FK field: bridge_width=113 -> bridge_width_id=113
+[2026-01-22 20:55:24,627] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-01-22 20:55:24,627] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-01-22 20:55:24,627] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-01-22 20:55:24,627] INFO product: clean_vdata for variant: {'product_type_id': 171, 'last_purchase_price': '50', 'selling_price': '500', 'discount_percentage': '10', 'sku': '1313111212', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'frame_color_id': 18, 'lens_diameter_id': 123, 'temple_length_id': 19, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-01-22 20:55:24,627] INFO product: M2M fields for FrameVariant: []
+[2026-01-22 20:55:24,627] INFO product: Creating variant with data: {'product_type_id': 171, 'last_purchase_price': '50', 'selling_price': '500', 'discount_percentage': '10', 'sku': '1313111212', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'frame_color_id': 18, 'lens_diameter_id': 123, 'temple_length_id': 19, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-01-22 21:05:55,610] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 21:05:55,616] INFO product: 📦 variants in validated_data: [{'id': 1, 'product_type': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111212', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': ''}]
+[2026-01-22 21:05:55,616] INFO product: 📦 variants_data after pop: [{'id': 1, 'product_type': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111212', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': ''}]
+[2026-01-22 21:05:55,634] INFO product: ✅ Product created: 5 - evetor2
+[2026-01-22 21:05:55,657] INFO product: 🔍 _manage_variants called for product 5 (evetor2)
+[2026-01-22 21:05:55,658] INFO product: 📋 variants_data received: [{'id': 1, 'product_type': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111212', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': ''}]
+[2026-01-22 21:05:55,673] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-22 21:05:55,673] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-22 21:05:55,673] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 21:05:55,673] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: frame_color=18 -> frame_color_id=18
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: temple_length=19 -> temple_length_id=19
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: bridge_width=113 -> bridge_width_id=113
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-01-22 21:05:55,674] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-01-22 21:05:55,674] INFO product: clean_vdata for variant: {'id': 1, 'product_type_id': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111212', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'frame_color_id': 18, 'lens_diameter_id': 123, 'temple_length_id': 19, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-01-22 21:05:55,674] INFO product: M2M fields for FrameVariant: []
+[2026-01-22 21:05:55,674] INFO product: Creating variant with data: {'product_type_id': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111212', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'frame_color_id': 18, 'lens_diameter_id': 123, 'temple_length_id': 19, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-01-22 21:06:37,740] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 21:06:37,741] INFO product: 📦 variants in validated_data: [{'id': 1, 'product_type': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111211', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': ''}]
+[2026-01-22 21:06:37,741] INFO product: 📦 variants_data after pop: [{'id': 1, 'product_type': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111211', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': ''}]
+[2026-01-22 21:06:37,746] INFO product: ✅ Product created: 6 - evetor2
+[2026-01-22 21:06:37,756] INFO product: 🔍 _manage_variants called for product 6 (evetor2)
+[2026-01-22 21:06:37,758] INFO product: 📋 variants_data received: [{'id': 1, 'product_type': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111211', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'frame_color': 18, 'lens_diameter': 123, 'temple_length': 19, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': ''}]
+[2026-01-22 21:06:37,772] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-22 21:06:37,772] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-22 21:06:37,772] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 21:06:37,772] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 21:06:37,772] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 21:06:37,772] INFO product: Converted FK field: frame_color=18 -> frame_color_id=18
+[2026-01-22 21:06:37,773] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-01-22 21:06:37,773] INFO product: Converted FK field: temple_length=19 -> temple_length_id=19
+[2026-01-22 21:06:37,773] INFO product: Converted FK field: bridge_width=113 -> bridge_width_id=113
+[2026-01-22 21:06:37,773] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-01-22 21:06:37,773] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-01-22 21:06:37,773] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-01-22 21:06:37,773] INFO product: clean_vdata for variant: {'id': 1, 'product_type_id': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111211', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'frame_color_id': 18, 'lens_diameter_id': 123, 'temple_length_id': 19, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-01-22 21:06:37,773] INFO product: M2M fields for FrameVariant: []
+[2026-01-22 21:06:37,773] INFO product: Creating variant with data: {'product_type_id': 171, 'last_purchase_price': '50.00', 'selling_price': '500.00', 'discount_percentage': '10.00', 'sku': '1313111211', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'frame_color_id': 18, 'lens_diameter_id': 123, 'temple_length_id': 19, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-01-22 22:22:52,997] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 22:22:52,998] INFO product: 📦 variants in validated_data: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:22:52,999] INFO product: 📦 variants_data after pop: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:22:53,011] INFO product: ✅ Product created: 7 - Vouge 2011
+[2026-01-22 22:22:53,027] INFO product: 🔍 _manage_variants called for product 7 (Vouge 2011)
+[2026-01-22 22:22:53,027] INFO product: 📋 variants_data received: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:22:53,039] INFO product: FK fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-01-22 22:22:53,040] INFO product: Converted FK field: product_type=172 -> product_type_id=172
+[2026-01-22 22:22:53,040] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 22:22:53,040] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 22:22:53,041] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 22:22:53,041] INFO product: clean_vdata for variant: {'product_type_id': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-01-22 22:22:53,042] INFO product: M2M fields for ProductVariant: []
+[2026-01-22 22:22:53,042] INFO product: Creating variant with data: {'product_type_id': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-01-22 22:25:34,827] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 22:25:34,827] INFO product: 📦 variants in validated_data: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:25:34,827] INFO product: 📦 variants_data after pop: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:25:34,830] INFO product: ✅ Product created: 8 - Vouge 2011
+[2026-01-22 22:25:34,835] INFO product: 🔍 _manage_variants called for product 8 (Vouge 2011)
+[2026-01-22 22:25:34,835] INFO product: 📋 variants_data received: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:25:34,847] INFO product: FK fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-01-22 22:25:34,848] INFO product: Converted FK field: product_type=172 -> product_type_id=172
+[2026-01-22 22:25:34,848] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 22:25:34,848] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 22:25:34,848] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 22:25:34,848] INFO product: clean_vdata for variant: {'product_type_id': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-01-22 22:25:34,848] INFO product: M2M fields for ProductVariant: []
+[2026-01-22 22:25:34,848] INFO product: Creating variant with data: {'product_type_id': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-01-22 22:27:27,840] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 22:27:27,843] INFO product: 📦 variants in validated_data: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:27:27,843] INFO product: 📦 variants_data after pop: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:27:27,861] INFO product: ✅ Product created: 9 - Vouge 2011
+[2026-01-22 22:27:27,883] INFO product: 🔍 _manage_variants called for product 9 (Vouge 2011)
+[2026-01-22 22:27:27,883] INFO product: 📋 variants_data received: [{'product_type': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-01-22 22:27:27,911] INFO product: FK fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-01-22 22:27:27,912] INFO product: Converted FK field: product_type=172 -> product_type_id=172
+[2026-01-22 22:27:27,912] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 22:27:27,913] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 22:27:27,913] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 22:27:27,913] INFO product: clean_vdata for variant: {'product_type_id': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-01-22 22:27:27,913] INFO product: M2M fields for ProductVariant: []
+[2026-01-22 22:27:27,916] INFO product: Creating variant with data: {'product_type_id': 172, 'last_purchase_price': '100', 'selling_price': '300', 'discount_percentage': '20', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-01-22 22:42:20,356] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 22:42:20,360] INFO product: 📦 variants in validated_data: [{'id': 3, 'product_type': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [196, 204, 205], 'is_active': True, 'attributes': ''}]
+[2026-01-22 22:42:20,361] INFO product: 📦 variants_data after pop: [{'id': 3, 'product_type': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [196, 204, 205], 'is_active': True, 'attributes': ''}]
+[2026-01-22 22:42:20,383] INFO product: ✅ Product created: 10 - Clear view
+[2026-01-22 22:42:20,418] INFO product: 🔍 _manage_variants called for product 10 (Clear view)
+[2026-01-22 22:42:20,418] INFO product: 📋 variants_data received: [{'id': 3, 'product_type': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '1234560000', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [196, 204, 205], 'is_active': True, 'attributes': ''}]
+[2026-01-22 22:42:20,437] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-01-22 22:42:20,437] INFO product: Converted FK field: product_type=224 -> product_type_id=224
+[2026-01-22 22:42:20,437] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 22:42:20,437] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 22:42:20,440] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 22:42:20,440] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-01-22 22:42:20,440] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-01-22 22:42:20,440] INFO product: clean_vdata for variant: {'id': 3, 'product_type_id': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'spherical': '-01.00', 'lens_diameter_id': 119, 'lens_material_id': 5, 'lens_coatings': [196, 204, 205], 'is_active': True}
+[2026-01-22 22:42:20,440] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-01-22 22:42:20,440] INFO product: Creating variant with data: {'product_type_id': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '1234560000', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'spherical': '-01.00', 'lens_diameter_id': 119, 'lens_material_id': 5, 'is_active': True}
+[2026-01-22 22:42:38,830] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-22 22:42:38,830] INFO product: 📦 variants in validated_data: [{'id': 3, 'product_type': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '12345600001', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [196, 204, 205], 'is_active': True, 'attributes': ''}]
+[2026-01-22 22:42:38,831] INFO product: 📦 variants_data after pop: [{'id': 3, 'product_type': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '12345600001', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [196, 204, 205], 'is_active': True, 'attributes': ''}]
+[2026-01-22 22:42:38,835] INFO product: ✅ Product created: 11 - Clear view
+[2026-01-22 22:42:38,852] INFO product: 🔍 _manage_variants called for product 11 (Clear view)
+[2026-01-22 22:42:38,853] INFO product: 📋 variants_data received: [{'id': 3, 'product_type': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '12345600001', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [196, 204, 205], 'is_active': True, 'attributes': ''}]
+[2026-01-22 22:42:38,863] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-01-22 22:42:38,864] INFO product: Converted FK field: product_type=224 -> product_type_id=224
+[2026-01-22 22:42:38,864] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-01-22 22:42:38,865] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-01-22 22:42:38,865] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-01-22 22:42:38,865] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-01-22 22:42:38,865] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-01-22 22:42:38,865] INFO product: clean_vdata for variant: {'id': 3, 'product_type_id': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '12345600001', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'spherical': '-01.00', 'lens_diameter_id': 119, 'lens_material_id': 5, 'lens_coatings': [196, 204, 205], 'is_active': True}
+[2026-01-22 22:42:38,865] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-01-22 22:42:38,866] INFO product: Creating variant with data: {'product_type_id': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '12345600001', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'spherical': '-01.00', 'lens_diameter_id': 119, 'lens_material_id': 5, 'is_active': True}
+[2026-01-22 22:42:38,986] INFO product: Set M2M field lens_coatings = [196, 204, 205]
+[2026-01-22 22:42:39,186] INFO product: ✅ Updated description after M2M fields

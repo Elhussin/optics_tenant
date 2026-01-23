@@ -97,17 +97,23 @@ class LoginView(APIView):
             if not user.is_active:
                 return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
 
-            if user.role:
-                permissions = user.role.permissions.all()
-            else:
-                permissions = Permission.objects.none()
+            # Aggregating roles and permissions
+            user_roles = list(user.roles.all())
+
+            role_names = [r.name for r in user_roles]
+            all_permissions = set()
+            for r in user_roles:
+                all_permissions.update(
+                    r.permissions.values_list('code', flat=True))
 
             refresh = RefreshToken.for_user(user)
-            refresh["role_id"] = user.role.id if user.role else None
-            refresh["role"] = user.role.name if user.role else None
+            # For backward compatibility, pick the first role as primary role_id/role
+            primary_role = user_roles[0] if user_roles else None
+            refresh["role_id"] = primary_role.id if primary_role else None
+            refresh["role"] = primary_role.name if primary_role else None
+            refresh["roles"] = role_names
             refresh["tenant"] = connection.schema_name
-            refresh["permissions"] = list(
-                permissions.values_list('code', flat=True))
+            refresh["permissions"] = list(all_permissions)
 
             response = Response({"msg": "Login successful"})
             set_token_cookies(response, access=str(
@@ -147,17 +153,23 @@ class RefreshTokenView(APIView):
             # get user permissions from database
             user_id = refresh["user_id"]
             user = User.objects.get(id=user_id)
-            if user.role:
-                permissions = user.role.permissions.all()
-            else:
-                permissions = Permission.objects.none()
+            # Aggregating roles and permissions
+            user_roles = list(user.roles.all())
 
-            access["role_id"] = user.role.id if user.role else None
-            access["role"] = user.role.name if user.role else None
+            role_names = [r.name for r in user_roles]
+            all_permissions = set()
+            for r in user_roles:
+                all_permissions.update(
+                    r.permissions.values_list('code', flat=True))
+
+            # For backward compatibility, pick the first role as primary role_id/role
+            primary_role = user_roles[0] if user_roles else None
+            access["role_id"] = primary_role.id if primary_role else None
+            access["role"] = primary_role.name if primary_role else None
+            access["roles"] = role_names
             access["tenant"] = refresh.payload.get(
                 "tenant", connection.schema_name)
-            access["permissions"] = list(
-                permissions.values_list('code', flat=True))
+            access["permissions"] = list(all_permissions)
 
             response = Response(
                 {"msg": "Token refreshed", "access": str(access)})
@@ -296,7 +308,8 @@ class PermissionViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
+            required_permissions=["view_permission"]
+        )
     ]
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
@@ -306,7 +319,8 @@ class RolePermissionViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
+            required_permissions=["view_permission"]
+        )
     ]
 
     queryset = RolePermission.objects.all()
@@ -329,7 +343,8 @@ class RoleViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
+            required_permissions=["view_role"]
+        )
     ]
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
@@ -343,16 +358,19 @@ class UserViewSet(BaseViewSet):
     filter_fields = USER_FILTER_FIELDS
     permission_classes = [
         IsAuthenticated,
-        RoleOrPermissionRequired(
-            allowed_roles=["staff"],
-            required_permissions=["view_users"]
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=["BranchManager", "HRManager"],
+            required_permissions=["view_user"]
         )
     ]
 
     def get_queryset(self):
         user = self.request.user
-        # Allow superuser or users with specific roles (admin, owner, staff) to see everyone
-        if user.is_superuser or (getattr(user, 'role', None) and user.role.name in ["admin", "owner", "staff"]):
+        # Allow superuser or users with specific roles (TenantOwner, TenantAdmin, BranchManager) to see everyone
+        user_roles = {r.name for r in user.roles.all()}
+
+        allowed_admin_roles = {"TenantOwner", "TenantAdmin", "BranchManager"}
+        if user.is_superuser or user_roles.intersection(allowed_admin_roles):
             return User.objects.all()
         # Users see themselves
         return User.objects.filter(id=user.id)
@@ -368,7 +386,8 @@ class TenantSettingsViewset(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
+            required_permissions=["view_tenant_settings"]
+        )
     ]
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
@@ -397,8 +416,7 @@ class PageViewSet(BaseViewSet):
             return [IsAuthenticated()]
         return [
             IsAuthenticated(),
-            RoleOrPermissionRequired.with_requirements(
-                super_roles=["admin", "owner"])
+            RoleOrPermissionRequired.with_requirements()
         ]
 
     def update(self, request, *args, **kwargs):

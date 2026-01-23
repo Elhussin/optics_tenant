@@ -1,52 +1,53 @@
 code,description
-# Core & Users
+*,Wildcard for full access to everything
+__all__,Internal flag for all permissions
 view_dashboard,Can view the main dashboard
 view_user,Can view user list and details
 create_user,Can create new users
 edit_user,Can edit existing users
 delete_user,Can delete users
+view_role,Can view role list and details
 manage_roles,Can create and assign roles
+view_permission,Can view permission list and details
 view_activity_log,Can view system activity logs
 
-# Branches & Settings
 view_branch,Can view branch details
 create_branch,Can add new branches
 edit_branch,Can edit branch details
-manage_tenant_settings,Can edit company settings (logo business info)
+view_client,Can view and manage tenant clients
+view_domain,Can view and manage tenant domains
+view_subscription,Can view and manage subscription plans
+view_tenant_settings,Can view and manage company settings (logo business info)
 
-# Products & Inventory
 view_product,Can view product list
 create_product,Can create new products
 edit_product,Can edit product details
 delete_product,Can soft delete products
+
 view_cost_price,Can see the buying price/cost of products
 view_inventory,Can view stock levels
 adjust_inventory,Can manually adjust stock quantities
 transfer_stock,Can transfer stock between branches
 
-# Sales & Finance
 view_sale,Can view orders and invoices list
 create_sale,Can create new orders/sales
 edit_sale,Can edit existing orders
 cancel_sale,Can cancel orders
 view_invoice,Can view invoices
 create_payment,Can record payments
-view_financial_reports,Can view daily/monthly sales reports
+view_accounting,Can view and manage financial data and reports
 
-# Prescriptions (Optical)
 view_prescription,Can view patient prescriptions
 create_prescription,Can create new eye tests/prescriptions
 edit_prescription,Can edit existing prescriptions
 print_prescription,Can print prescription cards
 
-# CRM (Customers)
 view_customer,Can view customer profiles
 create_customer,Can add new customers
 edit_customer,Can edit customer details
 delete_customer,Can delete customers
 view_customer_history,Can view full purchase/medical history
 
-# HRM (Employees)
 view_employee,Can view employee list
 manage_employee,Can create/edit employees
 manage_attendance,Can manage schedules and attendance

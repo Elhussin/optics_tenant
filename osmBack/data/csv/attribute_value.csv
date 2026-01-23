@@ -89,43 +89,53 @@ Length,16,16
 Length,14,14
 Length,12,12
 Length,10,10
-Width,62,62
-Width,60,60
-Width,58,58
-Width,56,56
-Width,54,54
-Width,52,52
-Width,50,50
-Width,48,48
-Width,46,46
-Width,44,44
-Width,42,42
-Width,40,40
-Width,38,38
-Width,36,36
-Width,34,34
-Width,32,32
-Width,30,30
-Width,28,28
-Width,26,26
-Width,24,24
-Diameter,62,62
-Diameter,60,60
-Diameter,58,58
-Diameter,56,56
-Diameter,54,54
-Diameter,52,52
+Width,62,62MM
+Width,60,60MM
+Width,58,58MM
+Width,56,56MM
+Width,54,54MM
+Width,52,52MM
+Width,50,50MM
+Width,48,48MM
+Width,46,46MM
+Width,44,44MM
+Width,42,42MM
+Width,40,40MM
+Width,38,38MM
+Width,36,36MM
+Width,34,34MM
+Width,32,32MM
+Width,30,30MM
+Width,28,28MM
+Width,26,26MM
+Width,24,24MM
+Width,22,22MM
+Width,20,20MM
+Width,18,18MM
+Width,16,16MM
+Width,14,14MM
+Width,12,12MM
+Width,10,10MM
+Diameter,62,62MM
+Diameter,60,60MM
+Diameter,58,58MM
+Diameter,56,56MM
+Diameter,54,54MM
+Diameter,52,52MM
 Diameter,50,50
 Diameter,48,48
 Diameter,46,46
 Diameter,44,44
 Diameter,42,42
 Diameter,40,40
-Diameter,38,38
-Diameter,36,36
-Diameter,34,34
-Diameter,32,32
-Diameter,30,30
+Diameter,38,38MM
+Diameter,36,36MM
+Diameter,34,34MM
+Diameter,32,32MM
+Diameter,30,30MM
+Diameter,14,14MM
+Diameter,12,12MM
+Diameter,10,10MM
 Base Curve,+00.00,+00.00
 Base Curve,+00.50,+00.50
 Base Curve,+01.00,+01.00
@@ -152,15 +162,19 @@ Base Curve,+11.00,+11.00
 Base Curve,+11.50,+11.50
 Base Curve,+12.00,+12.00
 Base Curve,+12.50,+12.50
-Product Type,SV-ST,Single Stock
-Product Type,SV-RX,Single RX
-Product Type,MF-RX,Multi  Focal RX
-Product Type,BF-RX,Bifocal RX
-Product Type,TF-RX,Triple Focal RX
+Product Type,SL-ST,Single Stock
+Product Type,SL-RX,Single RX
+Product Type,SL-MF,Multi  Focal RX
+Product Type,SL-BF,Bifocal RX
+Product Type,SL-TF,Triple Focal RX
 Product Type,CL-Cl,Contact Lens Clear
 Product Type,CL-CO,Contact Lens Colored
 Product Type,FR-SG,Frames Sun Glasses
 Product Type,FR-SP,Frames Spectacle Glasses
+Product Type,OT,Other
+Product Type,DV,Devices
+Product Type,AX,Accessories
+
 Water Content,50%,Water Content 50%
 Water Content,60%,Water Content 60%
 Replacement Schedule,6M,Replacement Schedule 6 Month

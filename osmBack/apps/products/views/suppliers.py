@@ -8,8 +8,7 @@ from apps.products.serializers.suppliers import (
 from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
-SUPPLY_MANAGERS = ["manager", "store_keeper"]
-SUPER_ROLES = ["admin", "owner"]
+SUPPLY_MANAGERS = ["InventoryManager", "BranchManager"]
 
 
 class SupplierBaseViewSet(BaseViewSet):
@@ -17,7 +16,7 @@ class SupplierBaseViewSet(BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             allowed_roles=SUPPLY_MANAGERS,
-            super_roles=SUPER_ROLES
+            required_permissions=["view_inventory"]
         )
     ]
 

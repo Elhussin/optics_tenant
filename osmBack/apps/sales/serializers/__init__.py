@@ -21,6 +21,8 @@ from apps.sales.serializers.payment import (
     PaymentRefundSerializer,
 )
 
+from apps.sales.serializers.payment_method import PaymentMethodSerializer
+
 __all__ = [
     # Order serializers
     'OrderSerializer',
@@ -37,4 +39,5 @@ __all__ = [
     'BNPLSessionRequestSerializer',
     'BNPLSessionResponseSerializer',
     'PaymentRefundSerializer',
+    'PaymentMethodSerializer',
 ]

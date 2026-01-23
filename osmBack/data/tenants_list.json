@@ -1,6 +1,6 @@
 [
   {
-    "name": "Public",
+    "name": "Store1",
     "paid_until": "2030-12-31",
     "trial": true,
     "create_superuser": true,

@@ -94,7 +94,22 @@
       "brand": {
         "related_model": "products.Brand",
         "lookup_field": "name",
-        "create_if_missing": false
+        "create_if_missing": true
+      },
+      "category": {
+        "related_model": "products.Category",
+        "lookup_field": "name",
+        "create_if_missing": true
+      },
+      "supplier": {
+        "related_model": "products.Supplier",
+        "lookup_field": "name",
+        "create_if_missing": true
+      },
+      "manufacturer": {
+        "related_model": "products.Manufacturer",
+        "lookup_field": "name",
+        "create_if_missing": true
       }
     }
   },
@@ -114,7 +129,13 @@
     "schema": "public",
     "app": "users",
     "model": "User",
-    "csv": "csv/Users.csv"
+    "csv": "csv/Users.csv",
+    "foreign_keys": {
+      "roles": {
+        "related_model": "users.Role",
+        "lookup_field": "name"
+      }
+    }
   },
   {
     "schema": "public",

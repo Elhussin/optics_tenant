@@ -22,14 +22,12 @@ class Command(BaseCommand):
             required=False,
             help='Optional schema_name argument for custom use',
         )
-    
 
     def handle(self, *args, **options):
-        config_path = options['config'] 
+        config_path = options['config']
         schema_name = options.get('schema')
         print(f"Using config file: {config_path}")
-        print (f"Schema name: {schema_name}")
-
+        print(f"Schema name: {schema_name}")
 
         if not os.path.exists(os.path.abspath(config_path)):
 
@@ -38,32 +36,36 @@ class Command(BaseCommand):
         with open(os.path.abspath(config_path), 'r', encoding='utf-8') as f:
             config_list = json.load(f)
 
-
         for config in config_list:
             if schema_name:
                 config["schema"] = schema_name
-            schema_name =  config["schema"]
+            schema_name = config["schema"]
             app_label = config["app"]
             model_name = config["model"]
-            csv_file_path = os.path.join(os.path.dirname(config_path), config["csv"])
+            csv_file_path = os.path.join(
+                os.path.dirname(config_path), config["csv"])
             foreign_keys = config.get("foreign_keys", {})
 
-            self.import_csv_to_model(schema_name, app_label, model_name, csv_file_path, foreign_keys)
+            self.import_csv_to_model(
+                schema_name, app_label, model_name, csv_file_path, foreign_keys)
 
     def import_csv_to_model(self, schema_name, app_label, model_name, csv_file_path, foreign_keys):
-        self.stdout.write(f"\n[INFO] Importing: {csv_file_path} -> {schema_name}.{app_label}.{model_name}")
+        self.stdout.write(
+            f"\n[INFO] Importing: {csv_file_path} -> {schema_name}.{app_label}.{model_name}")
 
         with schema_context(schema_name):
             try:
-                model = apps.get_model(app_label=app_label, model_name=model_name)
+                model = apps.get_model(
+                    app_label=app_label, model_name=model_name)
             except LookupError:
-                self.stderr.write(f"[ERROR] Model {app_label}.{model_name} not found.")
+                self.stderr.write(
+                    f"[ERROR] Model {app_label}.{model_name} not found.")
                 return
 
             created_count = 0
             skipped_count = 0
             failed_rows = []
-            
+
             # Print path for debugging
             # print(os.path.abspath(csv_file_path))
 
@@ -77,39 +79,54 @@ class Command(BaseCommand):
 
                 for row_num, row in enumerate(reader, start=2):
                     data = {}
+                    mtm_data = {}
                     skip_row = False
 
                     for field_name, field in model_fields.items():
                         if field_name not in row or not row[field_name]:
                             continue
 
+                        # Handle ForeignKeys (Many-to-One)
                         if field.is_relation and field.many_to_one:
                             rel_model = field.related_model
                             fk_config = foreign_keys.get(field_name, {})
-                            # Check if the CSV header matches the foreign_keys config key (e.g. 'attribute' vs 'attribute_id')
-                            # or strictly follows model field name
-                            
                             lookup_field = fk_config.get("lookup_field", "id")
-                            create_if_missing = fk_config.get("create_if_missing", False)
+                            create_if_missing = fk_config.get(
+                                "create_if_missing", False)
 
                             try:
-                                rel_obj = rel_model.objects.get(**{lookup_field: row[field_name]})
+                                rel_obj = rel_model.objects.get(
+                                    **{lookup_field: row[field_name]})
+                                data[field.name] = rel_obj
                             except rel_model.DoesNotExist:
                                 if create_if_missing:
                                     try:
-                                        rel_obj = rel_model.objects.create(**{lookup_field: row[field_name]})
-                                        self.stdout.write(f"[NEW] Created new {rel_model.__name__}: {row[field_name]}")
+                                        rel_obj = rel_model.objects.create(
+                                            **{lookup_field: row[field_name]})
+                                        self.stdout.write(
+                                            f"[NEW] Created new {rel_model.__name__}: {row[field_name]}")
+                                        data[field.name] = rel_obj
                                     except Exception as e:
-                                        self.stderr.write(f"[ERROR] Failed to create {rel_model.__name__}: {e}")
-                                        failed_rows.append(row_num)
+                                        self.stderr.write(
+                                            f"[ERROR] Failed to create {rel_model.__name__}: {e}")
                                         skip_row = True
                                         break
                                 else:
-                                    self.stderr.write(f"[WARN] Row {row_num}: FK {field_name} not found: {row[field_name]}")
-                                    failed_rows.append(row_num)
+                                    self.stderr.write(
+                                        f"[WARN] Row {row_num}: FK {field_name} not found: {row[field_name]}")
                                     skip_row = True
                                     break
-                            data[field.name] = rel_obj
+
+                        # Handle Many-to-Many fields
+                        elif field.is_relation and field.many_to_many:
+                            mtm_config = foreign_keys.get(field_name, {})
+                            mtm_data[field_name] = {
+                                'values': [v.strip() for v in row[field_name].split(',')],
+                                'lookup_field': mtm_config.get("lookup_field", "id"),
+                                'model': field.related_model
+                            }
+
+                        # Handle regular fields
                         else:
                             data[field_name] = row[field_name]
 
@@ -117,28 +134,51 @@ class Command(BaseCommand):
                         skipped_count += 1
                         continue
 
+                    if not data:
+                        self.stderr.write(
+                            f"[WARN] Row {row_num}: No data found, skipping.")
+                        skipped_count += 1
+                        continue
+
                     try:
                         obj, created = model.objects.get_or_create(**data)
+
+                        # Now handle MTM assignments (must happen after instance is saved)
+                        if mtm_data:
+                            for mtm_field, config in mtm_data.items():
+                                rel_model = config['model']
+                                lookup_field = config['lookup_field']
+                                values = config['values']
+
+                                # Find related objects
+                                rel_objs = rel_model.objects.filter(
+                                    **{f"{lookup_field}__in": values})
+                                getattr(obj, mtm_field).set(rel_objs)
+
                         if created:
                             self.stdout.write(f"[OK] Created: {obj}")
                             created_count += 1
                         else:
-                            self.stdout.write(f"[SKIP] Exists: {obj}")
+                            self.stdout.write(
+                                f"[SKIP] Exists/Updated MTM: {obj}")
                             skipped_count += 1
                     except Exception as e:
-                        self.stderr.write(f"[ERROR] Error on row {row_num}: {e}")
+                        self.stderr.write(
+                            f"[ERROR] Error on row {row_num}: {e}")
                         failed_rows.append(row_num)
 
-            self.stdout.write(f"\n[SUMMARY] For {model_name} in schema {schema_name}:")
+            self.stdout.write(
+                f"\n[SUMMARY] For {model_name} in schema {schema_name}:")
             self.stdout.write(f"[OK] Created: {created_count}")
-            self.stdout.write(f"[SKIP] Skipped (Exists or Errors): {skipped_count}")
+            self.stdout.write(
+                f"[SKIP] Skipped (Exists or Errors): {skipped_count}")
             if failed_rows:
                 self.stderr.write(f"[ERROR] Failed Rows: {failed_rows}")
 
 
-# 
+#
 # python manage.py import_csv_with_foreign --config data/csv_configo0.json --schema store1
 
 
 # تشغيل الاستيراد من سطر الأوامر
-# pdm run python manage.py import_csv_with_foreign --config data/csv_configotenant.json --schema store20
+# pdm run python manage.py import_csv_with_foreign --config data/csv_configotenant.json --schema store3

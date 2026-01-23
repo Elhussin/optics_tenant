@@ -11,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Sum, Q
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 
 from apps.accounting.models import (
@@ -27,8 +28,7 @@ from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 # الأدوار المسموحة
-ACCOUNTING_ROLES = ["accountant", "manager", "cfo"]
-SUPER_ROLES = ["admin", "owner"]
+ACCOUNTING_ROLES = ["FinanceOfficer", "BranchManager"]
 
 
 class ChartOfAccountsViewSet(BaseViewSet):
@@ -40,7 +40,8 @@ class ChartOfAccountsViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=ACCOUNTING_ROLES,
+            required_permissions=["view_accounting"]
         )
     ]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -64,6 +65,21 @@ class ChartOfAccountsViewSet(BaseViewSet):
     def by_type(self, request):
         """الحسابات حسب النوع"""
         account_type = request.query_params.get('type')
+        if not account_type:
+            return Response(
+                {'detail': str(_('Account type is required'))},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # التحقق من صحة نوع الحساب
+        valid_types = [t[0] for t in ChartOfAccounts.ACCOUNT_TYPES]
+        if account_type not in valid_types:
+            return Response(
+                {'detail': str(_('Invalid account type: {type}').format(
+                    type=account_type))},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         accounts = self.get_queryset().filter(
             account_type=account_type,
             is_active=True,
@@ -78,7 +94,7 @@ class ChartOfAccountsViewSet(BaseViewSet):
         AutoJournalService.setup_default_accounts()
         return Response({
             'status': 'success',
-            'message': 'تم إعداد الحسابات الافتراضية'
+            'message': str(_('Default accounts have been set up successfully'))
         })
 
     @action(detail=False, methods=['get'])
@@ -99,7 +115,8 @@ class GeneralJournalViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=ACCOUNTING_ROLES,
+            required_permissions=["view_accounting"]
         )
     ]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -124,11 +141,11 @@ class GeneralJournalViewSet(BaseViewSet):
             journal.post(request.user)
             return Response({
                 'status': 'success',
-                'message': f'تم ترحيل القيد {journal.entry_number}'
+                'message': str(_('Journal entry {entry_number} has been posted').format(entry_number=journal.entry_number))
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'status': 'error', 'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -141,12 +158,12 @@ class GeneralJournalViewSet(BaseViewSet):
             reversal = journal.reverse(request.user)
             return Response({
                 'status': 'success',
-                'message': f'تم إنشاء قيد عكسي {reversal.entry_number}',
+                'message': str(_('Reversal entry {entry_number} has been created').format(entry_number=reversal.entry_number)),
                 'reversal_id': reversal.id,
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'status': 'error', 'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -162,6 +179,23 @@ class GeneralJournalViewSet(BaseViewSet):
         """القيود حسب المصدر"""
         source_type = request.query_params.get('source_type')
         source_id = request.query_params.get('source_id')
+
+        if not source_type and not source_id:
+            return Response(
+                {'detail': str(
+                    _('At least source_type or source_id is required'))},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # التحقق من صحة نوع المصدر
+        if source_type:
+            valid_types = [t[0] for t in GeneralJournal.SOURCE_TYPES]
+            if source_type not in valid_types:
+                return Response(
+                    {'detail': str(
+                        _('Invalid source type: {type}').format(type=source_type))},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
         journals = self.get_queryset()
         if source_type:
@@ -188,7 +222,8 @@ class FinancialPeriodViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=ACCOUNTING_ROLES,
+            required_permissions=["view_accounting"]
         )
     ]
 
@@ -205,7 +240,7 @@ class FinancialPeriodViewSet(BaseViewSet):
         if period:
             serializer = self.get_serializer(period)
             return Response(serializer.data)
-        return Response({'message': 'لا توجد فترة مالية نشطة'}, status=404)
+        return Response({'detail': str(_('No active financial period found'))}, status=404)
 
 
 class TaxViewSet(BaseViewSet):
@@ -215,7 +250,7 @@ class TaxViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES + ['sales'], super_roles=SUPER_ROLES
+            allowed_roles=ACCOUNTING_ROLES + ['SalesClerk']
         )
     ]
     filterset_fields = ['is_active']
@@ -228,7 +263,8 @@ class AccountingCategoryViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=ACCOUNTING_ROLES,
+            required_permissions=["view_accounting"]
         )
     ]
     filterset_fields = ['category_type']
@@ -242,7 +278,7 @@ class AccountingCategoryViewSet(BaseViewSet):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=ACCOUNTING_ROLES,
     )
 ])
 def trial_balance(request):
@@ -297,7 +333,7 @@ def trial_balance(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=ACCOUNTING_ROLES
     )
 ])
 def income_statement(request):
@@ -399,7 +435,7 @@ def income_statement(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=ACCOUNTING_ROLES,
     )
 ])
 def balance_sheet(request):
@@ -486,7 +522,7 @@ def balance_sheet(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=ACCOUNTING_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=ACCOUNTING_ROLES,
     )
 ])
 def account_ledger(request, account_id):
@@ -496,7 +532,7 @@ def account_ledger(request, account_id):
     try:
         account = ChartOfAccounts.objects.get(id=account_id)
     except ChartOfAccounts.DoesNotExist:
-        return Response({'error': 'الحساب غير موجود'}, status=404)
+        return Response({'detail': str(_('Account not found'))}, status=404)
 
     start_date = request.query_params.get('start_date')
     end_date = request.query_params.get('end_date')

@@ -14,8 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
-PRODUCT_MANAGERS = ["manager", "store_keeper"]
-SUPER_ROLES = ["admin", "owner"]
+PRODUCT_MANAGERS = ["InventoryManager", "BranchManager", "SalesClerk"]
 
 
 class ProductBaseViewSet(BaseViewSet):
@@ -23,7 +22,7 @@ class ProductBaseViewSet(BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             allowed_roles=PRODUCT_MANAGERS,
-            super_roles=SUPER_ROLES
+            required_permissions=["view_product"]
         )
     ]
 

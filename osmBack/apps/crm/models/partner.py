@@ -5,6 +5,7 @@
 
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel
 
 
@@ -18,48 +19,49 @@ class Partner(BaseModel):
     - وكيل
     """
     PARTNER_TYPES = [
-        ('insurance', 'شركة تأمين'),
-        ('bnpl', 'شركة تقسيط'),           # Buy Now Pay Later
-        ('corporate', 'شركة عملاء'),       # Corporate clients
-        ('wholesaler', 'تاجر جملة'),
-        ('agent', 'وكيل'),
+        ('insurance', _('Insurance Company')),
+        ('bnpl', _('BNPL Provider')),           # Buy Now Pay Later
+        ('corporate', _('Corporate Client')),       # Corporate clients
+        ('wholesaler', _('Wholesaler')),
+        ('agent', _('Agent')),
     ]
 
     PAYMENT_TERMS = [
-        ('immediate', 'فوري'),
-        ('7_days', '7 أيام'),
-        ('15_days', '15 يوم'),
-        ('30_days', '30 يوم'),
-        ('60_days', '60 يوم'),
-        ('90_days', '90 يوم'),
+        ('immediate', _('Immediate')),
+        ('7_days', _('7 Days')),
+        ('15_days', _('15 Days')),
+        ('30_days', _('30 Days')),
+        ('60_days', _('60 Days')),
+        ('90_days', _('90 Days')),
     ]
 
     # المعلومات الأساسية
-    name = models.CharField(max_length=200, verbose_name="اسم الشريك")
+    name = models.CharField(max_length=200, verbose_name=_('Partner Name'))
     name_en = models.CharField(
-        max_length=200, blank=True, verbose_name="الاسم بالإنجليزية")
+        max_length=200, blank=True, verbose_name=_('English Name'))
     partner_type = models.CharField(
-        max_length=20, choices=PARTNER_TYPES, verbose_name="نوع الشريك")
+        max_length=20, choices=PARTNER_TYPES, verbose_name=_('Partner Type'))
     code = models.CharField(max_length=20, unique=True,
-                            blank=True, verbose_name="رمز الشريك")
+                            blank=True, verbose_name=_('Partner Code'))
     logo = models.ImageField(
         upload_to='partners/logos/', null=True, blank=True)
 
     # معلومات الاتصال
     contact_person = models.CharField(
-        max_length=100, blank=True, verbose_name="مسؤول التواصل")
-    phone = models.CharField(max_length=20, blank=True, verbose_name="الهاتف")
-    email = models.EmailField(blank=True, verbose_name="البريد الإلكتروني")
-    website = models.URLField(blank=True, verbose_name="الموقع الإلكتروني")
-    address = models.TextField(blank=True, verbose_name="العنوان")
+        max_length=100, blank=True, verbose_name=_('Contact Person'))
+    phone = models.CharField(max_length=20, blank=True,
+                             verbose_name=_('Phone'))
+    email = models.EmailField(blank=True, verbose_name=_('Email'))
+    website = models.URLField(blank=True, verbose_name=_('Website'))
+    address = models.TextField(blank=True, verbose_name=_('Address'))
 
     # معلومات العقد
     contract_number = models.CharField(
-        max_length=50, blank=True, verbose_name="رقم العقد")
+        max_length=50, blank=True, verbose_name=_('Contract Number'))
     contract_start = models.DateField(
-        null=True, blank=True, verbose_name="بداية العقد")
+        null=True, blank=True, verbose_name=_('Contract Start Date'))
     contract_end = models.DateField(
-        null=True, blank=True, verbose_name="نهاية العقد")
+        null=True, blank=True, verbose_name=_('Contract End Date'))
     contract_document = models.FileField(
         upload_to='partners/contracts/', null=True, blank=True)
 
@@ -68,13 +70,13 @@ class Partner(BaseModel):
         max_length=20,
         choices=PAYMENT_TERMS,
         default='30_days',
-        verbose_name="شروط الدفع"
+        verbose_name=_('Payment Terms')
     )
     default_discount = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         default=0,
-        verbose_name="نسبة الخصم الافتراضية %"
+        verbose_name=_('Default Discount %')
     )
 
     # حد الائتمان والرصيد
@@ -82,14 +84,14 @@ class Partner(BaseModel):
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="حد الائتمان"
+        verbose_name=_('Credit Limit')
     )
     current_balance = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="الرصيد الحالي",
-        help_text="المبلغ المستحق على/لصالح الشريك"
+        verbose_name=_('Current Balance'),
+        help_text=_('Amount due from/to partner')
     )
 
     # للتأمين: نسبة تغطية العميل (ما يدفعه العميل)
@@ -97,18 +99,18 @@ class Partner(BaseModel):
         max_digits=5,
         decimal_places=2,
         default=20,
-        verbose_name="نسبة مشاركة العميل %",
-        help_text="النسبة التي يدفعها العميل من الفاتورة (للتأمين)"
+        verbose_name=_('Patient Share %'),
+        help_text=_('Percentage paid by the patient (for insurance)')
     )
 
     # معلومات إضافية
     tax_number = models.CharField(
-        max_length=50, blank=True, verbose_name="الرقم الضريبي")
-    notes = models.TextField(blank=True, verbose_name="ملاحظات")
+        max_length=50, blank=True, verbose_name=_('Tax Number'))
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
 
     class Meta:
-        verbose_name = "شريك"
-        verbose_name_plural = "الشركاء"
+        verbose_name = _('Partner')
+        verbose_name_plural = _('Partners')
         ordering = ['name']
 
     def __str__(self):
@@ -160,7 +162,7 @@ class PartnerBranch(BaseModel):
         'branches.Branch',
         on_delete=models.CASCADE,
         related_name='partner_agreements',
-        help_text="الفرع المرتبط بهذا الشريك"
+        help_text=_('Branch associated with this partner')
     )
 
     # شروط خاصة بهذا الفرع
@@ -169,12 +171,12 @@ class PartnerBranch(BaseModel):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="خصم خاص بالفرع %"
+        verbose_name=_('Branch Special Discount %')
     )
 
     class Meta:
-        verbose_name = "ربط شريك بفرع"
-        verbose_name_plural = "ارتباطات الشركاء بالفروع"
+        verbose_name = _('Partner Branch Link')
+        verbose_name_plural = _('Partner Branch Links')
         unique_together = ['partner', 'branch']
 
 
@@ -184,41 +186,43 @@ class PartnerPriceList(BaseModel):
     مثال: أسعار AXA الخاصة بالنظارات الطبية
     """
     PRICE_TYPE = [
-        ('discount', 'خصم على السعر الأصلي'),
-        ('fixed', 'سعر ثابت'),
-        ('markup', 'زيادة على التكلفة'),
+        ('discount', _('Discount on Original Price')),
+        ('fixed', _('Fixed Price')),
+        ('markup', _('Markup on Cost')),
     ]
 
     partner = models.ForeignKey(
         Partner, on_delete=models.CASCADE, related_name='price_lists')
-    name = models.CharField(max_length=100, verbose_name="اسم القائمة")
-    description = models.TextField(blank=True)
+    name = models.CharField(max_length=100, verbose_name=_('List Name'))
+    description = models.TextField(blank=True, verbose_name=_('Description'))
 
     # نوع التسعير
     price_type = models.CharField(
-        max_length=20, choices=PRICE_TYPE, default='discount')
+        max_length=20, choices=PRICE_TYPE, default='discount', verbose_name=_('Price Type'))
 
     # قيمة التعديل
     adjustment_value = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="قيمة التعديل",
-        help_text="نسبة للخصم، مبلغ للثابت، نسبة للزيادة"
+        verbose_name=_('Adjustment Value'),
+        help_text=_('Percentage for discount/markup, amount for fixed price')
     )
 
     # صلاحية القائمة
-    valid_from = models.DateField(null=True, blank=True)
-    valid_until = models.DateField(null=True, blank=True)
+    valid_from = models.DateField(
+        null=True, blank=True, verbose_name=_('Valid From'))
+    valid_until = models.DateField(
+        null=True, blank=True, verbose_name=_('Valid Until'))
 
     # التطبيق
     applies_to_all = models.BooleanField(
         default=False,
-        verbose_name="تطبق على كل المنتجات"
+        verbose_name=_('Applies to All Products')
     )
 
     class Meta:
-        verbose_name = "قائمة أسعار شريك"
-        verbose_name_plural = "قوائم أسعار الشركاء"
+        verbose_name = _('Partner Price List')
+        verbose_name_plural = _('Partner Price Lists')
         ordering = ['partner', 'name']
 
     def __str__(self):
@@ -270,19 +274,19 @@ class PartnerPriceListItem(BaseModel):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="سعر خاص"
+        verbose_name=_('Special Price')
     )
     special_discount = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="خصم خاص %"
+        verbose_name=_('Special Discount %')
     )
 
     class Meta:
-        verbose_name = "عنصر قائمة أسعار"
-        verbose_name_plural = "عناصر قوائم الأسعار"
+        verbose_name = _('Price List Item')
+        verbose_name_plural = _('Price List Items')
 
     def get_price_for_variant(self, variant, base_price):
         """حساب السعر النهائي للمنتج"""
@@ -326,19 +330,19 @@ class CustomerPartnerLink(BaseModel):
     member_id = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="رقم العضوية/البوليصة"
+        verbose_name=_('Member ID / Policy Number')
     )
     policy_number = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="رقم البوليصة"
+        verbose_name=_('Policy Number')
     )
 
     # صلاحية التغطية
     coverage_start = models.DateField(
-        null=True, blank=True, verbose_name="بداية التغطية")
+        null=True, blank=True, verbose_name=_('Coverage Start'))
     coverage_end = models.DateField(
-        null=True, blank=True, verbose_name="نهاية التغطية")
+        null=True, blank=True, verbose_name=_('Coverage End'))
 
     # حدود التغطية
     annual_limit = models.DecimalField(
@@ -346,14 +350,14 @@ class CustomerPartnerLink(BaseModel):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="الحد السنوي"
+        verbose_name=_('Annual Limit')
     )
     remaining_limit = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="المتبقي من الحد"
+        verbose_name=_('Remaining Limit')
     )
 
     # نسبة التحمل الخاصة بالعميل (قد تختلف عن الشريك)
@@ -362,28 +366,28 @@ class CustomerPartnerLink(BaseModel):
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="نسبة التحمل %"
+        verbose_name=_('Copay Percentage %')
     )
     copay_fixed = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name="مبلغ تحمل ثابت"
+        verbose_name=_('Fixed Copay Amount')
     )
 
     # الفئة (مثلاً: VIP, Gold, Silver)
     coverage_class = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="فئة التغطية"
+        verbose_name=_('Coverage Class')
     )
 
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
 
     class Meta:
-        verbose_name = "ربط عميل بشريك"
-        verbose_name_plural = "ارتباطات العملاء بالشركاء"
+        verbose_name = _('Customer-Partner Link')
+        verbose_name_plural = _('Customer-Partner Links')
         unique_together = ['customer', 'partner']
 
     def __str__(self):

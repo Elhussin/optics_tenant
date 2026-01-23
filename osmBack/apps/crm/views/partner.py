@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from django.utils.translation import gettext_lazy as _
 
 from apps.crm.models import (
     Partner, PartnerBranch, PartnerPriceList, PartnerPriceListItem,
@@ -25,9 +26,8 @@ from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 # الأدوار المسموحة
-PARTNER_ROLES = ["manager", "accountant", "admin"]
-SUPER_ROLES = ["admin", "owner"]
-SALES_ROLES = ["sales", "cashier", "manager"]
+PARTNER_ROLES = ["BranchManager", "FinanceOfficer"]
+SALES_ROLES = ["SalesClerk", "BranchManager"]
 
 
 class PartnerViewSet(BaseViewSet):
@@ -39,7 +39,7 @@ class PartnerViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES
         )
     ]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -59,7 +59,7 @@ class PartnerViewSet(BaseViewSet):
         partner_type = request.query_params.get('type')
         if not partner_type:
             return Response(
-                {'error': 'type parameter is required'},
+                {'detail': str(_('Type parameter is required'))},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -144,7 +144,7 @@ class PartnerBranchViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES
         )
     ]
     filterset_fields = ['partner', 'branch', 'is_active']
@@ -158,7 +158,7 @@ class PartnerPriceListViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES
         )
     ]
     filterset_fields = ['partner', 'is_active', 'price_type']
@@ -174,7 +174,7 @@ class PartnerPriceListItemViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES
         )
     ]
     filterset_fields = ['price_list', 'product', 'category']
@@ -188,7 +188,7 @@ class CustomerPartnerLinkViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES + SALES_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES + SALES_ROLES
         )
     ]
     filterset_fields = ['customer', 'partner', 'is_active']
@@ -201,7 +201,7 @@ class CustomerPartnerLinkViewSet(BaseViewSet):
         customer_id = request.query_params.get('customer_id')
         if not customer_id:
             return Response(
-                {'error': 'customer_id is required'},
+                {'detail': str(_('Customer ID is required'))},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -234,7 +234,7 @@ class InsuranceClaimViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES + SALES_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES + SALES_ROLES
         )
     ]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -259,12 +259,12 @@ class InsuranceClaimViewSet(BaseViewSet):
             claim.submit()
             return Response({
                 'status': 'success',
-                'message': 'تم تقديم المطالبة بنجاح',
+                'message': str(_('Claim submitted successfully')),
                 'claim_number': claim.claim_number,
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'status': 'error', 'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -279,12 +279,12 @@ class InsuranceClaimViewSet(BaseViewSet):
             claim.approve(approved_amount, notes)
             return Response({
                 'status': 'success',
-                'message': 'تم اعتماد المطالبة',
+                'message': str(_('Claim approved')),
                 'approved_amount': str(claim.approved_amount),
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'status': 'error', 'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -298,11 +298,11 @@ class InsuranceClaimViewSet(BaseViewSet):
             claim.reject(reason)
             return Response({
                 'status': 'success',
-                'message': 'تم رفض المطالبة',
+                'message': str(_('Claim rejected')),
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'status': 'error', 'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -317,12 +317,12 @@ class InsuranceClaimViewSet(BaseViewSet):
             claim.mark_paid(amount, reference)
             return Response({
                 'status': 'success',
-                'message': 'تم تسجيل السداد',
+                'message': str(_('Payment recorded')),
                 'paid_amount': str(claim.paid_amount),
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'status': 'error', 'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -359,7 +359,7 @@ class ClaimItemViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES
         )
     ]
     filterset_fields = ['claim']
@@ -372,7 +372,7 @@ class ClaimDocumentViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES + SALES_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PARTNER_ROLES + SALES_ROLES
         )
     ]
     filterset_fields = ['claim', 'document_type']
@@ -385,7 +385,7 @@ class PartnerSettlementViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=['accountant', 'manager'], super_roles=SUPER_ROLES
+            allowed_roles=['FinanceOfficer', 'BranchManager']
         )
     ]
     filterset_fields = ['partner', 'status']

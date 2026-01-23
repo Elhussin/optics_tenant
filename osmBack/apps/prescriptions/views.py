@@ -54,9 +54,9 @@ class PrescriptionViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=["optometrist", "staff"],  # Specific roles
-            super_roles=["admin", "owner"],  # Super roles
-            required_permissions=["view_prescriptions"]
+           allowed_roles=["Optometrist", "Assistant", "SalesClerk"],  # Specific roles
+           required_permissions=["view_prescription"] 
+
         )
     ]
 

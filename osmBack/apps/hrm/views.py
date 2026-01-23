@@ -14,30 +14,9 @@ from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 User = get_user_model()
 
-
-class DepartmentViewSet(BaseViewSet):
-    queryset = Department.objects.all()
-    serializer_class = DepartmentSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_class = DepartmentFilter
-
-    def get_queryset(self):
-        # Departments are generally public internal info, but maybe hide deleted
-        return Department.objects.all()
-
-
-class EmployeeFormOptionsView(APIView):
-    def get(self, request):
-        return Response({
-            "departments": build_choices_from_queryset(Department.objects.all()),
-            "users": build_choices_from_queryset(User.objects.all(), label_field="username"),
-            "positions": build_choices_from_list(Employee.Position),
-        })
-
-
 # Helper roles
-HR_ROLES = ["hr", "manager"]
-SUPER_ROLES = ["admin", "owner"]
+HR_ROLES = ["HRManager", "BranchManager"]
+super_roles = ["TenantOwner", "TenantAdmin"]
 
 
 class HRMBaseViewSet(BaseViewSet):
@@ -47,7 +26,9 @@ class HRMBaseViewSet(BaseViewSet):
     permission_classes = [
         permissions.IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=HR_ROLES, super_roles=SUPER_ROLES)
+            allowed_roles=HR_ROLES,
+            required_permissions=["view_employee"]
+        )
     ]
 
     def get_employee(self):
@@ -60,14 +41,44 @@ class HRMBaseViewSet(BaseViewSet):
         user = self.request.user
         if user.is_superuser:
             return True
-        if hasattr(user, 'role') and user.role.name in (HR_ROLES + SUPER_ROLES):
+        user_roles = {r.name for r in user.roles.all()}
+        if getattr(user, 'role', None):
+            user_roles.add(user.role.name)
+
+        if user_roles.intersection(set(HR_ROLES + super_roles)):
             return True
         # Also check internal employee position as fallback if roles aren't perfectly synced
         emp = self.get_employee()
         # Adjust strings based on choices
-        if emp and emp.position in ['hr', "HR Manager", "Admin"]:
+        if emp and emp.position in ["HR Manager", "Admin", "Manager"]:
             return True
         return False
+
+
+class DepartmentViewSet(HRMBaseViewSet):
+    queryset = Department.objects.all()
+    serializer_class = DepartmentSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = DepartmentFilter
+
+    def get_queryset(self):
+        # Departments are generally public internal info, but maybe hide deleted
+        return Department.objects.all()
+
+
+class EmployeeFormOptionsView(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=HR_ROLES)
+    ]
+
+    def get(self, request):
+        return Response({
+            "departments": build_choices_from_queryset(Department.objects.all()),
+            "users": build_choices_from_queryset(User.objects.all(), label_field="username"),
+            "positions": build_choices_from_list(Employee.Position),
+        })
 
 
 class EmployeeViewSet(HRMBaseViewSet):

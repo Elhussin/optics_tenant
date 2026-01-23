@@ -1,0 +1,370 @@
+from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
+from djmoney.models.fields import MoneyField
+from djmoney.money import Money
+from django.utils import timezone
+from dateutil.relativedelta import relativedelta
+
+User = get_user_model()
+
+
+class FinancialPeriod(models.Model):
+    """Represents a financial period (e.g., fiscal year)."""
+
+    name = models.CharField(
+        max_length=50,
+        verbose_name=_("Period Name"),
+        help_text=_("Name of the financial period")
+    )
+    start_date = models.DateField(
+        verbose_name=_("Start Date"),
+        help_text=_("Period start date")
+    )
+    end_date = models.DateField(
+        verbose_name=_("End Date"),
+        help_text=_("Period end date")
+    )
+    is_closed = models.BooleanField(
+        default=False,
+        verbose_name=_("Is Closed"),
+        help_text=_("Whether the period is closed")
+    )
+
+    class Meta:
+        verbose_name = _("Financial Period")
+        verbose_name_plural = _("Financial Periods")
+
+    def __str__(self):
+        return self.name
+
+
+class Account(models.Model):
+    """Represents a user's financial account with a specific currency."""
+
+    CURRENCIES = ['USD', 'EUR', 'SAR']
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="accounts",
+        verbose_name=_("User")
+    )
+    name = models.CharField(
+        max_length=255,
+        verbose_name=_("Account Name")
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At")
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("Updated At")
+    )
+    currency = models.CharField(
+        max_length=3,
+        choices=[(c, c) for c in CURRENCIES],
+        default='USD',
+        verbose_name=_("Currency"),
+        help_text=_("Account currency")
+    )
+    balance = MoneyField(
+        max_digits=19,
+        decimal_places=2,
+        default_currency='USD',
+        default=0,
+        verbose_name=_("Balance"),
+        help_text=_("Current account balance")
+    )
+
+    class Meta:
+        verbose_name = _("Account")
+        verbose_name_plural = _("Accounts")
+
+    def update_balance(self):
+        """Recalculates the balance from transactions and saves it to the DB."""
+        income = self.transactions.filter(transaction_type='income').aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
+
+        expense = self.transactions.filter(transaction_type='expense').aggregate(
+            total=models.Sum('amount')
+        )['total'] or 0
+
+        if not isinstance(income, Money):
+            income = Money(income, self.currency)
+        if not isinstance(expense, Money):
+            expense = Money(expense, self.currency)
+
+        self.balance = income - expense
+        self.save(update_fields=['balance'])
+        return self.balance
+
+    def perform_destroy(self, instance):
+        pass
+
+    def __str__(self):
+        return f"{self.name} ({self.currency})"
+
+
+class Tax(models.Model):
+    """Represents a tax rate applicable to transactions."""
+
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_("Tax Name")
+    )
+    rate = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name=_("Tax Rate"),
+        help_text=_("Tax rate percentage (e.g., 5.00%)")
+    )
+    effective_date = models.DateField(
+        verbose_name=_("Effective Date"),
+        help_text=_("Date when tax rate becomes effective")
+    )
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name=_("Is Active")
+    )
+    description = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Description")
+    )
+
+    class Meta:
+        verbose_name = _("Tax")
+        verbose_name_plural = _("Taxes")
+
+    def __str__(self):
+        return f"{self.name} ({self.rate}%)"
+
+
+class AccountingCategory(models.Model):
+    """Represents a transaction category (income or expense)."""
+
+    TYPE_CHOICES = [
+        ('income', _('Income')),
+        ('expense', _('Expense')),
+    ]
+
+    name = models.CharField(
+        max_length=100,
+        unique=True,
+        verbose_name=_("Category Name")
+    )
+    category_type = models.CharField(
+        max_length=7,
+        choices=TYPE_CHOICES,
+        verbose_name=_("Category Type")
+    )
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Parent Category")
+    )
+    description = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Description")
+    )
+
+    class Meta:
+        verbose_name = _("Accounting Category")
+        verbose_name_plural = _("Accounting Categories")
+
+    def __str__(self):
+        return self.name
+
+
+class Transaction(models.Model):
+    """Represents a financial transaction within an account."""
+
+    TRANSACTION_TYPE_CHOICES = [
+        ('income', _('Income')),
+        ('expense', _('Expense')),
+    ]
+
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        related_name='transactions',
+        verbose_name=_("Account")
+    )
+    period = models.ForeignKey(
+        FinancialPeriod,
+        on_delete=models.PROTECT,
+        verbose_name=_("Financial Period")
+    )
+    date = models.DateField(
+        verbose_name=_("Transaction Date")
+    )
+    amount = MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        default_currency='USD',
+        currency_field_name='amount_currency',
+        verbose_name=_("Amount")
+    )
+    transaction_type = models.CharField(
+        max_length=7,
+        choices=TRANSACTION_TYPE_CHOICES,
+        verbose_name=_("Transaction Type")
+    )
+    category = models.ForeignKey(
+        "AccountingCategory",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Category")
+    )
+    tax_rate = models.ForeignKey(
+        Tax,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name=_("Tax Rate")
+    )
+    description = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name=_("Description")
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_("Created At")
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name=_("Updated At")
+    )
+
+    class Meta:
+        verbose_name = _("Transaction")
+        verbose_name_plural = _("Transactions")
+
+    def save(self, *args, **kwargs):
+        """Ensures the transaction uses the correct currency and updates account balance."""
+        if not self.amount_currency:
+            self.amount_currency = self.account.currency
+
+        super().save(*args, **kwargs)
+        self.account.update_balance()
+
+    def delete(self, *args, **kwargs):
+        account = self.account
+        super().delete(*args, **kwargs)
+        account.update_balance()
+
+    def __str__(self):
+        return f"{self.date} - {self.amount}"
+
+
+class JournalEntry(models.Model):
+    """Represents a journal entry for double-entry bookkeeping."""
+
+    transaction = models.ForeignKey(
+        Transaction,
+        on_delete=models.CASCADE,
+        related_name="journal_entries",
+        verbose_name=_("Transaction")
+    )
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        verbose_name=_("Account")
+    )
+    debit = MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        default_currency='USD',
+        verbose_name=_("Debit")
+    )
+    credit = MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        default_currency='USD',
+        verbose_name=_("Credit")
+    )
+
+    class Meta:
+        verbose_name = _("Journal Entry")
+        verbose_name_plural = _("Journal Entries")
+
+
+class RecurringTransaction(models.Model):
+    """Represents a recurring transaction (monthly/yearly)."""
+
+    INTERVAL_CHOICES = [
+        ('monthly', _('Monthly')),
+        ('yearly', _('Yearly')),
+    ]
+
+    TRANSACTION_TYPE_CHOICES = [
+        ('income', _('Income')),
+        ('expense', _('Expense')),
+    ]
+
+    account = models.ForeignKey(
+        Account,
+        on_delete=models.CASCADE,
+        verbose_name=_("Account")
+    )
+    amount = MoneyField(
+        max_digits=10,
+        decimal_places=2,
+        default_currency='USD',
+        verbose_name=_("Amount")
+    )
+    transaction_type = models.CharField(
+        max_length=7,
+        choices=TRANSACTION_TYPE_CHOICES,
+        verbose_name=_("Transaction Type")
+    )
+    interval = models.CharField(
+        max_length=10,
+        choices=INTERVAL_CHOICES,
+        verbose_name=_("Interval"),
+        help_text=_("Recurrence interval")
+    )
+    next_execution = models.DateField(
+        verbose_name=_("Next Execution"),
+        help_text=_("Next execution date")
+    )
+
+    class Meta:
+        verbose_name = _("Recurring Transaction")
+        verbose_name_plural = _("Recurring Transactions")
+
+    def calculate_next_date(self):
+        if self.interval == 'monthly':
+            return self.next_execution + relativedelta(months=1)
+        elif self.interval == 'yearly':
+            return self.next_execution + relativedelta(years=1)
+        return self.next_execution
+
+    def process(self):
+        if self.next_execution <= timezone.now().date():
+            current_period = FinancialPeriod.objects.filter(
+                start_date__lte=timezone.now().date(),
+                end_date__gte=timezone.now().date(),
+                is_closed=False
+            ).first()
+
+            if not current_period:
+                return
+
+            Transaction.objects.create(
+                account=self.account,
+                amount=self.amount,
+                transaction_type=self.transaction_type,
+                date=timezone.now().date(),
+                period=current_period
+            )
+            self.next_execution = self.calculate_next_date()
+            self.save()

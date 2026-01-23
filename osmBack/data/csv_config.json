@@ -1,10 +1,9 @@
-
 [
-{
-  "schema": "public",
-  "app": "users",
-  "model": "Role",
-  "csv": "csv/Role.csv"
+  {
+    "schema": "public",
+    "app": "users",
+    "model": "Role",
+    "csv": "csv/Role.csv"
   },
   {
     "schema": "public",
@@ -38,7 +37,11 @@
     "schema": "public",
     "app": "users",
     "model": "User",
-    "csv": "csv/Users.csv"
+    "csv": "csv/Users.csv",
+    "foreign_keys": {
+      "roles": {
+        "lookup_field": "name"
+      }
+    }
   }
-
 ]

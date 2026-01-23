@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny
 import logging
 from enum import Enum
 from django.utils.text import slugify
-from django.utils.translation import gettext_lazy as T
+from django.utils.translation import gettext_lazy as _
 from django_tenants.utils import schema_context
 from django.conf import settings
 from apps.tenants.models import (
@@ -85,21 +85,23 @@ class TenantActivation:
             # Check schema name validity
             schema_name = slugify(pending.schema_name)
             if not schema_name:
-                raise ValidationError("Invalid schema name")
+                raise ValidationError(_("Invalid schema name"))
 
             if Client.objects.filter(schema_name=schema_name).exists():
-                raise ValidationError(f"Schema '{schema_name}' already exists")
+                raise ValidationError(
+                    _("Schema '{name}' already exists").format(name=schema_name))
 
             # Check subscription plan
             try:
                 trial_plan = SubscriptionPlan.objects.get(name__iexact="trial")
             except SubscriptionPlan.DoesNotExist:
-                raise ValidationError("Trial subscription plan not found")
+                raise ValidationError(_("Trial subscription plan not found"))
 
             # Prepare domain
             domain = f"{schema_name}.{settings.TENANT_BASE_DOMAIN}"
             if Domain.objects.filter(domain=domain).exists():
-                raise ValidationError(f"Domain '{domain}' already exists")
+                raise ValidationError(
+                    _("Domain '{domain}' already exists").format(domain=domain))
 
             # ✅ Transaction block
             # --------------------
@@ -124,9 +126,9 @@ class TenantActivation:
                 # print("Domain created")
 
                 # Mark pending request as activated
-                pending.is_activated = True
                 pending.is_deleted = True
                 pending.save()
+
                 return tenant, domain, ActivationStatus.SUCCESS
 
         except Exception as e:
@@ -139,32 +141,33 @@ class TenantActivation:
     def setup_user_permissions(self, pending, tenant):
         """
         Algorithm: User and permission setup outside main transaction
-        Time Complexity: O(1)
         """
         try:
             with schema_context(pending.schema_name):
                 from django.contrib.auth import get_user_model
                 from apps.users.models import Role, Permission, RolePermission
 
-                # Create owner role and permissions
+                # 1. Run CSV import FIRST to populate all predefined roles and permissions
+                call_command('import_csv_with_foreign',
+                             schema=pending.schema_name, config="data/csv_configotenant.json")
+
+                # 2. Ensure TenantOwner is created/linked correctly (Safety Check)
                 owner_role, _ = Role.objects.get_or_create(
-                    name="owner",
-                    defaults={"description": "Owner role"}
+                    name="TenantOwner",
+                    defaults={"description": "System Owner with full access"}
                 )
+
+                # Update core wildcard permission
                 all_permission, _ = Permission.objects.get_or_create(
-                    code="__all__",
-                    defaults={"description": "All permissions"}
+                    code="*",
+                    defaults={"description": "All permissions wildcard"}
                 )
                 RolePermission.objects.get_or_create(
-                    role=owner_role,  # Correct field name usually 'role' not 'role_id' for FK object assignment
-                    permission=all_permission  # Correct field name usually 'permission' not 'permission_id'
-                )
+                    role=owner_role, permission=all_permission)
 
-                # Create superuser manually for better control
+                # 3. Create the Owner User
                 User = get_user_model()
-
-                # Use email as username or sanitize schema_name to avoid validation errors
-                username = pending.email.split('@')[0]
+                username = pending.email  # Use full email for maximum safety and uniqueness
 
                 if User.objects.filter(email=pending.email).exists():
                     self.logger.warning(
@@ -174,21 +177,20 @@ class TenantActivation:
                 user = User(
                     username=username,
                     email=pending.email,
-                    first_name=pending.name[:30],  # Truncate to fit
+                    first_name=pending.name[:30],
                     is_staff=True,
                     is_superuser=True,
                     is_active=True,
-                    role=owner_role,
-                    client=tenant,
-                    # client=tenant # Typically NOT needed for schema-isolated users unless you have a specific requirement
+                    client=tenant
                 )
-                # Assign the already hashed password directly
+                # Assign the already hashed password
                 user.password = pending.password
                 user.save()
 
-                # Run CSV import
-                call_command('import_csv_with_foreign',
-                             schema=pending.schema_name, config="data/csv_configotenant.json")
+                # ✅ NEW: Assign to the multi-role field for the new RBAC system
+                user.roles.add(owner_role)
+
+            return ActivationStatus.SUCCESS
 
             return ActivationStatus.SUCCESS
 
@@ -226,11 +228,11 @@ class ActivateTenantView(APIView):
             pending)
         if expiration_status == ActivationStatus.TOKEN_EXPIRED:
             return Response({
-                "detail": T("Activation link expired. New activation email sent.")
+                "detail": _("Activation link expired. New activation email sent.")
             }, status=400)
 
         ResponseData = {
-            "detail": T("Start creating your store. Please wait You will receive a confirmation email. "),
+            "detail": _("Start creating your store. Please wait You will receive a confirmation email. "),
             # "tenant_domain": domain,
         }
 
@@ -248,6 +250,16 @@ class ActivateTenantView(APIView):
             send_failed_activation_email(pending.email)
             return
 
+        # ✅ Step 2: Manually create schema and run migrations (Outside Transaction)
+        try:
+            tenant.create_schema(check_if_exists=True, verbosity=1)
+        except Exception as e:
+            self.tenantActivation.logger.error(
+                f"Schema creation failed: {str(e)}")
+            send_failed_activation_email(pending.email)
+            return
+
+        # Step 3: Setup user and permissions
         self.tenantActivation.setup_user_permissions(pending, tenant)
 
         send_message_acount_activated(
@@ -256,8 +268,8 @@ class ActivateTenantView(APIView):
     def _handle_validation_error(self, status, pending):
         """Helper method for handling validation errors"""
         error_messages = {
-            ActivationStatus.TOKEN_MISSING: T("Token is required."),
-            ActivationStatus.INVALID_TOKEN: T("Invalid or expired activation link."),
-            ActivationStatus.ALREADY_ACTIVATED: T("Your account is already activated. Please login."),
+            ActivationStatus.TOKEN_MISSING: _("Token is required."),
+            ActivationStatus.INVALID_TOKEN: _("Invalid or expired activation link."),
+            ActivationStatus.ALREADY_ACTIVATED: _("Your account is already activated. Please login."),
         }
         return Response({"detail": error_messages[status]}, status=400)

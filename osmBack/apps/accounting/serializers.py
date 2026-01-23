@@ -4,6 +4,7 @@ Accounting Serializers
 """
 
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from apps.accounting.models import (
     ChartOfAccounts, GeneralJournal, JournalLine,
     FinancialPeriod, Tax, AccountingCategory
@@ -34,9 +35,52 @@ class ChartOfAccountsSerializer(serializers.ModelSerializer):
             'full_path', 'is_active', 'created_at',
         ]
         read_only_fields = ['id', 'current_balance', 'created_at']
+        extra_kwargs = {
+            'code': {
+                'error_messages': {
+                    'required': str(_('Account code is required')),
+                    'blank': str(_('Account code cannot be blank')),
+                }
+            },
+            'name': {
+                'error_messages': {
+                    'required': str(_('Account name is required')),
+                    'blank': str(_('Account name cannot be blank')),
+                }
+            },
+            'account_type': {
+                'error_messages': {
+                    'required': str(_('Account type is required')),
+                }
+            },
+        }
 
     def get_full_path(self, obj):
         return obj.get_full_path()
+
+    def validate_code(self, value):
+        """التحقق من عدم تكرار رمز الحساب"""
+        queryset = ChartOfAccounts.objects.filter(code=value)
+        if self.instance:
+            queryset = queryset.exclude(pk=self.instance.pk)
+        if queryset.exists():
+            raise serializers.ValidationError(
+                _('Account with this code already exists')
+            )
+        return value
+
+    def validate(self, data):
+        """التحقق من صحة البيانات"""
+        parent = data.get('parent')
+        is_header = data.get('is_header', False)
+
+        # الحسابات الرئيسية لا يمكن أن تكون أبناء لحسابات غير رئيسية
+        if parent and not parent.is_header:
+            raise serializers.ValidationError({
+                'parent': _('Parent account must be a header account')
+            })
+
+        return data
 
 
 class ChartOfAccountsTreeSerializer(serializers.ModelSerializer):
@@ -66,6 +110,39 @@ class JournalLineSerializer(serializers.ModelSerializer):
             'id', 'account', 'account_code', 'account_name',
             'debit', 'credit', 'description', 'cost_center',
         ]
+        extra_kwargs = {
+            'account': {
+                'error_messages': {
+                    'required': _('Account is required'),
+                    'does_not_exist': _('The specified account does not exist'),
+                }
+            },
+        }
+
+    def validate(self, data):
+        """التحقق من صحة المبالغ"""
+        debit = data.get('debit', 0) or 0
+        credit = data.get('credit', 0) or 0
+
+        # يجب تحديد إما مدين أو دائن
+        if debit == 0 and credit == 0:
+            raise serializers.ValidationError(
+                _('Either debit or credit amount must be specified')
+            )
+
+        # لا يمكن تحديد كلاهما في نفس السطر
+        if debit > 0 and credit > 0:
+            raise serializers.ValidationError(
+                _('Cannot have both debit and credit in the same line')
+            )
+
+        # المبالغ يجب أن تكون موجبة
+        if debit < 0 or credit < 0:
+            raise serializers.ValidationError(
+                _('Debit and credit amounts must be positive')
+            )
+
+        return data
 
 
 class GeneralJournalSerializer(serializers.ModelSerializer):
@@ -110,16 +187,21 @@ class GeneralJournalCreateSerializer(serializers.ModelSerializer):
         ]
 
     def validate_lines(self, lines):
+        """التحقق من صحة سطور القيد"""
         if len(lines) < 2:
             raise serializers.ValidationError(
-                "القيد يجب أن يحتوي على سطرين على الأقل")
+                _("Journal entry must contain at least two lines")
+            )
 
         total_debit = sum(line.get('debit', 0) for line in lines)
         total_credit = sum(line.get('credit', 0) for line in lines)
 
         if total_debit != total_credit:
             raise serializers.ValidationError(
-                f"القيد غير متوازن: مدين={total_debit}, دائن={total_credit}"
+                _("Journal entry is not balanced: Debit={debit}, Credit={credit}").format(
+                    debit=total_debit,
+                    credit=total_credit
+                )
             )
 
         return lines
@@ -155,6 +237,40 @@ class FinancialPeriodSerializer(serializers.ModelSerializer):
     class Meta:
         model = FinancialPeriod
         fields = ['id', 'name', 'start_date', 'end_date', 'is_closed']
+        extra_kwargs = {
+            'name': {
+                'error_messages': {
+                    'required': _('Period name is required'),
+                    'blank': _('Period name cannot be blank'),
+                }
+            },
+            'start_date': {
+                'error_messages': {
+                    'required': _('Start date is required'),
+                    'invalid': _('Enter a valid start date'),
+                }
+            },
+            'end_date': {
+                'error_messages': {
+                    'required': _('End date is required'),
+                    'invalid': _('Enter a valid end date'),
+                }
+            },
+        }
+
+    def validate(self, data):
+        """التحقق من صحة التواريخ"""
+        start_date = data.get('start_date') or (
+            self.instance.start_date if self.instance else None)
+        end_date = data.get('end_date') or (
+            self.instance.end_date if self.instance else None)
+
+        if start_date and end_date and end_date <= start_date:
+            raise serializers.ValidationError({
+                'end_date': _('End date must be after start date')
+            })
+
+        return data
 
 
 class TaxSerializer(serializers.ModelSerializer):
@@ -164,6 +280,31 @@ class TaxSerializer(serializers.ModelSerializer):
         model = Tax
         fields = ['id', 'name', 'rate',
                   'effective_date', 'is_active', 'description']
+        extra_kwargs = {
+            'name': {
+                'error_messages': {
+                    'required': _('Tax name is required'),
+                    'blank': _('Tax name cannot be blank'),
+                }
+            },
+            'rate': {
+                'error_messages': {
+                    'required': _('Tax rate is required'),
+                }
+            },
+        }
+
+    def validate_rate(self, value):
+        """التحقق من نسبة الضريبة"""
+        if value < 0:
+            raise serializers.ValidationError(
+                _('Tax rate cannot be negative')
+            )
+        if value > 100:
+            raise serializers.ValidationError(
+                _('Tax rate cannot exceed 100%')
+            )
+        return value
 
 
 class AccountingCategorySerializer(serializers.ModelSerializer):
@@ -172,6 +313,19 @@ class AccountingCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountingCategory
         fields = ['id', 'name', 'category_type', 'parent', 'description']
+        extra_kwargs = {
+            'name': {
+                'error_messages': {
+                    'required': _('Category name is required'),
+                    'blank': _('Category name cannot be blank'),
+                }
+            },
+            'category_type': {
+                'error_messages': {
+                    'required': _('Category type is required'),
+                }
+            },
+        }
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

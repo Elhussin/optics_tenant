@@ -5,6 +5,7 @@
 
 from django.db import models
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel
 
 
@@ -13,72 +14,72 @@ class ChartOfAccounts(BaseModel):
     دليل الحسابات - الهيكل الأساسي للحسابات المحاسبية
     """
     ACCOUNT_TYPES = [
-        ('asset', 'أصل'),              # 1xxxx
-        ('liability', 'التزام'),        # 2xxxx
-        ('equity', 'حقوق الملكية'),     # 3xxxx
-        ('revenue', 'إيراد'),           # 4xxxx
-        ('expense', 'مصروف'),           # 5xxxx
-        ('cogs', 'تكلفة البضاعة'),      # 6xxxx (Cost of Goods Sold)
+        ('asset', _('Asset')),              # 1xxxx
+        ('liability', _('Liability')),      # 2xxxx
+        ('equity', _('Equity')),            # 3xxxx
+        ('revenue', _('Revenue')),          # 4xxxx
+        ('expense', _('Expense')),          # 5xxxx
+        ('cogs', _('Cost of Goods Sold')),  # 6xxxx
     ]
 
     ACCOUNT_SUBTYPES = [
-        # Assets - أصول
-        ('cash', 'نقدية'),
-        ('bank', 'بنك'),
-        ('receivable', 'ذمم مدينة'),
-        ('inventory', 'مخزون'),
-        ('prepaid', 'مصروفات مقدمة'),
-        ('fixed_asset', 'أصول ثابتة'),
+        # Assets
+        ('cash', _('Cash')),
+        ('bank', _('Bank')),
+        ('receivable', _('Accounts Receivable')),
+        ('inventory', _('Inventory')),
+        ('prepaid', _('Prepaid Expenses')),
+        ('fixed_asset', _('Fixed Assets')),
 
-        # Liabilities - التزامات
-        ('payable', 'ذمم دائنة'),
-        ('accrued', 'مصروفات مستحقة'),
-        ('tax_payable', 'ضرائب مستحقة'),
-        ('deferred', 'إيرادات مقدمة'),
-        ('loan', 'قروض'),
+        # Liabilities
+        ('payable', _('Accounts Payable')),
+        ('accrued', _('Accrued Expenses')),
+        ('tax_payable', _('Taxes Payable')),
+        ('deferred', _('Deferred Revenue')),
+        ('loan', _('Loans')),
 
-        # Equity - حقوق ملكية
-        ('capital', 'رأس المال'),
-        ('retained', 'أرباح مبقاة'),
-        ('reserves', 'احتياطيات'),
+        # Equity
+        ('capital', _('Capital')),
+        ('retained', _('Retained Earnings')),
+        ('reserves', _('Reserves')),
 
-        # Revenue - إيرادات
-        ('sales', 'مبيعات'),
-        ('service', 'خدمات'),
-        ('other_income', 'إيرادات أخرى'),
+        # Revenue
+        ('sales', _('Sales')),
+        ('service', _('Services')),
+        ('other_income', _('Other Income')),
 
-        # Expenses - مصروفات
-        ('salary', 'رواتب'),
-        ('rent', 'إيجار'),
-        ('utilities', 'مرافق'),
-        ('supplies', 'مستلزمات'),
-        ('marketing', 'تسويق'),
-        ('other_expense', 'مصروفات أخرى'),
+        # Expenses
+        ('salary', _('Salaries')),
+        ('rent', _('Rent')),
+        ('utilities', _('Utilities')),
+        ('supplies', _('Supplies')),
+        ('marketing', _('Marketing')),
+        ('other_expense', _('Other Expenses')),
 
-        # COGS - تكلفة البضاعة
-        ('cost_of_goods', 'تكلفة بضاعة مباعة'),
+        # COGS
+        ('cost_of_goods', _('Cost of Goods Sold')),
     ]
 
     code = models.CharField(
         max_length=10,
         unique=True,
-        verbose_name="رمز الحساب",
-        help_text="مثال: 1100 للنقدية"
+        verbose_name=_('Account Code'),
+        help_text=_('Example: 1100 for Cash')
     )
-    name = models.CharField(max_length=200, verbose_name="اسم الحساب")
+    name = models.CharField(max_length=200, verbose_name=_('Account Name'))
     name_en = models.CharField(
-        max_length=200, blank=True, verbose_name="الاسم بالإنجليزية")
+        max_length=200, blank=True, verbose_name=_('English Name'))
 
     account_type = models.CharField(
         max_length=20,
         choices=ACCOUNT_TYPES,
-        verbose_name="نوع الحساب"
+        verbose_name=_('Account Type')
     )
     account_subtype = models.CharField(
         max_length=20,
         choices=ACCOUNT_SUBTYPES,
         blank=True,
-        verbose_name="النوع الفرعي"
+        verbose_name=_('Account Subtype')
     )
 
     parent = models.ForeignKey(
@@ -87,43 +88,43 @@ class ChartOfAccounts(BaseModel):
         null=True,
         blank=True,
         related_name='children',
-        verbose_name="الحساب الرئيسي"
+        verbose_name=_('Parent Account')
     )
 
-    description = models.TextField(blank=True, verbose_name="الوصف")
+    description = models.TextField(blank=True, verbose_name=_('Description'))
 
-    # الرصيد الافتتاحي
+    # Opening Balance
     opening_balance = models.DecimalField(
         max_digits=14,
         decimal_places=2,
         default=0,
-        verbose_name="الرصيد الافتتاحي"
+        verbose_name=_('Opening Balance')
     )
     current_balance = models.DecimalField(
         max_digits=14,
         decimal_places=2,
         default=0,
-        verbose_name="الرصيد الحالي"
+        verbose_name=_('Current Balance')
     )
 
-    # هل يظهر في التقارير
+    # Header Account
     is_header = models.BooleanField(
         default=False,
-        verbose_name="حساب رئيسي (عنوان)",
-        help_text="الحسابات الرئيسية لا تستخدم للقيود"
+        verbose_name=_('Is Header Account'),
+        help_text=_('Header accounts are not used for journal entries')
     )
 
-    # هل تزيد بالمدين أم بالدائن
+    # Normal Balance
     normal_balance = models.CharField(
         max_length=10,
-        choices=[('debit', 'مدين'), ('credit', 'دائن')],
+        choices=[('debit', _('Debit')), ('credit', _('Credit'))],
         default='debit',
-        verbose_name="الطبيعة"
+        verbose_name=_('Normal Balance')
     )
 
     class Meta:
-        verbose_name = "حساب في دليل الحسابات"
-        verbose_name_plural = "دليل الحسابات"
+        verbose_name = _('Chart of Accounts')
+        verbose_name_plural = _('Chart of Accounts')
         ordering = ['code']
         indexes = [
             models.Index(fields=['code']),
@@ -186,99 +187,102 @@ class GeneralJournal(BaseModel):
     دفتر اليومية العام
     """
     ENTRY_TYPES = [
-        ('standard', 'قيد عادي'),
-        ('adjustment', 'قيد تسوية'),
-        ('closing', 'قيد إقفال'),
-        ('opening', 'قيد افتتاحي'),
-        ('reversal', 'قيد عكسي'),
+        ('standard', _('Standard Entry')),
+        ('adjustment', _('Adjustment Entry')),
+        ('closing', _('Closing Entry')),
+        ('opening', _('Opening Entry')),
+        ('reversal', _('Reversal Entry')),
     ]
 
     SOURCE_TYPES = [
-        ('manual', 'يدوي'),
-        ('sales_invoice', 'فاتورة مبيعات'),
-        ('purchase_invoice', 'فاتورة مشتريات'),
-        ('payment', 'دفعة'),
-        ('receipt', 'قبض'),
-        ('return', 'مرتجع'),
-        ('adjustment', 'تسوية مخزون'),
-        ('payroll', 'رواتب'),
+        ('manual', _('Manual')),
+        ('sales_invoice', _('Sales Invoice')),
+        ('purchase_invoice', _('Purchase Invoice')),
+        ('payment', _('Payment')),
+        ('receipt', _('Receipt')),
+        ('return', _('Return')),
+        ('adjustment', _('Inventory Adjustment')),
+        ('payroll', _('Payroll')),
     ]
 
     entry_number = models.CharField(
         max_length=20,
         unique=True,
         editable=False,
-        verbose_name="رقم القيد"
+        verbose_name=_('Entry Number')
     )
-    entry_date = models.DateField(verbose_name="تاريخ القيد")
+    entry_date = models.DateField(verbose_name=_('Entry Date'))
 
     entry_type = models.CharField(
         max_length=20,
         choices=ENTRY_TYPES,
         default='standard',
-        verbose_name="نوع القيد"
+        verbose_name=_('Entry Type')
     )
     source_type = models.CharField(
         max_length=20,
         choices=SOURCE_TYPES,
         default='manual',
-        verbose_name="مصدر القيد"
+        verbose_name=_('Source Type')
     )
 
-    # ربط بالمستند المصدر
+    # Source Document Reference
     source_document = models.CharField(
         max_length=100,
         blank=True,
-        verbose_name="رقم المستند المصدر"
+        verbose_name=_('Source Document Number')
     )
     source_id = models.PositiveIntegerField(
         null=True,
         blank=True,
-        verbose_name="معرف المستند"
+        verbose_name=_('Source Document ID')
     )
 
-    description = models.TextField(verbose_name="الوصف")
+    description = models.TextField(verbose_name=_('Description'))
 
-    # الإجماليات
+    # Totals
     total_debit = models.DecimalField(
         max_digits=14,
         decimal_places=2,
         default=0,
-        verbose_name="إجمالي المدين"
+        verbose_name=_('Total Debit')
     )
     total_credit = models.DecimalField(
         max_digits=14,
         decimal_places=2,
         default=0,
-        verbose_name="إجمالي الدائن"
+        verbose_name=_('Total Credit')
     )
 
-    # الحالة
+    # Status
     is_posted = models.BooleanField(
         default=False,
-        verbose_name="مرحّل"
+        verbose_name=_('Is Posted')
     )
-    posted_at = models.DateTimeField(null=True, blank=True)
+    posted_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_('Posted At'))
     posted_by = models.ForeignKey(
         'users.User',
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        related_name='posted_journals'
+        related_name='posted_journals',
+        verbose_name=_('Posted By')
     )
 
-    # قيد عكسي
+    # Reversal Entry
     reversed_entry = models.ForeignKey(
         'self',
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        related_name='reversal_entries'
+        related_name='reversal_entries',
+        verbose_name=_('Reversed Entry')
     )
 
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
 
     class Meta:
-        verbose_name = "قيد يومية"
-        verbose_name_plural = "قيود اليومية"
+        verbose_name = _('Journal Entry')
+        verbose_name_plural = _('Journal Entries')
         ordering = ['-entry_date', '-entry_number']
         indexes = [
             models.Index(fields=['entry_date']),
@@ -320,7 +324,10 @@ class GeneralJournal(BaseModel):
 
         if total_debit != total_credit:
             raise ValidationError(
-                f"القيد غير متوازن: مدين={total_debit}, دائن={total_credit}"
+                str(_('Journal entry is not balanced: debit={debit}, credit={credit}').format(
+                    debit=total_debit,
+                    credit=total_credit
+                ))
             )
 
         self.total_debit = total_debit
@@ -332,7 +339,7 @@ class GeneralJournal(BaseModel):
         from django.utils import timezone
 
         if self.is_posted:
-            raise ValidationError("القيد مرحّل مسبقاً")
+            raise ValidationError(str(_('Journal entry is already posted')))
 
         self.validate_balance()
 
@@ -352,26 +359,31 @@ class GeneralJournal(BaseModel):
 
     def reverse(self, user=None):
         """إنشاء قيد عكسي"""
-        if not self.is_posted:
-            raise ValidationError("لا يمكن عكس قيد غير مرحّل")
+        from django.utils import timezone
 
-        # إنشاء القيد العكسي
+        if not self.is_posted:
+            raise ValidationError(
+                str(_('Cannot reverse an unposted journal entry')))
+
+        # Create reversal entry
         reversal = GeneralJournal.objects.create(
             entry_date=timezone.now().date(),
             entry_type='reversal',
             source_type=self.source_type,
-            description=f"عكس القيد رقم {self.entry_number}",
+            description=str(_('Reversal of entry #{number}').format(
+                number=self.entry_number)),
             reversed_entry=self,
         )
 
-        # عكس السطور
+        # Reverse lines
         for line in self.lines.all():
             JournalLine.objects.create(
                 journal=reversal,
                 account=line.account,
                 debit=line.credit,
                 credit=line.debit,
-                description=f"عكس: {line.description}",
+                description=str(_('Reversal: {desc}').format(
+                    desc=line.description)),
             )
 
         reversal.post(user)
@@ -386,44 +398,47 @@ class JournalLine(BaseModel):
         GeneralJournal,
         on_delete=models.CASCADE,
         related_name='lines',
-        verbose_name="القيد"
+        verbose_name=_('Journal Entry')
     )
     account = models.ForeignKey(
         ChartOfAccounts,
         on_delete=models.PROTECT,
         related_name='journal_lines',
-        verbose_name="الحساب"
+        verbose_name=_('Account')
     )
 
     debit = models.DecimalField(
         max_digits=14,
         decimal_places=2,
         default=0,
-        verbose_name="مدين"
+        verbose_name=_('Debit')
     )
     credit = models.DecimalField(
         max_digits=14,
         decimal_places=2,
         default=0,
-        verbose_name="دائن"
+        verbose_name=_('Credit')
     )
 
-    description = models.CharField(max_length=500, blank=True)
+    description = models.CharField(
+        max_length=500, blank=True, verbose_name=_('Description'))
 
-    # ربط بمستندات أخرى للتتبع
+    # Cost Center
     cost_center = models.CharField(
-        max_length=50, blank=True, verbose_name="مركز تكلفة")
+        max_length=50, blank=True, verbose_name=_('Cost Center'))
 
     class Meta:
-        verbose_name = "سطر قيد"
-        verbose_name_plural = "سطور القيود"
+        verbose_name = _('Journal Line')
+        verbose_name_plural = _('Journal Lines')
 
     def __str__(self):
-        return f"{self.account.code} - مدين:{self.debit} دائن:{self.credit}"
+        return f"{self.account.code} - {_('Debit')}:{self.debit} {_('Credit')}:{self.credit}"
 
     def clean(self):
-        # لا يمكن أن يكون كلاهما صفر أو كلاهما موجب
+        # Cannot both be zero or both be positive
         if self.debit == 0 and self.credit == 0:
-            raise ValidationError("يجب تحديد مبلغ مدين أو دائن")
+            raise ValidationError(
+                str(_('Must specify either debit or credit amount')))
         if self.debit > 0 and self.credit > 0:
-            raise ValidationError("لا يمكن وجود مدين ودائن في نفس السطر")
+            raise ValidationError(
+                str(_('Cannot have both debit and credit in the same line')))

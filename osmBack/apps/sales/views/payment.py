@@ -24,8 +24,7 @@ from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 # الأدوار المسموحة
-PAYMENT_ROLES = ["cashier", "sales", "accountant", "manager"]
-SUPER_ROLES = ["admin", "owner"]
+PAYMENT_ROLES = ["SalesClerk", "FinanceOfficer", "BranchManager"]
 
 
 class PaymentViewSet(BaseViewSet):
@@ -39,7 +38,7 @@ class PaymentViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PAYMENT_ROLES, super_roles=SUPER_ROLES
+            allowed_roles=PAYMENT_ROLES
         )
     ]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
@@ -324,7 +323,7 @@ class InstallmentViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=['accountant', 'manager'], super_roles=SUPER_ROLES
+            allowed_roles=['FinanceOfficer', 'BranchManager']
         )
     ]
     filterset_fields = ['payment', 'status']

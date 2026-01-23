@@ -16,19 +16,31 @@ from django.apps import apps  # Added to resolve SubscriptionPlan
 
 payment_logger = logging.getLogger('paypal')
 
+
 class SubscriptionPlan(BaseModel):
     """Plan Subscription"""
-    name = models.CharField(max_length=50, unique=True,verbose_name=_("Name"))  # trial, basic, premium...
+    name = models.CharField(max_length=50, unique=True,
+                            verbose_name=_("Name"))  # trial, basic, premium...
     duration_months = models.PositiveIntegerField(default=30,)
     duration_years = models.PositiveIntegerField(default=365)
-    max_users = models.PositiveIntegerField(default=1,verbose_name=_("Max Users"))
-    max_branches = models.PositiveIntegerField(default=1,verbose_name=_("Max Branches"))
-    max_products = models.PositiveIntegerField(default=200,verbose_name=_("Max Products"))
-    month_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Month"))
-    year_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Year"))
-    currency = models.CharField(max_length=10, default="USD", choices=CURRENCY,verbose_name=_("Currency"))
-    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00,verbose_name=_("Discount"))
-
+    max_users = models.PositiveIntegerField(
+        default=1, verbose_name=_("Max Users"))
+    max_branches = models.PositiveIntegerField(
+        default=1, verbose_name=_("Max Branches"))
+    max_products = models.PositiveIntegerField(
+        default=200, verbose_name=_("Max Products"))
+    month_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Month"))
+    year_price = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Year"))
+    currency = models.CharField(
+        max_length=10, default="USD", choices=CURRENCY, verbose_name=_("Currency"))
+    discount = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Discount"))
+    has_hr_module = models.BooleanField(default=True)
+    has_inventory_module = models.BooleanField(default=True)
+    has_eye_test_module = models.BooleanField(default=True)
+    has_crm_module = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = _("Subscription Plan")
@@ -38,18 +50,24 @@ class SubscriptionPlan(BaseModel):
     def __str__(self):
         return f"{self.name} ({self.month_price} {self.currency})"
 
+
 class PendingTenantRequest(BaseModel):
     """Pending tenant requests"""
-    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True,)
-    schema_name = models.CharField(max_length=63, unique=True, verbose_name=_("Schema Name"))
+    plan = models.ForeignKey(
+        "SubscriptionPlan", on_delete=models.SET_NULL, null=True,)
+    schema_name = models.CharField(
+        max_length=63, unique=True, verbose_name=_("Schema Name"))
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
     email = models.EmailField(unique=True, verbose_name=_("Email"))
     password = models.CharField(max_length=128, verbose_name=_("Password"))
     token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     token_expires_at = models.DateTimeField(verbose_name=_("Token Expires At"))
-    is_activated = models.BooleanField(default=False, verbose_name=_("Activated"))
-   
-    expires_at = models.DateTimeField(blank=True, null=True, verbose_name=_("Expires At"))
+    is_activated = models.BooleanField(
+        default=False, verbose_name=_("Activated"))
+
+    expires_at = models.DateTimeField(
+        blank=True, null=True, verbose_name=_("Expires At"))
+
     class Meta:
         verbose_name = _("Pending Tenant Request")
         verbose_name_plural = _("Pending Tenant Requests")
@@ -59,7 +77,7 @@ class PendingTenantRequest(BaseModel):
 
     def clean(self):
         if not self.schema_name.isalnum():
-            raise ValidationError("Schema name must be alphanumeric")
+            raise ValidationError(_("Schema name must be alphanumeric"))
 
     def save(self, *args, **kwargs):
         """Set plan to trial and expires_at to expiration_date"""
@@ -68,21 +86,26 @@ class PendingTenantRequest(BaseModel):
             # Use duration_months * 30 as approximation since duration_days is not on model
             days = self.plan.duration_months * 30
             self.expires_at = expiration_date(days)
-            
+
         super().save(*args, **kwargs)
 
-class Client(TenantMixin,BaseModel):
+
+class Client(TenantMixin, BaseModel):
     """Tenants (Clients) """
-    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True )
+    plan = models.ForeignKey(
+        "SubscriptionPlan", on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
     max_users = models.IntegerField(default=1, verbose_name=_("Max Users"))
-    max_products = models.IntegerField(default=200, verbose_name=_("Max Products"))
-    max_branches = models.IntegerField(default=1, verbose_name=_("Max Branches"))
-    paid_until = models.DateField(null=True, blank=True, verbose_name=_("Paid Until"))
+    max_products = models.IntegerField(
+        default=200, verbose_name=_("Max Products"))
+    max_branches = models.IntegerField(
+        default=1, verbose_name=_("Max Branches"))
+    paid_until = models.DateField(
+        null=True, blank=True, verbose_name=_("Paid Until"))
     on_trial = models.BooleanField(default=True, verbose_name=_("On Trial"))
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
-    auto_create_schema = True
+    auto_create_schema = False
 
     class Meta:
         verbose_name = _("Client")
@@ -110,21 +133,43 @@ class Client(TenantMixin,BaseModel):
         now = timezone.now().date()
         return self.is_active and self.paid_until and self.paid_until >= now
 
+    def save(self, *args, **kwargs):
+        self.apply_plan_limits()  # تحديث القيود قبل الحفظ
+        super().save(*args, **kwargs)
+
+    def delete(self, force_drop=False, *args, **kwargs):
+        """بما أن Client يرث من BaseModel، نحتاج لتعطيل الـ Soft Delete هنا
+        لأن django-tenants يستدعي delete() داخلياً أثناء التهيئة مما يسبب recursion.
+        كما يجب دعم وسيط force_drop المتوقع من قبل django-tenants."""
+        return models.Model.delete(self, *args, **kwargs)
+
+
 class Domain(DomainMixin):
     """Domains for tenants"""
+
+    def delete(self, *args, **kwargs):
+        return models.Model.delete(self, *args, **kwargs)
+
     def __str__(self):
         return self.domain
 
+
 class Payment(BaseModel):
     """سجل المدفوعات"""
-    client = models.ForeignKey("Client", on_delete=models.CASCADE, related_name="payments")
-    plan = models.ForeignKey("SubscriptionPlan", on_delete=models.SET_NULL, null=True)
+    client = models.ForeignKey(
+        "Client", on_delete=models.CASCADE, related_name="payments")
+    plan = models.ForeignKey(
+        "SubscriptionPlan", on_delete=models.SET_NULL, null=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     currency = models.CharField(max_length=10, default="USD", choices=CURRENCY)
-    method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default="paypal")
+    method = models.CharField(
+        max_length=20, choices=PAYMENT_METHODS, default="paypal")
     transaction_id = models.CharField(max_length=100, blank=True, null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
-    direction = models.CharField(max_length=10, choices=[('month', 'Monthly'), ('year', 'Yearly')], default='month')
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="pending")
+    direction = models.CharField(max_length=10, choices=[(
+        'month', 'Monthly'), ('year', 'Yearly')], default='month')
+
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
@@ -146,9 +191,12 @@ class Payment(BaseModel):
         if self.status == 'success':
             try:
                 update_client_plan(self)
-                payment_logger.info(f"Successfully applied plan {self.plan} to client {self.client}")
+                payment_logger.info(
+                    f"Successfully applied plan {self.plan} to client {self.client}")
             except Exception as e:
-                payment_logger.error(f"Failed to apply plan to client: {str(e)}")
+                payment_logger.error(
+                    f"Failed to apply plan to client: {str(e)}")
                 raise
         else:
-            payment_logger.warning(f"Attempted to apply plan for non-successful payment: {self.id}")
+            payment_logger.warning(
+                f"Attempted to apply plan for non-successful payment: {self.id}")

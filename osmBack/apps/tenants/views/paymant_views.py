@@ -32,10 +32,10 @@ paymant_logger = logging.getLogger('paypal')
 class CreatePaymentOrderView(APIView):
     def post(self, request):
         lang_header = request.headers.get('accept-language', 'en')
-        lang = lang_header.split(',')[0].split('-')[0] # 'en'
+        lang = lang_header.split(',')[0].split('-')[0]  # 'en'
         serializer = CreatePaymentOrderSerializer(data=request.data)
-        print (request.data)
-        print (request.headers)
+        print(request.data)
+        print(request.headers)
         if serializer.is_valid():
             client = serializer.validated_data["client"]
             plan = serializer.validated_data["plan"]
@@ -187,17 +187,20 @@ class PaymentListView(APIView):
     # Secure: Only Authenticated Admins/Owners
     permission_classes = [
         IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
+        RoleOrPermissionRequired.with_requirements()
     ]
 
     def get(self, request):
         # Admin can filter by client
         client_uuid = request.query_params.get("client_id")
         user = request.user
+        # Collect all role names
+        user_roles = {r.name for r in user.roles.all()}
+        if getattr(user, "role", None):
+            user_roles.add(user.role.name)
 
         # Superuser/Owner sees all or filtered
-        if user.is_superuser or (user.role and user.role.name in ["owner"]):
+        if user.is_superuser or "TenantOwner" in user_roles:
             if client_uuid:
                 payments = Payment.objects.filter(client__uuid=client_uuid)
             else:

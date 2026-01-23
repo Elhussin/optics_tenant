@@ -4,6 +4,7 @@ Serializers للشركاء والتأمين
 """
 
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from apps.crm.models import (
     Partner, PartnerBranch, PartnerPriceList, PartnerPriceListItem,
     CustomerPartnerLink, InsuranceClaim, ClaimItem, ClaimDocument, PartnerSettlement
@@ -33,6 +34,42 @@ class PartnerSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at',
         ]
         read_only_fields = ['id', 'code', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'name': {
+                'error_messages': {
+                    'required': str(_('Partner name is required')),
+                    'blank': str(_('Partner name cannot be blank')),
+                }
+            },
+            'partner_type': {
+                'error_messages': {
+                    'required': str(_('Partner type is required')),
+                    'invalid_choice': str(_('Invalid partner type')),
+                }
+            },
+        }
+
+    def validate(self, data):
+        """التحقق من البيانات"""
+        contract_start = data.get('contract_start') or (
+            self.instance.contract_start if self.instance else None)
+        contract_end = data.get('contract_end') or (
+            self.instance.contract_end if self.instance else None)
+
+        # التحقق من تواريخ العقد
+        if contract_start and contract_end and contract_end <= contract_start:
+            raise serializers.ValidationError(
+                _('Contract end date must be after start date')
+            )
+
+        # التحقق من حد الائتمان
+        credit_limit = data.get('credit_limit')
+        if credit_limit is not None and credit_limit < 0:
+            raise serializers.ValidationError({
+                'credit_limit': _('Credit limit cannot be negative')
+            })
+
+        return data
 
 
 class PartnerListSerializer(serializers.ModelSerializer):
@@ -117,6 +154,28 @@ class CustomerPartnerLinkSerializer(serializers.ModelSerializer):
             'is_active', 'is_coverage_active', 'notes',
         ]
 
+    def validate(self, data):
+        """التحقق من البيانات"""
+        coverage_start = data.get('coverage_start') or (
+            self.instance.coverage_start if self.instance else None)
+        coverage_end = data.get('coverage_end') or (
+            self.instance.coverage_end if self.instance else None)
+
+        # التحقق من تواريخ التغطية
+        if coverage_start and coverage_end and coverage_end <= coverage_start:
+            raise serializers.ValidationError(
+                _('Coverage end date must be after start date')
+            )
+
+        # التحقق من الحد السنوي
+        annual_limit = data.get('annual_limit')
+        if annual_limit is not None and annual_limit < 0:
+            raise serializers.ValidationError({
+                'annual_limit': _('Annual limit cannot be negative')
+            })
+
+        return data
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Insurance Claims Serializers
@@ -190,6 +249,32 @@ class InsuranceClaimCreateSerializer(serializers.ModelSerializer):
             'order', 'partner', 'customer_partner_link',
             'total_amount', 'notes',
         ]
+
+    def validate_total_amount(self, value):
+        """التحقق من المبلغ"""
+        if value <= 0:
+            raise serializers.ValidationError(
+                _('Total amount must be greater than zero')
+            )
+        return value
+
+    def validate(self, data):
+        """التحقق من البيانات"""
+        customer_partner_link = data.get('customer_partner_link')
+
+        # التحقق من أن customer_partner_link نشط
+        if customer_partner_link and not customer_partner_link.is_active:
+            raise serializers.ValidationError({
+                'customer_partner_link': _('Customer partner link is not active')
+            })
+
+        # التحقق من أن التغطية نشطة
+        if customer_partner_link and not customer_partner_link.is_coverage_active:
+            raise serializers.ValidationError({
+                'customer_partner_link': _('Coverage period has expired')
+            })
+
+        return data
 
     def create(self, validated_data):
         claim = InsuranceClaim(**validated_data)

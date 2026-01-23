@@ -6,6 +6,7 @@
 from django.db import models, transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from core.models import BaseModel
 from decimal import Decimal
 import time
@@ -16,14 +17,14 @@ class InsuranceClaim(BaseModel):
     مطالبة تأمين - تتبع عملية المطالبة من التقديم للسداد
     """
     CLAIM_STATUS = [
-        ('draft', 'مسودة'),
-        ('submitted', 'تم التقديم'),
-        ('under_review', 'قيد المراجعة'),
-        ('approved', 'معتمدة'),
-        ('partial', 'معتمدة جزئياً'),
-        ('rejected', 'مرفوضة'),
-        ('paid', 'تم السداد'),
-        ('cancelled', 'ملغاة'),
+        ('draft', _('Draft')),
+        ('submitted', _('Submitted')),
+        ('under_review', _('Under Review')),
+        ('approved', _('Approved')),
+        ('partial', _('Partially Approved')),
+        ('rejected', _('Rejected')),
+        ('paid', _('Paid')),
+        ('cancelled', _('Cancelled')),
     ]
 
     # الربط بالطلب والشريك
@@ -50,48 +51,48 @@ class InsuranceClaim(BaseModel):
     external_claim_number = models.CharField(
         max_length=100,
         blank=True,
-        verbose_name="رقم المطالبة لدى الشركة"
+        verbose_name=_('External Claim Number')
     )
 
     # التواريخ
     claim_date = models.DateField(
-        auto_now_add=True, verbose_name="تاريخ المطالبة")
+        auto_now_add=True, verbose_name=_('Claim Date'))
     submission_date = models.DateField(
-        null=True, blank=True, verbose_name="تاريخ التقديم")
+        null=True, blank=True, verbose_name=_('Submission Date'))
     response_date = models.DateField(
-        null=True, blank=True, verbose_name="تاريخ الرد")
+        null=True, blank=True, verbose_name=_('Response Date'))
     payment_date = models.DateField(
-        null=True, blank=True, verbose_name="تاريخ السداد")
+        null=True, blank=True, verbose_name=_('Payment Date'))
 
     # المبالغ
     total_amount = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        verbose_name="إجمالي المبلغ"
+        verbose_name=_('Total Amount')
     )
     claim_amount = models.DecimalField(
         max_digits=12,
         decimal_places=2,
-        verbose_name="المبلغ المطالب به",
-        help_text="المبلغ المطلوب من شركة التأمين"
+        verbose_name=_('Claim Amount'),
+        help_text=_('Amount requested from insurance company')
     )
     approved_amount = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="المبلغ المعتمد"
+        verbose_name=_('Approved Amount')
     )
     paid_amount = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="المبلغ المسدد"
+        verbose_name=_('Paid Amount')
     )
     patient_share = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="حصة المريض"
+        verbose_name=_('Patient Share')
     )
 
     # الحالة
@@ -99,25 +100,26 @@ class InsuranceClaim(BaseModel):
         max_length=20,
         choices=CLAIM_STATUS,
         default='draft',
-        verbose_name="الحالة"
+        verbose_name=_('Status')
     )
 
     # السبب في حالة الرفض
-    rejection_reason = models.TextField(blank=True, verbose_name="سبب الرفض")
+    rejection_reason = models.TextField(
+        blank=True, verbose_name=_('Rejection Reason'))
     partial_reason = models.TextField(
-        blank=True, verbose_name="سبب الاعتماد الجزئي")
+        blank=True, verbose_name=_('Partial Approval Reason'))
 
     # معلومات إضافية
-    notes = models.TextField(blank=True, verbose_name="ملاحظات")
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
     internal_notes = models.TextField(
-        blank=True, verbose_name="ملاحظات داخلية")
+        blank=True, verbose_name=_('Internal Notes'))
 
     # المستندات المرفقة
     documents = models.JSONField(default=list, blank=True)
 
     class Meta:
-        verbose_name = "مطالبة تأمين"
-        verbose_name_plural = "مطالبات التأمين"
+        verbose_name = _('Insurance Claim')
+        verbose_name_plural = _('Insurance Claims')
         ordering = ['-claim_date']
         indexes = [
             models.Index(fields=['status']),
@@ -181,7 +183,7 @@ class InsuranceClaim(BaseModel):
     def submit(self):
         """تقديم المطالبة"""
         if self.status != 'draft':
-            raise ValidationError("يمكن تقديم المطالبات المسودة فقط")
+            raise ValidationError(_("Only draft claims can be submitted"))
 
         self.status = 'submitted'
         self.submission_date = timezone.now().date()
@@ -191,7 +193,7 @@ class InsuranceClaim(BaseModel):
     def approve(self, approved_amount=None, notes=""):
         """اعتماد المطالبة"""
         if self.status not in ['submitted', 'under_review']:
-            raise ValidationError("لا يمكن اعتماد هذه المطالبة")
+            raise ValidationError(_("This claim cannot be approved"))
 
         self.response_date = timezone.now().date()
 
@@ -215,7 +217,7 @@ class InsuranceClaim(BaseModel):
     def reject(self, reason=""):
         """رفض المطالبة"""
         if self.status not in ['submitted', 'under_review']:
-            raise ValidationError("لا يمكن رفض هذه المطالبة")
+            raise ValidationError(_("This claim cannot be rejected"))
 
         self.status = 'rejected'
         self.response_date = timezone.now().date()
@@ -227,7 +229,8 @@ class InsuranceClaim(BaseModel):
     def mark_paid(self, amount=None, payment_reference=""):
         """تسجيل السداد"""
         if self.status not in ['approved', 'partial']:
-            raise ValidationError("يمكن تسجيل السداد للمطالبات المعتمدة فقط")
+            raise ValidationError(
+                _("Payment can only be recorded for approved claims"))
 
         self.paid_amount = amount or self.approved_amount
         self.payment_date = timezone.now().date()
@@ -261,30 +264,35 @@ class ClaimItem(BaseModel):
     )
 
     # تفاصيل المنتج
-    description = models.CharField(max_length=200, verbose_name="الوصف")
-    quantity = models.PositiveIntegerField(default=1)
-    unit_price = models.DecimalField(max_digits=10, decimal_places=2)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    description = models.CharField(
+        max_length=200, verbose_name=_('Description'))
+    quantity = models.PositiveIntegerField(
+        default=1, verbose_name=_('Quantity'))
+    unit_price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name=_('Unit Price'))
+    total_price = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name=_('Total Price'))
 
     # المبالغ
     claim_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
-        verbose_name="المبلغ المطالب"
+        verbose_name=_('Claim Amount')
     )
     approved_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=0,
-        verbose_name="المبلغ المعتمد"
+        verbose_name=_('Approved Amount')
     )
 
     # كود التأمين للمنتج
-    insurance_code = models.CharField(max_length=50, blank=True)
+    insurance_code = models.CharField(
+        max_length=50, blank=True, verbose_name=_('Insurance Code'))
 
     class Meta:
-        verbose_name = "عنصر مطالبة"
-        verbose_name_plural = "عناصر المطالبات"
+        verbose_name = _('Claim Item')
+        verbose_name_plural = _('Claim Items')
 
     def save(self, *args, **kwargs):
         self.total_price = self.quantity * self.unit_price
@@ -296,11 +304,11 @@ class ClaimDocument(BaseModel):
     مستندات المطالبة (وصفات، فواتير، تقارير)
     """
     DOCUMENT_TYPES = [
-        ('prescription', 'وصفة طبية'),
-        ('invoice', 'فاتورة'),
-        ('report', 'تقرير طبي'),
-        ('authorization', 'موافقة مسبقة'),
-        ('other', 'أخرى'),
+        ('prescription', _('Prescription')),
+        ('invoice', _('Invoice')),
+        ('report', _('Medical Report')),
+        ('authorization', _('Pre-Authorization')),
+        ('other', _('Other')),
     ]
 
     claim = models.ForeignKey(
@@ -309,14 +317,16 @@ class ClaimDocument(BaseModel):
         related_name='attached_documents'
     )
 
-    document_type = models.CharField(max_length=20, choices=DOCUMENT_TYPES)
-    title = models.CharField(max_length=200)
-    file = models.FileField(upload_to='claims/documents/')
-    notes = models.TextField(blank=True)
+    document_type = models.CharField(
+        max_length=20, choices=DOCUMENT_TYPES, verbose_name=_('Document Type'))
+    title = models.CharField(max_length=200, verbose_name=_('Title'))
+    file = models.FileField(
+        upload_to='claims/documents/', verbose_name=_('File'))
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
 
     class Meta:
-        verbose_name = "مستند مطالبة"
-        verbose_name_plural = "مستندات المطالبات"
+        verbose_name = _('Claim Document')
+        verbose_name_plural = _('Claim Documents')
 
     def __str__(self):
         return f"{self.title} - {self.claim.claim_number}"
@@ -327,10 +337,10 @@ class PartnerSettlement(BaseModel):
     تسوية مالية مع الشريك (دفعة شهرية مثلاً)
     """
     SETTLEMENT_STATUS = [
-        ('pending', 'قيد الانتظار'),
-        ('confirmed', 'مؤكدة'),
-        ('paid', 'مسددة'),
-        ('disputed', 'متنازع عليها'),
+        ('pending', _('Pending')),
+        ('confirmed', _('Confirmed')),
+        ('paid', _('Paid')),
+        ('disputed', _('Disputed')),
     ]
 
     partner = models.ForeignKey(
@@ -339,31 +349,35 @@ class PartnerSettlement(BaseModel):
         related_name='settlements'
     )
 
-    settlement_number = models.CharField(max_length=50, unique=True)
-    settlement_date = models.DateField(auto_now_add=True)
-    period_start = models.DateField(verbose_name="من تاريخ")
-    period_end = models.DateField(verbose_name="إلى تاريخ")
+    settlement_number = models.CharField(
+        max_length=50, unique=True, verbose_name=_('Settlement Number'))
+    settlement_date = models.DateField(
+        auto_now_add=True, verbose_name=_('Settlement Date'))
+    period_start = models.DateField(verbose_name=_('Period Start'))
+    period_end = models.DateField(verbose_name=_('Period End'))
 
     # المبالغ
     total_claims = models.PositiveIntegerField(
-        default=0, verbose_name="عدد المطالبات")
+        default=0, verbose_name=_('Total Claims'))
     total_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, verbose_name="إجمالي المبلغ")
+        max_digits=12, decimal_places=2, verbose_name=_('Total Amount'))
     adjustments = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0, verbose_name="التعديلات")
+        max_digits=12, decimal_places=2, default=0, verbose_name=_('Adjustments'))
     net_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, verbose_name="صافي المبلغ")
+        max_digits=12, decimal_places=2, verbose_name=_('Net Amount'))
 
     status = models.CharField(
-        max_length=20, choices=SETTLEMENT_STATUS, default='pending')
-    payment_date = models.DateField(null=True, blank=True)
-    payment_reference = models.CharField(max_length=100, blank=True)
+        max_length=20, choices=SETTLEMENT_STATUS, default='pending', verbose_name=_('Status'))
+    payment_date = models.DateField(
+        null=True, blank=True, verbose_name=_('Payment Date'))
+    payment_reference = models.CharField(
+        max_length=100, blank=True, verbose_name=_('Payment Reference'))
 
-    notes = models.TextField(blank=True)
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
 
     class Meta:
-        verbose_name = "تسوية مالية"
-        verbose_name_plural = "التسويات المالية"
+        verbose_name = _('Partner Settlement')
+        verbose_name_plural = _('Partner Settlements')
         ordering = ['-settlement_date']
 
     def calculate_from_claims(self):

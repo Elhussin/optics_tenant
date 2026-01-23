@@ -5,7 +5,7 @@ from .product import CategoryViewSet, ProductViewSet, ProductVariantViewSet, Pro
 from .suppliers import SupplierViewSet, ManufacturerViewSet, BrandViewSet
 
 from .inventory import StocksViewSet, StockMovementsViewSet, StockTransferViewSet, StockTransferItemViewSet
-
+from .import_export import ProductImportView  # New View
 
 __all__ = [
     "ProductViewSet", "ProductVariantViewSet", "CategoryViewSet",
@@ -14,7 +14,8 @@ __all__ = [
     "AttributesViewSet", "AttributeValueViewSet",
     "ProductVariantReviewViewSet", "ProductVariantQuestionViewSet", "ProductVariantAnswerViewSet", "ProductVariantOfferViewSet",
     "SupplierViewSet", "ManufacturerViewSet", "BrandViewSet",
-    "InventoryDocumentViewSet", "InventoryLineItemViewSet",
+   
     "ProductImageViewSet",
-    "FlexiblePriceViewSet",
+    "FlexiblePriceViewSet","ProductImportView"
 ]
+#  "InventoryDocumentViewSet", "InventoryLineItemViewSet",

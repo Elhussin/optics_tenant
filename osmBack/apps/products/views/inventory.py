@@ -13,9 +13,8 @@ from core.permissions.BranchAccessMixin import BranchAccessMixin, TransferBranch
 from django.db import transaction
 from django.utils import timezone
 
-INVENTORY_MANAGERS = ["manager", "store_keeper"]
-SUPER_ROLES = ["admin", "owner"]
-
+INVENTORY_MANAGERS = ["InventoryManager", "BranchManager"]
+SUPER_ROLES = ["TenantOwner", "TenantAdmin"]
 
 class InventoryBaseViewSet(BranchAccessMixin, BaseViewSet):
     """
@@ -26,14 +25,13 @@ class InventoryBaseViewSet(BranchAccessMixin, BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             allowed_roles=INVENTORY_MANAGERS,
-            super_roles=SUPER_ROLES
+           required_permissions=["view_inventory"]
         )
     ]
 
     # Branch access configuration
     branch_field = 'branch'
-    allow_all_branches_for_roles = SUPER_ROLES + ['manager']
-
+    allow_all_branches_for_roles = SUPER_ROLES + ["InventoryManager"]
 
 class StocksViewSet(InventoryBaseViewSet):
     """
@@ -185,10 +183,10 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             allowed_roles=INVENTORY_MANAGERS,
-            super_roles=SUPER_ROLES
+            required_permissions=["view_inventory"]
         )
     ]
-    allow_all_branches_for_roles = SUPER_ROLES + ['manager']
+    allow_all_branches_for_roles = SUPER_ROLES + ['InventoryManager']
     queryset = StockTransfer.objects.select_related(
         'from_branch', 'to_branch'
     ).prefetch_related('items__variant__product').all()

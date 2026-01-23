@@ -1,5 +1,5 @@
 
-from paypalrestsdk.openid_connect import client_id
+# from paypalrestsdk.openid_connect import client_id
 from rest_framework import serializers
 from apps.tenants.models import Client, PendingTenantRequest, Payment, Domain, SubscriptionPlan
 from django.utils.translation import gettext_lazy as _
@@ -17,7 +17,9 @@ class SubscriptionPlanSerializer(VerboseNameMixin, serializers.ModelSerializer):
     class Meta:
         model = SubscriptionPlan
         fields = ['id', 'name', 'duration_months', 'duration_years', 'max_users',
-                  'max_branches', 'max_products', 'month_price', 'year_price', 'currency', 'discount', 'field_labels']
+                  'max_branches', 'max_products', 'month_price', 'year_price',
+                  'has_hr_module', 'has_inventory_module', 'has_eye_test_module', 'has_crm_module',
+                  'currency', 'discount', 'field_labels']
 
 
 class RegisterTenantSerializer(serializers.ModelSerializer):
@@ -58,7 +60,7 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 {"detail": _("System configuration error: Trial plan not found.")})
 
-        expires_at = expiration_date(days=trial_plan.duration_months)
+        # expires_at = expiration_date(days=trial_plan.duration_months)
 
         return PendingTenantRequest.objects.create(
             schema_name=schema_name,
@@ -66,7 +68,7 @@ class RegisterTenantSerializer(serializers.ModelSerializer):
             email=email,
             password=make_password(password),
             plan=trial_plan,
-            expires_at=expires_at,
+            # expires_at=expires_at,
             token=uuid.uuid4(),
             token_expires_at=expiration_date(1)
         )

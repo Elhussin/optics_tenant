@@ -16,8 +16,8 @@ from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 from core.permissions.BranchAccessMixin import BranchAccessMixin
 
-SALES_ROLES = ["sales", "cashier", "manager"]
-SUPER_ROLES = ["admin", "owner"]
+SALES_ROLES = ["SalesClerk", "BranchManager"]
+super_roles = ["TenantOwner", "TenantAdmin"]
 
 
 class BaseSalesViewSet(BranchAccessMixin, BaseViewSet):
@@ -28,12 +28,14 @@ class BaseSalesViewSet(BranchAccessMixin, BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=SALES_ROLES, super_roles=SUPER_ROLES)
+            allowed_roles=SALES_ROLES,
+            required_permissions=["view_sale"]
+        )
     ]
 
     # Branch access configuration
     branch_field = 'branch'
-    allow_all_branches_for_roles = SUPER_ROLES + ['manager']
+    allow_all_branches_for_roles = super_roles
 
 
 class OrderViewSet(BaseSalesViewSet):
@@ -193,7 +195,7 @@ def invoice_choices(request):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=SALES_ROLES, super_roles=SUPER_ROLES
+        allowed_roles=SALES_ROLES
     )
 ])
 def create_return(request, order_id):
@@ -248,7 +250,7 @@ def create_return(request, order_id):
 @permission_classes([
     IsAuthenticated,
     RoleOrPermissionRequired.with_requirements(
-        allowed_roles=['manager', 'store_keeper'], super_roles=SUPER_ROLES
+        allowed_roles=['BranchManager', 'InventoryManager']
     )
 ])
 def create_damage_record(request):

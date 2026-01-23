@@ -2,7 +2,6 @@ import requests
 import logging
 from django.conf import settings
 from optics_tenant.config_loader import config
-from apps.tenants.models import Payment, SubscriptionPlan, Client
 from django.utils import timezone
 from dateutil.relativedelta import relativedelta
 from rest_framework import status
@@ -67,13 +66,13 @@ def create_paypal_order(client, plan, lang, direction, amount):
                 "reference_id": str(client.uuid),
                 "description": f"Subscription for {client.name} ({plan.name} - {direction})",
                 "amount": {
-                    "currency_code": "USD",
+                    "currency_code": plan.currency,
                     "value": str(amount)
                 }
             }
         ],
         "application_context": {
-            "brand_name": "Solo Vizion",
+            "brand_name": config("PLATFORM_NAME", default="OSM Beta"),
             "landing_page": "LOGIN",
             "user_action": "PAY_NOW",
             "return_url": return_url,

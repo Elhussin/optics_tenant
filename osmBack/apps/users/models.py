@@ -5,6 +5,7 @@ from django.utils.text import slugify
 import django.utils.timezone as timezone
 from core.models import BaseModel, SoftDeleteManager, SoftDeleteMixin
 
+
 class Role(BaseModel):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(blank=True)
@@ -19,33 +20,39 @@ class Role(BaseModel):
         verbose_name_plural = "Roles"
         ordering = ['name']
 
+
 class Permission(BaseModel):
     code = models.CharField(max_length=100, unique=True)  # create_prescription
     description = models.TextField(blank=True)
 
+
 class RolePermission(BaseModel):
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
     permission = models.ForeignKey(Permission, on_delete=models.CASCADE)
-    
+
     class Meta:
         unique_together = ('role', 'permission')
+
 
 class SoftDeleteUserManager(SoftDeleteMixin, UserManager):
     pass
 
+
 class User(AbstractUser):
-    role = models.ForeignKey("Role", on_delete=models.SET_NULL, null=True, blank=True)
+    roles = models.ManyToManyField(
+        "Role", related_name="users_list", blank=True)
     is_deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
     phone = models.CharField(max_length=20, null=True, blank=True)
-    client = models.ForeignKey('tenants.Client', on_delete=models.CASCADE, null=True, blank=True)
+    client = models.ForeignKey(
+        'tenants.Client', on_delete=models.CASCADE, null=True, blank=True)
 
     objects = SoftDeleteUserManager()
 
     def delete(self, using=None, keep_parents=False):
         # CHANGED: Soft delete now also deactivates the user to prevent login
         self.is_deleted = True
-        self.is_active = False 
+        self.is_active = False
         self.deleted_at = timezone.now()
         self.save()
 
@@ -53,7 +60,7 @@ class User(AbstractUser):
         # If is_deleted set to True for first time
         if self.is_deleted and not self.deleted_at:
             self.deleted_at = timezone.now()
-            self.is_active = False # Ensure deactivation
+            self.is_active = False  # Ensure deactivation
 
         # If restoring
         elif not self.is_deleted and self.deleted_at:
@@ -71,12 +78,16 @@ class ContactUs(BaseModel):
     name = models.CharField(max_length=100)
     message = models.TextField(max_length=500)
 
+
 class TenantSettings(BaseModel):
-    business_name = models.CharField(max_length=255 , default="Optics Tenant")
+    client = models.ForeignKey(
+        'tenants.Client', on_delete=models.CASCADE, null=True, blank=True)
+    business_name = models.CharField(max_length=255, default="Optics Tenant")
     description = models.TextField(blank=True, default="Default description.")
     # Social Media
     facebook = models.URLField(blank=True, default='https://www.facebook.com')
-    instagram = models.URLField(blank=True, default='https://www.instagram.com')
+    instagram = models.URLField(
+        blank=True, default='https://www.instagram.com')
     whatsapp = models.CharField(max_length=20, blank=True, default='')
     twitter = models.URLField(blank=True, default='https://www.twitter.com')
     tiktok = models.URLField(blank=True, default='https://www.tiktok.com')
@@ -107,16 +118,20 @@ class TenantSettings(BaseModel):
     def __str__(self):
         return self.business_name if self.business_name else "Tenant Settings"
 
+
 class Page(BaseModel):
     LANGUAGE_CHOICES = [
         ('en', 'English'),
         ('ar', 'Arabic'),
     ]
-    slug = models.SlugField(max_length=200, unique=True)   
-    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pages')
+    client = models.ForeignKey(
+        'tenants.Client', on_delete=models.CASCADE, null=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True)
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='pages')
     default_language = models.CharField(
-        max_length=2, 
-        choices=LANGUAGE_CHOICES, 
+        max_length=2,
+        choices=LANGUAGE_CHOICES,
         default='en'
     )
     is_published = models.BooleanField(default=False)
@@ -124,10 +139,12 @@ class Page(BaseModel):
     class Meta:
         db_table = 'pages'
         ordering = ['-updated_at']
+        unique_together = ('client', 'slug')
+
 
 class PageContent(BaseModel):
     page = models.ForeignKey(
-        Page, 
+        Page,
         related_name='translations',
         on_delete=models.CASCADE
     )
@@ -138,7 +155,7 @@ class PageContent(BaseModel):
     seo_title = models.CharField(max_length=200, blank=True)
     meta_description = models.TextField(max_length=500, blank=True)
     meta_keywords = models.TextField(blank=True)
-    
+
     class Meta:
         db_table = 'page_translations'
         unique_together = [

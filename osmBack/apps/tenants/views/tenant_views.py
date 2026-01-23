@@ -22,6 +22,8 @@ from apps.tenants.serializers import (
 )
 from core.utils.email import send_activation_email
 
+super_roles = ["TenantOwner", "TenantAdmin"]
+
 
 class IsPublicTenant(permissions.BasePermission):
     """
@@ -63,7 +65,8 @@ class DomainViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"]),
+            required_permissions=["view_domain"]
+        ),
         IsPublicTenant
     ]
     filterset_fields = ['tenant', 'is_primary']
@@ -79,7 +82,8 @@ class ClientViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"]),
+            required_permissions=["view_client"]
+        ),
         # IsPublicTenant  # 👈 Restrict to Public Djomain Only
     ]
 
@@ -87,7 +91,13 @@ class ClientViewSet(BaseViewSet):
         user = self.request.user
         # Admin/Owner can see all clients (or based on platform logic)
         # Assuming 'owner' is platform owner here, or if superuser
-        if user.is_superuser or (getattr(user, 'role', None) and user.role.name.lower() in ['admin', 'owner']):
+
+        user_roles = {r.name.lower() for r in user.roles.all()}
+        if getattr(user, 'role', None):
+            user_roles.add(user.role.name.lower())
+
+        super_roles_lower = [r.lower() for r in super_roles]
+        if user.is_superuser or user_roles.intersection(set(super_roles_lower)):
             return Client.objects.all()
 
         # Regular users see their own client
@@ -113,7 +123,8 @@ class SubscriptionPlanViewSet(BaseViewSet):
             permission_classes = [
                 IsAuthenticated,
                 RoleOrPermissionRequired.with_requirements(
-                    super_roles=["admin", "owner"]),
+                    required_permissions=["view_subscription"]
+                ),
                 IsPublicTenant  # 👈 Restrict to Public Domain Only
             ]
         return [permission() for permission in permission_classes]
@@ -123,8 +134,7 @@ class RegisterTenantViewSet(BaseViewSet):
     # Only Admin/Owner can view pending requests
     permission_classes = [
         IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"]),
+        RoleOrPermissionRequired.with_requirements(),
         IsPublicTenant  # 👈 Restrict to Public Domain Only
     ]
     queryset = PendingTenantRequest.objects.all()

@@ -62,57 +62,77 @@ class BaseItem(BaseModel):
         super().save(*args, **kwargs)
 
 
+class PaymentMethod(BaseModel):
+    """
+    Dynamic Payment Methods (e.g., Mada, Visa, Tabby, Apple Pay)
+    Allows adding new methods without code changes.
+    """
+    name_ar = models.CharField(
+        max_length=100, verbose_name=_("الاسم (بالعربي)"))
+    name_en = models.CharField(
+        max_length=100, verbose_name=_("Name (English)"))
+    code = models.SlugField(unique=True, verbose_name=_(
+        "Code"))  # e.g., 'tabby', 'mada'
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
+    icon = models.ImageField(upload_to='payment_icons/', null=True, blank=True)
+    provider_fees_percent = models.DecimalField(
+        max_digits=5, decimal_places=2, default=0.0,
+        help_text=_("Percentage fee charged by the provider (e.g., 2.5)")
+    )
+    is_installment = models.BooleanField(
+        default=False, verbose_name=_("Is Installment (BNPL)"))
+
+    def __str__(self):
+        return f"{self.name_en} ({self.name_ar})"
+
+    class Meta:
+        verbose_name = _("Payment Method")
+        verbose_name_plural = _("Payment Methods")
+
+
 class Order(BaseDocument):
-    ORDER_TYPE_CHOICES = [
-        ('cash', 'نقدي'),
-        ('credit', 'آجل'),
-        ('insurance', 'تأمين'),
-        ('bnpl', 'تقسيط'),           # Tabby, Tamara
-        ('corporate', 'شركات'),
-        ('wholesale', 'جملة'),
-    ]
-    PAYMENT_METHOD_CHOICES = [
-        ('cash', 'نقدي'),
-        ('card', 'بطاقة'),
-        ('bank_transfer', 'تحويل بنكي'),
-        ('mada', 'مدى'),
-        ('visa', 'فيزا'),
-        ('master', 'ماستر كارد'),
-        ('apple_pay', 'Apple Pay'),
-        ('stc_pay', 'STC Pay'),
-        ('tabby', 'تابي'),
-        ('tamara', 'تمارا'),
-        ('insurance', 'تأمين'),
-        ('credit', 'آجل'),
-        ('mixed', 'مختلط'),
-    ]
-    PAYMENT_STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('partial', 'Partial'),
-        ('paid', 'Paid'),
-        ('refunded', 'Refunded'),
-        ('disputed', 'Disputed'),
-    ]
-    STATUS_CHOICES = [
-        ('pending', 'pending'),
-        ('confirmed', 'confirmed'),
-        ('ready', 'ready'),
-        ('delivered', 'delivered'),
-        ('cancelled', 'cancelled'),
-    ]
+    class OrderType(models.TextChoices):
+        CASH = 'cash', _('نقدي')
+        CREDIT = 'credit', _('آجل')
+        INSURANCE = 'insurance', _('تأمين')
+        BNPL = 'bnpl', _('تقسيط')           # Tabby, Tamara
+        CORPORATE = 'corporate', _('شركات')
+        WHOLESALE = 'wholesale', _('جملة')
+
+    class PaymentStatus(models.TextChoices):
+        PENDING = 'pending', _('Pending')
+        PARTIAL = 'partial', _('Partial')
+        PAID = 'paid', _('Paid')
+        REFUNDED = 'refunded', _('Refunded')
+        DISPUTED = 'disputed', _('Disputed')
+
+    class OrderStatus(models.TextChoices):
+        PENDING = 'pending', _('Pending')
+        CONFIRMED = 'confirmed', _('Confirmed')
+        READY = 'ready', _('Ready')
+        DELIVERED = 'delivered', _('Delivered')
+        CANCELLED = 'cancelled', _('Cancelled')
 
     # نوع الطلب (يحدد سير العمل)
     order_type = models.CharField(
-        max_length=20, choices=ORDER_TYPE_CHOICES, default='cash')
+        max_length=20, choices=OrderType.choices, default=OrderType.CASH)
     order_number = models.CharField(max_length=20, unique=True, editable=False)
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default='pending')
+        max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
 
     # الدفع
     payment_status = models.CharField(
-        max_length=20, choices=PAYMENT_STATUS_CHOICES, default='pending')
-    payment_method = models.CharField(
-        max_length=20, choices=PAYMENT_METHOD_CHOICES, default='cash')
+        max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
+
+    # تحويل إلى ForeignKey ليكون ديناميكياً
+    payment_method = models.ForeignKey(
+        PaymentMethod,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='orders',
+        verbose_name=_("طريقة الدفع")
+    )
 
     # ربط بالشريك (تأمين/تقسيط/شركة)
     partner = models.ForeignKey(
@@ -282,46 +302,6 @@ class Payment(BaseModel):
     """
     نموذج الدفعات - يدعم طرق دفع متعددة وتقسيط
     """
-    PAYMENT_METHOD_CHOICES = [
-        # الدفع المباشر
-        ('cash', 'نقدي'),
-        ('card', 'بطاقة'),
-        ('bank_transfer', 'تحويل بنكي'),
-        ('cheque', 'شيك'),
-
-        # بطاقات محلية
-        ('mada', 'مدى'),
-        ('visa', 'فيزا'),
-        ('mastercard', 'ماستر كارد'),
-        ('amex', 'أمريكان إكسبريس'),
-
-        # المحافظ الرقمية
-        ('apple_pay', 'Apple Pay'),
-        ('stc_pay', 'STC Pay'),
-        ('urpay', 'URPay'),
-
-        # شركات التقسيط (BNPL)
-        ('tabby', 'تابي'),
-        ('tamara', 'تمارا'),
-        ('postpay', 'بوست باي'),
-        ('spotii', 'سبوتي'),
-
-        # التأمين والائتمان
-        ('insurance', 'تأمين'),
-        ('credit', 'آجل'),
-        ('partner', 'شريك'),
-    ]
-
-    PAYMENT_STATUS_CHOICES = [
-        ('pending', 'قيد الانتظار'),
-        ('processing', 'جاري المعالجة'),
-        ('completed', 'مكتمل'),
-        ('failed', 'فشل'),
-        ('cancelled', 'ملغي'),
-        ('refunded', 'مسترجع'),
-        ('partially_refunded', 'مسترجع جزئياً'),
-    ]
-
     # الربط بالفاتورة أو الطلب
     invoice = models.ForeignKey(
         Invoice, on_delete=models.CASCADE,
@@ -337,12 +317,18 @@ class Payment(BaseModel):
     # معلومات الدفع الأساسية
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     currency = models.CharField(max_length=3, default='SAR')
-    payment_method = models.CharField(
-        max_length=20, choices=PAYMENT_METHOD_CHOICES)
+    payment_method = models.ForeignKey(
+        PaymentMethod,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='payments',
+        verbose_name=_("طريقة الدفع")
+    )
     status = models.CharField(
         max_length=20,
-        choices=PAYMENT_STATUS_CHOICES,
-        default='pending'
+        choices=Order.PaymentStatus.choices,
+        default=Order.PaymentStatus.PENDING
     )
 
     # للشريك (تأمين/تقسيط)

@@ -5,7 +5,7 @@ from django.db import models
 import hashlib
 from django.core.exceptions import ValidationError
 from apps.products.utils.index import spherical_lens_powers, cylinder_lens_powers, additional_lens_powers
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.utils import timezone
 from apps.crm.models import Customer
@@ -21,6 +21,7 @@ from apps.products.constants import (
 )
 
 # product_logger = logging.getLogger('product')
+
 
 class Category(BaseModel):
     """Category for glasses"""
@@ -152,10 +153,16 @@ class ProductVariant(BaseModel):
     @property
     def discount_price(self):
         """Calculate discounted price"""
-        if self.discount_percentage > 0:
-            discount_amount = self.selling_price * \
-                (self.discount_percentage / 100)
-            return self.selling_price - discount_amount
+        # تحويل discount_percentage و selling_price إلى Decimal للتأكد من صحة العمليات الحسابية
+        try:
+            discount_pct = Decimal(str(self.discount_percentage or 0))
+            selling_price = Decimal(str(self.selling_price or 0))
+
+            if discount_pct > 0 and selling_price > 0:
+                discount_amount = selling_price * (discount_pct / 100)
+                return selling_price - discount_amount
+        except (ValueError, TypeError, InvalidOperation):
+            pass
         return None
 
     class Meta:
@@ -199,8 +206,9 @@ class ProductVariant(BaseModel):
 
         # Add price
         price_text = f"السعر: {self.selling_price} ر.س"
-        if self.discount_price:
-            price_text = f"السعر: {self.discount_price} ر.س (بعد خصم {self.discount_percentage}%)"
+        discount_pct = Decimal(str(self.discount_percentage or 0))
+        if self.discount_price and discount_pct > 0:
+            price_text = f"السعر: {self.discount_price} ر.س (بعد خصم {discount_pct}%)"
         parts.append(price_text)
 
         return " | ".join(parts)

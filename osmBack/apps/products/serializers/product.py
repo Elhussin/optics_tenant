@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema_field
 from apps.products.models import (
     Category, Product, ProductVariant,
@@ -79,7 +80,7 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
         product_value = validated_data.get('product')
         if not product_value:
             raise serializers.ValidationError(
-                {"product": "This field is required."})
+                {"product": str(_("This field is required"))})
 
         # Convert product ID to instance if needed
         if isinstance(product_value, int):
@@ -90,7 +91,7 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
                     f"Converted product ID {product_value} to instance")
             except Product.DoesNotExist:
                 raise serializers.ValidationError(
-                    {"product": f"Product with ID {product_value} does not exist."})
+                    {"product": str(_('Product with ID {id} does not exist').format(id=product_value))})
         else:
             product = product_value
 
@@ -153,7 +154,7 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
                     logger.error(
                         f"  ❌ {related_model.__name__} with ID {value} not found")
                     raise serializers.ValidationError(
-                        {key: f"{related_model.__name__} with ID {value} does not exist."})
+                        {key: str(_('{model} with ID {id} does not exist').format(model=related_model.__name__, id=value))})
             else:
                 create_data[key] = value
                 logger.info(f"  ➡️  Kept as-is: {key}={value}")
@@ -289,14 +290,14 @@ class FlexiblePriceSerializer(serializers.ModelSerializer):
         # Ensure either customer or customer_group is set, not both
         if data.get('customer') and data.get('customer_group'):
             raise serializers.ValidationError(
-                "Cannot set both customer and customer group."
+                str(_('Cannot set both customer and customer group'))
             )
 
         # Validate date range
         if data.get('start_date') and data.get('end_date'):
             if data['start_date'] > data['end_date']:
                 raise serializers.ValidationError(
-                    "End date must be after start date."
+                    str(_('End date must be after start date'))
                 )
 
         return data

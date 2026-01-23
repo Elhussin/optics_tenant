@@ -18,6 +18,8 @@ from apps.sales.views.payment import (
     InstallmentViewSet,
 )
 
+from apps.sales.views.payment_method import PaymentMethodViewSet
+
 from apps.sales.views.wholesale import (
     get_wholesale_pricing,
     validate_wholesale_order,
@@ -41,6 +43,7 @@ __all__ = [
     # Payment
     'PaymentViewSet',
     'InstallmentViewSet',
+    'PaymentMethodViewSet',
 
     # Wholesale
     'get_wholesale_pricing',

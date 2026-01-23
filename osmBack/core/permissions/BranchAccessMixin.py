@@ -40,12 +40,13 @@ class BranchAccessMixin:
         if user.is_superuser:
             return None
 
-        # Check user role
-        role = getattr(user, 'role', None)
-        role_name = getattr(role, 'name', None)
+        # Collect all role names
+        user_roles = {r.name for r in user.roles.all()}
+        if getattr(user, 'role', None):
+            user_roles.add(user.role.name)
 
         # Super roles see everything
-        if role_name in self.allow_all_branches_for_roles:
+        if user_roles.intersection(set(self.allow_all_branches_for_roles)):
             return None
 
         # Get user's assigned branches via Employee -> BranchUsers

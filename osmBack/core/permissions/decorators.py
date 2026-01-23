@@ -2,7 +2,8 @@
 
 from django.http import HttpResponseForbidden
 from functools import wraps
-from apps.users.models import Role,Permission
+from apps.users.models import Role, Permission
+
 
 def role_required(allowed_roles):
     """
@@ -12,11 +13,9 @@ def role_required(allowed_roles):
     def decorator(view_func):
         @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
-            print("user",request.user)
             user = request.user
             if not user.is_active:
                 return HttpResponseForbidden("User account is disabled.")
-            print("user",user)
 
             if not user.is_authenticated:
                 return HttpResponseForbidden("Not authenticated")
@@ -24,14 +23,17 @@ def role_required(allowed_roles):
             if user.is_superuser:
                 return view_func(request, *args, **kwargs)
 
-            # نفترض عندك user.role علاقة ForeignKey لـ Role
-            if user.role and user.role.name in allowed_roles:
+            # Check across all roles
+            user_role_names = set(user.roles.values_list('name', flat=True))
+            if getattr(user, 'role', None):
+                user_role_names.add(user.role.name)
+
+            if user_role_names.intersection(set(allowed_roles)):
                 return view_func(request, *args, **kwargs)
 
             return HttpResponseForbidden("You do not have permission.")
         return _wrapped_view
     return decorator
-
 
 
 def permission_required(required_permission_code):
@@ -50,9 +52,14 @@ def permission_required(required_permission_code):
             if user.is_superuser:
                 return view_func(request, *args, **kwargs)
 
-            # هنا بنفترض إن user.role موجود وعلاقته بـ permissions
-            if user.role and user.role.permissions.filter(code=required_permission_code).exists():
-                return view_func(request, *args, **kwargs)
+            # Check permissions across all roles (ManyToManyField and legacy ForeignKey)
+            user_roles = list(user.roles.all())
+            if getattr(user, 'role', None):
+                user_roles.append(user.role)
+
+            for role in user_roles:
+                if role.permissions.filter(code=required_permission_code).exists():
+                    return view_func(request, *args, **kwargs)
 
             return HttpResponseForbidden("Permission denied.")
         return _wrapped_view

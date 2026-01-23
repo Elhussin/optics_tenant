@@ -10,15 +10,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.models import Sum, Count, Q, F
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from datetime import timedelta
 from decimal import Decimal
 
 from core.caching import cache_result, CacheManager, SHORT_CACHE_TTL
 from core.query_optimizer import QueryOptimizer
+from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([
+    IsAuthenticated,
+    RoleOrPermissionRequired.with_requirements(
+        required_permissions=["view_dashboard"])
+])
 def mobile_dashboard(request):
     """
     لوحة تحكم للموبايل - كل البيانات في طلب واحد
@@ -66,7 +72,7 @@ def mobile_dashboard(request):
         {
             'id': o.id,
             'order_number': o.order_number,
-            'customer_name': o.customer.full_name if o.customer else 'عميل',
+            'customer_name': o.customer.full_name if o.customer else str(_('Customer')),
             'total': str(o.total_amount),
             'status': o.status,
             'time': o.created_at.strftime('%H:%M'),
@@ -85,8 +91,8 @@ def mobile_dashboard(request):
     if pending_count > 0:
         alerts.append({
             'type': 'warning',
-            'title': 'طلبات معلقة',
-            'message': f'{pending_count} طلب في انتظار التأكيد',
+            'title': str(_('Pending Orders')),
+            'message': str(_("{count} orders awaiting confirmation").format(count=pending_count)),
             'action': 'orders_pending',
         })
 
@@ -100,8 +106,8 @@ def mobile_dashboard(request):
         if low_stock > 0:
             alerts.append({
                 'type': 'alert',
-                'title': 'مخزون منخفض',
-                'message': f'{low_stock} منتج يحتاج إعادة طلب',
+                'title': str(_('Low Stock')),
+                'message': str(_('{count} products need reordering').format(count=low_stock)),
                 'action': 'low_stock',
             })
 
@@ -133,7 +139,11 @@ def mobile_dashboard(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([
+    IsAuthenticated,
+    RoleOrPermissionRequired.with_requirements(
+        required_permissions=["view_product"])
+])
 def mobile_product_search(request):
     """
     بحث سريع عن المنتجات للموبايل
@@ -181,7 +191,11 @@ def mobile_product_search(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([
+    IsAuthenticated,
+    RoleOrPermissionRequired.with_requirements(
+        required_permissions=["view_customer"])
+])
 def mobile_customer_lookup(request):
     """
     بحث سريع عن العملاء للموبايل
@@ -217,7 +231,11 @@ def mobile_customer_lookup(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+@permission_classes([
+    IsAuthenticated,
+    RoleOrPermissionRequired.with_requirements(
+        required_permissions=["create_sale"])
+])
 def mobile_quick_sale(request):
     """
     بيع سريع من الموبايل
@@ -245,7 +263,7 @@ def mobile_quick_sale(request):
 
     if not branch:
         return Response(
-            {'error': 'لم يتم تحديد الفرع'},
+            {'detail': str(_('Branch not specified'))},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -256,7 +274,7 @@ def mobile_quick_sale(request):
 
     if not items_data:
         return Response(
-            {'error': 'لا توجد منتجات'},
+            {'detail': str(_('No products'))},
             status=status.HTTP_400_BAD_REQUEST
         )
 
@@ -284,7 +302,8 @@ def mobile_quick_sale(request):
             })
         except ProductVariant.DoesNotExist:
             return Response(
-                {'error': f'المنتج {item["variant_id"]} غير موجود'},
+                {'detail': str(_('Product {id} not found').format(
+                    id=item['variant_id']))},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -331,7 +350,11 @@ def mobile_quick_sale(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([
+    IsAuthenticated,
+    RoleOrPermissionRequired.with_requirements(
+        required_permissions=["view_inventory"])  # أو صلاحية مخصصة للسينك
+])
 def mobile_sync_data(request):
     """
     مزامنة البيانات للموبايل (offline-first)
@@ -382,7 +405,11 @@ def mobile_sync_data(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([
+    IsAuthenticated,
+    RoleOrPermissionRequired.with_requirements(
+        required_permissions=["view_sale"])
+])
 def mobile_order_detail(request, order_id):
     """
     تفاصيل الطلب للموبايل - محسن
@@ -397,7 +424,7 @@ def mobile_order_detail(request, order_id):
         ).get(id=order_id)
     except Order.DoesNotExist:
         return Response(
-            {'error': 'الطلب غير موجود'},
+            {'detail': str(_('Order not found'))},
             status=status.HTTP_404_NOT_FOUND
         )
 

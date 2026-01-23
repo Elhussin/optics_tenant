@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.db import transaction
+from django.utils.translation import gettext_lazy as _
 from apps.products.models import Stock, StockMovement, StockTransfer, StockTransferItem
 from apps.branches.models import Branch
 
@@ -30,8 +31,10 @@ class StockSerializer(serializers.ModelSerializer):
         """تأكد أن الفرع من نوع STORE فقط عند إضافة المخزون"""
         if value.branch_type != 'store':
             raise serializers.ValidationError(
-                "لا يمكن إضافة المخزون إلا للفروع من نوع 'مستودع' (Store). "
-                f"الفرع '{value.name}' من نوع '{value.get_branch_type_display()}'."
+                _("Stock can only be added to branches of type 'Store'. Branch '{name}' is of type '{type}'.").format(
+                    name=value.name,
+                    type=value.get_branch_type_display()
+                )
             )
         return value
 
@@ -64,7 +67,7 @@ class StockMovementSerializer(serializers.ModelSerializer):
         # إجبار إدخال سعر الشراء عند الشراء/إعادة التخزين
         if movement_type == 'purchase' and (cost_per_unit is None or cost_per_unit <= 0):
             raise serializers.ValidationError({
-                'cost_per_unit': 'يجب إدخال سعر الشراء (أكبر من صفر) عند إضافة مخزون جديد.'
+                'cost_per_unit': _("Purchase price (greater than zero) must be entered when adding new stock")
             })
 
         # التحقق من الكمية المتاحة عند السحب
@@ -73,7 +76,10 @@ class StockMovementSerializer(serializers.ModelSerializer):
             quantity = abs(data.get('quantity', 0))
             if stock and stock.available_quantity < quantity:
                 raise serializers.ValidationError({
-                    'quantity': f'الكمية المطلوبة ({quantity}) أكبر من الكمية المتاحة ({stock.available_quantity}).'
+                    'quantity': _("Requested quantity ({quantity}) exceeds available quantity ({available})").format(
+                        quantity=quantity,
+                        available=stock.available_quantity
+                    )
                 })
 
         return data
@@ -98,18 +104,18 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
         if movement_type == 'purchase':
             if stock.branch.branch_type != 'store':
                 raise serializers.ValidationError({
-                    'stock': f"لا يمكن إضافة المخزون إلا للفروع من نوع 'مستودع' (Store)."
+                    'stock': _("Stock can only be added to branches of type 'Store'")
                 })
             if cost_per_unit is None or cost_per_unit <= 0:
                 raise serializers.ValidationError({
-                    'cost_per_unit': 'يجب إدخال سعر الشراء (أكبر من صفر).'
+                    'cost_per_unit': _("Purchase price (greater than zero) must be entered")
                 })
 
         # التحقق من الكمية المتاحة عند السحب
         if movement_type in ['sale', 'transfer_out', 'damage']:
             if stock.available_quantity < abs(quantity):
                 raise serializers.ValidationError({
-                    'quantity': f'الكمية المطلوبة أكبر من المتاحة ({stock.available_quantity}).'
+                    'quantity': _("Requested quantity exceeds available quantity ({available})").format(available=stock.available_quantity)
                 })
 
         return data
@@ -207,7 +213,7 @@ class StockTransferSerializer(serializers.ModelSerializer):
 
         if from_branch and to_branch and from_branch == to_branch:
             raise serializers.ValidationError({
-                'to_branch': 'لا يمكن التحويل إلى نفس الفرع.'
+                'to_branch': _("Cannot transfer to the same branch")
             })
 
         return data
@@ -232,7 +238,7 @@ class StockTransferCreateSerializer(serializers.Serializer):
 
         if from_branch == to_branch:
             raise serializers.ValidationError({
-                'to_branch': 'لا يمكن التحويل إلى نفس الفرع.'
+                'to_branch': _("Cannot transfer to the same branch")
             })
 
         # التحقق من توفر الكميات
@@ -246,11 +252,11 @@ class StockTransferCreateSerializer(serializers.Serializer):
                     branch=from_branch, variant_id=variant_id)
                 if stock.available_quantity < quantity:
                     raise serializers.ValidationError({
-                        'items': f'الكمية المطلوبة للمنتج {variant_id} غير متوفرة. المتاح: {stock.available_quantity}'
+                        'items': _("Requested quantity for product {variant_id} is not available. Available: {available}").format(variant_id=variant_id, available=stock.available_quantity)
                     })
             except Stock.DoesNotExist:
                 raise serializers.ValidationError({
-                    'items': f'المنتج {variant_id} غير موجود في مخزون الفرع المرسل.'
+                    'items': _("Product {variant_id} does not exist in the source branch stock").format(variant_id=variant_id)
                 })
 
         return data

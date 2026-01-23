@@ -1,12 +1,14 @@
 name,description
-owner,System Owner with full access to all modules and configurations
-admin,Administrator with access to most modules excluding sensitive tenant billing
-branch_manager,Manages a specific branch including sales staff and stock
-optometrist,Eye doctor/Technician who performs eye tests and creates prescriptions
-salesperson,Front desk staff handling sales orders and invoices
-inventory_manager,Responsible for stock levels purchasing and transfers
-accountant,Handles invoices payments and financial reporting
-receptionist,Handles appointments and basic customer queries
-crm_specialist,Focuses on customer relationships and marketing
-guest,Read-only access for temporary users
-customer,End-user access for the customer portal (if applicable)
+TenantOwner,System Owner with full access to all modules and configurations
+TenantAdmin,Administrator with access to most modules excluding sensitive tenant billing
+BranchManager,Manages a specific branch including sales staff and stock
+InventoryManager,Responsible for stock levels purchasing and transfers
+SalesClerk,Front desk staff handling sales orders and invoices
+Optometrist,Eye doctor/Technician who performs eye tests and creates prescriptions
+HRManager,Manages HR processes and staff
+FinanceOfficer,Handles invoices payments and financial reporting
+CustomerServiceRep,Handles appointments and basic customer queries
+CRMSpecialist,Focuses on customer relationships and marketing
+Assistant,Assists customers and staff
+Guest,Read-only access for temporary users
+Customer,End-user access for the customer portal (if applicable)

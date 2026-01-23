@@ -17,10 +17,9 @@ class RoleOrPermissionRequired(BasePermission):
         self.allowed_roles = allowed_roles or []
         self.required_permissions = required_permissions or []
         self.require_all = require_all
-        # Use simple default, but allow passing empty list/None explicitly if logic allows.
-        # Current logic: if None, default to ["admin", "owner"]. If [], stays [].
+        # Updated to match new roles: TenantOwner and TenantAdmin
         self.super_roles = super_roles if super_roles is not None else [
-            "admin", "owner"]
+            "TenantOwner", "TenantAdmin"]
 
     def __call__(self):
         return self
@@ -38,58 +37,64 @@ class RoleOrPermissionRequired(BasePermission):
         if user.is_superuser:
             return True
 
-        # Check user role
-        user_role = getattr(user, "role", None)
-        role_name = getattr(user_role, "name", None)
+        # Collect all roles and permissions
+        user_roles = list(user.roles.all())
 
-        # If user is in super roles list
-        if role_name in self.super_roles:
+        role_names = {r.name for r in user_roles}
+        user_permissions = set()
+        for r in user_roles:
+            user_permissions.update(
+                r.permissions.values_list("code", flat=True))
+
+        # Check super roles
+        if role_names.intersection(set(self.super_roles)):
             return True
 
-        # Check if user role is in allowed roles list
-        if self.allowed_roles and role_name in self.allowed_roles:
+        # Check allowed roles
+        if self.allowed_roles and role_names.intersection(set(self.allowed_roles)):
             return True
 
-        # Check if user has required permissions
+        # Check required permissions
         if self.required_permissions:
-            if not user_role:
-                # Permissions required but user has no role -> automatically fail checking permissions
+            if not user_roles:
+                # Permissions required but user has no roles
                 pass
             else:
-                user_permissions = set(
-                    user_role.permissions.values_list("code", flat=True))
+                # SUPPORT WILDCARD
+                if "*" in user_permissions:
+                    return True
+
                 required_perms = set(self.required_permissions)
 
                 if self.require_all:
-                    # User must have all permissions
                     if required_perms.issubset(user_permissions):
                         return True
                     else:
                         missing = required_perms - user_permissions
                         raise PermissionDenied(
-                            detail=T(
-                                f"❌ You are missing the following permissions: {', '.join(missing)}.")
+                            detail=T("❌ You are missing the following permissions: {}.").format(
+                                ', '.join(missing))
                         )
                 else:
-                    # User must have at least one permission
                     if user_permissions.intersection(required_perms):
                         return True
                     else:
                         raise PermissionDenied(
-                            detail=T(
-                                f"❌ You are missing the following permissions: {', '.join(required_perms)}.")
+                            detail=T("❌ You are missing the following permissions: {}.").format(
+                                ', '.join(required_perms))
                         )
 
         # Failure: No role matched (if allowed_roles set) AND (no permissions matched OR permissions check skipped)
         # We need a proper error message.
-        if self.required_permissions and not user_role:
-            msg = "❌ You are missing the required permissions (No role assigned)."
+        if self.required_permissions and not user_roles:
+            msg = T("❌ You are missing the required permissions (No roles assigned).")
         elif self.allowed_roles:
-            msg = f"❌ Access denied. Allowed roles: {', '.join(self.allowed_roles)}"
+            msg = T("❌ Access denied. Allowed roles: {}").format(
+                ', '.join(self.allowed_roles))
         else:
-            msg = "❌ Permission denied."
+            msg = T("❌ Permission denied.")
 
-        raise PermissionDenied(detail=T(msg))
+        raise PermissionDenied(detail=msg)
 
     @classmethod
     def with_requirements(cls, allowed_roles=None, required_permissions=None, require_all=False, super_roles=None):

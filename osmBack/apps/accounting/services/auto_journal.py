@@ -6,6 +6,7 @@
 from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 import logging
 
 logger = logging.getLogger(__name__)
@@ -182,7 +183,11 @@ class AutoJournalService:
             source_type='sales_invoice',
             source_document=invoice.invoice_number,
             source_id=invoice.id,
-            description=f"فاتورة مبيعات رقم {invoice.invoice_number} - {invoice.customer.full_name if invoice.customer else 'عميل'}",
+            description=str(_('Sales invoice #{number} - {customer}').format(
+                number=invoice.invoice_number,
+                customer=invoice.customer.full_name if invoice.customer else _(
+                    'Customer')
+            )),
         )
 
         # سطر المدين (العميل)
@@ -191,7 +196,8 @@ class AutoJournalService:
             account=debit_account,
             debit=invoice.total_amount,
             credit=0,
-            description=f"ذمم العميل - فاتورة {invoice.invoice_number}",
+            description=str(
+                _('Customer receivable - Invoice #{number}').format(number=invoice.invoice_number)),
         )
 
         # سطر الدائن (إيرادات المبيعات)
@@ -201,7 +207,7 @@ class AutoJournalService:
             account=sales_account,
             debit=0,
             credit=net_sales,
-            description="إيرادات المبيعات",
+            description=str(_('Sales revenue')),
         )
 
         # سطر الدائن (الضريبة)
@@ -211,7 +217,7 @@ class AutoJournalService:
                 account=vat_account,
                 debit=0,
                 credit=invoice.tax_amount,
-                description="ضريبة القيمة المضافة",
+                description=str(_('Value Added Tax')),
             )
 
         # حساب توازن القيد وترحيله
@@ -272,7 +278,8 @@ class AutoJournalService:
             account=debit_account,
             debit=payment.amount,
             credit=0,
-            description=f"استلام دفعة {payment.get_payment_method_display()}",
+            description=str(_('Payment received via {method}').format(
+                method=payment.get_payment_method_display())),
         )
 
         # سطر الدائن
@@ -281,7 +288,7 @@ class AutoJournalService:
             account=credit_account,
             debit=0,
             credit=payment.amount,
-            description="تسوية ذمم العميل",
+            description=str(_('Customer receivable settlement')),
         )
 
         journal.validate_balance()
@@ -326,7 +333,7 @@ class AutoJournalService:
             account=sales_account,
             debit=abs(net_amount),
             credit=0,
-            description="إلغاء إيرادات المبيعات",
+            description=str(_('Cancel sales revenue')),
         )
 
         # عكس الضريبة (مدين)
@@ -336,7 +343,7 @@ class AutoJournalService:
                 account=vat_account,
                 debit=abs(invoice.tax_amount),
                 credit=0,
-                description="إلغاء ضريبة القيمة المضافة",
+                description=str(_('Cancel Value Added Tax')),
             )
 
         # تخفيض ذمم العميل (دائن)
@@ -345,7 +352,7 @@ class AutoJournalService:
             account=receivables_account,
             debit=0,
             credit=abs(invoice.total_amount),
-            description="تخفيض ذمم العميل",
+            description=str(_('Reduce customer receivable')),
         )
 
         journal.validate_balance()
@@ -396,7 +403,7 @@ class AutoJournalService:
             account=cogs_account,
             debit=total_cost,
             credit=0,
-            description="تكلفة البضاعة المباعة",
+            description=str(_('Cost of goods sold')),
         )
 
         JournalLine.objects.create(
@@ -404,7 +411,7 @@ class AutoJournalService:
             account=inventory_account,
             debit=0,
             credit=total_cost,
-            description="تخفيض المخزون",
+            description=str(_('Reduce inventory')),
         )
 
         journal.validate_balance()

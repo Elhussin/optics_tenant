@@ -36,9 +36,12 @@ def create_invoice_journal(sender, instance, created, **kwargs):
                     AutoJournalService.create_cogs_journal(instance)
 
                 logger.info(
-                    f"تم إنشاء قيود محاسبية لفاتورة {instance.invoice_number}")
+                    f"Created accounting entries for invoice {instance.invoice_number}")
             except Exception as e:
-                logger.error(f"خطأ في إنشاء قيد محاسبي: {e}")
+                logger.error(
+                    f"Failed to create accounting entry for invoice {instance.invoice_number}: {e}",
+                    exc_info=True
+                )
 
 
 def create_return_journal(sender, instance, created, **kwargs):
@@ -53,14 +56,16 @@ def create_return_journal(sender, instance, created, **kwargs):
             source_type='return',
             source_id=instance.id
         ).exists()
-
         if not existing:
             try:
                 AutoJournalService.create_return_journal(instance)
                 logger.info(
-                    f"تم إنشاء قيد مرتجع لفاتورة {instance.invoice_number}")
+                    f"Created return journal entry for invoice {instance.invoice_number}")
             except Exception as e:
-                logger.error(f"خطأ في إنشاء قيد مرتجع: {e}")
+                logger.error(
+                    f"Failed to create return journal entry for invoice {instance.invoice_number}: {e}",
+                    exc_info=True
+                )
 
 
 def create_payment_journal(sender, instance, created, **kwargs):
@@ -75,13 +80,16 @@ def create_payment_journal(sender, instance, created, **kwargs):
             source_type='receipt',
             source_id=instance.id
         ).exists()
-
         if not existing:
             try:
                 AutoJournalService.create_payment_journal(instance)
-                logger.info(f"تم إنشاء قيد قبض للدفعة {instance.id}")
+                logger.info(
+                    f"Created payment receipt journal entry for payment {instance.id}")
             except Exception as e:
-                logger.error(f"خطأ في إنشاء قيد قبض: {e}")
+                logger.error(
+                    f"Failed to create payment receipt journal entry for payment {instance.id}: {e}",
+                    exc_info=True
+                )
 
 
 def connect_accounting_signals():
@@ -105,9 +113,10 @@ def connect_accounting_signals():
             dispatch_uid='payment_accounting_signal'
         )
 
-        logger.info("تم ربط إشارات المحاسبة التلقائية")
+        logger.info("Accounting signals connected successfully")
     except Exception as e:
-        logger.error(f"خطأ في ربط إشارات المحاسبة: {e}")
+        logger.error(
+            f"Failed to connect accounting signals: {e}", exc_info=True)
 
 
 def disconnect_accounting_signals():
@@ -129,6 +138,7 @@ def disconnect_accounting_signals():
             dispatch_uid='payment_accounting_signal'
         )
 
-        logger.info("تم فصل إشارات المحاسبة")
+        logger.info("Accounting signals disconnected successfully")
     except Exception as e:
-        logger.error(f"خطأ في فصل إشارات المحاسبة: {e}")
+        logger.error(
+            f"Failed to disconnect accounting signals: {e}", exc_info=True)

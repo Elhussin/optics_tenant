@@ -49,9 +49,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
-    'django.middleware.locale.LocaleMiddleware',  
-    'core.middleware.CustomLanguageMiddleware.CustomLanguageMiddleware',    
+    'django.middleware.locale.LocaleMiddleware',
+    # 'core.middleware.CustomLanguageMiddleware.CustomLanguageMiddleware',
     'core.middleware.PlanValidationMiddleware.PlanValidationMiddleware',
+    'core.middleware.ErrorHandlingMiddleware.ErrorHandlingMiddleware',
+    'core.middleware.LanguageMiddleware.AutoLanguageMiddleware',
     # 'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
@@ -79,7 +81,7 @@ SHARED_APPS = (
     'dj_rest_auth',
     'dj_rest_auth.registration',
     'simple_history',
-    'corsheaders', # corsheaders use for 
+    'corsheaders',  # corsheaders use for
     'djmoney',
     'drf_spectacular',
     'drf_spectacular_sidecar',
@@ -113,7 +115,8 @@ TENANT_APPS = (
 # ===============================
 # merge apps
 # ===============================
-INSTALLED_APPS = list(SHARED_APPS) + [app for app in TENANT_APPS if app not in SHARED_APPS]
+INSTALLED_APPS = list(SHARED_APPS) + \
+    [app for app in TENANT_APPS if app not in SHARED_APPS]
 
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -148,6 +151,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'core.middleware.CookieJWTAuthentication.CookieJWTAuthentication',
     ],
+    'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
         'rest_framework.permissions.AllowAny',
@@ -157,11 +161,15 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,  # القيمة الافتراضية
 }
 
-CORS_ALLOW_CREDENTIALS = config("CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
-CORS_ALLOW_ALL_ORIGINS = config("CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
+CORS_ALLOW_CREDENTIALS = config(
+    "CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
+CORS_ALLOW_ALL_ORIGINS = config(
+    "CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
 CORS_ALLOW_HEADERS = config("CORS_ALLOW_HEADERS").split(',')
-CORS_ALLOW_METHODS = config("CORS_ALLOW_METHODS", default="DELETE,GET,OPTIONS,PATCH,POST,PUT").split(',')
-CORS_ALLOWED_ORIGIN_REGEXES = config("CORS_ALLOWED_ORIGIN_REGEXES", default=r"^http://localhost:3000$,^http://.+\.localhost:3000$", cast=lambda v: v.split(","))
+CORS_ALLOW_METHODS = config(
+    "CORS_ALLOW_METHODS", default="DELETE,GET,OPTIONS,PATCH,POST,PUT").split(',')
+CORS_ALLOWED_ORIGIN_REGEXES = config(
+    "CORS_ALLOWED_ORIGIN_REGEXES", default=r"^http://localhost:3000$,^http://.+\.localhost:3000$", cast=lambda v: v.split(","))
 
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'
 ROOT_URLCONF = 'optics_tenant.urls'
@@ -182,10 +190,10 @@ LANGUAGES = [
 ]
 
 
-
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ar'  # اللغة الافتراضية عربي
 TIME_ZONE = 'Asia/Riyadh'
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 LOCALE_PATHS = [BASE_DIR / 'locale']
 
@@ -197,7 +205,8 @@ PORT = config('PORT', default=8000, cast=int)
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
-    EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+    EMAIL_BACKEND = config(
+        'EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
     EMAIL_HOST = config('EMAIL_HOST')
     EMAIL_PORT = config('EMAIL_PORT', cast=int)
     # EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=True, cast=bool)
@@ -205,8 +214,6 @@ else:
     EMAIL_HOST_USER = config('EMAIL_HOST_USER')
     EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
     DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-
-
 
 
 SPECTACULAR_SETTINGS = {
@@ -219,19 +226,18 @@ SPECTACULAR_SETTINGS = {
 }
 
 
-
 CSRF_COOKIE_NAME = 'optics_tenant_csrftoken'
 CSRF_HEADER_NAME = 'HTTP_X_OPTICS_TENANT_CSRFTOKEN'
 SESSION_COOKIE_NAME = 'optics_tenant_sessionid'
 CSRF_COOKIE_HTTPONLY = False
 
 if DEBUG:
-    SESSION_COOKIE_SECURE = False # required https 
+    SESSION_COOKIE_SECURE = False  # required https
     CSRF_COOKIE_SECURE = False  # required https
-    SECURE_HSTS_SECONDS = 0 # required https
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = False # required https
-    SECURE_CONTENT_TYPE_NOSNIFF = False  
-    SECURE_PROXY_SSL_HEADER = None # required https 
+    SECURE_HSTS_SECONDS = 0  # required https
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False  # required https
+    SECURE_CONTENT_TYPE_NOSNIFF = False
+    SECURE_PROXY_SSL_HEADER = None  # required https
 else:
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
@@ -242,8 +248,10 @@ else:
     SECURE_SSL_REDIRECT = True
 
 
-ACCESS_TOKEN_LIFETIME_MINUTES = config("ACCESS_TOKEN_LIFETIME_MINUTES", cast=int, default=15)
-REFRESH_TOKEN_LIFETIME_DAYS = config("REFRESH_TOKEN_LIFETIME_DAYS", cast=int, default=7)
+ACCESS_TOKEN_LIFETIME_MINUTES = config(
+    "ACCESS_TOKEN_LIFETIME_MINUTES", cast=int, default=15)
+REFRESH_TOKEN_LIFETIME_DAYS = config(
+    "REFRESH_TOKEN_LIFETIME_DAYS", cast=int, default=7)
 AUTH_COOKIE_SECURE = config("AUTH_COOKIE_SECURE", default=False, cast=bool)
 
 SIMPLE_JWT = {
@@ -257,7 +265,7 @@ SIMPLE_JWT = {
     'AUTH_COOKIE_HTTP_ONLY': True,
     'AUTH_COOKIE_SAMESITE': "Lax",
     "ALGORITHM": "HS256",
-    "SIGNING_KEY":config("JWT_SECRET")
+    "SIGNING_KEY": config("JWT_SECRET")
 }
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -281,22 +289,46 @@ LOGGING = {
             'format': '[{asctime}] {levelname} {name}: {message}',
             'style': '{',
         },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
     },
 
     # handlers
     'handlers': {
+        # Console handler - للتطوير
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+
+        # Error file handler - لجميع الأخطاء
+        'error_file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'errors.log'),
+            'formatter': 'verbose',
+        },
+
+        # PayPal handler
         'paypal_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'logs', 'paypal.log'),
             'formatter': 'verbose',
         },
+
+        # Tenant handler
         'tenant_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': os.path.join(BASE_DIR, 'logs', 'tenant.log'),
             'formatter': 'verbose',
         },
+
+        # Product handler
         'product_file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
@@ -307,21 +339,46 @@ LOGGING = {
 
     # loggers
     'loggers': {
-        'paypal': {  # logger name
-            'handlers': ['paypal_file'],
+        # PayPal logger
+        'paypal': {
+            'handlers': ['paypal_file', 'console'],
             'level': 'INFO',
             'propagate': False,
         },
-        'tenant': {  # جديد
-            'handlers': ['tenant_file'],
+
+        # Tenant logger
+        'tenant': {
+            'handlers': ['tenant_file', 'console'],
             'level': 'INFO',
             'propagate': False,
         },
-        'product': {  # جديد
-            'handlers': ['product_file'],
+
+        # Product logger
+        'product': {
+            'handlers': ['product_file', 'console'],
             'level': 'INFO',
             'propagate': False,
         },
+
+        # Django logger - للأخطاء العامة
+        'django': {
+            'handlers': ['console', 'error_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+
+        # Django request logger - لأخطاء الـ requests
+        'django.request': {
+            'handlers': ['console', 'error_file'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+
+    # Root logger - للأخطاء التي لا تنتمي لأي logger محدد
+    'root': {
+        'handlers': ['console', 'error_file'],
+        'level': 'INFO',
     },
 }
 

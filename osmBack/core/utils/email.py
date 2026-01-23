@@ -45,7 +45,7 @@ def send_message_acount_activated(email,schema_name,name):
     Your domain: {domain}
     Your login link: {PROTOCOL}://{domain}/auth/login
     Your superuser email: {email}
-    Your superuser username: {name}
+    Your superuser username: {email}
     Your superuser password: ***Enter at Registration
     
     Thanks,

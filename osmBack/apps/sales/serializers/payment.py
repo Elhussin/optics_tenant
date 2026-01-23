@@ -4,13 +4,20 @@ Serializers للدفعات
 """
 
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from apps.sales.models import Payment, Installment
 
 
 class PaymentSerializer(serializers.ModelSerializer):
     """Serializer للدفعة"""
     payment_method_display = serializers.CharField(
-        source='get_payment_method_display', read_only=True
+        source='payment_method.name_ar', read_only=True
+    )
+    payment_method_name_en = serializers.CharField(
+        source='payment_method.name_en', read_only=True
+    )
+    payment_method_code = serializers.CharField(
+        source='payment_method.code', read_only=True
     )
     status_display = serializers.CharField(
         source='get_status_display', read_only=True
@@ -30,7 +37,7 @@ class PaymentSerializer(serializers.ModelSerializer):
         model = Payment
         fields = [
             'id', 'invoice', 'invoice_number', 'order', 'order_number',
-            'amount', 'currency', 'payment_method', 'payment_method_display',
+            'amount', 'currency', 'payment_method', 'payment_method_display', 'payment_method_name_en', 'payment_method_code',
             'status', 'status_display', 'partner', 'partner_name',
             'gateway_transaction_id', 'gateway_reference',
             'is_installment', 'installments_count', 'installment_amount', 'bnpl_order_id',
@@ -70,11 +77,12 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         # التأكد من وجود فاتورة أو طلب
         if not data.get('invoice') and not data.get('order'):
             raise serializers.ValidationError(
-                "يجب تحديد فاتورة أو طلب"
+                str(_('Invoice or order must be specified'))
             )
 
-        # التحقق من طريقة الدفع
-        if data.get('payment_method') in ['tabby', 'tamara']:
+        # التحقق من طريقة الدفع إذا كانت تقسيط
+        payment_method = data.get('payment_method')
+        if payment_method and payment_method.is_installment:
             data['is_installment'] = True
             if not data.get('installments_count'):
                 data['installments_count'] = 4  # Default for BNPL
@@ -114,7 +122,7 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
 class PaymentListSerializer(serializers.ModelSerializer):
     """Serializer مختصر للقوائم"""
     payment_method_display = serializers.CharField(
-        source='get_payment_method_display', read_only=True
+        source='payment_method.name_ar', read_only=True
     )
     status_display = serializers.CharField(
         source='get_status_display', read_only=True

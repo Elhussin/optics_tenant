@@ -11,7 +11,8 @@ class BranchViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            super_roles=["admin", "owner"])
+            required_permissions=["view_branch"]
+        )
     ]
     queryset = Branch.objects.all()
     serializer_class = BranchSerializer
@@ -22,7 +23,9 @@ class BranchUsersViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=["manager"], super_roles=["admin", "owner"])
+            allowed_roles=["BranchManager"],
+            required_permissions=["view_branch"]
+        )
     ]
     queryset = BranchUsers.objects.all()
     serializer_class = BranchUsersSerializer
@@ -33,7 +36,9 @@ class ShiftViewSet(BaseViewSet):
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-            allowed_roles=["manager"], super_roles=["admin", "owner"])
+            allowed_roles=["BranchManager"],
+            required_permissions=["view_attendance"]
+        )
     ]
     queryset = Shift.objects.all()
     serializer_class = ShiftSerializer

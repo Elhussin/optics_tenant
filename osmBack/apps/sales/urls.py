@@ -4,6 +4,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from apps.sales.views import (
     OrderViewSet, InvoiceViewSet, PaymentViewSet, InstallmentViewSet,
+    PaymentMethodViewSet,
     order_choices, invoice_choices,
     create_return, create_damage_record,
     # Wholesale
@@ -22,6 +23,8 @@ router.register(r'orders', OrderViewSet, basename='order')
 router.register(r'invoices', InvoiceViewSet, basename='invoice')
 router.register(r'payments', PaymentViewSet, basename='payment')
 router.register(r'installments', InstallmentViewSet, basename='installment')
+router.register(r'payment-methods', PaymentMethodViewSet,
+                basename='payment-method')
 
 urlpatterns = [
     path('', include(router.urls)),

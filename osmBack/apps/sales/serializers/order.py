@@ -1,6 +1,7 @@
 
 
 from rest_framework import serializers
+from django.utils.translation import gettext_lazy as _
 from apps.sales.models import Order, OrderItem, Invoice, InvoiceItem, Payment
 from apps.products.models import ProductVariant
 
@@ -19,8 +20,10 @@ class OrderSerializer(serializers.ModelSerializer):
     remaining_amount = serializers.DecimalField(
         max_digits=12, decimal_places=2, read_only=True
     )
-    # حقل اختياري للتوافق مع Frontend (payment_type بدلاً من payment_method)
-    payment_type = serializers.CharField(write_only=True, required=False)
+    # حقل اختياري للبدء (سيتم استخدام الـ ID بدلاً منه)
+    payment_method_display = serializers.CharField(
+        source='payment_method.name_ar', read_only=True
+    )
 
     class Meta:
         model = Order
@@ -32,7 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
         """التحقق من أن المبلغ المدفوع ليس سلبياً"""
         if value < 0:
             raise serializers.ValidationError(
-                "المبلغ المدفوع لا يمكن أن يكون أقل من صفر."
+                str(_('Paid amount cannot be negative'))
             )
         return value
 
@@ -40,7 +43,7 @@ class OrderSerializer(serializers.ModelSerializer):
         """التحقق من أن الخصم ليس سلبياً"""
         if value < 0:
             raise serializers.ValidationError(
-                "الخصم لا يمكن أن يكون أقل من صفر."
+                str(_('Discount amount cannot be negative'))
             )
         return value
 
@@ -48,7 +51,7 @@ class OrderSerializer(serializers.ModelSerializer):
         """التحقق من العناصر"""
         if not items:
             raise serializers.ValidationError(
-                "يجب إضافة منتج واحد على الأقل للطلب."
+                str(_('At least one product is required for the order'))
             )
 
         seen = set()
@@ -56,14 +59,15 @@ class OrderSerializer(serializers.ModelSerializer):
             variant = item.get('product_variant')
             if variant is None:
                 raise serializers.ValidationError(
-                    "كل عنصر يجب أن يحتوي على منتج."
+                    str(_('Each item must have a product'))
                 )
 
             # التحقق من التكرار
             variant_id = variant.id if hasattr(variant, 'id') else variant
             if variant_id in seen:
                 raise serializers.ValidationError(
-                    f"لا يمكن تكرار نفس المنتج في الطلب: {variant_id}"
+                    str(_('Duplicate product in order: {id}').format(
+                        id=variant_id))
                 )
             seen.add(variant_id)
 
@@ -71,14 +75,14 @@ class OrderSerializer(serializers.ModelSerializer):
             quantity = item.get('quantity', 1)
             if quantity < 1:
                 raise serializers.ValidationError(
-                    "الكمية يجب أن تكون 1 على الأقل."
+                    str(_('Quantity must be at least 1'))
                 )
 
             # التحقق من السعر
             unit_price = item.get('unit_price', 0)
             if unit_price < 0:
                 raise serializers.ValidationError(
-                    "سعر الوحدة لا يمكن أن يكون سلبياً."
+                    str(_('Unit price cannot be negative'))
                 )
 
         # التحقق من المخزون (soft check)
@@ -101,22 +105,23 @@ class OrderSerializer(serializers.ModelSerializer):
 
                 if not stock:
                     raise serializers.ValidationError(
-                        f"المنتج (ID: {variant_id}) غير متوفر في مخزون هذا الفرع"
+                        str(_('Product (ID: {id}) is not available in this branch stock').format(
+                            id=variant_id))
                     )
 
                 if stock.available_quantity < quantity:
                     raise serializers.ValidationError(
-                        f"الكمية المتوفرة من المنتج (ID: {variant_id}) هي {stock.available_quantity} فقط، والمطلوب {quantity}"
+                        str(_('Available quantity for product (ID: {id}) is only {available}, requested {requested}').format(
+                            id=variant_id,
+                            available=stock.available_quantity,
+                            requested=quantity
+                        ))
                     )
 
         return items
 
     def validate(self, data):
         """التحقق على مستوى الطلب كاملاً"""
-        # معالجة payment_type للتوافق مع Frontend
-        if 'payment_type' in data:
-            data['payment_method'] = data.pop('payment_type')
-
         items = data.get('items', [])
         discount_amount = data.get('discount_amount', 0)
         paid_amount = data.get('paid_amount', 0)
@@ -131,7 +136,10 @@ class OrderSerializer(serializers.ModelSerializer):
         # التحقق من أن الخصم لا يتجاوز الإجمالي
         if discount_amount > subtotal:
             raise serializers.ValidationError({
-                'discount_amount': f"الخصم ({discount_amount}) لا يمكن أن يتجاوز إجمالي المنتجات ({subtotal})."
+                'discount_amount': str(_('Discount ({discount}) cannot exceed products total ({total})').format(
+                    discount=discount_amount,
+                    total=subtotal
+                ))
             })
 
         # حساب المبلغ المطلوب
@@ -142,7 +150,10 @@ class OrderSerializer(serializers.ModelSerializer):
         # التحقق من أن المبلغ المدفوع لا يتجاوز المطلوب
         if paid_amount > total_amount:
             raise serializers.ValidationError({
-                'paid_amount': f"المبلغ المدفوع ({paid_amount}) لا يمكن أن يتجاوز المبلغ المطلوب ({total_amount:.2f})."
+                'paid_amount': str(_('Paid amount ({paid}) cannot exceed total amount ({total})').format(
+                    paid=paid_amount,
+                    total=f"{total_amount:.2f}"
+                ))
             })
 
         return data
@@ -200,7 +211,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
             variant_id = item.get('product_variant')
             if variant_id in seen:
                 raise serializers.ValidationError(
-                    f"Duplicate variant in invoice: {variant_id}")
+                    str(_('Duplicate variant in invoice: {id}').format(id=variant_id)))
             seen.add(variant_id)
         return items
 

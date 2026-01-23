@@ -1,0 +1,1670 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-23 14:18+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: apps/accounting/models/accounting_models.py:17
+msgid "Period Name"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:18
+msgid "Name of the financial period"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:21
+msgid "Start Date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:22
+msgid "Period start date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:25
+msgid "End Date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:26
+msgid "Period end date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:30
+msgid "Is Closed"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:31
+msgid "Whether the period is closed"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:35
+#: apps/accounting/models/accounting_models.py:202
+msgid "Financial Period"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:36
+msgid "Financial Periods"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:51
+msgid "User"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:55
+#: apps/accounting/models/chart_of_accounts.py:69
+msgid "Account Name"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:59
+#: apps/accounting/models/accounting_models.py:240
+msgid "Created At"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:63
+#: apps/accounting/models/accounting_models.py:244
+msgid "Updated At"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:69 apps/tenants/models.py:37
+msgid "Currency"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:70
+msgid "Account currency"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:77
+msgid "Balance"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:78
+msgid "Current account balance"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:82
+#: apps/accounting/models/accounting_models.py:197
+#: apps/accounting/models/accounting_models.py:280
+#: apps/accounting/models/accounting_models.py:316
+#: apps/accounting/models/chart_of_accounts.py:407
+msgid "Account"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:83
+msgid "Accounts"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:116
+msgid "Tax Name"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:121
+#: apps/accounting/models/accounting_models.py:231
+msgid "Tax Rate"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:122
+msgid "Tax rate percentage (e.g., 5.00%)"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:125
+msgid "Effective Date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:126
+msgid "Date when tax rate becomes effective"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:130 apps/branches/models.py:73
+msgid "Is Active"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:135
+#: apps/accounting/models/accounting_models.py:174
+#: apps/accounting/models/accounting_models.py:236
+#: apps/accounting/models/chart_of_accounts.py:94
+#: apps/accounting/models/chart_of_accounts.py:241
+#: apps/accounting/models/chart_of_accounts.py:424
+msgid "Description"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:139
+msgid "Tax"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:140
+msgid "Taxes"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:150
+#: apps/accounting/models/accounting_models.py:189
+#: apps/accounting/models/accounting_models.py:309
+msgid "Income"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:151
+#: apps/accounting/models/accounting_models.py:190
+#: apps/accounting/models/accounting_models.py:310
+#: apps/accounting/models/chart_of_accounts.py:21
+msgid "Expense"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:157
+msgid "Category Name"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:162
+msgid "Category Type"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:169
+msgid "Parent Category"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:178
+msgid "Accounting Category"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:179
+msgid "Accounting Categories"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:205
+msgid "Transaction Date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:212
+#: apps/accounting/models/accounting_models.py:322
+msgid "Amount"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:217
+#: apps/accounting/models/accounting_models.py:327
+msgid "Transaction Type"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:224
+msgid "Category"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:248
+#: apps/accounting/models/accounting_models.py:275
+msgid "Transaction"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:249
+msgid "Transactions"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:286
+#: apps/accounting/models/chart_of_accounts.py:120
+#: apps/accounting/models/chart_of_accounts.py:414
+msgid "Debit"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:292
+#: apps/accounting/models/chart_of_accounts.py:120
+#: apps/accounting/models/chart_of_accounts.py:420
+msgid "Credit"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:296
+#: apps/accounting/models/chart_of_accounts.py:284
+#: apps/accounting/models/chart_of_accounts.py:401
+msgid "Journal Entry"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:297
+#: apps/accounting/models/chart_of_accounts.py:285
+msgid "Journal Entries"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:304
+msgid "Monthly"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:305
+msgid "Yearly"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:332
+msgid "Interval"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:333
+msgid "Recurrence interval"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:336
+msgid "Next Execution"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:337
+msgid "Next execution date"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:341
+msgid "Recurring Transaction"
+msgstr ""
+
+#: apps/accounting/models/accounting_models.py:342
+msgid "Recurring Transactions"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:17
+msgid "Asset"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:18
+msgid "Liability"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:19
+msgid "Equity"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:20
+msgid "Revenue"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:22
+#: apps/accounting/models/chart_of_accounts.py:60
+msgid "Cost of Goods Sold"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:27
+msgid "Cash"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:28
+msgid "Bank"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:29
+msgid "Accounts Receivable"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:30
+msgid "Inventory"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:31
+msgid "Prepaid Expenses"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:32
+msgid "Fixed Assets"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:35
+msgid "Accounts Payable"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:36
+msgid "Accrued Expenses"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:37
+msgid "Taxes Payable"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:38
+msgid "Deferred Revenue"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:39
+msgid "Loans"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:42
+msgid "Capital"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:43
+msgid "Retained Earnings"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:44
+msgid "Reserves"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:47
+msgid "Sales"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:48
+msgid "Services"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:49
+msgid "Other Income"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:52
+msgid "Salaries"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:53
+msgid "Rent"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:54
+msgid "Utilities"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:55
+msgid "Supplies"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:56
+msgid "Marketing"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:57
+msgid "Other Expenses"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:66
+msgid "Account Code"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:67
+msgid "Example: 1100 for Cash"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:71
+msgid "English Name"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:76
+msgid "Account Type"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:82
+msgid "Account Subtype"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:91
+msgid "Parent Account"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:101
+msgid "Opening Balance"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:107
+msgid "Current Balance"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:113
+msgid "Is Header Account"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:114
+msgid "Header accounts are not used for journal entries"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:122
+msgid "Normal Balance"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:126
+#: apps/accounting/models/chart_of_accounts.py:127
+msgid "Chart of Accounts"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:190
+msgid "Standard Entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:191
+msgid "Adjustment Entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:192
+msgid "Closing Entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:193
+msgid "Opening Entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:194
+msgid "Reversal Entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:198
+msgid "Manual"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:199
+msgid "Sales Invoice"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:200
+msgid "Purchase Invoice"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:201 apps/tenants/models.py:174
+msgid "Payment"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:202
+msgid "Receipt"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:203
+msgid "Return"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:204
+msgid "Inventory Adjustment"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:205
+msgid "Payroll"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:212
+msgid "Entry Number"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:214
+msgid "Entry Date"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:220
+msgid "Entry Type"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:226
+msgid "Source Type"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:233
+msgid "Source Document Number"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:238
+msgid "Source Document ID"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:248
+msgid "Total Debit"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:254
+msgid "Total Credit"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:260
+msgid "Is Posted"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:263
+msgid "Posted At"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:269
+msgid "Posted By"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:278
+msgid "Reversed Entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:281 apps/branches/models.py:74
+#: apps/branches/models.py:92
+msgid "Notes"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:327
+#, python-brace-format
+msgid "Journal entry is not balanced: debit={debit}, credit={credit}"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:342
+msgid "Journal entry is already posted"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:366
+msgid "Cannot reverse an unposted journal entry"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:373
+#, python-brace-format
+msgid "Reversal of entry #{number}"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:385
+#, python-brace-format
+msgid "Reversal: {desc}"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:428
+msgid "Cost Center"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:431
+msgid "Journal Line"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:432
+msgid "Journal Lines"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:441
+msgid "Must specify either debit or credit amount"
+msgstr ""
+
+#: apps/accounting/models/chart_of_accounts.py:444
+msgid "Cannot have both debit and credit in the same line"
+msgstr ""
+
+#: apps/accounting/serializers.py:41
+msgid "Account code is required"
+msgstr ""
+
+#: apps/accounting/serializers.py:42
+msgid "Account code cannot be blank"
+msgstr ""
+
+#: apps/accounting/serializers.py:47
+msgid "Account name is required"
+msgstr ""
+
+#: apps/accounting/serializers.py:48
+msgid "Account name cannot be blank"
+msgstr ""
+
+#: apps/accounting/serializers.py:53 apps/accounting/views.py:70
+msgid "Account type is required"
+msgstr ""
+
+#: apps/accounting/serializers.py:68
+msgid "Account with this code already exists"
+msgstr ""
+
+#: apps/accounting/serializers.py:80
+msgid "Parent account must be a header account"
+msgstr ""
+
+#: apps/accounting/serializers.py:160
+msgid "Journal entry must contain at least two lines"
+msgstr ""
+
+#: apps/accounting/serializers.py:168
+#, python-brace-format
+msgid "Journal entry is not balanced: Debit={debit}, Credit={credit}"
+msgstr ""
+
+#: apps/accounting/serializers.py:210
+msgid "Period name is required"
+msgstr ""
+
+#: apps/accounting/serializers.py:211
+msgid "Period name cannot be blank"
+msgstr ""
+
+#: apps/accounting/serializers.py:225 apps/products/serializers/product.py:300
+msgid "End date must be after start date"
+msgstr ""
+
+#: apps/accounting/serializers.py:241
+msgid "Tax name is required"
+msgstr ""
+
+#: apps/accounting/serializers.py:242
+msgid "Tax name cannot be blank"
+msgstr ""
+
+#: apps/accounting/serializers.py:247
+msgid "Tax rate is required"
+msgstr ""
+
+#: apps/accounting/serializers.py:256
+msgid "Tax rate cannot be negative"
+msgstr ""
+
+#: apps/accounting/serializers.py:260
+msgid "Tax rate cannot exceed 100%"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:186
+#, python-brace-format
+msgid "Sales invoice #{number} - {customer}"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:189 apps/api/views_mobile.py:75
+msgid "Customer"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:200
+#, python-brace-format
+msgid "Customer receivable - Invoice #{number}"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:210
+msgid "Sales revenue"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:220
+msgid "Value Added Tax"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:281
+#, python-brace-format
+msgid "Payment received via {method}"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:291
+msgid "Customer receivable settlement"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:336
+msgid "Cancel sales revenue"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:346
+msgid "Cancel Value Added Tax"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:355
+msgid "Reduce customer receivable"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:406
+msgid "Cost of goods sold"
+msgstr ""
+
+#: apps/accounting/services/auto_journal.py:414
+msgid "Reduce inventory"
+msgstr ""
+
+#: apps/accounting/views.py:78
+#, python-brace-format
+msgid "Invalid account type: {type}"
+msgstr ""
+
+#: apps/accounting/views.py:97
+msgid "Default accounts have been set up successfully"
+msgstr ""
+
+#: apps/accounting/views.py:144
+#, python-brace-format
+msgid "Journal entry {entry_number} has been posted"
+msgstr ""
+
+#: apps/accounting/views.py:161
+#, python-brace-format
+msgid "Reversal entry {entry_number} has been created"
+msgstr ""
+
+#: apps/accounting/views.py:186
+msgid "At least source_type or source_id is required"
+msgstr ""
+
+#: apps/accounting/views.py:196
+#, python-brace-format
+msgid "Invalid source type: {type}"
+msgstr ""
+
+#: apps/accounting/views.py:243
+msgid "No active financial period found"
+msgstr ""
+
+#: apps/accounting/views.py:535
+msgid "Account not found"
+msgstr ""
+
+#: apps/api/views_mobile.py:94
+msgid "Pending Orders"
+msgstr ""
+
+#: apps/api/views_mobile.py:95
+#, python-brace-format
+msgid "{count} orders awaiting confirmation"
+msgstr ""
+
+#: apps/api/views_mobile.py:109
+msgid "Low Stock"
+msgstr ""
+
+#: apps/api/views_mobile.py:110
+#, python-brace-format
+msgid "{count} products need reordering"
+msgstr ""
+
+#: apps/api/views_mobile.py:266
+msgid "Branch not specified"
+msgstr ""
+
+#: apps/api/views_mobile.py:277
+msgid "No products"
+msgstr ""
+
+#: apps/api/views_mobile.py:305
+#, python-brace-format
+msgid "Product {id} not found"
+msgstr ""
+
+#: apps/api/views_mobile.py:427
+msgid "Order not found"
+msgstr ""
+
+#: apps/branches/models.py:11
+msgid "Store"
+msgstr ""
+
+#: apps/branches/models.py:12 apps/branches/models.py:45
+#: apps/branches/models.py:70 apps/branches/models.py:87
+msgid "Branch"
+msgstr ""
+
+#: apps/branches/models.py:15
+msgid "Branch Name"
+msgstr ""
+
+#: apps/branches/models.py:21
+msgid "Branch Code"
+msgstr ""
+
+#: apps/branches/models.py:26
+msgid "Branch Type"
+msgstr ""
+
+#: apps/branches/models.py:28
+msgid "Country"
+msgstr ""
+
+#: apps/branches/models.py:29
+msgid "City"
+msgstr ""
+
+#: apps/branches/models.py:30
+msgid "Address"
+msgstr ""
+
+#: apps/branches/models.py:32
+msgid "Phone"
+msgstr ""
+
+#: apps/branches/models.py:33 apps/tenants/models.py:61
+msgid "Email"
+msgstr ""
+
+#: apps/branches/models.py:35
+msgid "Is Main Branch"
+msgstr ""
+
+#: apps/branches/models.py:37
+msgid "Allows Online Orders"
+msgstr ""
+
+#: apps/branches/models.py:39
+msgid "Operating Hours"
+msgstr ""
+
+#: apps/branches/models.py:46
+msgid "Branches"
+msgstr ""
+
+#: apps/branches/models.py:72 apps/branches/models.py:89
+msgid "Employee"
+msgstr ""
+
+#: apps/branches/models.py:81
+msgid "Branch User"
+msgstr ""
+
+#: apps/branches/models.py:82
+msgid "Branch Users"
+msgstr ""
+
+#: apps/branches/models.py:90
+msgid "Start Time"
+msgstr ""
+
+#: apps/branches/models.py:91
+msgid "End Time"
+msgstr ""
+
+#: apps/branches/models.py:99
+msgid "Shift"
+msgstr ""
+
+#: apps/branches/models.py:100
+msgid "Shifts"
+msgstr ""
+
+#: apps/branches/serializers.py:48
+msgid "End time must be after start time"
+msgstr ""
+
+#: apps/crm/models/insurance.py:185
+msgid "Only draft claims can be submitted"
+msgstr ""
+
+#: apps/crm/models/insurance.py:195
+msgid "This claim cannot be approved"
+msgstr ""
+
+#: apps/crm/models/insurance.py:219
+msgid "This claim cannot be rejected"
+msgstr ""
+
+#: apps/crm/models/insurance.py:232
+msgid "Payment can only be recorded for approved claims"
+msgstr ""
+
+#: apps/crm/serializers/crm_serializers.py:34
+msgid "Identification number is required"
+msgstr ""
+
+#: apps/crm/serializers/crm_serializers.py:35
+msgid "Identification number cannot be blank"
+msgstr ""
+
+#: apps/crm/serializers/crm_serializers.py:40
+msgid "Customer type is required"
+msgstr ""
+
+#: apps/crm/serializers/crm_serializers.py:41
+msgid "Invalid customer type"
+msgstr ""
+
+#: apps/crm/serializers/crm_serializers.py:58
+msgid "Customer with this identification number already exists"
+msgstr ""
+
+#: apps/crm/serializers/crm_serializers.py:72
+msgid "Customer must have at least phone or email"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:40
+msgid "Partner name is required"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:41
+msgid "Partner name cannot be blank"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:46
+msgid "Partner type is required"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:47
+msgid "Invalid partner type"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:62
+msgid "Contract end date must be after start date"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:69
+msgid "Credit limit cannot be negative"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:167
+msgid "Coverage end date must be after start date"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:174
+msgid "Annual limit cannot be negative"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:257
+msgid "Total amount must be greater than zero"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:268
+msgid "Customer partner link is not active"
+msgstr ""
+
+#: apps/crm/serializers/partner.py:274
+msgid "Coverage period has expired"
+msgstr ""
+
+#: apps/hrm/serializers.py:58
+msgid "End date must be after or equal to start date"
+msgstr ""
+
+#: apps/hrm/serializers.py:82
+msgid "Check-out time must be after check-in time"
+msgstr ""
+
+#: apps/hrm/serializers.py:112
+msgid "Basic salary cannot be negative"
+msgstr ""
+
+#: apps/hrm/serializers.py:120
+msgid "Deductions cannot be negative"
+msgstr ""
+
+#: apps/hrm/serializers.py:128
+msgid "Bonuses cannot be negative"
+msgstr ""
+
+#: apps/prescriptions/serializers.py:33
+msgid "Sphere value must be between -20 and +20"
+msgstr ""
+
+#: apps/prescriptions/serializers.py:41
+msgid "Cylinder value must be between -10 and +10"
+msgstr ""
+
+#: apps/prescriptions/serializers.py:49
+msgid "Axis value must be between 0 and 180"
+msgstr ""
+
+#: apps/prescriptions/serializers.py:75
+msgid "Pupillary distance must be between 25 and 80 mm"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:34
+#, python-brace-format
+msgid ""
+"Stock can only be added to branches of type 'Store'. Branch '{name}' is of "
+"type '{type}'."
+msgstr ""
+
+#: apps/products/serializers/inventory.py:70
+msgid ""
+"Purchase price (greater than zero) must be entered when adding new stock"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:79
+#, python-brace-format
+msgid ""
+"Requested quantity ({quantity}) exceeds available quantity ({available})"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:107
+msgid "Stock can only be added to branches of type 'Store'"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:111
+msgid "Purchase price (greater than zero) must be entered"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:118
+#, python-brace-format
+msgid "Requested quantity exceeds available quantity ({available})"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:216
+#: apps/products/serializers/inventory.py:241
+msgid "Cannot transfer to the same branch"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:255
+#, python-brace-format
+msgid ""
+"Requested quantity for product {variant_id} is not available. Available: "
+"{available}"
+msgstr ""
+
+#: apps/products/serializers/inventory.py:259
+#, python-brace-format
+msgid "Product {variant_id} does not exist in the source branch stock"
+msgstr ""
+
+#: apps/products/serializers/product.py:83
+msgid "This field is required"
+msgstr ""
+
+#: apps/products/serializers/product.py:94
+#, python-brace-format
+msgid "Product with ID {id} does not exist"
+msgstr ""
+
+#: apps/products/serializers/product.py:157
+#, python-brace-format
+msgid "{model} with ID {id} does not exist"
+msgstr ""
+
+#: apps/products/serializers/product.py:293
+msgid "Cannot set both customer and customer group"
+msgstr ""
+
+#: apps/sales/models.py:71
+msgid "الاسم (بالعربي)"
+msgstr ""
+
+#: apps/sales/models.py:73
+msgid "Name (English)"
+msgstr ""
+
+#: apps/sales/models.py:75
+msgid "Code"
+msgstr ""
+
+#: apps/sales/models.py:76 core/models.py:33
+msgid "Active"
+msgstr ""
+
+#: apps/sales/models.py:80
+msgid "Percentage fee charged by the provider (e.g., 2.5)"
+msgstr ""
+
+#: apps/sales/models.py:83
+msgid "Is Installment (BNPL)"
+msgstr ""
+
+#: apps/sales/models.py:89
+msgid "Payment Method"
+msgstr ""
+
+#: apps/sales/models.py:90
+msgid "Payment Methods"
+msgstr ""
+
+#: apps/sales/models.py:95
+msgid "نقدي"
+msgstr ""
+
+#: apps/sales/models.py:96
+msgid "آجل"
+msgstr ""
+
+#: apps/sales/models.py:97
+msgid "تأمين"
+msgstr ""
+
+#: apps/sales/models.py:98
+msgid "تقسيط"
+msgstr ""
+
+#: apps/sales/models.py:99
+msgid "شركات"
+msgstr ""
+
+#: apps/sales/models.py:100
+msgid "جملة"
+msgstr ""
+
+#: apps/sales/models.py:103 apps/sales/models.py:110
+msgid "Pending"
+msgstr ""
+
+#: apps/sales/models.py:104
+msgid "Partial"
+msgstr ""
+
+#: apps/sales/models.py:105
+msgid "Paid"
+msgstr ""
+
+#: apps/sales/models.py:106
+msgid "Refunded"
+msgstr ""
+
+#: apps/sales/models.py:107
+msgid "Disputed"
+msgstr ""
+
+#: apps/sales/models.py:111
+msgid "Confirmed"
+msgstr ""
+
+#: apps/sales/models.py:112
+msgid "Ready"
+msgstr ""
+
+#: apps/sales/models.py:113
+msgid "Delivered"
+msgstr ""
+
+#: apps/sales/models.py:114
+msgid "Cancelled"
+msgstr ""
+
+#: apps/sales/models.py:134 apps/sales/models.py:326
+msgid "طريقة الدفع"
+msgstr ""
+
+#: apps/sales/serializers/order.py:38
+msgid "Paid amount cannot be negative"
+msgstr ""
+
+#: apps/sales/serializers/order.py:46
+msgid "Discount amount cannot be negative"
+msgstr ""
+
+#: apps/sales/serializers/order.py:54
+msgid "At least one product is required for the order"
+msgstr ""
+
+#: apps/sales/serializers/order.py:62
+msgid "Each item must have a product"
+msgstr ""
+
+#: apps/sales/serializers/order.py:69
+#, python-brace-format
+msgid "Duplicate product in order: {id}"
+msgstr ""
+
+#: apps/sales/serializers/order.py:78
+msgid "Quantity must be at least 1"
+msgstr ""
+
+#: apps/sales/serializers/order.py:85
+msgid "Unit price cannot be negative"
+msgstr ""
+
+#: apps/sales/serializers/order.py:108
+#, python-brace-format
+msgid "Product (ID: {id}) is not available in this branch stock"
+msgstr ""
+
+#: apps/sales/serializers/order.py:114
+#, python-brace-format
+msgid ""
+"Available quantity for product (ID: {id}) is only {available}, requested "
+"{requested}"
+msgstr ""
+
+#: apps/sales/serializers/order.py:139
+#, python-brace-format
+msgid "Discount ({discount}) cannot exceed products total ({total})"
+msgstr ""
+
+#: apps/sales/serializers/order.py:153
+#, python-brace-format
+msgid "Paid amount ({paid}) cannot exceed total amount ({total})"
+msgstr ""
+
+#: apps/sales/serializers/order.py:214
+#, python-brace-format
+msgid "Duplicate variant in invoice: {id}"
+msgstr ""
+
+#: apps/sales/serializers/payment.py:80
+msgid "Invoice or order must be specified"
+msgstr ""
+
+#: apps/tenants/models.py:23
+msgid "Name"
+msgstr ""
+
+#: apps/tenants/models.py:27 apps/tenants/models.py:98
+msgid "Max Users"
+msgstr ""
+
+#: apps/tenants/models.py:29 apps/tenants/models.py:102
+msgid "Max Branches"
+msgstr ""
+
+#: apps/tenants/models.py:31 apps/tenants/models.py:100
+msgid "Max Products"
+msgstr ""
+
+#: apps/tenants/models.py:33
+msgid "Month"
+msgstr ""
+
+#: apps/tenants/models.py:35
+msgid "Year"
+msgstr ""
+
+#: apps/tenants/models.py:39
+msgid "Discount"
+msgstr ""
+
+#: apps/tenants/models.py:46
+msgid "Subscription Plan"
+msgstr ""
+
+#: apps/tenants/models.py:47
+msgid "Subscription Plans"
+msgstr ""
+
+#: apps/tenants/models.py:59
+msgid "Schema Name"
+msgstr ""
+
+#: apps/tenants/models.py:60 apps/tenants/models.py:97
+msgid "Company Name"
+msgstr ""
+
+#: apps/tenants/models.py:62
+msgid "Password"
+msgstr ""
+
+#: apps/tenants/models.py:64
+msgid "Token Expires At"
+msgstr ""
+
+#: apps/tenants/models.py:66
+msgid "Activated"
+msgstr ""
+
+#: apps/tenants/models.py:69
+msgid "Expires At"
+msgstr ""
+
+#: apps/tenants/models.py:72
+msgid "Pending Tenant Request"
+msgstr ""
+
+#: apps/tenants/models.py:73
+msgid "Pending Tenant Requests"
+msgstr ""
+
+#: apps/tenants/models.py:80
+msgid "Schema name must be alphanumeric"
+msgstr ""
+
+#: apps/tenants/models.py:104
+msgid "Paid Until"
+msgstr ""
+
+#: apps/tenants/models.py:105
+msgid "On Trial"
+msgstr ""
+
+#: apps/tenants/models.py:111
+msgid "Client"
+msgstr ""
+
+#: apps/tenants/models.py:112
+msgid "Clients"
+msgstr ""
+
+#: apps/tenants/models.py:175
+msgid "Payments"
+msgstr ""
+
+#: apps/tenants/serializers.py:61
+msgid "System configuration error: Trial plan not found."
+msgstr ""
+
+#: apps/tenants/serializers.py:124
+msgid "Client not found"
+msgstr ""
+
+#: apps/tenants/serializers.py:128
+msgid "Client account is inactive"
+msgstr ""
+
+#: apps/tenants/serializers.py:141
+msgid "Invalid payment direction"
+msgstr ""
+
+#: apps/tenants/serializers.py:151
+msgid "You already have a pending payment for this plan"
+msgstr ""
+
+#: apps/tenants/signals.py:19
+msgid "You have reached the maximum number of users for your plan."
+msgstr ""
+
+#: apps/tenants/signals.py:30
+msgid "You have reached the maximum number of branches for your plan."
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:88
+msgid "Invalid schema name"
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:92
+#, python-brace-format
+msgid "Schema '{name}' already exists"
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:98
+msgid "Trial subscription plan not found"
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:104
+#, python-brace-format
+msgid "Domain '{domain}' already exists"
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:231
+msgid "Activation link expired. New activation email sent."
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:235
+msgid ""
+"Start creating your store. Please wait You will receive a confirmation "
+"email. "
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:271
+msgid "Token is required."
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:272
+msgid "Invalid or expired activation link."
+msgstr ""
+
+#: apps/tenants/views/active_tenant.py:273
+msgid "Your account is already activated. Please login."
+msgstr ""
+
+#: apps/users/serializers.py:163
+msgid "User does not exist"
+msgstr ""
+
+#: apps/users/serializers.py:170
+msgid "User account is disabled"
+msgstr ""
+
+#: apps/users/serializers.py:172
+msgid "Incorrect password"
+msgstr ""
+
+#: apps/users/serializers.py:280
+msgid "Invalid UID"
+msgstr ""
+
+#: apps/users/serializers.py:284
+msgid "Invalid or expired token"
+msgstr ""
+
+#: core/decorators/error_handling.py:72 core/mixins/ErrorHandlingMixin.py:113
+#, python-brace-format
+msgid "The following fields are required: {fields}"
+msgstr ""
+
+#: core/exceptions.py:27
+msgid "An error occurred. Please try again later."
+msgstr ""
+
+#: core/exceptions.py:30
+msgid "This field is required."
+msgstr ""
+
+#: core/exceptions.py:31
+msgid "This field cannot be blank."
+msgstr ""
+
+#: core/exceptions.py:32
+msgid "Invalid value."
+msgstr ""
+
+#: core/exceptions.py:35
+#, python-brace-format
+msgid "{model} with this {field} already exists."
+msgstr ""
+
+#: core/exceptions.py:36
+msgid "This record already exists."
+msgstr ""
+
+#: core/exceptions.py:39
+msgid "You do not have permission to perform this action."
+msgstr ""
+
+#: core/exceptions.py:40
+msgid "Authentication credentials were not provided."
+msgstr ""
+
+#: core/exceptions.py:43
+msgid "Not found."
+msgstr ""
+
+#: core/exceptions.py:44
+msgid "Invalid data provided."
+msgstr ""
+
+#: core/exceptions.py:47
+#, python-brace-format
+msgid "Insufficient stock. Available: {available}"
+msgstr ""
+
+#: core/exceptions.py:48
+msgid "Stock is reserved and cannot be modified."
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:72
+msgid "Created successfully"
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:73
+msgid "Updated successfully"
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:74
+msgid "Deleted successfully"
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:75
+msgid "Action completed successfully"
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:78
+msgid "Success"
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:134
+#, python-brace-format
+msgid "{field_name} must be greater than zero"
+msgstr ""
+
+#: core/mixins/ErrorHandlingMixin.py:138
+#, python-brace-format
+msgid "{field_name} must be a valid number"
+msgstr ""
+
+#: core/models.py:31
+msgid "Created at"
+msgstr ""
+
+#: core/models.py:32
+msgid "Updated at"
+msgstr ""
+
+#: core/models.py:34
+msgid "Deleted"
+msgstr ""
+
+#: core/permissions/BranchAccessMixin.py:109
+msgid "ليس لديك صلاحية الوصول لهذا الفرع."
+msgstr ""
+
+#: core/permissions/BranchAccessMixin.py:153
+msgid "ليس لديك صلاحية إنشاء تحويلات من هذا الفرع."
+msgstr ""
+
+#: core/utils/ReusableFields.py:24
+msgid "Username is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:25
+msgid "Username cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:26
+msgid "Username must be at least 5 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:27
+msgid "Username must be at most 50 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:41
+msgid ""
+"Password must contain at least one uppercase, one lowercase, and one number"
+msgstr ""
+
+#: core/utils/ReusableFields.py:45
+msgid "Password is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:46
+msgid "Password cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:47
+msgid "Password must be at least 8 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:56
+msgid "Email is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:57
+msgid "Email cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:58
+msgid "Enter a valid email address"
+msgstr ""
+
+#: core/utils/ReusableFields.py:69
+msgid "Enter a valid phone number (7-15 digits)"
+msgstr ""
+
+#: core/utils/ReusableFields.py:73
+msgid "Phone number is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:74
+msgid "Phone number cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:84
+msgid "First name is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:85
+msgid "First name cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:86
+msgid "First name must be at most 30 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:96
+msgid "Last name is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:97
+msgid "Last name cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:98
+msgid "Last name must be at most 30 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:108
+msgid "Name is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:109
+msgid "Name cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:110
+msgid "Name must be at most 100 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:121
+msgid "SKU is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:122
+msgid "SKU cannot be blank"
+msgstr ""
+
+#: core/utils/ReusableFields.py:123
+msgid "SKU must be at most 50 characters"
+msgstr ""
+
+#: core/utils/ReusableFields.py:124
+msgid "Product with this SKU already exists"
+msgstr ""
+
+#: core/utils/ReusableFields.py:137
+msgid "Price is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:138
+msgid "Enter a valid price"
+msgstr ""
+
+#: core/utils/ReusableFields.py:139
+msgid "Price must be greater than or equal to zero"
+msgstr ""
+
+#: core/utils/ReusableFields.py:140
+msgid "Price is too large"
+msgstr ""
+
+#: core/utils/ReusableFields.py:151
+msgid "Quantity is required"
+msgstr ""
+
+#: core/utils/ReusableFields.py:152
+msgid "Enter a valid quantity"
+msgstr ""
+
+#: core/utils/ReusableFields.py:153
+msgid "Quantity must be greater than or equal to zero"
+msgstr ""
+
+#: core/utils/email.py:22
+#, python-brace-format
+msgid ""
+"\n"
+"        Hi 👋,\n"
+"        Please activate your account by clicking the link below:\n"
+"        {activation_link}\n"
+"\n"
+"        Note: This link will expire in 24 hours.\n"
+"\n"
+"        Thanks,\n"
+"        Solo Vizion Team\n"
+"        "
+msgstr ""
+
+#: romve_cash.py:35 scripts/romve_cash.py:35
+#, python-brace-format
+msgid "🗑️ Removed: {pycache_dir}"
+msgstr ""
+
+#: romve_cash.py:42 scripts/romve_cash.py:42
+#, python-brace-format
+msgid "🗑️ Removed: {pyc_file}"
+msgstr ""
+
+#: romve_cash.py:44 scripts/romve_cash.py:44
+#, python-brace-format
+msgid "⚠️ Could not remove {pyc_file}: {e}"
+msgstr ""
+
+#: romve_cash.py:55 scripts/romve_cash.py:55
+#, python-brace-format
+msgid "🗑️ Removed migration: {file_path}"
+msgstr ""
+
+#: romve_cash.py:57 scripts/romve_cash.py:57
+#, python-brace-format
+msgid "⚠️ Could not remove {file_path}: {e}"
+msgstr ""
+
+#: romve_cash.py:61 scripts/romve_cash.py:61
+msgid "🔄 Start removing cache and migration files..."
+msgstr ""
+
+#: romve_cash.py:63 scripts/romve_cash.py:63
+msgid "❌ This operation is only allowed in DEBUG mode."
+msgstr ""
+
+#: romve_cash.py:68 scripts/romve_cash.py:68
+msgid "✅ All cache and migration files have been cleared successfully."
+msgstr ""
