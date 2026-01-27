@@ -1,90 +1,94 @@
-# utils/utils.py
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.text import slugify
-from dateutil.relativedelta import relativedelta
-from django.utils import timezone
-from django.utils.translation import gettext_lazy as _ # for translation
-# from optics_tenant.optics_tenant.config_loader import config
 from django.utils.translation import gettext_lazy as _
 from optics_tenant.config_loader import config
 
-FRONTEND_DOMAIN =config("FRONTEND_DOMAIN")
-FRONTEND_PORT =config("FRONTEND_PORT")
-PROTOCOL =config("PROTOCOL")
-locale =config("LOCALE")
+FRONTEND_DOMAIN = config("FRONTEND_DOMAIN")
+FRONTEND_PORT = config("FRONTEND_PORT")
+PROTOCOL = config("PROTOCOL")
+LOCALE = config("LOCALE")
 
-def send_activation_email(email, token ):
+
+def send_activation_email(email, token):
     if FRONTEND_PORT:
-        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{locale}/auth/activate/?token={token}"
+        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{LOCALE}/auth/activate/?token={token}"
     else:
-        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}/{locale}/auth/activate/?token={token}"
-    message =_(f"""
-        Hi 👋,
-        Please activate your account by clicking the link below:
-        {activation_link}
+        activation_link = f"{PROTOCOL}://{FRONTEND_DOMAIN}/{LOCALE}/auth/activate/?token={token}"
 
-        Note: This link will expire in 24 hours.
+    message_template = _(
+        "Hi 👋,\n"
+        "Please activate your account by clicking the link below:\n"
+        "{link}\n\n"
+        "Note: This link will expire in 24 hours.\n\n"
+        "Thanks,\n"
+        "Solo Vizion Team"
+    )
+    message = str(message_template).format(link=activation_link)
 
-        Thanks,
-        Solo Vizion Team
-        """)
-    send_mail("Activate your account", message, settings.DEFAULT_FROM_EMAIL, [email])
+    send_mail(str(_("Activate your account")), message,
+              settings.DEFAULT_FROM_EMAIL, [email])
 
 
-def send_message_acount_activated(email,schema_name,name):
+def send_message_acount_activated(email, schema_name, name):
     if FRONTEND_PORT:
-        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{locale}"
+        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}:{FRONTEND_PORT}/{LOCALE}"
     else:
-        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}/{locale}"
-    message = f"""
-    Hi 👋,
-    Your account has been activated successfully.
-    
-    Your store name: {schema_name}
-    Your domain: {domain}
-    Your login link: {PROTOCOL}://{domain}/auth/login
-    Your superuser email: {email}
-    Your superuser username: {email}
-    Your superuser password: ***Enter at Registration
-    
-    Thanks,
-    Solo Vizion Team
-    """
-    send_mail("Account Activated", message, settings.DEFAULT_FROM_EMAIL, [email])
+        domain = f"{slugify(schema_name)}.{FRONTEND_DOMAIN}/{LOCALE}"
 
+    message_template = _(
+        "Hi 👋,\n"
+        "Your account has been activated successfully.\n\n"
+        "Your store name: {schema_name}\n"
+        "Your domain: {domain}\n"
+        "Your login link: {protocol}://{domain}/auth/login\n"
+        "Your superuser email: {email}\n"
+        "Your superuser password: ***Enter at Registration\n\n"
+        "Thanks,\n"
+        "Solo Vizion Team"
+    )
+    message = str(message_template).format(
+        schema_name=schema_name,
+        domain=domain,
+        protocol=PROTOCOL,
+        email=email
+    )
+
+    send_mail(str(_("Account Activated")), message,
+              settings.DEFAULT_FROM_EMAIL, [email])
 
 
 def send_password_reset_email(email, url):
-    message = f"""
-    Hi 👋,
+    message_template = _(
+        "Hi 👋,\n\n"
+        "Please reset your password by clicking the link below:\n\n"
+        "{url}\n\n"
+        "Note: This link will expire in 24 hours.\n\n"
+        "Thanks,\n"
+        "Solo Vizion Team"
+    )
+    message = str(message_template).format(url=url)
 
-    Please reset your password by clicking the link below:
+    send_mail(str(_("Reset your password")), message,
+              settings.DEFAULT_FROM_EMAIL, [email])
 
-    {url}
-
-    Note: This link will expire in 24 hours.
-
-    Thanks,  
-    Solo Vizion Team
-    """
-    send_mail("Reset your password", message, settings.DEFAULT_FROM_EMAIL, [email])
 
 def send_password_change_email(email):
-    message = """
-    Hi 👋,
-    Your password has been changed successfully.
-
-    Thanks,
-    Solo Vizion Team
-    """
-    send_mail("Password Changed", message, settings.DEFAULT_FROM_EMAIL, [email])
+    message = _(
+        "Hi 👋,\n"
+        "Your password has been changed successfully.\n\n"
+        "Thanks,\n"
+        "Solo Vizion Team"
+    )
+    send_mail(str(_("Password Changed")), str(message),
+              settings.DEFAULT_FROM_EMAIL, [email])
 
 
 def send_failed_activation_email(email):
-    message = """
-    Hi 👋,
-    Your account activation failed.
-    please try again by clicking previous activation link 
-    """
-    send_mail("Account Activation Failed", message, settings.DEFAULT_FROM_EMAIL, [email])
+    message = _(
+        "Hi 👋,\n"
+        "Your account activation failed.\n"
+        "Please try again by clicking previous activation link.\n"
+    )
+    send_mail(str(_("Account Activation Failed")), str(
+        message), settings.DEFAULT_FROM_EMAIL, [email])

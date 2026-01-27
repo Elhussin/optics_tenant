@@ -7,12 +7,14 @@ from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
 
+from django.utils.translation import gettext_lazy as _
+
 ATTRIBUTES_RELATED_FIELDS = [
     "attribute__name",
 ]
 ATTRIBUTES_FIELD_LABELS = {
-    "attribute__name": "Attribute Name",
-    "value": "Value",
+    "attribute__name": _("Attribute Name"),
+    "value": _("Value"),
 }
 
 
@@ -22,25 +24,28 @@ ATTRIBUTES_FILTER_FIELDS = {
 }
 INVENTORY_ROLES = ["InventoryManager", "BranchManager", "SalesClerk"]
 
+
 class AttributesViewSet(BaseViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-           allowed_roles=INVENTORY_ROLES,
-           required_permissions=["view_product"] 
+            allowed_roles=INVENTORY_ROLES,
+            required_permissions=["view_product"]
 
         )
     ]
+
+
 class AttributeValueViewSet(BaseViewSet):
     queryset = AttributeValue.objects.all()
     serializer_class = AttributeValueSerializer
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
-           allowed_roles=INVENTORY_ROLES,
-           required_permissions=["view_product"] 
+            allowed_roles=INVENTORY_ROLES,
+            required_permissions=["view_product"]
 
         )
     ]

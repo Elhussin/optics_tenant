@@ -5,7 +5,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from core.constants.tenants import PAYMENT_METHODS, STATUS_CHOICES, CURRENCY
-from core.utils.update_client_plan import update_client_plan
+from apps.tenants.utils.update_client_plan import update_client_plan
 from core.utils.expiration_date import expiration_date
 from core.models import BaseModel
 import logging
@@ -21,8 +21,10 @@ class SubscriptionPlan(BaseModel):
     """Plan Subscription"""
     name = models.CharField(max_length=50, unique=True,
                             verbose_name=_("Name"))  # trial, basic, premium...
-    duration_months = models.PositiveIntegerField(default=30,)
-    duration_years = models.PositiveIntegerField(default=365)
+    duration_months = models.PositiveIntegerField(
+        default=30, verbose_name=_("Duration Months"))
+    duration_years = models.PositiveIntegerField(
+        default=365, verbose_name=_("Duration Years"))
     max_users = models.PositiveIntegerField(
         default=1, verbose_name=_("Max Users"))
     max_branches = models.PositiveIntegerField(
@@ -30,17 +32,21 @@ class SubscriptionPlan(BaseModel):
     max_products = models.PositiveIntegerField(
         default=200, verbose_name=_("Max Products"))
     month_price = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Month"))
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Month Price"))
     year_price = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Year"))
+        max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Year Price"))
     currency = models.CharField(
         max_length=10, default="USD", choices=CURRENCY, verbose_name=_("Currency"))
     discount = models.DecimalField(
         max_digits=10, decimal_places=2, default=0.00, verbose_name=_("Discount"))
-    has_hr_module = models.BooleanField(default=True)
-    has_inventory_module = models.BooleanField(default=True)
-    has_eye_test_module = models.BooleanField(default=True)
-    has_crm_module = models.BooleanField(default=True)
+    has_hr_module = models.BooleanField(
+        default=True, verbose_name=_("Has HR Module"))
+    has_inventory_module = models.BooleanField(
+        default=True, verbose_name=_("Has Inventory Module"))
+    has_eye_test_module = models.BooleanField(
+        default=True, verbose_name=_("Has Eye Test Module"))
+    has_crm_module = models.BooleanField(
+        default=True, verbose_name=_("Has CRM Module"))
 
     class Meta:
         verbose_name = _("Subscription Plan")
@@ -54,7 +60,7 @@ class SubscriptionPlan(BaseModel):
 class PendingTenantRequest(BaseModel):
     """Pending tenant requests"""
     plan = models.ForeignKey(
-        "SubscriptionPlan", on_delete=models.SET_NULL, null=True,)
+        "SubscriptionPlan", on_delete=models.SET_NULL, null=True, verbose_name=_("Plan"))
     schema_name = models.CharField(
         max_length=63, unique=True, verbose_name=_("Schema Name"))
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
@@ -93,7 +99,7 @@ class PendingTenantRequest(BaseModel):
 class Client(TenantMixin, BaseModel):
     """Tenants (Clients) """
     plan = models.ForeignKey(
-        "SubscriptionPlan", on_delete=models.SET_NULL, null=True)
+        "SubscriptionPlan", on_delete=models.SET_NULL, null=True, verbose_name=_("Plan"))
     name = models.CharField(max_length=100, verbose_name=_("Company Name"))
     max_users = models.IntegerField(default=1, verbose_name=_("Max Users"))
     max_products = models.IntegerField(
@@ -157,18 +163,21 @@ class Domain(DomainMixin):
 class Payment(BaseModel):
     """سجل المدفوعات"""
     client = models.ForeignKey(
-        "Client", on_delete=models.CASCADE, related_name="payments")
+        "Client", on_delete=models.CASCADE, related_name="payments", verbose_name=_("Client"))
     plan = models.ForeignKey(
-        "SubscriptionPlan", on_delete=models.SET_NULL, null=True)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    currency = models.CharField(max_length=10, default="USD", choices=CURRENCY)
+        "SubscriptionPlan", on_delete=models.SET_NULL, null=True, verbose_name=_("Plan"))
+    amount = models.DecimalField(
+        max_digits=10, decimal_places=2, verbose_name=_("Amount"))
+    currency = models.CharField(
+        max_length=10, default="USD", choices=CURRENCY, verbose_name=_("Currency"))
     method = models.CharField(
-        max_length=20, choices=PAYMENT_METHODS, default="paypal")
-    transaction_id = models.CharField(max_length=100, blank=True, null=True)
+        max_length=20, choices=PAYMENT_METHODS, default="paypal", verbose_name=_("Payment Method"))
+    transaction_id = models.CharField(
+        max_length=100, blank=True, null=True, verbose_name=_("Transaction ID"))
     status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default="pending")
-    direction = models.CharField(max_length=10, choices=[(
-        'month', 'Monthly'), ('year', 'Yearly')], default='month')
+        max_length=20, choices=STATUS_CHOICES, default="pending", verbose_name=_("Status"))
+    direction = models.CharField(max_length=10, choices=[
+        ('month', _("Monthly")), ('year', _("Yearly"))], default='month', verbose_name=_("Direction"))
 
     class Meta:
         verbose_name = _("Payment")

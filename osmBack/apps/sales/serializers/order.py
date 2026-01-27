@@ -10,17 +10,17 @@ class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
         exclude = ['is_deleted']
-        # order يتم تعيينه تلقائياً في OrderSerializer.create()
+        # order is set automatically in OrderSerializer.create()
         read_only_fields = ['total_price', 'order']
 
 
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
-    # حقل محسوب للمبلغ المتبقي
+    # Calculated field for remaining amount
     remaining_amount = serializers.DecimalField(
         max_digits=12, decimal_places=2, read_only=True
     )
-    # حقل اختياري للبدء (سيتم استخدام الـ ID بدلاً منه)
+    # Optional field for display (ID will be used instead)
     payment_method_display = serializers.CharField(
         source='payment_method.name_ar', read_only=True
     )
@@ -32,7 +32,7 @@ class OrderSerializer(serializers.ModelSerializer):
                             'subtotal', 'tax_amount', 'confirmed_at', 'delivered_at']
 
     def validate_paid_amount(self, value):
-        """التحقق من أن المبلغ المدفوع ليس سلبياً"""
+        """Validate paid amount is not negative"""
         if value < 0:
             raise serializers.ValidationError(
                 str(_('Paid amount cannot be negative'))
@@ -40,7 +40,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return value
 
     def validate_discount_amount(self, value):
-        """التحقق من أن الخصم ليس سلبياً"""
+        """Validate discount amount is not negative"""
         if value < 0:
             raise serializers.ValidationError(
                 str(_('Discount amount cannot be negative'))
@@ -48,7 +48,7 @@ class OrderSerializer(serializers.ModelSerializer):
         return value
 
     def validate_items(self, items):
-        """التحقق من العناصر"""
+        """Validate items"""
         if not items:
             raise serializers.ValidationError(
                 str(_('At least one product is required for the order'))
@@ -62,7 +62,7 @@ class OrderSerializer(serializers.ModelSerializer):
                     str(_('Each item must have a product'))
                 )
 
-            # التحقق من التكرار
+            # Check for duplicates
             variant_id = variant.id if hasattr(variant, 'id') else variant
             if variant_id in seen:
                 raise serializers.ValidationError(
@@ -71,24 +71,24 @@ class OrderSerializer(serializers.ModelSerializer):
                 )
             seen.add(variant_id)
 
-            # التحقق من الكمية
+            # Check quantity
             quantity = item.get('quantity', 1)
             if quantity < 1:
                 raise serializers.ValidationError(
                     str(_('Quantity must be at least 1'))
                 )
 
-            # التحقق من السعر
+            # Check price
             unit_price = item.get('unit_price', 0)
             if unit_price < 0:
                 raise serializers.ValidationError(
                     str(_('Unit price cannot be negative'))
                 )
 
-        # التحقق من المخزون (soft check)
+        # Check stock (soft check)
         from apps.products.models import Stock
 
-        # الحصول على الفرع من الـ request context
+        # Get branch from request context
         request = self.context.get('request')
         if request and hasattr(request.user, 'branch_user'):
             branch_id = request.user.branch_user.branch_id
@@ -121,19 +121,19 @@ class OrderSerializer(serializers.ModelSerializer):
         return items
 
     def validate(self, data):
-        """التحقق على مستوى الطلب كاملاً"""
+        """Validate entire order"""
         items = data.get('items', [])
         discount_amount = data.get('discount_amount', 0)
         paid_amount = data.get('paid_amount', 0)
         tax_rate = data.get('tax_rate', 0.15)
 
-        # حساب الإجمالي المبدئي
+        # Calculate initial subtotal
         subtotal = sum(
             item.get('quantity', 1) * item.get('unit_price', 0)
             for item in items
         )
 
-        # التحقق من أن الخصم لا يتجاوز الإجمالي
+        # Check discount does not exceed subtotal
         if discount_amount > subtotal:
             raise serializers.ValidationError({
                 'discount_amount': str(_('Discount ({discount}) cannot exceed products total ({total})').format(
@@ -142,12 +142,12 @@ class OrderSerializer(serializers.ModelSerializer):
                 ))
             })
 
-        # حساب المبلغ المطلوب
+        # Calculate required amount
         discounted_subtotal = subtotal - discount_amount
         tax_amount = discounted_subtotal * tax_rate
         total_amount = discounted_subtotal + tax_amount
 
-        # التحقق من أن المبلغ المدفوع لا يتجاوز المطلوب
+        # Check paid amount does not exceed total
         if paid_amount > total_amount:
             raise serializers.ValidationError({
                 'paid_amount': str(_('Paid amount ({paid}) cannot exceed total amount ({total})').format(
@@ -169,16 +169,16 @@ class OrderSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         items_data = validated_data.pop('items', None)
 
-        # تحديث بيانات الطلب
+        # Update order data
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
         instance.save()
 
-        # تحديث العناصر إذا تم إرسالها
+        # Update items if provided
         if items_data is not None:
-            # حذف العناصر القديمة
+            # Delete old items
             instance.items.all().delete()
-            # إنشاء العناصر الجديدة
+            # Create new items
             for item_data in items_data:
                 OrderItem.objects.create(order=instance, **item_data)
 
@@ -190,7 +190,7 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = InvoiceItem
         exclude = ['is_deleted']
-        # invoice يتم تعيينه تلقائياً في InvoiceSerializer.create()
+        # invoice is set automatically in InvoiceSerializer.create()
         read_only_fields = ['total_price', 'invoice']
 
 

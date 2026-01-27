@@ -154,5 +154,234 @@
         "create_if_missing": false
       }
     }
+  },
+  {
+    "schema": "public",
+    "app": "products",
+    "model": "Product",
+    "csv": "csv/product_variants.csv",
+    "foreign_keys": {
+      "brand": {
+        "related_model": "products.Brand",
+        "lookup_field": "name",
+        "create_if_missing": true
+      }
+    }
+  },
+  {
+    "schema": "public",
+    "app": "products",
+    "model": "FrameVariant",
+    "csv": "csv/product_variants.csv",
+    "row_filter": {
+      "variant_type": "frames"
+    },
+    "foreign_keys": {
+      "product": {
+        "related_model": "products.Product",
+        "lookup_fields": {
+          "brand__name": "brand",
+          "model": "model"
+        }
+      },
+      "product_type": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "product_type_value" },
+        "fixed_filters": { "attribute__name": "Product Type" },
+        "create_if_missing": false
+      },
+      "frame_color": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "color" },
+        "fixed_filters": { "attribute__name": "Color" },
+        "create_if_missing": false
+      },
+      "frame_shape": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "shape" },
+        "fixed_filters": { "attribute__name": "Shape" },
+        "create_if_missing": false
+      },
+      "frame_material": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "material" },
+        "fixed_filters": { "attribute__name": "Material" },
+        "create_if_missing": false
+      },
+      "temple_length": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "temple" },
+        "fixed_filters": { "attribute__name": "Length" },
+        "create_if_missing": false
+      },
+      "bridge_width": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "bridge" },
+        "fixed_filters": { "attribute__name": "Width" },
+        "create_if_missing": false
+      },
+      "lens_diameter": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_width" },
+        "fixed_filters": { "attribute__name": "Diameter" },
+        "create_if_missing": false
+      }
+    }
+  },
+  {
+    "schema": "public",
+    "app": "products",
+    "model": "ContactLensVariant",
+    "csv": "csv/product_variants.csv",
+    "row_filter": {
+      "variant_type": "contactLenses"
+    },
+    "foreign_keys": {
+      "product": {
+        "related_model": "products.Product",
+        "lookup_fields": {
+          "brand__name": "brand",
+          "model": "model"
+        }
+      },
+      "product_type": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "product_type_value" },
+        "fixed_filters": { "attribute__name": "Product Type" },
+        "create_if_missing": false
+      },
+      "lens_water_content": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "water_content" },
+        "fixed_filters": { "attribute__name": "Water Content" },
+        "create_if_missing": false
+      },
+      "replacement_schedule": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "repl_schedule" },
+        "fixed_filters": { "attribute__name": "Replacement Schedule" },
+        "create_if_missing": false
+      },
+      "units": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "units" },
+        "fixed_filters": { "attribute__name": "Unit" },
+        "create_if_missing": false
+      },
+      "lens_material": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_material" },
+        "fixed_filters": { "attribute__name": "Material" },
+        "create_if_missing": false
+      },
+      "lens_color": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_color" },
+        "fixed_filters": { "attribute__name": "Color" },
+        "create_if_missing": false
+      },
+      "lens_base_curve": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "base_curve" },
+        "fixed_filters": { "attribute__name": "Base Curve" },
+        "create_if_missing": false
+      },
+      "lens_diameter": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "diameter" },
+        "fixed_filters": { "attribute__name": "Diameter" },
+        "create_if_missing": false
+      }
+    }
+  },
+  {
+    "schema": "public",
+    "app": "products",
+    "model": "StokLensVariant",
+    "csv": "csv/product_variants.csv",
+    "row_filter": {
+      "variant_type": "stockLenses"
+    },
+    "foreign_keys": {
+      "product": {
+        "related_model": "products.Product",
+        "lookup_fields": {
+          "brand__name": "brand",
+          "model": "model"
+        }
+      },
+      "product_type": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "product_type_value" },
+        "fixed_filters": { "attribute__name": "Product Type" },
+        "create_if_missing": false
+      },
+      "lens_material": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_material" },
+        "fixed_filters": { "attribute__name": "Material" },
+        "create_if_missing": false
+      },
+      "lens_color": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_color" },
+        "fixed_filters": { "attribute__name": "Color" },
+        "create_if_missing": false
+      },
+      "lens_diameter": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "diameter" },
+        "fixed_filters": { "attribute__name": "Diameter" },
+        "create_if_missing": false
+      }
+    }
+  },
+  {
+    "schema": "public",
+    "app": "products",
+    "model": "RxLensVariant",
+    "csv": "csv/product_variants.csv",
+    "row_filter": {
+      "variant_type": "rxLenses"
+    },
+    "foreign_keys": {
+      "product": {
+        "related_model": "products.Product",
+        "lookup_fields": {
+          "brand__name": "brand",
+          "model": "model"
+        }
+      },
+      "product_type": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "product_type_value" },
+        "fixed_filters": { "attribute__name": "Product Type" },
+        "create_if_missing": false
+      },
+      "lens_material": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_material" },
+        "fixed_filters": { "attribute__name": "Material" },
+        "create_if_missing": false
+      },
+      "lens_color": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "lens_color" },
+        "fixed_filters": { "attribute__name": "Color" },
+        "create_if_missing": false
+      },
+      "lens_base_curve": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "base_curve" },
+        "fixed_filters": { "attribute__name": "Base Curve" },
+        "create_if_missing": false
+      },
+      "lens_diameter": {
+        "related_model": "products.AttributeValue",
+        "lookup_fields": { "value": "diameter" },
+        "fixed_filters": { "attribute__name": "Diameter" },
+        "create_if_missing": false
+      }
+    }
   }
 ]

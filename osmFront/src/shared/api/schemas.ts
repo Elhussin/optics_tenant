@@ -139,6 +139,37 @@ const PatchedChartOfAccountsRequest = z
   })
   .partial()
   .passthrough();
+const ChartOfAccountsChoices = z
+  .object({
+    account_types: z.object({}).partial().passthrough(),
+    account_subtypes: z.object({}).partial().passthrough(),
+  })
+  .passthrough();
+const SetupDefaultsResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const ChartOfAccountsTree = z
+  .object({
+    id: z.number().int(),
+    code: z.string().max(10),
+    name: z.string().max(200),
+    account_type: AccountTypeEnum,
+    current_balance: z
+      .string()
+      .regex(/^-?\d{0,12}(?:\.\d{0,2})?$/)
+      .optional(),
+    is_header: z.boolean().optional(),
+    children: z.string(),
+  })
+  .passthrough();
+const PaginatedChartOfAccountsTreeList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ChartOfAccountsTree),
+  })
+  .passthrough();
 const FinancialPeriod = z
   .object({
     id: z.number().int(),
@@ -316,6 +347,169 @@ const PatchedGeneralJournalRequest = z
   })
   .partial()
   .passthrough();
+const PostEntryResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const ReverseEntryResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    reversal_id: z.number().int(),
+  })
+  .passthrough();
+const GeneralJournalChoices = z
+  .object({
+    entry_types: z.object({}).partial().passthrough(),
+    source_types: z.object({}).partial().passthrough(),
+  })
+  .passthrough();
+const BSItemAssets = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const BalanceSheetSectionAssets = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    items: z.array(BSItemAssets),
+  })
+  .passthrough();
+const BSItemLiabilities = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const BalanceSheetSectionLiabilities = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    items: z.array(BSItemLiabilities),
+  })
+  .passthrough();
+const BSItemEquity = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const BalanceSheetSectionEquity = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    items: z.array(BSItemEquity),
+  })
+  .passthrough();
+const BalanceSheetResponse = z
+  .object({
+    as_of_date: z.string(),
+    assets: BalanceSheetSectionAssets,
+    liabilities: BalanceSheetSectionLiabilities,
+    equity: BalanceSheetSectionEquity,
+    total_liabilities_and_equity: z
+      .string()
+      .regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    is_balanced: z.boolean(),
+  })
+  .passthrough();
+const IncomeStatementPeriod = z
+  .object({ start_date: z.string().nullable(), end_date: z.string() })
+  .passthrough();
+const IncomeItem = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const IncomeStatementSection = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    items: z.array(IncomeItem),
+  })
+  .passthrough();
+const IncomeItemCOGS = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const IncomeStatementSectionCOGS = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    items: z.array(IncomeItemCOGS),
+  })
+  .passthrough();
+const IncomeItemExpenses = z
+  .object({
+    code: z.string(),
+    name: z.string(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const IncomeStatementSectionExpenses = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    items: z.array(IncomeItemExpenses),
+  })
+  .passthrough();
+const IncomeStatementResponse = z
+  .object({
+    period: IncomeStatementPeriod,
+    revenue: IncomeStatementSection,
+    cogs: IncomeStatementSectionCOGS,
+    gross_profit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    expenses: IncomeStatementSectionExpenses,
+    net_income: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const LedgerAccountInfo = z
+  .object({ code: z.string(), name: z.string() })
+  .passthrough();
+const LedgerEntry = z
+  .object({
+    date: z.string(),
+    entry_number: z.string(),
+    description: z.string(),
+    debit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    credit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const AccountLedgerResponse = z
+  .object({
+    account: LedgerAccountInfo,
+    opening_balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    entries: z.array(LedgerEntry),
+    closing_balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const TrialBalanceAccount = z
+  .object({
+    account_code: z.string(),
+    account_name: z.string(),
+    account_type: z.string(),
+    debit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    credit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const TrialBalanceTotals = z
+  .object({
+    debit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    credit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    is_balanced: z.boolean(),
+  })
+  .passthrough();
+const TrialBalanceResponse = z
+  .object({
+    as_of_date: z.string(),
+    accounts: z.array(TrialBalanceAccount),
+    totals: TrialBalanceTotals,
+  })
+  .passthrough();
 const Tax = z
   .object({
     id: z.number().int(),
@@ -492,6 +686,19 @@ const PatchedShiftRequest = z
   })
   .partial()
   .passthrough();
+const CSVImportRequest = z
+  .object({ csv_file: z.instanceof(File), config: z.unknown() })
+  .passthrough();
+const CSVImportResponse = z
+  .object({
+    created: z.number().int(),
+    skipped: z.number().int(),
+    failed: z.number().int(),
+    errors: z.array(z.string()),
+  })
+  .passthrough();
+const CSVImportError = z.object({ detail: z.string() }).passthrough();
+const CSVImportForbidden = z.object({ detail: z.string() }).passthrough();
 const Campaign = z
   .object({
     id: z.number().int(),
@@ -862,11 +1069,11 @@ const PreferredContactEnum = z.enum(["email", "phone", "sms"]);
 const Customer = z
   .object({
     id: z.number().int(),
-    phone: z.string().max(20).optional(),
+    phone: z.string().regex(/^\+?\d{7,15}$/),
     identification_number: z.string().min(10).max(20),
-    first_name: z.string().max(100).optional(),
-    last_name: z.string().max(100).optional(),
-    email: z.string().max(254).email().optional(),
+    first_name: z.string().max(30),
+    last_name: z.string().max(30),
+    email: z.string().email().optional(),
     customer_type: CustomerTypeEnum.optional(),
     is_vip: z.boolean().nullish(),
     accepts_marketing: z.boolean().optional(),
@@ -893,11 +1100,14 @@ const PaginatedCustomerList = z
   .passthrough();
 const CustomerRequest = z
   .object({
-    phone: z.string().max(20).optional(),
+    phone: z
+      .string()
+      .min(1)
+      .regex(/^\+?\d{7,15}$/),
     identification_number: z.string().min(10).max(20),
-    first_name: z.string().max(100).optional(),
-    last_name: z.string().max(100).optional(),
-    email: z.string().max(254).email().optional(),
+    first_name: z.string().min(1).max(30),
+    last_name: z.string().min(1).max(30),
+    email: z.string().min(1).email().optional(),
     customer_type: CustomerTypeEnum.optional(),
     is_vip: z.boolean().nullish(),
     accepts_marketing: z.boolean().optional(),
@@ -916,11 +1126,14 @@ const CustomerRequest = z
   .passthrough();
 const PatchedCustomerRequest = z
   .object({
-    phone: z.string().max(20),
+    phone: z
+      .string()
+      .min(1)
+      .regex(/^\+?\d{7,15}$/),
     identification_number: z.string().min(10).max(20),
-    first_name: z.string().max(100),
-    last_name: z.string().max(100),
-    email: z.string().max(254).email(),
+    first_name: z.string().min(1).max(30),
+    last_name: z.string().min(1).max(30),
+    email: z.string().min(1).email(),
     customer_type: CustomerTypeEnum,
     is_vip: z.boolean().nullable(),
     accepts_marketing: z.boolean(),
@@ -975,7 +1188,7 @@ const PatchedDocumentRequest = z
   })
   .partial()
   .passthrough();
-const Status644Enum = z.enum([
+const StatusC92Enum = z.enum([
   "draft",
   "submitted",
   "under_review",
@@ -998,7 +1211,7 @@ const InsuranceClaimList = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
-    status: Status644Enum.optional(),
+    status: StatusC92Enum.optional(),
     status_display: z.string(),
   })
   .passthrough();
@@ -1051,7 +1264,7 @@ const InsuranceClaim = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
-    status: Status644Enum.optional(),
+    status: StatusC92Enum.optional(),
     status_display: z.string(),
     rejection_reason: z.string().optional(),
     partial_reason: z.string().optional(),
@@ -1075,7 +1288,7 @@ const InsuranceClaimRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
-    status: Status644Enum.optional(),
+    status: StatusC92Enum.optional(),
     rejection_reason: z.string().optional(),
     partial_reason: z.string().optional(),
     notes: z.string().optional(),
@@ -1091,13 +1304,47 @@ const PatchedInsuranceClaimRequest = z
     total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     claim_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     patient_share: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
-    status: Status644Enum,
+    status: StatusC92Enum,
     rejection_reason: z.string(),
     partial_reason: z.string(),
     notes: z.string(),
     internal_notes: z.string(),
   })
   .partial()
+  .passthrough();
+const ApproveClaimRequestRequest = z
+  .object({
+    approved_amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    notes: z.string().min(1).optional(),
+  })
+  .passthrough();
+const ApproveClaimResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    approved_amount: z.string(),
+  })
+  .passthrough();
+const MarkClaimPaidRequestRequest = z
+  .object({
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    payment_reference: z.string().min(1).optional(),
+  })
+  .passthrough();
+const MarkClaimPaidResponse = z
+  .object({ status: z.string(), message: z.string(), paid_amount: z.string() })
+  .passthrough();
+const RejectClaimRequestRequest = z
+  .object({ reason: z.string().min(1) })
+  .passthrough();
+const RejectClaimResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const SubmitClaimResponse = z
+  .object({ status: z.string(), message: z.string(), claim_number: z.string() })
+  .passthrough();
+const ClaimChoices = z
+  .object({ claim_status: z.object({}).partial().passthrough() })
   .passthrough();
 const InteractionTypeEnum = z.enum(["call", "email", "meeting"]);
 const Interaction = z
@@ -1571,6 +1818,23 @@ const PatchedPartnerRequest = z
   })
   .partial()
   .passthrough();
+const ClaimsStats = z
+  .object({
+    total_claims: z.number().int(),
+    total_amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    total_approved: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    total_paid: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const PartnerClaimsSummary = z
+  .object({ summary: ClaimsStats, by_status: z.array(z.unknown()) })
+  .passthrough();
+const PartnerChoices = z
+  .object({
+    partner_types: z.object({}).partial().passthrough(),
+    payment_terms: z.object({}).partial().passthrough(),
+  })
+  .passthrough();
 const SubscriptionTypeEnum = z.enum(["monthly", "yearly", "lifetime"]);
 const Subscription = z
   .object({
@@ -1743,6 +2007,22 @@ const PatchedDepartmentRequest = z
     location: z.string().max(100).nullable(),
   })
   .partial()
+  .passthrough();
+const DepartmentOption = z
+  .object({ label: z.string(), value: z.number().int() })
+  .passthrough();
+const UserOption = z
+  .object({ label: z.string(), value: z.number().int() })
+  .passthrough();
+const PositionOption = z
+  .object({ label: z.string(), value: z.string() })
+  .passthrough();
+const EmployeeFormOptionsResponse = z
+  .object({
+    departments: z.array(DepartmentOption),
+    users: z.array(UserOption),
+    positions: z.array(PositionOption),
+  })
   .passthrough();
 const PositionEnum = z.enum([
   "manager",
@@ -2005,6 +2285,142 @@ const PatchedPerformanceReviewRequest = z
   })
   .partial()
   .passthrough();
+const MobileCustomerLookupItem = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    phone: z.string(),
+    tier: z.string(),
+    has_credit: z.boolean(),
+  })
+  .passthrough();
+const MobileDashboardTodayStats = z
+  .object({
+    orders_count: z.number().int(),
+    total_sales: z.string(),
+    cash_sales: z.string(),
+    card_sales: z.string(),
+  })
+  .passthrough();
+const MobileDashboardOrder = z
+  .object({
+    id: z.number().int(),
+    order_number: z.string(),
+    customer_name: z.string(),
+    total: z.string(),
+    status: z.string(),
+    time: z.string(),
+  })
+  .passthrough();
+const MobileDashboardAlert = z
+  .object({
+    type: z.string(),
+    title: z.string(),
+    message: z.string(),
+    action: z.string(),
+  })
+  .passthrough();
+const MobileUserPerformance = z
+  .object({ orders: z.number().int(), sales: z.string() })
+  .passthrough();
+const MobileDashboardResponse = z
+  .object({
+    today: MobileDashboardTodayStats,
+    recent_orders: z.array(MobileDashboardOrder),
+    alerts: z.array(MobileDashboardAlert),
+    user_performance: MobileUserPerformance.nullable(),
+    timestamp: z.string(),
+  })
+  .passthrough();
+const OrderDetailCustomer = z
+  .object({ id: z.number().int(), name: z.string() })
+  .passthrough();
+const OrderDetailItem = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    sku: z.string(),
+    quantity: z.number().int(),
+    price: z.string(),
+    total: z.string(),
+  })
+  .passthrough();
+const MobileOrderDetailResponse = z
+  .object({
+    id: z.number().int(),
+    order_number: z.string(),
+    status: z.string(),
+    payment_status: z.string(),
+    customer: OrderDetailCustomer.nullable(),
+    branch: z.string().nullable(),
+    items: z.array(OrderDetailItem),
+    subtotal: z.string(),
+    discount: z.string(),
+    tax: z.string(),
+    total: z.string(),
+    paid: z.string(),
+    remaining: z.string(),
+    created_at: z.string(),
+  })
+  .passthrough();
+const MobileProductSearchItem = z
+  .object({
+    id: z.number().int(),
+    sku: z.string(),
+    name: z.string(),
+    price: z.string(),
+    stock: z.number().int(),
+  })
+  .passthrough();
+const QuickSaleItemRequest = z
+  .object({
+    variant_id: z.number().int(),
+    quantity: z.number().int(),
+    price: z.string().min(1),
+  })
+  .passthrough();
+const MobileQuickSaleRequestRequest = z
+  .object({
+    customer_id: z.number().int().optional(),
+    items: z.array(QuickSaleItemRequest),
+    payment_method: z.string().min(1),
+    discount: z.string().min(1),
+  })
+  .passthrough();
+const MobileQuickSaleResponse = z
+  .object({
+    success: z.boolean(),
+    order_id: z.number().int(),
+    order_number: z.string(),
+    total: z.string(),
+  })
+  .passthrough();
+const SyncProduct = z
+  .object({
+    id: z.number().int(),
+    sku: z.string(),
+    price: z.string(),
+    product__name: z.string(),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const SyncCustomer = z
+  .object({
+    id: z.number().int(),
+    first_name: z.string(),
+    last_name: z.string(),
+    phone: z.string(),
+    pricing_tier: z.string(),
+    updated_at: z.string().datetime({ offset: true }),
+  })
+  .passthrough();
+const MobileSyncResponse = z
+  .object({
+    products: z.array(SyncProduct),
+    customers: z.array(SyncCustomer),
+    timestamp: z.string(),
+  })
+  .passthrough();
 const Permission = z
   .object({
     id: z.number().int(),
@@ -2035,6 +2451,7 @@ const User = z
     is_staff: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
+    tenant_settings: z.string(),
   })
   .passthrough();
 const RightSphereEnum = z.enum([
@@ -2848,7 +3265,7 @@ const AttributeValue = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     value: z.string().max(100),
-    label: z.string().max(100).nullish(),
+    label: z.string().nullable(),
     unique_key: z.string(),
     attribute: z.number().int(),
   })
@@ -2866,7 +3283,6 @@ const AttributeValueRequest = z
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     value: z.string().min(1).max(100),
-    label: z.string().max(100).nullish(),
     attribute: z.number().int(),
   })
   .passthrough();
@@ -2875,7 +3291,6 @@ const PatchedAttributeValueRequest = z
     is_active: z.boolean(),
     is_deleted: z.boolean(),
     value: z.string().min(1).max(100),
-    label: z.string().max(100).nullable(),
     attribute: z.number().int(),
   })
   .partial()
@@ -2914,6 +3329,40 @@ const PatchedAttributeRequest = z
   })
   .partial()
   .passthrough();
+const Stock = z
+  .object({
+    id: z.number().int(),
+    branch_name: z.string(),
+    branch_code: z.string(),
+    branch_type: z.string(),
+    variant_sku: z.string(),
+    variant_name: z.string(),
+    product_name: z.string(),
+    stock_status: z.string(),
+    available_quantity: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    quantity_in_stock: z.number().int().gte(0).lte(2147483647).optional(),
+    reserved_quantity: z.number().int().gte(0).lte(2147483647).optional(),
+    reorder_level: z.number().int().gte(0).lte(2147483647).optional(),
+    max_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
+    min_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
+    average_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    last_cost: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
+    last_restocked: z.string().datetime({ offset: true }).nullable(),
+    last_sale: z.string().datetime({ offset: true }).nullable(),
+    allow_backorder: z.boolean().optional(),
+    branch: z.number().int(),
+    variant: z.number().int(),
+  })
+  .passthrough();
 const ProductTypeEnum = z.enum(["CL", "SL", "FR", "AX", "OT", "DV", "All"]);
 const Brand = z
   .object({
@@ -2921,6 +3370,7 @@ const Brand = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     name: z.string().max(100),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
@@ -2940,6 +3390,7 @@ const PaginatedBrandList = z
 const BrandRequest = z
   .object({
     is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
     name: z.string().min(1).max(100),
     country: z.string().max(50).optional(),
     website: z.string().max(200).url().optional(),
@@ -2951,6 +3402,7 @@ const BrandRequest = z
 const PatchedBrandRequest = z
   .object({
     is_active: z.boolean(),
+    is_deleted: z.boolean(),
     name: z.string().min(1).max(100),
     country: z.string().max(50),
     website: z.string().max(200).url(),
@@ -3096,6 +3548,7 @@ const AgeGroupEnum = z.enum(["adult", "child", "senior"]);
 const ProductVariantMarketing = z
   .object({
     id: z.number().int(),
+    variant_name: z.string(),
     is_active: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     title: z.string().max(200),
@@ -3209,6 +3662,22 @@ const PatchedProductVariantOfferRequest = z
   })
   .partial()
   .passthrough();
+const OrderFulfillmentItemRequest = z
+  .object({ variant_id: z.number().int(), quantity: z.number().int() })
+  .passthrough();
+const OrderFulfillmentCheckRequestRequest = z
+  .object({ items: z.array(OrderFulfillmentItemRequest) })
+  .passthrough();
+const VariantFulfillmentPlan = z
+  .object({
+    branch_id: z.number().int(),
+    branch_name: z.string(),
+    quantity: z.number().int(),
+  })
+  .passthrough();
+const OrderFulfillmentCheckResponse = z
+  .object({ variant_id: z.array(VariantFulfillmentPlan) })
+  .passthrough();
 const ProductImage = z
   .object({
     id: z.number().int(),
@@ -3307,6 +3776,22 @@ const PatchedProductRequest = z
   })
   .partial()
   .passthrough();
+const ProductImportSummary = z
+  .object({
+    created: z.number().int(),
+    updated_or_skipped: z.number().int(),
+    failed: z.number().int(),
+  })
+  .passthrough();
+const ProductImportSuccessResponse = z
+  .object({
+    message: z.string(),
+    summary: ProductImportSummary,
+    errors: z.array(z.string()),
+  })
+  .passthrough();
+const ProductImportBadRequest = z.object({ error: z.string() }).passthrough();
+const ProductImportServerError = z.object({ detail: z.string() }).passthrough();
 const ProductVariantQuestion = z
   .object({
     id: z.number().int(),
@@ -3619,40 +4104,6 @@ const PatchedStockTransferRequest = z
   })
   .partial()
   .passthrough();
-const Stock = z
-  .object({
-    id: z.number().int(),
-    branch_name: z.string(),
-    branch_code: z.string(),
-    branch_type: z.string(),
-    variant_sku: z.string(),
-    variant_name: z.string(),
-    product_name: z.string(),
-    stock_status: z.string(),
-    available_quantity: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    quantity_in_stock: z.number().int().gte(0).lte(2147483647).optional(),
-    reserved_quantity: z.number().int().gte(0).lte(2147483647).optional(),
-    reorder_level: z.number().int().gte(0).lte(2147483647).optional(),
-    max_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
-    min_stock_level: z.number().int().gte(0).lte(2147483647).optional(),
-    average_cost: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .optional(),
-    last_cost: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .optional(),
-    last_restocked: z.string().datetime({ offset: true }).nullable(),
-    last_sale: z.string().datetime({ offset: true }).nullable(),
-    allow_backorder: z.boolean().optional(),
-    branch: z.number().int(),
-    variant: z.number().int(),
-  })
-  .passthrough();
 const PaginatedStockList = z
   .object({
     count: z.number().int(),
@@ -3697,6 +4148,17 @@ const PatchedStockRequest = z
     variant: z.number().int(),
   })
   .partial()
+  .passthrough();
+const StoreBranch = z
+  .object({ id: z.number().int(), name: z.string() })
+  .passthrough();
+const PaginatedStoreBranchList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(StoreBranch),
+  })
   .passthrough();
 const Supplier = z
   .object({
@@ -3785,6 +4247,7 @@ const PaginatedProductVariantList = z
   .passthrough();
 const CreateProductVariantRequest = z
   .object({
+    variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean().nullable(),
     sku: z.string().max(50).nullable(),
     last_purchase_price: z
@@ -3810,6 +4273,7 @@ const CreateProductVariantRequest = z
 const CreateProductVariant = z
   .object({
     id: z.number().int(),
+    variants: z.string(),
     created_at: z.string().datetime({ offset: true }).nullable(),
     updated_at: z.string().datetime({ offset: true }).nullable(),
     is_active: z.boolean().nullish(),
@@ -3874,6 +4338,35 @@ const PatchedProductVariantRequest = z
   })
   .partial()
   .passthrough();
+const NearestBranchResponse = z
+  .object({
+    branch_id: z.number().int(),
+    branch_name: z.string(),
+    available: z.number(),
+  })
+  .passthrough();
+const StockSummaryBranchInfo = z
+  .object({
+    branch: z.string(),
+    stock: z.number(),
+    available: z.number(),
+    reserved: z.number(),
+    status: z.string(),
+  })
+  .passthrough();
+const VariantStockSummaryResponse = z
+  .object({
+    total_stock: z.number(),
+    total_available: z.number(),
+    total_reserved: z.number(),
+    branches: z.array(StockSummaryBranchInfo),
+    low_stock_branches: z.array(z.string()),
+    out_of_stock_branches: z.array(z.string()),
+  })
+  .passthrough();
+const VariantTotalStockResponse = z
+  .object({ variant: z.number().int(), total_stock: z.number() })
+  .passthrough();
 const InstallmentStatusEnum = z.enum([
   "pending",
   "due",
@@ -3924,6 +4417,29 @@ const PatchedInstallmentRequest = z
     paid_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
   })
   .partial()
+  .passthrough();
+const MarkInstallmentPaidRequestRequest = z
+  .object({ amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/) })
+  .passthrough();
+const MarkInstallmentPaidResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const DamageItemRequestRequest = z
+  .object({
+    variant_id: z.number().int(),
+    quantity: z.number().int(),
+    reason: z.string().min(1),
+  })
+  .passthrough();
+const CreateDamageRecordRequestRequest = z
+  .object({
+    branch_id: z.number().int(),
+    items: z.array(DamageItemRequestRequest),
+    reason: z.string().min(1).optional(),
+  })
+  .passthrough();
+const CreateDamageRecordResponse = z
+  .object({ status: z.string(), message: z.string() })
   .passthrough();
 const InvoiceItem = z
   .object({
@@ -4039,6 +4555,23 @@ const PatchedInvoiceRequest = z
     order: z.number().int().nullable(),
   })
   .partial()
+  .passthrough();
+const InvoiceTotalsResponse = z
+  .object({
+    subtotal: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    tax_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    discount_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    total: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const InvoiceConfirmResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const InvoiceChoicesResponse = z
+  .object({
+    invoice_type: z.object({}).partial().passthrough(),
+    status: z.object({}).partial().passthrough(),
+  })
   .passthrough();
 const OrderItem = z
   .object({
@@ -4180,6 +4713,23 @@ const OrderRequest = z
     sales_person: z.number().int().nullish(),
   })
   .passthrough();
+const ReturnItemRequestRequest = z
+  .object({ order_item_id: z.number().int(), quantity: z.number().int() })
+  .passthrough();
+const CreateReturnRequestRequest = z
+  .object({
+    items: z.array(ReturnItemRequestRequest),
+    reason: z.string().min(1).optional(),
+  })
+  .passthrough();
+const CreateReturnResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    invoice_number: z.string(),
+    return_amount: z.string(),
+  })
+  .passthrough();
 const PatchedOrderRequest = z
   .object({
     items: z.array(OrderItemRequest),
@@ -4203,6 +4753,38 @@ const PatchedOrderRequest = z
     sales_person: z.number().int().nullable(),
   })
   .partial()
+  .passthrough();
+const OrderTotalsResponse = z
+  .object({
+    subtotal: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    tax_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    discount_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    total: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const OrderCancelResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const OrderConfirmResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const OrderDeliverResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    invoice_number: z.string(),
+  })
+  .passthrough();
+const OrderReadyResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const OrderChoicesResponse = z
+  .object({
+    order_type: z.object({}).partial().passthrough(),
+    payment_method: z.object({}).partial().passthrough(),
+    status: z.object({}).partial().passthrough(),
+    payment_status: z.object({}).partial().passthrough(),
+  })
   .passthrough();
 const PaymentMethod = z
   .object({
@@ -4266,7 +4848,7 @@ const PatchedPaymentMethodRequest = z
   })
   .partial()
   .passthrough();
-const Status577Enum = z.enum([
+const StatusB5aEnum = z.enum([
   "pending",
   "partial",
   "paid",
@@ -4280,7 +4862,7 @@ const PaymentList = z
     currency: z.string().max(3).optional(),
     payment_method: z.number().int().nullish(),
     payment_method_display: z.string(),
-    status: Status577Enum.optional(),
+    status: StatusB5aEnum.optional(),
     status_display: z.string(),
     is_installment: z.boolean().optional(),
     paid_at: z.string().datetime({ offset: true }).nullish(),
@@ -4348,7 +4930,7 @@ const Payment = z
     payment_method_display: z.string(),
     payment_method_name_en: z.string(),
     payment_method_code: z.string(),
-    status: Status577Enum.optional(),
+    status: StatusB5aEnum.optional(),
     status_display: z.string(),
     partner: z.number().int().nullish(),
     partner_name: z.string(),
@@ -4387,7 +4969,7 @@ const PaymentRequest = z
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().min(1).max(3).optional(),
     payment_method: z.number().int().nullish(),
-    status: Status577Enum.optional(),
+    status: StatusB5aEnum.optional(),
     partner: z.number().int().nullish(),
     gateway_reference: z.string().max(100).optional(),
     is_installment: z.boolean().optional(),
@@ -4418,7 +5000,7 @@ const PatchedPaymentRequest = z
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().min(1).max(3),
     payment_method: z.number().int().nullable(),
-    status: Status577Enum,
+    status: StatusB5aEnum,
     partner: z.number().int().nullable(),
     gateway_reference: z.string().max(100),
     is_installment: z.boolean(),
@@ -4440,6 +5022,464 @@ const PatchedPaymentRequest = z
   })
   .partial()
   .passthrough();
+const MarkCompletedRequestRequest = z
+  .object({ transaction_id: z.string().min(1) })
+  .partial()
+  .passthrough();
+const MarkCompletedResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const MarkFailedRequestRequest = z
+  .object({ reason: z.string().min(1) })
+  .partial()
+  .passthrough();
+const MarkFailedResponse = z
+  .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const PaymentRefundRequest = z
+  .object({
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    reason: z.string().min(1).max(500),
+  })
+  .partial()
+  .passthrough();
+const RefundResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    refunded_amount: z.string(),
+  })
+  .passthrough();
+const BNPLCallbackResponse = z.object({ status: z.string() }).passthrough();
+const PaymentChoices = z
+  .object({
+    payment_methods: z.object({}).partial().passthrough(),
+    payment_status: z.object({}).partial().passthrough(),
+  })
+  .passthrough();
+const GatewayEnum = z.enum(["tabby", "tamara"]);
+const BNPLSessionRequestRequest = z
+  .object({
+    order_id: z.number().int(),
+    gateway: GatewayEnum,
+    installments_count: z.number().int().gte(2).lte(12).optional().default(4),
+    success_url: z.string().min(1).url(),
+    cancel_url: z.string().min(1).url(),
+    failure_url: z.string().min(1).url(),
+    webhook_url: z.string().min(1).url().optional(),
+  })
+  .passthrough();
+const BNPLSessionResponse = z
+  .object({
+    success: z.boolean(),
+    checkout_url: z.string().url(),
+    session_id: z.string(),
+    payment_id: z.number().int(),
+    gateway: z.string(),
+    installments: z.array(z.unknown()).optional(),
+  })
+  .passthrough();
+const PaymentTotal = z
+  .object({
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    count: z.number().int(),
+  })
+  .passthrough();
+const InstallmentSummary = z
+  .object({
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    count: z.number().int(),
+  })
+  .passthrough();
+const PaymentSummaryResponse = z
+  .object({
+    period: z.string(),
+    total: PaymentTotal,
+    by_method: z.array(z.unknown()),
+    installments: InstallmentSummary,
+  })
+  .passthrough();
+const BranchComparisonResponse = z
+  .object({
+    branch_id: z.number().int(),
+    branch_name: z.string(),
+    orders_count: z.number().int(),
+    total_revenue: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    avg_order: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const FinancialDashboardSales = z
+  .object({
+    invoices_count: z.number().int(),
+    gross_total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    tax_collected: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    discounts_given: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    net_total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    amount_received: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    pending_amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const FinancialDashboardPurchases = z
+  .object({
+    invoices_count: z.number().int(),
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    paid: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const FinancialDashboardReturns = z
+  .object({
+    count: z.number().int(),
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const FinancialDashboardPaymentsByMethod = z
+  .object({
+    cash: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    card: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const FinancialDashboardPayments = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    by_method: FinancialDashboardPaymentsByMethod,
+  })
+  .passthrough();
+const FinancialDashboardReservedInv = z
+  .object({
+    quantity: z.number().int(),
+    estimated_value: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const FinancialDashboardResponse = z
+  .object({
+    period: z.string(),
+    from_date: z.string(),
+    sales: FinancialDashboardSales,
+    purchases: FinancialDashboardPurchases,
+    returns: FinancialDashboardReturns,
+    payments: FinancialDashboardPayments,
+    reserved_inventory: FinancialDashboardReservedInv,
+  })
+  .passthrough();
+const InventorySummaryResponse = z
+  .object({
+    total_items: z.number().int(),
+    total_quantity: z.number().int(),
+    total_reserved: z.number().int(),
+    total_value: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    low_stock_count: z.number().int(),
+    out_of_stock_count: z.number().int(),
+  })
+  .passthrough();
+const PendingOrdersByStatus = z
+  .object({
+    status: z.string(),
+    count: z.number().int(),
+    total_value: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    paid_amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const PendingOrdersTotal = z
+  .object({
+    count: z.number().int(),
+    total_value: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    reserved_items: z.number().int(),
+  })
+  .passthrough();
+const PendingOrdersResponse = z
+  .object({
+    by_status: z.array(PendingOrdersByStatus),
+    total: PendingOrdersTotal,
+  })
+  .passthrough();
+const AgingBucketCurrent = z
+  .object({
+    days: z.string(),
+    count: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const AgingBucket3160 = z
+  .object({
+    days: z.string(),
+    count: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const AgingBucket6190 = z
+  .object({
+    days: z.string(),
+    count: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const AgingBucket90Plus = z
+  .object({
+    days: z.string(),
+    count: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const AgingBuckets = z
+  .object({
+    current: AgingBucketCurrent,
+    days_31_60: AgingBucket3160,
+    days_61_90: AgingBucket6190,
+    over_90: AgingBucket90Plus,
+  })
+  .passthrough();
+const ReceivablesAgingResponse = z
+  .object({
+    aging: AgingBuckets,
+    total_pending: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    invoices_count: z.number().int(),
+  })
+  .passthrough();
+const SalesByDateResponse = z
+  .object({
+    date: z.string(),
+    orders_count: z.number().int(),
+    revenue: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const SalesSummaryPayments = z
+  .object({
+    total: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    cash: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    card: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const SalesSummaryResponse = z
+  .object({
+    total_orders: z.number().int(),
+    total_revenue: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    total_tax: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    total_discount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    avg_order_value: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    payments: SalesSummaryPayments,
+  })
+  .passthrough();
+const StockMovementByType = z
+  .object({
+    movement_type: z.string(),
+    count: z.number().int(),
+    total_quantity: z.number().int(),
+  })
+  .passthrough();
+const StockMovementsReportResponse = z
+  .object({
+    by_type: z.array(StockMovementByType),
+    total_movements: z.number().int(),
+  })
+  .passthrough();
+const TopProductsResponse = z
+  .object({
+    product_variant_id: z.number().int(),
+    product_name: z.string(),
+    variant_name: z.string(),
+    total_sold: z.number().int(),
+    total_revenue: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const CreateOrderItemRequestRequest = z
+  .object({ variant_id: z.number().int(), quantity: z.number().int() })
+  .passthrough();
+const CreateWholesaleOrderRequestRequest = z
+  .object({
+    customer_id: z.number().int(),
+    branch_id: z.number().int(),
+    items: z.array(CreateOrderItemRequestRequest),
+    payment_method: z.string().min(1).optional(),
+    notes: z.string().min(1).optional(),
+  })
+  .passthrough();
+const CreatedOrderInfo = z
+  .object({
+    id: z.number().int(),
+    order_number: z.string(),
+    total_amount: z.string(),
+    discount_amount: z.string(),
+    status: z.string(),
+  })
+  .passthrough();
+const CreateWholesaleOrderResponse = z
+  .object({ status: z.string(), message: z.string(), order: CreatedOrderInfo })
+  .passthrough();
+const UpdateCustomerCreditRequestRequest = z
+  .object({
+    credit_limit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    credit_status: z.string().min(1),
+    payment_terms_days: z.number().int(),
+    pricing_tier: z.string().min(1),
+    default_discount_percentage: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
+  })
+  .partial()
+  .passthrough();
+const UpdatedCreditCustomer = z
+  .object({
+    id: z.number().int(),
+    credit_limit: z.string(),
+    credit_status: z.string(),
+    pricing_tier: z.string(),
+    available_credit: z.string(),
+  })
+  .passthrough();
+const UpdateCustomerCreditResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    customer: UpdatedCreditCustomer,
+  })
+  .passthrough();
+const StatementCustomerInfo = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    credit_limit: z.string(),
+    current_balance: z.string(),
+  })
+  .passthrough();
+const StatementPeriod = z
+  .object({
+    start_date: z.string().nullable(),
+    end_date: z.string().nullable(),
+  })
+  .passthrough();
+const StatementTransaction = z
+  .object({
+    date: z.string(),
+    type: z.string(),
+    reference: z.string(),
+    debit: z.string(),
+    credit: z.string(),
+    balance: z.string(),
+  })
+  .passthrough();
+const StatementSummary = z
+  .object({ total_invoices: z.string(), total_payments: z.string() })
+  .passthrough();
+const CustomerStatementResponse = z
+  .object({
+    customer: StatementCustomerInfo,
+    period: StatementPeriod,
+    opening_balance: z.string(),
+    transactions: z.array(StatementTransaction),
+    closing_balance: z.string(),
+    summary: StatementSummary,
+  })
+  .passthrough();
+const WholesaleCustomer = z
+  .object({
+    id: z.number().int(),
+    first_name: z.string(),
+    last_name: z.string(),
+    customer_type: z.string(),
+    pricing_tier: z.string(),
+    credit_limit: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    current_balance: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+    credit_status: z.string(),
+    payment_terms_days: z.number().int(),
+    minimum_order_amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
+const DashboardMonthStats = z
+  .object({
+    orders_count: z.number().int(),
+    total_sales: z.string(),
+    total_discount: z.string(),
+  })
+  .passthrough();
+const DashboardTopCustomer = z
+  .object({
+    customer_id: z.number().int(),
+    name: z.string(),
+    total: z.string(),
+    orders_count: z.number().int(),
+  })
+  .passthrough();
+const DashboardReceivables = z
+  .object({ total: z.string(), customers_count: z.number().int() })
+  .passthrough();
+const WholesaleDashboardResponse = z
+  .object({
+    month_stats: DashboardMonthStats,
+    top_customers: z.array(DashboardTopCustomer),
+    receivables: DashboardReceivables,
+    overdue_count: z.number().int(),
+  })
+  .passthrough();
+const PricingItemRequestRequest = z
+  .object({ variant_id: z.number().int(), quantity: z.number().int() })
+  .passthrough();
+const GetWholesalePricingRequestRequest = z
+  .object({
+    customer_id: z.number().int(),
+    items: z.array(PricingItemRequestRequest),
+    branch_id: z.number().int().optional(),
+  })
+  .passthrough();
+const PricingCustomerInfo = z
+  .object({
+    id: z.number().int(),
+    name: z.string(),
+    pricing_tier: z.string(),
+    pricing_tier_display: z.string(),
+    default_discount: z.string(),
+  })
+  .passthrough();
+const PricingResponseItem = z
+  .object({
+    variant_id: z.number().int(),
+    variant_name: z.string(),
+    quantity: z.number().int(),
+    original_price: z.string(),
+    unit_price: z.string(),
+    discount_type: z.string(),
+    discount_source: z.string(),
+    line_discount: z.string(),
+    line_total: z.string(),
+  })
+  .passthrough();
+const GetWholesalePricingResponse = z
+  .object({
+    customer: PricingCustomerInfo,
+    items: z.array(PricingResponseItem),
+    subtotal: z.string(),
+    line_discounts: z.string(),
+    customer_discount: z.string(),
+    total_discount: z.string(),
+    final_total: z.string(),
+  })
+  .passthrough();
+const ValidateItemRequestRequest = z
+  .object({ variant_id: z.number().int(), quantity: z.number().int() })
+  .passthrough();
+const ValidateWholesaleOrderRequestRequest = z
+  .object({
+    customer_id: z.number().int(),
+    items: z.array(ValidateItemRequestRequest),
+    use_credit: z.boolean().optional(),
+  })
+  .passthrough();
+const CustomerCreditInfo = z
+  .object({
+    credit_limit: z.string(),
+    current_balance: z.string(),
+    available_credit: z.string(),
+    credit_status: z.string(),
+  })
+  .passthrough();
+const ValidateWholesaleOrderResponse = z
+  .object({
+    is_valid: z.boolean(),
+    errors: z.array(z.string()),
+    customer_credit: CustomerCreditInfo.nullable(),
+  })
+  .passthrough();
+const ActivationSuccessResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
+const ActivationErrorResponse = z.object({ detail: z.string() }).passthrough();
 const CurrencyEnum = z.enum(["usd", "egp", "sar", "aud", "eur"]);
 const SubscriptionPlan = z
   .object({
@@ -4522,6 +5562,29 @@ const PatchedClientRequest = z
   })
   .partial()
   .passthrough();
+const DirectionEnum = z.enum(["month", "year"]);
+const MethodEnum = z.enum([
+  "credit_card",
+  "bank_transfer",
+  "paypal",
+  "stripe",
+  "manual",
+  "another",
+]);
+const CreatePaymentOrderRequest = z
+  .object({
+    client_id: z.string().uuid(),
+    plan_id: z.number().int(),
+    direction: DirectionEnum,
+    method: MethodEnum,
+  })
+  .passthrough();
+const CreatePaymentOrderResponse = z
+  .object({ approval_url: z.string().url(), order_id: z.string() })
+  .passthrough();
+const CreatePaymentErrorResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
 const Domain = z
   .object({
     id: z.number().int(),
@@ -4553,8 +5616,57 @@ const PatchedDomainRequest = z
   })
   .partial()
   .passthrough();
+const PaymentDetail = z
+  .object({
+    id: z.number().int(),
+    amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    currency: z.string(),
+    status: z.string(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    method: z.string(),
+    direction: z.string(),
+    transaction_id: z.string(),
+    client: z.number().int(),
+    plan_name: z.string(),
+  })
+  .passthrough();
+const PaymentListResponse = z
+  .object({ results: z.array(PaymentDetail), count: z.number().int() })
+  .passthrough();
+const PayPalExecuteRequestRequest = z
+  .object({
+    order_id: z.string().min(1),
+    plan_id: z.number().int(),
+    client_id: z.string().uuid(),
+    direction: z.string().min(1),
+  })
+  .passthrough();
+const PayPalExecuteSuccessResponse = z
+  .object({ detail: z.string(), payment_id: z.number().int() })
+  .passthrough();
+const PayPalExecuteErrorResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
+const WebhookResponse = z.object({ status: z.string() }).passthrough();
+const RegisterTenantRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    email: z.string().min(1).email(),
+    password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+  })
+  .passthrough();
+const RegisterTenantSuccessResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
+const RegisterTenantErrorResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
 const RegisterTenant = z
-  .object({ name: z.string().max(25), email: z.string().email() })
+  .object({ name: z.string().max(100), email: z.string().email() })
   .passthrough();
 const PaginatedRegisterTenantList = z
   .object({
@@ -4564,19 +5676,9 @@ const PaginatedRegisterTenantList = z
     results: z.array(RegisterTenant),
   })
   .passthrough();
-const RegisterTenantRequest = z
-  .object({
-    name: z.string().min(1).max(25),
-    email: z.string().min(1).email(),
-    password: z
-      .string()
-      .min(8)
-      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
-  })
-  .passthrough();
 const PatchedRegisterTenantRequest = z
   .object({
-    name: z.string().min(1).max(25),
+    name: z.string().min(1).max(100),
     email: z.string().min(1).email(),
     password: z
       .string()
@@ -4685,14 +5787,14 @@ const HealthResponse = z.object({ status: z.string() }).passthrough();
 const LoginRequest = z
   .object({ username: z.string().min(1), password: z.string().min(1) })
   .passthrough();
-const LoginSuccessResponse = z.object({ msg: z.string() }).passthrough();
+const LoginSuccessResponse = z.object({ detail: z.string() }).passthrough();
 const LoginBadRequest = z
   .object({ username: z.array(z.string()), password: z.array(z.string()) })
   .partial()
   .passthrough();
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
-const LogoutResponse = z.object({ msg: z.string() }).passthrough();
-const TokenRefreshError = z.object({ error: z.string() }).passthrough();
+const LogoutResponse = z.object({ detail: z.string() }).passthrough();
+const TokenRefreshError = z.object({ detail: z.string() }).passthrough();
 const DefaultLanguageEnum = z.enum(["en", "ar"]);
 const LanguageEnum = z.enum(["en", "ar"]);
 const PageContent = z
@@ -4775,6 +5877,19 @@ const PasswordResetBadRequest = z
   .object({ email: z.array(z.string()) })
   .partial()
   .passthrough();
+const PasswordResetConfirmRequest = z
+  .object({
+    uid: z.string().min(1),
+    token: z.string().min(1),
+    new_password: z
+      .string()
+      .min(8)
+      .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
+  })
+  .passthrough();
+const PasswordResetConfirmSuccessResponse = z
+  .object({ detail: z.string() })
+  .passthrough();
 const PaginatedPermissionList = z
   .object({
     count: z.number().int(),
@@ -4793,7 +5908,7 @@ const PatchedPermissionRequest = z
   .object({ code: z.string().min(1).max(100), description: z.string() })
   .partial()
   .passthrough();
-const Unauthorized = z.object({ error: z.string() }).passthrough();
+const Unauthorized = z.object({ detail: z.string() }).passthrough();
 const RegisterRequest = z
   .object({
     username: z.string().min(5).max(50),
@@ -4806,7 +5921,7 @@ const RegisterRequest = z
   })
   .passthrough();
 const RegisterSuccessResponse = z
-  .object({ msg: z.string(), user: User })
+  .object({ detail: z.string(), user: User })
   .passthrough();
 const RolePermission = z
   .object({
@@ -4961,7 +6076,7 @@ const PatchedTenantSettingsRequest = z
   .partial()
   .passthrough();
 const RefreshTokenResponse = z
-  .object({ msg: z.string(), access: z.string() })
+  .object({ detail: z.string(), access: z.string() })
   .passthrough();
 const PaginatedUserList = z
   .object({
@@ -5027,6 +6142,10 @@ export const schemas = {
   PaginatedChartOfAccountsList,
   ChartOfAccountsRequest,
   PatchedChartOfAccountsRequest,
+  ChartOfAccountsChoices,
+  SetupDefaultsResponse,
+  ChartOfAccountsTree,
+  PaginatedChartOfAccountsTreeList,
   FinancialPeriod,
   PaginatedFinancialPeriodList,
   FinancialPeriodRequest,
@@ -5042,6 +6161,30 @@ export const schemas = {
   GeneralJournal,
   GeneralJournalRequest,
   PatchedGeneralJournalRequest,
+  PostEntryResponse,
+  ReverseEntryResponse,
+  GeneralJournalChoices,
+  BSItemAssets,
+  BalanceSheetSectionAssets,
+  BSItemLiabilities,
+  BalanceSheetSectionLiabilities,
+  BSItemEquity,
+  BalanceSheetSectionEquity,
+  BalanceSheetResponse,
+  IncomeStatementPeriod,
+  IncomeItem,
+  IncomeStatementSection,
+  IncomeItemCOGS,
+  IncomeStatementSectionCOGS,
+  IncomeItemExpenses,
+  IncomeStatementSectionExpenses,
+  IncomeStatementResponse,
+  LedgerAccountInfo,
+  LedgerEntry,
+  AccountLedgerResponse,
+  TrialBalanceAccount,
+  TrialBalanceTotals,
+  TrialBalanceResponse,
   Tax,
   PaginatedTaxList,
   TaxRequest,
@@ -5059,6 +6202,10 @@ export const schemas = {
   PaginatedShiftList,
   ShiftRequest,
   PatchedShiftRequest,
+  CSVImportRequest,
+  CSVImportResponse,
+  CSVImportError,
+  CSVImportForbidden,
   Campaign,
   PaginatedCampaignList,
   CampaignRequest,
@@ -5099,7 +6246,7 @@ export const schemas = {
   PaginatedDocumentList,
   DocumentRequest,
   PatchedDocumentRequest,
-  Status644Enum,
+  StatusC92Enum,
   InsuranceClaimList,
   PaginatedInsuranceClaimListList,
   InsuranceClaimCreateRequest,
@@ -5107,6 +6254,14 @@ export const schemas = {
   InsuranceClaim,
   InsuranceClaimRequest,
   PatchedInsuranceClaimRequest,
+  ApproveClaimRequestRequest,
+  ApproveClaimResponse,
+  MarkClaimPaidRequestRequest,
+  MarkClaimPaidResponse,
+  RejectClaimRequestRequest,
+  RejectClaimResponse,
+  SubmitClaimResponse,
+  ClaimChoices,
   InteractionTypeEnum,
   Interaction,
   PaginatedInteractionList,
@@ -5142,6 +6297,9 @@ export const schemas = {
   PartnerRequest,
   Partner,
   PatchedPartnerRequest,
+  ClaimsStats,
+  PartnerClaimsSummary,
+  PartnerChoices,
   SubscriptionTypeEnum,
   Subscription,
   PaginatedSubscriptionList,
@@ -5160,6 +6318,10 @@ export const schemas = {
   PaginatedDepartmentList,
   DepartmentRequest,
   PatchedDepartmentRequest,
+  DepartmentOption,
+  UserOption,
+  PositionOption,
+  EmployeeFormOptionsResponse,
   PositionEnum,
   Employee,
   PaginatedEmployeeList,
@@ -5185,6 +6347,22 @@ export const schemas = {
   PaginatedPerformanceReviewList,
   PerformanceReviewRequest,
   PatchedPerformanceReviewRequest,
+  MobileCustomerLookupItem,
+  MobileDashboardTodayStats,
+  MobileDashboardOrder,
+  MobileDashboardAlert,
+  MobileUserPerformance,
+  MobileDashboardResponse,
+  OrderDetailCustomer,
+  OrderDetailItem,
+  MobileOrderDetailResponse,
+  MobileProductSearchItem,
+  QuickSaleItemRequest,
+  MobileQuickSaleRequestRequest,
+  MobileQuickSaleResponse,
+  SyncProduct,
+  SyncCustomer,
+  MobileSyncResponse,
   Permission,
   Role,
   User,
@@ -5211,6 +6389,7 @@ export const schemas = {
   PaginatedAttributeList,
   AttributeRequest,
   PatchedAttributeRequest,
+  Stock,
   ProductTypeEnum,
   Brand,
   PaginatedBrandList,
@@ -5238,6 +6417,10 @@ export const schemas = {
   PaginatedProductVariantOfferList,
   ProductVariantOfferRequest,
   PatchedProductVariantOfferRequest,
+  OrderFulfillmentItemRequest,
+  OrderFulfillmentCheckRequestRequest,
+  VariantFulfillmentPlan,
+  OrderFulfillmentCheckResponse,
   ProductImage,
   PaginatedProductImageList,
   ProductImageRequest,
@@ -5248,6 +6431,10 @@ export const schemas = {
   PaginatedProductList,
   ProductRequest,
   PatchedProductRequest,
+  ProductImportSummary,
+  ProductImportSuccessResponse,
+  ProductImportBadRequest,
+  ProductImportServerError,
   ProductVariantQuestion,
   PaginatedProductVariantQuestionList,
   ProductVariantQuestionRequest,
@@ -5274,10 +6461,11 @@ export const schemas = {
   StockTransferCreate,
   StockTransferRequest,
   PatchedStockTransferRequest,
-  Stock,
   PaginatedStockList,
   StockRequest,
   PatchedStockRequest,
+  StoreBranch,
+  PaginatedStoreBranchList,
   Supplier,
   PaginatedSupplierList,
   SupplierRequest,
@@ -5288,11 +6476,20 @@ export const schemas = {
   CreateProductVariant,
   ProductVariantRequest,
   PatchedProductVariantRequest,
+  NearestBranchResponse,
+  StockSummaryBranchInfo,
+  VariantStockSummaryResponse,
+  VariantTotalStockResponse,
   InstallmentStatusEnum,
   Installment,
   PaginatedInstallmentList,
   InstallmentRequest,
   PatchedInstallmentRequest,
+  MarkInstallmentPaidRequestRequest,
+  MarkInstallmentPaidResponse,
+  DamageItemRequestRequest,
+  CreateDamageRecordRequestRequest,
+  CreateDamageRecordResponse,
   InvoiceItem,
   InvoiceTypeEnum,
   InvoiceStatusEnum,
@@ -5301,6 +6498,9 @@ export const schemas = {
   InvoiceItemRequest,
   InvoiceRequest,
   PatchedInvoiceRequest,
+  InvoiceTotalsResponse,
+  InvoiceConfirmResponse,
+  InvoiceChoicesResponse,
   OrderItem,
   OrderTypeEnum,
   OrderStatusEnum,
@@ -5309,12 +6509,21 @@ export const schemas = {
   PaginatedOrderList,
   OrderItemRequest,
   OrderRequest,
+  ReturnItemRequestRequest,
+  CreateReturnRequestRequest,
+  CreateReturnResponse,
   PatchedOrderRequest,
+  OrderTotalsResponse,
+  OrderCancelResponse,
+  OrderConfirmResponse,
+  OrderDeliverResponse,
+  OrderReadyResponse,
+  OrderChoicesResponse,
   PaymentMethod,
   PaginatedPaymentMethodList,
   PaymentMethodRequest,
   PatchedPaymentMethodRequest,
-  Status577Enum,
+  StatusB5aEnum,
   PaymentList,
   PaginatedPaymentListList,
   PaymentCreateRequest,
@@ -5322,19 +6531,98 @@ export const schemas = {
   Payment,
   PaymentRequest,
   PatchedPaymentRequest,
+  MarkCompletedRequestRequest,
+  MarkCompletedResponse,
+  MarkFailedRequestRequest,
+  MarkFailedResponse,
+  PaymentRefundRequest,
+  RefundResponse,
+  BNPLCallbackResponse,
+  PaymentChoices,
+  GatewayEnum,
+  BNPLSessionRequestRequest,
+  BNPLSessionResponse,
+  PaymentTotal,
+  InstallmentSummary,
+  PaymentSummaryResponse,
+  BranchComparisonResponse,
+  FinancialDashboardSales,
+  FinancialDashboardPurchases,
+  FinancialDashboardReturns,
+  FinancialDashboardPaymentsByMethod,
+  FinancialDashboardPayments,
+  FinancialDashboardReservedInv,
+  FinancialDashboardResponse,
+  InventorySummaryResponse,
+  PendingOrdersByStatus,
+  PendingOrdersTotal,
+  PendingOrdersResponse,
+  AgingBucketCurrent,
+  AgingBucket3160,
+  AgingBucket6190,
+  AgingBucket90Plus,
+  AgingBuckets,
+  ReceivablesAgingResponse,
+  SalesByDateResponse,
+  SalesSummaryPayments,
+  SalesSummaryResponse,
+  StockMovementByType,
+  StockMovementsReportResponse,
+  TopProductsResponse,
+  CreateOrderItemRequestRequest,
+  CreateWholesaleOrderRequestRequest,
+  CreatedOrderInfo,
+  CreateWholesaleOrderResponse,
+  UpdateCustomerCreditRequestRequest,
+  UpdatedCreditCustomer,
+  UpdateCustomerCreditResponse,
+  StatementCustomerInfo,
+  StatementPeriod,
+  StatementTransaction,
+  StatementSummary,
+  CustomerStatementResponse,
+  WholesaleCustomer,
+  DashboardMonthStats,
+  DashboardTopCustomer,
+  DashboardReceivables,
+  WholesaleDashboardResponse,
+  PricingItemRequestRequest,
+  GetWholesalePricingRequestRequest,
+  PricingCustomerInfo,
+  PricingResponseItem,
+  GetWholesalePricingResponse,
+  ValidateItemRequestRequest,
+  ValidateWholesaleOrderRequestRequest,
+  CustomerCreditInfo,
+  ValidateWholesaleOrderResponse,
+  ActivationSuccessResponse,
+  ActivationErrorResponse,
   CurrencyEnum,
   SubscriptionPlan,
   Client,
   PaginatedClientList,
   ClientRequest,
   PatchedClientRequest,
+  DirectionEnum,
+  MethodEnum,
+  CreatePaymentOrderRequest,
+  CreatePaymentOrderResponse,
+  CreatePaymentErrorResponse,
   Domain,
   PaginatedDomainList,
   DomainRequest,
   PatchedDomainRequest,
+  PaymentDetail,
+  PaymentListResponse,
+  PayPalExecuteRequestRequest,
+  PayPalExecuteSuccessResponse,
+  PayPalExecuteErrorResponse,
+  WebhookResponse,
+  RegisterTenantRequest,
+  RegisterTenantSuccessResponse,
+  RegisterTenantErrorResponse,
   RegisterTenant,
   PaginatedRegisterTenantList,
-  RegisterTenantRequest,
   PatchedRegisterTenantRequest,
   PaginatedSubscriptionPlanList,
   SubscriptionPlanRequest,
@@ -5360,6 +6648,8 @@ export const schemas = {
   PatchedPageRequest,
   PasswordResetSuccessResponse,
   PasswordResetBadRequest,
+  PasswordResetConfirmRequest,
+  PasswordResetConfirmSuccessResponse,
   PaginatedPermissionList,
   PermissionRequest,
   PatchedPermissionRequest,
@@ -5388,7 +6678,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/categories/",
     alias: "accounting_categories_list",
-    description: `ViewSet للفئات المحاسبية`,
+    description: `ViewSet for Accounting Categories`,
     requestFormat: "json",
     parameters: [
       {
@@ -5423,7 +6713,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/categories/",
     alias: "accounting_categories_create",
-    description: `ViewSet للفئات المحاسبية`,
+    description: `ViewSet for Accounting Categories`,
     requestFormat: "json",
     parameters: [
       {
@@ -5438,7 +6728,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_retrieve",
-    description: `ViewSet للفئات المحاسبية`,
+    description: `ViewSet for Accounting Categories`,
     requestFormat: "json",
     parameters: [
       {
@@ -5453,7 +6743,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_update",
-    description: `ViewSet للفئات المحاسبية`,
+    description: `ViewSet for Accounting Categories`,
     requestFormat: "json",
     parameters: [
       {
@@ -5473,7 +6763,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_partial_update",
-    description: `ViewSet للفئات المحاسبية`,
+    description: `ViewSet for Accounting Categories`,
     requestFormat: "json",
     parameters: [
       {
@@ -5493,7 +6783,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/categories/:id/",
     alias: "accounting_categories_destroy",
-    description: `ViewSet للفئات المحاسبية`,
+    description: `ViewSet for Accounting Categories`,
     requestFormat: "json",
     parameters: [
       {
@@ -5516,7 +6806,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/chart-of-accounts/",
     alias: "accounting_chart_of_accounts_list",
-    description: `ViewSet لدليل الحسابات`,
+    description: `ViewSet for Chart of Accounts`,
     requestFormat: "json",
     parameters: [
       {
@@ -5595,7 +6885,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/chart-of-accounts/",
     alias: "accounting_chart_of_accounts_create",
-    description: `ViewSet لدليل الحسابات`,
+    description: `ViewSet for Chart of Accounts`,
     requestFormat: "json",
     parameters: [
       {
@@ -5610,7 +6900,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/chart-of-accounts/:id/",
     alias: "accounting_chart_of_accounts_retrieve",
-    description: `ViewSet لدليل الحسابات`,
+    description: `ViewSet for Chart of Accounts`,
     requestFormat: "json",
     parameters: [
       {
@@ -5625,7 +6915,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/chart-of-accounts/:id/",
     alias: "accounting_chart_of_accounts_update",
-    description: `ViewSet لدليل الحسابات`,
+    description: `ViewSet for Chart of Accounts`,
     requestFormat: "json",
     parameters: [
       {
@@ -5645,7 +6935,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/chart-of-accounts/:id/",
     alias: "accounting_chart_of_accounts_partial_update",
-    description: `ViewSet لدليل الحسابات`,
+    description: `ViewSet for Chart of Accounts`,
     requestFormat: "json",
     parameters: [
       {
@@ -5665,7 +6955,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/chart-of-accounts/:id/",
     alias: "accounting_chart_of_accounts_destroy",
-    description: `ViewSet لدليل الحسابات`,
+    description: `ViewSet for Chart of Accounts`,
     requestFormat: "json",
     parameters: [
       {
@@ -5679,18 +6969,94 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/accounting/chart-of-accounts/by_type/",
-    alias: "accounting_chart_of_accounts_by_type_retrieve",
-    description: `الحسابات حسب النوع`,
+    alias: "accounting_chart_of_accounts_by_type_list",
+    description: `Filter accounts by type`,
     requestFormat: "json",
-    response: ChartOfAccounts,
+    parameters: [
+      {
+        name: "account_subtype",
+        type: "Query",
+        schema: z
+          .enum([
+            "accrued",
+            "bank",
+            "capital",
+            "cash",
+            "cost_of_goods",
+            "deferred",
+            "fixed_asset",
+            "inventory",
+            "loan",
+            "marketing",
+            "other_expense",
+            "other_income",
+            "payable",
+            "prepaid",
+            "receivable",
+            "rent",
+            "reserves",
+            "retained",
+            "salary",
+            "sales",
+            "service",
+            "supplies",
+            "tax_payable",
+            "utilities",
+          ])
+          .optional(),
+      },
+      {
+        name: "account_type",
+        type: "Query",
+        schema: z
+          .enum(["asset", "cogs", "equity", "expense", "liability", "revenue"])
+          .optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_header",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "type",
+        type: "Query",
+        schema: z.string(),
+      },
+    ],
+    response: PaginatedChartOfAccountsList,
   },
   {
     method: "get",
     path: "/api/accounting/chart-of-accounts/choices/",
     alias: "accounting_chart_of_accounts_choices_retrieve",
-    description: `الخيارات المتاحة`,
+    description: `Available choices`,
     requestFormat: "json",
-    response: ChartOfAccounts,
+    response: ChartOfAccountsChoices,
   },
   {
     method: "get",
@@ -5704,30 +7070,94 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/chart-of-accounts/setup_defaults/",
     alias: "accounting_chart_of_accounts_setup_defaults_create",
-    description: `إعداد الحسابات الافتراضية`,
+    description: `Setup default accounts`,
     requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: ChartOfAccountsRequest,
-      },
-    ],
-    response: ChartOfAccounts,
+    response: SetupDefaultsResponse,
   },
   {
     method: "get",
     path: "/api/accounting/chart-of-accounts/tree/",
-    alias: "accounting_chart_of_accounts_tree_retrieve",
-    description: `عرض دليل الحسابات كشجرة هرمية`,
+    alias: "accounting_chart_of_accounts_tree_list",
+    description: `Display Chart of Accounts as a tree structure`,
     requestFormat: "json",
-    response: ChartOfAccounts,
+    parameters: [
+      {
+        name: "account_subtype",
+        type: "Query",
+        schema: z
+          .enum([
+            "accrued",
+            "bank",
+            "capital",
+            "cash",
+            "cost_of_goods",
+            "deferred",
+            "fixed_asset",
+            "inventory",
+            "loan",
+            "marketing",
+            "other_expense",
+            "other_income",
+            "payable",
+            "prepaid",
+            "receivable",
+            "rent",
+            "reserves",
+            "retained",
+            "salary",
+            "sales",
+            "service",
+            "supplies",
+            "tax_payable",
+            "utilities",
+          ])
+          .optional(),
+      },
+      {
+        name: "account_type",
+        type: "Query",
+        schema: z
+          .enum(["asset", "cogs", "equity", "expense", "liability", "revenue"])
+          .optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_header",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedChartOfAccountsTreeList,
   },
   {
     method: "get",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_list",
-    description: `ViewSet للفترات المالية`,
+    description: `ViewSet for Financial Periods`,
     requestFormat: "json",
     parameters: [
       {
@@ -5782,7 +7212,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/financial-periods/",
     alias: "accounting_financial_periods_create",
-    description: `ViewSet للفترات المالية`,
+    description: `ViewSet for Financial Periods`,
     requestFormat: "json",
     parameters: [
       {
@@ -5797,7 +7227,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_retrieve",
-    description: `ViewSet للفترات المالية`,
+    description: `ViewSet for Financial Periods`,
     requestFormat: "json",
     parameters: [
       {
@@ -5812,7 +7242,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_update",
-    description: `ViewSet للفترات المالية`,
+    description: `ViewSet for Financial Periods`,
     requestFormat: "json",
     parameters: [
       {
@@ -5832,7 +7262,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_partial_update",
-    description: `ViewSet للفترات المالية`,
+    description: `ViewSet for Financial Periods`,
     requestFormat: "json",
     parameters: [
       {
@@ -5852,7 +7282,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/financial-periods/:id/",
     alias: "accounting_financial_periods_destroy",
-    description: `ViewSet للفترات المالية`,
+    description: `ViewSet for Financial Periods`,
     requestFormat: "json",
     parameters: [
       {
@@ -5867,7 +7297,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/financial-periods/current/",
     alias: "accounting_financial_periods_current_retrieve",
-    description: `الفترة المالية الحالية`,
+    description: `Get current financial period`,
     requestFormat: "json",
     response: FinancialPeriod,
   },
@@ -5883,7 +7313,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_list",
-    description: `ViewSet لقيود اليومية`,
+    description: `ViewSet for General Journal Entries`,
     requestFormat: "json",
     parameters: [
       {
@@ -5946,7 +7376,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/journal-entries/",
     alias: "accounting_journal_entries_create",
-    description: `ViewSet لقيود اليومية`,
+    description: `ViewSet for General Journal Entries`,
     requestFormat: "json",
     parameters: [
       {
@@ -5961,7 +7391,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_retrieve",
-    description: `ViewSet لقيود اليومية`,
+    description: `ViewSet for General Journal Entries`,
     requestFormat: "json",
     parameters: [
       {
@@ -5976,7 +7406,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_update",
-    description: `ViewSet لقيود اليومية`,
+    description: `ViewSet for General Journal Entries`,
     requestFormat: "json",
     parameters: [
       {
@@ -5996,7 +7426,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_partial_update",
-    description: `ViewSet لقيود اليومية`,
+    description: `ViewSet for General Journal Entries`,
     requestFormat: "json",
     parameters: [
       {
@@ -6016,7 +7446,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/journal-entries/:id/",
     alias: "accounting_journal_entries_destroy",
-    description: `ViewSet لقيود اليومية`,
+    description: `ViewSet for General Journal Entries`,
     requestFormat: "json",
     parameters: [
       {
@@ -6031,57 +7461,96 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/journal-entries/:id/post_entry/",
     alias: "accounting_journal_entries_post_entry_create",
-    description: `ترحيل القيد`,
+    description: `Post the journal entry`,
     requestFormat: "json",
     parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: GeneralJournalRequest,
-      },
       {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: GeneralJournal,
+    response: PostEntryResponse,
   },
   {
     method: "post",
     path: "/api/accounting/journal-entries/:id/reverse_entry/",
     alias: "accounting_journal_entries_reverse_entry_create",
-    description: `عكس القيد`,
+    description: `Reverse the journal entry`,
     requestFormat: "json",
     parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: GeneralJournalRequest,
-      },
       {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: GeneralJournal,
+    response: ReverseEntryResponse,
   },
   {
     method: "get",
     path: "/api/accounting/journal-entries/by_source/",
-    alias: "accounting_journal_entries_by_source_retrieve",
-    description: `القيود حسب المصدر`,
+    alias: "accounting_journal_entries_by_source_list",
+    description: `Get journals by source`,
     requestFormat: "json",
-    response: GeneralJournal,
+    parameters: [
+      {
+        name: "entry_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "entry_type",
+        type: "Query",
+        schema: z
+          .enum(["adjustment", "closing", "opening", "reversal", "standard"])
+          .optional(),
+      },
+      {
+        name: "is_posted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "source_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "source_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedGeneralJournalListList,
   },
   {
     method: "get",
     path: "/api/accounting/journal-entries/choices/",
     alias: "accounting_journal_entries_choices_retrieve",
-    description: `الخيارات المتاحة`,
+    description: `Available choices`,
     requestFormat: "json",
-    response: GeneralJournal,
+    response: GeneralJournalChoices,
   },
   {
     method: "get",
@@ -6094,32 +7563,106 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/accounting/journal-entries/unposted/",
-    alias: "accounting_journal_entries_unposted_retrieve",
-    description: `القيود غير المرحّلة`,
+    alias: "accounting_journal_entries_unposted_list",
+    description: `Get unposted journals`,
     requestFormat: "json",
-    response: GeneralJournal,
+    parameters: [
+      {
+        name: "entry_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "entry_type",
+        type: "Query",
+        schema: z
+          .enum(["adjustment", "closing", "opening", "reversal", "standard"])
+          .optional(),
+      },
+      {
+        name: "is_posted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "source_type",
+        type: "Query",
+        schema: z
+          .enum([
+            "adjustment",
+            "manual",
+            "payment",
+            "payroll",
+            "purchase_invoice",
+            "receipt",
+            "return",
+            "sales_invoice",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedGeneralJournalListList,
   },
   {
     method: "get",
     path: "/api/accounting/reports/balance-sheet/",
     alias: "accounting_reports_balance_sheet_retrieve",
-    description: `الميزانية العمومية`,
+    description: `Get Balance Sheet Report`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "as_of_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: BalanceSheetResponse,
   },
   {
     method: "get",
     path: "/api/accounting/reports/income-statement/",
     alias: "accounting_reports_income_statement_retrieve",
-    description: `قائمة الدخل`,
+    description: `Get Income Statement Report`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: IncomeStatementResponse,
   },
   {
     method: "get",
     path: "/api/accounting/reports/ledger/:account_id/",
     alias: "accounting_reports_ledger_retrieve",
-    description: `دفتر الأستاذ لحساب معين`,
+    description: `Get Ledger for a specific account`,
     requestFormat: "json",
     parameters: [
       {
@@ -6127,22 +7670,39 @@ export const endpoints = makeApi([
         type: "Path",
         schema: z.number().int(),
       },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
-    response: z.void(),
+    response: AccountLedgerResponse,
   },
   {
     method: "get",
     path: "/api/accounting/reports/trial-balance/",
     alias: "accounting_reports_trial_balance_retrieve",
-    description: `ميزان المراجعة`,
+    description: `Get Trial Balance Report`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "as_of_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: TrialBalanceResponse,
   },
   {
     method: "get",
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_list",
-    description: `ViewSet للضرائب`,
+    description: `ViewSet for Taxes`,
     requestFormat: "json",
     parameters: [
       {
@@ -6177,7 +7737,7 @@ export const endpoints = makeApi([
     method: "post",
     path: "/api/accounting/taxes/",
     alias: "accounting_taxes_create",
-    description: `ViewSet للضرائب`,
+    description: `ViewSet for Taxes`,
     requestFormat: "json",
     parameters: [
       {
@@ -6192,7 +7752,7 @@ export const endpoints = makeApi([
     method: "get",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_retrieve",
-    description: `ViewSet للضرائب`,
+    description: `ViewSet for Taxes`,
     requestFormat: "json",
     parameters: [
       {
@@ -6207,7 +7767,7 @@ export const endpoints = makeApi([
     method: "put",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_update",
-    description: `ViewSet للضرائب`,
+    description: `ViewSet for Taxes`,
     requestFormat: "json",
     parameters: [
       {
@@ -6227,7 +7787,7 @@ export const endpoints = makeApi([
     method: "patch",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_partial_update",
-    description: `ViewSet للضرائب`,
+    description: `ViewSet for Taxes`,
     requestFormat: "json",
     parameters: [
       {
@@ -6247,7 +7807,7 @@ export const endpoints = makeApi([
     method: "delete",
     path: "/api/accounting/taxes/:id/",
     alias: "accounting_taxes_destroy",
-    description: `ViewSet للضرائب`,
+    description: `ViewSet for Taxes`,
     requestFormat: "json",
     parameters: [
       {
@@ -6795,7 +8355,26 @@ export const endpoints = makeApi([
     path: "/api/core/import-csv/",
     alias: "core_import_csv_create",
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ csv_file: z.instanceof(File), config: z.unknown() })
+          .passthrough(),
+      },
+    ],
+    response: CSVImportResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+      {
+        status: 403,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "get",
@@ -7860,10 +9439,52 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/crm/customer-partner-links/by_customer/",
-    alias: "crm_customer_partner_links_by_customer_retrieve",
+    alias: "crm_customer_partner_links_by_customer_list",
     description: `جلب ارتباطات عميل معين`,
     requestFormat: "json",
-    response: CustomerPartnerLink,
+    parameters: [
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "customer_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerPartnerLinkList,
   },
   {
     method: "get",
@@ -8320,7 +9941,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: InsuranceClaimRequest,
+        schema: ApproveClaimRequestRequest,
       },
       {
         name: "id",
@@ -8328,7 +9949,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: InsuranceClaim,
+    response: ApproveClaimResponse,
   },
   {
     method: "post",
@@ -8340,7 +9961,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: InsuranceClaimRequest,
+        schema: MarkClaimPaidRequestRequest,
       },
       {
         name: "id",
@@ -8348,7 +9969,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: InsuranceClaim,
+    response: MarkClaimPaidResponse,
   },
   {
     method: "post",
@@ -8360,7 +9981,7 @@ export const endpoints = makeApi([
       {
         name: "body",
         type: "Body",
-        schema: InsuranceClaimRequest,
+        schema: z.object({ reason: z.string().min(1) }).passthrough(),
       },
       {
         name: "id",
@@ -8368,7 +9989,7 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: InsuranceClaim,
+    response: RejectClaimResponse,
   },
   {
     method: "post",
@@ -8378,25 +9999,68 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: InsuranceClaimRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: InsuranceClaim,
+    response: SubmitClaimResponse,
   },
   {
     method: "get",
     path: "/api/crm/insurance-claims/approved_unpaid/",
-    alias: "crm_insurance_claims_approved_unpaid_retrieve",
+    alias: "crm_insurance_claims_approved_unpaid_list",
     description: `المطالبات المعتمدة غير المسددة`,
     requestFormat: "json",
-    response: InsuranceClaim,
+    parameters: [
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "paid",
+            "partial",
+            "rejected",
+            "submitted",
+            "under_review",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedInsuranceClaimListList,
   },
   {
     method: "get",
@@ -8404,7 +10068,9 @@ export const endpoints = makeApi([
     alias: "crm_insurance_claims_choices_retrieve",
     description: `الخيارات المتاحة`,
     requestFormat: "json",
-    response: InsuranceClaim,
+    response: z
+      .object({ claim_status: z.object({}).partial().passthrough() })
+      .passthrough(),
   },
   {
     method: "get",
@@ -8417,10 +10083,58 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/crm/insurance-claims/pending/",
-    alias: "crm_insurance_claims_pending_retrieve",
+    alias: "crm_insurance_claims_pending_list",
     description: `المطالبات المعلقة`,
     requestFormat: "json",
-    response: InsuranceClaim,
+    parameters: [
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "paid",
+            "partial",
+            "rejected",
+            "submitted",
+            "under_review",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedInsuranceClaimListList,
   },
   {
     method: "get",
@@ -9490,12 +11204,12 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: Partner,
+    response: PartnerClaimsSummary,
   },
   {
     method: "get",
     path: "/api/crm/partners/:id/customers/",
-    alias: "crm_partners_customers_retrieve",
+    alias: "crm_partners_customers_list",
     description: `العملاء المرتبطين بهذا الشريك`,
     requestFormat: "json",
     parameters: [
@@ -9504,24 +11218,129 @@ export const endpoints = makeApi([
         type: "Path",
         schema: z.number().int(),
       },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
-    response: Partner,
+    response: PaginatedCustomerPartnerLinkList,
   },
   {
     method: "get",
     path: "/api/crm/partners/bnpl_providers/",
-    alias: "crm_partners_bnpl_providers_retrieve",
+    alias: "crm_partners_bnpl_providers_list",
     description: `شركات التقسيط (Tabby, Tamara)`,
     requestFormat: "json",
-    response: Partner,
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerListList,
   },
   {
     method: "get",
     path: "/api/crm/partners/by_type/",
-    alias: "crm_partners_by_type_retrieve",
+    alias: "crm_partners_by_type_list",
     description: `جلب الشركاء حسب النوع`,
     requestFormat: "json",
-    response: Partner,
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "type",
+        type: "Query",
+        schema: z.string(),
+      },
+    ],
+    response: PaginatedPartnerListList,
   },
   {
     method: "get",
@@ -9529,7 +11348,7 @@ export const endpoints = makeApi([
     alias: "crm_partners_choices_retrieve",
     description: `الخيارات المتاحة`,
     requestFormat: "json",
-    response: Partner,
+    response: PartnerChoices,
   },
   {
     method: "get",
@@ -9542,10 +11361,44 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/crm/partners/insurance_companies/",
-    alias: "crm_partners_insurance_companies_retrieve",
+    alias: "crm_partners_insurance_companies_list",
     description: `شركات التأمين فقط`,
     requestFormat: "json",
-    response: Partner,
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerListList,
   },
   {
     method: "get",
@@ -10189,7 +12042,7 @@ export const endpoints = makeApi([
     path: "/api/hrm/employee-form-options/",
     alias: "hrm_employee_form_options_retrieve",
     requestFormat: "json",
-    response: z.void(),
+    response: EmployeeFormOptionsResponse,
   },
   {
     method: "get",
@@ -11196,30 +13049,49 @@ export const endpoints = makeApi([
   {
     method: "get",
     path: "/api/mobile/customers/search/",
-    alias: "mobile_customers_search_retrieve",
-    description: `بحث سريع عن العملاء للموبايل`,
+    alias: "mobile_customers_search_list",
+    description: `Quick customer lookup for mobile`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "q",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.array(MobileCustomerLookupItem),
   },
   {
     method: "get",
     path: "/api/mobile/dashboard/",
     alias: "mobile_dashboard_retrieve",
-    description: `لوحة تحكم للموبايل - كل البيانات في طلب واحد
+    description: `Mobile Dashboard - All data in one request
 
-يجمع:
-- إحصائيات اليوم
-- آخر الطلبات
-- التنبيهات
-- أداء المستخدم`,
+Aggregates:
+- Today&#x27;s statistics
+- Recent orders
+- Alerts
+- User performance`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: MobileDashboardResponse,
   },
   {
     method: "get",
     path: "/api/mobile/orders/:order_id/",
     alias: "mobile_orders_retrieve",
-    description: `تفاصيل الطلب للموبايل - محسن`,
+    description: `Mobile order details - Optimized`,
     requestFormat: "json",
     parameters: [
       {
@@ -11228,43 +13100,69 @@ export const endpoints = makeApi([
         schema: z.number().int(),
       },
     ],
-    response: z.void(),
+    response: MobileOrderDetailResponse,
   },
   {
     method: "get",
     path: "/api/mobile/products/search/",
-    alias: "mobile_products_search_retrieve",
-    description: `بحث سريع عن المنتجات للموبايل
-
-يعيد فقط الحقول المطلوبة لتقليل حجم البيانات`,
+    alias: "mobile_products_search_list",
+    description: `Quick product search for mobile
+Returns only required fields to minimize data size`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "q",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.array(MobileProductSearchItem),
   },
   {
     method: "post",
     path: "/api/mobile/quick-sale/",
     alias: "mobile_quick_sale_create",
-    description: `بيع سريع من الموبايل
-
-Request Body:
-{
-    &quot;customer_id&quot;: 1,
-    &quot;items&quot;: [{&quot;variant_id&quot;: 1, &quot;quantity&quot;: 1, &quot;price&quot;: &quot;100.00&quot;}],
-    &quot;payment_method&quot;: &quot;cash&quot;,
-    &quot;discount&quot;: &quot;0.00&quot;
-}`,
+    description: `Quick sale from mobile`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: MobileQuickSaleRequestRequest,
+      },
+    ],
+    response: MobileQuickSaleResponse,
   },
   {
     method: "get",
     path: "/api/mobile/sync/",
     alias: "mobile_sync_retrieve",
-    description: `مزامنة البيانات للموبايل (offline-first)
-
-يعيد فقط التغييرات منذ آخر مزامنة`,
+    description: `Mobile data sync (offline-first)
+Returns only changes since last sync`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "since",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: MobileSyncResponse,
   },
   {
     method: "get",
@@ -11398,7 +13296,7 @@ Request Body:
     method: "get",
     path: "/api/products/answers/",
     alias: "products_answers_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing answers to customer questions.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11468,7 +13366,7 @@ Request Body:
     method: "post",
     path: "/api/products/answers/",
     alias: "products_answers_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing answers to customer questions.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11483,7 +13381,7 @@ Request Body:
     method: "get",
     path: "/api/products/answers/:id/",
     alias: "products_answers_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing answers to customer questions.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11498,7 +13396,7 @@ Request Body:
     method: "put",
     path: "/api/products/answers/:id/",
     alias: "products_answers_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing answers to customer questions.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11518,7 +13416,7 @@ Request Body:
     method: "patch",
     path: "/api/products/answers/:id/",
     alias: "products_answers_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing answers to customer questions.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11538,7 +13436,7 @@ Request Body:
     method: "delete",
     path: "/api/products/answers/:id/",
     alias: "products_answers_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing answers to customer questions.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11845,9 +13743,41 @@ Request Body:
   },
   {
     method: "get",
+    path: "/api/products/branches/:branch_id/low-stock/",
+    alias: "products_branches_low_stock_list",
+    description: `API View to list low stock items for a specific branch.
+Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_quantity`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.array(Stock),
+  },
+  {
+    method: "get",
+    path: "/api/products/branches/active/",
+    alias: "products_branches_active_list",
+    description: `API View to list all active branches.`,
+    requestFormat: "json",
+    response: z.array(Branch),
+  },
+  {
+    method: "get",
+    path: "/api/products/branches/main/",
+    alias: "products_branches_main_retrieve",
+    description: `API View to get the main branch details.`,
+    requestFormat: "json",
+    response: Branch,
+  },
+  {
+    method: "get",
     path: "/api/products/brands/",
     alias: "products_brands_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Brands.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11872,6 +13802,11 @@ Request Body:
       },
       {
         name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
         type: "Query",
         schema: z.boolean().optional(),
       },
@@ -11927,7 +13862,7 @@ Request Body:
     method: "post",
     path: "/api/products/brands/",
     alias: "products_brands_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Brands.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11942,7 +13877,7 @@ Request Body:
     method: "get",
     path: "/api/products/brands/:id/",
     alias: "products_brands_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Brands.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11957,7 +13892,7 @@ Request Body:
     method: "put",
     path: "/api/products/brands/:id/",
     alias: "products_brands_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Brands.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11977,7 +13912,7 @@ Request Body:
     method: "patch",
     path: "/api/products/brands/:id/",
     alias: "products_brands_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Brands.`,
     requestFormat: "json",
     parameters: [
       {
@@ -11997,7 +13932,7 @@ Request Body:
     method: "delete",
     path: "/api/products/brands/:id/",
     alias: "products_brands_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Brands.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12020,7 +13955,7 @@ Request Body:
     method: "get",
     path: "/api/products/categories/",
     alias: "products_categories_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Categories.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12085,7 +14020,7 @@ Request Body:
     method: "post",
     path: "/api/products/categories/",
     alias: "products_categories_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Categories.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12100,7 +14035,7 @@ Request Body:
     method: "get",
     path: "/api/products/categories/:id/",
     alias: "products_categories_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Categories.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12115,7 +14050,7 @@ Request Body:
     method: "put",
     path: "/api/products/categories/:id/",
     alias: "products_categories_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Categories.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12135,7 +14070,7 @@ Request Body:
     method: "patch",
     path: "/api/products/categories/:id/",
     alias: "products_categories_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Categories.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12155,7 +14090,7 @@ Request Body:
     method: "delete",
     path: "/api/products/categories/:id/",
     alias: "products_categories_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Categories.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12178,7 +14113,7 @@ Request Body:
     method: "get",
     path: "/api/products/flexible-prices/",
     alias: "products_flexible_prices_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Flexible Pricing rules.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12263,7 +14198,7 @@ Request Body:
     method: "post",
     path: "/api/products/flexible-prices/",
     alias: "products_flexible_prices_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Flexible Pricing rules.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12278,7 +14213,7 @@ Request Body:
     method: "get",
     path: "/api/products/flexible-prices/:id/",
     alias: "products_flexible_prices_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Flexible Pricing rules.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12293,7 +14228,7 @@ Request Body:
     method: "put",
     path: "/api/products/flexible-prices/:id/",
     alias: "products_flexible_prices_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Flexible Pricing rules.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12313,7 +14248,7 @@ Request Body:
     method: "patch",
     path: "/api/products/flexible-prices/:id/",
     alias: "products_flexible_prices_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Flexible Pricing rules.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12333,7 +14268,7 @@ Request Body:
     method: "delete",
     path: "/api/products/flexible-prices/:id/",
     alias: "products_flexible_prices_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Flexible Pricing rules.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12356,7 +14291,7 @@ Request Body:
     method: "get",
     path: "/api/products/manufacturers/",
     alias: "products_manufacturers_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Manufacturers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12431,7 +14366,7 @@ Request Body:
     method: "post",
     path: "/api/products/manufacturers/",
     alias: "products_manufacturers_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Manufacturers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12446,7 +14381,7 @@ Request Body:
     method: "get",
     path: "/api/products/manufacturers/:id/",
     alias: "products_manufacturers_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Manufacturers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12461,7 +14396,7 @@ Request Body:
     method: "put",
     path: "/api/products/manufacturers/:id/",
     alias: "products_manufacturers_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Manufacturers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12481,7 +14416,7 @@ Request Body:
     method: "patch",
     path: "/api/products/manufacturers/:id/",
     alias: "products_manufacturers_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Manufacturers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12501,7 +14436,7 @@ Request Body:
     method: "delete",
     path: "/api/products/manufacturers/:id/",
     alias: "products_manufacturers_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Manufacturers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12524,7 +14459,7 @@ Request Body:
     method: "get",
     path: "/api/products/marketing/",
     alias: "products_marketing_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
     requestFormat: "json",
     parameters: [
       {
@@ -12634,7 +14569,7 @@ Request Body:
     method: "post",
     path: "/api/products/marketing/",
     alias: "products_marketing_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
     requestFormat: "json",
     parameters: [
       {
@@ -12649,7 +14584,7 @@ Request Body:
     method: "get",
     path: "/api/products/marketing/:id/",
     alias: "products_marketing_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
     requestFormat: "json",
     parameters: [
       {
@@ -12664,7 +14599,7 @@ Request Body:
     method: "put",
     path: "/api/products/marketing/:id/",
     alias: "products_marketing_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
     requestFormat: "json",
     parameters: [
       {
@@ -12684,7 +14619,7 @@ Request Body:
     method: "patch",
     path: "/api/products/marketing/:id/",
     alias: "products_marketing_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
     requestFormat: "json",
     parameters: [
       {
@@ -12704,7 +14639,7 @@ Request Body:
     method: "delete",
     path: "/api/products/marketing/:id/",
     alias: "products_marketing_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
     requestFormat: "json",
     parameters: [
       {
@@ -12727,7 +14662,7 @@ Request Body:
     method: "get",
     path: "/api/products/offers/",
     alias: "products_offers_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing special offers on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12802,7 +14737,7 @@ Request Body:
     method: "post",
     path: "/api/products/offers/",
     alias: "products_offers_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing special offers on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12817,7 +14752,7 @@ Request Body:
     method: "get",
     path: "/api/products/offers/:id/",
     alias: "products_offers_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing special offers on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12832,7 +14767,7 @@ Request Body:
     method: "put",
     path: "/api/products/offers/:id/",
     alias: "products_offers_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing special offers on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12852,7 +14787,7 @@ Request Body:
     method: "patch",
     path: "/api/products/offers/:id/",
     alias: "products_offers_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing special offers on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12872,7 +14807,7 @@ Request Body:
     method: "delete",
     path: "/api/products/offers/:id/",
     alias: "products_offers_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing special offers on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12892,10 +14827,31 @@ Request Body:
     response: ProductVariantOffer,
   },
   {
+    method: "post",
+    path: "/api/products/orders/fulfillment-check/",
+    alias: "products_orders_fulfillment_check_create",
+    description: `Expecting JSON in the format:
+{
+    &quot;items&quot;: [
+        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 3},
+        {&quot;variant_id&quot;: 5, &quot;quantity&quot;: 2}
+    ]
+}`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderFulfillmentCheckRequestRequest,
+      },
+    ],
+    response: OrderFulfillmentCheckResponse,
+  },
+  {
     method: "get",
     path: "/api/products/product-images/",
     alias: "products_product_images_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Images.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12955,7 +14911,7 @@ Request Body:
     method: "post",
     path: "/api/products/product-images/",
     alias: "products_product_images_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Images.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12970,7 +14926,7 @@ Request Body:
     method: "get",
     path: "/api/products/product-images/:id/",
     alias: "products_product_images_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Images.`,
     requestFormat: "json",
     parameters: [
       {
@@ -12985,7 +14941,7 @@ Request Body:
     method: "put",
     path: "/api/products/product-images/:id/",
     alias: "products_product_images_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Images.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13005,7 +14961,7 @@ Request Body:
     method: "patch",
     path: "/api/products/product-images/:id/",
     alias: "products_product_images_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Images.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13025,7 +14981,7 @@ Request Body:
     method: "delete",
     path: "/api/products/product-images/:id/",
     alias: "products_product_images_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Images.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13048,7 +15004,7 @@ Request Body:
     method: "get",
     path: "/api/products/products/",
     alias: "products_products_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing main Products.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13143,7 +15099,7 @@ Request Body:
     method: "post",
     path: "/api/products/products/",
     alias: "products_products_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing main Products.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13158,7 +15114,7 @@ Request Body:
     method: "get",
     path: "/api/products/products/:id/",
     alias: "products_products_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing main Products.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13173,7 +15129,7 @@ Request Body:
     method: "put",
     path: "/api/products/products/:id/",
     alias: "products_products_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing main Products.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13193,7 +15149,7 @@ Request Body:
     method: "patch",
     path: "/api/products/products/:id/",
     alias: "products_products_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing main Products.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13213,7 +15169,7 @@ Request Body:
     method: "delete",
     path: "/api/products/products/:id/",
     alias: "products_products_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing main Products.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13236,16 +15192,32 @@ Request Body:
     method: "post",
     path: "/api/products/products/import-csv/",
     alias: "products_products_import_csv_create",
-    description: `API View مخصص لاستيراد المنتجات فقط.
-يعتمد إجبارياً على إعدادات &#x27;products.Product&#x27; الموجودة في ملف &#x27;csv_configotenant.json&#x27;.`,
-    requestFormat: "json",
-    response: z.void(),
+    description: `Import products from CSV file using server-side configuration`,
+    requestFormat: "form-data",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({ file: z.instanceof(File) }).passthrough(),
+      },
+    ],
+    response: ProductImportSuccessResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ error: z.string() }).passthrough(),
+      },
+      {
+        status: 500,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "get",
     path: "/api/products/questions/",
     alias: "products_questions_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer questions about product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13315,7 +15287,7 @@ Request Body:
     method: "post",
     path: "/api/products/questions/",
     alias: "products_questions_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer questions about product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13330,7 +15302,7 @@ Request Body:
     method: "get",
     path: "/api/products/questions/:id/",
     alias: "products_questions_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer questions about product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13345,7 +15317,7 @@ Request Body:
     method: "put",
     path: "/api/products/questions/:id/",
     alias: "products_questions_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer questions about product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13365,7 +15337,7 @@ Request Body:
     method: "patch",
     path: "/api/products/questions/:id/",
     alias: "products_questions_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer questions about product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13385,7 +15357,7 @@ Request Body:
     method: "delete",
     path: "/api/products/questions/:id/",
     alias: "products_questions_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer questions about product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13408,7 +15380,7 @@ Request Body:
     method: "get",
     path: "/api/products/reviews/",
     alias: "products_reviews_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer reviews on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13483,7 +15455,7 @@ Request Body:
     method: "post",
     path: "/api/products/reviews/",
     alias: "products_reviews_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer reviews on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13498,7 +15470,7 @@ Request Body:
     method: "get",
     path: "/api/products/reviews/:id/",
     alias: "products_reviews_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer reviews on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13513,7 +15485,7 @@ Request Body:
     method: "put",
     path: "/api/products/reviews/:id/",
     alias: "products_reviews_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer reviews on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13533,7 +15505,7 @@ Request Body:
     method: "patch",
     path: "/api/products/reviews/:id/",
     alias: "products_reviews_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer reviews on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13553,7 +15525,7 @@ Request Body:
     method: "delete",
     path: "/api/products/reviews/:id/",
     alias: "products_reviews_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing customer reviews on product variants.`,
     requestFormat: "json",
     parameters: [
       {
@@ -13576,12 +15548,12 @@ Request Body:
     method: "get",
     path: "/api/products/stock-movements/",
     alias: "products_stock_movements_list",
-    description: `ViewSet لإدارة حركات المخزون
+    description: `ViewSet for Stock Movements
 
 Endpoints:
-- GET /stock-movements/ - قائمة الحركات
-- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
-- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
     requestFormat: "json",
     parameters: [
       {
@@ -13633,7 +15605,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-movements/",
     alias: "products_stock_movements_create",
-    description: `إنشاء حركة مخزون جديدة مع تسجيل المستخدم`,
+    description: `Create new stock movement with user logging`,
     requestFormat: "json",
     parameters: [
       {
@@ -13648,12 +15620,12 @@ Endpoints:
     method: "get",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_retrieve",
-    description: `ViewSet لإدارة حركات المخزون
+    description: `ViewSet for Stock Movements
 
 Endpoints:
-- GET /stock-movements/ - قائمة الحركات
-- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
-- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
     requestFormat: "json",
     parameters: [
       {
@@ -13668,12 +15640,12 @@ Endpoints:
     method: "put",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_update",
-    description: `ViewSet لإدارة حركات المخزون
+    description: `ViewSet for Stock Movements
 
 Endpoints:
-- GET /stock-movements/ - قائمة الحركات
-- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
-- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
     requestFormat: "json",
     parameters: [
       {
@@ -13693,12 +15665,12 @@ Endpoints:
     method: "patch",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_partial_update",
-    description: `ViewSet لإدارة حركات المخزون
+    description: `ViewSet for Stock Movements
 
 Endpoints:
-- GET /stock-movements/ - قائمة الحركات
-- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
-- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
     requestFormat: "json",
     parameters: [
       {
@@ -13718,12 +15690,12 @@ Endpoints:
     method: "delete",
     path: "/api/products/stock-movements/:id/",
     alias: "products_stock_movements_destroy",
-    description: `ViewSet لإدارة حركات المخزون
+    description: `ViewSet for Stock Movements
 
 Endpoints:
-- GET /stock-movements/ - قائمة الحركات
-- POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
-- GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين`,
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
     requestFormat: "json",
     parameters: [
       {
@@ -13738,31 +15710,80 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-movements/adjustment/",
     alias: "products_stock_movements_adjustment_create",
-    description: `تعديل المخزون (زيادة أو نقصان)`,
+    description: `Stock adjustment (Increase or Decrease)`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: StockMovementRequest,
+        schema: StockMovementCreateRequest,
       },
     ],
     response: StockMovement,
+    errors: [
+      {
+        status: 400,
+        description: `No response body`,
+        schema: z.void(),
+      },
+    ],
   },
   {
     method: "get",
     path: "/api/products/stock-movements/by-stock/:stock_id/",
-    alias: "products_stock_movements_by_stock_retrieve",
-    description: `حركات مخزون معين`,
+    alias: "products_stock_movements_by_stock_list",
+    description: `Movements for specific stock`,
     requestFormat: "json",
     parameters: [
       {
+        name: "movement_type",
+        type: "Query",
+        schema: z
+          .enum([
+            "adjustment",
+            "damage",
+            "purchase",
+            "release",
+            "reserve",
+            "return",
+            "sale",
+            "transfer_in",
+            "transfer_out",
+          ])
+          .optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "stock",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
         name: "stock_id",
-        type: "Path",
+        type: "Query",
         schema: z.number().int(),
       },
     ],
-    response: StockMovement,
+    response: PaginatedStockMovementList,
   },
   {
     method: "get",
@@ -13776,22 +15797,29 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-movements/purchase/",
     alias: "products_stock_movements_purchase_create",
-    description: `إضافة عملية شراء جديدة (إضافة للمخزون)`,
+    description: `Add purchase (Restock)`,
     requestFormat: "json",
     parameters: [
       {
         name: "body",
         type: "Body",
-        schema: StockMovementRequest,
+        schema: StockMovementCreateRequest,
       },
     ],
     response: StockMovement,
+    errors: [
+      {
+        status: 400,
+        description: `No response body`,
+        schema: z.void(),
+      },
+    ],
   },
   {
     method: "get",
     path: "/api/products/stock-transfer-items/",
     alias: "products_stock_transfer_items_list",
-    description: `ViewSet لإدارة عناصر التحويل`,
+    description: `ViewSet for Transfer Items`,
     requestFormat: "json",
     parameters: [
       {
@@ -13826,7 +15854,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfer-items/",
     alias: "products_stock_transfer_items_create",
-    description: `ViewSet لإدارة عناصر التحويل`,
+    description: `ViewSet for Transfer Items`,
     requestFormat: "json",
     parameters: [
       {
@@ -13841,7 +15869,7 @@ Endpoints:
     method: "get",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_retrieve",
-    description: `ViewSet لإدارة عناصر التحويل`,
+    description: `ViewSet for Transfer Items`,
     requestFormat: "json",
     parameters: [
       {
@@ -13856,7 +15884,7 @@ Endpoints:
     method: "put",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_update",
-    description: `ViewSet لإدارة عناصر التحويل`,
+    description: `ViewSet for Transfer Items`,
     requestFormat: "json",
     parameters: [
       {
@@ -13876,7 +15904,7 @@ Endpoints:
     method: "patch",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_partial_update",
-    description: `ViewSet لإدارة عناصر التحويل`,
+    description: `ViewSet for Transfer Items`,
     requestFormat: "json",
     parameters: [
       {
@@ -13896,7 +15924,7 @@ Endpoints:
     method: "delete",
     path: "/api/products/stock-transfer-items/:id/",
     alias: "products_stock_transfer_items_destroy",
-    description: `ViewSet لإدارة عناصر التحويل`,
+    description: `ViewSet for Transfer Items`,
     requestFormat: "json",
     parameters: [
       {
@@ -13919,19 +15947,19 @@ Endpoints:
     method: "get",
     path: "/api/products/stock-transfers/",
     alias: "products_stock_transfers_list",
-    description: `ViewSet لإدارة التحويلات بين الفروع
+    description: `ViewSet for Inter-Branch Transfers
 
-يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-(سواء كفرع مرسل أو مستلم).
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
 
 Endpoints:
-- GET /stock-transfers/ - قائمة التحويلات
-- POST /stock-transfers/ - إنشاء تحويل جديد
-- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-- POST /stock-transfers/{id}/ship/ - شحن التحويل
-- POST /stock-transfers/{id}/receive/ - استلام التحويل
-- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -13985,19 +16013,19 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfers/",
     alias: "products_stock_transfers_create",
-    description: `ViewSet لإدارة التحويلات بين الفروع
+    description: `ViewSet for Inter-Branch Transfers
 
-يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-(سواء كفرع مرسل أو مستلم).
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
 
 Endpoints:
-- GET /stock-transfers/ - قائمة التحويلات
-- POST /stock-transfers/ - إنشاء تحويل جديد
-- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-- POST /stock-transfers/{id}/ship/ - شحن التحويل
-- POST /stock-transfers/{id}/receive/ - استلام التحويل
-- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14012,19 +16040,19 @@ Endpoints:
     method: "get",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_retrieve",
-    description: `ViewSet لإدارة التحويلات بين الفروع
+    description: `ViewSet for Inter-Branch Transfers
 
-يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-(سواء كفرع مرسل أو مستلم).
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
 
 Endpoints:
-- GET /stock-transfers/ - قائمة التحويلات
-- POST /stock-transfers/ - إنشاء تحويل جديد
-- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-- POST /stock-transfers/{id}/ship/ - شحن التحويل
-- POST /stock-transfers/{id}/receive/ - استلام التحويل
-- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14039,19 +16067,19 @@ Endpoints:
     method: "put",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_update",
-    description: `ViewSet لإدارة التحويلات بين الفروع
+    description: `ViewSet for Inter-Branch Transfers
 
-يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-(سواء كفرع مرسل أو مستلم).
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
 
 Endpoints:
-- GET /stock-transfers/ - قائمة التحويلات
-- POST /stock-transfers/ - إنشاء تحويل جديد
-- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-- POST /stock-transfers/{id}/ship/ - شحن التحويل
-- POST /stock-transfers/{id}/receive/ - استلام التحويل
-- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14071,19 +16099,19 @@ Endpoints:
     method: "patch",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_partial_update",
-    description: `ViewSet لإدارة التحويلات بين الفروع
+    description: `ViewSet for Inter-Branch Transfers
 
-يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-(سواء كفرع مرسل أو مستلم).
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
 
 Endpoints:
-- GET /stock-transfers/ - قائمة التحويلات
-- POST /stock-transfers/ - إنشاء تحويل جديد
-- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-- POST /stock-transfers/{id}/ship/ - شحن التحويل
-- POST /stock-transfers/{id}/receive/ - استلام التحويل
-- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14103,19 +16131,19 @@ Endpoints:
     method: "delete",
     path: "/api/products/stock-transfers/:id/",
     alias: "products_stock_transfers_destroy",
-    description: `ViewSet لإدارة التحويلات بين الفروع
+    description: `ViewSet for Inter-Branch Transfers
 
-يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-(سواء كفرع مرسل أو مستلم).
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
 
 Endpoints:
-- GET /stock-transfers/ - قائمة التحويلات
-- POST /stock-transfers/ - إنشاء تحويل جديد
-- POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-- POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-- POST /stock-transfers/{id}/ship/ - شحن التحويل
-- POST /stock-transfers/{id}/receive/ - استلام التحويل
-- POST /stock-transfers/{id}/cancel/ - إلغاء التحويل`,
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14130,7 +16158,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfers/:id/approve/",
     alias: "products_stock_transfers_approve_create",
-    description: `الموافقة على التحويل`,
+    description: `Approve transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14150,7 +16178,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfers/:id/cancel/",
     alias: "products_stock_transfers_cancel_create",
-    description: `إلغاء التحويل`,
+    description: `Cancel transfer`,
     requestFormat: "json",
     parameters: [
       {
@@ -14170,7 +16198,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfers/:id/receive/",
     alias: "products_stock_transfers_receive_create",
-    description: `استلام التحويل - يضيف للفرع المستلم`,
+    description: `Receive transfer - Adds to receiving branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14190,7 +16218,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfers/:id/ship/",
     alias: "products_stock_transfers_ship_create",
-    description: `شحن التحويل - يخصم من الفرع المرسل`,
+    description: `Ship transfer - Deducts from sending branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14210,7 +16238,7 @@ Endpoints:
     method: "post",
     path: "/api/products/stock-transfers/:id/submit/",
     alias: "products_stock_transfers_submit_create",
-    description: `تقديم التحويل للموافقة`,
+    description: `Submit transfer for approval`,
     requestFormat: "json",
     parameters: [
       {
@@ -14237,40 +16265,188 @@ Endpoints:
   {
     method: "get",
     path: "/api/products/stock-transfers/incoming/",
-    alias: "products_stock_transfers_incoming_retrieve",
-    description: `التحويلات الواردة للفرع الحالي`,
+    alias: "products_stock_transfers_incoming_list",
+    description: `Incoming transfers to current branch`,
     requestFormat: "json",
-    response: StockTransfer,
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
   },
   {
     method: "get",
     path: "/api/products/stock-transfers/outgoing/",
-    alias: "products_stock_transfers_outgoing_retrieve",
-    description: `التحويلات الصادرة من الفرع الحالي`,
+    alias: "products_stock_transfers_outgoing_list",
+    description: `Outgoing transfers from current branch`,
     requestFormat: "json",
-    response: StockTransfer,
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
   },
   {
     method: "get",
     path: "/api/products/stock-transfers/pending/",
-    alias: "products_stock_transfers_pending_retrieve",
-    description: `التحويلات المعلقة`,
+    alias: "products_stock_transfers_pending_list",
+    description: `Pending transfers`,
     requestFormat: "json",
-    response: StockTransfer,
+    parameters: [
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
   },
   {
     method: "get",
     path: "/api/products/stocks/",
     alias: "products_stocks_list",
-    description: `ViewSet لإدارة المخزون
+    description: `ViewSet for Inventory Management
 
 Endpoints:
-- GET /stocks/ - قائمة المخزون
-- GET /stocks/{id}/ - تفاصيل مخزون
-- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14315,15 +16491,15 @@ Endpoints:
     method: "post",
     path: "/api/products/stocks/",
     alias: "products_stocks_create",
-    description: `ViewSet لإدارة المخزون
+    description: `ViewSet for Inventory Management
 
 Endpoints:
-- GET /stocks/ - قائمة المخزون
-- GET /stocks/{id}/ - تفاصيل مخزون
-- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14338,15 +16514,15 @@ Endpoints:
     method: "get",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_retrieve",
-    description: `ViewSet لإدارة المخزون
+    description: `ViewSet for Inventory Management
 
 Endpoints:
-- GET /stocks/ - قائمة المخزون
-- GET /stocks/{id}/ - تفاصيل مخزون
-- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14361,15 +16537,15 @@ Endpoints:
     method: "put",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_update",
-    description: `ViewSet لإدارة المخزون
+    description: `ViewSet for Inventory Management
 
 Endpoints:
-- GET /stocks/ - قائمة المخزون
-- GET /stocks/{id}/ - تفاصيل مخزون
-- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14389,15 +16565,15 @@ Endpoints:
     method: "patch",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_partial_update",
-    description: `ViewSet لإدارة المخزون
+    description: `ViewSet for Inventory Management
 
 Endpoints:
-- GET /stocks/ - قائمة المخزون
-- GET /stocks/{id}/ - تفاصيل مخزون
-- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14417,15 +16593,15 @@ Endpoints:
     method: "delete",
     path: "/api/products/stocks/:id/",
     alias: "products_stocks_destroy",
-    description: `ViewSet لإدارة المخزون
+    description: `ViewSet for Inventory Management
 
 Endpoints:
-- GET /stocks/ - قائمة المخزون
-- GET /stocks/{id}/ - تفاصيل مخزون
-- POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-- GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-- GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-- GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين`,
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
@@ -14439,17 +16615,52 @@ Endpoints:
   {
     method: "get",
     path: "/api/products/stocks/by-branch/:branch_id/",
-    alias: "products_stocks_by_branch_retrieve",
-    description: `مخزون فرع معين`,
+    alias: "products_stocks_by_branch_list",
+    description: `Stock for specific branch`,
     requestFormat: "json",
     parameters: [
       {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
         name: "branch_id",
-        type: "Path",
+        type: "Query",
         schema: z.number().int(),
       },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
     ],
-    response: Stock,
+    response: PaginatedStockList,
   },
   {
     method: "get",
@@ -14462,32 +16673,143 @@ Endpoints:
   {
     method: "get",
     path: "/api/products/stocks/low_stock/",
-    alias: "products_stocks_low_stock_retrieve",
-    description: `المنتجات منخفضة المخزون`,
+    alias: "products_stocks_low_stock_list",
+    description: `Low stock products`,
     requestFormat: "json",
-    response: Stock,
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockList,
   },
   {
     method: "get",
     path: "/api/products/stocks/out_of_stock/",
-    alias: "products_stocks_out_of_stock_retrieve",
-    description: `المنتجات نفدت من المخزون`,
+    alias: "products_stocks_out_of_stock_list",
+    description: `Out of stock products`,
     requestFormat: "json",
-    response: Stock,
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockList,
   },
   {
     method: "get",
     path: "/api/products/stocks/stores_only/",
-    alias: "products_stocks_stores_only_retrieve",
-    description: `المستودعات فقط (الفروع التي يمكن إضافة المخزون لها)`,
+    alias: "products_stocks_stores_only_list",
+    description: `Warehouses only (Branches that can add stock)`,
     requestFormat: "json",
-    response: Stock,
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStoreBranchList,
   },
   {
     method: "get",
     path: "/api/products/suppliers/",
     alias: "products_suppliers_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Suppliers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14577,7 +16899,7 @@ Endpoints:
     method: "post",
     path: "/api/products/suppliers/",
     alias: "products_suppliers_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Suppliers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14592,7 +16914,7 @@ Endpoints:
     method: "get",
     path: "/api/products/suppliers/:id/",
     alias: "products_suppliers_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Suppliers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14607,7 +16929,7 @@ Endpoints:
     method: "put",
     path: "/api/products/suppliers/:id/",
     alias: "products_suppliers_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Suppliers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14627,7 +16949,7 @@ Endpoints:
     method: "patch",
     path: "/api/products/suppliers/:id/",
     alias: "products_suppliers_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Suppliers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14647,7 +16969,7 @@ Endpoints:
     method: "delete",
     path: "/api/products/suppliers/:id/",
     alias: "products_suppliers_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Suppliers.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14670,7 +16992,8 @@ Endpoints:
     method: "get",
     path: "/api/products/variants/",
     alias: "products_variants_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14775,7 +17098,8 @@ Endpoints:
     method: "post",
     path: "/api/products/variants/",
     alias: "products_variants_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14790,7 +17114,8 @@ Endpoints:
     method: "get",
     path: "/api/products/variants/:id/",
     alias: "products_variants_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14805,7 +17130,8 @@ Endpoints:
     method: "put",
     path: "/api/products/variants/:id/",
     alias: "products_variants_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14825,7 +17151,8 @@ Endpoints:
     method: "patch",
     path: "/api/products/variants/:id/",
     alias: "products_variants_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14845,7 +17172,8 @@ Endpoints:
     method: "delete",
     path: "/api/products/variants/:id/",
     alias: "products_variants_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
@@ -14855,6 +17183,56 @@ Endpoints:
       },
     ],
     response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/products/variants/:variant_id/nearest-branch/",
+    alias: "products_variants_nearest_branch_retrieve",
+    description: `API View to find the nearest branch with sufficient stock.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "min_quantity",
+        type: "Query",
+        schema: z.number().int().optional().default(1),
+      },
+      {
+        name: "variant_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: NearestBranchResponse,
+  },
+  {
+    method: "get",
+    path: "/api/products/variants/:variant_id/stock-summary/",
+    alias: "products_variants_stock_summary_retrieve",
+    description: `API View to get stock summary for a specific variant across all branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "variant_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: VariantStockSummaryResponse,
+  },
+  {
+    method: "get",
+    path: "/api/products/variants/:variant_id/total-stock/",
+    alias: "products_variants_total_stock_retrieve",
+    description: `API View to get total stock quantity for a variant across all branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "variant_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: VariantTotalStockResponse,
   },
   {
     method: "get",
@@ -15001,7 +17379,9 @@ Endpoints:
       {
         name: "body",
         type: "Body",
-        schema: InstallmentRequest,
+        schema: z
+          .object({ amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/) })
+          .passthrough(),
       },
       {
         name: "id",
@@ -15009,7 +17389,7 @@ Endpoints:
         schema: z.number().int(),
       },
     ],
-    response: Installment,
+    response: MarkInstallmentPaidResponse,
   },
   {
     method: "get",
@@ -15022,27 +17402,59 @@ Endpoints:
   {
     method: "get",
     path: "/api/sales/installments/overdue/",
-    alias: "sales_installments_overdue_retrieve",
+    alias: "sales_installments_overdue_list",
     description: `الأقساط المتأخرة`,
     requestFormat: "json",
-    response: Installment,
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "payment",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum(["cancelled", "due", "overdue", "paid", "pending"])
+          .optional(),
+      },
+    ],
+    response: PaginatedInstallmentList,
   },
   {
     method: "post",
     path: "/api/sales/inventory/damage/",
     alias: "sales_inventory_damage_create",
-    description: `تسجيل تلف/إتلاف منتجات
-
-Request Body:
-{
-    &quot;branch_id&quot;: 1,
-    &quot;items&quot;: [
-        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 5, &quot;reason&quot;: &quot;كسر&quot;}
-    ],
-    &quot;reason&quot;: &quot;سبب عام&quot;
-}`,
+    description: `تسجيل تلف/إتلاف منتجات`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateDamageRecordRequestRequest,
+      },
+    ],
+    response: CreateDamageRecordResponse,
   },
   {
     method: "get",
@@ -15274,17 +17686,12 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: InvoiceRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Invoice,
+    response: InvoiceTotalsResponse,
   },
   {
     method: "post",
@@ -15294,32 +17701,154 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: InvoiceRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Invoice,
+    response: InvoiceConfirmResponse,
   },
   {
     method: "get",
     path: "/api/sales/invoices/by_order/",
-    alias: "sales_invoices_by_order_retrieve",
+    alias: "sales_invoices_by_order_list",
     description: `جلب فواتير طلب معين`,
     requestFormat: "json",
-    response: Invoice,
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "discount_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "due_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "paid_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "subtotal",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInvoiceList,
   },
   {
     method: "get",
     path: "/api/sales/invoices/choices/",
     alias: "sales_invoices_choices_retrieve",
     requestFormat: "json",
-    response: z.void(),
+    response: InvoiceChoicesResponse,
   },
   {
     method: "get",
@@ -15599,17 +18128,12 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: OrderRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Order,
+    response: OrderTotalsResponse,
   },
   {
     method: "post",
@@ -15619,17 +18143,12 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: OrderRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Order,
+    response: OrderCancelResponse,
   },
   {
     method: "post",
@@ -15639,17 +18158,12 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: OrderRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Order,
+    response: OrderConfirmResponse,
   },
   {
     method: "post",
@@ -15659,17 +18173,12 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: OrderRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Order,
+    response: OrderDeliverResponse,
   },
   {
     method: "post",
@@ -15679,48 +18188,39 @@ Users only see data from their assigned branches.`,
     requestFormat: "json",
     parameters: [
       {
-        name: "body",
-        type: "Body",
-        schema: OrderRequest,
-      },
-      {
         name: "id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: Order,
+    response: OrderReadyResponse,
   },
   {
     method: "post",
     path: "/api/sales/orders/:order_id/return/",
     alias: "sales_orders_return_create",
-    description: `إنشاء مرتجع مبيعات
-
-Request Body:
-{
-    &quot;items&quot;: [
-        {&quot;order_item_id&quot;: 1, &quot;quantity&quot;: 2},
-        {&quot;order_item_id&quot;: 2, &quot;quantity&quot;: 1}
-    ],
-    &quot;reason&quot;: &quot;سبب الإرجاع&quot;
-}`,
+    description: `إنشاء مرتجع مبيعات`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateReturnRequestRequest,
+      },
       {
         name: "order_id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: z.void(),
+    response: CreateReturnResponse,
   },
   {
     method: "get",
     path: "/api/sales/orders/choices/",
     alias: "sales_orders_choices_retrieve",
     requestFormat: "json",
-    response: z.void(),
+    response: OrderChoicesResponse,
   },
   {
     method: "get",
@@ -15734,7 +18234,7 @@ Request Body:
     method: "get",
     path: "/api/sales/payment-methods/",
     alias: "sales_payment_methods_list",
-    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    description: `ViewSet for dynamically managing payment methods`,
     requestFormat: "json",
     parameters: [
       {
@@ -15774,7 +18274,7 @@ Request Body:
     method: "post",
     path: "/api/sales/payment-methods/",
     alias: "sales_payment_methods_create",
-    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    description: `ViewSet for dynamically managing payment methods`,
     requestFormat: "json",
     parameters: [
       {
@@ -15789,7 +18289,7 @@ Request Body:
     method: "get",
     path: "/api/sales/payment-methods/:id/",
     alias: "sales_payment_methods_retrieve",
-    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    description: `ViewSet for dynamically managing payment methods`,
     requestFormat: "json",
     parameters: [
       {
@@ -15804,7 +18304,7 @@ Request Body:
     method: "put",
     path: "/api/sales/payment-methods/:id/",
     alias: "sales_payment_methods_update",
-    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    description: `ViewSet for dynamically managing payment methods`,
     requestFormat: "json",
     parameters: [
       {
@@ -15824,7 +18324,7 @@ Request Body:
     method: "patch",
     path: "/api/sales/payment-methods/:id/",
     alias: "sales_payment_methods_partial_update",
-    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    description: `ViewSet for dynamically managing payment methods`,
     requestFormat: "json",
     parameters: [
       {
@@ -15844,7 +18344,7 @@ Request Body:
     method: "delete",
     path: "/api/sales/payment-methods/:id/",
     alias: "sales_payment_methods_destroy",
-    description: `ViewSet لإدارة طرق الدفع ديناميكياً`,
+    description: `ViewSet for dynamically managing payment methods`,
     requestFormat: "json",
     parameters: [
       {
@@ -16020,7 +18520,10 @@ Request Body:
       {
         name: "body",
         type: "Body",
-        schema: PaymentRequest,
+        schema: z
+          .object({ transaction_id: z.string().min(1) })
+          .partial()
+          .passthrough(),
       },
       {
         name: "id",
@@ -16028,7 +18531,7 @@ Request Body:
         schema: z.number().int(),
       },
     ],
-    response: Payment,
+    response: MarkCompletedResponse,
   },
   {
     method: "post",
@@ -16040,7 +18543,10 @@ Request Body:
       {
         name: "body",
         type: "Body",
-        schema: PaymentRequest,
+        schema: z
+          .object({ reason: z.string().min(1) })
+          .partial()
+          .passthrough(),
       },
       {
         name: "id",
@@ -16048,7 +18554,7 @@ Request Body:
         schema: z.number().int(),
       },
     ],
-    response: Payment,
+    response: MarkFailedResponse,
   },
   {
     method: "post",
@@ -16060,7 +18566,7 @@ Request Body:
       {
         name: "body",
         type: "Body",
-        schema: PaymentRequest,
+        schema: PaymentRefundRequest,
       },
       {
         name: "id",
@@ -16068,7 +18574,7 @@ Request Body:
         schema: z.number().int(),
       },
     ],
-    response: Payment,
+    response: RefundResponse,
   },
   {
     method: "post",
@@ -16076,14 +18582,7 @@ Request Body:
     alias: "sales_payments_bnpl_callback_create",
     description: `Webhook callback من BNPL providers`,
     requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PaymentRequest,
-      },
-    ],
-    response: Payment,
+    response: z.object({ status: z.string() }).passthrough(),
   },
   {
     method: "get",
@@ -16091,7 +18590,7 @@ Request Body:
     alias: "sales_payments_choices_retrieve",
     description: `الخيارات المتاحة`,
     requestFormat: "json",
-    response: Payment,
+    response: PaymentChoices,
   },
   {
     method: "post",
@@ -16103,10 +18602,10 @@ Request Body:
       {
         name: "body",
         type: "Body",
-        schema: PaymentRequest,
+        schema: BNPLSessionRequestRequest,
       },
     ],
-    response: Payment,
+    response: BNPLSessionResponse,
   },
   {
     method: "get",
@@ -16122,132 +18621,247 @@ Request Body:
     alias: "sales_payments_summary_retrieve",
     description: `ملخص الدفعات`,
     requestFormat: "json",
-    response: Payment,
+    parameters: [
+      {
+        name: "period",
+        type: "Query",
+        schema: z.enum(["month", "today", "week", "year"]).optional(),
+      },
+    ],
+    response: PaymentSummaryResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/branch-comparison/",
-    alias: "sales_reports_branch_comparison_retrieve",
-    description: `مقارنة أداء الفروع`,
+    alias: "sales_reports_branch_comparison_list",
+    description: `Branch Performance Comparison`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: z.array(BranchComparisonResponse),
   },
   {
     method: "get",
     path: "/api/sales/reports/financial-dashboard/",
     alias: "sales_reports_financial_dashboard_retrieve",
-    description: `لوحة المعلومات المالية الشاملة
-تشمل:
-- إجمالي الفواتير
-- إجمالي المدفوعات
-- المبالغ المعلقة (غير المدفوعة)
-- الخصومات
-- الضرائب`,
+    description: `Comprehensive Financial Dashboard
+Includes:
+- Total Invoices
+- Total Payments
+- Pending Amounts (Unpaid)
+- Discounts
+- Taxes`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "period",
+        type: "Query",
+        schema: z.enum(["month", "today", "week", "year"]).optional(),
+      },
+    ],
+    response: FinancialDashboardResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/inventory-summary/",
     alias: "sales_reports_inventory_summary_retrieve",
-    description: `ملخص المخزون`,
+    description: `Inventory Summary`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: InventorySummaryResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/pending-orders/",
     alias: "sales_reports_pending_orders_retrieve",
-    description: `الطلبات المعلقة (غير المسلمة)`,
+    description: `Pending Orders (Not Delivered)`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PendingOrdersResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/receivables-aging/",
     alias: "sales_reports_receivables_aging_retrieve",
-    description: `تقرير أعمار الذمم المدينة (المبالغ المستحقة)
-يوضح الفواتير غير المدفوعة حسب العمر`,
+    description: `Receivables Aging Report (Due Amounts)
+Shows unpaid invoices by age`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: ReceivablesAgingResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/sales-by-date/",
-    alias: "sales_reports_sales_by_date_retrieve",
-    description: `المبيعات حسب التاريخ (للرسوم البيانية)`,
+    alias: "sales_reports_sales_by_date_list",
+    description: `Sales by Date (for charts)`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: z.array(SalesByDateResponse),
   },
   {
     method: "get",
     path: "/api/sales/reports/sales-summary/",
     alias: "sales_reports_sales_summary_retrieve",
-    description: `ملخص المبيعات
+    description: `Sales Summary
 Parameters:
     - branch_id: optional
     - from_date: YYYY-MM-DD
     - to_date: YYYY-MM-DD
     - period: today, week, month, year`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "from_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "period",
+        type: "Query",
+        schema: z.enum(["month", "today", "week", "year"]).optional(),
+      },
+      {
+        name: "to_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: SalesSummaryResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/stock-movements/",
     alias: "sales_reports_stock_movements_retrieve",
-    description: `تقرير حركات المخزون`,
+    description: `Stock Movements Report`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "movement_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: StockMovementsReportResponse,
   },
   {
     method: "get",
     path: "/api/sales/reports/top-products/",
-    alias: "sales_reports_top_products_retrieve",
-    description: `أكثر المنتجات مبيعاً`,
+    alias: "sales_reports_top_products_list",
+    description: `Top Selling Products`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: z.array(TopProductsResponse),
   },
   {
     method: "post",
     path: "/api/sales/wholesale/create-order/",
     alias: "sales_wholesale_create_order_create",
-    description: `إنشاء طلب جملة
-
-Request Body:
-{
-    &quot;customer_id&quot;: 1,
-    &quot;branch_id&quot;: 1,
-    &quot;items&quot;: [
-        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 10},
-        {&quot;variant_id&quot;: 2, &quot;quantity&quot;: 5}
-    ],
-    &quot;payment_method&quot;: &quot;credit&quot;,  // credit, cash, card, etc.
-    &quot;notes&quot;: &quot;ملاحظات&quot;
-}`,
+    description: `Create Wholesale Order`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateWholesaleOrderRequestRequest,
+      },
+    ],
+    response: CreateWholesaleOrderResponse,
   },
   {
     method: "post",
     path: "/api/sales/wholesale/customer/:customer_id/credit/",
     alias: "sales_wholesale_customer_credit_create",
-    description: `تحديث ائتمان العميل`,
+    description: `Update Customer Credit`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: UpdateCustomerCreditRequestRequest,
+      },
       {
         name: "customer_id",
         type: "Path",
         schema: z.number().int(),
       },
     ],
-    response: z.void(),
+    response: UpdateCustomerCreditResponse,
   },
   {
     method: "get",
     path: "/api/sales/wholesale/customer/:customer_id/statement/",
     alias: "sales_wholesale_customer_statement_retrieve",
-    description: `كشف حساب العميل`,
+    description: `Customer Statement`,
     requestFormat: "json",
     parameters: [
       {
@@ -16255,50 +18869,64 @@ Request Body:
         type: "Path",
         schema: z.number().int(),
       },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
-    response: z.void(),
+    response: CustomerStatementResponse,
   },
   {
     method: "get",
     path: "/api/sales/wholesale/customers/",
-    alias: "sales_wholesale_customers_retrieve",
-    description: `قائمة عملاء الجملة`,
+    alias: "sales_wholesale_customers_list",
+    description: `List of Wholesale Customers`,
     requestFormat: "json",
-    response: z.void(),
+    response: z.array(WholesaleCustomer),
   },
   {
     method: "get",
     path: "/api/sales/wholesale/dashboard/",
     alias: "sales_wholesale_dashboard_retrieve",
-    description: `لوحة تحكم البيع بالجملة`,
+    description: `Wholesale Dashboard`,
     requestFormat: "json",
-    response: z.void(),
+    response: WholesaleDashboardResponse,
   },
   {
     method: "post",
     path: "/api/sales/wholesale/pricing/",
     alias: "sales_wholesale_pricing_create",
-    description: `حساب تسعير الجملة لعميل معين
-
-Request Body:
-{
-    &quot;customer_id&quot;: 1,
-    &quot;items&quot;: [
-        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 10},
-        {&quot;variant_id&quot;: 2, &quot;quantity&quot;: 5}
-    ],
-    &quot;branch_id&quot;: 1  // اختياري
-}`,
+    description: `Calculate wholesale pricing for a specific customer`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: GetWholesalePricingRequestRequest,
+      },
+    ],
+    response: GetWholesalePricingResponse,
   },
   {
     method: "post",
     path: "/api/sales/wholesale/validate/",
     alias: "sales_wholesale_validate_create",
-    description: `التحقق من صحة طلب الجملة قبل إنشائه`,
+    description: `Validate wholesale order before creation`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ValidateWholesaleOrderRequestRequest,
+      },
+    ],
+    response: ValidateWholesaleOrderResponse,
   },
   {
     method: "get",
@@ -16306,7 +18934,20 @@ Request Body:
     alias: "tenants_activate_retrieve",
     description: `Main algorithm execution with improved flow control`,
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "token",
+        type: "Query",
+        schema: z.string(),
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "get",
@@ -16436,7 +19077,20 @@ Request Body:
     path: "/api/tenants/create-payment-order/",
     alias: "tenants_create_payment_order_create",
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreatePaymentOrderRequest,
+      },
+    ],
+    response: CreatePaymentOrderResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "get",
@@ -16588,7 +19242,7 @@ Allows listing, creating, and managing domains and subdomains.`,
     path: "/api/tenants/payments/",
     alias: "tenants_payments_retrieve",
     requestFormat: "json",
-    response: z.void(),
+    response: PaymentListResponse,
   },
   {
     method: "get",
@@ -16596,27 +19250,67 @@ Allows listing, creating, and managing domains and subdomains.`,
     alias: "tenants_paypal_cancel_retrieve",
     requestFormat: "json",
     response: z.void(),
+    errors: [
+      {
+        status: 302,
+        description: `No response body`,
+        schema: z.void(),
+      },
+    ],
   },
   {
     method: "post",
     path: "/api/tenants/paypal/execute/",
     alias: "tenants_paypal_execute_create",
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PayPalExecuteRequestRequest,
+      },
+    ],
+    response: PayPalExecuteSuccessResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "post",
     path: "/api/tenants/paypal/webhook/",
     alias: "tenants_paypal_webhook_create",
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
+    response: z.object({ status: z.string() }).passthrough(),
   },
   {
     method: "post",
     path: "/api/tenants/register/",
     alias: "tenants_register_create",
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
   },
   {
     method: "get",
@@ -17143,7 +19837,7 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: LoginRequest,
       },
     ],
-    response: z.object({ msg: z.string() }).passthrough(),
+    response: z.object({ detail: z.string() }).passthrough(),
     errors: [
       {
         status: 400,
@@ -17168,11 +19862,11 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: z.object({}).partial().passthrough(),
       },
     ],
-    response: z.object({ msg: z.string() }).passthrough(),
+    response: z.object({ detail: z.string() }).passthrough(),
     errors: [
       {
         status: 401,
-        schema: z.object({ error: z.string() }).passthrough(),
+        schema: z.object({ detail: z.string() }).passthrough(),
       },
     ],
   },
@@ -17359,7 +20053,14 @@ Allows listing, creating, and managing domains and subdomains.`,
     path: "/api/users/password-reset-confirm/",
     alias: "users_password_reset_confirm_create",
     requestFormat: "json",
-    response: z.void(),
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PasswordResetConfirmRequest,
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
   },
   {
     method: "post",
@@ -17530,7 +20231,7 @@ Allows listing, creating, and managing domains and subdomains.`,
     errors: [
       {
         status: 401,
-        schema: z.object({ error: z.string() }).passthrough(),
+        schema: z.object({ detail: z.string() }).passthrough(),
       },
     ],
   },
@@ -18142,7 +20843,7 @@ Allows listing, creating, and managing domains and subdomains.`,
     errors: [
       {
         status: 401,
-        schema: z.object({ error: z.string() }).passthrough(),
+        schema: z.object({ detail: z.string() }).passthrough(),
       },
     ],
   },

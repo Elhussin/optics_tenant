@@ -60,10 +60,16 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
             'id', 'usku', 'discount_price', 'images',
             'created_at', 'updated_at', 'description'
         ]
-        # استخدام extra_kwargs لجعل جميع الحقول اختيارية
+        # Use extra_kwargs to make all fields optional
         extra_kwargs = {field.name: {'required': False, 'allow_null': True}
                         for field in ProductVariant._meta.get_fields()
                         if not field.auto_created and not field.primary_key}
+
+    # 👈 variants READ logic
+    variants = serializers.SerializerMethodField()
+    # 👈 variants WRITE logic (input)
+    variants_input = serializers.ListField(child=serializers.DictField(
+    ), write_only=True, required=False, source='variants')
 
     def to_internal_value(self, data):
         """Override to accept fields from all variant types"""

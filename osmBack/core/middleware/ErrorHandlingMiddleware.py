@@ -1,19 +1,20 @@
 """
-Middleware لمعالجة الأخطاء غير المتوقعة
+Middleware for handling unexpected errors
 """
 
 import logging
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
 
 
 class ErrorHandlingMiddleware:
     """
-    Middleware لمعالجة الأخطاء التي تحدث خارج DRF
-    مثل أخطاء الـ routing، CSRF، إلخ
+    Middleware to handle errors occuring outside DRF
+    e.g. routing errors, CSRF, etc.
     """
 
     def __init__(self, get_response):
@@ -24,32 +25,26 @@ class ErrorHandlingMiddleware:
         return response
 
     def process_exception(self, request, exception):
-        """معالجة الأخطاء غير المتوقعة"""
+        """Handle unexpected exceptions"""
 
-        # الحصول على اللغة
-        lang = request.headers.get('Accept-Language', 'ar')
-        lang = 'en' if lang.startswith('en') else 'ar'
-
-        # معالجة 404
+        # Handle 404
         if isinstance(exception, Http404):
-            message = 'الصفحة المطلوبة غير موجودة.' if lang == 'ar' else 'Page not found.'
             return JsonResponse({
-                'detail': message,
+                'detail': str(_('Page not found.')),
                 'error_type': 'not_found',
                 'status_code': 404
             }, status=404)
 
-        # معالجة PermissionDenied
+        # Handle PermissionDenied
         if isinstance(exception, PermissionDenied):
-            message = 'ليس لديك صلاحية للوصول لهذه الصفحة.' if lang == 'ar' else 'Permission denied.'
             return JsonResponse({
-                'detail': message,
+                'detail': str(_('Permission denied.')),
                 'error_type': 'permission_denied',
                 'status_code': 403
             }, status=403)
 
-        # تسجيل الأخطاء غير المتوقعة
+        # Log unexpected errors
         logger.error(f"Unhandled exception: {exception}", exc_info=True)
 
-        # إرجاع None للسماح للـ exception handlers الأخرى بالمعالجة
+        # Return None to allow other exception handlers to process
         return None

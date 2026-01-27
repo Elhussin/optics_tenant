@@ -106,7 +106,7 @@ class BranchAccessMixin:
         branch_id = branch.id if hasattr(branch, 'id') else branch
         if branch_id not in branch_ids:
             raise PermissionDenied(
-                detail=_("ليس لديك صلاحية الوصول لهذا الفرع.")
+                detail=_("You do not have permission to access this branch.")
             )
 
         return True
@@ -150,7 +150,8 @@ class TransferBranchAccessMixin(BranchAccessMixin):
 
         if from_id not in branch_ids:
             raise PermissionDenied(
-                detail=_("ليس لديك صلاحية إنشاء تحويلات من هذا الفرع.")
+                detail=_(
+                    "You do not have permission to create transfers from this branch.")
             )
 
         return True

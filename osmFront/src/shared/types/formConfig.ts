@@ -3,6 +3,7 @@ export interface FormConfig {
   createAlias?: string;
   retrieveAlias?: string;
   updateAlias?: string;
+  partialUpdateAlias?: string;
   hardDeleteAlias?: string;
   listAlias?: string;
   createSuccessMessage?: string;
@@ -14,8 +15,8 @@ export interface FormConfig {
   detailsTitle?: string;
   createTitle?: string;
   updateTitle?: string;
-  fields: string[];
-  detailsField: string[];
+  fields?: string[];
+  detailsField?: string[];
 
   userConfig?: object,
   showResetButton?: boolean,

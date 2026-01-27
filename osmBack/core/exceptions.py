@@ -1,10 +1,10 @@
 """
-نظام موحد لمعالجة الأخطاء في Django REST Framework مع دعم الترجمة
-يوفر:
+Unified Error Handling System for Django REST Framework with Localization Support
+Provides:
 1. Custom Exception Handler
-2. رسائل خطأ موحدة مع Django i18n
-3. معالجة جميع أنواع الأخطاء
-4. Logging تلقائي
+2. Unified error messages with Django i18n
+3. Handling of all error types
+4. Automatic Logging
 """
 
 from rest_framework.views import exception_handler
@@ -21,57 +21,57 @@ logger = logging.getLogger(__name__)
 
 
 class ErrorMessages:
-    """رسائل الخطأ الموحدة مع دعم Django i18n"""
+    """Unified error messages with Django i18n support"""
 
-    # أخطاء عامة
+    # General Errors
     GENERAL_ERROR = _("An error occurred. Please try again later.")
 
-    # أخطاء الحقول
+    # Field Errors
     FIELD_REQUIRED = _("This field is required.")
     FIELD_BLANK = _("This field cannot be blank.")
     FIELD_INVALID = _("Invalid value.")
 
-    # أخطاء التكرار
+    # Duplicate Errors
     ALREADY_EXISTS = _("{model} with this {field} already exists.")
     DUPLICATE_ENTRY = _("This record already exists.")
 
-    # أخطاء الصلاحيات
+    # Permission Errors
     PERMISSION_DENIED = _("You do not have permission to perform this action.")
     NOT_AUTHENTICATED = _("Authentication credentials were not provided.")
 
-    # أخطاء البيانات
+    # Data Errors
     NOT_FOUND = _("Not found.")
     INVALID_DATA = _("Invalid data provided.")
 
-    # أخطاء المخزون
+    # Inventory Errors
     INSUFFICIENT_STOCK = _("Insufficient stock. Available: {available}")
     STOCK_RESERVED = _("Stock is reserved and cannot be modified.")
 
 
 def custom_exception_handler(exc, context):
     """
-    معالج مخصص للأخطاء في Django REST Framework مع دعم الترجمة
+    Custom exception handler for Django REST Framework with localization support
 
-    يعالج:
+    Handles:
     - ValidationError (DRF & Django)
     - IntegrityError (Database)
     - PermissionDenied
     - NotAuthenticated
     - NotFound
-    - جميع الأخطاء الأخرى
+    - All other exceptions
     """
 
-    # الحصول على اللغة من الـ request
+    # Get language from request
     request = context.get('request')
     if request:
         lang = request.META.get('HTTP_ACCEPT_LANGUAGE', 'ar')
         lang_code = 'en' if lang.startswith('en') else 'ar'
         translation.activate(lang_code)
 
-    # معالجة الأخطاء القياسية من DRF
+    # Handle standard DRF exceptions
     response = exception_handler(exc, context)
 
-    # معالجة ValidationError من Django
+    # Handle Django ValidationError
     if isinstance(exc, DjangoValidationError):
         if hasattr(exc, 'message_dict'):
             # Multiple field errors
@@ -87,13 +87,13 @@ def custom_exception_handler(exc, context):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    # معالجة IntegrityError (مثل SKU مكرر)
+    # Handle IntegrityError (e.g. duplicate SKU)
     elif isinstance(exc, IntegrityError):
         error_message = str(exc)
 
-        # محاولة استخراج اسم الحقل من رسالة الخطأ
+        # Try to extract field name from error message
         if 'UNIQUE constraint failed' in error_message or 'duplicate key' in error_message:
-            # محاولة استخراج اسم الحقل
+            # Try to identify the field
             field_name = 'field'
             if 'sku' in error_message.lower():
                 field_name = 'SKU'
@@ -102,7 +102,7 @@ def custom_exception_handler(exc, context):
             elif 'username' in error_message.lower():
                 field_name = 'username'
 
-            # استخدام الرسالة المترجمة
+            # Use translated message
             message = str(ErrorMessages.ALREADY_EXISTS).format(
                 model='', field=field_name)
         else:
@@ -113,12 +113,12 @@ def custom_exception_handler(exc, context):
             status=status.HTTP_400_BAD_REQUEST
         )
 
-        # تسجيل الخطأ
+        # Log the error
         logger.warning(f"IntegrityError: {error_message}")
 
-    # إذا لم يتم معالجة الخطأ بعد
+    # If exception is not yet handled
     if response is None:
-        # خطأ غير متوقع
+        # Unexpected error
         logger.error(f"Unhandled exception: {exc}", exc_info=True)
 
         response = Response(
@@ -130,7 +130,7 @@ def custom_exception_handler(exc, context):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
 
-    # تحسين رسائل الخطأ القياسية
+    # Improve standard error messages
     elif response.status_code == 401:
         response.data = {
             'detail': str(ErrorMessages.NOT_AUTHENTICATED),
@@ -149,15 +149,15 @@ def custom_exception_handler(exc, context):
             'error_type': 'not_found'
         }
 
-    # إضافة معلومات إضافية للـ response
+    # Add additional info to response
     if isinstance(response.data, dict):
         response.data['status_code'] = response.status_code
 
-        # إضافة timestamp
+        # Add timestamp
         from django.utils import timezone
         response.data['timestamp'] = timezone.now().isoformat()
 
-    # إلغاء تفعيل اللغة
+    # Deactivate language
     if request:
         translation.deactivate()
 
@@ -166,45 +166,45 @@ def custom_exception_handler(exc, context):
 
 def validate_unique_field(model, field_name, value, instance=None):
     """
-    التحقق من تفرد حقل معين مع رسالة خطأ مترجمة
+    Validate field uniqueness with translated error message
 
     Args:
-        model: النموذج المراد التحقق منه
-        field_name: اسم الحقل
-        value: القيمة المراد التحقق منها
-        instance: الكائن الحالي (للتحديث)
+        model: Model to check
+        field_name: Name of the field
+        value: Value to check
+        instance: Current instance (for update)
 
     Returns:
-        value: القيمة إذا كانت فريدة
+        value: The value if unique
 
     Raises:
-        ValidationError: إذا كانت القيمة مكررة
+        ValidationError: If value is duplicate
     """
     from rest_framework import serializers
 
-    # التحقق من جميع الكائنات بما فيها المحذوفة soft-deleted
+    # Check all objects including soft-deleted ones
     if hasattr(model.objects, 'all_objects'):
         queryset = model.objects.all_objects()
     else:
         queryset = model.objects.all()
 
-    # استثناء الكائن الحالي عند التحديث
+    # Exclude current instance on update
     if instance and instance.pk:
         queryset = queryset.exclude(pk=instance.pk)
 
-    # التحقق من التكرار
+    # Check for duplicates
     if queryset.filter(**{field_name: value}).exists():
-        # ترجمة اسم النموذج
+        # Translated model name
         model_name = model._meta.verbose_name or model.__name__
 
-        # ترجمة اسم الحقل
+        # Translated field name
         try:
             field_verbose = model._meta.get_field(
                 field_name).verbose_name or field_name
         except:
             field_verbose = field_name
 
-        # استخدام الرسالة المترجمة
+        # Use translated message
         message = str(ErrorMessages.ALREADY_EXISTS).format(
             model=model_name,
             field=field_verbose

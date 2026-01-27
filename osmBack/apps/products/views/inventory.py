@@ -12,9 +12,13 @@ from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 from core.permissions.BranchAccessMixin import BranchAccessMixin, TransferBranchAccessMixin
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
+from rest_framework import serializers
 
 INVENTORY_MANAGERS = ["InventoryManager", "BranchManager"]
 SUPER_ROLES = ["TenantOwner", "TenantAdmin"]
+
 
 class InventoryBaseViewSet(BranchAccessMixin, BaseViewSet):
     """
@@ -25,7 +29,7 @@ class InventoryBaseViewSet(BranchAccessMixin, BaseViewSet):
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
             allowed_roles=INVENTORY_MANAGERS,
-           required_permissions=["view_inventory"]
+            required_permissions=["view_inventory"]
         )
     ]
 
@@ -33,17 +37,18 @@ class InventoryBaseViewSet(BranchAccessMixin, BaseViewSet):
     branch_field = 'branch'
     allow_all_branches_for_roles = SUPER_ROLES + ["InventoryManager"]
 
+
 class StocksViewSet(InventoryBaseViewSet):
     """
-    ViewSet لإدارة المخزون
+    ViewSet for Inventory Management
 
     Endpoints:
-    - GET /stocks/ - قائمة المخزون
-    - GET /stocks/{id}/ - تفاصيل مخزون
-    - POST /stocks/ - إضافة مخزون جديد (فقط للمستودعات)
-    - GET /stocks/low_stock/ - المنتجات منخفضة المخزون
-    - GET /stocks/out_of_stock/ - المنتجات نفدت من المخزون
-    - GET /stocks/by_branch/{branch_id}/ - مخزون فرع معين
+    - GET /stocks/ - List stock
+    - GET /stocks/{id}/ - Stock details
+    - POST /stocks/ - Add new stock (Warehouses only)
+    - GET /stocks/low_stock/ - Low stock products
+    - GET /stocks/out_of_stock/ - Out of stock products
+    - GET /stocks/by_branch/{branch_id}/ - Stock for specific branch
     """
     queryset = Stock.objects.select_related('branch', 'variant__product').all()
     serializer_class = StockSerializer
@@ -52,31 +57,39 @@ class StocksViewSet(InventoryBaseViewSet):
     ordering_fields = ['quantity_in_stock', 'created_at', 'last_restocked']
     ordering = ['-created_at']
 
+    @extend_schema(responses=StockSerializer(many=True))
     @action(detail=False, methods=['get'])
     def low_stock(self, request):
-        """المنتجات منخفضة المخزون"""
+        """Low stock products"""
         queryset = Stock.objects.low_stock().select_related('branch', 'variant__product')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(responses=StockSerializer(many=True))
     @action(detail=False, methods=['get'])
     def out_of_stock(self, request):
-        """المنتجات نفدت من المخزون"""
+        """Out of stock products"""
         queryset = Stock.objects.out_of_stock().select_related('branch', 'variant__product')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        parameters=[OpenApiParameter(
+            name='branch_id', required=True, type=int)],
+        responses=StockSerializer(many=True)
+    )
     @action(detail=False, methods=['get'], url_path='by-branch/(?P<branch_id>[^/.]+)')
     def by_branch(self, request, branch_id=None):
-        """مخزون فرع معين"""
+        """Stock for specific branch"""
         queryset = Stock.objects.filter(branch_id=branch_id).select_related(
             'branch', 'variant__product')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(responses=inline_serializer(name='StoreBranch', fields={'id': serializers.IntegerField(), 'name': serializers.CharField()}, many=True))
     @action(detail=False, methods=['get'])
     def stores_only(self, request):
-        """المستودعات فقط (الفروع التي يمكن إضافة المخزون لها)"""
+        """Warehouses only (Branches that can add stock)"""
         from apps.branches.models import Branch
         from apps.branches.serializers import BranchSerializer
         stores = Branch.objects.filter(branch_type='store', is_active=True)
@@ -86,12 +99,12 @@ class StocksViewSet(InventoryBaseViewSet):
 
 class StockMovementsViewSet(InventoryBaseViewSet):
     """
-    ViewSet لإدارة حركات المخزون
+    ViewSet for Stock Movements
 
     Endpoints:
-    - GET /stock-movements/ - قائمة الحركات
-    - POST /stock-movements/ - إضافة حركة جديدة (شراء، بيع، تعديل، إلخ)
-    - GET /stock-movements/by_stock/{stock_id}/ - حركات مخزون معين
+    - GET /stock-movements/ - List movements
+    - POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+    - GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock
     """
     queryset = StockMovement.objects.select_related(
         'stock__branch', 'stock__variant__product'
@@ -110,7 +123,7 @@ class StockMovementsViewSet(InventoryBaseViewSet):
         return StockMovementSerializer
 
     def create(self, request, *args, **kwargs):
-        """إنشاء حركة مخزون جديدة مع تسجيل المستخدم"""
+        """Create new stock movement with user logging"""
         serializer = StockMovementCreateSerializer(
             data=request.data,
             context={'request': request}
@@ -123,16 +136,25 @@ class StockMovementsViewSet(InventoryBaseViewSet):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        parameters=[OpenApiParameter(
+            name='stock_id', required=True, type=int)],
+        responses=StockMovementSerializer(many=True)
+    )
     @action(detail=False, methods=['get'], url_path='by-stock/(?P<stock_id>[^/.]+)')
     def by_stock(self, request, stock_id=None):
-        """حركات مخزون معين"""
+        """Movements for specific stock"""
         queryset = self.queryset.filter(stock_id=stock_id)
         serializer = StockMovementSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        request=StockMovementCreateSerializer,
+        responses={201: StockMovementSerializer, 400: None}
+    )
     @action(detail=False, methods=['post'])
     def purchase(self, request):
-        """إضافة عملية شراء جديدة (إضافة للمخزون)"""
+        """Add purchase (Restock)"""
         data = request.data.copy()
         data['movement_type'] = 'purchase'
 
@@ -146,9 +168,13 @@ class StockMovementsViewSet(InventoryBaseViewSet):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(
+        request=StockMovementCreateSerializer,
+        responses={201: StockMovementSerializer, 400: None}
+    )
     @action(detail=False, methods=['post'])
     def adjustment(self, request):
-        """تعديل المخزون (زيادة أو نقصان)"""
+        """Stock adjustment (Increase or Decrease)"""
         data = request.data.copy()
         data['movement_type'] = 'adjustment'
 
@@ -165,19 +191,19 @@ class StockMovementsViewSet(InventoryBaseViewSet):
 
 class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
     """
-    ViewSet لإدارة التحويلات بين الفروع
+    ViewSet for Inter-Branch Transfers
 
-    يستخدم TransferBranchAccessMixin لعرض التحويلات التي ينتمي لها المستخدم
-    (سواء كفرع مرسل أو مستلم).
+    Uses TransferBranchAccessMixin to show transfers relevant to the user's branch
+    (either as sender or receiver).
 
     Endpoints:
-    - GET /stock-transfers/ - قائمة التحويلات
-    - POST /stock-transfers/ - إنشاء تحويل جديد
-    - POST /stock-transfers/{id}/submit/ - تقديم التحويل للموافقة
-    - POST /stock-transfers/{id}/approve/ - الموافقة على التحويل
-    - POST /stock-transfers/{id}/ship/ - شحن التحويل
-    - POST /stock-transfers/{id}/receive/ - استلام التحويل
-    - POST /stock-transfers/{id}/cancel/ - إلغاء التحويل
+    - GET /stock-transfers/ - List transfers
+    - POST /stock-transfers/ - Create transfer
+    - POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+    - POST /stock-transfers/{id}/approve/ - Approve transfer
+    - POST /stock-transfers/{id}/ship/ - Ship transfer
+    - POST /stock-transfers/{id}/receive/ - Receive transfer
+    - POST /stock-transfers/{id}/cancel/ - Cancel transfer
     """
     permission_classes = [
         IsAuthenticated,
@@ -213,20 +239,21 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(responses=StockTransferSerializer)
     @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
-        """تقديم التحويل للموافقة"""
+        """Submit transfer for approval"""
         transfer = self.get_object()
 
         if transfer.status != 'pending':
             return Response(
-                {'error': 'يمكن تقديم التحويلات المعلقة فقط.'},
+                {'detail': _('Only pending transfers can be submitted.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
         if not transfer.items.exists():
             return Response(
-                {'error': 'يجب إضافة منتجات للتحويل أولاً.'},
+                {'detail': _('Must add items to transfer first.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -235,14 +262,15 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
 
         return Response(StockTransferSerializer(transfer).data)
 
+    @extend_schema(responses=StockTransferSerializer)
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
-        """الموافقة على التحويل"""
+        """Approve transfer"""
         transfer = self.get_object()
 
         if transfer.status != 'submitted':
             return Response(
-                {'error': 'يمكن الموافقة على التحويلات المقدمة فقط.'},
+                {'detail': _('Only submitted transfers can be approved.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -253,9 +281,10 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
 
         return Response(StockTransferSerializer(transfer).data)
 
+    @extend_schema(responses=StockTransferSerializer)
     @action(detail=True, methods=['post'])
     def ship(self, request, pk=None):
-        """شحن التحويل - يخصم من الفرع المرسل"""
+        """Ship transfer - Deducts from sending branch"""
         transfer = self.get_object()
 
         try:
@@ -263,13 +292,14 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
             return Response(StockTransferSerializer(transfer).data)
         except ValueError as e:
             return Response(
-                {'error': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(responses=StockTransferSerializer)
     @action(detail=True, methods=['post'])
     def receive(self, request, pk=None):
-        """استلام التحويل - يضيف للفرع المستلم"""
+        """Receive transfer - Adds to receiving branch"""
         transfer = self.get_object()
 
         try:
@@ -280,18 +310,19 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
             return Response(StockTransferSerializer(transfer).data)
         except ValueError as e:
             return Response(
-                {'error': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(responses=StockTransferSerializer)
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
-        """إلغاء التحويل"""
+        """Cancel transfer"""
         transfer = self.get_object()
 
         if transfer.status in ['shipped', 'received', 'completed']:
             return Response(
-                {'error': 'لا يمكن إلغاء تحويل تم شحنه أو استلامه.'},
+                {'detail': _('Cannot cancel a shipped or received transfer.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
@@ -300,20 +331,26 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
 
         return Response(StockTransferSerializer(transfer).data)
 
+    @extend_schema(responses=StockTransferSerializer(many=True))
     @action(detail=False, methods=['get'])
     def pending(self, request):
-        """التحويلات المعلقة"""
+        """Pending transfers"""
         queryset = self.queryset.filter(status='pending')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        parameters=[OpenApiParameter(
+            name='branch_id', required=True, type=int)],
+        responses=StockTransferSerializer(many=True)
+    )
     @action(detail=False, methods=['get'])
     def incoming(self, request):
-        """التحويلات الواردة للفرع الحالي"""
+        """Incoming transfers to current branch"""
         branch_id = request.query_params.get('branch_id')
         if not branch_id:
             return Response(
-                {'error': 'يجب تحديد الفرع.'},
+                {'detail': _('Branch must be specified.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
         queryset = self.queryset.filter(
@@ -321,13 +358,18 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        parameters=[OpenApiParameter(
+            name='branch_id', required=True, type=int)],
+        responses=StockTransferSerializer(many=True)
+    )
     @action(detail=False, methods=['get'])
     def outgoing(self, request):
-        """التحويلات الصادرة من الفرع الحالي"""
+        """Outgoing transfers from current branch"""
         branch_id = request.query_params.get('branch_id')
         if not branch_id:
             return Response(
-                {'error': 'يجب تحديد الفرع.'},
+                {'detail': _('Branch must be specified.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
         queryset = self.queryset.filter(
@@ -338,7 +380,7 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
 
 class StockTransferItemViewSet(InventoryBaseViewSet):
     """
-    ViewSet لإدارة عناصر التحويل
+    ViewSet for Transfer Items
     """
     queryset = StockTransferItem.objects.select_related(
         'transfer', 'variant__product'

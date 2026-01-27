@@ -28,18 +28,28 @@ class PrescriptionRecordSerializer(serializers.ModelSerializer):
 
     def _validate_sphere(self, value, field_name):
         """التحقق من قيمة Sphere (عادة بين -20 و +20)"""
-        if value is not None and (value < -20 or value > 20):
-            raise serializers.ValidationError(
-                _('Sphere value must be between -20 and +20')
-            )
+        if value is not None:
+            try:
+                val = float(value)
+                if val < -20 or val > 20:
+                    raise serializers.ValidationError(
+                        _('Sphere value must be between -20 and +20')
+                    )
+            except ValueError:
+                pass  # Let standard choice validation handle invalid numbers
         return value
 
     def _validate_cylinder(self, value, field_name):
         """التحقق من قيمة Cylinder (عادة بين -10 و +10)"""
-        if value is not None and (value < -10 or value > 10):
-            raise serializers.ValidationError(
-                _('Cylinder value must be between -10 and +10')
-            )
+        if value is not None:
+            try:
+                val = float(value)
+                if val < -10 or val > 10:
+                    raise serializers.ValidationError(
+                        _('Cylinder value must be between -10 and +10')
+                    )
+            except ValueError:
+                pass
         return value
 
     def _validate_axis(self, value, field_name):
@@ -81,6 +91,49 @@ class PrescriptionRecordSerializer(serializers.ModelSerializer):
 
     def validate_left_pupillary_distance(self, value):
         return self._validate_pupillary_distance(value, 'left_pupillary_distance')
+
+    def validate(self, data):
+        """
+        Cross-field validation for prescription data
+        """
+        # Check if at least one eye has prescription data
+        right_has_data = any([
+            data.get('right_sphere'),
+            data.get('right_cylinder'),
+            data.get('right_axis')
+        ])
+
+        left_has_data = any([
+            data.get('left_sphere'),
+            data.get('left_cylinder'),
+            data.get('left_axis')
+        ])
+
+        if not right_has_data and not left_has_data:
+            raise serializers.ValidationError(
+                _('At least one eye must have prescription data (sphere, cylinder, or axis)')
+            )
+
+        # Validate that if cylinder is provided, axis should also be provided
+        if data.get('right_cylinder') and data.get('right_cylinder') != '-00.00':
+            if not data.get('right_axis') and data.get('right_axis') != 0:
+                raise serializers.ValidationError({
+                    'right_axis': _('Axis is required when cylinder is provided for right eye')
+                })
+
+        if data.get('left_cylinder') and data.get('left_cylinder') != '-00.00':
+            if not data.get('left_axis') and data.get('left_axis') != 0:
+                raise serializers.ValidationError({
+                    'left_axis': _('Axis is required when cylinder is provided for left eye')
+                })
+
+        # Validate customer is provided
+        if not data.get('customer'):
+            raise serializers.ValidationError({
+                'customer': _('Customer is required for prescription record')
+            })
+
+        return data
 
     def to_internal_value(self, data):
         # Clean empty strings to None for fields that might be sent as ""

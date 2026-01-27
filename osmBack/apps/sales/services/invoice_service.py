@@ -2,6 +2,7 @@
 
 from django.db import transaction
 from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 from apps.products.models import Stock, StockMovement
 from apps.sales.services.base_document_service import calculate_document_totals
 
@@ -9,10 +10,11 @@ from apps.sales.services.base_document_service import calculate_document_totals
 def calculate_invoice_totals(invoice):
     return calculate_document_totals(invoice)
 
+
 @transaction.atomic
 def confirm_invoice(invoice):
     if invoice.status != 'draft':
-        raise ValidationError("Only draft invoices can be confirmed")
+        raise ValidationError(_("Only draft invoices can be confirmed"))
 
     for item in invoice.items.select_related('product_variant'):
         stock = Stock.objects.select_for_update().filter(
@@ -22,7 +24,8 @@ def confirm_invoice(invoice):
 
         if invoice.invoice_type in ['sale', 'return_purchase']:
             if stock.available_quantity < item.quantity:
-                raise ValidationError(f"Not enough stock for {item.product_variant}")
+                raise ValidationError(
+                    _("Not enough stock for {0}").format(item.product_variant))
             stock.quantity_in_stock -= item.quantity
             movement_type = 'sale'
         else:
@@ -39,7 +42,7 @@ def confirm_invoice(invoice):
             quantity_before=before,
             quantity_after=stock.quantity_in_stock,
             reference_number=invoice.invoice_number,
-            notes=f"Invoice {invoice.invoice_type}",
+            notes=_("Invoice {0}").format(invoice.invoice_type),
         )
 
     invoice.status = 'confirmed'

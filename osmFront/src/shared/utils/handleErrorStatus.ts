@@ -1,4 +1,4 @@
-import {translate} from "./translate";
+import { translate } from "./translate";
 import type { NormalizedError } from "../types";
 
 /**
@@ -22,7 +22,19 @@ export function handleErrorStatus(error: any, t?: (key: string) => string): Norm
   }
 
   const status = error.response.status || error.status;
-  const detail = error.response.data?.detail || error.message;
+  const data = error.response.data;
+
+  // 1. Check for Unified Backend Error Format { error: { message, code, details } }
+  if (data?.error && typeof data.error === 'object') {
+    return {
+      message: data.error.message || translate("error.unexpected", t) || "An unexpected error occurred.",
+      code: data.error.code || status,
+      details: data.error.details || data.error
+    };
+  }
+
+  // 2. Fallback to Legacy formats
+  const detail = data?.detail || error.message;
 
   const statusMessages: Record<number, string> = {
     400: translate("error.validation", t) || "Validation error occurred",
@@ -39,6 +51,6 @@ export function handleErrorStatus(error: any, t?: (key: string) => string): Norm
   return {
     message: detail || statusMessages[status] || translate("error.unexpected", t) || "An unexpected error occurred.",
     code: status,
-    details: error.response.data,
+    details: data,
   };
 }

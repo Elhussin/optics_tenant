@@ -18,6 +18,9 @@ PRODUCT_MANAGERS = ["InventoryManager", "BranchManager", "SalesClerk"]
 
 
 class ProductBaseViewSet(BaseViewSet):
+    """
+    Base ViewSet for Product Management, enforcing Role access.
+    """
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
@@ -28,16 +31,24 @@ class ProductBaseViewSet(BaseViewSet):
 
 
 class CategoryViewSet(ProductBaseViewSet):
+    """
+    ViewSet for managing Product Categories.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     search_fields = ["name", "parent__name", "description"]
 
 
 class ProductVariantViewSet(ProductBaseViewSet):
+    """
+    ViewSet for managing Product Variants.
+    Custom logic for creation to support nested pricing/attributes.
+    """
     queryset = ProductVariant.objects.select_related(
         'product', 'product__brand').all()
     serializer_class = ProductVariantSerializer
-    # حقول البحث الفعلية - استخدم product__name للعلاقات
+
+    # Actual search fields - use product__name for relationships
     search_fields = [
         "sku",
         "usku",
@@ -55,14 +66,16 @@ class ProductVariantViewSet(ProductBaseViewSet):
 
 
 class ProductViewSet(ProductBaseViewSet):
+    """
+    ViewSet for managing main Products.
+    """
     queryset = (
         Product.objects.all()
-        # .select_related('brand')  # Removed incorrect comments, kept valid logic
         .prefetch_related(
             'variants',
             'categories'
         )
-    ).select_related('brand')  # Chained correctly
+    ).select_related('brand')
 
     serializer_class = ProductSerializer
     search_fields = ["name", "description",
@@ -70,15 +83,24 @@ class ProductViewSet(ProductBaseViewSet):
 
 
 class ProductImageViewSet(ProductBaseViewSet):
+    """
+    ViewSet for managing Product Images.
+    """
     queryset = ProductImage.objects.all()
     serializer_class = ProductImageSerializer
 
 
 class FlexiblePriceViewSet(ProductBaseViewSet):
+    """
+    ViewSet for managing Flexible Pricing rules.
+    """
     queryset = FlexiblePrice.objects.all()
     serializer_class = FlexiblePriceSerializer
 
 
 class ProductVariantOfferViewSet(ProductBaseViewSet):
+    """
+    ViewSet for managing Product Offers.
+    """
     queryset = ProductVariantOffer.objects.all()
     serializer_class = ProductVariantOfferSerializer

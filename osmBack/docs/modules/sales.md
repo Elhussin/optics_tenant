@@ -1,23 +1,35 @@
-# وحدة المبيعات ونقاط البيع (Sales & POS) 🛒
+# Sales & Invoicing 💰
 
-تتيح هذه الوحدة تنفيذ عمليات البيع اليومية، ربطها بالفواتير، وإصدار الإيصالات للعملاء.
+The Sales module handles the Point of Sale (POS) operations, order processing, and invoice generation.
 
-## 🧾 الفواتير (Invoicing)
-- **إنشاء الفواتير**: ربط المنتجات، الخصومات، والضرائب تلقائياً.
-- **تعدد طرق الدفع**: نقدي، بطاقة، أو تقسيط.
-- **تكامل المحاسبة**: ترحيل القيمة فوراً لحسابات المبيعات والأصول.
+## 🛒 Order Lifecycle
 
-## 🕶 ربط الوصفات الطبية (Prescriptions)
-من الميزات الفريدة في نظام EyeCare هي إمكانية ربط فاتورة المبيعات بوصفة طبية محددة لضمان دقة العدسات المطلوبة.
+1.  **Draft/Cart**: User adds items to the cart.
+2.  **Creation**: `Order` is created with status `pending`.
+    -   Stock is reserved (temporarily deducted).
+3.  **Confirmation**: Status becomes `confirmed`.
+    -   Financial transaction is recorded.
+    -   Stock deduction is finalized.
+4.  **Payment**: Status becomes `paid` or `partially_paid`.
+    -   Payment record is created.
+5.  **Completion**: Order is fulfilled/delivered (`completed`).
 
----
+## 🧾 Invoices
 
-## 📈 التقارير
-- تقارير المبيعات اليومية والشهرية.
-- تقارير أداء الموظفين (عمولات المبيعات).
-- تقارير المنتجات الأكثر مبيعاً.
+The system supports two types of invoices compliant with ZATCA (Saudi Tax Authority):
+1.  **Simplified Tax Invoice**: For B2C transactions (end consumers).
+2.  **Standard Tax Invoice**: For B2B transactions (requires customer VAT number).
 
+**Formatting:**
+-   Invoices include QR Codes.
+-   Amounts are calculated to 2 decimal places.
+-   VAT (15%) is clearly separated.
 
----
+## 💳 Payments
 
-> **ملاحظة**: التوثيق التلقائي للكود يتطلب إعداد بيئة Django.
+-   **Methods**: Cash, Card (Mada/Visa), Bank Transfer.
+-   **Split Payments**: An order can be paid partially by Cash and partially by Card.
+
+## 🔁 Returns & Refunds
+-   Supports full or partial returns.
+-   Automatically reverses the Stock Movement and creates a Credit Note (Financial Reversal).

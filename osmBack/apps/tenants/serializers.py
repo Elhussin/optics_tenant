@@ -97,21 +97,27 @@ class DomainSerializer(serializers.ModelSerializer):
 
 
 class CreatePaymentOrderSerializer(serializers.Serializer):
-    client_id = serializers.UUIDField()
+    client_id = serializers.UUIDField(label=_("Client"))
 
     plan_id = serializers.PrimaryKeyRelatedField(
-        queryset=SubscriptionPlan.objects.filter(is_active=True)
+        queryset=SubscriptionPlan.objects.filter(is_active=True),
+        label=_("Subscription Plan")
     )
     direction = serializers.ChoiceField(
-        choices=PAYMENT_PERIODS)  # month / year
-    method = serializers.ChoiceField(choices=PAYMENT_METHODS)
+        choices=PAYMENT_PERIODS,
+        label=_("Payment Period")
+    )
+    method = serializers.ChoiceField(
+        choices=PAYMENT_METHODS,
+        label=_("Payment Method")
+    )
 
     def to_internal_value(self, data):
         # Normalize direction to lowercase to support "Month"/"Monthly" etc.
         if 'direction' in data and isinstance(data['direction'], str):
             # Create a mutable copy if it's immutable (common in DRF)
             if hasattr(data, 'copy'):
-               data = data.copy()
+                data = data.copy()
             data['direction'] = data['direction'].lower()
         return super().to_internal_value(data)
 

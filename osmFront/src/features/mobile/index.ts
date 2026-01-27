@@ -7,6 +7,7 @@
 // Hooks
 export * from './hooks/useMobile';
 export * from './hooks/useOfflineSync';
+export * from './hooks/useMobileApi';
 
 // Components
 export * from './components/BottomNav';

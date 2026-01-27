@@ -249,3 +249,12 @@
 [2026-01-22 22:42:38,866] INFO product: Creating variant with data: {'product_type_id': 224, 'last_purchase_price': '100.00', 'selling_price': '300.00', 'discount_percentage': '20.00', 'sku': '12345600001', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184, 'spherical': '-01.00', 'lens_diameter_id': 119, 'lens_material_id': 5, 'is_active': True}
 [2026-01-22 22:42:38,986] INFO product: Set M2M field lens_coatings = [196, 204, 205]
 [2026-01-22 22:42:39,186] INFO product: ✅ Updated description after M2M fields
+[2026-01-26 22:36:48,210] INFO product: 🔍 _manage_variants called for product 8 (Nikon Seecoat)
+[2026-01-26 22:36:48,214] INFO product: 📋 variants_data received: [{'id': 5, 'product_type': 164, 'last_purchase_price': '', 'selling_price': '200.00', 'discount_percentage': '0.00', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-02.00', 'cylinder': '-00.50', 'lens_diameter': 119, 'lens_color': '', 'lens_material': 5, 'lens_coatings': [195, 203], 'is_active': True, 'attributes': ''}]
+[2026-01-26 22:36:48,218] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-01-26 22:36:48,219] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-01-26 22:36:48,220] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-01-26 22:36:48,221] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-01-26 22:36:48,221] INFO product: clean_vdata for variant: {'id': 5, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'spherical': '-02.00', 'cylinder': '-00.50', 'lens_diameter_id': 119, 'lens_material_id': 5, 'lens_coatings': [195, 203], 'is_active': True}
+[2026-01-26 22:36:48,382] INFO product: Updated M2M field lens_coatings = [195, 203]
+[2026-01-26 22:36:48,537] INFO product: ✅ Updated description after M2M fields

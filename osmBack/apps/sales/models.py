@@ -17,22 +17,41 @@ from apps.sales.services.payment_service import apply_payment
 
 
 class BaseDocument(BaseModel):
-    branch = models.ForeignKey(Branch, on_delete=models.SET_NULL,
-                               null=True, blank=True, related_name='%(class)s_branch')
+    branch = models.ForeignKey(
+        Branch, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='%(class)s_branch',
+        verbose_name=_("Branch")
+    )
     customer = models.ForeignKey(
-        Customer, on_delete=models.CASCADE, related_name='%(class)s_customer')
+        Customer, on_delete=models.CASCADE,
+        related_name='%(class)s_customer',
+        verbose_name=_("Customer")
+    )
 
-    subtotal = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    subtotal = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Subtotal")
+    )
     tax_rate = models.DecimalField(
-        max_digits=5, decimal_places=4, default=Decimal('0.15'))
+        max_digits=5, decimal_places=4, default=Decimal('0.15'),
+        verbose_name=_("Tax Rate")
+    )
     tax_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0)
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Tax Amount")
+    )
     discount_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0)
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Discount Amount")
+    )
     total_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0)
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Total Amount")
+    )
     paid_amount = models.DecimalField(
-        max_digits=12, decimal_places=2, default=0)
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Paid Amount")
+    )
 
     class Meta:
         abstract = True
@@ -48,11 +67,22 @@ class BaseDocument(BaseModel):
 
 class BaseItem(BaseModel):
     product_variant = models.ForeignKey(
-        ProductVariant, on_delete=models.SET_NULL, null=True, related_name='%(class)s_variant')
-    quantity = models.PositiveIntegerField(default=1)
-    unit_price = models.DecimalField(max_digits=12, decimal_places=2)
+        ProductVariant, on_delete=models.SET_NULL, null=True,
+        related_name='%(class)s_variant',
+        verbose_name=_("Product")
+    )
+    quantity = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_("Quantity")
+    )
+    unit_price = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        verbose_name=_("Unit Price")
+    )
     total_price = models.DecimalField(
-        max_digits=12, decimal_places=2, editable=False)
+        max_digits=12, decimal_places=2, editable=False,
+        verbose_name=_("Total Price")
+    )
 
     class Meta:
         abstract = True
@@ -68,13 +98,16 @@ class PaymentMethod(BaseModel):
     Allows adding new methods without code changes.
     """
     name_ar = models.CharField(
-        max_length=100, verbose_name=_("الاسم (بالعربي)"))
+        max_length=100, verbose_name=_("Name (Arabic)"))
     name_en = models.CharField(
         max_length=100, verbose_name=_("Name (English)"))
     code = models.SlugField(unique=True, verbose_name=_(
         "Code"))  # e.g., 'tabby', 'mada'
     is_active = models.BooleanField(default=True, verbose_name=_("Active"))
-    icon = models.ImageField(upload_to='payment_icons/', null=True, blank=True)
+    icon = models.ImageField(
+        upload_to='payment_icons/', null=True, blank=True,
+        verbose_name=_("Icon")
+    )
     provider_fees_percent = models.DecimalField(
         max_digits=5, decimal_places=2, default=0.0,
         help_text=_("Percentage fee charged by the provider (e.g., 2.5)")
@@ -92,16 +125,16 @@ class PaymentMethod(BaseModel):
 
 class Order(BaseDocument):
     class OrderType(models.TextChoices):
-        CASH = 'cash', _('نقدي')
-        CREDIT = 'credit', _('آجل')
-        INSURANCE = 'insurance', _('تأمين')
-        BNPL = 'bnpl', _('تقسيط')           # Tabby, Tamara
-        CORPORATE = 'corporate', _('شركات')
-        WHOLESALE = 'wholesale', _('جملة')
+        CASH = 'cash', _('Cash')
+        CREDIT = 'credit', _('Credit')
+        INSURANCE = 'insurance', _('Insurance')
+        BNPL = 'bnpl', _('Installment')           # Tabby, Tamara
+        CORPORATE = 'corporate', _('Corporate')
+        WHOLESALE = 'wholesale', _('Wholesale')
 
     class PaymentStatus(models.TextChoices):
         PENDING = 'pending', _('Pending')
-        PARTIAL = 'partial', _('Partial')
+        PARTIAL = 'partial', _('Partial Payment')
         PAID = 'paid', _('Paid')
         REFUNDED = 'refunded', _('Refunded')
         DISPUTED = 'disputed', _('Disputed')
@@ -113,35 +146,44 @@ class Order(BaseDocument):
         DELIVERED = 'delivered', _('Delivered')
         CANCELLED = 'cancelled', _('Cancelled')
 
-    # نوع الطلب (يحدد سير العمل)
+    # Order type (determines workflow)
     order_type = models.CharField(
-        max_length=20, choices=OrderType.choices, default=OrderType.CASH)
-    order_number = models.CharField(max_length=20, unique=True, editable=False)
+        max_length=20, choices=OrderType.choices, default=OrderType.CASH,
+        verbose_name=_("Order Type")
+    )
+    order_number = models.CharField(
+        max_length=20, unique=True, editable=False,
+        verbose_name=_("Order Number")
+    )
     status = models.CharField(
-        max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING)
+        max_length=20, choices=OrderStatus.choices, default=OrderStatus.PENDING,
+        verbose_name=_("Order Status")
+    )
 
-    # الدفع
+    # Payment
     payment_status = models.CharField(
-        max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING)
+        max_length=20, choices=PaymentStatus.choices, default=PaymentStatus.PENDING,
+        verbose_name=_("Payment Status")
+    )
 
-    # تحويل إلى ForeignKey ليكون ديناميكياً
+    # Changed to ForeignKey for dynamic behavior
     payment_method = models.ForeignKey(
         PaymentMethod,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='orders',
-        verbose_name=_("طريقة الدفع")
+        verbose_name=_("Payment Method")
     )
 
-    # ربط بالشريك (تأمين/تقسيط/شركة)
+    # Link to Partner (Insurance/Installment/Corporate)
     partner = models.ForeignKey(
         'crm.Partner',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='orders',
-        verbose_name="الشريك"
+        verbose_name=_("Partner")
     )
     customer_partner_link = models.ForeignKey(
         'crm.CustomerPartnerLink',
@@ -149,32 +191,53 @@ class Order(BaseDocument):
         null=True,
         blank=True,
         related_name='orders',
-        verbose_name="ربط العميل بالشريك"
+        verbose_name=_("Customer Partner Link")
     )
 
-    # مبالغ إضافية للتأمين/التقسيط
+    # Additional amounts for Insurance/Installment
     partner_share = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="حصة الشريك",
-        help_text="المبلغ المستحق من الشريك (تأمين/تقسيط)"
+        verbose_name=_("Partner Share"),
+        help_text=_("Amount due from partner (insurance/installment)")
     )
     customer_share = models.DecimalField(
         max_digits=12,
         decimal_places=2,
         default=0,
-        verbose_name="حصة العميل",
-        help_text="المبلغ المستحق من العميل مباشرة"
+        verbose_name=_("Customer Share"),
+        help_text=_("Amount due from customer directly")
     )
 
-    notes = models.TextField(blank=True)
-    internal_notes = models.TextField(blank=True)
-    confirmed_at = models.DateTimeField(null=True, blank=True)
-    delivered_at = models.DateTimeField(null=True, blank=True)
-    expected_delivery = models.DateTimeField(null=True, blank=True)
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
+    internal_notes = models.TextField(
+        blank=True,
+        verbose_name=_("Internal Notes")
+    )
+    confirmed_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Confirmation Date")
+    )
+    delivered_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Delivery Date")
+    )
+    expected_delivery = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Expected Delivery Date")
+    )
     sales_person = models.ForeignKey(
-        BranchUsers, on_delete=models.SET_NULL, null=True, blank=True)
+        BranchUsers, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name=_("Sales Person")
+    )
+
+    class Meta:
+        verbose_name = _("Order")
+        verbose_name_plural = _("Orders")
 
     # Legacy compatibility
     @property
@@ -185,7 +248,7 @@ class Order(BaseDocument):
         return f"Order {self.order_number} - {self.customer.full_name}"
 
     def calculate_partner_shares(self):
-        """حساب توزيع المبالغ بين العميل والشريك"""
+        """Calculate amount distribution between Customer and Partner"""
         if self.order_type in ['insurance', 'bnpl', 'corporate'] and self.partner:
             if self.customer_partner_link:
                 self.customer_share = self.customer_partner_link.get_copay_amount(
@@ -235,32 +298,72 @@ class Order(BaseDocument):
 
 class OrderItem(BaseItem):
     order = models.ForeignKey(
-        Order, on_delete=models.CASCADE, related_name='items')
+        Order, on_delete=models.CASCADE, related_name='items',
+        verbose_name=_("Order")
+    )
     prescription = models.ForeignKey(
-        PrescriptionRecord, on_delete=models.SET_NULL, null=True, blank=True, related_name='order_items')
+        PrescriptionRecord, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='order_items',
+        verbose_name=_("Prescription")
+    )
+
+    class Meta:
+        verbose_name = _("Order Item")
+        verbose_name_plural = _("Order Items")
 
     def __str__(self):
         return f"{self.product_variant.product.model} - {self.quantity}"
 
 
 class Invoice(BaseDocument):
-    INVOICE_TYPES = [('purchase', 'Purchase'), ('sale', 'Sale'),
-                     ('return_purchase', 'Return Purchase'), ('return_sale', 'Return Sale')]
-    INVOICE_STATUS = [('draft', 'Draft'), ('paid', 'Paid'), ('partially_paid',
-                                                             'Partially Paid'), ('overdue', 'Overdue'), ('confirmed', 'Confirmed')]
+    INVOICE_TYPES = [
+        ('purchase', _('Purchase')),
+        ('sale', _('Sale')),
+        ('return_purchase', _('Purchase Return')),
+        ('return_sale', _('Sale Return'))
+    ]
+    INVOICE_STATUS = [
+        ('draft', _('Draft')),
+        ('paid', _('Paid')),
+        ('partially_paid', _('Partially Paid')),
+        ('overdue', _('Overdue')),
+        ('confirmed', _('Confirmed'))
+    ]
 
     invoice_number = models.CharField(
-        max_length=50, unique=True, editable=False)
+        max_length=50, unique=True, editable=False,
+        verbose_name=_("Invoice Number")
+    )
     invoice_type = models.CharField(
-        max_length=20, choices=INVOICE_TYPES, default='sale')
+        max_length=20, choices=INVOICE_TYPES, default='sale',
+        verbose_name=_("Invoice Type")
+    )
     created_by = models.ForeignKey(
-        BranchUsers, on_delete=models.SET_NULL, null=True, related_name='%(class)s_created_by')
-    order = models.ForeignKey(Order, on_delete=models.SET_NULL,
-                              null=True, blank=True, related_name='%(class)s_order')
-    due_date = models.DateField(null=True, blank=True)
+        BranchUsers, on_delete=models.SET_NULL, null=True,
+        related_name='%(class)s_created_by',
+        verbose_name=_("Created By")
+    )
+    order = models.ForeignKey(
+        Order, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='%(class)s_order',
+        verbose_name=_("Order")
+    )
+    due_date = models.DateField(
+        null=True, blank=True,
+        verbose_name=_("Due Date")
+    )
     status = models.CharField(
-        max_length=20, choices=INVOICE_STATUS, default='draft')
-    notes = models.TextField(blank=True, null=True)
+        max_length=20, choices=INVOICE_STATUS, default='draft',
+        verbose_name=_("Status")
+    )
+    notes = models.TextField(
+        blank=True, null=True,
+        verbose_name=_("Notes")
+    )
+
+    class Meta:
+        verbose_name = _("Invoice")
+        verbose_name_plural = _("Invoices")
 
     def __str__(self):
         return f"Invoice {self.invoice_number} - {self.customer.first_name}"
@@ -295,90 +398,156 @@ class Invoice(BaseDocument):
 
 class InvoiceItem(BaseItem):
     invoice = models.ForeignKey(
-        Invoice, on_delete=models.CASCADE, related_name='items')
+        Invoice, on_delete=models.CASCADE, related_name='items',
+        verbose_name=_("Invoice")
+    )
+
+    class Meta:
+        verbose_name = _("Invoice Item")
+        verbose_name_plural = _("Invoice Items")
 
 
 class Payment(BaseModel):
     """
-    نموذج الدفعات - يدعم طرق دفع متعددة وتقسيط
+    Payment Model - Supports multiple payment methods and installments
     """
-    # الربط بالفاتورة أو الطلب
+    # Link to Invoice or Order
     invoice = models.ForeignKey(
         Invoice, on_delete=models.CASCADE,
         related_name='payments',
-        null=True, blank=True
+        null=True, blank=True,
+        verbose_name=_("Invoice")
     )
     order = models.ForeignKey(
         'Order', on_delete=models.CASCADE,
         related_name='payments',
-        null=True, blank=True
+        null=True, blank=True,
+        verbose_name=_("Order")
     )
 
-    # معلومات الدفع الأساسية
-    amount = models.DecimalField(max_digits=12, decimal_places=2)
-    currency = models.CharField(max_length=3, default='SAR')
+    # Basic Payment Info
+    amount = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        verbose_name=_("Amount")
+    )
+    currency = models.CharField(
+        max_length=3, default='SAR',
+        verbose_name=_("Currency")
+    )
     payment_method = models.ForeignKey(
         PaymentMethod,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='payments',
-        verbose_name=_("طريقة الدفع")
+        verbose_name=_("Payment Method")
     )
     status = models.CharField(
         max_length=20,
         choices=Order.PaymentStatus.choices,
-        default=Order.PaymentStatus.PENDING
+        default=Order.PaymentStatus.PENDING,
+        verbose_name=_("Status")
     )
 
-    # للشريك (تأمين/تقسيط)
+    # For Partner (Insurance/Installment)
     partner = models.ForeignKey(
         'crm.Partner',
         on_delete=models.SET_NULL,
         null=True, blank=True,
-        related_name='payments'
+        related_name='payments',
+        verbose_name=_("Partner")
     )
 
-    # معلومات بوابة الدفع
-    gateway_transaction_id = models.CharField(max_length=100, blank=True)
-    gateway_reference = models.CharField(max_length=100, blank=True)
-    gateway_response = models.JSONField(default=dict, blank=True)
+    # Gateway Info
+    gateway_transaction_id = models.CharField(
+        max_length=100, blank=True,
+        verbose_name=_("Transaction ID")
+    )
+    gateway_reference = models.CharField(
+        max_length=100, blank=True,
+        verbose_name=_("Reference")
+    )
+    gateway_response = models.JSONField(
+        default=dict, blank=True,
+        verbose_name=_("Gateway Response")
+    )
 
-    # معلومات التقسيط (BNPL)
-    is_installment = models.BooleanField(default=False)
-    installments_count = models.PositiveIntegerField(default=1)
+    # Installment Info (BNPL)
+    is_installment = models.BooleanField(
+        default=False,
+        verbose_name=_("Is Installment")
+    )
+    installments_count = models.PositiveIntegerField(
+        default=1,
+        verbose_name=_("Installments Count")
+    )
     installment_amount = models.DecimalField(
         max_digits=10, decimal_places=2,
-        null=True, blank=True
+        null=True, blank=True,
+        verbose_name=_("Installment Amount")
     )
-    bnpl_order_id = models.CharField(max_length=100, blank=True)
+    bnpl_order_id = models.CharField(
+        max_length=100, blank=True,
+        verbose_name=_("BNPL Order ID")
+    )
 
-    # معلومات البطاقة (مشفرة/مخفية)
-    card_last_four = models.CharField(max_length=4, blank=True)
-    card_brand = models.CharField(max_length=20, blank=True)
+    # Card Info (Encrypted/Masked)
+    card_last_four = models.CharField(
+        max_length=4, blank=True,
+        verbose_name=_("Card Last 4 Digits")
+    )
+    card_brand = models.CharField(
+        max_length=20, blank=True,
+        verbose_name=_("Card Brand")
+    )
 
-    # معلومات الشيك
-    cheque_number = models.CharField(max_length=50, blank=True)
-    cheque_bank = models.CharField(max_length=100, blank=True)
-    cheque_date = models.DateField(null=True, blank=True)
+    # Cheque Info
+    cheque_number = models.CharField(
+        max_length=50, blank=True,
+        verbose_name=_("Cheque Number")
+    )
+    cheque_bank = models.CharField(
+        max_length=100, blank=True,
+        verbose_name=_("Bank")
+    )
+    cheque_date = models.DateField(
+        null=True, blank=True,
+        verbose_name=_("Cheque Date")
+    )
 
-    # معلومات التحويل البنكي
-    transfer_reference = models.CharField(max_length=100, blank=True)
-    transfer_bank = models.CharField(max_length=100, blank=True)
+    # Bank Transfer Info
+    transfer_reference = models.CharField(
+        max_length=100, blank=True,
+        verbose_name=_("Transfer Reference")
+    )
+    transfer_bank = models.CharField(
+        max_length=100, blank=True,
+        verbose_name=_("Bank")
+    )
 
-    # التواريخ
-    paid_at = models.DateTimeField(null=True, blank=True)
-    refunded_at = models.DateTimeField(null=True, blank=True)
+    # Dates
+    paid_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Payment Date")
+    )
+    refunded_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Refund Date")
+    )
     refund_amount = models.DecimalField(
         max_digits=12, decimal_places=2,
-        default=0
+        default=0,
+        verbose_name=_("Refund Amount")
     )
 
-    notes = models.TextField(blank=True)
+    notes = models.TextField(
+        blank=True,
+        verbose_name=_("Notes")
+    )
 
     class Meta:
-        verbose_name = "دفعة"
-        verbose_name_plural = "الدفعات"
+        verbose_name = _("Payment")
+        verbose_name_plural = _("Payments")
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['status']),
@@ -391,18 +560,18 @@ class Payment(BaseModel):
         return f"Payment of {self.amount} {self.currency} via {self.get_payment_method_display()}"
 
     def save(self, *args, **kwargs):
-        # حساب مبلغ القسط
+        # Calculate installment amount
         if self.is_installment and self.installments_count > 1:
             self.installment_amount = self.amount / self.installments_count
 
         super().save(*args, **kwargs)
 
-        # تحديث الفاتورة عند اكتمال الدفع
+        # Update invoice upon payment completion
         if self.status == 'completed' and self.invoice:
             apply_payment(self.invoice, self.amount)
 
     def mark_completed(self, transaction_id=None, response=None):
-        """تحديث حالة الدفع لمكتمل"""
+        """Update payment status to completed"""
         from django.utils import timezone
 
         self.status = 'completed'
@@ -414,19 +583,20 @@ class Payment(BaseModel):
         self.save()
 
     def mark_failed(self, reason=None):
-        """تحديث حالة الدفع لفاشل"""
+        """Update payment status to failed"""
         self.status = 'failed'
         if reason:
-            self.notes += f"\nسبب الفشل: {reason}"
+            self.notes += f"\nFailure Reason: {reason}"
         self.save()
 
     def refund(self, amount=None, reason=None):
-        """استرجاع الدفعة"""
+        """Refund Payment"""
         from django.utils import timezone
 
         refund_amount = amount or self.amount
         if refund_amount > (self.amount - self.refund_amount):
-            raise ValueError("مبلغ الاسترجاع أكبر من المتبقي")
+            raise ValueError(
+                _("Refund amount is greater than remaining amount"))
 
         self.refund_amount += refund_amount
         self.refunded_at = timezone.now()
@@ -437,7 +607,7 @@ class Payment(BaseModel):
             self.status = 'partially_refunded'
 
         if reason:
-            self.notes += f"\nسبب الاسترجاع: {reason}"
+            self.notes += f"\nRefund Reason: {reason}"
 
         self.save()
         return refund_amount
@@ -445,48 +615,61 @@ class Payment(BaseModel):
 
 class Installment(BaseModel):
     """
-    أقساط الدفعات - لتتبع أقساط BNPL
+    Payment Installments - to track BNPL installments
     """
     INSTALLMENT_STATUS = [
-        ('pending', 'قيد الانتظار'),
-        ('due', 'مستحق'),
-        ('paid', 'مسدد'),
-        ('overdue', 'متأخر'),
-        ('cancelled', 'ملغي'),
+        ('pending', _('Pending')),
+        ('due', _('Due')),
+        ('paid', _('Paid')),
+        ('overdue', _('Overdue')),
+        ('cancelled', _('Cancelled')),
     ]
 
     payment = models.ForeignKey(
         Payment, on_delete=models.CASCADE,
-        related_name='installments'
+        related_name='installments',
+        verbose_name=_("Payment")
     )
 
-    installment_number = models.PositiveIntegerField()
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    due_date = models.DateField()
+    installment_number = models.PositiveIntegerField(
+        verbose_name=_("Installment Number")
+    )
+    amount = models.DecimalField(
+        max_digits=10, decimal_places=2,
+        verbose_name=_("Amount")
+    )
+    due_date = models.DateField(
+        verbose_name=_("Due Date")
+    )
 
     status = models.CharField(
         max_length=20,
         choices=INSTALLMENT_STATUS,
-        default='pending'
+        default='pending',
+        verbose_name=_("Status")
     )
 
-    paid_at = models.DateTimeField(null=True, blank=True)
+    paid_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Payment Date")
+    )
     paid_amount = models.DecimalField(
         max_digits=10, decimal_places=2,
-        default=0
+        default=0,
+        verbose_name=_("Paid Amount")
     )
 
     class Meta:
-        verbose_name = "قسط"
-        verbose_name_plural = "الأقساط"
+        verbose_name = _("Installment")
+        verbose_name_plural = _("Installments")
         ordering = ['payment', 'installment_number']
         unique_together = ['payment', 'installment_number']
 
     def __str__(self):
-        return f"قسط {self.installment_number} من {self.payment}"
+        return f"Installment {self.installment_number} of {self.payment}"
 
     def mark_paid(self, amount=None):
-        """تسجيل سداد القسط"""
+        """Record installment payment"""
         from django.utils import timezone
 
         self.status = 'paid'

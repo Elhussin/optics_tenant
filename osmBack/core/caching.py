@@ -1,6 +1,6 @@
 # core/caching.py
 """
-نظام التخزين المؤقت للبيانات المتكررة
+Caching system for frequently accessed data
 """
 
 from django.core.cache import cache
@@ -12,14 +12,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# مدة التخزين المؤقت الافتراضية (بالثواني)
-DEFAULT_CACHE_TTL = 60 * 5  # 5 دقائق
-LONG_CACHE_TTL = 60 * 60    # ساعة
-SHORT_CACHE_TTL = 60 * 1    # دقيقة
+# Default cache duration (in seconds)
+DEFAULT_CACHE_TTL = 60 * 5  # 5 minutes
+LONG_CACHE_TTL = 60 * 60    # 1 hour
+SHORT_CACHE_TTL = 60 * 1    # 1 minute
 
 
 def generate_cache_key(*args, prefix='cache'):
-    """توليد مفتاح cache فريد"""
+    """Generate a unique cache key"""
     key_parts = [str(arg) for arg in args]
     key_string = ':'.join(key_parts)
     hash_part = hashlib.md5(key_string.encode()).hexdigest()[:12]
@@ -28,7 +28,7 @@ def generate_cache_key(*args, prefix='cache'):
 
 def cache_result(ttl=DEFAULT_CACHE_TTL, prefix='func'):
     """
-    Decorator لتخزين نتائج الدوال
+    Decorator to cache function results
 
     Usage:
         @cache_result(ttl=300, prefix='products')
@@ -38,27 +38,27 @@ def cache_result(ttl=DEFAULT_CACHE_TTL, prefix='func'):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            # توليد مفتاح فريد
+            # Generate unique key
             cache_key = generate_cache_key(
                 func.__name__, *args, *kwargs.values(),
                 prefix=prefix
             )
 
-            # محاولة جلب من الكاش
+            # Try to get from cache
             result = cache.get(cache_key)
             if result is not None:
                 logger.debug(f"Cache HIT: {cache_key}")
                 return result
 
-            # تنفيذ الدالة
+            # Execute function
             logger.debug(f"Cache MISS: {cache_key}")
             result = func(*args, **kwargs)
 
-            # تخزين النتيجة
+            # Store result
             cache.set(cache_key, result, ttl)
             return result
 
-        # إضافة دالة لإلغاء الكاش
+        # Add invalidation function
         def invalidate(*args, **kwargs):
             cache_key = generate_cache_key(
                 func.__name__, *args, *kwargs.values(),
@@ -74,10 +74,10 @@ def cache_result(ttl=DEFAULT_CACHE_TTL, prefix='func'):
 
 class CacheManager:
     """
-    مدير التخزين المؤقت المركزي
+    Central Cache Manager
     """
 
-    # مفاتيح الكاش الشائعة
+    # Common cache keys
     KEYS = {
         'product_list': 'products:list:{branch_id}',
         'product_detail': 'products:detail:{product_id}',
@@ -92,7 +92,7 @@ class CacheManager:
 
     @classmethod
     def get_key(cls, key_name, **kwargs):
-        """الحصول على مفتاح الكاش"""
+        """Get cache key"""
         template = cls.KEYS.get(key_name)
         if not template:
             return key_name
@@ -100,51 +100,52 @@ class CacheManager:
 
     @classmethod
     def get(cls, key_name, default=None, **kwargs):
-        """جلب من الكاش"""
+        """Get from cache"""
         key = cls.get_key(key_name, **kwargs)
         return cache.get(key, default)
 
     @classmethod
     def set(cls, key_name, value, ttl=DEFAULT_CACHE_TTL, **kwargs):
-        """تخزين في الكاش"""
+        """Set in cache"""
         key = cls.get_key(key_name, **kwargs)
         cache.set(key, value, ttl)
         logger.debug(f"Cache SET: {key}")
 
     @classmethod
     def delete(cls, key_name, **kwargs):
-        """حذف من الكاش"""
+        """Delete from cache"""
         key = cls.get_key(key_name, **kwargs)
         cache.delete(key)
         logger.debug(f"Cache DELETE: {key}")
 
     @classmethod
     def delete_pattern(cls, pattern):
-        """حذف مجموعة مفاتيح"""
+        """Delete by pattern"""
         try:
-            # يعمل مع Redis
+            # Works with Redis
             keys = cache.keys(pattern)
             for key in keys:
                 cache.delete(key)
             logger.debug(f"Cache DELETE PATTERN: {pattern} ({len(keys)} keys)")
         except AttributeError:
-            # Fallback للكاش العادي
-            logger.warning("delete_pattern غير مدعوم في هذا النوع من الكاش")
+            # Fallback for standard cache
+            logger.warning(
+                "delete_pattern is not supported on this cache backend")
 
     @classmethod
     def clear_all(cls):
-        """مسح كل الكاش"""
+        """Clear all cache"""
         cache.clear()
         logger.info("Cache CLEARED")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# دوال الكاش للبيانات الشائعة
+# Common Data Cache Functions
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @cache_result(ttl=LONG_CACHE_TTL, prefix='choices')
 def get_cached_order_choices():
-    """خيارات الطلبات (نادراً ما تتغير)"""
+    """Order choices (rarely change)"""
     from apps.sales.models import Order
     return {
         'order_type': Order.ORDER_TYPE_CHOICES,
@@ -156,7 +157,7 @@ def get_cached_order_choices():
 
 @cache_result(ttl=LONG_CACHE_TTL, prefix='choices')
 def get_cached_chart_of_accounts(account_type=None):
-    """دليل الحسابات"""
+    """Chart of Accounts"""
     from apps.accounting.models import ChartOfAccounts
 
     queryset = ChartOfAccounts.objects.filter(
@@ -171,7 +172,7 @@ def get_cached_chart_of_accounts(account_type=None):
 
 @cache_result(ttl=SHORT_CACHE_TTL, prefix='dashboard')
 def get_cached_dashboard_stats(branch_id=None):
-    """إحصائيات لوحة التحكم"""
+    """Dashboard Statistics"""
     from django.db.models import Sum, Count
     from django.utils import timezone
     from apps.sales.models import Order
@@ -193,7 +194,7 @@ def get_cached_dashboard_stats(branch_id=None):
 
 @cache_result(ttl=DEFAULT_CACHE_TTL, prefix='products')
 def get_cached_product_variants(branch_id=None, category_id=None, limit=100):
-    """قائمة المنتجات المتوفرة"""
+    """List of available products"""
     from apps.products.models import ProductVariant, Stock
 
     variants = ProductVariant.objects.filter(
@@ -206,15 +207,15 @@ def get_cached_product_variants(branch_id=None, category_id=None, limit=100):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# Middleware للكاش
+# Cache Middleware
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class CacheMiddleware:
     """
-    Middleware لتطبيق الكاش على الطلبات
+    Middleware to cache requests
     """
 
-    # المسارات التي يتم تخزينها
+    # Paths to be cached
     CACHEABLE_PATHS = [
         '/api/sales/orders/choices/',
         '/api/products/categories/',
@@ -225,30 +226,30 @@ class CacheMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        # فقط للـ GET requests
+        # Only GET requests
         if request.method != 'GET':
             return self.get_response(request)
 
-        # تحقق من المسار
+        # Check path
         path = request.path_info
         if not any(path.startswith(p) for p in self.CACHEABLE_PATHS):
             return self.get_response(request)
 
-        # توليد مفتاح الكاش
+        # Generate cache key
         cache_key = generate_cache_key(
             path, request.GET.urlencode(),
             prefix='http'
         )
 
-        # محاولة جلب من الكاش
+        # Try to get from cache
         cached_response = cache.get(cache_key)
         if cached_response:
             return cached_response
 
-        # تنفيذ الطلب
+        # Execute request
         response = self.get_response(request)
 
-        # تخزين الاستجابة الناجحة
+        # Store successful response
         if response.status_code == 200:
             cache.set(cache_key, response, DEFAULT_CACHE_TTL)
 
@@ -256,11 +257,11 @@ class CacheMiddleware:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# إعدادات Redis Cache (لـ settings.py)
+# Redis Cache Settings (for settings.py)
 # ═══════════════════════════════════════════════════════════════════════════════
 
 """
-# أضف إلى settings.py للاستخدام مع Redis:
+# Add to settings.py for Redis usage:
 
 CACHES = {
     'default': {
@@ -275,7 +276,7 @@ CACHES = {
     }
 }
 
-# للتطوير يمكن استخدام LocMem:
+# For development, you can use LocMem:
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',

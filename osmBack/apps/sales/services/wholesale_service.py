@@ -1,12 +1,13 @@
 # apps/sales/services/wholesale_service.py
 """
-خدمة البيع بالجملة
+Wholesale Service
 """
 
 from django.db import models
 from decimal import Decimal
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 import logging
 
 logger = logging.getLogger(__name__)
@@ -14,18 +15,18 @@ logger = logging.getLogger(__name__)
 
 class WholesaleService:
     """
-    خدمة لإدارة عمليات البيع بالجملة
+    Service for managing wholesale operations
     """
 
     @classmethod
     def get_order_pricing(cls, customer, order_items, branch=None):
         """
-        الحصول على التسعير المناسب للعميل
+        Get pricing for customer orders
 
         Args:
-            customer: العميل
-            order_items: قائمة المنتجات [{variant, quantity}]
-            branch: الفرع (اختياري)
+            customer: Customer
+            order_items: List of items [{variant, quantity}]
+            branch: Branch (optional)
 
         Returns:
             dict: {items: [...], subtotal, discount, total}
@@ -40,7 +41,7 @@ class WholesaleService:
             variant = item['variant']
             quantity = item.get('quantity', 1)
 
-            # البحث عن السعر المناسب
+            # Find appropriate price
             price_info = cls.get_variant_price(
                 variant, customer, quantity, branch
             )
@@ -63,7 +64,7 @@ class WholesaleService:
             subtotal += line_total
             total_discount += line_discount
 
-        # تطبيق خصم إضافي من مستوى العميل
+        # Apply additional customer level discount
         customer_discount = Decimal('0')
         if customer.default_discount_percentage > 0:
             customer_discount = subtotal * \
@@ -81,22 +82,22 @@ class WholesaleService:
     @classmethod
     def get_variant_price(cls, variant, customer=None, quantity=1, branch=None):
         """
-        الحصول على السعر المناسب لمنتج معين
+        Get appropriate price for a variant
 
-        الترتيب (من الأعلى أولوية):
-        1. سعر خاص للعميل
-        2. سعر الشريك (إذا كان مرتبط بشريك)
-        3. سعر مستوى الجملة (pricing_tier)
-        4. سعر مجموعة العملاء
-        5. سعر الكمية
-        6. السعر العادي
+        Priority (Highest to Lowest):
+        1. Special customer price
+        2. Partner price (if linked)
+        3. Wholesale tier price
+        4. Customer group price
+        5. Quantity price
+        6. Base price
         """
         from apps.products.models import FlexiblePrice
 
         date = timezone.now().date()
         base_price = variant.price
 
-        # 1. سعر خاص للعميل
+        # 1. Special customer price
         if customer:
             customer_price = FlexiblePrice.objects.filter(
                 variant=variant,
@@ -112,10 +113,10 @@ class WholesaleService:
                 return {
                     'price': customer_price.get_final_price(base_price),
                     'discount_type': 'customer_special',
-                    'source': f'سعر خاص للعميل',
+                    'source': _('Special Customer Price'),
                 }
 
-            # 2. سعر الشريك
+            # 2. Partner Price
             partner_link = customer.get_active_partner_link()
             if partner_link:
                 partner_price = FlexiblePrice.objects.filter(
@@ -133,10 +134,10 @@ class WholesaleService:
                     return {
                         'price': partner_price.get_final_price(base_price),
                         'discount_type': 'partner',
-                        'source': f'سعر الشريك: {partner_link.partner.name}',
+                        'source': _('Partner Price: {0}').format(partner_link.partner.name),
                     }
 
-            # 3. سعر مستوى الجملة
+            # 3. Wholesale Tier Price
             if customer.pricing_tier and customer.pricing_tier != 'retail':
                 tier_price = FlexiblePrice.objects.filter(
                     variant=variant,
@@ -154,10 +155,10 @@ class WholesaleService:
                     return {
                         'price': tier_price.get_final_price(base_price),
                         'discount_type': 'tier',
-                        'source': f'سعر الجملة: {customer.get_pricing_tier_display()}',
+                        'source': _('Wholesale Price: {0}').format(customer.get_pricing_tier_display()),
                     }
 
-            # 4. سعر مجموعة العملاء
+            # 4. Customer Group Price
             customer_groups = customer.groups.all()
             if customer_groups.exists():
                 group_price = FlexiblePrice.objects.filter(
@@ -175,10 +176,10 @@ class WholesaleService:
                     return {
                         'price': group_price.get_final_price(base_price),
                         'discount_type': 'group',
-                        'source': f'سعر المجموعة: {group_price.customer_group.name}',
+                        'source': _('Group Price: {0}').format(group_price.customer_group.name),
                     }
 
-        # 5. سعر الكمية
+        # 5. Quantity Price
         quantity_price = FlexiblePrice.objects.filter(
             variant=variant,
             customer__isnull=True,
@@ -198,10 +199,10 @@ class WholesaleService:
             return {
                 'price': quantity_price.get_final_price(base_price),
                 'discount_type': 'quantity',
-                'source': f'سعر الكمية ({quantity_price.min_quantity}+)',
+                'source': _('Quantity Price ({0}+)').format(quantity_price.min_quantity),
             }
 
-        # 6. سعر الفرع
+        # 6. Branch Price
         if branch:
             branch_price = FlexiblePrice.objects.filter(
                 variant=variant,
@@ -218,36 +219,37 @@ class WholesaleService:
                 return {
                     'price': branch_price.get_final_price(base_price),
                     'discount_type': 'branch',
-                    'source': f'سعر الفرع: {branch.name}',
+                    'source': _('Branch Price: {0}').format(branch.name),
                 }
 
-        # السعر العادي
+        # Base Price
         return {
             'price': base_price,
             'discount_type': 'none',
-            'source': 'السعر الأساسي',
+            'source': _('Base Price'),
         }
 
     @classmethod
     def validate_wholesale_order(cls, customer, order_items, use_credit=False):
         """
-        التحقق من صحة طلب الجملة
+        Validate wholesale order
 
         Returns:
             tuple: (is_valid, errors)
         """
         errors = []
 
-        # التحقق من الحد الأدنى للطلب
+        # Check minimum order amount
         if customer.minimum_order_amount > 0:
             pricing = cls.get_order_pricing(customer, order_items)
             if pricing['final_total'] < customer.minimum_order_amount:
                 errors.append(
-                    f"الحد الأدنى للطلب هو {customer.minimum_order_amount} ريال، "
-                    f"المبلغ الحالي: {pricing['final_total']} ريال"
+                    _("Minimum order amount is {0} SAR, current amount: {1} SAR").format(
+                        customer.minimum_order_amount, pricing['final_total']
+                    )
                 )
 
-        # التحقق من الائتمان إذا كان الدفع آجل
+        # Check credit if payment is deferred
         if use_credit:
             pricing = cls.get_order_pricing(customer, order_items)
             is_available, message = customer.check_credit_available(
@@ -255,11 +257,11 @@ class WholesaleService:
             if not is_available:
                 errors.append(message)
 
-        # التحقق من صلاحية التعاقد
+        # Check contract validity
         if customer.contract_end_date:
             today = timezone.now().date()
             if customer.contract_end_date < today:
-                errors.append("انتهت صلاحية التعاقد مع هذا العميل")
+                errors.append(_("Contract with this customer has expired"))
 
         return len(errors) == 0, errors
 
@@ -267,11 +269,11 @@ class WholesaleService:
     @transaction.atomic
     def create_wholesale_order(cls, customer, items, branch, user, payment_method='credit', notes=''):
         """
-        إنشاء طلب جملة
+        Create wholesale order
         """
         from apps.sales.models import Order, OrderItem
 
-        # التحقق من صحة الطلب
+        # Validate order
         use_credit = payment_method == 'credit'
         is_valid, errors = cls.validate_wholesale_order(
             customer, items, use_credit)
@@ -279,10 +281,10 @@ class WholesaleService:
         if not is_valid:
             raise ValueError('\n'.join(errors))
 
-        # الحصول على التسعير
+        # Get pricing
         pricing = cls.get_order_pricing(customer, items, branch)
 
-        # إنشاء الطلب
+        # Create order
         order = Order.objects.create(
             branch=branch,
             customer=customer,
@@ -296,7 +298,7 @@ class WholesaleService:
                 user, 'sales_profile') else None,
         )
 
-        # إنشاء عناصر الطلب
+        # Create order items
         for item_data in pricing['items']:
             OrderItem.objects.create(
                 order=order,
@@ -308,18 +310,18 @@ class WholesaleService:
                 total_price=item_data['line_total'],
             )
 
-        # تحديث رصيد العميل إذا آجل
+        # Update customer balance if credit
         if payment_method == 'credit':
             customer.update_balance(pricing['final_total'], is_payment=False)
 
         logger.info(
-            f"تم إنشاء طلب جملة {order.order_number} للعميل {customer}")
+            f"Wholesale order {order.order_number} created for customer {customer}")
         return order
 
     @classmethod
     def get_customer_statement(cls, customer, start_date=None, end_date=None):
         """
-        كشف حساب العميل
+        Customer Statement
         """
         from apps.sales.models import Order, Invoice, Payment
 
@@ -329,12 +331,12 @@ class WholesaleService:
         if end_date:
             filters['created_at__date__lte'] = end_date
 
-        # الفواتير
+        # Invoices
         invoices = Invoice.objects.filter(**filters).values(
             'invoice_number', 'created_at', 'total_amount', 'status'
         )
 
-        # الدفعات
+        # Payments
         payment_filters = filters.copy()
         payment_filters.pop('customer', None)
         payment_filters['invoice__customer'] = customer
@@ -343,7 +345,7 @@ class WholesaleService:
             'id', 'created_at', 'amount', 'payment_method', 'status'
         )
 
-        # دمج وترتيب
+        # Merge and sort
         transactions = []
         running_balance = customer.opening_balance if hasattr(
             customer, 'opening_balance') else Decimal('0')
@@ -371,7 +373,7 @@ class WholesaleService:
                     'balance': running_balance,
                 })
 
-        # ترتيب حسب التاريخ
+        # Sort by date
         transactions.sort(key=lambda x: x['date'])
 
         return {

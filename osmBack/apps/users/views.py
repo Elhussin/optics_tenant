@@ -6,6 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext as _
 from drf_spectacular.utils import extend_schema, inline_serializer
 from django.db import connection
 from core.utils.set_token import set_token_cookies
@@ -50,7 +51,7 @@ class RegisterView(APIView):
         request=RegisterSerializer,
         responses={200: inline_serializer(
             name='RegisterSuccessResponse',
-            fields={'msg': serializers.CharField(),
+            fields={'detail': serializers.CharField(),
                     'user': UserSerializer()}
         )},
         description="Register endpoint for users"
@@ -59,7 +60,7 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            response = Response({"msg": "User created", "user": UserSerializer(
+            response = Response({"detail": _("User created"), "user": UserSerializer(
                 user).data}, status=status.HTTP_201_CREATED)
             return response
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -73,7 +74,7 @@ class LoginView(APIView):
         responses={
             200: inline_serializer(
                 name='LoginSuccessResponse',
-                fields={'msg': serializers.CharField()}
+                fields={'detail': serializers.CharField()}
             ),
             400: inline_serializer(
                 name='LoginBadRequest',
@@ -95,7 +96,7 @@ class LoginView(APIView):
             user = serializer.validated_data['user']
 
             if not user.is_active:
-                return Response({"detail": "User account is disabled."}, status=status.HTTP_403_FORBIDDEN)
+                return Response({"detail": _("User account is disabled")}, status=status.HTTP_403_FORBIDDEN)
 
             # Aggregating roles and permissions
             user_roles = list(user.roles.all())
@@ -115,7 +116,7 @@ class LoginView(APIView):
             refresh["tenant"] = connection.schema_name
             refresh["permissions"] = list(all_permissions)
 
-            response = Response({"msg": "Login successful"})
+            response = Response({"detail": _("Login successful")})
             set_token_cookies(response, access=str(
                 refresh.access_token), refresh=str(refresh))
             return response
@@ -131,20 +132,20 @@ class RefreshTokenView(APIView):
             200: inline_serializer(
                 name='RefreshTokenResponse',
                 fields={
-                    'msg': serializers.CharField(),
+                    'detail': serializers.CharField(),
                     'access': serializers.CharField(),
                 }
             ),
             401: inline_serializer(
                 name='TokenRefreshError',
-                fields={'error': serializers.CharField()}
+                fields={'detail': serializers.CharField()}
             )
         }
     )
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
         if not refresh_token:
-            return Response({"error": "No refresh token found"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"detail": _("No refresh token found")}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             refresh = RefreshToken(refresh_token)
@@ -172,12 +173,12 @@ class RefreshTokenView(APIView):
             access["permissions"] = list(all_permissions)
 
             response = Response(
-                {"msg": "Token refreshed", "access": str(access)})
+                {"detail": _("Token refreshed"), "access": str(access)})
             set_token_cookies(response, access=str(access))
             return response
 
         except TokenError:
-            return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"detail": _("Invalid or expired refresh token")}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ProfileView(APIView):
@@ -190,7 +191,7 @@ class ProfileView(APIView):
             401: inline_serializer(
                 name='Unauthorized',
                 fields={
-                    'error': serializers.CharField()
+                    'detail': serializers.CharField()
                 }
             )
         },
@@ -204,7 +205,7 @@ class ProfileView(APIView):
             serializer = UserSerializer(request.user)
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-            return Response({"msg": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"detail": _("User is not authenticated")}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class RequestPasswordResetView(APIView):
@@ -230,7 +231,7 @@ class RequestPasswordResetView(APIView):
         email = request.data.get('email')
 
         if not email:
-            return Response({"detail": "Email is required."}, status=400)
+            return Response({"detail": _("Email is required")}, status=400)
 
         tenant = request.headers.get('X-Tenant')
         lang = request.headers.get(
@@ -238,11 +239,11 @@ class RequestPasswordResetView(APIView):
 
         # CHANGED: Allow public tenant if header is missing or explicitly public, but Validate!
         if not tenant:
-            return Response({"detail": "Missing X-Tenant header."}, status=400)
+            return Response({"detail": _("Missing X-Tenant header")}, status=400)
 
         # CHANGED: Strict Validation to prevent Header Injection
         if tenant != "public" and not Client.objects.filter(schema_name=tenant, is_active=True).exists():
-            return Response({"detail": "Invalid or inactive tenant."}, status=400)
+            return Response({"detail": _("Invalid or inactive tenant")}, status=400)
 
         user = User.objects.filter(email=email).first()
 
@@ -259,12 +260,23 @@ class RequestPasswordResetView(APIView):
                 reset_url = f"{protocol}://{addTenant}{settings.TENANT_BASE_DOMAIN}{port}/{lang}/auth/reset-password/?uid={uid}&token={token}"
                 send_password_reset_email(email, reset_url)
 
-        return Response({"detail": "If the email exists, a reset link has been sent."}, status=200)
+        return Response({"detail": _("If the email exists, a reset link has been sent")}, status=200)
 
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=PasswordResetConfirmSerializer,
+        responses={
+            200: inline_serializer(
+                name='PasswordResetConfirmSuccessResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            )
+        }
+    )
     def post(self, request):
         serializer = PasswordResetConfirmSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -275,7 +287,7 @@ class PasswordResetConfirmView(APIView):
         user.set_password(password)
         user.save()
 
-        return Response({"detail": "Password has been reset successfully"}, status=200)
+        return Response({"detail": _("Password has been reset successfully")}, status=200)
 
 
 class LogoutView(APIView):
@@ -286,19 +298,20 @@ class LogoutView(APIView):
             200: inline_serializer(
                 name='LogoutResponse',
                 fields={
-                    'msg': serializers.CharField(),
+                    'detail': serializers.CharField(),
                 }
             ),
             401: inline_serializer(
                 name='TokenRefreshError',
                 fields={
-                    'error': serializers.CharField()
+                    'detail': serializers.CharField()
                 }
             )
         }
     )
     def post(self, request):
-        response = Response({"msg": "Logged out"}, status=status.HTTP_200_OK)
+        response = Response({"detail": _("Logged out")},
+                            status=status.HTTP_200_OK)
         response.delete_cookie('access_token')
         response.delete_cookie('refresh_token')
         return response

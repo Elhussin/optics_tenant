@@ -16,7 +16,7 @@ export default function EditPrescriptionPage() {
             <h1 className="text-2xl font-bold mb-6">{t(config.updateTitle || "updateTitle")}</h1>
             <div className="bg-white rounded-xl shadow-lg p-6">
                 <EyeTest
-                    alias={config.updateAlias!}
+                    alias={config.partialUpdateAlias!}
                     id={id}
                     title={t("update")}
                     submitText={t("save")}

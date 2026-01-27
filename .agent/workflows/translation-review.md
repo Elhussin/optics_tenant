@@ -133,6 +133,15 @@ pdm run python manage.py compilemessages --ignore=__pypackages__
 - [x] `apps/hrm/models.py`
 - [x] `apps/hrm/serializers.py`
 - [x] `apps/hrm/views.py`
+- [x] `apps/prescriptions/models.py`
+- [x] `apps/prescriptions/serializers.py`
+- [x] `apps/users/models.py`
+- [x] `apps/users/serializers.py`
+- [x] `apps/users/views.py`
+- [x] `apps/tenants/models.py`
+- [x] `apps/tenants/serializers.py`
+- [x] `apps/tenants/views/paymant_views.py`
+- [x] `apps/tenants/views/tenant_views.py`
 - [x] `apps/crm/serializers/crm_serializers.py`
 - [x] `apps/crm/serializers/partner.py`
 

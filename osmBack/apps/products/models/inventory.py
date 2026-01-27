@@ -1,6 +1,7 @@
-# models.py - النماذج المحسنة
+# models.py - Enhanced Models
 from django.db import models, transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ValidationError
 from django.db.models import Sum, F
 from django.contrib.auth.models import User
@@ -69,7 +70,7 @@ class Stock(BaseModel):
     average_cost = models.DecimalField(
         max_digits=10, decimal_places=2, default=0)
     last_cost = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0, help_text="Last purchase cost per unit")
+        max_digits=10, decimal_places=2, default=0, help_text=_("Last purchase cost per unit"))
     # Stock tracking
     last_restocked = models.DateTimeField(null=True, blank=True)
     last_sale = models.DateTimeField(null=True, blank=True)
@@ -94,12 +95,12 @@ class Stock(BaseModel):
     @property
     def stock_status(self):
         if self.available_quantity <= 0:
-            return "Out of Stock"
+            return _("Out of Stock")
         elif self.available_quantity <= self.reorder_level:
-            return "Low Stock"
+            return _("Low Stock")
         elif self.quantity_in_stock > self.max_stock_level:
-            return "Overstocked"
-        return "In Stock"
+            return _("Overstocked")
+        return _("In Stock")
 
     def reserve(self, quantity):
         if self.allow_backorder:
@@ -128,7 +129,7 @@ class Stock(BaseModel):
         self.save(update_fields=['reserved_quantity'])
 
     def update_average_cost(self, new_quantity, new_cost):
-        """تحديث التكلفة المتوسطة"""
+        """Update average cost"""
         if self.quantity_in_stock > 0:
             total_cost = (self.quantity_in_stock *
                           self.average_cost) + (new_quantity * new_cost)
@@ -142,15 +143,15 @@ class Stock(BaseModel):
 class StockMovement(BaseModel):
     """Track all stock movements for audit purposes"""
     class MovementType(models.TextChoices):
-        PURCHASE = 'purchase', 'Purchase/Restock'
-        SALE = 'sale', 'Sale'
-        TRANSFER_IN = 'transfer_in', 'Transfer In'
-        TRANSFER_OUT = 'transfer_out', 'Transfer Out'
-        ADJUSTMENT = 'adjustment', 'Stock Adjustment'
-        DAMAGE = 'damage', 'Damage/Loss'
-        RETURN = 'return', 'Customer Return'
-        RESERVE = 'reserve', 'Reserve Stock'
-        RELEASE = 'release', 'Release Reserved'
+        PURCHASE = 'purchase', _('Purchase/Restock')
+        SALE = 'sale', _('Sale')
+        TRANSFER_IN = 'transfer_in', _('Transfer In')
+        TRANSFER_OUT = 'transfer_out', _('Transfer Out')
+        ADJUSTMENT = 'adjustment', _('Stock Adjustment')
+        DAMAGE = 'damage', _('Damage/Loss')
+        RETURN = 'return', _('Customer Return')
+        RESERVE = 'reserve', _('Reserve Stock')
+        RELEASE = 'release', _('Release Reserved')
 
     stock = models.ForeignKey(
         "Stock", on_delete=models.CASCADE, related_name='movements')
@@ -166,7 +167,7 @@ class StockMovement(BaseModel):
         max_digits=10, decimal_places=2, default=0)
     created_by = models.ForeignKey(
         'users.User', on_delete=models.SET_NULL, null=True, blank=True,
-        related_name='stock_movements', help_text="User who created this movement"
+        related_name='stock_movements', help_text=_("User who created this movement")
     )
 
     class Meta:
@@ -192,12 +193,12 @@ class StockTransfer(BaseModel):
     """Stock transfers between branches"""
 
     class Status(models.TextChoices):
-        PENDING = 'pending', 'Pending'
-        SUBMITTED = 'submitted', 'Submitted'
-        SHIPPED = 'shipped', 'Shipped'
-        RECEIVED = 'received', 'Received'
-        COMPLETED = 'completed', 'Completed'
-        CANCELLED = 'cancelled', 'Cancelled'
+        PENDING = 'pending', _('Pending')
+        SUBMITTED = 'submitted', _('Submitted')
+        SHIPPED = 'shipped', _('Shipped')
+        RECEIVED = 'received', _('Received')
+        COMPLETED = 'completed', _('Completed')
+        CANCELLED = 'cancelled', _('Cancelled')
 
     from_branch = models.ForeignKey(
         "branches.Branch", on_delete=models.CASCADE, related_name='outgoing_transfers')
@@ -227,13 +228,13 @@ class StockTransfer(BaseModel):
         return f"{self.transfer_number} | {self.from_branch.code} → {self.to_branch.code}"
 
     def execute_shipment(self):
-        """ينفذ عملية الشحن (يخصم الكميات من الفرع المرسل)"""
+        """Execute shipment: Deduct quantities from sending branch"""
         if self.status != 'submitted':
             raise ValueError("Only submitted transfers can be shipped.")
 
         with transaction.atomic():
             for item in self.items.select_for_update():
-                # خصم من الفرع المرسل
+                # Deduct from sending branch
                 # Fixed: Use Stock instead of Inventory
                 from_stock = Stock.objects.select_for_update().get(
                     branch=self.from_branch,
@@ -249,7 +250,7 @@ class StockTransfer(BaseModel):
                 item.quantity_sent = item.quantity_requested
                 item.save()
 
-                # سجل الحركة
+                # Log movement
                 StockMovement.objects.create(
                     stock=from_stock,
                     movement_type='transfer_out',
@@ -264,7 +265,7 @@ class StockTransfer(BaseModel):
             self.save()
 
     def execute_receiving(self):
-        """ينفذ عملية الاستلام (يضيف الكميات للفرع المستلم)"""
+        """Execute receiving: Add quantities to receiving branch"""
         if self.status != 'shipped':
             raise ValueError("Only shipped transfers can be received.")
 

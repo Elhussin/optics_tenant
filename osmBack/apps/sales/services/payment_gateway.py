@@ -1,10 +1,11 @@
 # apps/sales/services/payment_gateway.py
 """
-خدمات بوابات الدفع - Tabby, Tamara, وغيرها
+Payment Gateway Services - Tabby, Tamara, etc.
 """
 
 from abc import ABC, abstractmethod
 from decimal import Decimal
+from django.utils.translation import gettext_lazy as _
 from typing import Dict, Any, Optional, List
 from django.conf import settings
 import requests
@@ -14,39 +15,39 @@ logger = logging.getLogger(__name__)
 
 
 class PaymentGatewayException(Exception):
-    """خطأ في بوابة الدفع"""
+    """Payment Gateway Error"""
     pass
 
 
 class BasePaymentGateway(ABC):
     """
-    قاعدة لبوابات الدفع
+    Base class for payment gateways
     """
 
     @abstractmethod
     def create_session(self, order_data: Dict) -> Dict:
-        """إنشاء جلسة دفع"""
+        """Create payment session"""
         pass
 
     @abstractmethod
     def capture_payment(self, payment_id: str) -> Dict:
-        """الاستحواذ على الدفعة"""
+        """Capture payment"""
         pass
 
     @abstractmethod
     def refund_payment(self, payment_id: str, amount: Decimal = None) -> Dict:
-        """استرجاع الدفعة"""
+        """Refund payment"""
         pass
 
     @abstractmethod
     def get_payment_status(self, payment_id: str) -> Dict:
-        """جلب حالة الدفعة"""
+        """Get payment status"""
         pass
 
 
 class TabbyGateway(BasePaymentGateway):
     """
-    بوابة تابي للتقسيط
+    Tabby Installment Gateway
     https://docs.tabby.ai/
     """
 
@@ -69,17 +70,17 @@ class TabbyGateway(BasePaymentGateway):
 
     def create_session(self, order_data: Dict) -> Dict:
         """
-        إنشاء جلسة دفع Tabby
+        Create Tabby payment session
 
-        order_data يجب أن يحتوي على:
-        - order_id: رقم الطلب
-        - amount: المبلغ الإجمالي
-        - currency: العملة (SAR)
+        order_data must contain:
+        - order_id: Order ID
+        - amount: Total amount
+        - currency: Currency (SAR)
         - customer: {email, phone, first_name, last_name}
         - items: [{name, quantity, unit_price, category}]
-        - success_url: رابط النجاح
-        - cancel_url: رابط الإلغاء
-        - failure_url: رابط الفشل
+        - success_url: Success URL
+        - cancel_url: Cancel URL
+        - failure_url: Failure URL
         """
         payload = {
             "payment": {
@@ -132,10 +133,11 @@ class TabbyGateway(BasePaymentGateway):
             }
         except requests.RequestException as e:
             logger.error(f"Tabby create_session error: {e}")
-            raise PaymentGatewayException(f"فشل في إنشاء جلسة Tabby: {str(e)}")
+            raise PaymentGatewayException(
+                str(_("Failed to create Tabby session: {0}").format(e)))
 
     def capture_payment(self, payment_id: str) -> Dict:
-        """الاستحواذ على الدفعة بعد التأكيد"""
+        """Capture payment after confirmation"""
         try:
             response = requests.post(
                 f"{self.base_url}/payments/{payment_id}/captures",
@@ -155,10 +157,10 @@ class TabbyGateway(BasePaymentGateway):
         except requests.RequestException as e:
             logger.error(f"Tabby capture_payment error: {e}")
             raise PaymentGatewayException(
-                f"فشل في الاستحواذ على دفعة Tabby: {str(e)}")
+                str(_("Failed to capture Tabby payment: {0}").format(e)))
 
     def refund_payment(self, payment_id: str, amount: Decimal = None) -> Dict:
-        """استرجاع الدفعة"""
+        """Refund payment"""
         payload = {}
         if amount:
             payload['amount'] = str(amount)
@@ -183,10 +185,10 @@ class TabbyGateway(BasePaymentGateway):
         except requests.RequestException as e:
             logger.error(f"Tabby refund_payment error: {e}")
             raise PaymentGatewayException(
-                f"فشل في استرجاع دفعة Tabby: {str(e)}")
+                str(_("Failed to refund Tabby payment: {0}").format(e)))
 
     def get_payment_status(self, payment_id: str) -> Dict:
-        """جلب حالة الدفعة"""
+        """Get payment status"""
         try:
             response = requests.get(
                 f"{self.base_url}/payments/{payment_id}",
@@ -206,12 +208,12 @@ class TabbyGateway(BasePaymentGateway):
         except requests.RequestException as e:
             logger.error(f"Tabby get_payment_status error: {e}")
             raise PaymentGatewayException(
-                f"فشل في جلب حالة دفعة Tabby: {str(e)}")
+                str(_("Failed to get Tabby payment status: {0}").format(e)))
 
 
 class TamaraGateway(BasePaymentGateway):
     """
-    بوابة تمارا للتقسيط
+    Tamara Installment Gateway
     https://docs.tamara.co/
     """
 
@@ -234,7 +236,7 @@ class TamaraGateway(BasePaymentGateway):
 
     def create_session(self, order_data: Dict) -> Dict:
         """
-        إنشاء جلسة دفع Tamara
+        Create Tamara payment session
         """
         payload = {
             "order_reference_id": order_data['order_id'],
@@ -298,10 +300,10 @@ class TamaraGateway(BasePaymentGateway):
         except requests.RequestException as e:
             logger.error(f"Tamara create_session error: {e}")
             raise PaymentGatewayException(
-                f"فشل في إنشاء جلسة Tamara: {str(e)}")
+                str(_("Failed to create Tamara session: {0}").format(e)))
 
     def capture_payment(self, order_id: str) -> Dict:
-        """تأكيد الطلب بعد الشحن"""
+        """Capture order after shipping"""
         payload = {
             "order_id": order_id,
             "total_amount": {
@@ -328,10 +330,11 @@ class TamaraGateway(BasePaymentGateway):
             }
         except requests.RequestException as e:
             logger.error(f"Tamara capture_payment error: {e}")
-            raise PaymentGatewayException(f"فشل في تأكيد طلب Tamara: {str(e)}")
+            raise PaymentGatewayException(
+                str(_("Failed to capture Tamara order: {0}").format(e)))
 
     def refund_payment(self, order_id: str, amount: Decimal = None) -> Dict:
-        """استرجاع الطلب"""
+        """Refund order"""
         payload = {
             "comment": "Customer refund request",
         }
@@ -360,10 +363,10 @@ class TamaraGateway(BasePaymentGateway):
         except requests.RequestException as e:
             logger.error(f"Tamara refund_payment error: {e}")
             raise PaymentGatewayException(
-                f"فشل في استرجاع طلب Tamara: {str(e)}")
+                str(_("Failed to refund Tamara order: {0}").format(e)))
 
     def get_payment_status(self, order_id: str) -> Dict:
-        """جلب حالة الطلب"""
+        """Get order status"""
         try:
             response = requests.get(
                 f"{self.base_url}/orders/{order_id}",
@@ -383,10 +386,10 @@ class TamaraGateway(BasePaymentGateway):
         except requests.RequestException as e:
             logger.error(f"Tamara get_payment_status error: {e}")
             raise PaymentGatewayException(
-                f"فشل في جلب حالة طلب Tamara: {str(e)}")
+                str(_("Failed to get Tamara order status: {0}").format(e)))
 
     def authorize_order(self, order_id: str) -> Dict:
-        """تأكيد الطلب بعد الموافقة"""
+        """Authorize order after approval"""
         try:
             response = requests.post(
                 f"{self.base_url}/orders/{order_id}/authorise",
@@ -404,12 +407,13 @@ class TamaraGateway(BasePaymentGateway):
             }
         except requests.RequestException as e:
             logger.error(f"Tamara authorize_order error: {e}")
-            raise PaymentGatewayException(f"فشل في تأكيد طلب Tamara: {str(e)}")
+            raise PaymentGatewayException(
+                str(_("Failed to authorize Tamara order: {0}").format(e)))
 
 
 class PaymentGatewayFactory:
     """
-    Factory لإنشاء بوابة الدفع المناسبة
+    Factory for creating appropriate payment gateway
     """
     _gateways = {
         'tabby': TabbyGateway,
@@ -418,14 +422,14 @@ class PaymentGatewayFactory:
 
     @classmethod
     def get_gateway(cls, gateway_name: str) -> BasePaymentGateway:
-        """الحصول على بوابة الدفع"""
+        """Get payment gateway"""
         gateway_class = cls._gateways.get(gateway_name.lower())
         if not gateway_class:
             raise PaymentGatewayException(
-                f"بوابة الدفع '{gateway_name}' غير مدعومة")
+                str(_("Payment gateway '{0}' is not supported").format(gateway_name)))
         return gateway_class()
 
     @classmethod
     def register_gateway(cls, name: str, gateway_class: type):
-        """تسجيل بوابة دفع جديدة"""
+        """Register new payment gateway"""
         cls._gateways[name.lower()] = gateway_class

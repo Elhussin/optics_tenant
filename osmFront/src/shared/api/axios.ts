@@ -2,6 +2,7 @@
 'use client';
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { endpoints } from "./schemas";
+import { toast } from "sonner";
 
 // import dynamic from 'next/dynamic';
 
@@ -67,6 +68,18 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
+
+    // Global Error Handling (Sonner Toast)
+    if (error.response?.data && typeof error.response.data === 'object') {
+      const responseData = error.response.data as any;
+      // Handle Unified Error Format
+      if (responseData.error && responseData.error.message) {
+        // Prevent duplicate toasts for 401 (handled by refresh logic usually)
+        if (error.response.status !== 401) {
+          toast.error(responseData.error.message);
+        }
+      }
+    }
 
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);

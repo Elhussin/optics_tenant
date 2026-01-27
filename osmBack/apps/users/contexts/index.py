@@ -1,6 +1,6 @@
 
 USER_RELATED_FIELDS = [
-    "role_id__name",
+    "roles__name",
     "email",
     "phone",
     "username",
@@ -9,7 +9,7 @@ USER_RELATED_FIELDS = [
 ]
 # # 👇 أسماء مخصصة لبعض الحقول
 USER_FIELD_LABELS = {
-    "role_id__name": "Role",
+    "roles__name": "Role",
     "email": "Email",
     "phone": "Phone",
     "username": "Username",
@@ -20,11 +20,10 @@ USER_FIELD_LABELS = {
 
 
 USER_FILTER_FIELDS = {
-    "role_id__name": ["icontains"],
+    "roles__name": ["icontains"],
     "email": ["icontains"],
     "phone": ["icontains"],
     "username": ["icontains"],
     "first_name": ["icontains"],
     "last_name": ["icontains"],
 }
-

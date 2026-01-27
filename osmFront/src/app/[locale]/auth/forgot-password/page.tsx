@@ -16,6 +16,7 @@ import { Link } from "@/src/app/i18n/navigation";
 import { cn } from "@/src/shared/utils/cn";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
 
 export default function ForgotPasswordPage() {
   const [status, setStatus] = useState<
@@ -23,7 +24,7 @@ export default function ForgotPasswordPage() {
   >("idle");
   const [message, setMessage] = useState<string>("");
   const t = useTranslations("forgotPassword");
-  const alias = "users_password_reset_create";
+  const alias = featuresConfig["password-reset"].createAlias;
 
   const formRequest = useApiForm({
     alias,

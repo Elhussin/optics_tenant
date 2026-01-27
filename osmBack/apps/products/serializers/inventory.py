@@ -28,7 +28,7 @@ class StockSerializer(serializers.ModelSerializer):
         return str(obj.variant)
 
     def validate_branch(self, value):
-        """تأكد أن الفرع من نوع STORE فقط عند إضافة المخزون"""
+        """Ensure branch is of type STORE only when adding stock"""
         if value.branch_type != 'store':
             raise serializers.ValidationError(
                 _("Stock can only be added to branches of type 'Store'. Branch '{name}' is of type '{type}'.").format(
@@ -60,17 +60,17 @@ class StockMovementSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        """التحقق من صحة البيانات"""
+        """Validate data"""
         movement_type = data.get('movement_type')
         cost_per_unit = data.get('cost_per_unit', 0)
 
-        # إجبار إدخال سعر الشراء عند الشراء/إعادة التخزين
+        # Force input of purchase price when purchasing/restocking
         if movement_type == 'purchase' and (cost_per_unit is None or cost_per_unit <= 0):
             raise serializers.ValidationError({
                 'cost_per_unit': _("Purchase price (greater than zero) must be entered when adding new stock")
             })
 
-        # التحقق من الكمية المتاحة عند السحب
+        # Check available quantity when withdrawing
         if movement_type in ['sale', 'transfer_out', 'damage']:
             stock = data.get('stock')
             quantity = abs(data.get('quantity', 0))
@@ -94,13 +94,19 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
                   'cost_per_unit', 'reference_number', 'notes']
 
     def validate(self, data):
-        """التحقق وحساب الكميات"""
+        """Validate and calculate quantities"""
         movement_type = data.get('movement_type')
         cost_per_unit = data.get('cost_per_unit', 0)
         stock = data.get('stock')
         quantity = data.get('quantity', 0)
 
-        # التحقق من نوع الفرع للشراء
+        # Ensure quantity is not zero
+        if quantity == 0:
+            raise serializers.ValidationError({
+                'quantity': _("Quantity must be greater than zero.")
+            })
+
+        # Check branch type for purchase
         if movement_type == 'purchase':
             if stock.branch.branch_type != 'store':
                 raise serializers.ValidationError({
@@ -111,7 +117,7 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
                     'cost_per_unit': _("Purchase price (greater than zero) must be entered")
                 })
 
-        # التحقق من الكمية المتاحة عند السحب
+        # Check available quantity when withdrawing
         if movement_type in ['sale', 'transfer_out', 'damage']:
             if stock.available_quantity < abs(quantity):
                 raise serializers.ValidationError({
@@ -125,13 +131,13 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
         movement_type = validated_data['movement_type']
         quantity = validated_data['quantity']
 
-        # حساب الكميات قبل وبعد
+        # Calculate quantities before and after
         quantity_before = stock.quantity_in_stock
 
-        # تحديد الكمية الفعلية (موجبة أو سالبة)
-        # adjustment يمكن أن يكون موجب (إضافة) أو سالب (نقصان)
+        # Determine actual quantity (positive or negative)
+        # adjustment can be positive (add) or negative (subtract)
         if movement_type == 'adjustment':
-            # للتعديل: نستخدم القيمة كما هي (موجبة للإضافة، سالبة للنقصان)
+            # For adjustment: use value as is (positive for addition, negative for subtraction)
             actual_quantity = quantity
             quantity_after = quantity_before + actual_quantity
         elif movement_type in ['purchase', 'transfer_in', 'return']:
@@ -145,16 +151,16 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
         validated_data['quantity_before'] = quantity_before
         validated_data['quantity_after'] = max(0, quantity_after)
 
-        # إضافة المستخدم الذي أنشأ الحركة
+        # Add user who created the movement
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['created_by'] = request.user
 
         with transaction.atomic():
-            # تحديث المخزون
+            # Update stock
             stock.quantity_in_stock = max(0, quantity_after)
 
-            # تحديث التكلفة المتوسطة للشراء
+            # Update average cost for purchase
             if movement_type == 'purchase' and validated_data.get('cost_per_unit', 0) > 0:
                 stock.update_average_cost(
                     abs(quantity), validated_data['cost_per_unit'])
@@ -229,7 +235,8 @@ class StockTransferCreateSerializer(serializers.Serializer):
     items = serializers.ListField(
         child=serializers.DictField(),
         min_length=1,
-        help_text="قائمة المنتجات: [{'variant': id, 'quantity_requested': int, 'unit_cost': decimal}]"
+        help_text=_(
+            "List of items: [{'variant': id, 'quantity_requested': int, 'unit_cost': decimal}]")
     )
 
     def validate(self, data):
@@ -241,11 +248,16 @@ class StockTransferCreateSerializer(serializers.Serializer):
                 'to_branch': _("Cannot transfer to the same branch")
             })
 
-        # التحقق من توفر الكميات
+        # Check availability
         items = data.get('items', [])
         for item in items:
             variant_id = item.get('variant')
             quantity = item.get('quantity_requested', 0)
+
+            if quantity <= 0:
+                raise serializers.ValidationError({
+                    'items': _("Quantity requested must be greater than zero.")
+                })
 
             try:
                 stock = Stock.objects.get(

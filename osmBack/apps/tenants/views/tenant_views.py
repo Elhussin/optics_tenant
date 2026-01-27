@@ -21,6 +21,8 @@ from apps.tenants.serializers import (
     SubscriptionPlanSerializer
 )
 from core.utils.email import send_activation_email
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 
 super_roles = ["TenantOwner", "TenantAdmin"]
 
@@ -37,10 +39,27 @@ class IsPublicTenant(permissions.BasePermission):
 class RegisterTenantView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=RegisterTenantSerializer,
+        responses={
+            201: inline_serializer(
+                name='RegisterTenantSuccessResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            ),
+            400: inline_serializer(
+                name='RegisterTenantErrorResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            )
+        }
+    )
     def post(self, request):
         tenant = get_tenant(request)
         if tenant.schema_name != 'public':
-            return HttpResponseForbidden("Not allowed on tenant domains.")
+            return HttpResponseForbidden(T("Not allowed on tenant domains"))
 
         serializer = RegisterTenantSerializer(data=request.data)
         if serializer.is_valid():

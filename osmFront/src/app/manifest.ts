@@ -1,33 +1,48 @@
 import { MetadataRoute } from 'next';
-/**
- * I created 
-src/app/manifest.ts
-. Next.js will use this file to automatically generate a manifest.json.
-This manifest allows users to install your app to their home screen (mobile/desktop) and is the first step towards "Offline" functionality.
-Note: To enable true offline support (caching pages so they work without internet), you need a Service Worker. The recommended way to do this in Next.js is to install the next-pwa package (npm install next-pwa) and configure it in your next.config.js. Since I cannot run installation commands in your environment, I have set up the foundation (the manifest), and you can add the service worker package when ready.
-Good luck with your app!
- * @returns 
- */
+
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'OSM - Optical Store Management',
+        name: 'نظام البصريات الشامل',
         short_name: 'OSM',
-        description: 'Advanced Optical Store Management Solution',
-        start_url: '/',
+        description: 'نظام إدارة محلات البصريات الشامل - Optics Store Manager',
+        start_url: '/ar/dashboard',
         display: 'standalone',
         background_color: '#ffffff',
-        theme_color: '#000000',
+        theme_color: '#3b82f6',
+        orientation: 'portrait-primary',
+        lang: 'ar',
+        dir: 'rtl',
         icons: [
             {
-                src: '/media/icon.jpg',
-                sizes: '192x192',
-                type: 'image/jpeg',
+                src: '/logo2.png',
+                sizes: 'any',
+                type: 'image/png',
+            }
+        ],
+        categories: ["business", "productivity"],
+        shortcuts: [
+            {
+                name: "طلب جديد",
+                short_name: "طلب جديد",
+                description: "إنشاء طلب جديد",
+                url: "/ar/dashboard/orders/new",
+                icons: [{ src: "/logo2.png", sizes: "96x96" }]
             },
             {
-                src: '/media/icon.jpg',
-                sizes: '512x512',
-                type: 'image/jpeg',
+                name: "المنتجات",
+                short_name: "المنتجات",
+                description: "إدارة المنتجات",
+                url: "/ar/dashboard/products",
+                icons: [{ src: "/logo2.png", sizes: "96x96" }]
             },
+            {
+                name: "العملاء",
+                short_name: "العملاء",
+                description: "إدارة العملاء",
+                url: "/ar/dashboard/customers",
+                icons: [{ src: "/logo2.png", sizes: "96x96" }]
+            }
         ],
+        prefer_related_applications: false,
     };
 }

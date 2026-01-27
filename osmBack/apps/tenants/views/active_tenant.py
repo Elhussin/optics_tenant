@@ -21,6 +21,9 @@ from apps.tenants.models import (
 from core.utils.email import send_activation_email, send_message_acount_activated, send_failed_activation_email
 from core.utils.expiration_date import expiration_date
 import threading
+from drf_spectacular.utils import extend_schema, OpenApiParameter, inline_serializer
+from rest_framework import serializers
+
 paymant_logger = logging.getLogger('paypal')
 tenant_logger = logging.getLogger('tenant')
 
@@ -212,6 +215,30 @@ class ActivateTenantView(APIView):
         super().__init__()
         self.tenantActivation = TenantActivation()
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name='token',
+                description='Activation token received via email',
+                required=True,
+                type=str
+            )
+        ],
+        responses={
+            200: inline_serializer(
+                name='ActivationSuccessResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            ),
+            400: inline_serializer(
+                name='ActivationErrorResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            )
+        }
+    )
     def get(self, request):
         """
         Main algorithm execution with improved flow control

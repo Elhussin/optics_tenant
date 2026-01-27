@@ -1,4 +1,3 @@
-# from Learn.scripts.python.json_to_csv import f
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from apps.products.models import Attribute, AttributeValue
@@ -11,7 +10,11 @@ class AttributeValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeValue
         fields = '__all__'
-        # fields = ['id', 'value', 'attribute', 'attribute_name']
+        read_only_fields = ['unique_key', 'label']
+
+    def validate_value(self, value):
+        """Ensure value is stripped of whitespace."""
+        return value.strip()
 
 
 class AttributeSerializer(serializers.ModelSerializer):
@@ -19,5 +22,8 @@ class AttributeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Attribute
-        # fields = ['id', 'name', 'values']
         fields = '__all__'
+
+    def validate_name(self, value):
+        """Ensure attribute name is stripped of whitespace and title cased."""
+        return value.strip()

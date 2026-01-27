@@ -39,7 +39,25 @@ router.register(r'stock-transfer-items', StockTransferItemViewSet,
 
 
 urlpatterns = [
+    # Import
     path('products/import-csv/', ProductImportView.as_view(),
          name='product-import-csv'),
+
+    # Helper Views
+    path('variants/<int:variant_id>/stock-summary/',
+         VariantStockSummaryAPIView.as_view(), name='variant-stock-summary'),
+    path('variants/<int:variant_id>/nearest-branch/',
+         NearestBranchAPIView.as_view(), name='nearest-branch'),
+    path('orders/fulfillment-check/',
+         OrderFulfillmentCheckAPIView.as_view(), name='order-fulfillment-check'),
+
+    # Manager Views
+    path('branches/active/', ActiveBranchesView.as_view(), name='active-branches'),
+    path('branches/main/', MainBranchView.as_view(), name='main-branch'),
+    path('branches/<int:branch_id>/low-stock/',
+         LowStockByBranchView.as_view(), name='branch-low-stock'),
+    path('variants/<int:variant_id>/total-stock/',
+         VariantTotalStockView.as_view(), name='variant-total-stock'),
+
     path('', include(router.urls)),
 ]

@@ -6,7 +6,7 @@ from core.views import BaseViewSet
 
 class PaymentMethodViewSet(BaseViewSet):
     """
-    ViewSet لإدارة طرق الدفع ديناميكياً
+    ViewSet for dynamically managing payment methods
     """
     queryset = PaymentMethod.objects.all()
     serializer_class = PaymentMethodSerializer

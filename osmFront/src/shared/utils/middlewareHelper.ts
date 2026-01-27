@@ -78,7 +78,7 @@ export const dashboardPermissions: Record<string, string[]> = {
   // الإدارة
   "/dashboard/users": ["view_user"],
   "/dashboard/roles": ["manage_roles"],
-  "/dashboard/reports": ["view_financial_reports"],
+  "/dashboard/reports": ["view_accounting"],
 
   // العمليات اليومية
   "/dashboard/inventory": ["view_inventory"],

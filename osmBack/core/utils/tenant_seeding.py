@@ -72,7 +72,7 @@ def seed_tenant_data(stdout=None):
     return owner_role
 
 
-# لتأسيس الموقع الرئيسي (Public)
+# To setup the main site (Public)
 # python manage.py setup_tenant --name "Main Site" --schema public --domain localhost --password "3112"
 
 

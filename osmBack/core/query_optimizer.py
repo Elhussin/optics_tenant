@@ -1,6 +1,6 @@
 # core/query_optimizer.py
 """
-أدوات تحسين الاستعلامات
+Query Optimization Tools
 """
 
 from django.db.models import Prefetch, Q, Count, Sum
@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 class QueryOptimizer:
     """
-    أدوات لتحسين استعلامات Django ORM
+    Tools to optimize Django ORM queries
     """
 
-    # علاقات الـ select_related الشائعة
+    # Common select_related relations
     COMMON_RELATIONS = {
         'Order': {
             'select': ['branch', 'customer', 'partner', 'customer_partner_link'],
@@ -48,7 +48,7 @@ class QueryOptimizer:
     @classmethod
     def optimize(cls, queryset, include_prefetch=True):
         """
-        تحسين QuerySet تلقائياً بناءً على الموديل
+        Automatically optimize QuerySet based on model
         """
         model_name = queryset.model.__name__
         relations = cls.COMMON_RELATIONS.get(model_name, {})
@@ -69,25 +69,25 @@ class QueryOptimizer:
     @classmethod
     def paginate_efficiently(cls, queryset, page=1, page_size=20):
         """
-        تقسيم فعال للصفحات باستخدام LIMIT/OFFSET
+        Efficient pagination using LIMIT/OFFSET
         """
         offset = (page - 1) * page_size
 
-        # استخدام only() أو defer() لتقليل البيانات
+        # Use only() or defer() to reduce data load if needed
         return queryset[offset:offset + page_size]
 
     @classmethod
     def count_efficiently(cls, queryset):
         """
-        عد فعال للسجلات
+        Efficiently count records
         """
-        # استخدام COUNT(*) بدلاً من COUNT(id) أحياناً أسرع
+        # Using COUNT(*) instead of COUNT(id) is sometimes faster
         return queryset.count()
 
     @classmethod
     def bulk_create_optimized(cls, model, objects, batch_size=1000):
         """
-        إنشاء دفعات بكفاءة
+        Efficiently create batches
         """
         return model.objects.bulk_create(
             objects,
@@ -98,7 +98,7 @@ class QueryOptimizer:
     @classmethod
     def bulk_update_optimized(cls, queryset, fields, batch_size=1000):
         """
-        تحديث دفعات بكفاءة
+        Efficiently update batches
         """
         return queryset.model.objects.bulk_update(
             list(queryset),
@@ -109,7 +109,7 @@ class QueryOptimizer:
 
 def query_debugger(func):
     """
-    Decorator لتتبع عدد الاستعلامات
+    Decorator to track query count
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -133,10 +133,10 @@ def query_debugger(func):
             f"Time: {end_time - start_time:.3f}s"
         )
 
-        # تحذير إذا كان عدد الاستعلامات كبير
+        # Warning if query count is high
         if len(queries) > 10:
             logger.warning(
-                f"[{func.__name__}] عدد استعلامات كبير! ({len(queries)})"
+                f"[{func.__name__}] High query count! ({len(queries)})"
             )
 
         return result
@@ -149,20 +149,20 @@ def query_debugger(func):
 
 class OptimizedManager:
     """
-    مزيج لإضافة استعلامات محسنة إلى الـ Manager
+    Mixin to add optimized queries to Manager
     """
 
     def optimized(self):
-        """QuerySet محسن"""
+        """Optimized QuerySet"""
         return QueryOptimizer.optimize(self.get_queryset())
 
     def list_optimized(self, page=1, page_size=20):
-        """قائمة محسنة مع pagination"""
+        """Optimized list with pagination"""
         qs = self.optimized()
         return QueryOptimizer.paginate_efficiently(qs, page, page_size)
 
     def detail_optimized(self, pk):
-        """تفاصيل محسنة"""
+        """Optimized details"""
         return self.optimized().get(pk=pk)
 
 
@@ -171,7 +171,7 @@ class OptimizedManager:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 class OrderQuerySet(QuerySet):
-    """QuerySet محسن للطلبات"""
+    """Optimized QuerySet for Orders"""
 
     def with_relations(self):
         return self.select_related(
@@ -195,14 +195,14 @@ class OrderQuerySet(QuerySet):
         return self.filter(created_at__date=today)
 
     def with_totals(self):
-        """إضافة الإجماليات"""
+        """Add totals"""
         return self.annotate(
             items_count=Count('items'),
             total_quantity=Sum('items__quantity'),
         )
 
     def summary(self):
-        """ملخص إجمالي"""
+        """Total summary"""
         return self.aggregate(
             count=Count('id'),
             total=Sum('total_amount'),
@@ -211,7 +211,7 @@ class OrderQuerySet(QuerySet):
 
 
 class InvoiceQuerySet(QuerySet):
-    """QuerySet محسن للفواتير"""
+    """Optimized QuerySet for Invoices"""
 
     def with_relations(self):
         return self.select_related(
@@ -234,7 +234,7 @@ class InvoiceQuerySet(QuerySet):
 
 
 class ProductVariantQuerySet(QuerySet):
-    """QuerySet محسن للمنتجات"""
+    """Optimized QuerySet for Products"""
 
     def with_relations(self):
         return self.select_related(
@@ -245,7 +245,7 @@ class ProductVariantQuerySet(QuerySet):
         return self.filter(is_active=True, product__is_active=True)
 
     def in_stock(self, branch_id=None):
-        """المنتجات المتوفرة في المخزون"""
+        """Products available in stock"""
         from apps.products.models import Stock
 
         qs = self.active_only()
@@ -259,7 +259,7 @@ class ProductVariantQuerySet(QuerySet):
         return qs
 
     def with_stock(self, branch_id):
-        """مع معلومات المخزون"""
+        """With stock information"""
         from apps.products.models import Stock
 
         return self.prefetch_related(
@@ -276,12 +276,12 @@ class ProductVariantQuerySet(QuerySet):
 
 class ReportOptimizer:
     """
-    تحسين استعلامات التقارير
+    Report query optimization
     """
 
     @staticmethod
     def sales_by_date(start_date, end_date, branch_id=None):
-        """مبيعات حسب التاريخ - محسن"""
+        """Sales by date - Optimized"""
         from apps.sales.models import Order
         from django.db.models.functions import TruncDate
 
@@ -303,7 +303,7 @@ class ReportOptimizer:
 
     @staticmethod
     def top_products(limit=10, branch_id=None, days=30):
-        """المنتجات الأكثر مبيعاً - محسن"""
+        """Top selling products - Optimized"""
         from apps.sales.models import OrderItem
         from django.utils import timezone
         from datetime import timedelta
@@ -328,7 +328,7 @@ class ReportOptimizer:
 
     @staticmethod
     def customer_summary(customer_id):
-        """ملخص العميل - محسن"""
+        """Customer summary - Optimized"""
         from apps.sales.models import Order, Payment
         from apps.crm.models import Customer
 

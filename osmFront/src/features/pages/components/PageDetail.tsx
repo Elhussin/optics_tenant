@@ -7,6 +7,8 @@ import { useCallback } from "react";
 import { useTranslations } from 'next-intl';
 import { useLocale } from 'next-intl';
 import { useApiForm } from '@/src/shared/hooks/useApiForm';
+import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+
 export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   const t = useTranslations("pagesList");
@@ -14,13 +16,13 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
 
   const [pageData, setPageData] = useState<any>(null);
 
-  const aliases = { deleteAlias: 'users_pages_destroy', editAlias: 'users_pages_partial_update' };
+  const aliases = { deleteAlias: featuresConfig["pages"].hardDeleteAlias!, editAlias: featuresConfig["pages"].updateAlias! };
 
 
 
 
   const fetchPage = useApiForm({
-    alias: "users_pages_retrieve",
+    alias: featuresConfig["pages"].retrieveAlias,
     defaultValues: { id: pageId },
 
   });

@@ -1,6 +1,7 @@
 from core.models import BaseModel
 from .suppliers import Supplier, Manufacturer, Brand
 from .attributes import AttributeValue
+from django.utils.translation import gettext_lazy as _
 from django.db import models
 import hashlib
 from django.core.exceptions import ValidationError
@@ -31,7 +32,7 @@ class Category(BaseModel):
         'self', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        verbose_name_plural = "Categories"
+        verbose_name_plural = _("Categories")
         indexes = [
             models.Index(fields=['name', 'is_active']),
         ]
@@ -78,7 +79,7 @@ class Product(BaseModel):
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True, editable=False)
     usku = models.CharField(max_length=64, unique=True, editable=False,
-                            help_text="Unique product SKU generated automatically")
+                            help_text=_("Unique product SKU generated automatically"))
     variant_type = models.CharField(
         max_length=20, choices=VARIANT_TYPE_CHOICES, default='basic')
 
@@ -98,7 +99,7 @@ class Product(BaseModel):
             self.description = f"{self.type} {self.brand.name} {self.model} {self.name}".upper(
             )
 
-        # 🔹 إنشاء كود SKU فريد
+        # 🔹 Generate Unique SKU
         # CHANGED: Use services.generate_sku_code (single source of truth)
         if not self.usku:
             # Product doesn't have complex fields like variant, pass self
@@ -112,7 +113,7 @@ class ProductVariant(BaseModel):
     sku = models.CharField(max_length=50, unique=True, blank=True, null=True)
     usku = models.CharField(max_length=64, unique=True, editable=False)
     description = models.TextField(blank=True, editable=False,
-                                   help_text="Auto-generated description based on variant specifications")
+                                   help_text=_("Auto-generated description based on variant specifications"))
     product_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE,
                                      related_name='%(class)s_product_type', limit_choices_to={'attribute__name': 'Product Type'})
     warranty = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_warranty',
@@ -148,7 +149,7 @@ class ProductVariant(BaseModel):
             exists = exists.exclude(pk=self.pk)
         if exists.exists():
             raise ValidationError(
-                "Variant with identical specifications already exists.")
+                _("Variant with identical specifications already exists."))
 
     @property
     def discount_price(self):
@@ -174,8 +175,8 @@ class ProductVariant(BaseModel):
             models.UniqueConstraint(
                 fields=['usku'], name='unique_variant_by_hash')
         ]
-        verbose_name = "Product Variant"
-        verbose_name_plural = "Product Variants"
+        verbose_name = _("Product Variant")
+        verbose_name_plural = _("Product Variants")
 
     def get_price_for(self, customer=None, branch=None, quantity=1, date=None):
         today = date or timezone.now().date()
@@ -201,14 +202,15 @@ class ProductVariant(BaseModel):
         parts = [self.product.name]
 
         # Add product type
+        # Add product type
         if self.product_type:
-            parts.append(f"نوع: {self._get_safe_attr_name(self.product_type)}")
+            parts.append(str(_("Type: {0}").format(self._get_safe_attr_name(self.product_type))))
 
         # Add price
-        price_text = f"السعر: {self.selling_price} ر.س"
+        price_text = str(_("Price: {0} SAR").format(self.selling_price))
         discount_pct = Decimal(str(self.discount_percentage or 0))
         if self.discount_price and discount_pct > 0:
-            price_text = f"السعر: {self.discount_price} ر.س (بعد خصم {discount_pct}%)"
+            price_text = str(_("Price: {0} SAR (after {1}% discount)").format(self.discount_price, discount_pct))
         parts.append(price_text)
 
         return " | ".join(parts)
@@ -222,7 +224,7 @@ class ProductVariant(BaseModel):
         super().save(*args, **kwargs)
 
     def build_sku(self):
-        """تجهيز الحقول المناسبة حسب نوع المنتج"""
+        """Prepare appropriate fields based on product type"""
         # We don't need 'fields' list passed to service anymore if service handles it,
         # BUT the service is simple hash. Let's assume we maintain old logic
         # of passing fields BUT using the better service.
@@ -523,8 +525,8 @@ class ContactLensVariantExpirationDate(models.Model):
     expiration_date = models.DateField()
 
     class Meta:
-        verbose_name = "Contact Lens Variant Expiration Date"
-        verbose_name_plural = "Contact Lens Variant Expiration Dates"
+        verbose_name = _("Contact Lens Variant Expiration Date")
+        verbose_name_plural = _("Contact Lens Variant Expiration Dates")
         unique_together = ("contact_lens_variant", "expiration_date")
 
 
@@ -564,84 +566,84 @@ class ProductImage(models.Model):
 
 class FlexiblePrice(BaseModel):
     """
-    التسعير المرن - يدعم:
-    - أسعار خاصة لعميل معين
-    - أسعار لمجموعة عملاء
-    - أسعار فرع معين
-    - أسعار الجملة (pricing_tier)
-    - أسعار الشركاء (partner)
-    - أسعار الكميات
+    Flexible Pricing - Supports:
+    - Special prices for specific customer
+    - Prices for customer group
+    - Prices for specific branch
+    - Wholesale prices (pricing_tier)
+    - Partner prices (partner)
+    - Quantity prices
     """
 
     PRICING_TIER_CHOICES = [
-        ('retail', 'تجزئة'),
-        ('wholesale_1', 'جملة - المستوى 1'),
-        ('wholesale_2', 'جملة - المستوى 2'),
-        ('wholesale_3', 'جملة - المستوى 3 (VIP)'),
-        ('distributor', 'موزع'),
+        ('retail', _('Retail')),
+        ('wholesale_1', _('Wholesale - Level 1')),
+        ('wholesale_2', _('Wholesale - Level 2')),
+        ('wholesale_3', _('Wholesale - Level 3 (VIP)')),
+        ('distributor', _('Distributor')),
     ]
 
     variant = models.ForeignKey(
         "ProductVariant", on_delete=models.CASCADE, related_name='price_rules')
 
-    # التسعير حسب العميل/المجموعة
+    # Pricing by Customer/Group
     customer = models.ForeignKey(
         "crm.Customer", on_delete=models.SET_NULL, null=True, blank=True,
-        verbose_name="عميل محدد"
+        verbose_name=_("Specific Customer")
     )
     customer_group = models.ForeignKey(
         "crm.CustomerGroup", on_delete=models.SET_NULL, null=True, blank=True,
-        verbose_name="مجموعة عملاء"
+        verbose_name=_("Customer Group")
     )
 
-    # التسعير حسب الفرع
+    # Pricing by Branch
     branch = models.ForeignKey(
         "branches.Branch", on_delete=models.SET_NULL, null=True, blank=True,
-        verbose_name="فرع محدد"
+        verbose_name=_("Specific Branch")
     )
 
-    # التسعير حسب مستوى الجملة
+    # Pricing by Wholesale Tier
     pricing_tier = models.CharField(
         max_length=20,
         choices=PRICING_TIER_CHOICES,
         blank=True,
         null=True,
-        verbose_name="مستوى التسعير"
+        verbose_name=_("Pricing Tier")
     )
 
-    # التسعير حسب الشريك (تأمين، BNPL، إلخ)
+    # Pricing by Partner (Insurance, BNPL, etc.)
     partner = models.ForeignKey(
         "crm.Partner", on_delete=models.SET_NULL, null=True, blank=True,
-        verbose_name="شريك",
+        verbose_name=_("Partner"),
         related_name='price_rules'
     )
 
-    # السعر الخاص
+    # Special Price
     special_price = models.DecimalField(max_digits=10, decimal_places=2)
 
-    # نسبة الخصم (بديل عن السعر الخاص)
+    # Discount Percentage (Alternative to Special Price)
     discount_percentage = models.DecimalField(
         max_digits=5, decimal_places=2,
         null=True, blank=True,
-        verbose_name="نسبة الخصم"
+        verbose_name=_("Discount Percentage")
     )
 
-    # صلاحية السعر
+    # Price Validity
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
 
-    # شروط الكمية
+    # Quantity Conditions
     min_quantity = models.PositiveIntegerField(
-        default=1, verbose_name="الحد الأدنى للكمية")
+        default=1, verbose_name=_("Minimum Quantity"))
     max_quantity = models.PositiveIntegerField(
-        null=True, blank=True, verbose_name="الحد الأقصى للكمية")
+        null=True, blank=True, verbose_name=_("Maximum Quantity"))
 
     currency = models.CharField(max_length=10, default="SAR")
 
-    # ترتيب الأولوية (لتحديد أي سعر يستخدم عند وجود أكثر من خيار)
+    # Priority Order (to determine which price to use when multiple options exist)
     priority = models.PositiveIntegerField(default=0)
 
-    # ملاحظات
+    # Notes
     notes = models.TextField(blank=True)
 
     class Meta:
@@ -653,11 +655,12 @@ class FlexiblePrice(BaseModel):
         ]
 
     def __str__(self):
-        target = self.customer or self.pricing_tier or self.partner or "عام"
+        target = self.customer or self.pricing_tier or self.partner or _(
+            "General")
         return f"{self.variant} - {target}: {self.special_price}"
 
     def is_valid(self, customer=None, branch=None, quantity=1, date=None):
-        """تحقق من صلاحية هذا السعر لعميل معين"""
+        """Check validity of this price for a specific customer"""
         date = date or timezone.now().date()
         if self.start_date and self.start_date > date:
             return False
@@ -674,7 +677,7 @@ class FlexiblePrice(BaseModel):
         return True
 
     def get_final_price(self, base_price=None):
-        """الحصول على السعر النهائي"""
+        """Get final price"""
         if self.special_price:
             return self.special_price
 
@@ -692,11 +695,11 @@ class ProductSupplier(models.Model):
     supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
     purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
     supply_code = models.CharField(
-        max_length=100, blank=True, null=True)  # لو المورد عنده كود خاص
+        max_length=100, blank=True, null=True)  # If supplier has special code
     lead_time_days = models.IntegerField(default=0)
 
     class Meta:
-        # يمنع تكرار نفس المنتج عند نفس المورد
+        # Prevent Duplicate product for same supplier
         unique_together = ('product', 'supplier')
 
 

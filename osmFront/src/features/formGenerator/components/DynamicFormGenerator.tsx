@@ -40,7 +40,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const t = useMergedTranslations(["viewDetailsCard", entity, "formsConfig"]);
   const form = formsConfig[entity];
   const alias = useMemo(
-    () => (id ? form.updateAlias : form.createAlias),
+    () => (id ? form.partialUpdateAlias : form.createAlias),
     [id, form]
   );
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);

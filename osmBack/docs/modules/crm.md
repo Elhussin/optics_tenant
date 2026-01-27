@@ -1,25 +1,24 @@
-# إدارة العملاء (CRM) 👥
+# CRM (Customer Relationship Management) 🤝
 
-وحدة CRM مخصصة لإدارة بيانات المرضى والعملاء، تتبع تاريخهم المرضي، وقياسات النظر الخاصة بهم.
+Manage patient profiles, prescriptions, and insurance details.
 
-## 🔍 المكونات الأساسية
-- **ملف العميل**: يحتوي على البيانات الشخصية، التصنيفات، والملاحظات.
-- **سجل الوصفات (Prescriptions History)**: تتبع تاريخ تغير قياسات النظر لكل عين.
-- **نظام الولاء**: تتبع نقاط العملاء والمشتريات السابقة.
+## 👥 Customer Profile
+Stores comprehensive data:
+-   **Personal Info**: Name, Phone, Email, National ID.
+-   **Medical History**: Integrated with the Prescriptions module.
+-   **Financials**: Credit limit, Balance, Payment History.
 
-## 🛠 الموديلات التقنية (Models)
+## 🏆 Pricing Tiers (Gold/Silver/Bronze)
+Customers can be assigned deeper discounts based on their tier.
+-   **Logic**: When creating an order, the system checks the customer's tier and applies the global tier discount to eligible products.
 
-### `Partner` (العميل/المورد)
-يستخدم النظام موديل `Partner` لتمثيل أي كيان خارجي يتعامل معه النظام.
+## 🏥 Insurance Integration
+The module handles insurance coverage for medical glasses.
+-   **Insurance Company**: The provider entity.
+-   **Policy**: Details of coverage (e.g., "Class A - 100% cover up to 500 SAR").
+-   **Approval Workflow**: Some orders require manual approval from the insurance provider before processing.
 
-
----
-
-> **ملاحظة**: التوثيق التلقائي للكود يتطلب إعداد بيئة Django.
-
----
-
-## 📈 تكاملات CRM
-تتكامل هذه الوحدة بشكل وثيق مع:
-- **Sales**: لربط المبيعات بالعملاء.
-- **Prescriptions**: لربط قياسات النظر بالعميل.
+## 📄 Prescriptions
+Linked directly to customers and orders.
+-   **Data Points**: Sphere (SPH), Cylinder (CYL), Axis, Addition (ADD), Pupillary Distance (PD).
+-   **Validation**: Ensures values are within optical standards range.

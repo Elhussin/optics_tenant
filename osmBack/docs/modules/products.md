@@ -1,21 +1,33 @@
-# وحدة المنتجات والمخزون (Products & Inventory) 👓
+# Products & Inventory 📦
 
-تعتبر هذه الوحدة هي المسؤولة عن إدارة جميع أنواع المنتجات التي يتعامل معها محل البصريات، من إطارات، عدسات لاصقة، محاليل، وغيرها.
+The Products module manages the catalog of optical items (glasses, lenses, accessories) and their stock levels across multiple branches.
 
-## 📦 أنواع المنتجات
-- **إطارات (Frames)**: تتبع تفاصيل مثل الماركة، اللون، القياس.
-- **عدسات لاصقة (Contact Lenses)**: تتبع القوة (Power)، الانحناء (BC)، والقطر (DIA).
-- **عدسات طبية (Lenses)**: تتبع نوع المادة، الطلاء (Coating)، ومعاملي الانكسار.
+## 👓 Product Structure
+The system distinguishes between a generic Product and its Variants.
 
-## 🏭 إدارة المخزون
-- **تتبع المخزون**: مراقبة الكميات المتوفرة في كل فرع بشكل مستقل.
-- **تنبيهات انخفاض المخزون**: نظام آلي لتنبيه مدير المخازن عند وصول المنتج للحد الأدنى.
-- **الباركود**: دعم كامل لقراءة وطباعة ملصقات الباركود للمنتجات.
+1.  **Product**: The base item (e.g., "Ray-Ban Aviator").
+    -   Attributes: Brand, Model, Category, Material.
+2.  **ProductVariant**: The specific sellable item (e.g., "Ray-Ban Aviator - Gold Frame - Green Lens").
+    -   Attributes: SKU, Color, Size, Selling Price.
 
-## 🛠 البنية البرمجية
-تعتمد المنتجات على نظام **Dynamic Attributes** لتمكين إضافة خصائص جديدة لأي نوع منتج دون تعديل الكود.
+## 🏭 Inventory Management
 
+### Stock Model
+Tracks quantity per variant per branch.
+`Stock(branch_id, variant_id, quantity)`
 
----
+### Stock Movements
+Every change in inventory is recorded in `StockMovement` for audit purposes.
+-   **Types**: `purchase`, `sale`, `transfer`, `adjustment`, `return`.
+-   **Logic**:
+    -   **Sale**: Decreases stock, validates availability.
+    -   **Return**: Increases stock.
+    -   **Transfer**: Atomically decreases from Source Branch and increases in Destination Branch.
 
-> **ملاحظة**: التوثيق التلقائي للكود يتطلب إعداد بيئة Django.
+## 🏷️ Pricing & Barcodes
+-   **SKU Generation**: System auto-generates unique SKUs if not provided.
+-   **Barcodes**: Supports printing barcode labels for physical scanning.
+
+## 🔍 Search & Filtering
+-   **Optimized Search**: Uses `trigram` similarity for fuzzy matching (searching "Rayban" finds "Ray-Ban").
+-   **Filters**: Advanced filtering by Brand, Category, Price Range, and Stock Level.

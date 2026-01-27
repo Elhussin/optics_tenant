@@ -207,7 +207,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
               <RenderButtons
                 data={data}
                 alias={{
-                  editAlias: form.updateAlias!,
+                  editAlias: form.partialUpdateAlias!,
                   deleteAlias: form.hardDeleteAlias!,
                 }}
                 isViewOnly={form.isViewOnly}

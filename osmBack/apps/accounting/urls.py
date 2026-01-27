@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from apps.accounting.views import (
     ChartOfAccountsViewSet, GeneralJournalViewSet,
     FinancialPeriodViewSet, TaxViewSet, AccountingCategoryViewSet,
-    trial_balance, income_statement, balance_sheet, account_ledger
+    TrialBalanceView, IncomeStatementView, BalanceSheetView, AccountLedgerView
 )
 
 router = DefaultRouter()
@@ -21,9 +21,10 @@ urlpatterns = [
     path('', include(router.urls)),
 
     # Financial Reports
-    path('reports/trial-balance/', trial_balance, name='trial-balance'),
-    path('reports/income-statement/', income_statement, name='income-statement'),
-    path('reports/balance-sheet/', balance_sheet, name='balance-sheet'),
+    path('reports/trial-balance/', TrialBalanceView.as_view(), name='trial-balance'),
+    path('reports/income-statement/',
+         IncomeStatementView.as_view(), name='income-statement'),
+    path('reports/balance-sheet/', BalanceSheetView.as_view(), name='balance-sheet'),
     path('reports/ledger/<int:account_id>/',
-         account_ledger, name='account-ledger'),
+         AccountLedgerView.as_view(), name='account-ledger'),
 ]

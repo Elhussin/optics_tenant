@@ -176,8 +176,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
           } else if (
             v instanceof FileList ||
             (typeof FileList !== "undefined" && v instanceof FileList) ||
-            (Array.isArray(v) && v.length > 0 && isFile(v[0])) || 
-             (v && typeof v === "object" && v.length > 0 && isFile(v[0]))
+            (Array.isArray(v) && v.length > 0 && isFile(v[0])) ||
+            (v && typeof v === "object" && v.length > 0 && isFile(v[0]))
           ) {
             for (let i = 0; i < v.length; i++) {
               fd.append(k, v[i]);
@@ -195,13 +195,11 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
         payload = fd;
       }
 
-      console.log("payload", payload);
       const response = await mutation.mutateAsync(payload);
 
       onSuccess?.(response);
       return { success: true, data: response };
     } catch (error: any) {
-      console.log("error", error);
       handleServerErrors(error, methods.setError);
       const normalized = handleErrorStatus(error);
       onError?.(normalized);

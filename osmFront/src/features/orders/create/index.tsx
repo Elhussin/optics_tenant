@@ -25,7 +25,7 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../store/useOrderFormStore";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
-
+import {useUser} from "@/src/features/auth/hooks/UserContext";
 
 // Step Components
 import { CustomerStep } from "./steps/CustomerStep";
@@ -83,14 +83,15 @@ export function CreateOrder() {
 
   const router = useRouter();
   const store = useOrderFormStore();
+  const {user:currentUser} = useUser();
 
-  // جلب بيانات المستخدم الحالي لتحديد الفرع ومندوب المبيعات تلقائياً
-  const { query: userQuery } = useApiForm({
-    alias: "users_profile_retrieve",
-    enabled: true,
-  });
+  // // جلب بيانات المستخدم الحالي لتحديد الفرع ومندوب المبيعات تلقائياً
+  // const { query: userQuery } = useApiForm({
+  //   alias: "users_profile_retrieve",
+  //   enabled: true,
+  // });
 
-  const currentUser = userQuery.data;
+  // const currentUser = userQuery.data;
 
   // تحديد الفرع ومندوب المبيعات تلقائياً
   React.useEffect(() => {

@@ -1,6 +1,6 @@
 # apps/sales/serializers/payment.py
 """
-Serializers للدفعات
+Payment Serializers
 """
 
 from rest_framework import serializers
@@ -9,7 +9,7 @@ from apps.sales.models import Payment, Installment
 
 
 class PaymentSerializer(serializers.ModelSerializer):
-    """Serializer للدفعة"""
+    """Payment Serializer"""
     payment_method_display = serializers.CharField(
         source='payment_method.name_ar', read_only=True
     )
@@ -60,7 +60,7 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class PaymentCreateSerializer(serializers.ModelSerializer):
-    """Serializer لإنشاء دفعة"""
+    """Payment Creation Serializer"""
 
     class Meta:
         model = Payment
@@ -74,13 +74,13 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
-        # التأكد من وجود فاتورة أو طلب
+        # Check for invoice or order
         if not data.get('invoice') and not data.get('order'):
             raise serializers.ValidationError(
                 str(_('Invoice or order must be specified'))
             )
 
-        # التحقق من طريقة الدفع إذا كانت تقسيط
+        # Check if payment method is installment
         payment_method = data.get('payment_method')
         if payment_method and payment_method.is_installment:
             data['is_installment'] = True
@@ -92,14 +92,14 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         payment = Payment.objects.create(**validated_data)
 
-        # إنشاء الأقساط إذا كان تقسيط
+        # Create installments if BNPL
         if payment.is_installment and payment.installments_count > 1:
             self._create_installments(payment)
 
         return payment
 
     def _create_installments(self, payment):
-        """إنشاء سجلات الأقساط"""
+        """Create installment records"""
         from datetime import timedelta
         from django.utils import timezone
 
@@ -107,7 +107,7 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
         today = timezone.now().date()
 
         for i in range(payment.installments_count):
-            # القسط الأول اليوم، ثم كل شهر
+            # First installment today, then every month
             due_date = today if i == 0 else today + timedelta(days=30 * i)
 
             Installment.objects.create(
@@ -120,7 +120,7 @@ class PaymentCreateSerializer(serializers.ModelSerializer):
 
 
 class PaymentListSerializer(serializers.ModelSerializer):
-    """Serializer مختصر للقوائم"""
+    """Brief Payment List Serializer"""
     payment_method_display = serializers.CharField(
         source='payment_method.name_ar', read_only=True
     )
@@ -137,7 +137,7 @@ class PaymentListSerializer(serializers.ModelSerializer):
 
 
 class InstallmentSerializer(serializers.ModelSerializer):
-    """Serializer للقسط"""
+    """Installment Serializer"""
     status_display = serializers.CharField(
         source='get_status_display', read_only=True
     )
@@ -153,7 +153,7 @@ class InstallmentSerializer(serializers.ModelSerializer):
 
 
 class BNPLSessionRequestSerializer(serializers.Serializer):
-    """Serializer لطلب جلسة BNPL"""
+    """BNPL Session Request Serializer"""
     order_id = serializers.IntegerField()
     gateway = serializers.ChoiceField(choices=['tabby', 'tamara'])
     installments_count = serializers.IntegerField(
@@ -165,7 +165,7 @@ class BNPLSessionRequestSerializer(serializers.Serializer):
 
 
 class BNPLSessionResponseSerializer(serializers.Serializer):
-    """Serializer لاستجابة جلسة BNPL"""
+    """BNPL Session Response Serializer"""
     success = serializers.BooleanField()
     checkout_url = serializers.URLField()
     session_id = serializers.CharField()
@@ -175,7 +175,7 @@ class BNPLSessionResponseSerializer(serializers.Serializer):
 
 
 class PaymentRefundSerializer(serializers.Serializer):
-    """Serializer لاسترجاع دفعة"""
+    """Payment Refund Serializer"""
     amount = serializers.DecimalField(
         max_digits=12, decimal_places=2, required=False
     )

@@ -5,12 +5,30 @@ import { Upload, FileText, CheckCircle, AlertTriangle } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 
 export default function ProductImportPage() {
   const t = useTranslations("common");
   const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<any>(null);
+
+  const { submitForm, isBusy } = useApiForm({
+    alias: "products_products_import_csv_create",
+    onSuccess: (data) => {
+      setResult(data);
+      toast.success(t("importSuccess"));
+    },
+    onError: (error) => {
+      // Error is already formatted by useApiForm/handleServerErrors,
+      // but we can extract more details if needed
+      // If error structure matches { errors: [...] } we can set it
+      console.error("Import Error:", error);
+      // Fallback for visual display if result wasn't set by success
+      if (error && typeof error === "object") {
+        setResult({ errors: [error.message || "Unknown error"] });
+      }
+    },
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -22,32 +40,8 @@ export default function ProductImportPage() {
   const handleUpload = async () => {
     if (!file) return;
 
-    setIsUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const response = await fetch("/api/products/products/import-csv/", {
-        method: "POST",
-        body: formData,
-        // Don't set Content-Type header, let browser set it with boundary for FormData
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setResult(data);
-        toast.success(t("importSuccess"));
-      } else {
-        toast.error(data.error || t("importFailed"));
-        setResult({ errors: [data.error || "Unknown error"] });
-      }
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error(t("importFailed"));
-    } finally {
-      setIsUploading(false);
-    }
+    // Pass file directly to submitForm. useApiForm handles FormData conversion.
+    await submitForm({ file });
   };
 
   return (
@@ -89,7 +83,7 @@ export default function ProductImportPage() {
           <div className="flex justify-end">
             <ActionButton
               onClick={handleUpload}
-              isLoading={isUploading}
+              isLoading={isBusy}
               icon={<Upload className="w-5 h-5" />}
               label={t("startImport")}
             />

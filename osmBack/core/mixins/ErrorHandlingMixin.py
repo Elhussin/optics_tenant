@@ -1,5 +1,5 @@
 """
-Mixins لإضافة معالجة أخطاء موحدة في Views
+Mixins to add unified error handling in Views
 """
 
 from rest_framework.response import Response
@@ -13,34 +13,37 @@ logger = logging.getLogger(__name__)
 
 class ErrorHandlingMixin:
     """
-    Mixin لإضافة معالجة أخطاء موحدة في ViewSets
+    Mixin to add unified error handling in ViewSets
 
-    الاستخدام:
+    Usage:
     class MyViewSet(ErrorHandlingMixin, viewsets.ModelViewSet):
         pass
     """
 
-    def get_error_lang(self):
-        """الحصول على لغة رسائل الخطأ من الـ request"""
-        lang = self.request.headers.get('Accept-Language', 'ar')
-        return 'en' if lang.startswith('en') else 'ar'
-
     def handle_error(self, error, error_key='GENERAL_ERROR', **kwargs):
         """
-        معالجة الأخطاء بشكل موحد
+        Handle errors consistently
 
         Args:
-            error: الخطأ الذي حدث
-            error_key: مفتاح رسالة الخطأ من ErrorMessages
-            **kwargs: معاملات إضافية لرسالة الخطأ
+            error: The error that occurred
+            error_key: Error message key from ErrorMessages
+            **kwargs: Additional arguments for error message formatting
 
         Returns:
-            Response: استجابة بالخطأ
+            Response: Error response
         """
-        lang = self.get_error_lang()
-        message = ErrorMessages.get(error_key, lang, **kwargs)
+        # Get translated message via getattr (fallback to GENERAL_ERROR)
+        message_obj = getattr(ErrorMessages, error_key,
+                              ErrorMessages.GENERAL_ERROR)
+        message = str(message_obj)
 
-        # تسجيل الخطأ
+        if kwargs:
+            try:
+                message = message.format(**kwargs)
+            except Exception:
+                pass
+
+        # Log error
         logger.error(
             f"Error in {self.__class__.__name__}: {error}", exc_info=True)
 
@@ -55,19 +58,18 @@ class ErrorHandlingMixin:
 
     def success_response(self, message_key, data=None, **kwargs):
         """
-        إرجاع استجابة نجاح موحدة
+        Return unified success response
 
         Args:
-            message_key: مفتاح رسالة النجاح
-            data: البيانات المراد إرجاعها
-            **kwargs: معاملات إضافية
+            message_key: Success message key
+            data: Data to return
+            **kwargs: Additional arguments
 
         Returns:
-            Response: استجابة النجاح
+            Response: Success response
         """
-        lang = self.get_error_lang()
 
-        # رسائل النجاح باستخدام Django i18n
+        # Success messages using Django i18n
         success_messages = {
             'CREATED': _('Created successfully'),
             'UPDATED': _('Updated successfully'),
@@ -90,19 +92,19 @@ class ErrorHandlingMixin:
 
 class ValidationMixin:
     """
-    Mixin لإضافة validation methods شائعة
+    Mixin to add common validation methods
     """
 
     def validate_required_fields(self, data, required_fields):
         """
-        التحقق من وجود الحقول المطلوبة
+        Validate presence of required fields
 
         Args:
-            data: البيانات المراد التحقق منها
-            required_fields: قائمة بأسماء الحقول المطلوبة
+            data: Data to validate
+            required_fields: List of required field names
 
         Raises:
-            ValidationError: إذا كان أي حقل مفقود
+            ValidationError: If any field is missing
         """
         from rest_framework.exceptions import ValidationError
 
@@ -116,14 +118,14 @@ class ValidationMixin:
 
     def validate_positive_number(self, value, field_name):
         """
-        التحقق من أن الرقم موجب
+        Validate that number is positive
 
         Args:
-            value: القيمة المراد التحقق منها
-            field_name: اسم الحقل
+            value: Value to validate
+            field_name: Field name
 
         Raises:
-            ValidationError: إذا كان الرقم سالب
+            ValidationError: If number is negative
         """
         from rest_framework.exceptions import ValidationError
         from decimal import Decimal, InvalidOperation

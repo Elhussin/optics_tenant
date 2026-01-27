@@ -7,13 +7,12 @@ import { useTranslations } from "next-intl";
 import { Link } from '@/src/app/i18n/navigation';
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, CheckCircle, XCircle, AlertTriangle, LogIn, ArrowLeft } from "lucide-react";
-
+import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
 export default function ActivatePage() {
   const t = useTranslations('activation');
-  const alias = "tenants_activate_retrieve";
+  const alias = featuresConfig["tenants-activate"].retrieveAlias;
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-
   const [status, setStatus] = useState<"loading" | "success" | "error" | "invalid">("loading");
   const [message, setMessage] = useState<string>(t('loading'));
 

@@ -1,6 +1,6 @@
 from rest_framework.permissions import BasePermission
 from rest_framework.exceptions import PermissionDenied, NotAuthenticated
-from django.utils.translation import gettext_lazy as T
+from django.utils.translation import gettext_lazy as _
 
 
 class RoleOrPermissionRequired(BasePermission):
@@ -28,10 +28,10 @@ class RoleOrPermissionRequired(BasePermission):
         user = getattr(request, "user", None)
         if not user or not user.is_authenticated:
             raise NotAuthenticated(
-                detail=T("Not authenticated. Please login first"))
+                detail=_("Not authenticated. Please login first"))
         if not user.is_active:
             raise PermissionDenied(
-                detail=T("Account disabled. Please contact admin."))
+                detail=_("Account disabled. Please contact admin."))
 
         # Django superuser
         if user.is_superuser:
@@ -72,7 +72,7 @@ class RoleOrPermissionRequired(BasePermission):
                     else:
                         missing = required_perms - user_permissions
                         raise PermissionDenied(
-                            detail=T("❌ You are missing the following permissions: {}.").format(
+                            detail=_("You are missing the following permissions: {}.").format(
                                 ', '.join(missing))
                         )
                 else:
@@ -80,19 +80,18 @@ class RoleOrPermissionRequired(BasePermission):
                         return True
                     else:
                         raise PermissionDenied(
-                            detail=T("❌ You are missing the following permissions: {}.").format(
+                            detail=_("You are missing the following permissions: {}.").format(
                                 ', '.join(required_perms))
                         )
 
         # Failure: No role matched (if allowed_roles set) AND (no permissions matched OR permissions check skipped)
-        # We need a proper error message.
         if self.required_permissions and not user_roles:
-            msg = T("❌ You are missing the required permissions (No roles assigned).")
+            msg = _("You are missing the required permissions (No roles assigned).")
         elif self.allowed_roles:
-            msg = T("❌ Access denied. Allowed roles: {}").format(
+            msg = _("Access denied. Allowed roles: {}").format(
                 ', '.join(self.allowed_roles))
         else:
-            msg = T("❌ Permission denied.")
+            msg = _("Permission denied.")
 
         raise PermissionDenied(detail=msg)
 

@@ -68,17 +68,35 @@ class UserSerializer(serializers.ModelSerializer):
         source='roles',
         required=False
     )
+    tenant_settings = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'roles', 'role_ids', 'phone', 'password', 'client', 'is_active', 'is_staff',
-            'is_deleted', 'deleted_at',
+            'is_deleted', 'deleted_at', 'tenant_settings'
         ]
         read_only_fields = ['id', 'deleted_at', 'client']
 
+    def get_tenant_settings(self, obj):
+        if obj.client and hasattr(obj.client, 'tenantsettings'):
+            return TenantSettingsSerializer(obj.client.tenantsettings).data
+        return None
+
     def create(self, validated_data):
+        from django.db import connection
+        from apps.tenants.models import Client
+
+        # Auto-assign client based on active tenant schema
+        schema_name = connection.schema_name
+        if schema_name != 'public':
+            try:
+                client = Client.objects.get(schema_name=schema_name)
+                validated_data['client'] = client
+            except Client.DoesNotExist:
+                pass
+
         password = validated_data.pop("password")
         roles = validated_data.pop("roles", [])
         user = User(**validated_data)
@@ -124,6 +142,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'password', 'email', 'role_ids']
 
     def create(self, validated_data):
+        from django.db import connection
+        from apps.tenants.models import Client
+
+        # Auto-assign client based on active tenant schema
+        schema_name = connection.schema_name
+        if schema_name != 'public':
+            try:
+                client = Client.objects.get(schema_name=schema_name)
+                validated_data['client'] = client
+            except Client.DoesNotExist:
+                pass
+
         password = validated_data.pop("password")
         roles = validated_data.pop("roles", [])
         user = User(**validated_data)
@@ -244,8 +274,32 @@ class PageSerializer(serializers.ModelSerializer):
 class ContactUsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactUs
-
         fields = '__all__'
+
+    def validate_message(self, value):
+        """Validate message is not empty and has minimum length"""
+        if not value or len(value.strip()) < 10:
+            raise serializers.ValidationError(
+                _('Message must be at least 10 characters long')
+            )
+        return value
+
+    def validate_name(self, value):
+        """Validate name is not empty"""
+        if not value or len(value.strip()) < 2:
+            raise serializers.ValidationError(
+                _('Name must be at least 2 characters long')
+            )
+        return value
+
+    def validate_phone(self, value):
+        """Validate phone number format"""
+        import re
+        if value and not re.match(r'^\+?[\d\s\-\(\)]{10,20}$', value):
+            raise serializers.ValidationError(
+                _('Please enter a valid phone number')
+            )
+        return value
 
 
 class TenantSettingsSerializer(serializers.ModelSerializer):

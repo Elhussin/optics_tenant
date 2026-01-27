@@ -11,6 +11,8 @@ from core.views import BaseViewSet
 from rest_framework.views import APIView
 # Assuming this import is needed for RoleOrPermissionRequired
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 
 User = get_user_model()
 
@@ -73,6 +75,39 @@ class EmployeeFormOptionsView(APIView):
             allowed_roles=HR_ROLES)
     ]
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name='EmployeeFormOptionsResponse',
+                fields={
+                    'departments': inline_serializer(
+                        name='DepartmentOption',
+                        fields={
+                            'label': serializers.CharField(),
+                            'value': serializers.IntegerField()
+                        },
+                        many=True
+                    ),
+                    'users': inline_serializer(
+                        name='UserOption',
+                        fields={
+                            'label': serializers.CharField(),
+                            'value': serializers.IntegerField()
+                        },
+                        many=True
+                    ),
+                    'positions': inline_serializer(
+                        name='PositionOption',
+                        fields={
+                            'label': serializers.CharField(),
+                            'value': serializers.CharField()
+                        },
+                        many=True
+                    ),
+                }
+            )
+        }
+    )
     def get(self, request):
         return Response({
             "departments": build_choices_from_queryset(Department.objects.all()),

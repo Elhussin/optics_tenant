@@ -4,11 +4,13 @@ from django.db.models import QuerySet
 from django_filters.rest_framework import FilterSet
 from django_filters import FilterSet
 
+
 class FilterOptionsGenerator:
     """
     Generic class to generate filter options for a given queryset
     and optional filterset. Can be reused across different ViewSets.
     """
+
     def __init__(self, queryset: QuerySet, filterset_class: Type[FilterSet], query_params: Dict[str, Any] = None):
         self.queryset = queryset
         self.filterset_class = filterset_class
@@ -20,7 +22,8 @@ class FilterOptionsGenerator:
         """
         if self.filterset_class:
             # Instantiate FilterSet with data + queryset
-            filterset = self.filterset_class(data=self.query_params, queryset=self.queryset)
+            filterset = self.filterset_class(
+                data=self.query_params, queryset=self.queryset)
             if filterset.is_valid():
                 return filterset.qs
         return self.queryset
@@ -39,12 +42,10 @@ class FilterOptionsGenerator:
         return options
 
 
-
-
 def create_filterset_class(model: Type, fields: Dict[str, List[str]]) -> Type[FilterSet]:
     """
     Dynamically generate a FilterSet class for a given model and fields.
-    
+
     Example usage:
         fields = {
             "customer__id": ["exact"],
@@ -76,11 +77,11 @@ def create_filterset_class(model: Type, fields: Dict[str, List[str]]) -> Type[Fi
     return DynamicFilterSet
 
 
-# 👇 دالة format تلقائي
+# 👇 Automatic formatting function
 def format_field_name(field: str) -> str:
     return field.replace("__", " ").replace("_", " ").title()
 
 
-# 👇 دالة اختيار الاسم النهائي (custom label أو format)
-def get_display_name(CUSTOM_FIELD_LABELS,field: str) -> str:
+# 👇 Function to choose final name (custom label or format)
+def get_display_name(CUSTOM_FIELD_LABELS, field: str) -> str:
     return CUSTOM_FIELD_LABELS.get(field, format_field_name(field))

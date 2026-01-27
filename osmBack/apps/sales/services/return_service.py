@@ -1,13 +1,14 @@
 # services/return_service.py
 """
-خدمات المرتجعات:
-- مرتجع مبيعات (العميل يرجع منتج)
-- مرتجع مشتريات (نرجع منتج للمورد)
+Return Services:
+- Sale Return (Customer returns product)
+- Purchase Return (Return product to supplier)
 """
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from apps.products.models import Stock, StockMovement
 from decimal import Decimal
 
@@ -15,23 +16,23 @@ from decimal import Decimal
 @transaction.atomic
 def create_sale_return(order, items_to_return, user, reason=""):
     """
-    إنشاء مرتجع مبيعات (العميل يرجع منتج)
+    Create Sale Return (Customer returns product)
 
     Args:
-        order: الطلب الأصلي
-        items_to_return: قائمة من {order_item_id, quantity, reason}
-        user: المستخدم الذي ينفذ العملية
-        reason: سبب الإرجاع
+        order: Original Order
+        items_to_return: List of {order_item_id, quantity, reason}
+        user: User performing the action
+        reason: Reason for return
 
     Returns:
-        Invoice: فاتورة المرتجع
+        Invoice: Return Invoice
     """
     if order.status != 'delivered':
-        raise ValidationError("يمكن إرجاع الطلبات المسلمة فقط")
+        raise ValidationError(str(_("Only delivered orders can be returned")))
 
     from apps.sales.models import Invoice, InvoiceItem, OrderItem
 
-    # التحقق من الكميات
+    # Check quantities
     total_return_amount = Decimal('0')
     validated_items = []
 
@@ -45,7 +46,8 @@ def create_sale_return(order, items_to_return, user, reason=""):
 
         if return_qty > order_item.quantity:
             raise ValidationError(
-                f"لا يمكن إرجاع كمية أكبر من المشتراة للمنتج {order_item.product_variant}"
+                str(_("Cannot return more than purchased quantity for product {0}").format(
+                    order_item.product_variant))
             )
 
         validated_items.append({
@@ -56,7 +58,7 @@ def create_sale_return(order, items_to_return, user, reason=""):
         })
         total_return_amount += return_qty * order_item.unit_price
 
-    # إنشاء فاتورة المرتجع
+    # Create return invoice
     invoice = Invoice.objects.create(
         branch=order.branch,
         customer=order.customer,
@@ -68,12 +70,13 @@ def create_sale_return(order, items_to_return, user, reason=""):
         discount_amount=Decimal('0'),
         total_amount=total_return_amount * (1 + order.tax_rate),
         status='confirmed',
-        notes=f"مرتجع للطلب {order.order_number}. السبب: {reason}",
+        notes=str(_("Return for order {0}. Reason: {1}").format(
+            order.order_number, reason)),
     )
 
-    # إضافة العناصر المرتجعة للفاتورة وإعادة المخزون
+    # Add returned items to invoice and restock
     for item in validated_items:
-        # إنشاء عنصر الفاتورة
+        # Create invoice item
         InvoiceItem.objects.create(
             invoice=invoice,
             product_variant=item['order_item'].product_variant,
@@ -81,7 +84,7 @@ def create_sale_return(order, items_to_return, user, reason=""):
             unit_price=item['unit_price'],
         )
 
-        # إعادة الكمية للمخزون
+        # Return quantity to stock
         stock = Stock.objects.select_for_update().filter(
             branch=order.branch,
             variant=item['order_item'].product_variant
@@ -92,15 +95,15 @@ def create_sale_return(order, items_to_return, user, reason=""):
             stock.quantity_in_stock += item['quantity']
             stock.save()
 
-            # سجل حركة الإرجاع
+            # Log return movement
             StockMovement.objects.create(
                 stock=stock,
                 movement_type='return',
-                quantity=item['quantity'],  # موجب = إضافة للمخزون
+                quantity=item['quantity'],  # Positive = Add to stock
                 quantity_before=quantity_before,
                 quantity_after=stock.quantity_in_stock,
                 reference_number=invoice.invoice_number,
-                notes=f"مرتجع مبيعات - {reason}",
+                notes=str(_("Sale Return - {0}").format(reason)),
                 created_by=user if hasattr(user, 'id') else None,
             )
 
@@ -110,23 +113,23 @@ def create_sale_return(order, items_to_return, user, reason=""):
 @transaction.atomic
 def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
     """
-    إنشاء مرتجع مشتريات (نرجع منتج للمورد)
+    Create Purchase Return (Return product to supplier)
 
     Args:
-        branch: الفرع
-        supplier: المورد
-        items_to_return: قائمة من {variant_id, quantity, cost_per_unit}
-        user: المستخدم
-        reason: سبب الإرجاع
+        branch: Branch
+        supplier: Supplier
+        items_to_return: List of {variant_id, quantity, cost_per_unit}
+        user: User
+        reason: Reason for return
 
     Returns:
-        Invoice: فاتورة المرتجع
+        Invoice: Return Invoice
     """
     from apps.sales.models import Invoice, InvoiceItem
     from apps.products.models import ProductVariant
     from apps.crm.models import Customer
 
-    # التحقق من الكميات المتوفرة
+    # Check available quantities
     total_return_amount = Decimal('0')
     validated_items = []
 
@@ -142,7 +145,8 @@ def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
 
         if not stock or stock.available_quantity < return_qty:
             raise ValidationError(
-                f"الكمية المتوفرة من {variant} غير كافية للإرجاع"
+                str(_("Available quantity of {0} is insufficient for return").format(
+                    variant))
             )
 
         validated_items.append({
@@ -154,8 +158,8 @@ def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
         })
         total_return_amount += return_qty * cost
 
-    # نحتاج Customer للفاتورة - يمكن استخدام حساب المورد كـ Customer
-    # أو إنشاء حساب خاص للموردين
+    # Need Customer for invoice - can use supplier account as Customer
+    # or create special account for suppliers
     supplier_customer, _ = Customer.objects.get_or_create(
         phone=f"supplier_{supplier.id if hasattr(supplier, 'id') else 'unknown'}",
         defaults={
@@ -164,7 +168,7 @@ def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
         }
     )
 
-    # إنشاء فاتورة المرتجع
+    # Create return invoice
     invoice = Invoice.objects.create(
         branch=branch,
         customer=supplier_customer,
@@ -172,12 +176,12 @@ def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
         subtotal=total_return_amount,
         total_amount=total_return_amount,
         status='confirmed',
-        notes=f"مرتجع للمورد. السبب: {reason}",
+        notes=str(_("Return to supplier. Reason: {0}").format(reason)),
     )
 
-    # خصم من المخزون
+    # Deduct from stock
     for item in validated_items:
-        # إنشاء عنصر الفاتورة
+        # Create invoice item
         InvoiceItem.objects.create(
             invoice=invoice,
             product_variant=item['variant'],
@@ -185,21 +189,21 @@ def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
             unit_price=item['cost'],
         )
 
-        # خصم الكمية من المخزون
+        # Deduct quantity from stock
         stock = item['stock']
         quantity_before = stock.quantity_in_stock
         stock.quantity_in_stock -= item['quantity']
         stock.save()
 
-        # سجل حركة الإرجاع للمورد
+        # Log return movement to supplier
         StockMovement.objects.create(
             stock=stock,
             movement_type='return_to_supplier',
-            quantity=-item['quantity'],  # سالب = خصم من المخزون
+            quantity=-item['quantity'],  # Negative = Deduct from stock
             quantity_before=quantity_before,
             quantity_after=stock.quantity_in_stock,
             reference_number=invoice.invoice_number,
-            notes=f"مرتجع للمورد - {reason}",
+            notes=str(_("Return to supplier - {0}").format(reason)),
             created_by=user if hasattr(user, 'id') else None,
         )
 
@@ -209,13 +213,13 @@ def create_purchase_return(branch, supplier, items_to_return, user, reason=""):
 @transaction.atomic
 def process_damage(branch, items, user, reason=""):
     """
-    تسجيل تلف/إتلاف منتجات
+    Record damage/spoilage of products
 
     Args:
-        branch: الفرع
-        items: قائمة من {variant_id, quantity, reason}
-        user: المستخدم
-        reason: سبب التلف
+        branch: Branch
+        items: List of {variant_id, quantity, reason}
+        user: User
+        reason: Reason for damage
     """
     from apps.products.models import ProductVariant
 
@@ -231,7 +235,8 @@ def process_damage(branch, items, user, reason=""):
 
         if not stock or stock.available_quantity < damage_qty:
             raise ValidationError(
-                f"الكمية المتوفرة من {variant} غير كافية"
+                str(_("Available quantity of {0} is insufficient").format(
+                    variant))
             )
 
         quantity_before = stock.quantity_in_stock
@@ -245,7 +250,7 @@ def process_damage(branch, items, user, reason=""):
             quantity=-damage_qty,
             quantity_before=quantity_before,
             quantity_after=stock.quantity_in_stock,
-            notes=f"تلف/إتلاف - {item_reason}",
+            notes=str(_("Damage/Spoilage - {0}").format(item_reason)),
             created_by=user if hasattr(user, 'id') else None,
         )
 

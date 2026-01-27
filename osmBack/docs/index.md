@@ -1,55 +1,55 @@
-# مرحباً بك في توثيق منصة EyeCare 🚀
+# Welcome to EyeCare Platform Documentation 🚀
 
-مرحباً بك في المركز المعرفي الشامل لنظام إدارة البصريات (Optics Management System). هذا الموقع يحتوي على كل ما تحتاجه لفهم، تطوير، وتشغيل النظام.
+Welcome to the comprehensive knowledge center for the **EyeCare Optics Management System (OMS)**. This documentation provides everything you need to understand, develop, and deploy the system.
 
-## 📌 نبذة عن النظام
-نظام **EyeCare** هو منصة متكاملة لإدارة محلات البصريات، تدعم نظام تعدد المستأجرين (Multi-tenancy)، المحاسبة المالية، إدارة العملاء (CRM)، وإدارة المخزون.
+## 📌 System Overview
+**EyeCare** is a state-of-the-art SaaS platform designed for optics retailers. It supports **Multi-tenancy**, **Financial Accounting**, **CRM**, and **Inventory Management** out of the box, ensuring data isolation and high performance for multiple corporate clients properly.
 
 ---
 
-## 🛠 الأجزاء الرئيسية للتوثيق
+## 🛠 Documentation Sections
 
 <div class="grid cards" markdown>
 
--   :material-rocket-launch:{ .lg .middle } __البداية السريعة__
+-   :material-rocket-launch:{ .lg .middle } __Quick Start__
 
-    تعلم كيفية تثبيت وتشغيل النظام في أقل من 5 دقائق.
+    Learn how to install and run the system locally in under 5 minutes.
 
-    [:octicons-arrow-right-24: ابدأ الآن](./getting-started/installation.md)
+    [:octicons-arrow-right-24: Get Started](./getting-started/installation.md)
 
--   :material-office-building:{ .lg .middle } __بنية النظام (Architecture)__
+-   :material-office-building:{ .lg .middle } __Architecture & Core__
 
-    فهم كيف يعمل نظام الـ Multi-tenancy والربط بين الفرونت آند والباك آند.
+    Deep dive into Multi-tenancy, Authentication, RBAC, and System Design.
 
-    [:octicons-arrow-right-24: استكشف الهيكلية](./architecture/overview.md)
+    [:octicons-arrow-right-24: Explore Architecture](./architecture/overview.md)
 
--   :material-api:{ .lg .middle } __مرجع الـ API__
+-   :material-api:{ .lg .middle } __API Reference__
 
-    توثيق كامل لجميع الـ Endpoints باستخدام Swagger و Redoc.
+    Complete documentation for standard and mobile-optimized Endpoints.
 
-    [:octicons-arrow-right-24: عرض الـ API](./api/swagger.md)
+    [:octicons-arrow-right-24: View APIs](./api/swagger.md)
 
--   :material-calculator:{ .lg .middle } __النظام المحاسبي__
+-   :material-calculator:{ .lg .middle } __Business Modules__
 
-    شرح تفصيلي لدليل الحسابات، قيود اليومية، والتقارير المالية.
+    Detailed guides for Accounting, Sales, Products, and CRM.
 
-    [:octicons-arrow-right-24: الدليل المحاسبي](./modules/accounting.md)
+    [:octicons-arrow-right-24: Explore Modules](./modules/accounting.md)
 
 </div>
 
 ---
 
-## 🧱 هيكلية المجلدات (Project Directory)
+## 🧱 Project Structure
 
 ```text
 optics_tenant/
 ├── osmBack/              # Backend (Django REST Framework)
-│   ├── apps/             # تطبيقات النظام (Core Modules)
-│   ├── core/             # الإعدادات الرئيسية
-│   └── docs/             # ملفات التوثيق التي تقرأها الآن
+│   ├── apps/             # Business Logic Modules (Accounting, Sales, etc.)
+│   ├── core/             # Shared Utilities (Auth, Caching, Middleware)
+│   └── docs/             # Documentation Source
 └── osmFront/             # Frontend (Next.js + Tailwind)
-    └── src/              # كود الواجهات والمكونات
+    └── src/              # UI Components & Logic
 ```
 
-## 🚀 الخطوات القادمة
-إذا كنت مطوراً جديداً في المشروع، ننصحك بالبدء بصفحة [التثبيت والإعداد](./getting-started/installation.md).
+## 🚀 Next Steps
+If you are a new developer on the team, we recommend starting with the [Installation & Setup](./getting-started/installation.md) guide.

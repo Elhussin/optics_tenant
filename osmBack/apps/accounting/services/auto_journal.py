@@ -1,6 +1,6 @@
 # apps/accounting/services/auto_journal.py
 """
-خدمة إنشاء القيود المحاسبية التلقائية
+Service for creating automatic accounting journals
 """
 
 from decimal import Decimal
@@ -14,12 +14,12 @@ logger = logging.getLogger(__name__)
 
 class AutoJournalService:
     """
-    خدمة إنشاء القيود المحاسبية التلقائية من المستندات
+    Service for creating automatic accounting journal entries from documents
     """
 
-    # رموز الحسابات الافتراضية
+    # Default Account Codes
     DEFAULT_ACCOUNTS = {
-        # أصول
+        # Assets
         'cash': '1100',
         'bank': '1110',
         'receivables': '1200',
@@ -27,24 +27,24 @@ class AutoJournalService:
         'bnpl_receivables': '1220',
         'inventory': '1300',
 
-        # التزامات
+        # Liabilities
         'payables': '2100',
         'vat_payable': '2200',
         'customer_deposits': '2300',
 
-        # حقوق الملكية
+        # Equity
         'capital': '3100',
         'retained_earnings': '3200',
 
-        # إيرادات
+        # Revenue
         'sales_revenue': '4100',
         'service_revenue': '4200',
         'discount_given': '4900',
 
-        # تكلفة البضاعة
+        # COGS
         'cogs': '5100',
 
-        # مصروفات
+        # Expenses
         'salaries': '6100',
         'rent': '6200',
         'utilities': '6300',
@@ -52,7 +52,7 @@ class AutoJournalService:
 
     @classmethod
     def get_or_create_account(cls, code, name, account_type, subtype=''):
-        """الحصول على الحساب أو إنشاؤه"""
+        """Get or create the account"""
         from apps.accounting.models import ChartOfAccounts
 
         account, created = ChartOfAccounts.objects.get_or_create(
@@ -65,50 +65,49 @@ class AutoJournalService:
         )
 
         if created:
-            logger.info(f"تم إنشاء حساب جديد: {code} - {name}")
+            logger.info(f"Created new account: {code} - {name}")
 
         return account
 
     @classmethod
     def setup_default_accounts(cls):
-        """إعداد الحسابات الافتراضية"""
+        """Setup default accounts"""
         accounts_setup = [
-            # الأصول
-            ('1000', 'الأصول المتداولة', 'asset', '', True),
-            ('1100', 'الصندوق', 'asset', 'cash', False),
-            ('1110', 'البنك', 'asset', 'bank', False),
-            ('1200', 'ذمم العملاء', 'asset', 'receivable', False),
-            ('1210', 'ذمم شركات التأمين', 'asset', 'receivable', False),
-            ('1220', 'ذمم شركات التقسيط', 'asset', 'receivable', False),
-            ('1300', 'المخزون', 'asset', 'inventory', False),
+            # Assets
+            ('1000', _('Current Assets'), 'asset', '', True),
+            ('1100', _('Cash'), 'asset', 'cash', False),
+            ('1110', _('Bank'), 'asset', 'bank', False),
+            ('1200', _('Accounts Receivable'), 'asset', 'receivable', False),
+            ('1210', _('Insurance Receivables'), 'asset', 'receivable', False),
+            ('1220', _('BNPL Receivables'), 'asset', 'receivable', False),
+            ('1300', _('Inventory'), 'asset', 'inventory', False),
 
-            # الالتزامات
-            ('2000', 'الالتزامات المتداولة', 'liability', '', True),
-            ('2100', 'ذمم الموردين', 'liability', 'payable', False),
-            ('2200', 'ضريبة القيمة المضافة المستحقة',
-             'liability', 'tax_payable', False),
-            ('2300', 'عربون العملاء', 'liability', 'deferred', False),
+            # Liabilities
+            ('2000', _('Current Liabilities'), 'liability', '', True),
+            ('2100', _('Accounts Payable'), 'liability', 'payable', False),
+            ('2200', _('VAT Payable'), 'liability', 'tax_payable', False),
+            ('2300', _('Customer Deposits'), 'liability', 'deferred', False),
 
-            # حقوق الملكية
-            ('3000', 'حقوق الملكية', 'equity', '', True),
-            ('3100', 'رأس المال', 'equity', 'capital', False),
-            ('3200', 'الأرباح المبقاة', 'equity', 'retained', False),
+            # Equity
+            ('3000', _('Equity'), 'equity', '', True),
+            ('3100', _('Capital'), 'equity', 'capital', False),
+            ('3200', _('Retained Earnings'), 'equity', 'retained', False),
 
-            # الإيرادات
-            ('4000', 'الإيرادات', 'revenue', '', True),
-            ('4100', 'إيرادات المبيعات', 'revenue', 'sales', False),
-            ('4200', 'إيرادات الخدمات', 'revenue', 'service', False),
-            ('4900', 'الخصم المسموح به', 'revenue', 'other_income', False),
+            # Revenue
+            ('4000', _('Revenue'), 'revenue', '', True),
+            ('4100', _('Sales Revenue'), 'revenue', 'sales', False),
+            ('4200', _('Service Revenue'), 'revenue', 'service', False),
+            ('4900', _('Discount Allowed'), 'revenue', 'other_income', False),
 
-            # تكلفة البضاعة
-            ('5000', 'تكلفة البضاعة المباعة', 'cogs', '', True),
-            ('5100', 'تكلفة البضاعة', 'cogs', 'cost_of_goods', False),
+            # COGS
+            ('5000', _('Cost of Goods Sold'), 'cogs', '', True),
+            ('5100', _('Cost of Goods'), 'cogs', 'cost_of_goods', False),
 
-            # المصروفات
-            ('6000', 'المصروفات التشغيلية', 'expense', '', True),
-            ('6100', 'الرواتب والأجور', 'expense', 'salary', False),
-            ('6200', 'الإيجار', 'expense', 'rent', False),
-            ('6300', 'المرافق', 'expense', 'utilities', False),
+            # Expenses
+            ('6000', _('Operating Expenses'), 'expense', '', True),
+            ('6100', _('Salaries and Wages'), 'expense', 'salary', False),
+            ('6200', _('Rent Expense'), 'expense', 'rent', False),
+            ('6300', _('Utilities Expense'), 'expense', 'utilities', False),
         ]
 
         from apps.accounting.models import ChartOfAccounts
@@ -124,27 +123,28 @@ class AutoJournalService:
                 }
             )
 
-        logger.info("تم إعداد الحسابات الافتراضية")
+        logger.info("Default accounts setup complete")
 
     @classmethod
     @transaction.atomic
     def create_sales_invoice_journal(cls, invoice):
         """
-        إنشاء قيد محاسبي من فاتورة مبيعات
+        Create journal entry from sales invoice
 
-        القيد:
-        مدين: ذمم العملاء / نقدية    = المبلغ الإجمالي
-        دائن: إيرادات المبيعات       = المبلغ قبل الضريبة
-        دائن: ضريبة القيمة المضافة   = مبلغ الضريبة
-        دائن: الخصم المسموح به       = الخصم (إن وجد) - قيد منفصل
+        Entry:
+        Debit: Receivables / Cash    = Total Amount
+        Credit: Sales Revenue        = Subtotal (before tax)
+        Credit: VAT Payable          = Tax Amount
+        Credit: Discount Allowed     = Discount (if any) - not strictly separate usually nets against revenue, but implementation depends.
+        Here: Revenue is credited with Net Sales (Subtotal - Discount).
         """
         from apps.accounting.models import GeneralJournal, JournalLine, ChartOfAccounts
 
-        # تحديد حساب المدين (نقدية أو ذمم عملاء)
+        # Determine debit account (Cash or Receivables)
         if invoice.status == 'paid':
             debit_account_code = cls.DEFAULT_ACCOUNTS['cash']
         else:
-            # تحديد نوع الذمم حسب نوع الطلب
+            # Determine receivable type based on Order
             order = invoice.order
             if order and order.partner:
                 if order.partner.partner_type == 'insurance':
@@ -156,7 +156,7 @@ class AutoJournalService:
             else:
                 debit_account_code = cls.DEFAULT_ACCOUNTS['receivables']
 
-        # الحصول على الحسابات
+        # Get accounts
         debit_account = ChartOfAccounts.objects.filter(
             code=debit_account_code).first()
         sales_account = ChartOfAccounts.objects.filter(
@@ -166,9 +166,9 @@ class AutoJournalService:
 
         if not all([debit_account, sales_account, vat_account]):
             logger.warning(
-                "الحسابات الافتراضية غير موجودة - تشغيل setup_default_accounts")
+                "Default accounts missing - running setup_default_accounts")
             cls.setup_default_accounts()
-            # إعادة الجلب
+            # Fetch again
             debit_account = ChartOfAccounts.objects.get(
                 code=debit_account_code)
             sales_account = ChartOfAccounts.objects.get(
@@ -176,7 +176,7 @@ class AutoJournalService:
             vat_account = ChartOfAccounts.objects.get(
                 code=cls.DEFAULT_ACCOUNTS['vat_payable'])
 
-        # إنشاء القيد
+        # Create Journal
         journal = GeneralJournal.objects.create(
             entry_date=invoice.created_at.date() if invoice.created_at else timezone.now().date(),
             entry_type='standard',
@@ -190,7 +190,7 @@ class AutoJournalService:
             )),
         )
 
-        # سطر المدين (العميل)
+        # Debit Line (Customer/Cash)
         JournalLine.objects.create(
             journal=journal,
             account=debit_account,
@@ -200,7 +200,7 @@ class AutoJournalService:
                 _('Customer receivable - Invoice #{number}').format(number=invoice.invoice_number)),
         )
 
-        # سطر الدائن (إيرادات المبيعات)
+        # Credit Line (Sales Revenue)
         net_sales = invoice.subtotal - (invoice.discount_amount or 0)
         JournalLine.objects.create(
             journal=journal,
@@ -210,7 +210,7 @@ class AutoJournalService:
             description=str(_('Sales revenue')),
         )
 
-        # سطر الدائن (الضريبة)
+        # Credit Line (VAT)
         if invoice.tax_amount and invoice.tax_amount > 0:
             JournalLine.objects.create(
                 journal=journal,
@@ -220,44 +220,48 @@ class AutoJournalService:
                 description=str(_('Value Added Tax')),
             )
 
-        # حساب توازن القيد وترحيله
+        # Validate and Save
         journal.validate_balance()
         journal.save()
 
-        logger.info(f"تم إنشاء قيد مبيعات: {journal.entry_number}")
+        logger.info(f"Sales journal created: {journal.entry_number}")
         return journal
 
     @classmethod
     @transaction.atomic
     def create_payment_journal(cls, payment):
         """
-        إنشاء قيد محاسبي من دفعة
+        Create journal entry from payment
 
-        القيد:
-        مدين: الصندوق/البنك    = مبلغ الدفعة
-        دائن: ذمم العملاء       = مبلغ الدفعة
+        Entry:
+        Debit: Cash/Bank       = Payment Amount
+        Credit: Receivables    = Payment Amount
         """
         from apps.accounting.models import GeneralJournal, JournalLine, ChartOfAccounts
 
-        # تحديد حساب المدين حسب طريقة الدفع
-        if payment.payment_method == 'cash':
+        # Determine debit account based on payment method
+        # It is safer to use payment_method.type or code key checks
+        # Assuming payment_method is an object; checking code or name_en
+        method_code = payment.payment_method.code if payment.payment_method else 'cash'
+
+        if method_code == 'cash':
             debit_account_code = cls.DEFAULT_ACCOUNTS['cash']
-        elif payment.payment_method in ['card', 'mada', 'visa', 'mastercard', 'apple_pay', 'stc_pay']:
+        elif method_code in ['card', 'mada', 'visa', 'mastercard', 'apple_pay', 'stc_pay', 'transfer']:
             debit_account_code = cls.DEFAULT_ACCOUNTS['bank']
-        elif payment.payment_method in ['tabby', 'tamara']:
+        elif method_code in ['tabby', 'tamara']:
             debit_account_code = cls.DEFAULT_ACCOUNTS['bnpl_receivables']
-        elif payment.payment_method == 'insurance':
+        elif method_code == 'insurance':
             debit_account_code = cls.DEFAULT_ACCOUNTS['insurance_receivables']
         else:
             debit_account_code = cls.DEFAULT_ACCOUNTS['bank']
 
-        # تحديد حساب الدائن
+        # Credit Account
         credit_account_code = cls.DEFAULT_ACCOUNTS['receivables']
 
         debit_account = ChartOfAccounts.objects.get(code=debit_account_code)
         credit_account = ChartOfAccounts.objects.get(code=credit_account_code)
 
-        # وصف القيد
+        # Description
         invoice = payment.invoice
         order = payment.order
         source_doc = invoice.invoice_number if invoice else (
@@ -269,10 +273,14 @@ class AutoJournalService:
             source_type='receipt',
             source_document=source_doc,
             source_id=payment.id,
-            description=f"دفعة {payment.get_payment_method_display()} - {source_doc}",
+            description=str(_("Payment {method} - {doc}").format(
+                method=payment.get_payment_method_display() if hasattr(
+                    payment, 'get_payment_method_display') else method_code,
+                doc=source_doc
+            )),
         )
 
-        # سطر المدين
+        # Debit Line
         JournalLine.objects.create(
             journal=journal,
             account=debit_account,
@@ -282,7 +290,7 @@ class AutoJournalService:
                 method=payment.get_payment_method_display())),
         )
 
-        # سطر الدائن
+        # Credit Line
         JournalLine.objects.create(
             journal=journal,
             account=credit_account,
@@ -294,19 +302,19 @@ class AutoJournalService:
         journal.validate_balance()
         journal.save()
 
-        logger.info(f"تم إنشاء قيد قبض: {journal.entry_number}")
+        logger.info(f"Payment journal created: {journal.entry_number}")
         return journal
 
     @classmethod
     @transaction.atomic
     def create_return_journal(cls, invoice):
         """
-        إنشاء قيد مرتجع مبيعات
+        Create sales return journal
 
-        القيد (عكس قيد المبيعات):
-        مدين: إيرادات المبيعات       = المبلغ
-        مدين: ضريبة القيمة المضافة   = الضريبة
-        دائن: ذمم العملاء / نقدية    = المبلغ الإجمالي
+        Entry (Reverse of Sales):
+        Debit: Sales Revenue        = Net Amount
+        Debit: VAT Payable          = Tax Amount
+        Credit: Receivables / Cash  = Total Amount
         """
         from apps.accounting.models import GeneralJournal, JournalLine, ChartOfAccounts
 
@@ -323,10 +331,11 @@ class AutoJournalService:
             source_type='return',
             source_document=invoice.invoice_number,
             source_id=invoice.id,
-            description=f"مرتجع مبيعات - فاتورة {invoice.invoice_number}",
+            description=str(_("Sales Return - Invoice {0}").format(
+                invoice.invoice_number)),
         )
 
-        # عكس إيرادات المبيعات (مدين)
+        # Reverse Sales Revenue (Debit)
         net_amount = invoice.subtotal - (invoice.discount_amount or 0)
         JournalLine.objects.create(
             journal=journal,
@@ -336,7 +345,7 @@ class AutoJournalService:
             description=str(_('Cancel sales revenue')),
         )
 
-        # عكس الضريبة (مدين)
+        # Reverse VAT (Debit)
         if invoice.tax_amount and invoice.tax_amount > 0:
             JournalLine.objects.create(
                 journal=journal,
@@ -346,7 +355,7 @@ class AutoJournalService:
                 description=str(_('Cancel Value Added Tax')),
             )
 
-        # تخفيض ذمم العميل (دائن)
+        # Reduce Receivables (Credit)
         JournalLine.objects.create(
             journal=journal,
             account=receivables_account,
@@ -358,18 +367,18 @@ class AutoJournalService:
         journal.validate_balance()
         journal.save()
 
-        logger.info(f"تم إنشاء قيد مرتجع: {journal.entry_number}")
+        logger.info(f"Return journal created: {journal.entry_number}")
         return journal
 
     @classmethod
     @transaction.atomic
     def create_cogs_journal(cls, invoice):
         """
-        إنشاء قيد تكلفة البضاعة المباعة
+        Create COGS journal entry
 
-        القيد:
-        مدين: تكلفة البضاعة المباعة = تكلفة المنتجات
-        دائن: المخزون               = تكلفة المنتجات
+        Entry:
+        Debit: Cost of Goods Sold   = Total Cost
+        Credit: Inventory           = Total Cost
         """
         from apps.accounting.models import GeneralJournal, JournalLine, ChartOfAccounts
 
@@ -378,15 +387,15 @@ class AutoJournalService:
         inventory_account = ChartOfAccounts.objects.get(
             code=cls.DEFAULT_ACCOUNTS['inventory'])
 
-        # حساب تكلفة البضاعة
+        # Calculate Total Cost
         total_cost = Decimal('0')
         for item in invoice.items.all():
             variant = item.product_variant
             if variant and hasattr(variant, 'cost_price') and variant.cost_price:
-                total_cost += variant.cost_price * item.quantity
+                total_cost += Decimal(str(variant.cost_price)) * item.quantity
 
         if total_cost <= 0:
-            logger.info("لا توجد تكلفة للبضاعة - تخطي قيد COGS")
+            logger.info("No COGS calculated - skipping journal")
             return None
 
         journal = GeneralJournal.objects.create(
@@ -395,7 +404,8 @@ class AutoJournalService:
             source_type='sales_invoice',
             source_document=invoice.invoice_number,
             source_id=invoice.id,
-            description=f"تكلفة البضاعة المباعة - فاتورة {invoice.invoice_number}",
+            description=str(_("Cost of Goods Sold - Invoice {0}").format(
+                invoice.invoice_number)),
         )
 
         JournalLine.objects.create(
@@ -417,5 +427,5 @@ class AutoJournalService:
         journal.validate_balance()
         journal.save()
 
-        logger.info(f"تم إنشاء قيد تكلفة بضاعة: {journal.entry_number}")
+        logger.info(f"COGS journal created: {journal.entry_number}")
         return journal

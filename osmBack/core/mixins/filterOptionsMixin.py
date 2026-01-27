@@ -17,7 +17,7 @@ class FilterOptionsMixin:
         """
         Generate FilterSet dynamically if not explicitly set.
         """
-        # إذا الكلاس عنده filterset_class جاهزة
+        # If class has pre-defined filterset_class
         explicit_class = getattr(self, "__explicit_filterset_class", None)
         if explicit_class and issubclass(explicit_class, FilterSet):
             return explicit_class
@@ -27,7 +27,7 @@ class FilterOptionsMixin:
         else:
             model = self.get_queryset().model
 
-        # ✅ دعم كلاً من filterset_fields و filter_fields
+        # ✅ Support both filterset_fields and filter_fields
         fields = getattr(self, "filterset_fields", None) or getattr(
             self, "filter_fields", {})
 

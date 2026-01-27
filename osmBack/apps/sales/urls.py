@@ -5,17 +5,17 @@ from rest_framework.routers import DefaultRouter
 from apps.sales.views import (
     OrderViewSet, InvoiceViewSet, PaymentViewSet, InstallmentViewSet,
     PaymentMethodViewSet,
-    order_choices, invoice_choices,
-    create_return, create_damage_record,
+    OrderChoicesView, InvoiceChoicesView,
+    CreateReturnView, CreateDamageRecordView,
     # Wholesale
-    get_wholesale_pricing, validate_wholesale_order, create_wholesale_order,
-    customer_statement, wholesale_customers, wholesale_dashboard,
-    update_customer_credit,
+    GetWholesalePricingView, ValidateWholesaleOrderView, CreateWholesaleOrderView,
+    CustomerStatementView, WholesaleCustomersView, WholesaleDashboardView,
+    UpdateCustomerCreditView,
 )
-from apps.sales.views_reports import (
-    sales_summary, sales_by_date, inventory_summary,
-    stock_movements_report, top_products, branch_comparison,
-    financial_dashboard, receivables_aging, pending_orders
+from apps.sales.views import (
+    SalesSummaryView, SalesByDateView, InventorySummaryView,
+    StockMovementsReportView, TopProductsView, BranchComparisonView,
+    FinancialDashboardView, ReceivablesAgingView, PendingOrdersView
 )
 
 router = DefaultRouter()
@@ -28,45 +28,50 @@ router.register(r'payment-methods', PaymentMethodViewSet,
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('orders/choices/', order_choices, name='order-choices'),
-    path('invoices/choices/', invoice_choices, name='invoice-choices'),
+    path('orders/choices/', OrderChoicesView.as_view(), name='order-choices'),
+    path('invoices/choices/', InvoiceChoicesView.as_view(), name='invoice-choices'),
 
-    # Returns (المرتجعات)
-    path('orders/<int:order_id>/return/', create_return, name='create-return'),
-    path('inventory/damage/', create_damage_record, name='create-damage'),
+    # Returns
+    path('orders/<int:order_id>/return/',
+         CreateReturnView.as_view(), name='create-return'),
+    path('inventory/damage/', CreateDamageRecordView.as_view(), name='create-damage'),
 
     # ═══════════════════════════════════════════════════════════════════════
-    # Wholesale (البيع بالجملة)
+    # Wholesale
     # ═══════════════════════════════════════════════════════════════════════
-    path('wholesale/pricing/', get_wholesale_pricing, name='wholesale-pricing'),
-    path('wholesale/validate/', validate_wholesale_order,
+    path('wholesale/pricing/', GetWholesalePricingView.as_view(),
+         name='wholesale-pricing'),
+    path('wholesale/validate/', ValidateWholesaleOrderView.as_view(),
          name='wholesale-validate'),
-    path('wholesale/create-order/', create_wholesale_order,
+    path('wholesale/create-order/', CreateWholesaleOrderView.as_view(),
          name='wholesale-create-order'),
-    path('wholesale/customers/', wholesale_customers, name='wholesale-customers'),
-    path('wholesale/dashboard/', wholesale_dashboard, name='wholesale-dashboard'),
+    path('wholesale/customers/', WholesaleCustomersView.as_view(),
+         name='wholesale-customers'),
+    path('wholesale/dashboard/', WholesaleDashboardView.as_view(),
+         name='wholesale-dashboard'),
     path('wholesale/customer/<int:customer_id>/statement/',
-         customer_statement, name='customer-statement'),
+         CustomerStatementView.as_view(), name='customer-statement'),
     path('wholesale/customer/<int:customer_id>/credit/',
-         update_customer_credit, name='update-customer-credit'),
+         UpdateCustomerCreditView.as_view(), name='update-customer-credit'),
 
     # Reports - Sales
-    path('reports/sales-summary/', sales_summary, name='sales-summary'),
-    path('reports/sales-by-date/', sales_by_date, name='sales-by-date'),
-    path('reports/top-products/', top_products, name='top-products'),
+    path('reports/sales-summary/', SalesSummaryView.as_view(), name='sales-summary'),
+    path('reports/sales-by-date/', SalesByDateView.as_view(), name='sales-by-date'),
+    path('reports/top-products/', TopProductsView.as_view(), name='top-products'),
     path('reports/branch-comparison/',
-         branch_comparison, name='branch-comparison'),
+         BranchComparisonView.as_view(), name='branch-comparison'),
 
     # Reports - Inventory
     path('reports/inventory-summary/',
-         inventory_summary, name='inventory-summary'),
-    path('reports/stock-movements/', stock_movements_report,
+         InventorySummaryView.as_view(), name='inventory-summary'),
+    path('reports/stock-movements/', StockMovementsReportView.as_view(),
          name='stock-movements-report'),
 
     # Reports - Financial (NEW)
     path('reports/financial-dashboard/',
-         financial_dashboard, name='financial-dashboard'),
+         FinancialDashboardView.as_view(), name='financial-dashboard'),
     path('reports/receivables-aging/',
-         receivables_aging, name='receivables-aging'),
-    path('reports/pending-orders/', pending_orders, name='pending-orders'),
+         ReceivablesAgingView.as_view(), name='receivables-aging'),
+    path('reports/pending-orders/',
+         PendingOrdersView.as_view(), name='pending-orders'),
 ]

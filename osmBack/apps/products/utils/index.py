@@ -2,20 +2,25 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 import hashlib
 
 
-LENS_POWERS = [(f"{x:+.2f}", f"{x:+.2f}") for x in [i / 4 for i in range(-120, 121)]]
+LENS_POWERS = [(f"{x:+.2f}", f"{x:+.2f}")
+               for x in [i / 4 for i in range(-120, 121)]]
 
-spherical_lens_powersMunis = [(f"-{abs(x):05.2f}", f"-{abs(x):05.2f}") for x in [i / 4 for i in range(-120, 1)]]
-spherical_lens_powersPlus = [(f"+{abs(x):05.2f}", f"+{abs(x):05.2f}") for x in [i / 4 for i in range(1, 121)]]
-cylinder_lens_powers = [(f"-{abs(x):05.2f}", f"-{abs(x):05.2f}") for x in [i / 4 for i in range(-60, 1)]]
-additional_lens_powers = [(f"+{abs(x):05.2f}", f"+{abs(x):05.2f}") for x in [i / 4 for i in range(1, 25)]]
+spherical_lens_powersMunis = [
+    (f"-{abs(x):05.2f}", f"-{abs(x):05.2f}") for x in [i / 4 for i in range(-120, 1)]]
+spherical_lens_powersPlus = [
+    (f"+{abs(x):05.2f}", f"+{abs(x):05.2f}") for x in [i / 4 for i in range(1, 121)]]
+cylinder_lens_powers = [(f"-{abs(x):05.2f}", f"-{abs(x):05.2f}")
+                        for x in [i / 4 for i in range(-60, 1)]]
+additional_lens_powers = [(f"+{abs(x):05.2f}", f"+{abs(x):05.2f}")
+                          for x in [i / 4 for i in range(1, 25)]]
 
-# دمج الموجب والسالب للـ spherical
+# Combine positive and negative spherical powers
 spherical_lens_powers = spherical_lens_powersMunis + spherical_lens_powersPlus
-
 
 
 def format_decimal(value, width=6, decimals=2):
@@ -25,17 +30,17 @@ def format_decimal(value, width=6, decimals=2):
 
 
 def send_low_stock_email(stock_items, recipient_email=None):
-    """إرسال إيميل للمخزون المنخفض"""
+    """Send low stock email"""
     if not recipient_email:
         recipient_email = settings.DEFAULT_FROM_EMAIL
-    
-    subject = "تنبيه: مخزون منخفض"
-    
+
+    subject = str(_("Alert: Low Stock"))
+
     html_message = render_to_string('emails/low_stock_alert.html', {
         'stock_items': stock_items,
         'date': timezone.now().date(),
     })
-    
+
     send_mail(
         subject=subject,
         message="",
@@ -46,41 +51,44 @@ def send_low_stock_email(stock_items, recipient_email=None):
 
 
 def generate_barcode(product_variant):
-    """إنشاء باركود للمنتج"""
+    """Generate barcode for product"""
     import barcode
     from barcode.writer import ImageWriter
     from io import BytesIO
-    
-    code = barcode.get('code128', str(product_variant.id), writer=ImageWriter())
+
+    code = barcode.get('code128', str(
+        product_variant.id), writer=ImageWriter())
     buffer = BytesIO()
     code.write(buffer)
     buffer.seek(0)
-    
+
     return buffer.getvalue()
 
 
 def export_stock_to_excel(stock_queryset):
-    """تصدير المخزون إلى Excel"""
+    """Export stock to Excel"""
     import openpyxl
     from openpyxl.utils import get_column_letter
     from django.http import HttpResponse
-    
+
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
-    worksheet.title = "Stock Report"
-    
+    worksheet.title = str(_("Stock Report"))
+
     # Headers
     headers = [
-        'Branch', 'Product', 'Variant', 'Stock Quantity', 
-        'Reserved', 'Available', 'Min Level', 'Max Level', 
-        'Average Cost', 'Last Cost', 'Last Updated'
+        str(_('Branch')), str(_('Product')), str(
+            _('Variant')), str(_('Stock Quantity')),
+        str(_('Reserved')), str(_('Available')), str(
+            _('Min Level')), str(_('Max Level')),
+        str(_('Average Cost')), str(_('Last Cost')), str(_('Last Updated'))
     ]
-    
+
     for col, header in enumerate(headers, 1):
         cell = worksheet.cell(row=1, column=col)
         cell.value = header
         cell.font = openpyxl.styles.Font(bold=True)
-    
+
     # Data
     for row, stock in enumerate(stock_queryset, 2):
         worksheet.cell(row=row, column=1).value = str(stock.branch)
@@ -93,19 +101,17 @@ def export_stock_to_excel(stock_queryset):
         worksheet.cell(row=row, column=8).value = stock.max_stock_level
         worksheet.cell(row=row, column=9).value = float(stock.average_cost)
         worksheet.cell(row=row, column=10).value = float(stock.last_cost)
-        worksheet.cell(row=row, column=11).value = stock.last_updated.strftime('%Y-%m-%d %H:%M')
-    
+        worksheet.cell(row=row, column=11).value = stock.last_updated.strftime(
+            '%Y-%m-%d %H:%M')
+
     # Auto-adjust column widths
     for col in range(1, len(headers) + 1):
         worksheet.column_dimensions[get_column_letter(col)].auto_size = True
-    
+
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     )
     response['Content-Disposition'] = 'attachment; filename=stock_report.xlsx'
-    
+
     workbook.save(response)
     return response
-
-
-

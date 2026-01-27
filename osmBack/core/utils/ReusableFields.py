@@ -1,5 +1,5 @@
 """
-حقول قابلة لإعادة الاستخدام مع رسائل خطأ مترجمة
+Reusable Fields with Translated Error Messages
 """
 
 from rest_framework import serializers
@@ -9,8 +9,8 @@ from django.utils.translation import gettext_lazy as _
 
 class ReusableFields:
     """
-    حقول قابلة لإعادة الاستخدام في Serializers
-    مع رسائل خطأ موحدة ومترجمة باستخدام Django i18n
+    Reusable fields in Serializers
+    with unified and translated error messages using Django i18n
     """
 
     @staticmethod
@@ -114,7 +114,7 @@ class ReusableFields:
 
     @staticmethod
     def sku(**kwargs):
-        """حقل SKU مع validation"""
+        """SKU field with validation"""
         return serializers.CharField(
             max_length=50,
             error_messages={
@@ -128,7 +128,7 @@ class ReusableFields:
 
     @staticmethod
     def price(**kwargs):
-        """حقل السعر مع validation"""
+        """Price field with validation"""
         return serializers.DecimalField(
             max_digits=10,
             decimal_places=2,
@@ -144,7 +144,7 @@ class ReusableFields:
 
     @staticmethod
     def quantity(**kwargs):
-        """حقل الكمية مع validation"""
+        """Quantity field with validation"""
         return serializers.IntegerField(
             min_value=0,
             error_messages={

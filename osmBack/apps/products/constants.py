@@ -7,18 +7,19 @@ for easy modification and extension.
 Usage:
     from apps.products.constants import PRODUCT_TYPE_CHOICES, VARIANT_TYPE_CHOICES
 """
+from django.utils.translation import gettext_lazy as _
 
 # =============================================================================
-# MAIN PRODUCT TYPE (تصنيف المنتج الرئيسي)
+# MAIN PRODUCT TYPE
 # =============================================================================
 # These are the main categories of products in an optical store
 PRODUCT_TYPE_CHOICES = [
-    ('CL', 'Contact Lenses'),      # عدسات لاصقة
-    ('SL', 'Spectacle Lenses'),    # عدسات نظارات
-    ('FR', 'Frames'),              # إطارات
-    ('AX', 'Accessories'),         # إكسسوارات
-    ('OT', 'Other'),               # أخرى
-    ('DV', 'Devices'),             # أجهزة
+    ('CL', _('Contact Lenses')),      # Contact Lenses
+    ('SL', _('Spectacle Lenses')),    # Spectacle Lenses
+    ('FR', _('Frames')),              # Frames
+    ('AX', _('Accessories')),         # Accessories
+    ('OT', _('Other')),               # Other
+    ('DV', _('Devices')),             # Devices
 ]
 
 
@@ -28,16 +29,16 @@ PRODUCT_TYPE_DICT = {code: label for code, label in PRODUCT_TYPE_CHOICES}
 
 
 # =============================================================================
-# VARIANT TYPE (نوع المتغير)
+# VARIANT TYPE
 # =============================================================================
 # These define which model/serializer to use for variants
 VARIANT_TYPE_CHOICES = [
-    ('basic', 'Basic'),                # متغير أساسي
-    ('frames', 'Frames'),              # إطارات
-    ('stockLenses', 'Stock Lenses'),   # عدسات جاهزة
-    ('rxLenses', 'Rx Lenses'),         # عدسات طبية
-    ('contactLenses', 'Contact Lenses'),  # عدسات لاصقة
-    ('custom', 'Custom'),              # مخصص
+    ('basic', _('Basic')),                # Basic variant
+    ('frames', _('Frames')),              # Frames
+    ('stockLenses', _('Stock Lenses')),   # Stock Lenses
+    ('rxLenses', _('Rx Lenses')),         # Rx Lenses
+    ('contactLenses', _('Contact Lenses')),  # Contact Lenses
+    ('custom', _('Custom')),              # Custom
 ]
 
 # Dictionary for quick lookup by code
@@ -59,11 +60,11 @@ PRODUCT_VARIANT_TYPE_MAPPING = {
 
 
 # =============================================================================
-# RIGHT/LEFT EYE CHOICES (اختيارات العين)
+# RIGHT/LEFT EYE CHOICES
 # =============================================================================
 RIGHT_LEFT_CHOICES = [
-    ('R', 'Right'),  # يمين
-    ('L', 'Left'),   # يسار
+    ('R', _('Right')),  # Right
+    ('L', _('Left')),   # Left
 ]
 
 

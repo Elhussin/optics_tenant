@@ -1,6 +1,6 @@
 # apps/accounting/models/chart_of_accounts.py
 """
-دليل الحسابات - Chart of Accounts
+Chart of Accounts
 """
 
 from django.db import models
@@ -11,7 +11,7 @@ from core.models import BaseModel
 
 class ChartOfAccounts(BaseModel):
     """
-    دليل الحسابات - الهيكل الأساسي للحسابات المحاسبية
+    Chart of Accounts (Main Account Structure)
     """
     ACCOUNT_TYPES = [
         ('asset', _('Asset')),              # 1xxxx
@@ -135,7 +135,7 @@ class ChartOfAccounts(BaseModel):
         return f"{self.code} - {self.name}"
 
     def save(self, *args, **kwargs):
-        # تحديد الطبيعة تلقائياً بناءً على نوع الحساب
+        # Automatically determine normal balance based on account type
         if not self.pk:
             if self.account_type in ['asset', 'expense', 'cogs']:
                 self.normal_balance = 'debit'
@@ -145,7 +145,7 @@ class ChartOfAccounts(BaseModel):
         super().save(*args, **kwargs)
 
     def get_full_path(self):
-        """الحصول على المسار الكامل للحساب"""
+        """Get full path of account"""
         path = [self.name]
         parent = self.parent
         while parent:
@@ -155,16 +155,16 @@ class ChartOfAccounts(BaseModel):
 
     @classmethod
     def get_by_code(cls, code):
-        """البحث عن حساب بالرمز"""
+        """Get account by code"""
         return cls.objects.filter(code=code, is_active=True).first()
 
     @classmethod
     def get_by_subtype(cls, subtype):
-        """البحث عن حساب بالنوع الفرعي"""
+        """Get account by subtype"""
         return cls.objects.filter(account_subtype=subtype, is_active=True, is_header=False).first()
 
     def update_balance(self, amount, is_debit=True):
-        """تحديث الرصيد"""
+        """Update balance"""
         from decimal import Decimal
         amount = Decimal(str(amount))
 
@@ -184,7 +184,7 @@ class ChartOfAccounts(BaseModel):
 
 class GeneralJournal(BaseModel):
     """
-    دفتر اليومية العام
+    General Journal
     """
     ENTRY_TYPES = [
         ('standard', _('Standard Entry')),
@@ -290,7 +290,7 @@ class GeneralJournal(BaseModel):
         ]
 
     def __str__(self):
-        return f"قيد {self.entry_number} - {self.entry_date}"
+        return f"Journal Entry {self.entry_number} - {self.entry_date}"
 
     def save(self, *args, **kwargs):
         if not self.entry_number:
@@ -298,7 +298,7 @@ class GeneralJournal(BaseModel):
         super().save(*args, **kwargs)
 
     def _generate_entry_number(self):
-        """توليد رقم قيد تلقائي"""
+        """Generate automatic entry number"""
         from django.utils import timezone
         import time
 
@@ -318,7 +318,7 @@ class GeneralJournal(BaseModel):
         return f"{prefix}{new_num:04d}"
 
     def validate_balance(self):
-        """التحقق من توازن القيد"""
+        """Check journal entry balance"""
         total_debit = sum(line.debit for line in self.lines.all())
         total_credit = sum(line.credit for line in self.lines.all())
 
@@ -335,7 +335,7 @@ class GeneralJournal(BaseModel):
         return True
 
     def post(self, user=None):
-        """ترحيل القيد وتحديث أرصدة الحسابات"""
+        """Post entry and update account balances"""
         from django.utils import timezone
 
         if self.is_posted:
@@ -343,7 +343,7 @@ class GeneralJournal(BaseModel):
 
         self.validate_balance()
 
-        # تحديث أرصدة الحسابات
+        # Update account balances
         for line in self.lines.all():
             if line.debit > 0:
                 line.account.update_balance(line.debit, is_debit=True)
@@ -358,7 +358,7 @@ class GeneralJournal(BaseModel):
         return self
 
     def reverse(self, user=None):
-        """إنشاء قيد عكسي"""
+        """Create reversal entry"""
         from django.utils import timezone
 
         if not self.is_posted:
@@ -392,7 +392,7 @@ class GeneralJournal(BaseModel):
 
 class JournalLine(BaseModel):
     """
-    سطر في قيد اليومية
+    Journal Entry Line
     """
     journal = models.ForeignKey(
         GeneralJournal,

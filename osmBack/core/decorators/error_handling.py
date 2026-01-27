@@ -1,5 +1,5 @@
 """
-Decorators لمعالجة الأخطاء في Views
+Decorators for Error Handling in Views
 """
 
 from functools import wraps
@@ -14,9 +14,9 @@ logger = logging.getLogger(__name__)
 
 def handle_exceptions(error_key='GENERAL_ERROR'):
     """
-    Decorator لمعالجة الأخطاء في view functions
+    Decorator to handle exceptions in view functions
 
-    الاستخدام:
+    Usage:
     @handle_exceptions('INSUFFICIENT_STOCK')
     @action(detail=True, methods=['post'])
     def my_action(self, request, pk=None):
@@ -28,19 +28,17 @@ def handle_exceptions(error_key='GENERAL_ERROR'):
             try:
                 return func(self, request, *args, **kwargs)
             except Exception as e:
-                # الحصول على اللغة
-                lang = request.headers.get('Accept-Language', 'ar')
-                lang = 'en' if lang.startswith('en') else 'ar'
-
-                # تسجيل الخطأ
+                # Log the error
                 logger.error(f"Error in {func.__name__}: {e}", exc_info=True)
 
-                # إرجاع رسالة الخطأ
-                message = ErrorMessages.get(error_key, lang)
+                # Get translated message
+                # Fallback to GENERAL_ERROR if key not found
+                message = getattr(ErrorMessages, error_key,
+                                  ErrorMessages.GENERAL_ERROR)
 
                 return Response(
                     {
-                        'detail': message,
+                        'detail': str(message),
                         'error': str(e) if request.user.is_staff else None,
                         'error_type': error_key.lower()
                     },
@@ -52,9 +50,9 @@ def handle_exceptions(error_key='GENERAL_ERROR'):
 
 def validate_request_data(*required_fields):
     """
-    Decorator للتحقق من وجود الحقول المطلوبة في request.data
+    Decorator to validate required fields in request.data
 
-    الاستخدام:
+    Usage:
     @validate_request_data('product_id', 'quantity')
     @action(detail=False, methods=['post'])
     def my_action(self, request):

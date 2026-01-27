@@ -21,7 +21,7 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 
 export default function EyeTest(props: PrescriptionFormProps) {
-  const { filterAlias, updateAlias, retrieveAlias, createAlias } =
+  const { filterAlias, partialUpdateAlias, retrieveAlias, createAlias } =
     formsConfig["prescriptions"];
   const [customers, setCustomers] = useState<any[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -48,7 +48,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
   });
 
   const updatePrescriptionApi = useApiForm({
-    alias: updateAlias,
+    alias: partialUpdateAlias,
   });
 
   const {
@@ -60,7 +60,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
     errors,
     isBusy,
     reset,
-  } = useApiForm({ alias: id ? updateAlias : createAlias });
+  } = useApiForm({ alias: id ? partialUpdateAlias : createAlias });
 
   // Handle Prescription Data Load
   useEffect(() => {

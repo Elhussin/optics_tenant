@@ -12,6 +12,9 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Sum, Count
 from django.utils import timezone
 from decimal import Decimal
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
+from rest_framework import serializers
 
 from apps.sales.models import Payment, Installment, Order, Invoice
 from apps.sales.serializers.payment import (
@@ -56,6 +59,12 @@ class PaymentViewSet(BaseViewSet):
             return PaymentListSerializer
         return PaymentSerializer
 
+    @extend_schema(
+        request=inline_serializer(name='MarkCompletedRequest', fields={
+                                  'transaction_id': serializers.CharField(required=False)}),
+        responses={200: inline_serializer(name='MarkCompletedResponse', fields={
+                                          'status': serializers.CharField(), 'message': serializers.CharField()})}
+    )
     @action(detail=True, methods=['post'])
     def mark_completed(self, request, pk=None):
         """تحديد الدفعة كمكتملة"""
@@ -66,14 +75,20 @@ class PaymentViewSet(BaseViewSet):
             payment.mark_completed(transaction_id=transaction_id)
             return Response({
                 'status': 'success',
-                'message': 'تم تحديث حالة الدفعة',
+                'message': _('Payment status updated'),
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(
+        request=inline_serializer(name='MarkFailedRequest', fields={
+                                  'reason': serializers.CharField(required=False)}),
+        responses={200: inline_serializer(name='MarkFailedResponse', fields={
+                                          'status': serializers.CharField(), 'message': serializers.CharField()})}
+    )
     @action(detail=True, methods=['post'])
     def mark_failed(self, request, pk=None):
         """تحديد الدفعة كفاشلة"""
@@ -83,9 +98,22 @@ class PaymentViewSet(BaseViewSet):
         payment.mark_failed(reason)
         return Response({
             'status': 'success',
-            'message': 'تم تحديث حالة الدفعة',
+            'message': _('Payment status updated'),
         })
 
+    @extend_schema(
+        request=PaymentRefundSerializer,
+        responses={
+            200: inline_serializer(
+                name='RefundResponse',
+                fields={
+                    'status': serializers.CharField(),
+                    'message': serializers.CharField(),
+                    'refunded_amount': serializers.CharField()
+                }
+            )
+        }
+    )
     @action(detail=True, methods=['post'])
     def refund(self, request, pk=None):
         """استرجاع دفعة"""
@@ -105,7 +133,7 @@ class PaymentViewSet(BaseViewSet):
                 payment.gateway_response = result.get('raw_response', {})
             except PaymentGatewayException as e:
                 return Response(
-                    {'status': 'error', 'message': str(e)},
+                    {'detail': str(e)},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
@@ -113,15 +141,19 @@ class PaymentViewSet(BaseViewSet):
             refunded = payment.refund(amount, reason)
             return Response({
                 'status': 'success',
-                'message': 'تم استرجاع الدفعة',
+                'message': _('Payment refunded successfully'),
                 'refunded_amount': str(refunded),
             })
         except ValueError as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(
+        request=BNPLSessionRequestSerializer,
+        responses=BNPLSessionResponseSerializer
+    )
     @action(detail=False, methods=['post'])
     def create_bnpl_session(self, request):
         """
@@ -137,7 +169,7 @@ class PaymentViewSet(BaseViewSet):
                 'items__product_variant__product').get(id=data['order_id'])
         except Order.DoesNotExist:
             return Response(
-                {'status': 'error', 'message': 'الطلب غير موجود'},
+                {'detail': _('Order not found')},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -200,10 +232,15 @@ class PaymentViewSet(BaseViewSet):
 
         except PaymentGatewayException as e:
             return Response(
-                {'success': False, 'message': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(
+        request=None,
+        responses={200: inline_serializer(name='BNPLCallbackResponse', fields={
+                                          'status': serializers.CharField()})}
+    )
     @action(detail=False, methods=['post'])
     def bnpl_callback(self, request):
         """
@@ -227,7 +264,7 @@ class PaymentViewSet(BaseViewSet):
 
             if not payment:
                 return Response(
-                    {'status': 'error', 'message': 'Payment not found'},
+                    {'detail': 'Payment not found'},
                     status=status.HTTP_404_NOT_FOUND
                 )
 
@@ -247,10 +284,23 @@ class PaymentViewSet(BaseViewSet):
 
         except Exception as e:
             return Response(
-                {'status': 'error', 'message': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    @extend_schema(
+        parameters=[OpenApiParameter(name='period', required=False, type=str, enum=[
+                                     'today', 'week', 'month', 'year'])],
+        responses=inline_serializer(
+            name='PaymentSummaryResponse',
+            fields={
+                'period': serializers.CharField(),
+                'total': inline_serializer(name='PaymentTotal', fields={'amount': serializers.DecimalField(max_digits=20, decimal_places=2), 'count': serializers.IntegerField()}),
+                'by_method': serializers.ListField(),
+                'installments': inline_serializer(name='InstallmentSummary', fields={'amount': serializers.DecimalField(max_digits=20, decimal_places=2), 'count': serializers.IntegerField()})
+            }
+        )
+    )
     @action(detail=False, methods=['get'])
     def summary(self, request):
         """ملخص الدفعات"""
@@ -305,6 +355,17 @@ class PaymentViewSet(BaseViewSet):
             },
         })
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name='PaymentChoices',
+                fields={
+                    'payment_methods': serializers.DictField(),
+                    'payment_status': serializers.DictField(),
+                }
+            )
+        }
+    )
     @action(detail=False, methods=['get'])
     def choices(self, request):
         """الخيارات المتاحة"""
@@ -329,6 +390,12 @@ class InstallmentViewSet(BaseViewSet):
     filterset_fields = ['payment', 'status']
     ordering = ['due_date']
 
+    @extend_schema(
+        request=inline_serializer(name='MarkInstallmentPaidRequest', fields={
+                                  'amount': serializers.DecimalField(max_digits=20, decimal_places=2)}),
+        responses={200: inline_serializer(name='MarkInstallmentPaidResponse', fields={
+                                          'status': serializers.CharField(), 'message': serializers.CharField()})}
+    )
     @action(detail=True, methods=['post'])
     def mark_paid(self, request, pk=None):
         """تسجيل سداد القسط"""
@@ -338,9 +405,10 @@ class InstallmentViewSet(BaseViewSet):
         installment.mark_paid(amount)
         return Response({
             'status': 'success',
-            'message': 'تم تسجيل سداد القسط',
+            'message': _('Installment marked as paid'),
         })
 
+    @extend_schema(responses=InstallmentSerializer(many=True))
     @action(detail=False, methods=['get'])
     def overdue(self, request):
         """الأقساط المتأخرة"""

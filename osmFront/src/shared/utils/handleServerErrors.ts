@@ -36,7 +36,32 @@ export function handleServerErrors(
   const { showToast, t } = options;
   const serverErrors = error?.response?.data;
 
-  // 1. Handle Structured JSON Object Errors (Field-specific validation errors)
+  // 1. Handle New Unified Error Format { error: { message, code, details } }
+  if (serverErrors?.error) {
+    const errorObj = serverErrors.error;
+
+    // A. Field Errors in 'details'
+    if (errorObj.details && typeof errorObj.details === 'object') {
+      // Check if details is array (e.g. bulk errors) or object (field errors)
+      if (!Array.isArray(errorObj.details)) {
+        const normalized = normalizeErrors(errorObj.details);
+        for (const [field, message] of Object.entries(normalized)) {
+          setError(field as any, { type: "server", message: translate(message, t) });
+        }
+      }
+    }
+
+    // B. Show Toast for main message (if not just a field error)
+    // If we have field errors, usually we don't toast unless it's a generic "Validation Failed" message
+    // But for safety, if there is a message, let's show it if it's not a 400 with field errors or if explicit toast requested
+    if (showToast && errorObj.message) {
+      // Optional: logic to skip toast if it's just "Invalid input" and we set field errors
+      safeToast(translate(errorObj.message, t), { type: "error" });
+    }
+    return;
+  }
+
+  // 2. Handle Legacy Structured JSON Object Errors (Field-specific validation errors)
   if (serverErrors && typeof serverErrors === "object" && !Array.isArray(serverErrors)) {
     // Flatten nested errors (e.g., { user: { email: "Invalid" } } -> "user.email")
     const normalized = normalizeErrors(serverErrors);
@@ -58,7 +83,7 @@ export function handleServerErrors(
     return;
   }
 
-  // 2. Handle Array Errors (List of error messages)
+  // 3. Handle Legacy Array Errors (List of error messages)
   if (Array.isArray(serverErrors)) {
     const message = serverErrors.map((e: any) => e.msg || e).join(" ");
     if (showToast) safeToast(translate(message, t), { type: "error" });
@@ -66,7 +91,7 @@ export function handleServerErrors(
     return;
   }
 
-  // 3. Fallback: Handle Generic HTTP Status Errors (e.g., 500, 404)
+  // 4. Fallback: Handle Generic HTTP Status Errors (e.g., 500, 404)
   const normalized = handleErrorStatus(error, t);
   setError("root", { type: "server", message: normalized.message });
 

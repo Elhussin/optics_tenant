@@ -2,7 +2,7 @@
 
 def build_choices_from_queryset(queryset, label_field="name", value_field="id"):
     """
-    يبني خيارات من أي Queryset على شكل [{"label": ..., "value": ...}]
+    Builds choices from any Queryset in the format [{"label": ..., "value": ...}]
     """
     return [
         {
@@ -12,9 +12,10 @@ def build_choices_from_queryset(queryset, label_field="name", value_field="id"):
         for obj in queryset
     ]
 
+
 def build_choices_from_list(choices):
     """
-    يبني خيارات من قائمة choices [(value, label), ...]
+    Builds choices from a list of choices [(value, label), ...]
     """
     return [
         {"label": label, "value": value}

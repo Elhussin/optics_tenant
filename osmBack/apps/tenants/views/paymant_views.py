@@ -24,12 +24,32 @@ from apps.tenants.paypal_service import (
     capture_paypal_order,
     get_paypal_access_token
 )
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 
 paymant_logger = logging.getLogger('paypal')
 
 
 # ==============================================================
 class CreatePaymentOrderView(APIView):
+    @extend_schema(
+        request=CreatePaymentOrderSerializer,
+        responses={
+            200: inline_serializer(
+                name='CreatePaymentOrderResponse',
+                fields={
+                    'approval_url': serializers.URLField(),
+                    'order_id': serializers.CharField(),
+                }
+            ),
+            400: inline_serializer(
+                name='CreatePaymentErrorResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            )
+        }
+    )
     def post(self, request):
         lang_header = request.headers.get('accept-language', 'en')
         lang = lang_header.split(',')[0].split('-')[0]  # 'en'
@@ -60,7 +80,7 @@ class CreatePaymentOrderView(APIView):
 
             except Exception as e:
                 paymant_logger.error(f"Error creating payment order: {str(e)}")
-                return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -71,6 +91,32 @@ class CreatePaymentOrderView(APIView):
 class PayPalExecuteView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=inline_serializer(
+            name='PayPalExecuteRequest',
+            fields={
+                'order_id': serializers.CharField(),
+                'plan_id': serializers.IntegerField(),
+                'client_id': serializers.UUIDField(),
+                'direction': serializers.CharField(),
+            }
+        ),
+        responses={
+            200: inline_serializer(
+                name='PayPalExecuteSuccessResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                    'payment_id': serializers.IntegerField(),
+                }
+            ),
+            400: inline_serializer(
+                name='PayPalExecuteErrorResponse',
+                fields={
+                    'detail': serializers.CharField(),
+                }
+            )
+        }
+    )
     def post(self, request):
         order_id = request.data.get("order_id")
         plan_id = request.data.get("plan_id")
@@ -79,10 +125,10 @@ class PayPalExecuteView(APIView):
 
         # Basic Validation
         if not all([order_id, plan_id, client_uuid]):
-            return Response({"error": T("Missing PayPal payment information")}, status=400)
+            return Response({"detail": T("Missing PayPal payment information")}, status=400)
 
         if not all([order_id, plan_id, client_uuid]):
-            return Response({"error": T("Missing PayPal payment information")}, status=400)
+            return Response({"detail": T("Missing PayPal payment information")}, status=400)
 
         try:
             # 1. Capture via Service (OUTSIDE Transaction)
@@ -91,13 +137,13 @@ class PayPalExecuteView(APIView):
                 capture_data = capture_paypal_order(order_id)
             except Exception as e:
                 paymant_logger.error(f"PayPal capture failed: {str(e)}")
-                return Response({"error": T("Payment verification failed at provider")}, status=400)
+                return Response({"detail": T("Payment verification failed at provider")}, status=400)
 
             # Check Status
             if capture_data.get("status") != "COMPLETED":
                 paymant_logger.error("Payment not completed", extra={
                                      "order_id": order_id})
-                return Response({"error": T("Payment verification failed")}, status=400)
+                return Response({"detail": T("Payment verification failed")}, status=400)
 
             # Extract Details safely
             try:
@@ -108,7 +154,7 @@ class PayPalExecuteView(APIView):
             except (IndexError, AttributeError, ValueError) as e:
                 paymant_logger.error(
                     f"Error parsing PayPal response: {str(e)}")
-                return Response({"error": T("Invalid payment data received")}, status=400)
+                return Response({"detail": T("Invalid payment data received")}, status=400)
 
             # 2. Database Operations (INSIDE Transaction)
             # -------------------------------------------
@@ -117,7 +163,7 @@ class PayPalExecuteView(APIView):
                     client = Client.objects.get(uuid=client_uuid)
                     plan = SubscriptionPlan.objects.get(id=plan_id)
                 except (Client.DoesNotExist, SubscriptionPlan.DoesNotExist):
-                    return Response({"error": T("Client or plan not found")}, status=400)
+                    return Response({"detail": T("Client or plan not found")}, status=400)
 
                 # Validate Amount (Fraud Protection)
                 expected_amount = plan.year_price if direction == 'year' else plan.month_price
@@ -126,7 +172,7 @@ class PayPalExecuteView(APIView):
                     paymant_logger.critical(
                         f"Fraud Attempt? Paid {paid_amount} but expected {expected_amount} for plan {plan.name}")
                     # We might still record the payment as 'partial' or 'fraud' but currently we reject
-                    return Response({"error": T("Paid amount mismatch")}, status=400)
+                    return Response({"detail": T("Paid amount mismatch")}, status=400)
 
                 # Create Payment Record
                 payment = Payment.objects.create(
@@ -155,7 +201,7 @@ class PayPalExecuteView(APIView):
             import traceback
             traceback.print_exc()
             paymant_logger.error(f"Error executing PayPal payment: {str(e)}")
-            return Response({"error": T("Payment processing failed")}, status=500)
+            return Response({"detail": T("Payment processing failed")}, status=500)
 
 
 # ==============================================================
@@ -164,6 +210,11 @@ class PayPalExecuteView(APIView):
 class PayPalWebhookView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=serializers.DictField(),
+        responses={200: inline_serializer(name='WebhookResponse', fields={
+                                          'status': serializers.CharField()})}
+    )
     def post(self, request):
         # Placeholder for future implementation using service verification
         event = request.data
@@ -176,6 +227,7 @@ class PayPalWebhookView(APIView):
 class PayPalCancelView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(responses={302: None})
     def get(self, request):
         from django.shortcuts import redirect
         # Logic to redirect to frontend cancel page
@@ -190,6 +242,31 @@ class PaymentListView(APIView):
         RoleOrPermissionRequired.with_requirements()
     ]
 
+    @extend_schema(
+        responses=inline_serializer(
+            name='PaymentListResponse',
+            fields={
+                'results': inline_serializer(
+                    name='PaymentDetail',
+                    fields={
+                        'id': serializers.IntegerField(),
+                        'amount': serializers.DecimalField(max_digits=10, decimal_places=2),
+                        'currency': serializers.CharField(),
+                        'status': serializers.CharField(),
+                        'created_at': serializers.DateTimeField(),
+                        'updated_at': serializers.DateTimeField(),
+                        'method': serializers.CharField(),
+                        'direction': serializers.CharField(),
+                        'transaction_id': serializers.CharField(),
+                        'client': serializers.IntegerField(),
+                        'plan_name': serializers.CharField(),
+                    },
+                    many=True
+                ),
+                'count': serializers.IntegerField()
+            }
+        )
+    )
     def get(self, request):
         # Admin can filter by client
         client_uuid = request.query_params.get("client_id")

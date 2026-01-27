@@ -1,5 +1,5 @@
 """
-دوال مساعدة للتحقق من صحة البيانات
+Helper functions to validate data uniqueness
 """
 
 from core.exceptions import validate_unique_field
@@ -7,22 +7,23 @@ from core.exceptions import validate_unique_field
 
 def check_unique_field(model, field_name, value, instance=None, lang='ar'):
     """
-    التحقق من تفرد حقل معين
-    
-    هذه الدالة هي wrapper لـ validate_unique_field من core.exceptions
-    للحفاظ على التوافق مع الكود القديم
-    
+    Validate field uniqueness with localization support.
+    verify field uniqueness
+
+    This function is a wrapper for validate_unique_field from core.exceptions
+    to maintain backward compatibility with legacy code.
+
     Args:
-        model: النموذج المراد التحقق منه
-        field_name: اسم الحقل
-        value: القيمة المراد التحقق منها
-        instance: الكائن الحالي (للتحديث)
-        lang: اللغة (ar/en)
-    
+        model: The model to check
+        field_name: Name of the field
+        value: Value to check
+        instance: Current instance (for updates)
+        lang: Language code (ar/en)
+
     Returns:
-        value: القيمة إذا كانت فريدة
-    
+        value: The value if unique
+
     Raises:
-        ValidationError: إذا كانت القيمة مكررة
+        ValidationError: If value is duplicate
     """
-    return validate_unique_field(model, field_name, value, instance, lang)
+    return validate_unique_field(model, field_name, value, instance)

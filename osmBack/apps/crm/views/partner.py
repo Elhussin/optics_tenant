@@ -10,6 +10,8 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParameter
+from rest_framework import serializers
 
 from apps.crm.models import (
     Partner, PartnerBranch, PartnerPriceList, PartnerPriceListItem,
@@ -53,6 +55,10 @@ class PartnerViewSet(BaseViewSet):
             return PartnerListSerializer
         return PartnerSerializer
 
+    @extend_schema(
+        parameters=[OpenApiParameter(name='type', required=True, type=str)],
+        responses=PartnerListSerializer(many=True)
+    )
     @action(detail=False, methods=['get'])
     def by_type(self, request):
         """جلب الشركاء حسب النوع"""
@@ -70,6 +76,7 @@ class PartnerViewSet(BaseViewSet):
         serializer = PartnerListSerializer(partners, many=True)
         return Response(serializer.data)
 
+    @extend_schema(responses=PartnerListSerializer(many=True))
     @action(detail=False, methods=['get'])
     def insurance_companies(self, request):
         """شركات التأمين فقط"""
@@ -80,6 +87,7 @@ class PartnerViewSet(BaseViewSet):
         serializer = PartnerListSerializer(partners, many=True)
         return Response(serializer.data)
 
+    @extend_schema(responses=PartnerListSerializer(many=True))
     @action(detail=False, methods=['get'])
     def bnpl_providers(self, request):
         """شركات التقسيط (Tabby, Tamara)"""
@@ -90,6 +98,7 @@ class PartnerViewSet(BaseViewSet):
         serializer = PartnerListSerializer(partners, many=True)
         return Response(serializer.data)
 
+    @extend_schema(responses=CustomerPartnerLinkSerializer(many=True))
     @action(detail=True, methods=['get'])
     def customers(self, request, pk=None):
         """العملاء المرتبطين بهذا الشريك"""
@@ -101,6 +110,25 @@ class PartnerViewSet(BaseViewSet):
         serializer = CustomerPartnerLinkSerializer(links, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name='PartnerClaimsSummary',
+                fields={
+                    'summary': inline_serializer(
+                        name='ClaimsStats',
+                        fields={
+                            'total_claims': serializers.IntegerField(),
+                            'total_amount': serializers.DecimalField(max_digits=20, decimal_places=2),
+                            'total_approved': serializers.DecimalField(max_digits=20, decimal_places=2),
+                            'total_paid': serializers.DecimalField(max_digits=20, decimal_places=2),
+                        }
+                    ),
+                    'by_status': serializers.ListField()
+                }
+            )
+        }
+    )
     @action(detail=True, methods=['get'])
     def claims_summary(self, request, pk=None):
         """ملخص مطالبات الشريك"""
@@ -128,6 +156,17 @@ class PartnerViewSet(BaseViewSet):
             'by_status': list(by_status),
         })
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name='PartnerChoices',
+                fields={
+                    'partner_types': serializers.DictField(),
+                    'payment_terms': serializers.DictField(),
+                }
+            )
+        }
+    )
     @action(detail=False, methods=['get'])
     def choices(self, request):
         """الخيارات المتاحة"""
@@ -195,6 +234,11 @@ class CustomerPartnerLinkViewSet(BaseViewSet):
     search_fields = ['member_id', 'policy_number',
                      'customer__first_name', 'customer__last_name']
 
+    @extend_schema(
+        parameters=[OpenApiParameter(
+            name='customer_id', required=True, type=int)],
+        responses=CustomerPartnerLinkSerializer(many=True)
+    )
     @action(detail=False, methods=['get'])
     def by_customer(self, request):
         """جلب ارتباطات عميل معين"""
@@ -251,6 +295,19 @@ class InsuranceClaimViewSet(BaseViewSet):
             return InsuranceClaimListSerializer
         return InsuranceClaimSerializer
 
+    @extend_schema(
+        request=None,
+        responses={
+            200: inline_serializer(
+                name='SubmitClaimResponse',
+                fields={
+                    'status': serializers.CharField(),
+                    'message': serializers.CharField(),
+                    'claim_number': serializers.CharField(),
+                }
+            )
+        }
+    )
     @action(detail=True, methods=['post'])
     def submit(self, request, pk=None):
         """تقديم المطالبة"""
@@ -264,10 +321,29 @@ class InsuranceClaimViewSet(BaseViewSet):
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'detail': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(
+        request=inline_serializer(
+            name='ApproveClaimRequest',
+            fields={
+                'approved_amount': serializers.DecimalField(max_digits=20, decimal_places=2),
+                'notes': serializers.CharField(required=False)
+            }
+        ),
+        responses={
+            200: inline_serializer(
+                name='ApproveClaimResponse',
+                fields={
+                    'status': serializers.CharField(),
+                    'message': serializers.CharField(),
+                    'approved_amount': serializers.CharField(),
+                }
+            )
+        }
+    )
     @action(detail=True, methods=['post'])
     def approve(self, request, pk=None):
         """اعتماد المطالبة"""
@@ -284,10 +360,25 @@ class InsuranceClaimViewSet(BaseViewSet):
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'detail': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(
+        request=inline_serializer(
+            name='RejectClaimRequest',
+            fields={'reason': serializers.CharField()}
+        ),
+        responses={
+            200: inline_serializer(
+                name='RejectClaimResponse',
+                fields={
+                    'status': serializers.CharField(),
+                    'message': serializers.CharField(),
+                }
+            )
+        }
+    )
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
         """رفض المطالبة"""
@@ -302,10 +393,29 @@ class InsuranceClaimViewSet(BaseViewSet):
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'detail': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(
+        request=inline_serializer(
+            name='MarkClaimPaidRequest',
+            fields={
+                'amount': serializers.DecimalField(max_digits=20, decimal_places=2),
+                'payment_reference': serializers.CharField(required=False)
+            }
+        ),
+        responses={
+            200: inline_serializer(
+                name='MarkClaimPaidResponse',
+                fields={
+                    'status': serializers.CharField(),
+                    'message': serializers.CharField(),
+                    'paid_amount': serializers.CharField(),
+                }
+            )
+        }
+    )
     @action(detail=True, methods=['post'])
     def mark_paid(self, request, pk=None):
         """تسجيل السداد"""
@@ -322,10 +432,11 @@ class InsuranceClaimViewSet(BaseViewSet):
             })
         except Exception as e:
             return Response(
-                {'status': 'error', 'detail': str(e)},
+                {'detail': str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+    @extend_schema(responses=InsuranceClaimListSerializer(many=True))
     @action(detail=False, methods=['get'])
     def pending(self, request):
         """المطالبات المعلقة"""
@@ -335,6 +446,7 @@ class InsuranceClaimViewSet(BaseViewSet):
         serializer = InsuranceClaimListSerializer(claims, many=True)
         return Response(serializer.data)
 
+    @extend_schema(responses=InsuranceClaimListSerializer(many=True))
     @action(detail=False, methods=['get'])
     def approved_unpaid(self, request):
         """المطالبات المعتمدة غير المسددة"""
@@ -344,6 +456,14 @@ class InsuranceClaimViewSet(BaseViewSet):
         serializer = InsuranceClaimListSerializer(claims, many=True)
         return Response(serializer.data)
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name='ClaimChoices',
+                fields={'claim_status': serializers.DictField()}
+            )
+        }
+    )
     @action(detail=False, methods=['get'])
     def choices(self, request):
         """الخيارات المتاحة"""

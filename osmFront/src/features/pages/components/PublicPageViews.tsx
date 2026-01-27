@@ -7,7 +7,7 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { Skeleton, SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
-
+import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
 export default function PublicPageViews({
   slug,
   locale,
@@ -16,7 +16,7 @@ export default function PublicPageViews({
   locale: string;
 }) {
   const pageRequest = useApiForm({
-    alias: `users_public_pages_retrieve`,
+    alias: featuresConfig["public-pages"].retrieveAlias,
     defaultValues: { slug: slug },
   });
 

@@ -7,10 +7,10 @@ from apps.sales.views.sales import (
     BaseSalesViewSet,
     OrderViewSet,
     InvoiceViewSet,
-    order_choices,
-    invoice_choices,
-    create_return,
-    create_damage_record,
+    OrderChoicesView,
+    InvoiceChoicesView,
+    CreateReturnView,
+    CreateDamageRecordView,
 )
 
 from apps.sales.views.payment import (
@@ -21,13 +21,25 @@ from apps.sales.views.payment import (
 from apps.sales.views.payment_method import PaymentMethodViewSet
 
 from apps.sales.views.wholesale import (
-    get_wholesale_pricing,
-    validate_wholesale_order,
-    create_wholesale_order,
-    customer_statement,
-    wholesale_customers,
-    wholesale_dashboard,
-    update_customer_credit,
+    GetWholesalePricingView,
+    ValidateWholesaleOrderView,
+    CreateWholesaleOrderView,
+    CustomerStatementView,
+    WholesaleCustomersView,
+    WholesaleDashboardView,
+    UpdateCustomerCreditView,
+)
+
+from apps.sales.views.reports import (
+    SalesSummaryView,
+    SalesByDateView,
+    InventorySummaryView,
+    StockMovementsReportView,
+    TopProductsView,
+    BranchComparisonView,
+    FinancialDashboardView,
+    ReceivablesAgingView,
+    PendingOrdersView,
 )
 
 __all__ = [
@@ -35,10 +47,10 @@ __all__ = [
     'BaseSalesViewSet',
     'OrderViewSet',
     'InvoiceViewSet',
-    'order_choices',
-    'invoice_choices',
-    'create_return',
-    'create_damage_record',
+    'OrderChoicesView',
+    'InvoiceChoicesView',
+    'CreateReturnView',
+    'CreateDamageRecordView',
 
     # Payment
     'PaymentViewSet',
@@ -46,11 +58,11 @@ __all__ = [
     'PaymentMethodViewSet',
 
     # Wholesale
-    'get_wholesale_pricing',
-    'validate_wholesale_order',
-    'create_wholesale_order',
-    'customer_statement',
-    'wholesale_customers',
-    'wholesale_dashboard',
-    'update_customer_credit',
+    'GetWholesalePricingView',
+    'ValidateWholesaleOrderView',
+    'CreateWholesaleOrderView',
+    'CustomerStatementView',
+    'WholesaleCustomersView',
+    'WholesaleDashboardView',
+    'UpdateCustomerCreditView',
 ]

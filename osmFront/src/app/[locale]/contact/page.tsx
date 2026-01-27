@@ -4,6 +4,7 @@ import { socialLinks } from "@/src/shared/constants/url";
 import { useTranslations } from "next-intl";
 import { Link } from "@/src/app/i18n/navigation";
 import { motion } from "framer-motion";
+import { useUser } from "@/src/features/auth/hooks/UserContext";
 import {
   Mail,
   Phone,
@@ -12,6 +13,12 @@ import {
   MessageSquare,
   Sparkles,
   AlertCircle,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  MessageCircle,
+  Video,
 } from "lucide-react";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
@@ -21,7 +28,8 @@ import { cn } from "@/src/shared/utils/cn";
 
 export default function ContactPage() {
   const t = useTranslations("contact");
-
+  const { user } = useUser();
+  /* Form Logic */
   const { handleSubmit, submitForm, errors, isBusy, register, reset } =
     useApiForm({ alias: "users_contact_us_create" });
 
@@ -34,6 +42,40 @@ export default function ContactPage() {
       safeToast(t("errorMessage"), { type: "error" });
     }
   };
+
+  // Use tenant settings from authenticated user context directly
+  const settings = user?.tenant_settings;
+
+  // Function to map dynamic settings to UI
+  const getSocialLinks = () => {
+    if (!settings) return socialLinks;
+
+    const links = [];
+    if (settings.facebook)
+      links.push({ name: "Facebook", url: settings.facebook, icon: Facebook });
+    if (settings.twitter)
+      links.push({ name: "Twitter", url: settings.twitter, icon: Twitter });
+    if (settings.instagram)
+      links.push({
+        name: "Instagram",
+        url: settings.instagram,
+        icon: Instagram,
+      });
+    if (settings.linkedin)
+      links.push({ name: "LinkedIn", url: settings.linkedin, icon: Linkedin });
+    if (settings.whatsapp)
+      links.push({
+        name: "WhatsApp",
+        url: `https://wa.me/${settings.whatsapp}`,
+        icon: MessageCircle,
+      });
+    if (settings.tiktok)
+      links.push({ name: "TikTok", url: settings.tiktok, icon: Video });
+
+    return links.length > 0 ? links : socialLinks;
+  };
+
+  const activeSocialLinks = getSocialLinks();
 
   return (
     <div className="min-h-screen bg-surface py-12 px-4 sm:px-6 lg:px-8">
@@ -136,7 +178,7 @@ export default function ContactPage() {
                 {t("followUs") || "Follow Us"}
               </h3>
               <div className="flex flex-wrap gap-3">
-                {socialLinks.map(({ url, icon: Icon, name }) => (
+                {activeSocialLinks.map(({ url, icon: Icon, name }) => (
                   <Link
                     key={name}
                     href={url}
@@ -196,7 +238,7 @@ export default function ContactPage() {
                           "focus:outline-none focus:ring-2 focus:ring-offset-1",
                           errors.name
                             ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                            : "border-border-main focus:border-primary focus:ring-primary/20"
+                            : "border-border-main focus:border-primary focus:ring-primary/20",
                         )}
                         placeholder="John Doe"
                       />
@@ -222,7 +264,7 @@ export default function ContactPage() {
                           "focus:outline-none focus:ring-2 focus:ring-offset-1",
                           errors.email
                             ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                            : "border-border-main focus:border-primary focus:ring-primary/20"
+                            : "border-border-main focus:border-primary focus:ring-primary/20",
                         )}
                         placeholder="john@example.com"
                       />
@@ -250,7 +292,7 @@ export default function ContactPage() {
                         "focus:outline-none focus:ring-2 focus:ring-offset-1",
                         errors.subject
                           ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                          : "border-border-main focus:border-primary focus:ring-primary/20"
+                          : "border-border-main focus:border-primary focus:ring-primary/20",
                       )}
                       placeholder="How can we help?"
                     />
@@ -276,7 +318,7 @@ export default function ContactPage() {
                         "focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none",
                         errors.message
                           ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                          : "border-border-main focus:border-primary focus:ring-primary/20"
+                          : "border-border-main focus:border-primary focus:ring-primary/20",
                       )}
                       placeholder="Tell us more about your inquiry..."
                     />

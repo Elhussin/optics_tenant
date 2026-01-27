@@ -12,13 +12,16 @@ from rest_framework.permissions import IsAuthenticated, BasePermission
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.fields import CharField
+from django.utils.translation import gettext_lazy as _
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers
 
 
 class IsSuperAdmin(BasePermission):
     """
-    صلاحية مخصصة للسماح فقط للمشرفين الرئيسيين (SuperAdmin).
+    Custom permission to allow only SuperAdmin users.
     """
-    message = "Only superadmin users can perform this action."
+    message = _("Only superadmin users can perform this action.")
 
     def has_permission(self, request, view):
         return (
@@ -29,7 +32,7 @@ class IsSuperAdmin(BasePermission):
         )
 
 
-# قائمة بيضاء للموديلات المسموح استيراد بياناتها
+# Whitelist for models allowed to import data
 ALLOWED_IMPORT_MODELS = {
     # Users App
     'users.Role',
@@ -70,31 +73,55 @@ ALLOWED_IMPORT_MODELS = {
     'crm.CustomerGroup',
 }
 
-# الحد الأقصى لحجم ملف CSV (5 ميجابايت)
+# Max CSV file size (5MB)
 MAX_CSV_FILE_SIZE = 5 * 1024 * 1024
 
 
 class CSVImportView(APIView):
-    # فقط SuperAdmin يمكنه استخدام هذا الـ Endpoint
+    # Only SuperAdmin can use this endpoint
     permission_classes = [IsSuperAdmin]
 
+    @extend_schema(
+        request=CSVImportSerializer,
+        responses={
+            200: inline_serializer(
+                name='CSVImportResponse',
+                fields={
+                    'created': serializers.IntegerField(),
+                    'skipped': serializers.IntegerField(),
+                    'failed': serializers.IntegerField(),
+                    'errors': serializers.ListField(child=serializers.CharField())
+                }
+            ),
+            400: inline_serializer(
+                name='CSVImportError',
+                fields={'detail': serializers.CharField()}
+            ),
+            403: inline_serializer(
+                name='CSVImportForbidden',
+                fields={'detail': serializers.CharField()}
+            )
+        }
+    )
     def post(self, request):
         serializer = CSVImportSerializer(data=request.data)
         if serializer.is_valid():
             csv_file = serializer.validated_data['csv_file']
             config = serializer.validated_data['config']
 
-            # التحقق من حجم الملف
+            # Check file size
             if csv_file.size > MAX_CSV_FILE_SIZE:
                 return Response(
-                    {"error": f"File too large. Maximum size is {MAX_CSV_FILE_SIZE // (1024*1024)}MB."},
+                    {"detail": _(
+                        f"File too large. Maximum size is {MAX_CSV_FILE_SIZE // (1024*1024)}MB.")},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
             # Security: Use schema from authenticated user's client instead of request data
             if not hasattr(request.user, 'client') or not request.user.client:
                 return Response(
-                    {"error": "User is not associated with any tenant client."},
+                    {"detail": _(
+                        "User is not associated with any tenant client.")},
                     status=status.HTTP_403_FORBIDDEN
                 )
 
@@ -103,11 +130,12 @@ class CSVImportView(APIView):
             model_name = config.get('model', '')
             foreign_keys = config.get('foreign_keys', {})
 
-            # التحقق من أن الموديل مسموح به
+            # Verify model is allowed
             model_path = f"{app_label}.{model_name}"
             if model_path not in ALLOWED_IMPORT_MODELS:
                 return Response(
-                    {"error": f"Model '{model_path}' is not allowed for import."},
+                    {"detail": _(
+                        f"Model '{model_path}' is not allowed for import.")},
                     status=status.HTTP_403_FORBIDDEN
                 )
 
@@ -117,7 +145,8 @@ class CSVImportView(APIView):
                         app_label=app_label, model_name=model_name)
                 except LookupError:
                     return Response(
-                        {"error": f"Model {model_name} in {app_label} not found."},
+                        {"detail": _(
+                            f"Model {model_name} in {app_label} not found.")},
                         status=status.HTTP_400_BAD_REQUEST
                     )
 
@@ -130,7 +159,8 @@ class CSVImportView(APIView):
                     content = csv_file.read().decode('utf-8')
                 except UnicodeDecodeError:
                     return Response(
-                        {"error": "Invalid file encoding. Please use UTF-8."},
+                        {"detail": _(
+                            "Invalid file encoding. Please use UTF-8.")},
                         status=status.HTTP_400_BAD_REQUEST
                     )
 
@@ -155,7 +185,7 @@ class CSVImportView(APIView):
                                     rel_conf['related_model'])
                             except LookupError:
                                 errors.append(
-                                    f"⚠️ Line {i}: Related model '{rel_conf['related_model']}' not found.")
+                                    _(f"⚠️ Line {i}: Related model '{rel_conf['related_model']}' not found."))
                                 failed += 1
                                 skip_row = True
                                 break
@@ -174,13 +204,13 @@ class CSVImportView(APIView):
                                             **{lookup_field: row[field_name]})
                                     except Exception as e:
                                         errors.append(
-                                            f"❌ Line {i}: Failed to create {rel_model.__name__}: {e}")
+                                            _(f"❌ Line {i}: Failed to create {rel_model.__name__}: {e}"))
                                         failed += 1
                                         skip_row = True
                                         break
                                 else:
                                     errors.append(
-                                        f"⚠️ Line {i}: {field_name} '{row[field_name]}' not found.")
+                                        _(f"⚠️ Line {i}: {field_name} '{row[field_name]}' not found."))
                                     failed += 1
                                     skip_row = True
                                     break
@@ -203,13 +233,13 @@ class CSVImportView(APIView):
                             skipped += 1
                     except Exception as e:
                         failed += 1
-                        errors.append(f"❌ Line {i}: {str(e)}")
+                        errors.append(_(f"❌ Line {i}: {str(e)}"))
 
                 return Response({
                     "created": created,
                     "skipped": skipped,
                     "failed": failed,
-                    "errors": errors
+                    "errors": [str(e) for e in errors]
                 })
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -218,12 +248,12 @@ class CSVImportView(APIView):
 class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    _generated_filterset_class = None  # لتجنب إعادة التوليد كل مرة
+    _generated_filterset_class = None  # To avoid regenerating every time
 
     @property
     def filterset_class(self):
         """
-        يعيد الكلاس المولد مرة واحدة فقط حتى لا يتكرر إنشاؤه.
+        Returns the generated class only once so it is not re-created.
         """
         if self._generated_filterset_class is None:
             self._generated_filterset_class = super().get_filterset_class()
@@ -233,14 +263,14 @@ class BaseViewSet(FilterOptionsMixin, viewsets.ModelViewSet):
     def search_fields(self):
         if getattr(self, "_search_fields", None):
             return self._search_fields
-        # توليد من serializer كل الحقول النصية تلقائيًا
+        # Automatic generation from serializer for all CharFields
         return [f for f, field in self.serializer_class().fields.items() if isinstance(field, CharField)]
 
     @property
     def filter_fields(self):
         if getattr(self, "_filter_fields", None):
             return self._filter_fields
-        # توليد كل الحقول مع lookup 'exact' تلقائيًا
+        # Automatic generation of all fields with 'exact' lookup
         # Ensure we only include fields that actually exist on the model
         model = self.queryset.model
         model_field_names = {f.name for f in model._meta.get_fields()}
