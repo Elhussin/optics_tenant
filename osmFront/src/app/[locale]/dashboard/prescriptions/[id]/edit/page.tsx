@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 
 export default function EditPrescriptionPage() {
-    const t = useTranslations("formsConfig");
+    const t = useTranslations("dashboardLinks");
     const params = useParams();
     const id = params.id as string;
     const entity = "prescriptions";

@@ -39,7 +39,7 @@ import {
 export default function DashboardLinks() {
   const { user } = useUser();
 
-  const t = useTranslations("formsConfig");
+  const t = useTranslations("dashboardLinks");
 
   const subdomain = getSubdomain();
   const userRoles = user?.roles?.map((r: any) => r.name) || [];
@@ -253,6 +253,69 @@ const links = [
     isTenant: true,
     icon: Smile,
   },
+  {
+    href: "crm-contacts",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: Smile,
+  },
+  {
+    href: "crm-claim-documents",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "crm-claim-items",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: List,
+  },
+  {
+    href: "crm-customer-partner-links",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: Users,
+  },
+  {
+    href: "crm-insurance-claims",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "crm-partner-branches",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: Store,
+  },
+  {
+    href: "crm-partner-price-list-items",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: DollarSign,
+  },
+  {
+    href: "crm-partner-price-lists",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: List,
+  },
+  {
+    href: "crm-partner-settlements",
+    roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist"],
+    group: "Customer",
+    isTenant: true,
+    icon: DollarSign,
+  },
   // HRM
   {
     href: "hrm-departments",
@@ -411,6 +474,55 @@ const links = [
     icon: DollarSign,
   },
   {
+    href: "product-variants",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: Package,
+  },
+  {
+    href: "product-supplier",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: Truck,
+  },
+  {
+    href: "product-answers",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: Smile,
+  },
+  {
+    href: "product-marketing",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: Star,
+  },
+  {
+    href: "product-offers",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: DollarSign,
+  },
+  {
+    href: "product-questions",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "product-reviews",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Product",
+    isTenant: true,
+    icon: Star,
+  },
+  {
     href: "pages",
     roles: ["TenantOwner", "TenantAdmin"],
     group: "Pages",
@@ -424,6 +536,34 @@ const links = [
     group: "Sales",
     isTenant: true,
     icon: ShoppingCart,
+  },
+  {
+    href: "invoices",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
+    group: "Sales",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "sales-payments",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
+    group: "Sales",
+    isTenant: true,
+    icon: DollarSign,
+  },
+  {
+    href: "sales_installments",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
+    group: "Sales",
+    isTenant: true,
+    icon: CreditCard,
+  },
+  {
+    href: "payment-methods",
+    roles: ["TenantOwner", "TenantAdmin"],
+    group: "Sales",
+    isTenant: true,
+    icon: CreditCard,
   },
   // Wholesale
   {
@@ -441,6 +581,34 @@ const links = [
     isTenant: true,
     icon: Warehouse,
   },
+  {
+    href: "stocks",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Inventory",
+    isTenant: true,
+    icon: Warehouse,
+  },
+  {
+    href: "stock-movements",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Inventory",
+    isTenant: true,
+    icon: Truck,
+  },
+  {
+    href: "product-stock-transfers",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Inventory",
+    isTenant: true,
+    icon: Truck,
+  },
+  {
+    href: "product-stock-transfer-items",
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
+    group: "Inventory",
+    isTenant: true,
+    icon: Package,
+  },
   // Reports
   {
     href: "reports",
@@ -457,4 +625,40 @@ const links = [
     isTenant: true,
     icon: DollarSign,
   },
+  {
+    href: "chart-of-accounts",
+    roles: ["TenantOwner", "TenantAdmin", "FinanceOfficer"],
+    group: "Accounting",
+    isTenant: true,
+    icon: List,
+  },
+  {
+    href: "journal-entries",
+    roles: ["TenantOwner", "TenantAdmin", "FinanceOfficer"],
+    group: "Accounting",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "financial-periods",
+    roles: ["TenantOwner", "TenantAdmin", "FinanceOfficer"],
+    group: "Accounting",
+    isTenant: true,
+    icon: BarChart3,
+  },
+  {
+    href: "accounting-taxes",
+    roles: ["TenantOwner", "TenantAdmin", "FinanceOfficer"],
+    group: "Accounting",
+    isTenant: true,
+    icon: DollarSign,
+  },
+  {
+    href: "accounting-categories",
+    roles: ["TenantOwner", "TenantAdmin", "FinanceOfficer"],
+    group: "Accounting",
+    isTenant: true,
+    icon: Layers,
+  },
 ];
+

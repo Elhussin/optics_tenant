@@ -4,7 +4,7 @@ import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig
 import { useTranslations } from "next-intl";
 
 export default function CreatePrescriptionPage() {
-    const t = useTranslations("formsConfig");
+    const t = useTranslations("dashboardLinks");
     const entity = "prescriptions";
     const config = formsConfig[entity];
 

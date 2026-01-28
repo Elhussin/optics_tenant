@@ -37,7 +37,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
 
   if (!entity) throw new Error("entity is required");
 
-  const t = useMergedTranslations(["viewDetailsCard", entity, "formsConfig"]);
+  const t = useMergedTranslations(["viewDetailsCard", entity, "dashboardLinks"]);
   const form = formsConfig[entity];
   const alias = useMemo(
     () => (id ? form.partialUpdateAlias : form.createAlias),
