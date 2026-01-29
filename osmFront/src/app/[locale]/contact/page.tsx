@@ -25,7 +25,7 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { cn } from "@/src/shared/utils/cn";
-
+import { FormConfig } from "@/src/shared/types/formConfig";
 export default function ContactPage() {
   const t = useTranslations("contact");
   const { user } = useUser();
@@ -42,6 +42,7 @@ export default function ContactPage() {
       safeToast(t("errorMessage"), { type: "error" });
     }
   };
+
 
   // Use tenant settings from authenticated user context directly
   const settings = user?.tenant_settings;

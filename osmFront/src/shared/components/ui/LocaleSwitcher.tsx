@@ -26,6 +26,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/src/shared/utils/cn";
 import { useClickOutside } from "@/src/shared/hooks/useClickOutside";
+import { useTranslations } from "next-intl";
 
 type Tab = "language" | "country" | "currency";
 
@@ -33,6 +34,7 @@ export default function LocaleSwitcher() {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
+  const t = useTranslations("localeSwitcher");
 
   const [isPending, startTransition] = useTransition();
   const [isOpen, setIsOpen] = useState(false);
@@ -46,10 +48,10 @@ export default function LocaleSwitcher() {
   const defaultCurrency = process.env.DEFAULT_CURRENCY || "sar";
 
   const [country, setCountry] = useState(
-    Cookies.get("country") || defaultCountry
+    Cookies.get("country") || defaultCountry,
   );
   const [currency, setCurrency] = useState(
-    Cookies.get("currency") || defaultCurrency
+    Cookies.get("currency") || defaultCurrency,
   );
 
   // Auto detect country on mount
@@ -71,7 +73,7 @@ export default function LocaleSwitcher() {
           Cookies.set(
             "currency",
             currencyMap[matched.value] || defaultCurrency,
-            { path: "/", expires: 30 }
+            { path: "/", expires: 30 },
           );
         }
       }
@@ -113,12 +115,12 @@ export default function LocaleSwitcher() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex items-center gap-2 px-4 py-2.5",
+          "flex items-center gap-2 px-4 py-2.5 cursor-pointer",
           "text-sm font-semibold",
           "rounded-xl border-1 transition-all duration-200",
           isOpen
             ? "bg-elevated border-primary/50 text-foreground"
-            : "bg-background border-primary/50 text-foreground hover:bg-elevated hover:border-primary/30"
+            : "bg-background border-primary/50 text-foreground hover:bg-elevated hover:border-primary/30",
         )}
       >
         <Globe size={18} className="text-primary" />
@@ -128,13 +130,13 @@ export default function LocaleSwitcher() {
           {country}
         </span>
         {isPending ? (
-          <Loader2 size={14} className="animate-spin ml-1 text-primary" />
+          <Loader2 size={14} className="animate-spin ms-1 text-primary" />
         ) : (
           <ChevronDown
             size={14}
             className={cn(
               "transition-transform duration-200 text-muted-foreground",
-              isOpen && "rotate-180"
+              isOpen && "rotate-180",
             )}
           />
         )}
@@ -149,12 +151,12 @@ export default function LocaleSwitcher() {
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              "absolute end-0 top-full mt-2 w-96",
+              "absolute ltr:right-0 rtl:left-0 top-full mt-2 w-80 sm:w-80 max-w-[calc(100vw-2rem)]",
               "bg-surface backdrop-blur-xl",
               "rounded-2xl shadow-2xl",
               "border-2 border-primary/50",
               "p-4 z-50",
-              "ltr:origin-top-right rtl:origin-top-left"
+              "ltr:origin-top-right rtl:origin-top-left",
             )}
           >
             {/* ✨ Enhanced Tabs */}
@@ -164,18 +166,18 @@ export default function LocaleSwitcher() {
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={cn(
-                    "flex-1 flex items-center justify-center py-2 px-3",
+                    "flex-1 flex items-center justify-center py-2 px-3 cursor-pointer",
                     "text-xs font-bold rounded-lg",
                     "transition-all duration-200",
                     activeTab === tab
                       ? "bg-primary text-primary-foreground shadow-lg"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background",
                   )}
                 >
-                  {tab === "language" && <Globe size={12} className="mr-1.5" />}
-                  {tab === "country" && <MapPin size={12} className="mr-1.5" />}
-                  {tab === "currency" && <Coins size={12} className="mr-1.5" />}
-                  <span className="capitalize">{tab}</span>
+                  {tab === "language" && <Globe size={12} className="me-1.5" />}
+                  {tab === "country" && <MapPin size={12} className="me-1.5" />}
+                  {tab === "currency" && <Coins size={12} className="me-1.5" />}
+                  <span className="capitalize">{t(tab)}</span>
                 </button>
               ))}
             </div>
@@ -185,7 +187,7 @@ export default function LocaleSwitcher() {
               className={cn(
                 "space-y-1 max-h-60 overflow-y-auto",
                 "scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent",
-                "px-1"
+                "px-1",
               )}
             >
               {/* Language Options */}
@@ -198,17 +200,19 @@ export default function LocaleSwitcher() {
                     transition={{ duration: 0.2 }}
                     onClick={() => handleLanguageChange(l.value)}
                     className={cn(
-                      "w-full flex items-center justify-between",
+                      "w-full flex items-center justify-between cursor-pointer select-none",
                       "px-3 py-2.5 rounded-xl text-sm font-medium",
                       "transition-all duration-200",
                       locale === l.value
                         ? "bg-primary/10 text-primary border-2 border-primary/20"
-                        : "hover:bg-elevated text-foreground border-2 border-transparent"
+                        : "hover:bg-elevated text-foreground border-2 border-transparent",
                     )}
                   >
                     <span className="flex items-center gap-2">
-                      <span className="text-lg">{l.label.split(" ")[0]}</span>
-                      {l.label}
+                      <span className="font-medium">{t(l.label)}</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-bold tracking-wider">
+                        {l.label}
+                      </span>
                     </span>
                     {locale === l.value && (
                       <Check size={16} className="text-primary" />
@@ -226,15 +230,20 @@ export default function LocaleSwitcher() {
                     transition={{ duration: 0.2 }}
                     onClick={() => handleCountryChange(c.value)}
                     className={cn(
-                      "w-full flex items-center justify-between",
+                      "w-full flex items-center justify-between cursor-pointer select-none",
                       "px-3 py-2.5 rounded-xl text-sm font-medium",
                       "transition-all duration-200",
                       country === c.value
                         ? "bg-primary/10 text-primary border-2 border-primary/20"
-                        : "hover:bg-elevated text-foreground border-2 border-transparent"
+                        : "hover:bg-elevated text-foreground border-2 border-transparent",
                     )}
                   >
-                    <span className="flex items-center gap-2">{c.label}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-medium">{t(c.label)}</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-bold tracking-wider">
+                        {c.label}
+                      </span>
+                    </span>
                     {country === c.value && (
                       <Check size={16} className="text-primary" />
                     )}
@@ -251,15 +260,20 @@ export default function LocaleSwitcher() {
                     transition={{ duration: 0.2 }}
                     onClick={() => handleCurrencyChange(c.value)}
                     className={cn(
-                      "w-full flex items-center justify-between",
+                      "w-full flex items-center justify-between cursor-pointer select-none",
                       "px-3 py-2.5 rounded-xl text-sm font-medium",
                       "transition-all duration-200",
                       currency === c.value
                         ? "bg-primary/10 text-primary border-2 border-primary/20"
-                        : "hover:bg-elevated text-foreground border-2 border-transparent"
+                        : "hover:bg-elevated text-foreground border-2 border-transparent",
                     )}
                   >
-                    <span className="flex items-center gap-2">{c.label}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-medium">{t(c.label)}</span>
+                      <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded-md font-bold tracking-wider">
+                        {c.label}
+                      </span>
+                    </span>
                     {currency === c.value && (
                       <Check size={16} className="text-primary" />
                     )}

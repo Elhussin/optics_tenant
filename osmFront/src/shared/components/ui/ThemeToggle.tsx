@@ -9,7 +9,7 @@ import { useEffect, useState, useRef } from "react";
 import { Palette, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/src/shared/utils/cn";
-
+import { useTranslations } from "next-intl";
 export const themes: { id: string; label: string; colors: string[] }[] = [
   {
     id: "theme-light",
@@ -50,6 +50,7 @@ export const themes: { id: string; label: string; colors: string[] }[] = [
  * @returns {JSX.Element}
  */
 export default function ThemeToggle() {
+  const t = useTranslations("theme");
   const [theme, setTheme] = useState("theme-light");
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -94,15 +95,15 @@ export default function ThemeToggle() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "p-2.5 rounded-xl",
+          "p-2.5 rounded-xl cursor-pointer select-none",
           "border-1 transition-all duration-200  border-primary/50",
           "focus:outline-none focus:ring-2 focus:ring-primary/50",
           isOpen
             ? "bg-primary/10 text-primary"
             : "bg-background  text-foreground hover:bg-elevated hover:border-primary/30"
         )}
-        title="Theme"
-        aria-label="Toggle theme"
+        title={t("selectTheme")}
+        aria-label={t("selectTheme")}
         aria-expanded={isOpen}
       >
         <Palette className="w-5 h-5" />
@@ -117,7 +118,7 @@ export default function ThemeToggle() {
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className={cn(
-              "absolute end-0 top-full mt-2 w-64",
+              "absolute ltr:right-0 rtl:left-0 top-full mt-2 w-64",
               "bg-surface backdrop-blur-xl",
               "border-2 border-primary/50",
               "rounded-2xl shadow-2xl",
@@ -133,11 +134,11 @@ export default function ThemeToggle() {
               )}
             >
               <p className="text-xs font-black uppercase tracking-wider text-muted-foreground">
-                Select Theme
+                {t("theme")}
               </p>
               {activeTheme && (
                 <p className="text-sm font-semibold text-foreground mt-1">
-                  Current: {activeTheme.label}
+                  {t("current")}: {activeTheme.label}
                 </p>
               )}
             </div>
@@ -158,7 +159,7 @@ export default function ThemeToggle() {
                   transition={{ delay: index * 0.05 }}
                   onClick={() => handleThemeChange(t.id)}
                   className={cn(
-                    "w-full px-3 py-3 mb-2 rounded-xl",
+                    "w-full px-3 py-3 mb-2 rounded-xl cursor-pointer select-none",
                     "flex items-center justify-between gap-3",
                     "transition-all duration-200",
                     "border-2",

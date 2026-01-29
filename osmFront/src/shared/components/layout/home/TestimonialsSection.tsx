@@ -64,7 +64,7 @@ export default function TestimonialsSection() {
           >
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-bold uppercase tracking-wider text-primary">
-              TESTIMONIALS
+              {t("TESTIMONIALS") || "TESTIMONIALS"}
             </span>
           </motion.div>
 
@@ -210,7 +210,7 @@ export default function TestimonialsSection() {
                 {stat.value}
               </p>
               <p className="text-sm text-muted-foreground font-medium">
-                {stat.label}
+                {t(stat.label)}
               </p>
             </div>
           ))}

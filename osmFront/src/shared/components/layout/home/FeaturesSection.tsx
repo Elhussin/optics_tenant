@@ -18,9 +18,12 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
+import { useRouter } from "next/navigation";
 
 export default function FeaturesSection() {
   const t = useTranslations("featuresSection");
+
+  const router = useRouter();
 
   // ✨ Enhanced icons mapping
   const icons = [BarChart3, Users, Store, ShieldCheck, Zap, Globe];
@@ -190,7 +193,7 @@ export default function FeaturesSection() {
                       "transition-all duration-300"
                     )}
                   >
-                    <span>Learn more</span>
+                    <span>{t("learnMore")}</span>
                     <ArrowRight
                       className={cn(
                         "w-4 h-4 transition-transform",
@@ -224,7 +227,7 @@ export default function FeaturesSection() {
           className="text-center mt-16"
         >
           <p className="text-muted-foreground mb-4">
-            Want to see more features?
+            {t("wantToSeeMoreFeatures")}
           </p>
           <button
             className={cn(
@@ -233,11 +236,12 @@ export default function FeaturesSection() {
               "bg-background hover:bg-elevated",
               "text-foreground font-semibold",
               "transition-all hover:scale-105",
-              "group"
+              "group cursor-pointer"
             )}
+            onClick={() => router.push("/features")}
           >
-            <span>View all features</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <span>{t("viewAllFeatures")}</span>
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform " />
           </button>
         </motion.div>
       </div>

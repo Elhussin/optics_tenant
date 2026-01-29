@@ -9,35 +9,58 @@ import {
   FaXTwitter,
 } from "react-icons/fa6";
 import { FiMail } from "react-icons/fi";
+import {
+  Home,
+  Shield,
+  User,
+  Users,
+  Building2,
+  BarChart3,
+  Truck,
+  Phone,
+  Info,
+  LogOut,
+  LogIn,
+  UserPlus,
+  Eye,
+  Grid,
+  Lock,
+  FileText,
+  HelpCircle,
+  LucideIcon
+} from "lucide-react";
 
+export interface NavItem {
+  path: string;
+  name: string;
+  icon: LucideIcon;
+}
 
+export const URLDATA: NavItem[] = [
+  { "path": "/", "name": "Home", icon: Home },
+  { "path": "/dashboard", "name": "dashboard", icon: Shield },
+  { "path": "/profile", "name": "Profile", icon: User },
+  { "path": "/admin", "name": "Admin", icon: Shield },
+  // { "path": "/prescriptions", "name": "Prescriptions", icon: Eye },
+  // { "path": "/about", "name": "About", icon: Info },
+  // { "path": "/contact", "name": "Contact", icon: Phone },
+  { "path": "/users", "name": "Users", icon: Users },
+  // { "path": "/tenants", "name": "Tenants", icon: Building2 },
+  // { "path": "/groups", "name": "Groups", icon: Users },
+  // { "path": "/crm", "name": "CRM", icon: BarChart3 },
+  // { "path": "/products/supplier", "name": "Suppliers", icon: Truck },
+];
 
-export const URLDATA = [
-    { "path": "/", "name": "Home", },
-    { "path": "/dashboard", "name": "Dashboard", },
-    { "path": "/profile", "name": "Profile", },
-    { "path": "/admin", "name": "Admin", },
-    // { "path": "/prescriptions", "name": "Prescriptions", },
-    // { "path": "/about", "name": "About", },
-    // { "path": "/contact", "name": "Contact", },
-    { "path": "/users", "name": "Users", },
-    // { "path": "/tenants", "name": "Tenants", },
-    // { "path": "/groups", "name": "Groups", },
-    // { "path": "/crm", "name": "CRM", },
-    // { "path": "/products/supplier", "name": "Suppliers", },
-
-  ]
-
-export const navUrl=[
-  {"path": "/", "name": "Home", },
-  {"path": "/about", "name": "About", },
-  {"path": "/contact", "name": "Contact", },
-  {"path": "/privacy", "name": "Privacy", },
-  {"path": "/terms", "name": "Terms", },
-  {"path": "/faq", "name": "FAQ", },
-  {"path": "/auth/register", "name": "Register", },  
-  {"path": "/auth/login", "name": "Login", },
-]
+export const navUrl: NavItem[] = [
+  { "path": "/", "name": "Home", icon: Home },
+  { "path": "/about", "name": "About", icon: Info },
+  { "path": "/contact", "name": "Contact", icon: Phone },
+  { "path": "/privacy", "name": "Privacy", icon: Lock },
+  { "path": "/terms", "name": "Terms", icon: FileText },
+  { "path": "/faq", "name": "FAQ", icon: HelpCircle },
+  { "path": "/auth/register", "name": "Register", icon: UserPlus },
+  { "path": "/auth/login", "name": "Login", icon: LogIn },
+];
 
 
 export const socialLinks = [

@@ -4,7 +4,6 @@
  */
 
 "use client";
-
 import { useState, useEffect } from "react";
 import ThemeToggle from "../ui/ThemeToggle";
 import LocaleSwitcher from "../ui/LocaleSwitcher";
@@ -12,7 +11,10 @@ import Image from "next/image";
 import { Link } from "@/src/app/i18n/navigation";
 import { AsideButton } from "@/src/shared/components/ui/buttons/AsideButton";
 import DesktopNavLinks from "./DesktopNavLinks";
-import MobileNavMenu from "./MobileNavMenu";
+// import MobileNavMenu from "./MobileNavMenu"; // Removed
+import { Search } from "lucide-react";
+import { useSearch } from "@/src/shared/contexts/SearchContext";
+import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
 import { AutoHideSearchOnRouteChange } from "../search/AutoHideSearchOnRouteChange";
 import { getSubdomain } from "@/src/shared/utils/getSubdomain";
 import { Menu, X, Sparkles } from "lucide-react";
@@ -20,14 +22,17 @@ import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
 import LogoutButton from "../ui/buttons/logout";
 import { cn } from "@/src/shared/utils/cn";
+import { useTranslations } from "next-intl";
 
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = useTranslations("header");
   const [subdomain, setSubdomain] = useState<string | null>(null);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { scrollY } = useScroll();
   const { user, logout } = useUser();
+  const { toggleSearch, isSearchVisible } = useSearch();
+  const { isVisible: isSearchVisibleButton } = useSearchButton();
 
   useEffect(() => {
     setSubdomain(getSubdomain());
@@ -63,8 +68,8 @@ export default function Header() {
         "fixed top-0 z-40 w-full",
         "border-b-2 transition-all duration-300",
         scrolled
-          ? "border-border bg-background/80 backdrop-blur-xl shadow-lg"
-          : "border-transparent bg-background/60 backdrop-blur-md shadow-sm"
+          ? "border-primary/20 bg-background/80 backdrop-blur-xl shadow-lg"
+          : "border-transparent bg-background/60 backdrop-blur-md shadow-sm",
       )}
     >
       <AutoHideSearchOnRouteChange />
@@ -79,27 +84,27 @@ export default function Header() {
               href="/"
               className={cn(
                 "flex items-center gap-2.5 group",
-                "transition-all duration-200"
+                "transition-all duration-200",
               )}
             >
               {/* Logo Container */}
               <div
                 className={cn(
                   "relative overflow-hidden rounded-xl",
-                  "border-2 border-border",
+                  "border-2 border-primary/20",
                   "shadow-md group-hover:shadow-lg",
                   "transition-all duration-200 group-hover:scale-105",
-                  "bg-gradient-to-br from-primary/10 to-primary/5"
+                  "bg-gradient-to-br from-primary/10 to-primary/5",
                 )}
               >
                 <Image
                   className="object-cover h-auto w-auto"
                   src="/media/icon.jpg"
-                  alt="OSM Logo"
+                  alt={t("logoAlt")}
                   width={42}
                   height={42}
                   priority
-                  title="O-S-M Optics Store Management"
+                  title={t("logoDesc")}
                 />
 
                 {/* Shine effect on hover */}
@@ -108,7 +113,7 @@ export default function Header() {
                     "absolute inset-0",
                     "bg-gradient-to-r from-transparent via-white/30 to-transparent",
                     "translate-x-[-200%] group-hover:translate-x-[200%]",
-                    "transition-transform duration-700"
+                    "transition-transform duration-700",
                   )}
                 />
               </div>
@@ -121,13 +126,13 @@ export default function Header() {
                     "bg-gradient-to-r from-foreground to-foreground/70",
                     "bg-clip-text text-transparent",
                     "group-hover:from-primary group-hover:to-primary/70",
-                    "transition-all duration-200"
+                    "transition-all duration-200",
                   )}
                 >
-                  OSM
+                  {t("logo")}
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium -mt-1">
-                  Optics Store
+                  {t("opticsStore")}
                 </span>
               </div>
             </Link>
@@ -141,7 +146,10 @@ export default function Header() {
           {/* ✨ Enhanced Right Actions */}
           <div className="flex items-center gap-2">
             {/* Locale & Theme Switchers */}
-            <div className="flex items-center gap-1.5">
+            <div
+              className="flex items-center gap-1.5 cursor-pointer"
+              title={t("switchLanguage")}
+            >
               <LocaleSwitcher />
               <ThemeToggle />
             </div>
@@ -154,39 +162,29 @@ export default function Header() {
             )}
 
             {/* ✨ Enhanced Mobile Menu Toggle */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className={cn(
-                "md:hidden p-2.5 rounded-xl",
-                "transition-all duration-200",
-                "border-2",
-                isMenuOpen
-                  ? "bg-destructive/10 text-destructive border-destructive/20"
-                  : "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
-                "shadow-sm hover:shadow-md"
-              )}
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isMenuOpen}
-            >
-              <motion.div
-                animate={{ rotate: isMenuOpen ? 90 : 0 }}
-                transition={{ duration: 0.2 }}
+
+            {/* ✨ Search Toggle (Mobile/Desktop)
+            {isSearchVisibleButton && (
+              <button
+                onClick={toggleSearch}
+                className={cn(
+                  "p-2.5 rounded-xl cursor-pointer",
+                  "transition-all duration-200",
+                  "border-2",
+                  isSearchVisible
+                    ? "bg-destructive/10 text-destructive border-destructive/20"
+                    : "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
+                  "shadow-sm hover:shadow-md",
+                )}
+                aria-label={isSearchVisible ? t("closeSearch") : t("search")}
+                title={isSearchVisible ? t("closeSearch") : t("search")}
               >
-                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-              </motion.div>
-            </motion.button>
+                {isSearchVisible ? <X size={20} /> : <Search size={20} />}
+              </button>
+            )} */}
           </div>
         </div>
       </div>
-
-      {/* Mobile Menu */}
-      <MobileNavMenu
-        isMenuOpen={isMenuOpen}
-        setIsMenuOpen={setIsMenuOpen}
-        subdomain={subdomain}
-      />
     </motion.header>
   );
 }

@@ -26,8 +26,7 @@ export function Pagination({
   pageSize = 10,
   onPageSizeChange,
 }: PaginationProps) {
-  const t = useTranslations();
-
+  const t = useTranslations("pagination");
   const getPages = () => {
     const pages: (number | string)[] = [];
 
@@ -58,8 +57,8 @@ export function Pagination({
           <div className="flex items-center gap-3 text-sm">
             <List size={16} className="text-primary shrink-0" />
             <span className="text-secondary font-medium whitespace-nowrap">
-              {t("rowsPerPage") || "Rows per page"}:
-            </span>
+              {t("rowsPerPage")}:
+            </span> 
             <div className="relative">
               <select
                 value={pageSize}

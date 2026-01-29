@@ -9,6 +9,8 @@ import { Providers } from "@/src/shared/hooks/providers";
 import { SearchProvider } from "@/src/shared/contexts/SearchContext";
 import { SearchButtonProvider } from "@/src/shared/contexts/SearchButtonContext";
 
+import { TenantProvider } from "@/src/shared/contexts/TenantContext";
+
 interface Props {
   children: React.ReactNode;
   locale: string;
@@ -17,16 +19,20 @@ interface Props {
 
 export default function ClientProviders({ children, locale, messages }: Props) {
   return (
-    <NextIntlClientProvider locale={locale} messages={messages} timeZone={process.env.NEXT_PUBLIC_TIMEZONE}>
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+      timeZone={process.env.NEXT_PUBLIC_TIMEZONE}
+    >
       <Providers>
         <UserProvider>
-          <SearchButtonProvider>
-            <SearchProvider>
-              <AsideProvider>
-                {children}
-              </AsideProvider>
-            </SearchProvider>
-          </SearchButtonProvider>
+          <TenantProvider>
+            <SearchButtonProvider>
+              <SearchProvider>
+                <AsideProvider>{children}</AsideProvider>
+              </SearchProvider>
+            </SearchButtonProvider>
+          </TenantProvider>
         </UserProvider>
       </Providers>
     </NextIntlClientProvider>

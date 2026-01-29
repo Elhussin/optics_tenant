@@ -204,7 +204,7 @@ export default function FAQSection() {
           transition={{ delay: 0.5 }}
           className="mt-16 text-center"
         >
-          <p className="text-muted-foreground mb-4">Still have questions?</p>
+          <p className="text-muted-foreground mb-4">{t("stillNeedSupport")}</p>
           <button
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3",
@@ -216,7 +216,7 @@ export default function FAQSection() {
             )}
           >
             <Sparkles className="w-4 h-4" />
-            <span><Link href="/contact">Contact Support</Link></span>
+            <span><Link href="/contact">{t("contactSupport")}</Link></span>
           </button>
         </motion.div>
       </div>

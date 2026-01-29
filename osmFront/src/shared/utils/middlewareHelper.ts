@@ -12,6 +12,7 @@ export function getRequiredPermission(pathname: string): string | null {
     "/views", "/privacy", "/support", "/careers", "/blog",
     "/unauthorized", "/auth/login", "/auth/register", "/auth/activate",
     "/auth/forgot-password", "/auth/reset-password", "/api/geo",
+    "/features",
   ];
 
   if (publicPaths.some(path => cleanPath === path || cleanPath.startsWith(`${path}/`))) {

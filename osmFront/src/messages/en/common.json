@@ -194,7 +194,12 @@
     "Language": "Language",
     "ar": "Arabic",
     "en": "English",
-    "Dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "menu": "Menu",
+    "closeMenu": "Close menu",
+    "openMenu": "Open menu",
+    "switchLanguage": "Switch language, country and currency",
+    "search": "Search"
   },
   "unauthorized": {
     "title": "Unauthorized",
@@ -256,13 +261,17 @@
     "noCreditCard": "No credit card required",
     "freeTrial": "30-day free trial",
     "cancelAnytime": "Cancel anytime",
-    "dashboardPreview": "Dashboard Preview"
+    "dashboardPreview": "Dashboard Preview",
+    "dashboardPreviewDescription": "Powerful analytics & insights"
   },
   "featuresSection": {
     "title": "Key Features",
     "subtitle": "Everything you need to run your business",
     "description": "Experience seamless management with our advanced tools designed for efficiency.",
     "subdescription": "Powerful features to help you manage inventory, customers, and sales all in one place.",
+    "learnMore": "Learn More",
+    "wantToSeeMoreFeatures": "Want to see more features?",
+    "viewAllFeatures": "View all features",
     "list": {
       "inventory": "Branch & Inventory Management",
       "sales": "Sales & Invoice Tracking",
@@ -284,7 +293,10 @@
     "right": "All rights reserved",
     "Support": "Support",
     "Careers": "Careers",
-    "Blog": "Blog"
+    "Blog": "Blog",
+    "madesmart": "Made With",
+    "foryou": "for you",
+    "allRightsReserved": "All rights reserved © for OSM"
   },
   "pricingSection": {
     "title": "Choose Your Plan",
@@ -308,6 +320,9 @@
     "basic": "Basic",
     "premium": "Premium",
     "enterprise": "Enterprise",
+    "pricing": "Pricing",
+    "save20": "Save 20%",
+    "allPlansInclude": "All plans include 24/7 support and updates",
     "perfectForGrowingBusinesses": "Perfect for growing businesses",
     "forLargeScaleOrganizations": "For large scale organizations",
     "billedAnnually": "Billed annually",
@@ -337,6 +352,10 @@
   "testimonialsSection": {
     "title": "Trusted by Optical Professionals",
     "subtitle": "The testimonials from optical professionals who rely on OSM platform",
+    "TESTIMONIALS": "Testimonials",
+    "Happy Clients": "Happy Clients",
+    "Satisfaction Rate": "Satisfaction Rate",
+    "Average Rating": "Average Rating",
     "testimonials": [
       {
         "name": "Ahmed Hassan",
@@ -362,11 +381,16 @@
     "title": "Ready to Streamline Your Optical Store?",
     "description": "Join hundreds of optical shops managing their inventory and patients with ease.",
     "button": "Get Started Now",
-    "cta": "Start Free Trial"
+    "cta": "Start Free Trial",
+    "ctaDescription": "30-day free trial",
+    "cancelAnytime": "Cancel anytime",
+    "noCreditCard": "No credit card required"
   },
   "faqSection": {
     "title": "Frequently Asked Questions",
     "subtitle": "Everything you need to know about our platform.",
+    "stillNeedSupport": "Still have questions?",
+    "contactSupport": "Contact Support",
     "faq": [
       {
         "question": "Is there a free trial?",
@@ -592,6 +616,60 @@
     "noPermissionsFound": "No permissions found matching your search.",
     "selectRoleToManage": "Select a role from the list on the left to manage its specific access rights.",
     "managePermissions": "Manage Permissions"
+  },
+  "pagination": {
+    "rowsPerPage": "Rows per page",
+    "firstPage": "First page",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
+    "lastPage": "Last page"
+  },
+  "theme": {
+    "theme": "Theme",
+    "light": "Light Mode",
+    "dark": "Dark Mode",
+    "system": "System Default",
+    "selectTheme": "Select Theme",
+    "current": "Current Theme"
+  },
+  "header": {
+    "dashboard": "Dashboard",
+
+    "settings": "Settings",
+    "logout": "Logout",
+    "logo": "OSM",
+    "logoDesc": "OSM Optics Store Management",
+    "logoAlt": "OSM Logo",
+    "opticsStore": "Optics Store Management",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "switchLanguage": "switch language, country and currency"
+  },
+  "asideButton": {
+    "toggleSidebar": "Sidebar"
+  },
+  "localeSwitcher": {
+    "closeMenu": "Close menu",
+    "language": "Language",
+    "country": "Country",
+    "currency": "Currency",
+    "theme": "Theme",
+    "dark": "Dark",
+    "light": "Light",
+    "EN": "English",
+    "AR": "Arabic",
+    "SA": "Saudi Arabia",
+    "EG": "Egypt",
+    "AE": "United Arab Emirates",
+    "SAR": "Saudi Riyal",
+    "EGP": "Egyptian Pounds",
+    "AED": "UAE Dirham"
+  },
+  "searchBox": {
+    "placeholder": "Search...",
+    "clearSearch": "Clear Search",
+    "filters": "Filters"
   },
   "importProducts": "Import Products",
   "importProductsDescription": "Upload a CSV file to bulk import products. The file must follow the required format.",

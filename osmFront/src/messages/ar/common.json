@@ -193,7 +193,12 @@
     "LightMode": "الوضع الفاتح",
     "Language": "اللغة",
     "Hrm": "الموارد البشرية",
-    "Dashboard": "لوحة التحكم"
+    "dashboard": "لوحة التحكم",
+    "menu": "القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "openMenu": "فتح القائمة",
+    "switchLanguage": "تبديل اللغة",
+    "search": "بحث"
   },
   "unauthorized": {
     "title": "غير مصرح",
@@ -254,14 +259,17 @@
     "noCreditCard": "لا تطلب بطاقة ائتمان",
     "freeTrial": "30 يوما مجانا",
     "cancelAnytime": "إلغاء في أي وقت",
-    "dashboardPreview": " لوحة التحكم"
+    "dashboardPreview": " لوحة التحكم",
+    "dashboardPreviewDescription": "تحليلات قوية وشاملة"
   },
   "featuresSection": {
     "title": "المزايا الرئيسية",
     "subtitle": "كل ما تحتاجه لتشغيل محلات البصريات",
     "description": "اكتشف أدواتنا المتقدمة المصممة لتحقيق الكفاءة.",
     "subdescription": "بكفاءة ودقة، OSM تساعدك في إدارة محلات البصريات بكل سهولة.",
-
+    "learnMore": "المزيد",
+    "wantToSeeMoreFeatures": "الأطلاع على المزيد من الميزات",
+    "viewAllFeatures": "عرض جميع الميزات",
     "list": {
       "inventory": "إدارة الفروع والمخزون",
       "sales": "تتبع المبيعات والفواتير",
@@ -283,7 +291,10 @@
     "right": "جميع الحقوق محفوظة",
     "Support": "دعم",
     "Careers": "وظائف",
-    "Blog": "المدونة"
+    "Blog": "المدونة",
+    "madesmart": "تم تصميمه",
+    "foryou": "لأجلك",
+    "allRightsReserved": "All rights reserved © for OSM"
   },
   "pricingSection": {
     "title": "اختر الخطة المناسبة",
@@ -310,6 +321,9 @@
     "perfectForGrowingBusinesses": "الأفضل لشركات الصغيرة والمتوسطة",
     "forLargeScaleOrganizations": "مناسب للشركات الكبيرة",
     "billedAnnually": "يتم الدفع سنويا",
+    "pricing": "الأسعار",
+    "save20": "وفر 20%",
+    "allPlansInclude": "جميع الخطة تشمل الدعم 24/7 وتحديثات",
     "plans": {
       "trial": {
         "name": "تجربة مجانية",
@@ -336,6 +350,10 @@
   "testimonialsSection": {
     "title": "اراء العملاء",
     "subtitle": "الاراءات من العملاء الذين يعتمدون على منصة OSM",
+    "TESTIMONIALS": "شهادات العملاء",
+    "Happy Clients": "العملاء المعجبين بالخدمة",
+    "Satisfaction Rate": "نسبة الرضا",
+    "Average Rating": "متوسط التقييم",
     "testimonials": [
       {
         "name": "Ahmed Hassan",
@@ -361,11 +379,16 @@
     "title": "هل تريد متجر بسيط؟",
     "description": "انضم إلى آلاف المتاجر التي تدير مخزونها وعملائها بسهولة.",
     "button": "ابدأ الآن",
-    "cta": "ابدأ فترتك التجريبية"
+    "cta": "ابدأ فترتك التجريبية",
+    "ctaDescription": "30 يوما مجانا",
+    "cancelAnytime": "إلغاء في أي وقت",
+    "noCreditCard": "لا تطلب بطاقة ائتمان"
   },
   "faqSection": {
     "title": "الأسئلة الشائعة",
     "subtitle": "كل ما تحتاجه لفهم منصة OSM.",
+    "contactSupport": "اتصل بدعم",
+    "stillNeedSupport": "هل تحتاج المزيد من الدعم؟",
     "faq": [
       {
         "question": "هل هناك فترة تجريبية مجانية؟",
@@ -591,6 +614,59 @@
     "noPermissionsFound": "لم يتم العثور على صلاحيات تطابق بحثك.",
     "selectRoleToManage": "اختر دوراً من القائمة الجانبية لإدارة صلاحيات الوصول الخاصة به.",
     "managePermissions": "إدارة الصلاحيات"
+  },
+  "pagination": {
+    "rowsPerPage": "صفوف لكل صفحة",
+    "firstPage": "الصفحة الأولى",
+    "previousPage": "الصفحة السابقة",
+    "nextPage": "الصفحة التالية",
+    "lastPage": "الصفحة الأخيرة"
+  },
+  "theme": {
+    "theme": "السمة",
+    "light": "الوضع الفاتح",
+    "dark": "الوضع المظلم",
+    "system": "الوضع الافتراضي",
+    "selectTheme": "اختر السمة",
+    "current": "السمة الحالية"
+  },
+  "header": {
+    "dashboard": "لوحة التحكم",
+    "settings": "الإعدادات",
+    "logout": "تسجيل الخروج",
+    "logo": "OSM",
+    "logoDesc": "OSM نظام إدارة متاجر البصريات",
+    "logoAlt": "OSM شعار",
+    "opticsStore": "ادارة متاجر البصريات",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة",
+    "menu": "القائمة",
+    "switchLanguage": "تبديل اللغة والعملة"
+  },
+  "asideButton": {
+    "toggleSidebar": " الشريط الجانبي"
+  },
+  "localeSwitcher": {
+    "closeMenu": "إغلاق القائمة",
+    "language": "اللغة",
+    "country": "البلد",
+    "currency": "العملة",
+    "theme": "الثيم",
+    "dark": "الظلام",
+    "light": "الضوء",
+    "EN": "الإنجليزية",
+    "AR": "العربية",
+    "SA": "السعودية",
+    "EG": "مصر",
+    "AE": "الإمارات",
+    "SAR": "الريال السعودي",
+    "EGP": "الجنيه المصري",
+    "AED": "الدرهم الإماراتي"
+  },
+  "searchBox": {
+    "placeholder": "بحث...",
+    "clearSearch": "مسح البحث",
+    "filters": "الفلاتر"
   },
   "importProducts": "استيراد المنتجات",
   "importProductsDescription": "قم برفع ملف CSV لاستيراد المنتجات بالجملة. يجب أن يتبع الملف التنسيق المطلوب.",

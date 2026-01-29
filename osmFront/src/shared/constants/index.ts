@@ -6,9 +6,9 @@ export const languages: Option[] = [
 ];
 
 export const countries: Option[] = [
-  { label: 'KSA', value: 'sa' },
-  { label: 'EGY', value: 'eg' },
-  { label: 'UAE', value: 'ae' },
+  { label: 'SA', value: 'sa' },
+  { label: 'EG', value: 'eg' },
+  { label: 'AE', value: 'ae' },
 ];
 
 export const currencies: Option[] = [

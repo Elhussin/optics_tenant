@@ -63,7 +63,7 @@ export default function PricingSection() {
           >
             <Sparkles className="w-4 h-4 text-primary" />
             <span className="text-sm font-bold uppercase tracking-wider text-primary">
-              PRICING
+              {t("pricing")}
             </span>
           </motion.div>
 
@@ -127,7 +127,7 @@ export default function PricingSection() {
             >
               {t("yearly") || "Yearly"}
               <span className="text-green-500 text-xs ml-2 font-bold">
-                (Save 20%)
+                {t("save20") || "Save 20%"}
               </span>
             </span>
           </div>
@@ -317,7 +317,7 @@ export default function PricingSection() {
           transition={{ delay: 0.6 }}
           className="text-center text-sm text-muted-foreground mt-12"
         >
-          All plans include 24/7 support and updates
+          {t("allPlansInclude") || "All plans include 24/7 support and updates"}
         </motion.p>
       </div>
     </section>

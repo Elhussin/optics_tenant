@@ -31,9 +31,11 @@ export default function DesktopNavLinks({
   const NavItem = ({
     href,
     children,
+    title,
   }: {
     href: string;
     children: React.ReactNode;
+    title: string;
   }) => {
     const isActive =
       pathname === href || (href !== "/" && pathname?.startsWith(href));
@@ -41,6 +43,7 @@ export default function DesktopNavLinks({
     return (
       <Link
         href={href}
+        title={title}
         className={cn(
           "relative px-4 py-2.5 rounded-xl",
           "text-sm font-semibold",
@@ -98,14 +101,14 @@ export default function DesktopNavLinks({
     <div className="hidden md:flex gap-8 items-center justify-between w-full">
       {/* ✨ Enhanced Navigation Links */}
       <div className="flex gap-1 items-center">
-        <NavItem href="/">{t("home")}</NavItem>
+        <NavItem href="/" title={t("home")}>{t("home")}</NavItem>
         {user && user.role === "ADMIN" && (
-          <NavItem href="/admin">{t("admin")}</NavItem>
+          <NavItem href="/admin" title={t("admin")}>{t("admin")}</NavItem>
         )}
         {user && user.role === "TECHNICIAN" && (
-          <NavItem href="/prescriptions">{t("technician")}</NavItem>
+          <NavItem href="/prescriptions" title={t("technician")}>{t("technician")}</NavItem>
         )}
-        {user && <NavItem href="/profile">{t("profile")}</NavItem>}
+        {user && <NavItem href="/profile" title={t("profile")}>{t("profile")}</NavItem>}
       </div>
 
       {/* ✨ Enhanced Search and Auth Actions */}
@@ -164,12 +167,13 @@ export default function DesktopNavLinks({
             <Link
               href="/auth/login"
               className={cn(
-                "px-4 py-2 rounded-xl",
+                "px-4 py-2 rounded-xl cursor-pointer",
                 "text-sm font-semibold",
                 "text-muted-foreground hover:text-foreground",
                 "hover:bg-elevated",
                 "transition-all duration-200"
               )}
+              title={t("login")}
             >
               {t("login")}
             </Link>
@@ -181,18 +185,19 @@ export default function DesktopNavLinks({
                 "relative px-5 py-2.5 rounded-xl overflow-hidden",
                 "text-sm font-bold",
                 "text-primary-foreground",
-                "bg-gradient-to-br from-primary to-primary/80",
+                "bg-primary",
                 "shadow-md hover:shadow-lg",
                 "transition-all duration-200",
-                "hover:scale-105 active:scale-95",
+                "hover:scale-105 active:scale-95 cursor-pointer",
                 "group"
               )}
+              title={t("register")}
             >
               {/* Shine effect */}
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
 
               <span className="relative z-10 flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
+                {/* <Sparkles className="w-4 h-4" /> */}
                 {t("register")}
               </span>
             </Link>

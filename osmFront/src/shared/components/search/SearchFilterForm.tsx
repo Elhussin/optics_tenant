@@ -12,7 +12,7 @@ import { useSearch } from "@/src/shared/contexts/SearchContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, SearchX, Filter, X, RotateCcw } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
-
+import { useTranslations } from "next-intl";
 interface Props {
   fields: any[];
   setFilters: (filters: Record<string, string>) => void;
@@ -22,7 +22,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
   const router = useRouter();
   const { isSearchVisible } = useSearch();
   const searchParams = useSearchParams();
-
+  const t = useTranslations("searchBox");
   /**
    * Build initial form state from URL query (ignore pagination params)
    */
@@ -104,7 +104,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
             key={resetKey}
             className={cn(
               "p-6 bg-elevated/50 backdrop-blur-md",
-              "border-b-2 border-border",
+              "border-b-2 border-primary/20",
               "shadow-sm"
             )}
             onSubmit={handleSubmit}
@@ -124,7 +124,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                   type="text"
                   className={cn(
                     "block w-full pl-14 pr-14 py-4",
-                    "bg-background border-2 border-border rounded-2xl",
+                    "bg-background border-2 border-primary/20 rounded-2xl",
                     "shadow-sm hover:shadow-md",
                     "placeholder:text-muted-foreground",
                     "text-base font-medium text-foreground",
@@ -134,7 +134,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                   )}
                   onChange={(e) => handleChange("search", e.target.value)}
                   value={form["search"] || ""}
-                  placeholder="🔍 ابحث عن أي شيء..."
+                  placeholder={t("placeholder")}
                   autoComplete="off"
                 />
                 {form["search"] && (
@@ -151,7 +151,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                       "hover:bg-destructive/10",
                       "transition-all duration-200 hover-scale"
                     )}
-                    aria-label="Clear search"
+                    aria-label={t("clearSearch")}
                   >
                     <X className="h-5 w-5" />
                   </motion.button>
@@ -183,7 +183,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                       >
                         <Filter className="w-4 h-4" />
                       </div>
-                      <span>Filters</span>
+                      <span>{t("filters")}</span>
                       {activeFiltersCount > 0 && (
                         <motion.span
                           initial={{ scale: 0 }}
@@ -211,14 +211,14 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                           "flex items-center gap-2 px-3 py-1.5",
                           "text-xs font-semibold",
                           "text-muted-foreground hover:text-destructive",
-                          "border-2 border-border hover:border-destructive/50",
+                          "border-2 border-primary/20 hover:border-destructive/50",
                           "rounded-lg",
                           "transition-all duration-200 hover-scale",
                           "hover:bg-destructive/5"
                         )}
                       >
                         <RotateCcw className="w-3.5 h-3.5" />
-                        Clear All
+                        {t("clearSearch")}
                       </motion.button>
                     )}
                   </div>
@@ -251,7 +251,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                           <select
                             className={cn(
                               "w-full h-11",
-                              "bg-background border-2 border-border",
+                              "bg-background border-2 border-primary/20",
                               "rounded-lg px-4 py-2.5",
                               "text-sm font-medium text-foreground",
                               "outline-none appearance-none cursor-pointer",
@@ -277,7 +277,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                             type="text"
                             className={cn(
                               "w-full h-11",
-                              "bg-background border-2 border-border",
+                              "bg-background border-2 border-primary/20",
                               "rounded-lg px-4 py-2.5",
                               "text-sm font-medium text-foreground",
                               "placeholder:text-muted-foreground",

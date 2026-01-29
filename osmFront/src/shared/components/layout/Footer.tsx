@@ -21,8 +21,8 @@ export default function Footer() {
       className={cn(
         "relative mt-auto",
         "bg-elevated/50 backdrop-blur-md",
-        "border-t-2 border-border",
-        "py-12"
+        "border-t-2 border-primary/20",
+        "py-12",
       )}
     >
       {/* Background gradient */}
@@ -43,7 +43,7 @@ export default function Footer() {
                 "text-lg font-bold mb-4 pb-3",
                 "text-foreground",
                 "border-b-2 border-primary/20",
-                "flex items-center gap-2"
+                "flex items-center gap-2",
               )}
             >
               <span className="w-1 h-6 bg-primary rounded-full" />
@@ -64,13 +64,13 @@ export default function Footer() {
                       "group flex items-center gap-2",
                       "text-muted-foreground hover:text-primary",
                       "transition-all duration-200",
-                      "text-sm font-medium"
+                      "text-sm font-medium",
                     )}
                   >
                     <span
                       className={cn(
                         "w-0 h-0.5 bg-primary rounded-full",
-                        "group-hover:w-4 transition-all duration-200"
+                        "group-hover:w-4 transition-all duration-200",
                       )}
                     />
                     {t2(item.name)}
@@ -92,7 +92,7 @@ export default function Footer() {
                 "text-lg font-bold mb-4 pb-3",
                 "text-foreground",
                 "border-b-2 border-primary/20",
-                "flex items-center gap-2"
+                "flex items-center gap-2",
               )}
             >
               <span className="w-1 h-6 bg-primary rounded-full" />
@@ -113,13 +113,13 @@ export default function Footer() {
                       "group flex items-center gap-2",
                       "text-muted-foreground hover:text-primary",
                       "transition-all duration-200",
-                      "text-sm font-medium"
+                      "text-sm font-medium",
                     )}
                   >
                     <span
                       className={cn(
                         "w-0 h-0.5 bg-primary rounded-full",
-                        "group-hover:w-4 transition-all duration-200"
+                        "group-hover:w-4 transition-all duration-200",
                       )}
                     />
                     {t(item.name)}
@@ -141,7 +141,7 @@ export default function Footer() {
                 "text-lg font-bold mb-4 pb-3",
                 "text-foreground",
                 "border-b-2 border-primary/20",
-                "flex items-center gap-2"
+                "flex items-center gap-2",
               )}
             >
               <span className="w-1 h-6 bg-primary rounded-full" />
@@ -171,7 +171,7 @@ export default function Footer() {
                         "border-2 border-primary/20 hover:border-primary",
                         "transition-all duration-200",
                         "hover:scale-110 hover:shadow-lg",
-                        "group"
+                        "group",
                       )}
                     >
                       <Icon
@@ -194,30 +194,27 @@ export default function Footer() {
           transition={{ delay: 0.4 }}
           className={cn(
             "mt-12 pt-8",
-            "border-t-2 border-border",
-            "text-center"
+            "border-t-2 border-primary/20",
+            "text-center",
           )}
         >
-          <p
-            className={cn(
-              "text-sm text-muted-foreground",
-              "flex items-center justify-center gap-2 flex-wrap"
-            )}
-          >
-            <span>&copy; {new Date().getFullYear()}</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="font-semibold text-foreground">{t("footer")}</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="flex items-center gap-1">
-              Made with
-              <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse-slow" />
-              &
-              <Sparkles className="w-4 h-4 text-primary" />
-            </span>
-          </p>
-          <p className="text-xs text-muted-foreground mt-2">
-            All rights reserved.
-          </p>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap justify-center">
+              <span className="font-semibold text-foreground">
+                {t("footer")}
+              </span>
+              <span className="hidden sm:inline text-border">•</span>
+              <span className="flex items-center gap-1.5">
+                {t("madesmart")}
+                <Heart className="w-4 h-4 text-red-500 fill-red-500 animate-pulse-slow" />
+                {t("foryou")}
+              </span>
+            </div>
+
+            <p className="text-xs text-muted-foreground/60">
+              &copy; {new Date().getFullYear()} {t("allRightsReserved")}
+            </p>
+          </div>
         </motion.div>
       </div>
     </footer>

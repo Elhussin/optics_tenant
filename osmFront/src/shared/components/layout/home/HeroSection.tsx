@@ -73,13 +73,14 @@ export default function HeroSection() {
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className={cn(
                   "text-5xl sm:text-6xl lg:text-7xl font-black",
+                  "text-primary/50",
                   "leading-tight mb-6",
-                  "bg-gradient-to-r from-foreground via-foreground to-primary/70",
-                  "bg-clip-text text-transparent"
+                
+
                 )}
               >
                 {t("title")}
-                <span className="text-primary">.</span>
+                <span className="text-primary/50">.</span>
               </motion.h1>
 
               {/* ✨ Enhanced Description */}
@@ -237,7 +238,7 @@ export default function HeroSection() {
                     ✨ {t("dashboardPreview") || "Dashboard Preview"}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Powerful analytics & insights
+                   {t("dashboardPreviewDescription") || "Dashboard Preview Description"}
                   </p>
                 </motion.div>
               </div>

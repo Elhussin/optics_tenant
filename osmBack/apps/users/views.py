@@ -396,14 +396,18 @@ class ContactUsViewSet(BaseViewSet):
 
 
 class TenantSettingsViewset(BaseViewSet):
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            required_permissions=["view_tenant_settings"]
-        )
-    ]
     queryset = TenantSettings.objects.all()
     serializer_class = TenantSettingsSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [
+            IsAuthenticated(),
+            RoleOrPermissionRequired.with_requirements(
+                required_permissions=["view_tenant_settings"]
+            )
+        ]
 
 
 class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):

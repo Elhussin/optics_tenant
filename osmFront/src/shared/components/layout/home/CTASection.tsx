@@ -127,15 +127,15 @@ export default function CTASection() {
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span>No credit card required</span>
+              <span>{t("noCreditCard")}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span>Free 30-day trial</span>
+              <span>{t("ctaDescription")}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span>Cancel anytime</span>
+              <span>{t("cancelAnytime")}</span>
             </div>
           </motion.div>
         </motion.div>
