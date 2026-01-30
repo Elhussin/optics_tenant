@@ -53,7 +53,7 @@ export default function MainLayout({ mainContent }: Props) {
     <div
       className={cn(
         "flex flex-col min-h-screen pt-16",
-        "bg-background text-foreground"
+        "bg-background text-foreground",
       )}
     >
       {/* ✨ Header Container */}
@@ -70,7 +70,7 @@ export default function MainLayout({ mainContent }: Props) {
             className={cn(
               "container mx-auto",
               "p-4 sm:p-6 lg:p-8",
-              "animate-fade-in-up"
+              "animate-fade-in-up",
             )}
           >
             {/* Global Alert */}
@@ -78,40 +78,6 @@ export default function MainLayout({ mainContent }: Props) {
 
             {/* Main Content */}
             {mainContent}
-
-            {/* ✨ Enhanced Toaster */}
-            <Toaster
-              richColors
-              closeButton
-              position={isRTL ? "top-left" : "top-right"}
-              duration={4000}
-              toastOptions={{
-                classNames: {
-                  toast: cn(
-                    "rounded-xl border-2 shadow-lg",
-                    "backdrop-blur-md"
-                  ),
-                  title: "font-semibold",
-                  description: "text-sm",
-                  success: cn(
-                    "bg-green-50 dark:bg-green-950/50 text-green-900 dark:text-green-100",
-                    "border-green-200 dark:border-green-800"
-                  ),
-                  error: cn(
-                    "bg-red-50 dark:bg-red-950/50 text-red-900 dark:text-red-100",
-                    "border-red-200 dark:border-red-800"
-                  ),
-                  warning: cn(
-                    "bg-yellow-50 dark:bg-yellow-950/50 text-yellow-900 dark:text-yellow-100",
-                    "border-yellow-200 dark:border-yellow-800"
-                  ),
-                  info: cn(
-                    "bg-blue-50 dark:bg-blue-950/50 text-blue-900 dark:text-blue-100",
-                    "border-blue-200 dark:border-blue-800"
-                  ),
-                },
-              }}
-            />
           </div>
         </main>
       </div>
@@ -137,7 +103,7 @@ export default function MainLayout({ mainContent }: Props) {
               "shadow-lg hover:shadow-xl",
               "transition-all duration-200",
               "group",
-              isRTL ? "left-6" : "right-6"
+              isRTL ? "left-6" : "right-6",
             )}
             aria-label="Scroll to top"
           >
@@ -145,12 +111,43 @@ export default function MainLayout({ mainContent }: Props) {
               className={cn(
                 "w-5 h-5",
                 "transition-transform duration-200",
-                "group-hover:-translate-y-1"
+                "group-hover:-translate-y-1",
               )}
             />
           </motion.button>
         )}
       </AnimatePresence>
+
+      {/* ✨ Enhanced Toaster - Moved to root to avoid transform stacking context issues */}
+      <Toaster
+        richColors
+        closeButton
+        position={isRTL ? "top-left" : "top-right"}
+        duration={4000}
+        toastOptions={{
+          classNames: {
+            toast: cn("rounded-xl border-2 shadow-lg", "backdrop-blur-md"),
+            title: "font-semibold",
+            description: "text-sm",
+            success: cn(
+              "bg-green-50 dark:bg-green-950/50 text-green-900 dark:text-green-100",
+              "border-green-200 dark:border-green-800",
+            ),
+            error: cn(
+              "bg-red-50 dark:bg-red-950/50 text-red-900 dark:text-red-100",
+              "border-red-200 dark:border-red-800",
+            ),
+            warning: cn(
+              "bg-yellow-50 dark:bg-yellow-950/50 text-yellow-900 dark:text-yellow-100",
+              "border-yellow-200 dark:border-yellow-800",
+            ),
+            info: cn(
+              "bg-blue-50 dark:bg-blue-950/50 text-blue-900 dark:text-blue-100",
+              "border-blue-200 dark:border-blue-800",
+            ),
+          },
+        }}
+      />
     </div>
   );
 }

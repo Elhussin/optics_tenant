@@ -134,7 +134,7 @@ export default function FeaturesSection() {
               <div
                 className={cn(
                   "relative p-8 rounded-2xl h-full",
-                  "bg-elevated border-2 border-border",
+                  "bg-elevated border-2 border-primary/20",
                   "hover:border-primary/50",
                   "transition-all duration-300",
                   "hover:shadow-xl hover:-translate-y-2"
@@ -232,7 +232,7 @@ export default function FeaturesSection() {
           <button
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3",
-              "rounded-xl border-2 border-border",
+              "rounded-xl border-2 border-primary/20",
               "bg-background hover:bg-elevated",
               "text-foreground font-semibold",
               "transition-all hover:scale-105",

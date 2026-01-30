@@ -57,7 +57,7 @@ const variantStyles: Record<BadgeVariant, { solid: string; outline: string }> =
     },
     neutral: {
       solid: "bg-elevated text-main",
-      outline: "border-border-main text-secondary bg-transparent",
+      outline: "border-primary/20 text-secondary bg-transparent",
     },
   };
 

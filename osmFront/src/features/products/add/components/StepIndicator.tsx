@@ -10,6 +10,7 @@ import { Check, Circle } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
 import { motion } from "framer-motion";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { useTranslations } from "next-intl";
 
 // interface Step {
 //   id: number;
@@ -270,6 +271,7 @@ interface StepIndicatorProps {
 }
 
 export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
+  const t = useTranslations("products");
   // Calculate progress percentage
   const progress = ((currentStep - 1) / (steps.length - 1)) * 100;
 
@@ -278,7 +280,9 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
       {/* ✨ Progress Bar */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-bold text-foreground">التقدم</span>
+          <span className="text-sm font-bold text-foreground">
+            {t("sections.progress")}
+          </span>
           <span className="text-sm font-black text-primary">
             {Math.round(progress)}%
           </span>
@@ -290,7 +294,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
             transition={{ duration: 0.5, ease: "easeOut" }}
             className={cn(
               "h-full rounded-full",
-              "bg-gradient-to-r from-primary to-blue-600"
+              "bg-gradient-to-r from-primary to-blue-600",
             )}
           />
         </div>
@@ -324,7 +328,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                       ? "bg-gradient-to-br from-success to-green-600 text-white scale-105"
                       : isCurrent
                       ? "bg-gradient-to-br from-primary to-blue-600 text-white ring-4 ring-primary/20 scale-110"
-                      : "bg-elevated text-muted-foreground border-2 border-primary/50"
+                      : "bg-elevated text-muted-foreground border-2 border-primary/50",
                   )}
                 >
                   {isCompleted ? (
@@ -370,7 +374,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                         ? "text-primary"
                         : isCompleted
                         ? "text-success"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
                     )}
                   >
                     {step.title}
@@ -378,7 +382,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                   <p
                     className={cn(
                       "text-xs mt-0.5 max-w-[120px]",
-                      "text-muted-foreground/70"
+                      "text-muted-foreground/70",
                     )}
                   >
                     {step.description}
@@ -403,7 +407,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                     transition={{ duration: 0.5, ease: "easeOut" }}
                     className={cn(
                       "absolute inset-y-0 left-0 rounded-full",
-                      "bg-gradient-to-r from-success to-green-600"
+                      "bg-gradient-to-r from-success to-green-600",
                     )}
                   />
                 </div>
@@ -436,7 +440,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
                       ? "bg-gradient-to-br from-success to-green-600 text-white"
                       : isCurrent
                       ? "bg-gradient-to-br from-primary to-blue-600 text-white ring-4 ring-primary/20"
-                      : "bg-elevated text-muted-foreground border-2 border-primary/50"
+                      : "bg-elevated text-muted-foreground border-2 border-primary/50",
                   )}
                 >
                   {isCompleted ? (
@@ -487,7 +491,7 @@ export function StepIndicator({ steps, currentStep }: StepIndicatorProps) {
           transition={{ duration: 0.3 }}
           className={cn(
             "text-center p-4 rounded-xl",
-            "bg-primary/5 border-2 border-primary/20"
+            "bg-primary/5 border-2 border-primary/20",
           )}
         >
           <p className="font-black text-foreground text-base mb-1">

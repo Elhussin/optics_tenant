@@ -56,22 +56,18 @@ import { StringToBoolean } from "class-variance-authority/types";
  */
 export const CheckboxField = ({ fieldRow, field }: FieldsProps) => {
   return (
-    <div className="flex items-start gap-3 px-4 py-2 border border-primary/50 rounded-lg bg-surface transition-all duration-300 cursor-pointer hover:border-primary/70 hover:shadow-sm animate-fade-in-up group">
+    <div className="flex items-center gap-3 h-11 px-0 transition-all duration-300 animate-fade-in-up group">
       <Checkbox
         id={fieldRow.name}
         checked={field.value}
         onCheckedChange={field.onChange}
-        className="mt-0.5 transition-all duration-300 data-[state=checked]:scale-110"
+        className="transition-all duration-300 data-[state=checked]:scale-110 border-primary/50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
       />
       <div className="flex-1">
         <label
           htmlFor={fieldRow.name}
           className="cursor-pointer text-sm font-medium text-foreground flex items-center gap-2 select-none"
         >
-          <CheckSquare
-            size={16}
-            className="text-primary group-hover:scale-110 transition-transform"
-          />
           {fieldRow.placeholder || fieldRow.label}
           {fieldRow.required && (
             <span className="text-destructive text-xs">*</span>
@@ -137,11 +133,34 @@ export const TextField = ({ fieldRow, field }: FieldsProps) => {
     <Input
       type={fieldRow.type}
       placeholder={fieldRow.placeholder}
-      value={field.defaultValue || ""}
       {...field}
+      value={field.value ?? ""}
       className={cn(
         "w-full h-11 px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 placeholder:text-secondary focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 animate-fade-in-up",
         "file:border-0 file:bg-transparent file:text-sm file:font-medium",
+        fieldRow.className,
+      )}
+    />
+  );
+};
+
+/**
+ * ✨ FileField - حقل رفع ملفات محسّن
+ */
+export const FileField = ({ fieldRow, field }: FieldsProps) => {
+  return (
+    <Input
+      type="file"
+      {...field}
+      value={undefined}
+      onChange={(e) => {
+        const files = e.target.files;
+        if (files && files.length > 0) {
+          field.onChange(files[0]);
+        }
+      }}
+      className={cn(
+        "w-full h-11 px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-secondary focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm cursor-pointer file:cursor-pointer animate-fade-in-up",
         fieldRow.className,
       )}
     />
@@ -156,6 +175,7 @@ export const TextareaField = ({ fieldRow, field }: FieldsProps) => {
     <Textarea
       placeholder={fieldRow.placeholder}
       {...field}
+      value={field.value ?? ""}
       className="w-full min-h-[100px] px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 placeholder:text-secondary focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm disabled:cursor-not-allowed disabled:opacity-50 resize-none scrollbar-thin animate-fade-in-up"
       required={fieldRow.required}
     />
@@ -171,7 +191,7 @@ export const SelectField = ({
   options,
 }: SelectFieldsProps) => {
   return (
-    <Select onValueChange={field.onChange} value={field.value}>
+    <Select onValueChange={field.onChange} value={field.value ?? ""}>
       <SelectTrigger className="w-full h-11 px-4 py-2 text-sm bg-surface border border-primary/50 rounded-lg transition-all duration-300 focus-visible:outline-none focus-visible:border-primary focus-visible:ring-1 focus-visible:ring-primary/20 hover:border-primary/70 hover:shadow-sm cursor-pointer animate-fade-in-up">
         <SelectValue placeholder={fieldRow.placeholder || "Select"} />
       </SelectTrigger>
@@ -368,7 +388,11 @@ export function MultiSelectField({
       control={control}
       defaultValue={[] as any}
       render={({ field }) => {
-        const value = (field.value || []) as Array<string | number>;
+        const value = Array.isArray(field.value)
+          ? field.value
+          : field.value
+          ? [field.value]
+          : [];
         const selected =
           options?.filter((opt: any) => value.includes(opt.value)) || [];
 

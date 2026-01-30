@@ -1,4 +1,4 @@
-import { onSubmit } from "./onsbmit";
+import { onSubmit } from "./onSubmit";
 import { buildPayload } from "@/src/features/products/utils/buildPayload";
 import { safeToast } from "@/src/shared/utils/safeToast";
 
@@ -6,26 +6,27 @@ export const handleSave = (
   form: any,
   variants: any,
   config: any,
+  t: any, // Add t function
   id?: string
 ) => {
   // Debug: Log what variants data we're receiving
-  console.log("🔍 handleSave called with:");
-  console.log("  - variants (raw):", variants);
-  console.log("  - config:", config);
-  console.log("  - form values:", form.getValues());
+  // console.log("🔍 handleSave called with:");
+  // console.log("  - variants (raw):", variants);
+  // console.log("  - config:", config);
+  // console.log("  - form values:", form.getValues());
 
   form.handleSubmit(
     (formValues: any) => {
       // Debug: Log form values after handleSubmit
-      console.log("📋 formValues after handleSubmit:", formValues);
-      console.log("📋 formValues.variants:", formValues.variants);
+      // console.log("📋 formValues after handleSubmit:", formValues);
+      // console.log("📋 formValues.variants:", formValues.variants);
 
       // IMPORTANT: Use formValues.variants instead of the stale 'variants' parameter
       // The 'variants' parameter passed to handleSave might be stale (captured at callback creation time)
       let variantsData = formValues.variants || [];
 
       // Debug: Log the payload that will be sent
-      console.log("🚀 variantsData to process (before filter):", variantsData);
+      // console.log("🚀 variantsData to process (before filter):", variantsData);
 
       // Filter out completely empty variants (variants with no meaningful data)
       variantsData = variantsData.filter((variant: any) => {
@@ -37,31 +38,45 @@ export const handleSave = (
         return hasData;
       });
 
-      console.log("🚀 variantsData to process (after filter):", variantsData);
+      // console.log("🚀 variantsData to process (after filter):", variantsData);
 
       // If no variants have data, show error
       if (variantsData.length === 0) {
-        safeToast("يجب إضافة متغير واحد على الأقل مع بيانات", { type: "error" });
+        safeToast(t("validation.noVariants"), { type: "error" });
         console.error("No variants with data found");
         return;
       }
 
       // Frontend validation for required variant fields
+      // Production Update: Use form.setError instead of just console logging
       const requiredVariantFields = ['selling_price'];
-      const validationErrors: string[] = [];
+      let hasValidationErrors = false;
+      let firstErrorDetail = "";
 
       for (let i = 0; i < variantsData.length; i++) {
         const variant = variantsData[i];
         for (const field of requiredVariantFields) {
           if (!variant[field] || variant[field] === "") {
-            validationErrors.push(`المتغير #${i + 1}: الحقل "${field}" مطلوب`);
+            // Set error on the specific field so it shows red border/message in UI
+            form.setError(`variants.${i}.${field}`, {
+              type: "manual",
+              message: t("validation.required")
+            });
+
+            // Capture first error for the toast hint
+            if (!hasValidationErrors) {
+              const fieldName = field === 'selling_price' ? t("fields.sellingPrice") : field;
+              firstErrorDetail = t("validation.invalidVariant", { index: i + 1, field: fieldName });
+            }
+
+            hasValidationErrors = true;
           }
         }
       }
 
-      if (validationErrors.length > 0) {
-        validationErrors.forEach(err => safeToast(err, { type: "error" }));
-        console.error("Variant validation failed:", validationErrors);
+      if (hasValidationErrors) {
+        // Show a single helpful toast with a hint
+        safeToast(firstErrorDetail || t("validation.invalidVariantsData"), { type: "error" });
         return;
       }
 
@@ -78,7 +93,7 @@ export const handleSave = (
       });
 
       // Debug: Log the payload after buildPayload
-      console.log("🚀 variantsPayload after buildPayload:", variantsPayload);
+      // console.log("🚀 variantsPayload after buildPayload:", variantsPayload);
 
 
       // Clean Main Payload
@@ -105,9 +120,9 @@ export const handleSave = (
       delete finalPayload.variants;  // Remove original 'variants' field
 
       // Debug: Log final payload
-      console.log("✅ Final Payload to be sent:", JSON.stringify(finalPayload, null, 2));
+      // console.log("✅ Final Payload to be sent:", JSON.stringify(finalPayload, null, 2));
 
-      onSubmit(finalPayload, form, id);
+      onSubmit(finalPayload, form, t, id);
     },
     (errors: any) => {
       console.error("Form Validation Errors:", errors);

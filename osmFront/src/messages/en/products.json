@@ -1,12 +1,156 @@
-
 {
-    "types":{
-        "CL": "Contact Lenses",
-        "SL": "Spectacle Lenses",
-        "SG": "Sunglasses",
-        "EW": "Eyewear",
-        "AX": "Accessories",
-        "OT": "Other",
-        "DV": "Devices"
+  "products": {
+    "types": {
+      "CL": "Contact Lenses",
+      "SL": "Spectacle Lenses",
+      "SG": "Sunglasses",
+      "EW": "Eyewear",
+      "AX": "Accessories",
+      "OT": "Other",
+      "DV": "Devices",
+      "FR": "Frames"
+    },
+    "variantTypes": {
+      "frames": "Frames",
+      "stockLenses": "Stock Lenses",
+      "rxLenses": "Rx Lenses",
+      "contactLenses": "Contact Lenses",
+      "basic": "Basic"
+    },
+    "steps": {
+      "type": "Product Type",
+      "info": "Product Info",
+      "variants": "Variants",
+      "review": "Review",
+      "selectTypeDescription": "Choose the type of product you want to add",
+      "variantType": "Variant Type",
+      "selectVariantTypeDescription": "Choose the appropriate variant type for this product",
+      "infoTitle": "Basic Product Information",
+      "infoDescription": "Enter basic product information. All required fields are marked with (*)",
+      "enterPricingDetails": "Enter selling price and discount for this product",
+      "addVariantsDescription": "Add different variants for the product (colors, sizes, etc.)"
+    },
+    "sections": {
+      "basicInfo": "Basic Information",
+      "organization": "Organization",
+      "pricing": "Pricing & Inventory",
+      "lensDetails": "Lens Details",
+      "progress": "Progress",
+      "pricingAndDetails": "Pricing & Details"
+    },
+    "fields": {
+      "name": "Product Name",
+      "sku": "SKU",
+      "brand": "Brand",
+      "model": "Model",
+      "category": "Category",
+      "categories": "Categories",
+      "description": "Description",
+      "basePrice": "Base Price",
+      "sellingPrice": "Selling Price",
+      "costPrice": "Cost Price",
+      "purchasePrice": "Purchase Price",
+      "quantity": "Quantity",
+      "discount": "Discount",
+      "barcode": "Barcode",
+      "color": "Color",
+      "size": "Size",
+      "material": "Material",
+      "gender": "Gender",
+      "season": "Season",
+      "diameter": "Diameter",
+      "baseCurve": "Base Curve",
+      "variantType": "Variant Type",
+      "variantCount": "Variant Count",
+      "categories_ids": "Categories",
+      "is_active": "Is Active",
+      "type": "Type",
+      "variant_count": "Variant Count",
+      "variant_type": "Variant Type",
+      "attribute_count": "Attribute Count",
+      "last_purchase_price": "Last Purchase Price",
+      "selling_price": "Selling Price",
+      "discount_percentage": "Discount Percentage",
+      "warranty": "Warranty",
+      "weight": "Weight",
+      "dimensions": "Dimensions",
+      "frame_color": "Frame Color",
+      "lens_diameter": "Lens Diameter",
+      "temple_length": "Temple Length",
+      "bridge_width": "Bridge Width",
+      "frame_shape": "Frame Shape",
+      "frame_material": "Frame Material",
+      "lens_color": "Lens Color",
+      "lens_material": "Lens Material",
+      "lens_coatings": "Lens Coatings",
+      "spherical": "SPH",
+
+      "addition": "ADD",
+      "right_or_left": "Right or Left",
+      "lens_water_content": "Water Content",
+      "replacement_schedule": "Replacement Schedule",
+      "units": "Units",
+      "expiration_date": "Expiration Date",
+      "lens_base_curve": "Base Curve",
+      "attribute": "Attribute",
+      "value": "Value",
+      "variant_type_custom": "Custom Variant Type",
+      "product_type": "Product Type"
+    },
+    "view": {
+      "productNotFound": "Product not found - check the product link"
+    },
+    "list": {
+      "title": "Products List",
+      "totalProducts": "Total {count} products",
+      "noProducts": "No products found",
+      "startAdding": "Start by adding a new product"
+    },
+    "variants": {
+      "title": "Product Variants",
+      "add": "Add Variant",
+      "remove": "Remove",
+      "copy": "Copy",
+      "generate": "Generate Variants",
+      "options": "Variant Options",
+      "variantLabel": "Variant #{number}",
+      "addNew": "Add New Variant",
+      "addVariantDescription": "Add new variant for product ({type})",
+      "noVariants": "No variants for this product"
+    },
+    "attributes": {
+      "title": "Additional Attributes",
+      "count": "{count} attributes added",
+      "add": "Add Attribute",
+      "attributeLabel": "Attribute #{number}",
+      "noAttributes": "No custom attributes added yet",
+      "addFirst": "Add first attribute"
+    },
+    "validation": {
+      "required": "This field is required",
+      "noVariants": "Please add at least one variant with valid data",
+      "invalidVariant": "Variant #{index}: {field} is required",
+      "saved": "Product saved successfully",
+      "error": "Error saving product",
+      "selectType": "Please select a product type",
+      "selectVariantType": "Please select a variant type",
+      "invalidVariantsData": "Please fill in variant data correctly",
+      "variantAddedSuccess": "Variant added successfully",
+      "variantAddError": "Failed to add variant: {error}"
+    },
+    "actions": {
+      "save": "Save Product",
+      "saving": "Saving...",
+      "edit": "Edit",
+      "editProduct": "Edit Product",
+      "add": "Add Product",
+      "next": "Next",
+      "back": "Back",
+      "delete": "Delete",
+      "view": "View",
+      "cancel": "Cancel",
+      "addVariant": "Add New Variant",
+      "adding": "Adding..."
+    }
   }
-  }
+}

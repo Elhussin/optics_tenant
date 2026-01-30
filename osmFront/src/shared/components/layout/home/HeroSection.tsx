@@ -137,7 +137,7 @@ export default function HeroSection() {
                   href="#features"
                   className={cn(
                     "w-full sm:w-auto px-8 py-4 rounded-xl",
-                    "border-2 border-border",
+                    "border-2 border-primary/20",
                     "bg-background hover:bg-elevated",
                     "text-foreground font-semibold text-base",
                     "transition-all hover:scale-105",
@@ -189,7 +189,7 @@ export default function HeroSection() {
                 className={cn(
                   "relative group",
                   "bg-elevated rounded-3xl",
-                  "shadow-2xl border-2 border-border",
+                  "shadow-2xl border-2 border-primary/20",
                   "overflow-hidden",
                   "transition-all duration-500",
                   "hover:shadow-3xl hover:scale-[1.02]"
@@ -230,7 +230,7 @@ export default function HeroSection() {
                     "absolute bottom-6 left-6 right-6",
                     "p-4 rounded-2xl",
                     "bg-background/90 backdrop-blur-md",
-                    "border-2 border-border",
+                    "border-2 border-primary/20",
                     "shadow-xl"
                   )}
                 >

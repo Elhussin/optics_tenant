@@ -19,6 +19,7 @@ import { RenderFields } from "@/src/shared/components/field/RenderFields";
 import { veriantConfig, BasicVariantConfig } from "../constants/config";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { useTranslations } from "next-intl";
 
 interface AddVariantProps {
   productId: number;
@@ -35,6 +36,7 @@ export function AddVariant({
   onSuccess,
   onCancel,
 }: AddVariantProps) {
+  const t = useTranslations("products");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useApiForm({
@@ -43,14 +45,19 @@ export function AddVariant({
       product: productId,
     },
     onSuccess: () => {
-      safeToast("تم إضافة المتغير بنجاح", { type: "success" });
+      safeToast(t("validation.variantAddedSuccess"), { type: "success" });
       form.reset();
       onSuccess?.();
     },
     onError: (error) => {
-      safeToast(`فشل في إضافة المتغير: ${error?.message || "خطأ غير معروف"}`, {
-        type: "error",
-      });
+      safeToast(
+        t("validation.variantAddError", {
+          error: error?.message || t("validation.error"),
+        }),
+        {
+          type: "error",
+        },
+      );
     },
   });
 
@@ -58,10 +65,15 @@ export function AddVariant({
 
   // Get variant config based on variant type
   const variantFields = useMemo(() => {
-    return veriantConfig(variantType);
-  }, [variantType]);
+    return veriantConfig(variantType).map((item) => ({
+      ...item,
+      label: t(`fields.${item.name}`) || item.label,
+      placeholder: t(`fields.${item.name}`) || item.placeholder,
+    }));
+  }, [variantType, t]);
 
   const handleSubmit = useCallback(async () => {
+    // ... logic ...
     setIsSubmitting(true);
     try {
       const values = form.getValues();
@@ -123,9 +135,9 @@ export function AddVariant({
             <Package className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <CardTitle className="text-lg">إضافة متغير جديد</CardTitle>
+            <CardTitle className="text-lg">{t("variants.addNew")}</CardTitle>
             <CardDescription>
-              أضف متغير جديد للمنتج ({variantType})
+              {t("variants.addVariantDescription", { type: variantType })}
             </CardDescription>
           </div>
         </div>
@@ -158,7 +170,7 @@ export function AddVariant({
                   className="flex-1"
                 >
                   <ArrowLeft className="w-4 h-4 ml-2" />
-                  إلغاء
+                  {t("actions.cancel")}
                 </Button>
               )}
               <Button
@@ -169,12 +181,12 @@ export function AddVariant({
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                    جاري الإضافة...
+                    {t("actions.adding")}
                   </>
                 ) : (
                   <>
                     <Check className="w-4 h-4 ml-2" />
-                    إضافة المتغير
+                    {t("variants.add")}
                   </>
                 )}
               </Button>

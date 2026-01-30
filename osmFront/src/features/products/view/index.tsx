@@ -23,6 +23,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { cn } from "@/src/shared/utils/cn";
+import { useTranslations } from "next-intl";
 
 // Product type badges (Premium variants)
 const TYPE_VARIANTS: Record<
@@ -42,6 +43,7 @@ interface ProductViewProps {
 }
 
 export function ProductView({ productId }: ProductViewProps) {
+  const t = useTranslations("products");
   const numericId = parseInt(productId, 10);
 
   const { query, isBusy } = useApiForm({
@@ -63,9 +65,7 @@ export function ProductView({ productId }: ProductViewProps) {
   }
 
   if (isError || !product) {
-    return (
-      <NotFound error="لم يتم العثور على المنتج - تأكد من صحة رابط المنتج" />
-    );
+    return <NotFound error={t("view.productNotFound")} />;
   }
 
   const typeVariant = TYPE_VARIANTS[product.type] || "primary";
@@ -102,7 +102,9 @@ export function ProductView({ productId }: ProductViewProps) {
                     {product.name || `${product.brand_name} ${product.model}`}
                   </h1>
                   <Badge variant={typeVariant}>
-                    {product.type_display || product.type}
+                    {product.type_display ||
+                      t(`types.${product.type}`) ||
+                      product.type}
                   </Badge>
                 </div>
                 {product.description && (
@@ -115,7 +117,7 @@ export function ProductView({ productId }: ProductViewProps) {
 
             {/* Actions */}
             <ActionButton
-              label="تعديل المنتج"
+              label={t("actions.editProduct")}
               icon={<Pencil size={16} />}
               variant="outline"
               navigateTo={`/dashboard/products/${productId}/edit`}
@@ -132,23 +134,27 @@ export function ProductView({ productId }: ProductViewProps) {
           >
             <InfoItem
               icon={<Tag size={18} />}
-              label="العلامة التجارية"
+              label={t("fields.brand")}
               value={product.brand_name || "-"}
             />
             <InfoItem
               icon={<Layers size={18} />}
-              label="الموديل"
+              label={t("fields.model")}
               value={product.model || "-"}
             />
             <InfoItem
               icon={<Barcode size={18} />}
-              label="SKU"
+              label={t("fields.sku")}
               value={product.usku || "-"}
             />
             <InfoItem
               icon={<Sparkles size={18} />}
-              label="نوع المتغير"
-              value={product.variant_type || "-"}
+              label={t("fields.variantType")}
+              value={
+                t(`variantTypes.${product.variant_type}`) ||
+                product.variant_type ||
+                "-"
+              }
             />
           </motion.div>
         </GlassCard>
@@ -164,7 +170,7 @@ export function ProductView({ productId }: ProductViewProps) {
           <GlassCard padding="md">
             <h2 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
               <Tag className="w-5 h-5 text-primary" />
-              التصنيفات
+              {t("fields.categories")}
             </h2>
             <div className="flex flex-wrap gap-2">
               {product.categories.map((cat: any, index: number) => (
@@ -194,10 +200,10 @@ export function ProductView({ productId }: ProductViewProps) {
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
               <Layers className="w-5 h-5 text-primary" />
-              المتغيرات ({product.variants?.length || 0})
+              {t("variants.title")} ({product.variants?.length || 0})
             </h2>
             <ActionButton
-              label="إضافة متغير"
+              label={t("variants.add")}
               icon={<Plus size={16} />}
               variant="outline"
               navigateTo={`/dashboard/products/${productId}/variants/add`}
@@ -210,7 +216,7 @@ export function ProductView({ productId }: ProductViewProps) {
               <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
                 <Layers className="w-8 h-8 text-primary opacity-50" />
               </div>
-              <p className="text-secondary">لا توجد متغيرات لهذا المنتج</p>
+              <p className="text-secondary">{t("variants.noVariants")}</p>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -256,6 +262,7 @@ function InfoItem({
 
 // ✨ Variant Card Component - Premium Design
 function VariantCard({ variant, index }: { variant: any; index: number }) {
+  const t = useTranslations("products");
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -270,7 +277,7 @@ function VariantCard({ variant, index }: { variant: any; index: number }) {
       <div className="relative p-5 border-2 border-primary/30 rounded-xl bg-elevated/50 hover:bg-elevated transition-all duration-300 hover:scale-[1.02]">
         <div className="flex items-center justify-between mb-4">
           <Badge variant="primary" className="text-xs">
-            المتغير #{index + 1}
+            {t("variants.variantLabel", { number: index + 1 })}
           </Badge>
           <span className="text-xs text-secondary font-mono">
             {variant.usku || "-"}
@@ -279,15 +286,15 @@ function VariantCard({ variant, index }: { variant: any; index: number }) {
 
         <div className="space-y-3 text-sm">
           <div className="flex justify-between items-center">
-            <span className="text-secondary">سعر البيع:</span>
+            <span className="text-secondary">{t("fields.sellingPrice")}:</span>
             <span className="font-bold text-primary text-base">
-              {variant.selling_price ? `${variant.selling_price} ر.س` : "-"}
+              {variant.selling_price ? `${variant.selling_price} ` : "-"}
             </span>
           </div>
 
           {variant.discount_percentage > 0 && (
             <div className="flex justify-between items-center">
-              <span className="text-secondary">الخصم:</span>
+              <span className="text-secondary">{t("fields.discount")}:</span>
               <Badge variant="success" className="text-xs">
                 {variant.discount_percentage}%
               </Badge>
@@ -296,16 +303,18 @@ function VariantCard({ variant, index }: { variant: any; index: number }) {
 
           {variant.last_purchase_price && (
             <div className="flex justify-between items-center">
-              <span className="text-secondary">سعر الشراء:</span>
-              <span className="font-medium">
-                {variant.last_purchase_price} ر.س
+              <span className="text-secondary">
+                {t("fields.purchasePrice")}:
               </span>
+              <span className="font-medium">{variant.last_purchase_price}</span>
             </div>
           )}
 
           {variant.description && (
             <div className="pt-3 border-t border-primary/20">
-              <p className="text-xs text-secondary mb-1">الوصف:</p>
+              <p className="text-xs text-secondary mb-1">
+                {t("fields.description")}:
+              </p>
               <p className="text-sm text-foreground line-clamp-2">
                 {variant.description}
               </p>

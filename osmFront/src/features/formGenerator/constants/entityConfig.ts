@@ -149,7 +149,7 @@ export const formsConfig: Record<string, FormConfig> = {
       "permission",
     ],
   },
-  "contact-us": {
+  "contact-us":{
     schemaName: "ContactUsRequest",
     listAlias: "users_contact_us_list",
     createAlias: "users_contact_us_create",

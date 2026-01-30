@@ -97,14 +97,14 @@ export default function Error({
                   />
                   <div className="flex-1 text-left">
                     <p className="text-xs text-secondary font-medium uppercase mb-1">
-                      Error Details
+                      {t("errorDetails")}
                     </p>
                     <p className="text-sm text-danger font-mono break-words">
                       {error.message || "Unknown error occurred"}
                     </p>
                     {error.digest && (
                       <p className="text-xs text-secondary mt-2">
-                        Error ID: {error.digest}
+                        {t("errorId")} {error.digest}
                       </p>
                     )}
                   </div>

@@ -51,7 +51,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               className={cn(
                 "relative w-full max-w-md",
                 "bg-background/95 backdrop-blur-xl",
-                "border-2 border-border",
+                "border-2 border-primary/20",
                 "rounded-3xl shadow-2xl",
                 "p-8"
               )}
@@ -115,7 +115,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                   onClick={onCancel}
                   className={cn(
                     "flex-1 px-6 py-3 rounded-xl",
-                    "border-2 border-border",
+                    "border-2 border-primary/20",
                     "bg-background hover:bg-elevated",
                     "text-foreground font-semibold",
                     "transition-all duration-200",

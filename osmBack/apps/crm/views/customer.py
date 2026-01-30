@@ -85,7 +85,6 @@ class DocumentViewSet(CRMBaseViewSet):
     serializer_class = DocumentSerializer
 
     def create(self, request, *args, **kwargs):
-        print("Incoming Document Data:", request)
         return super().create(request, *args, **kwargs)
 
 

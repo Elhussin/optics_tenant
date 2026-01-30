@@ -53,7 +53,7 @@ export function Pagination({
     <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-6 mt-8 w-full select-none animate-fade-in">
       {/* Items Per Page Selector */}
       {onPageSizeChange && (
-        <div className="glass px-4 py-2.5 rounded-xl border border-border-main shadow-soft hover:shadow-md transition-all duration-200 group">
+        <div className="glass bg-surface/20 px-4 py-2.5 rounded-xl border border-primary/20 shadow-soft hover:shadow-md transition-all duration-200 group">
           <div className="flex items-center gap-3 text-sm">
             <List size={16} className="text-primary shrink-0" />
             <span className="text-secondary font-medium whitespace-nowrap">
@@ -74,7 +74,7 @@ export function Pagination({
                   <option
                     key={size}
                     value={size}
-                    className="bg-elevated text-main"
+                    className="bg-elevated text-main "
                   >
                     {size}
                   </option>
@@ -90,10 +90,10 @@ export function Pagination({
       )}
 
       {/* Pagination Controls */}
-      <nav className="glass p-2 rounded-2xl border border-border-main shadow-soft">
+      <nav className="glass bg-surface/20 p-2 rounded-2xl border border-primary/20 shadow-soft">
         <div className="flex items-center gap-1">
           {/* First & Prev */}
-          <div className="flex items-center gap-1 mr-1 pr-2 border-r border-border-main/50">
+          <div className="flex items-center gap-1 mr-1 pr-2 border-r border-primary/20">
             <button
               onClick={() => onPageChange(1)}
               disabled={page === 1}
@@ -125,7 +125,7 @@ export function Pagination({
           </div>
 
           {/* Page Numbers */}
-          <div className="flex items-center gap-1 px-1">
+          <div className="flex items-center gap-1 px-1 ">
             {getPages().map((p, idx) =>
               p === "..." ? (
                 <span
@@ -154,7 +154,7 @@ export function Pagination({
           </div>
 
           {/* Next & Last */}
-          <div className="flex items-center gap-1 ml-1 pl-2 border-l border-border-main/50">
+          <div className="flex items-center gap-1 ml-1 pl-2 border-l border-primary/20">
             <button
               onClick={() => onPageChange(Math.min(totalPages, page + 1))}
               disabled={page === totalPages}

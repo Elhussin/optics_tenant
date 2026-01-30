@@ -34,11 +34,14 @@ interface ProductVariantStepProps {
   variantType: string;
 }
 
+import { useTranslations } from "next-intl";
+
 export function ProductVariantStep({
   form,
   productType,
   variantType,
 }: ProductVariantStepProps) {
+  const t = useTranslations("products");
   const store = useProductFormStore();
   const { setShowModal, setEntityName, setCurrentFieldName } = store;
 
@@ -49,7 +52,7 @@ export function ProductVariantStep({
       setCurrentFieldName(fieldName);
       setShowModal(true);
     },
-    [setEntityName, setCurrentFieldName, setShowModal]
+    [setEntityName, setCurrentFieldName, setShowModal],
   );
 
   // Field array for variants
@@ -64,11 +67,19 @@ export function ProductVariantStep({
 
   // Get variant config based on type
   const variantFields = useMemo(() => {
+    let fields;
     if (variantType === "custom") {
-      return CustomVariantMainConfig;
+      fields = CustomVariantMainConfig;
+    } else {
+      fields = veriantConfig(variantType);
     }
-    return veriantConfig(variantType);
-  }, [variantType]);
+
+    return fields.map((item) => ({
+      ...item,
+      label: t(`fields.${item.name}`) || item.label,
+      placeholder: t(`fields.${item.name}`) || item.placeholder,
+    }));
+  }, [variantType, t]);
 
   // Ensure at least one variant exists and auto-open it
   React.useEffect(() => {
@@ -121,7 +132,7 @@ export function ProductVariantStep({
                   "w-12 h-12 rounded-xl",
                   "bg-gradient-to-br from-primary to-blue-600",
                   "flex items-center justify-center shrink-0",
-                  "shadow-lg shadow-primary/30"
+                  "shadow-lg shadow-primary/30",
                 )}
               >
                 <Tags className="w-6 h-6 text-white" />
@@ -129,13 +140,13 @@ export function ProductVariantStep({
               <div className="flex-1">
                 <h3 className="text-xl font-black text-foreground mb-1 ">
                   {variantType === "basic"
-                    ? "التسعير والتفاصيل"
-                    : "متغيرات المنتج"}
+                    ? t("sections.pricingAndDetails")
+                    : t("variants.title")}
                 </h3>
                 <p className="text-sm text-secondary">
                   {variantType === "basic"
-                    ? "أدخل سعر البيع والخصم لهذا المنتج"
-                    : "أضف متغيرات مختلفة للمنتج (ألوان، مقاسات، إلخ)"}
+                    ? t("steps.enterPricingDetails")
+                    : t("steps.addVariantsDescription")}
                 </p>
               </div>
             </div>
@@ -150,11 +161,11 @@ export function ProductVariantStep({
             className={cn(
               "gap-2 border-2 border-dashed border-primary/50",
               "text-primary hover:bg-primary/10",
-              "hover:scale-105 transition-all"
+              "hover:scale-105 transition-all",
             )}
           >
             <Plus className="w-4 h-4" />
-            إضافة متغير
+            {t("variants.add")}
           </Button>
         )}
       </div>
@@ -169,12 +180,12 @@ export function ProductVariantStep({
             className={cn(
               "px-4 py-3 rounded-xl",
               "bg-destructive/10 border-2 border-destructive/20",
-              "flex items-center gap-3"
+              "flex items-center gap-3",
             )}
           >
             <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
             <p className="text-sm font-semibold text-destructive">
-              يرجى تعبئة بيانات المتغيرات بشكل صحيح
+              {t("validation.invalidVariantsData")}
             </p>
           </motion.div>
         )}
@@ -199,19 +210,25 @@ export function ProductVariantStep({
                   "transition-all duration-200",
                   isOpen
                     ? "border-primary shadow-xl shadow-primary/10"
-                    : "border-primary/50 shadow-md"
+                    : "border-primary/50 shadow-md",
                 )}
               >
                 {/* ✨ Variant Header */}
-                <button
-                  type="button"
+                <div
+                  role="button"
+                  tabIndex={0}
                   onClick={() => toggleVariant(index)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      toggleVariant(index);
+                    }
+                  }}
                   className={cn(
-                    "w-full p-4 flex items-center justify-between",
+                    "w-full p-4 flex items-center justify-between cursor-pointer",
                     "transition-colors",
                     isOpen
                       ? "bg-primary/10"
-                      : "bg-elevated/50 hover:bg-elevated"
+                      : "bg-elevated/50 hover:bg-elevated",
                   )}
                 >
                   <div className="flex items-center gap-3">
@@ -224,13 +241,13 @@ export function ProductVariantStep({
                         "text-sm font-black",
                         isOpen
                           ? "bg-gradient-to-br from-primary to-blue-600 text-white shadow-lg"
-                          : "bg-background border-2 border-primary/50 text-muted-foreground"
+                          : "bg-background border-2 border-primary/50 text-muted-foreground",
                       )}
                     >
                       {index + 1}
                     </motion.span>
                     <span className="font-bold text-foreground text-base">
-                      متغير #{index + 1}
+                      {t("variants.variantLabel", { number: index + 1 })}
                     </span>
 
                     {/* Show basic info preview when closed */}
@@ -254,7 +271,7 @@ export function ProductVariantStep({
                         className={cn(
                           "text-destructive hover:text-destructive",
                           "hover:bg-destructive/10",
-                          "transition-all hover:scale-110"
+                          "transition-all hover:scale-110",
                         )}
                       >
                         <Trash2 className="w-4 h-4" />
@@ -267,7 +284,7 @@ export function ProductVariantStep({
                       <ChevronDown className="w-5 h-5 text-muted-foreground" />
                     </motion.div>
                   </div>
-                </button>
+                </div>
 
                 {/* ✨ Variant Content */}
                 <AnimatePresence>
@@ -282,7 +299,7 @@ export function ProductVariantStep({
                       <div
                         className={cn(
                           "p-6 border-t-2 border-primary/50",
-                          "bg-background space-y-6"
+                          "bg-background space-y-6",
                         )}
                       >
                         <RenderFields
@@ -322,11 +339,11 @@ export function ProductVariantStep({
               "w-full border-dashed border-2 py-6",
               "border-primary text-primary",
               "hover:bg-primary/5 hover:border-primary",
-              "transition-all hover:scale-102"
+              "transition-all hover:scale-102",
             )}
           >
             <Plus className="w-5 h-5 me-2" />
-            <span className="font-bold">إضافة متغير جديد</span>
+            <span className="font-bold">{t("variants.addNew")}</span>
           </Button>
         </motion.div>
       )}

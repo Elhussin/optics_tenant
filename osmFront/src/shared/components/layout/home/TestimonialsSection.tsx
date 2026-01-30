@@ -106,7 +106,7 @@ export default function TestimonialsSection() {
               transition={{ delay: index * 0.1, duration: 0.5 }}
               className={cn(
                 "relative p-8 rounded-3xl",
-                "bg-elevated border-2 border-border",
+                "bg-elevated border-2 border-primary/20",
                 "hover:border-primary/30",
                 "transition-all duration-300",
                 "hover:shadow-xl hover:-translate-y-1",

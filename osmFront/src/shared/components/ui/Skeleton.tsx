@@ -107,7 +107,7 @@ export function SkeletonGroup({ type, count = 1 }: SkeletonGroupProps) {
           {items.map((_, i) => (
             <div
               key={i}
-              className="p-4 border border-border-main rounded-xl space-y-4"
+              className="p-4 border border-primary/20 rounded-xl space-y-4"
             >
               <Skeleton variant="image" height={120} />
               <Skeleton variant="title" />
@@ -128,7 +128,7 @@ export function SkeletonGroup({ type, count = 1 }: SkeletonGroupProps) {
           {items.map((_, i) => (
             <div
               key={i}
-              className="flex items-center gap-4 p-4 border-b border-border-main"
+              className="flex items-center gap-4 p-4 border-b border-primary/20"
             >
               <Skeleton width={40} height={16} />
               <Skeleton variant="text" className="flex-1" />

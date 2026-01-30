@@ -202,7 +202,7 @@ export const ProductTypeEnum = [
 ];
 
 export const BasicVariantConfig: ProductConfigType[] = [
-    {
+  {
     name: "product_type",
     label: "Product Type",
     role: "all",
@@ -216,7 +216,7 @@ export const BasicVariantConfig: ProductConfigType[] = [
     placeholder: "Select product type...",
     required: true,
   },
-    {
+  {
     label: "Last Purchase Price",
     name: "last_purchase_price",
     role: "all",
@@ -667,15 +667,15 @@ export const ContactLensVariantConfig: ProductConfigType[] = [
 export const CustomVariantMainConfig: ProductConfigType[] = [
   {
     name: "variant_type",
-    label: "نوع المتغير المخصص",  // Custom Variant Type
+    label: "Custom Variant Type",  // Custom Variant Type
     role: "all",
     filter: "attributes",
     subFilter: "",
-    title: "اختر نوع السمة للمتغير المخصص",
+    title: "Select attribute type for custom variant",
     entityName: "attributes",
     fieldName: "name",
     type: "foreignkey",
-    placeholder: "اختر نوع السمة...",
+    placeholder: "Select attribute type...",
     required: true,
     mapOnly: true,  // ✅ إظهار كل الـ attributes
   },
@@ -733,7 +733,7 @@ export const veriantConfig = (variant_type: string) => {
       config = BasicVariantConfig;
       break;
     case "frames":
-      config = [...BasicVariantConfig,...FrameVariantConfig];
+      config = [...BasicVariantConfig, ...FrameVariantConfig];
       break;
     case "stockLenses":
       config = [

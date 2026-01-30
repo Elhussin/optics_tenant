@@ -16,6 +16,7 @@ export interface TenantSettings {
   id?: string;
   business_name: string;
   phone: string;
+  whatsapp?: string;
   email: string;
   facebook?: string;
   instagram?: string;
@@ -24,6 +25,12 @@ export interface TenantSettings {
   website?: string;
   description?: string;
   is_active?: boolean;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  tiktok?: string;
+
   // Add other fields as needed
 }
 
@@ -52,6 +59,7 @@ export function TenantProvider({ children }: { children: ReactNode }) {
       // Adjust based on your actual API response structure (pagination, results array, etc.)
       const data = fetchSettings.query.data as any; // Type assertion if needed
       const results = Array.isArray(data) ? data : data.results || [];
+      console.log("results", results);
 
       if (results.length > 0) {
         setTenantSettings(results[0]);

@@ -25,16 +25,20 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { cn } from "@/src/shared/utils/cn";
-import { FormConfig } from "@/src/shared/types/formConfig";
+import { useTenant } from "@/src/shared/contexts/TenantContext";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 export default function ContactPage() {
   const t = useTranslations("contact");
   const { user } = useUser();
+  const { tenantSettings, loading } = useTenant();
+
   /* Form Logic */
   const { handleSubmit, submitForm, errors, isBusy, register, reset } =
-    useApiForm({ alias: "users_contact_us_create" });
+    useApiForm({ alias: formsConfig["contact-us"].createAlias! });
 
   const onSubmit = async (data: any) => {
     const result = await submitForm(data);
+    console.log("result", result);
     if (result?.success) {
       safeToast(t("successMessage"), { type: "success" });
       reset(); // Clear form on success
@@ -42,41 +46,61 @@ export default function ContactPage() {
       safeToast(t("errorMessage"), { type: "error" });
     }
   };
-
-
-  // Use tenant settings from authenticated user context directly
-  const settings = user?.tenant_settings;
-
+  if (loading) return "....";
+  console.log("tenantSettings", tenantSettings);
   // Function to map dynamic settings to UI
   const getSocialLinks = () => {
-    if (!settings) return socialLinks;
+    if (!tenantSettings || loading) return socialLinks;
 
     const links = [];
-    if (settings.facebook)
-      links.push({ name: "Facebook", url: settings.facebook, icon: Facebook });
-    if (settings.twitter)
-      links.push({ name: "Twitter", url: settings.twitter, icon: Twitter });
-    if (settings.instagram)
+    if (tenantSettings.facebook)
+      links.push({
+        name: "Facebook",
+        url: tenantSettings.facebook,
+        icon: Facebook,
+      });
+    if (tenantSettings.twitter)
+      links.push({
+        name: "Twitter",
+        url: tenantSettings.twitter,
+        icon: Twitter,
+      });
+    if (tenantSettings.instagram)
       links.push({
         name: "Instagram",
-        url: settings.instagram,
+        url: tenantSettings.instagram,
         icon: Instagram,
       });
-    if (settings.linkedin)
-      links.push({ name: "LinkedIn", url: settings.linkedin, icon: Linkedin });
-    if (settings.whatsapp)
+    if (tenantSettings.linkedin)
+      links.push({
+        name: "LinkedIn",
+        url: tenantSettings.linkedin,
+        icon: Linkedin,
+      });
+    if (tenantSettings.whatsapp)
       links.push({
         name: "WhatsApp",
-        url: `https://wa.me/${settings.whatsapp}`,
+        url: `https://wa.me/${tenantSettings.whatsapp}`,
         icon: MessageCircle,
       });
-    if (settings.tiktok)
-      links.push({ name: "TikTok", url: settings.tiktok, icon: Video });
+    if (tenantSettings.tiktok)
+      links.push({ name: "TikTok", url: tenantSettings.tiktok, icon: Video });
 
     return links.length > 0 ? links : socialLinks;
   };
 
   const activeSocialLinks = getSocialLinks();
+
+  // Address logic
+  const addressParts = [
+    tenantSettings?.address,
+    tenantSettings?.city,
+    tenantSettings?.state,
+    tenantSettings?.country,
+  ].filter(Boolean);
+
+  const displayAddress =
+    addressParts.length > 0 ? addressParts.join(", ") : contact.address;
 
   return (
     <div className="min-h-screen bg-surface py-12 px-4 sm:px-6 lg:px-8">
@@ -132,10 +156,10 @@ export default function ContactPage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-main">{t("email")}</p>
                     <a
-                      href={`mailto:${contact.email}`}
+                      href={`mailto:${tenantSettings?.email || contact.email}`}
                       className="text-secondary hover:text-primary transition truncate block"
                     >
-                      {contact.email}
+                      {tenantSettings?.email || contact.email}
                     </a>
                   </div>
                 </div>
@@ -148,10 +172,10 @@ export default function ContactPage() {
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-main">{t("phone")}</p>
                     <a
-                      href={`tel:${contact.phone}`}
+                      href={`tel:${tenantSettings?.phone || contact.phone}`}
                       className="text-secondary hover:text-success transition"
                     >
-                      {contact.phone}
+                      {tenantSettings?.phone || contact.phone}
                     </a>
                   </div>
                 </div>
@@ -163,7 +187,7 @@ export default function ContactPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-main">{t("address")}</p>
-                    <p className="text-secondary">{contact.address}</p>
+                    <p className="text-secondary">{displayAddress}</p>
                   </div>
                 </div>
               </div>
@@ -235,7 +259,7 @@ export default function ContactPage() {
                         type="text"
                         className={cn(
                           "w-full px-4 py-3 rounded-xl transition-all duration-200",
-                          "border-2 bg-white dark:bg-gray-800",
+                          " bg-white dark:bg-gray-800",
                           "focus:outline-none focus:ring-2 focus:ring-offset-1",
                           errors.name
                             ? "border-danger/50 focus:border-danger focus:ring-danger/20"
@@ -251,17 +275,43 @@ export default function ContactPage() {
                       )}
                     </div>
 
+                    {/* Phone */}
+                    <div className="space-y-2">
+                      <label className="text-sm font-semibold text-main ml-1">
+                        {t("phone")}
+                      </label>
+                      <input
+                        {...register("phone")}
+                        type="text"
+                        className={cn(
+                          "w-full px-4 py-3 rounded-xl transition-all duration-200",
+                          " bg-white dark:bg-gray-800",
+                          "focus:outline-none focus:ring-2 focus:ring-offset-1",
+                          errors.phone
+                            ? "border-danger/50 focus:border-danger focus:ring-danger/20"
+                            : "border-border-main focus:border-primary focus:ring-primary/20",
+                        )}
+                        placeholder="01000000000"
+                      />
+                      {errors.phone && (
+                        <p className="text-sm text-danger flex items-center gap-1.5 ml-1 animate-fade-in">
+                          <AlertCircle size={14} />
+                          {errors.phone.message}
+                        </p>
+                      )}
+                    </div>
+
                     {/* Email */}
                     <div className="space-y-2">
                       <label className="text-sm font-semibold text-main ml-1">
-                        {t("email") || t("emailLabel")}
+                        {t("email")}
                       </label>
                       <input
                         {...register("email")}
                         type="email"
                         className={cn(
                           "w-full px-4 py-3 rounded-xl transition-all duration-200",
-                          "border-2 bg-white dark:bg-gray-800",
+                          " bg-white dark:bg-gray-800",
                           "focus:outline-none focus:ring-2 focus:ring-offset-1",
                           errors.email
                             ? "border-danger/50 focus:border-danger focus:ring-danger/20"
@@ -289,13 +339,13 @@ export default function ContactPage() {
                       type="text"
                       className={cn(
                         "w-full px-4 py-3 rounded-xl transition-all duration-200",
-                        "border-2 bg-white dark:bg-gray-800",
+                        " bg-white dark:bg-gray-800",
                         "focus:outline-none focus:ring-2 focus:ring-offset-1",
                         errors.subject
                           ? "border-danger/50 focus:border-danger focus:ring-danger/20"
                           : "border-border-main focus:border-primary focus:ring-primary/20",
                       )}
-                      placeholder="How can we help?"
+                      placeholder={t("subjectPlaceholder")}
                     />
                     {errors.subject && (
                       <p className="text-sm text-danger flex items-center gap-1.5 ml-1 animate-fade-in">
@@ -308,20 +358,20 @@ export default function ContactPage() {
                   {/* Message */}
                   <div className="space-y-2">
                     <label className="text-sm font-semibold text-main ml-1">
-                      {t("message") || t("messageLabel")}
+                      {t("message")}
                     </label>
                     <textarea
                       {...register("message")}
                       rows={4}
                       className={cn(
                         "w-full px-4 py-3 rounded-xl transition-all duration-200",
-                        "border-2 bg-white dark:bg-gray-800",
+                        " bg-white dark:bg-gray-800",
                         "focus:outline-none focus:ring-2 focus:ring-offset-1 resize-none",
                         errors.message
                           ? "border-danger/50 focus:border-danger focus:ring-danger/20"
                           : "border-border-main focus:border-primary focus:ring-primary/20",
                       )}
-                      placeholder="Tell us more about your inquiry..."
+                      placeholder={t("messagePlaceholder")}
                     />
                     {errors.message && (
                       <p className="text-sm text-danger flex items-center gap-1.5 ml-1 animate-fade-in">

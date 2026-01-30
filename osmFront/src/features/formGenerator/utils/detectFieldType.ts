@@ -32,10 +32,10 @@ export function detectFieldType(field: string, rawSchema: z.ZodTypeAny): string 
   if (fieldLower.includes('password')) return 'password';
   if (fieldLower.includes('phone') || fieldLower.includes('tel')) return 'tel';
   if (fieldLower.includes('url') || fieldLower.includes('website')) return 'url';
-  if (fieldLower.includes('file') || fieldLower.includes('image') || fieldLower.includes('avatar') || fieldLower.includes('logo')) return 'file';
+  if (fieldLower.includes('file') || fieldLower.includes('image') || fieldLower.includes('avatar') || fieldLower.includes('logo') || fieldLower.includes('document') || fieldLower.includes('attachment')) return 'file';
   if (fieldLower.includes('color')) return 'color';
   if (fieldLower.includes('date')) return 'date';
-  if (fieldLower.includes('time')) return 'time';
+  if (fieldLower.includes('time') || fieldLower.includes('check_in') || fieldLower.includes('check_out')) return 'time';
   if (fieldLower.includes('description') || fieldLower.includes('content') || fieldLower.includes('notes')) return 'textarea';
 
   if (schema instanceof z.ZodBoolean) return 'checkbox';

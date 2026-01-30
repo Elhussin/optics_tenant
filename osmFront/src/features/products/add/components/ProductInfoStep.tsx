@@ -19,16 +19,23 @@ interface ProductInfoStepProps {
   productType: string;
 }
 
+import { useTranslations } from "next-intl";
+
 export function ProductInfoStep({ form, productType }: ProductInfoStepProps) {
+  const t = useTranslations("products");
   const { setShowModal, setEntityName, setCurrentFieldName } =
     useProductFormStore();
 
   // Filter config based on product type
   const filteredConfig = useMemo(() => {
     return ProductConfig.filter(
-      (item) => item.role === "all" || item.role === productType
-    );
-  }, [productType]);
+      (item) => item.role === "all" || item.role === productType,
+    ).map((item) => ({
+      ...item,
+      label: t(`fields.${item.name}`) || item.label,
+      placeholder: t(`fields.${item.name}`) || item.placeholder,
+    }));
+  }, [productType, t]);
 
   // Handle adding new entity
   const handleAddNew = useCallback(
@@ -37,7 +44,7 @@ export function ProductInfoStep({ form, productType }: ProductInfoStepProps) {
       setCurrentFieldName(fieldName);
       setShowModal(true);
     },
-    [setEntityName, setCurrentFieldName, setShowModal]
+    [setEntityName, setCurrentFieldName, setShowModal],
   );
 
   return (
@@ -59,18 +66,17 @@ export function ProductInfoStep({ form, productType }: ProductInfoStepProps) {
                 "w-12 h-12 rounded-xl",
                 "bg-gradient-to-br from-primary to-blue-600",
                 "flex items-center justify-center shrink-0",
-                "shadow-lg shadow-primary/30"
+                "shadow-lg shadow-primary/30",
               )}
             >
               <Info className="w-6 h-6 text-white" />
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-black text-foreground mb-1">
-                معلومات المنتج الأساسية
+                {t("steps.infoTitle")}
               </h3>
               <p className="text-sm text-secondary">
-                أدخل المعلومات الأساسية للمنتج. جميع الحقول المطلوبة مُشار إليها
-                بـ (*)
+                {t("steps.infoDescription")}
               </p>
             </div>
           </div>

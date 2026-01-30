@@ -36,7 +36,7 @@ class Command(BaseCommand):
             on_trial=True
         )
         tenant.save()
-        print(tenant)
+   
         self.stdout.write(self.style.SUCCESS('Tenant created successfully.'))
 
         # Step 2: Create the domain/subdomain

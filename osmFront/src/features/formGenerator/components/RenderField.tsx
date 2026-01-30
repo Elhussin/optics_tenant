@@ -1,29 +1,37 @@
 "use client";
 
 import { z } from "zod";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { detectFieldType } from "../utils/detectFieldType";
-import { ForeignKeyField } from "./ForeignKeyField";
-import { UnionField } from "./UnionField";
 import { useFieldOptions } from "../hooks/useFieldOptions";
 import { unwrapSchema } from "../utils/unwrapSchema";
-import { getFieldLabel, isFieldRequired } from "../utils";
+import { isFieldRequired } from "../utils";
 import { fieldTemplates } from "../constants/generatFormConfig";
-import { RHFSelect } from "./RHFSelect";
 import { cn } from "@/src/shared/utils/cn";
 import { Skeleton } from "@/src/shared/components/ui/Skeleton";
+import { Controller } from "react-hook-form";
 import {
-  CheckSquare,
-  Type,
-  Hash,
-  Calendar,
   Mail,
   Lock,
   Link as LinkIcon,
+  Type,
+  Hash,
+  Calendar,
   FileText,
   List,
+  CheckSquare,
   AlertCircle,
+  Info,
 } from "lucide-react";
+import { getFieldComponent } from "@/src/shared/components/field/registry/fieldRegistry";
+import {
+  FormLabel,
+  FormMessage,
+  FormItem,
+  FormField,
+  FormControl,
+} from "@/src/shared/components/shadcn/ui/form";
+import { InfoPopover } from "@/src/shared/components/field/RenderFields"; // Import InfoPopover if available or create local
 
 // Field Icons Mapping
 const fieldIcons: Record<string, any> = {
@@ -78,17 +86,41 @@ export const RenderField = ({
   const Icon = getFieldIcon(fieldName, fieldType);
 
   // Handle select / foreignkey options
-  const { data: options, loading } = useFieldOptions(
-    fieldName,
-    fieldType,
-    unwrappedSchema as z.ZodEnum<any>
-  );
+  const {
+    data: options,
+    loading,
+    refetch,
+    rawData,
+    relationConfig,
+  } = useFieldOptions(fieldName, fieldType, unwrappedSchema as z.ZodEnum<any>);
+
+  const expectingUpdate = useRef(false);
+
+  useEffect(() => {
+    if (fetchForginKey) {
+      expectingUpdate.current = true;
+      refetch?.(); // Safe call if refetch is available
+      setFetchForginKey(false);
+    }
+  }, [fetchForginKey, refetch, setFetchForginKey]);
+
+  useEffect(() => {
+    if (expectingUpdate.current && rawData?.length > 0 && relationConfig) {
+      // Assuming the last item in the list is the newly created one
+      const lastItem = rawData[rawData.length - 1];
+      if (lastItem) {
+        form.setValue(fieldName, lastItem[relationConfig.valueField]);
+      }
+      expectingUpdate.current = false;
+    }
+  }, [rawData, fieldName, relationConfig, form]);
 
   useEffect(() => {
     if (!loading && options?.length) {
       const currentValue = form.getValues(fieldName);
       const exists = options.some((o: any) => o.value === currentValue);
-      if (!exists) {
+      // Only set from defaultValue if current value doesn't exist in options AND we are not expecting an update
+      if (!exists && !expectingUpdate.current) {
         const defaultValue = form.formState.defaultValues?.[fieldName];
         if (defaultValue) {
           form.setValue(fieldName, defaultValue);
@@ -107,270 +139,100 @@ export const RenderField = ({
     );
   }
 
-  const hasError = !!form.formState.errors[fieldName];
-  const errorMessage = form.formState.errors[fieldName]?.message as string;
+  // Map to Shared Field Registry Type
+  let registryType = "text";
+  if (fieldType === "boolean" || fieldType === "checkbox")
+    registryType = "checkbox"; // or switch
+  else if (fieldType === "select" || fieldType === "union")
+    registryType = "select";
+  else if (fieldType === "foreignkey") registryType = "foreignkey";
+  else if (fieldType === "foreignkey-array") registryType = "multiSelect";
+  // Mapping foreignkey-array to multiSelect wrapper
+  else if (fieldType === "textarea") registryType = "textarea";
+  else if (fieldType === "date" || fieldType === "datetime")
+    registryType = "text"; // TODO: Add date picker
+  else if (template.type === "number") registryType = "number";
+  else if (template.type === "email") registryType = "email";
+  else if (fieldType === "file") registryType = "file";
 
-  // Shared input classes
-  const inputClasses = cn(
-    "w-full px-4 py-2.5 rounded-xl transition-all duration-200",
-    "border-2 bg-white dark:bg-gray-800",
-    "focus:outline-none focus:ring-2 focus:ring-offset-1",
-    "disabled:opacity-50 disabled:cursor-not-allowed",
-    hasError
-      ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-      : "border-gray-200 dark:border-gray-700 focus:border-primary focus:ring-primary/20 hover:border-gray-300 dark:hover:border-gray-600"
-  );
+  const FieldComponent = getFieldComponent(registryType);
 
-  const labelClasses = cn(
-    "block text-sm font-semibold mb-2 flex items-center gap-2",
-    hasError ? "text-danger" : "text-gray-700 dark:text-gray-200"
-  );
-
-  // ============================
-  // Foreign Key Fields
-  // ============================
-  if (fieldType === "foreignkey" || fieldType === "foreignkey-array") {
+  if (!FieldComponent) {
     return (
-      <ForeignKeyField
-        key={fieldName}
-        fieldName={fieldName}
-        register={form.register}
-        config={config}
-        label={label}
-        required={required}
-        errors={form.formState.errors}
-        form={form}
-        setShowModal={setShowModal}
-        fetchForginKey={fetchForginKey}
-        setFetchForginKey={setFetchForginKey}
-        isMulti={fieldType === "foreignkey-array"}
-      />
-    );
-  }
-
-  // ============================
-  // Union Fields
-  // ============================
-  if (fieldType === "union") {
-    return (
-      <UnionField
-        key={fieldName}
-        fieldName={fieldName}
-        fieldSchema={fieldSchema}
-        register={form.register}
-        config={config}
-        label={label}
-        required={required}
-        errors={form.formState.errors}
-      />
-    );
-  }
-
-  // ============================
-  // Checkbox Field
-  // ============================
-  if (template.wrapper === "checkbox") {
-    return (
-      <div key={fieldName} className="col-span-1">
-        <div className="flex items-start gap-3 p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-primary/50 transition-colors bg-gray-50/50 dark:bg-gray-800/50">
-          <input
-            id={fieldName}
-            type="checkbox"
-            {...form.register(fieldName)}
-            className="mt-1 h-5 w-5 text-primary focus:ring-2 focus:ring-primary focus:ring-offset-2 border-gray-300 rounded transition-all cursor-pointer"
-          />
-          <div className="flex-1">
-            <label
-              htmlFor={fieldName}
-              className="cursor-pointer text-sm font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
-            >
-              <CheckSquare size={16} className="text-primary" />
-              {label}
-              {required && <span className="text-danger">*</span>}
-            </label>
-            {hasError && (
-              <p className="mt-1 text-xs text-danger flex items-center gap-1">
-                <AlertCircle size={12} />
-                {errorMessage}
-              </p>
-            )}
-          </div>
-        </div>
+      <div className="text-red-500">
+        {t("unsupportedField")} {fieldType} ({registryType})
       </div>
     );
   }
 
-  // ============================
-  // Select Field
-  // ============================
-  if (fieldType === "select") {
-    return (
-      <div key={fieldName} className="col-span-1 space-y-2">
-        {label && (
-          <label htmlFor={fieldName} className={labelClasses}>
-            <Icon size={16} className="text-primary" />
-            {label}
-            {required && <span className="text-danger ml-1">*</span>}
-          </label>
-        )}
+  // Construct FieldRow object expected by shared components
+  const fieldRow = {
+    name: fieldName,
+    label: label,
+    type: template.type || registryType,
+    required: required,
+    placeholder: label, //  t("enter") + " " +
+    options: options,
+    title: config?.[fieldName]?.helpText, // Optional help text
+    entityName: config?.[fieldName]?.entityName, // For ForeignKey
+    filter: config?.[fieldName]?.filter, // For ForeignKey
+    className: fieldType === "textarea" ? "min-h-[120px]" : "",
+    // Pass specific props
+    ...template.props,
+  };
 
-        <RHFSelect
-          name={fieldName}
-          control={form.control}
-          parsedOptions={options}
-          label={label}
-          required={required}
-          placeholder={t("selectValue") || "Select a value"}
-          className="flex-1"
-        />
+  // Wrapper for layout
+  const gridClass =
+    fieldType === "textarea" || fieldType === "array" || fieldType === "object"
+      ? "col-span-1 md:col-span-2"
+      : "col-span-1";
 
-        {hasError && (
-          <p className="text-sm text-danger flex items-center gap-1.5 mt-1 animate-fade-in">
-            <AlertCircle size={14} />
-            {errorMessage}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // ============================
-  // Textarea Field
-  // ============================
-  if (fieldType === "textarea") {
-    return (
-      <div key={fieldName} className="col-span-1 md:col-span-2 space-y-2">
-        <label htmlFor={fieldName} className={labelClasses}>
-          <FileText size={16} className="text-primary" />
-          {label}
-          {required && <span className="text-danger ml-1">*</span>}
-        </label>
-
-        <div className="relative">
-          <textarea
-            id={fieldName}
-            {...form.register(fieldName)}
-            className={cn(inputClasses, "min-h-[120px] resize-y")}
-            rows={template.props?.rows || 4}
-            placeholder={`${t("enter")} ${label}...`}
-            autoComplete="off"
-          />
-        </div>
-
-        {hasError && (
-          <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
-            <AlertCircle size={14} />
-            {errorMessage}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // ============================
-  // Array Field
-  // ============================
-  if (fieldType === "array") {
-    return (
-      <div key={fieldName} className="col-span-1 md:col-span-2 space-y-2">
-        <label htmlFor={fieldName} className={labelClasses}>
-          <List size={16} className="text-primary" />
-          {label}
-          {required && <span className="text-danger ml-1">*</span>}
-        </label>
-
-        <input
-          id={fieldName}
-          type="text"
-          {...form.register(fieldName)}
-          className={inputClasses}
-          placeholder={t("commaSeparated") || "Value 1, Value 2, Value 3"}
-          autoComplete="off"
-        />
-
-        <p className="text-xs text-secondary flex items-center gap-1">
-          {t("enterCommaSeparated")}
-        </p>
-
-        {hasError && (
-          <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
-            <AlertCircle size={14} />
-            {errorMessage}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // ============================
-  // Object Field
-  // ============================
-  if (fieldType === "object") {
-    return (
-      <div key={fieldName} className="col-span-1 md:col-span-2 space-y-2">
-        <label htmlFor={fieldName} className={labelClasses}>
-          <FileText size={16} className="text-primary" />
-          {label}
-          {required && <span className="text-danger ml-1">*</span>}
-        </label>
-
-        <input
-          id={fieldName}
-          type="text"
-          {...form.register(fieldName)}
-          className={inputClasses}
-          autoComplete="off"
-          placeholder='{"key": "value"}'
-        />
-
-        <p className="text-xs text-secondary">
-          {t("enterValidJson") || "Enter a valid JSON object"}
-        </p>
-
-        {hasError && (
-          <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
-            <AlertCircle size={14} />
-            {errorMessage}
-          </p>
-        )}
-      </div>
-    );
-  }
-
-  // ============================
-  // Default Input Field
-  // ============================
-  const inputType = template.type || "text";
-  const isDisabled =
-    mode === "edit" && (fieldName === "username" || fieldName === "password");
+  // Check if we should render label (skip for checkboxes if handled internally, but for now enable all to match shared pattern)
+  // Or better, stick to shared RenderFields pattern which always renders label unless specific overrides.
 
   return (
-    <div key={fieldName} className="col-span-1 space-y-2">
-      <label htmlFor={fieldName} className={labelClasses}>
-        <Icon size={16} className="text-primary" />
-        {label}
-        {required && <span className="text-danger ml-1">*</span>}
-      </label>
+    <FormField
+      control={form.control}
+      name={fieldName}
+      render={({ field }) => (
+        <FormItem className={cn(gridClass, "space-y-2 animate-fade-in-up")}>
+          <div className="flex items-center gap-2 mb-2">
+            <FormLabel
+              className={cn(
+                "text-sm font-semibold text-foreground flex items-center gap-2",
+                "transition-colors",
+                // Error color is handled by FormLabel automatically via useFormField context
+              )}
+            >
+              {Icon && <Icon size={16} className={cn("text-primary")} />}
+              {label}
+              {required && (
+                <span className="text-destructive ml-1 animate-pulse-slow text-danger">
+                  *
+                </span>
+              )}
+            </FormLabel>
+            {fieldRow.title && (
+              <div className="text-muted-foreground hover:text-primary transition-colors cursor-help">
+                <Info size={14} />
+              </div>
+            )}
+          </div>
 
-      <div className="relative">
-        <input
-          id={fieldName}
-          type={inputType}
-          {...form.register(fieldName)}
-          className={inputClasses}
-          placeholder={`${t("enter")} ${label}...`}
-          disabled={isDisabled}
-          autoComplete="off"
-          {...(template.props || {})}
-        />
-      </div>
+          <FormControl>
+            <FieldComponent
+              fieldRow={fieldRow}
+              field={field}
+              options={options}
+              control={form.control}
+              onAddNew={setShowModal ? () => setShowModal(true) : undefined}
+              fieldName={fieldName}
+            />
+          </FormControl>
 
-      {hasError && (
-        <p className="text-sm text-danger flex items-center gap-1.5 animate-fade-in">
-          <AlertCircle size={14} />
-          {errorMessage}
-        </p>
+          <FormMessage className="text-xs text-danger mt-1.5 animate-fade-in font-medium flex items-center gap-1.5" />
+        </FormItem>
       )}
-    </div>
+    />
   );
 };

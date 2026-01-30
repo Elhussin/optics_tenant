@@ -32,7 +32,7 @@ function Switch({
         
         // ✨ Unchecked state - Theme colors
         "data-[state=unchecked]:bg-border",
-        "data-[state=unchecked]:border-border",
+        "data-[state=unchecked]:border-primary/20",
         "data-[state=unchecked]:shadow-md",
         
         // ✨ Hover states

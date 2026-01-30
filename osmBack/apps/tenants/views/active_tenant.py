@@ -119,14 +119,13 @@ class TenantActivation:
                     paid_until=expiration_date(trial_plan.duration_months),
                     on_trial=True,
                 )
-                # print("Tenant created")
+           
 
                 Domain.objects.create(
                     domain=domain,
                     tenant=tenant,
                     is_primary=True
                 )
-                # print("Domain created")
 
                 # Mark pending request as activated
                 pending.is_deleted = True
@@ -136,8 +135,7 @@ class TenantActivation:
 
         except Exception as e:
             error_msg = f"Tenant creation failed: {str(e)}"
-            # print(error_msg)
-            traceback.print_exc()
+            # traceback.print_exc()
             self.logger.error(error_msg)
             return None, None, ActivationStatus.CREATION_FAILED
 
@@ -199,7 +197,7 @@ class TenantActivation:
 
         except Exception as e:
             import traceback
-            traceback.print_exc()  # Print full trace to console for debugging
+            # traceback.print_exc()  # Print full trace to console for debugging
             self.logger.error(
                 f"Post-activation setup failed for {pending.schema_name}: {str(e)}")
             return ActivationStatus.POST_SETUP_FAILED

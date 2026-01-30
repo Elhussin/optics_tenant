@@ -111,7 +111,7 @@ export default function FAQSection() {
                   "border-2 transition-all duration-300",
                   isOpen
                     ? "border-primary/50 shadow-lg"
-                    : "border-border hover:border-primary/30"
+                    : "border-primary/20 hover:border-primary/30"
                 )}
               >
                 {/* ✨ Enhanced Question Button */}
@@ -171,7 +171,7 @@ export default function FAQSection() {
                           "px-6 pb-6 pt-2",
                           "text-muted-foreground leading-relaxed",
                           "bg-elevated/50",
-                          "border-t-2 border-border"
+                          "border-t-2 border-primary/20"
                         )}
                       >
                         {faq.answer}
@@ -208,7 +208,7 @@ export default function FAQSection() {
           <button
             className={cn(
               "inline-flex items-center gap-2 px-6 py-3",
-              "rounded-xl border-2 border-border",
+              "rounded-xl border-2 border-primary/20",
               "bg-background hover:bg-elevated",
               "text-foreground font-semibold",
               "transition-all hover:scale-105",

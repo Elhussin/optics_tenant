@@ -179,7 +179,7 @@ const links = [
   },
   // CRM
   {
-    href: "customers",
+    href: "crm-customers",
     roles: ["TenantOwner", "TenantAdmin", "CRMSpecialist", "SalesClerk"],
     group: "Customer",
     isTenant: true,

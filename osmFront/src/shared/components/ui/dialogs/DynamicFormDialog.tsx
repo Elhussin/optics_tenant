@@ -11,12 +11,13 @@ import { DynamicFormDialogProps } from "@/src/shared/types";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, GripVertical, Maximize2 } from "lucide-react";
+import { X, GripVertical, Maximize2, Minimize2 } from "lucide-react";
 import { cn } from "@/src/shared/utils/cn";
+import { createPortal } from "react-dom";
 
 const DynamicFormGenerator = dynamic(
   () => import("@/src/features/formGenerator/components/DynamicFormGenerator"),
-  { ssr: false }
+  { ssr: false },
 );
 
 const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
@@ -27,8 +28,17 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
 }) => {
   const nodeRef = useRef(null);
   const t = useTranslations(entity);
+  const [isMaximized, setIsMaximized] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
 
-  return (
+  React.useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       {/* ✨ Enhanced Backdrop */}
       <motion.div
@@ -39,10 +49,15 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
         className={cn(
           "fixed inset-0 z-50",
           "bg-black/60 backdrop-blur-sm",
-          "flex items-center justify-center p-4"
+          "flex items-center justify-center p-4",
         )}
       >
-        <Draggable handle=".modal-header" nodeRef={nodeRef} bounds="parent">
+        <Draggable
+          handle=".modal-header"
+          nodeRef={nodeRef}
+          bounds="parent"
+          disabled={isMaximized}
+        >
           {/* ✨ Enhanced Dialog */}
           <motion.div
             ref={nodeRef}
@@ -54,12 +69,14 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
               ease: [0.4, 0, 0.2, 1],
             }}
             className={cn(
-              "w-full max-w-3xl h-[85vh]",
               "bg-surface backdrop-blur-xl",
-              "border-2 border-border",
-              "rounded-3xl shadow-2xl",
+              "border-2 border-primary/20",
+              "shadow-2xl",
               "flex flex-col",
-              "overflow-hidden"
+              "overflow-hidden",
+              isMaximized
+                ? "fixed inset-0 w-full h-full rounded-none m-0 border-0"
+                : "w-full max-w-3xl h-[85vh] rounded-3xl",
             )}
           >
             {/* ✨ Enhanced Draggable Header */}
@@ -69,9 +86,10 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
                 "flex items-center justify-between gap-4",
                 "px-6 py-4",
                 "bg-elevated/50 backdrop-blur-md",
-                "border-b-2 border-border",
-                "cursor-move select-none",
-                "group"
+                "border-b-2 border-primary/20",
+                !isMaximized && "cursor-move",
+                "select-none",
+                "group",
               )}
             >
               {/* Drag Handle */}
@@ -79,10 +97,10 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
                 className={cn(
                   "flex items-center gap-3",
                   "text-muted-foreground group-hover:text-primary",
-                  "transition-colors"
+                  "transition-colors",
                 )}
               >
-                <GripVertical className="w-5 h-5" />
+                {!isMaximized && <GripVertical className="w-5 h-5" />}
                 <h2 className="text-xl font-black text-foreground">
                   {t("title") || title}
                 </h2>
@@ -90,20 +108,25 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
 
               {/* Actions */}
               <div className="flex items-center gap-2">
-                {/* Maximize hint (visual only) */}
+                {/* Maximize/Minimize Button */}
                 <button
+                  onClick={() => setIsMaximized(!isMaximized)}
                   className={cn(
                     "w-8 h-8 rounded-lg",
                     "flex items-center justify-center",
                     "bg-background hover:bg-elevated",
                     "text-muted-foreground hover:text-foreground",
                     "transition-all duration-200",
-                    "hover:scale-110"
+                    "hover:scale-110",
                   )}
-                  aria-label="Draggable"
-                  title="Drag to move"
+                  aria-label={isMaximized ? "Minimize" : "Maximize"}
+                  title={isMaximized ? "Minimize" : "Maximize"}
                 >
-                  <Maximize2 className="w-4 h-4" />
+                  {isMaximized ? (
+                    <Minimize2 className="w-4 h-4" />
+                  ) : (
+                    <Maximize2 className="w-4 h-4" />
+                  )}
                 </button>
 
                 {/* Close Button */}
@@ -115,7 +138,7 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
                     "bg-background hover:bg-destructive/10",
                     "text-muted-foreground hover:text-destructive",
                     "transition-all duration-200",
-                    "hover:scale-110"
+                    "hover:scale-110",
                   )}
                   aria-label="Close"
                 >
@@ -129,7 +152,7 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
               className={cn(
                 "flex-1 overflow-y-auto",
                 "p-6",
-                "scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent"
+                "scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent",
               )}
             >
               <DynamicFormGenerator
@@ -141,7 +164,8 @@ const DynamicFormDialog: React.FC<DynamicFormDialogProps> = ({
           </motion.div>
         </Draggable>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 };
 

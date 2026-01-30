@@ -26,9 +26,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         config_path = options['config']
         schema_name = options.get('schema')
-        print(f"Using config file: {config_path}")
-        print(f"Schema name: {schema_name}")
-
         if not os.path.exists(os.path.abspath(config_path)):
             raise CommandError(f"Config file does not exist: {config_path}")
 

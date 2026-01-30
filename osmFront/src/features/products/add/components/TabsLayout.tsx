@@ -21,6 +21,8 @@ import { ProductVariantStep } from "./ProductVariantStep";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 
+import { useTranslations } from "next-intl";
+
 interface TabsLayoutProps {
   form: UseFormReturn<any>;
   productType: string;
@@ -32,6 +34,7 @@ export function TabsLayout({
   productType,
   variantType,
 }: TabsLayoutProps) {
+  const t = useTranslations("products");
   // Check completion for each tab
   const isTypeComplete = !!productType && !!variantType;
   const hasInfoErrors =
@@ -47,7 +50,7 @@ export function TabsLayout({
           "bg-elevated/50 backdrop-blur-md rounded-2xl",
 
           "shadow-lg",
-          "mb-8"
+          "mb-8",
         )}
       >
         {/* Tab 1: Type */}
@@ -62,11 +65,11 @@ export function TabsLayout({
             "data-[state=inactive]:text-muted-foreground",
             "data-[state=inactive]:hover:bg-background data-[state=inactive]:hover:text-foreground",
             "transition-all duration-300",
-            "data-[state=active]:scale-105"
+            "data-[state=active]:scale-105",
           )}
         >
           <Package className="w-5 h-5" />
-          <span className="hidden sm:inline">نوع المنتج</span>
+          <span className="hidden sm:inline">{t("steps.type")}</span>
 
           {/* ✨ Completion Badge */}
           {isTypeComplete && (
@@ -93,11 +96,11 @@ export function TabsLayout({
             "data-[state=inactive]:text-muted-foreground",
             "data-[state=inactive]:hover:bg-background data-[state=inactive]:hover:text-foreground",
             "transition-all duration-300",
-            "data-[state=active]:scale-105"
+            "data-[state=active]:scale-105",
           )}
         >
           <Info className="w-5 h-5" />
-          <span className="hidden sm:inline">المعلومات</span>
+          <span className="hidden sm:inline">{t("steps.info")}</span>
 
           {/* ✨ Error Badge */}
           {hasInfoErrors && (
@@ -124,11 +127,11 @@ export function TabsLayout({
             "data-[state=inactive]:text-muted-foreground",
             "data-[state=inactive]:hover:bg-background data-[state=inactive]:hover:text-foreground",
             "transition-all duration-300",
-            "data-[state=active]:scale-105"
+            "data-[state=active]:scale-105",
           )}
         >
           <Tags className="w-5 h-5" />
-          <span className="hidden sm:inline">المتغيرات</span>
+          <span className="hidden sm:inline">{t("steps.variants")}</span>
 
           {/* ✨ Error Badge */}
           {hasVariantErrors && (
@@ -156,7 +159,7 @@ export function TabsLayout({
           >
             {/* Background glow on hover */}
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
-            
+
             <GlassCard className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <ProductTypeStep form={form} productType={productType} />
             </GlassCard>
@@ -173,7 +176,7 @@ export function TabsLayout({
           >
             {/* Background glow on hover */}
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
-            
+
             <GlassCard className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <ProductInfoStep form={form} productType={productType} />
             </GlassCard>
@@ -190,7 +193,7 @@ export function TabsLayout({
           >
             {/* Background glow on hover */}
             <div className="absolute -inset-1 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
-            
+
             <GlassCard className="overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <ProductVariantStep
                 form={form}

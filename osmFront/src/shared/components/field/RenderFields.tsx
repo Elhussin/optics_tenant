@@ -130,7 +130,7 @@ const FieldRenderer = React.memo(
               {/* ✨ Enhanced Error Message */}
               <FormMessage
                 className={cn(
-                  "text-xs text-destructive mt-1.5",
+                  "text-xs text-destructive text-danger mt-1.5",
                   "animate-fade-in-up font-medium"
                 )}
               />
@@ -257,7 +257,7 @@ export const InfoPopover = React.memo(({ hint }: { hint: string }) => {
       <PopoverContent
         className={cn(
           "w-72 p-4",
-          "bg-elevated border-2 border-border",
+          "bg-elevated border-2 border-primary/20",
           "rounded-lg shadow-lg",
           "animate-fade-in-down"
         )}

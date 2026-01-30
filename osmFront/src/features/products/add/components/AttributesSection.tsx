@@ -16,16 +16,18 @@ import {
 } from "@/src/shared/components/shadcn/ui/card";
 import { cn } from "@/src/shared/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
+// ... (imports)
 interface AttributesSectionProps {
   variantIndex: number;
   form: any;
 }
-
 export const AttributesSection = ({
   variantIndex,
   form,
 }: AttributesSectionProps) => {
+  const t = useTranslations("products");
   // إدارة الـ attributes الخاصة بكل variant
   const {
     fields: attributes,
@@ -48,7 +50,7 @@ export const AttributesSection = ({
         className={cn(
           "flex items-center justify-between",
           "p-4 rounded-xl",
-          "bg-primary/5 border-2 border-primary/10"
+          "bg-primary/5 border-2 border-primary/10",
         )}
       >
         <div className="flex items-center gap-3">
@@ -56,17 +58,17 @@ export const AttributesSection = ({
             className={cn(
               "w-10 h-10 rounded-lg",
               "bg-gradient-to-br from-purple-500 to-indigo-600",
-              "flex items-center justify-center"
+              "flex items-center justify-center",
             )}
           >
             <Tag className="w-5 h-5 text-white" />
           </div>
           <div>
             <h4 className="text-base font-black text-foreground">
-              خصائص إضافية
+              {t("attributes.title")}
             </h4>
             <p className="text-xs text-muted-foreground">
-              {attributes.length} خاصية مُضافة
+              {t("attributes.count", { count: attributes.length })}
             </p>
           </div>
         </div>
@@ -80,11 +82,11 @@ export const AttributesSection = ({
             "gap-2",
             "border-2 border-primary/30",
             "text-primary hover:bg-primary/10",
-            "hover:scale-105 transition-all"
+            "hover:scale-105 transition-all",
           )}
         >
           <Plus size={16} />
-          <span className="hidden sm:inline">إضافة خاصية</span>
+          <span className="hidden sm:inline">{t("attributes.add")}</span>
         </Button>
       </div>
 
@@ -107,7 +109,7 @@ export const AttributesSection = ({
                     "border-2 border-dashed border-border",
                     "hover:border-solid hover:border-primary/30",
                     "transition-all duration-300",
-                    "hover:shadow-lg"
+                    "hover:shadow-lg",
                   )}
                 >
                   {/* ✨ Delete Button */}
@@ -115,7 +117,7 @@ export const AttributesSection = ({
                     className={cn(
                       "absolute top-3 end-3 z-10",
                       "opacity-0 group-hover:opacity-100",
-                      "transition-opacity duration-200"
+                      "transition-opacity duration-200",
                     )}
                   >
                     <Button
@@ -125,7 +127,7 @@ export const AttributesSection = ({
                       className={cn(
                         "h-8 w-8 rounded-full",
                         "text-destructive hover:bg-destructive/10",
-                        "hover:scale-110 transition-all"
+                        "hover:scale-110 transition-all",
                       )}
                       onClick={() => removeAttr(attrIndex)}
                     >
@@ -139,16 +141,18 @@ export const AttributesSection = ({
                       className={cn(
                         "text-sm font-bold",
                         "text-foreground",
-                        "flex items-center gap-2"
+                        "flex items-center gap-2",
                       )}
                     >
                       <span
                         className={cn(
                           "h-2 w-2 rounded-full",
-                          "bg-gradient-to-r from-purple-500 to-indigo-600"
+                          "bg-gradient-to-r from-purple-500 to-indigo-600",
                         )}
                       />
-                      خاصية #{attrIndex + 1}
+                      {t("attributes.attributeLabel", {
+                        number: attrIndex + 1,
+                      })}
                     </CardTitle>
                   </CardHeader>
 
@@ -175,21 +179,21 @@ export const AttributesSection = ({
               "text-center py-12",
               "border-2 border-dashed rounded-2xl",
               "border-border bg-elevated/50",
-              "hover:bg-elevated transition-colors"
+              "hover:bg-elevated transition-colors",
             )}
           >
             <div
               className={cn(
                 "w-16 h-16 rounded-2xl mx-auto mb-4",
                 "bg-gradient-to-br from-purple-500/10 to-indigo-600/10",
-                "flex items-center justify-center"
+                "flex items-center justify-center",
               )}
             >
               <Sparkles className="w-8 h-8 text-purple-500" />
             </div>
 
             <p className="text-muted-foreground text-sm mb-4">
-              لم تتم إضافة أي خصائص مخصصة بعد
+              {t("attributes.noAttributes")}
             </p>
 
             <Button
@@ -198,11 +202,11 @@ export const AttributesSection = ({
               onClick={() => addAttr({ key: "", value: "" })}
               className={cn(
                 "text-primary hover:bg-primary/10",
-                "gap-2 hover:scale-105 transition-all"
+                "gap-2 hover:scale-105 transition-all",
               )}
             >
               <Plus className="w-4 h-4" />
-              إضافة أول خاصية
+              {t("attributes.addFirst")}
             </Button>
           </motion.div>
         )}

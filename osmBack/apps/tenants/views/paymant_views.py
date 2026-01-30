@@ -54,8 +54,6 @@ class CreatePaymentOrderView(APIView):
         lang_header = request.headers.get('accept-language', 'en')
         lang = lang_header.split(',')[0].split('-')[0]  # 'en'
         serializer = CreatePaymentOrderSerializer(data=request.data)
-        print(request.data)
-        print(request.headers)
         if serializer.is_valid():
             client = serializer.validated_data["client"]
             plan = serializer.validated_data["plan"]
@@ -199,7 +197,7 @@ class PayPalExecuteView(APIView):
         except Exception as e:
             # Catching generic DB or other errors
             import traceback
-            traceback.print_exc()
+            # traceback.print_exc()
             paymant_logger.error(f"Error executing PayPal payment: {str(e)}")
             return Response({"detail": T("Payment processing failed")}, status=500)
 

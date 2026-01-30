@@ -30,6 +30,8 @@
     "is_deleted": "Deleted",
     "created_at": "Created At",
     "updated_at": "Updated At",
+    "enter": "Enter",
+    "unsupportedField": "  Unsupported field type:",
     "values": {
       "is_active": {
         "true": "Active",
@@ -66,7 +68,7 @@
     "tenant-settings": "Tenant Settings",
     "hrm-departments": "Departments",
     "hrm-employees": "Employees",
-    "customers": "Customers",
+    "crm-customers": "Customers",
     "prescriptions": "Prescriptions",
     "branches": "Branches",
     "branch-users": "Branch Users",
@@ -388,7 +390,7 @@
     "updateDescription": "Update Notification",
     "createDescription": "Add New Notification"
   },
-  "customers": {
+  "crm-customers": {
     "title": "Customers",
     "detailsTitle": "Customer Details",
     "name": "Customer Name",

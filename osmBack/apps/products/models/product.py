@@ -204,13 +204,15 @@ class ProductVariant(BaseModel):
         # Add product type
         # Add product type
         if self.product_type:
-            parts.append(str(_("Type: {0}").format(self._get_safe_attr_name(self.product_type))))
+            parts.append(str(_("Type: {0}").format(
+                self._get_safe_attr_name(self.product_type))))
 
         # Add price
         price_text = str(_("Price: {0} SAR").format(self.selling_price))
         discount_pct = Decimal(str(self.discount_percentage or 0))
         if self.discount_price and discount_pct > 0:
-            price_text = str(_("Price: {0} SAR (after {1}% discount)").format(self.discount_price, discount_pct))
+            price_text = str(_("Price: {0} SAR (after {1}% discount)").format(
+                self.discount_price, discount_pct))
         parts.append(price_text)
 
         return " | ".join(parts)
@@ -273,25 +275,25 @@ class FrameVariant(ProductVariant):
 
         # Frame details
         specs = []
-        if self.frame_color:
+        if getattr(self, 'frame_color_id', None):
             specs.append(
                 f"{self._get_safe_attr_name(self.frame_color)}")
-        if self.frame_shape:
+        if getattr(self, 'frame_shape_id', None):
             specs.append(
                 f"{self._get_safe_attr_name(self.frame_shape)}")
-        if self.frame_material:
+        if getattr(self, 'frame_material_id', None):
             specs.append(
                 f"{self._get_safe_attr_name(self.frame_material)}")
 
         # Measurements
         measurements = []
-        if self.lens_diameter:
+        if getattr(self, 'lens_diameter_id', None):
             measurements.append(
                 f"{self._get_safe_attr_name(self.lens_diameter)}")
-        if self.temple_length:
+        if getattr(self, 'temple_length_id', None):
             measurements.append(
                 f"{self._get_safe_attr_name(self.temple_length)}")
-        if self.bridge_width:
+        if getattr(self, 'bridge_width_id', None):
             measurements.append(
                 f"{self._get_safe_attr_name(self.bridge_width)}")
 
@@ -301,7 +303,7 @@ class FrameVariant(ProductVariant):
             parts.append(" - ".join(measurements))
 
         # Lens color if available
-        if self.lens_color:
+        if getattr(self, 'lens_color_id', None):
             parts.append(
                 f"{self._get_safe_attr_name(self.lens_color)}")
 

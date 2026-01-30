@@ -72,7 +72,7 @@ export const RenderButtons = ({
   if (data?.is_deleted) {
     return (
       <>
-        <div className="flex items-center gap-2 p-1.5 bg-elevated/50 rounded-xl border border-border-main">
+        <div className="flex items-center gap-2 p-1.5 bg-elevated/50 rounded-xl border border-primary/20">
           {/* Restore Button */}
           <ActionButton
             variant="icon-success"
@@ -103,7 +103,7 @@ export const RenderButtons = ({
   if (!isViewOnly) {
     return (
       <>
-        <div className="flex items-center gap-2 p-1.5 bg-elevated/50 rounded-xl border border-border-main">
+        <div className="flex items-center gap-2 p-1.5 bg-elevated/50 rounded-xl border border-primary/20">
           {/* Edit Button */}
           <ActionButton
             variant="icon-edit"

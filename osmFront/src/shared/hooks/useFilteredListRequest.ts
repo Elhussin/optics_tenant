@@ -8,13 +8,14 @@ interface UseFilteredListRequestProps {
   defaultPage?: number;
   defaultPageSize?: number;
   defaultAll?: boolean;
+  enabled?: boolean;
 }
 
 export function useFilteredListRequest(props: UseFilteredListRequestProps) {
   const [data, setData] = useState<any[]>([]);
   const [count, setCount] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const { alias, defaultPage = 1, defaultPageSize = IteamInPage, defaultAll = false } = props;
+  const { alias, defaultPage = 1, defaultPageSize = IteamInPage, defaultAll = false, enabled = true } = props;
 
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -42,6 +43,7 @@ export function useFilteredListRequest(props: UseFilteredListRequestProps) {
       all,
       ...paramsObj, // ← نمرر جميع الفلاتر والبحث أيضًا
     },
+    enabled,
   });
 
   async function fetchData() {
@@ -57,7 +59,7 @@ export function useFilteredListRequest(props: UseFilteredListRequestProps) {
     (async () => {
       await fetchData();
     })();
-  }, [page, page_size, all, JSON.stringify(paramsObj),alias]);
+  }, [page, page_size, all, JSON.stringify(paramsObj), alias]);
 
   const setFilters = (filters: Record<string, string>) => {
     const params = new URLSearchParams({ ...paramsObj, ...filters, page: "1" });
@@ -85,7 +87,7 @@ export function useFilteredListRequest(props: UseFilteredListRequestProps) {
     isLoading: dataRequest.isBusy,
     // isError: dataRequest.isError,
     error: dataRequest.errors,
-    refetch:fetchData,
+    refetch: fetchData,
     setFilters,
     setPage,
     setPageSize,

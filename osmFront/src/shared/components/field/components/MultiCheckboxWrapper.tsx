@@ -28,7 +28,7 @@ export const MultiCheckboxWrapper = React.memo(
     onAddNew,
   }: MultiCheckboxWrapperProps) => {
     return (
-      <div className="flex gap-2 w-full">
+      <div className="flex gap-2 w-full items-start animate-fade-in-up">
         <div className="flex-1">
           <MultiCheckbox
             fieldName={fieldName}
@@ -42,11 +42,13 @@ export const MultiCheckboxWrapper = React.memo(
             onClick={() => onAddNew(fieldRow.entityName, fieldRow.name)}
             variant="icon-success"
             size="md"
-            icon={<Plus size={18} />}
+            icon={<Plus size={20} />}
             className={cn(
-              "rounded-xl mt-0.5 shrink-0",
-              "transition-smooth hover-scale",
-              "border-2 hover:border-primary/50",
+              "h-11 w-11 shrink-0 rounded-lg",
+              "transition-all duration-300",
+              "border border-success/30 hover:border-success",
+              "bg-success/5 hover:bg-success/10 text-success",
+              "shadow-sm hover:shadow",
             )}
             title={`Add ${fieldRow.filter}`}
           />

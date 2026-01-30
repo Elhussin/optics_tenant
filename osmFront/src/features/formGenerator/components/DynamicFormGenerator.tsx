@@ -26,6 +26,7 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { Skeleton, SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
+import { Form } from "@/src/shared/components/shadcn/ui/form";
 
 export default function DynamicFormGenerator(props: DynamicFormProps) {
   const router = useRouter();
@@ -37,11 +38,15 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
 
   if (!entity) throw new Error("entity is required");
 
-  const t = useMergedTranslations(["viewDetailsCard", entity, "dashboardLinks"]);
+  const t = useMergedTranslations([
+    "viewDetailsCard",
+    entity,
+    "dashboardLinks",
+  ]);
   const form = formsConfig[entity];
   const alias = useMemo(
     () => (id ? form.partialUpdateAlias : form.createAlias),
-    [id, form]
+    [id, form],
   );
   const fetchAlias = useMemo(() => form.retrieveAlias, [form]);
   const showResetButton = form.showResetButton ?? true;
@@ -52,17 +57,17 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
 
   const submitText = useMemo(
     () => `${t(action)} ${t(entity)}`,
-    [action, t, entity]
+    [action, t, entity],
   );
 
   const successMessage = useMemo(
     () => `${t("success")} ${t(action)} ${t(entity)}`,
-    [action, t, entity]
+    [action, t, entity],
   );
 
   const errorMessage = useMemo(
     () => `${t("failed")} ${t(action)} ${t(entity)}`,
-    [action, t, entity]
+    [action, t, entity],
   );
 
   const title = useMemo(() => `${t(action)} ${t(entity)}`, [action, t, entity]);
@@ -77,12 +82,12 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
   const shape = (schema as any)?.shape || {};
   const effectiveIgnoredFields = useMemo(
     () => (id ? [...ignoredFields, "password"] : ignoredFields),
-    [id]
+    [id],
   );
 
   const allFields = useMemo(
     () => Object.keys(shape).filter((f) => !effectiveIgnoredFields.includes(f)),
-    [shape, effectiveIgnoredFields]
+    [shape, effectiveIgnoredFields],
   );
 
   const visibleFields = config.fieldOrder || allFields;
@@ -165,7 +170,7 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
     <div
       className={cn(
         className,
-        "container mx-auto px-4 py-8 max-w-5xl animate-fade-in"
+        "container mx-auto px-4 py-8 max-w-5xl animate-fade-in",
       )}
     >
       {/* Enhanced Header with Glassmorphism */}
@@ -223,57 +228,59 @@ export default function DynamicFormGenerator(props: DynamicFormProps) {
           <div className="h-2 bg-gradient-to-r from-primary via-secondary to-primary animate-shimmer bg-[length:200%_100%]" />
 
           <div className="p-6 md:p-8">
-            <form
-              onSubmit={formRequest.handleSubmit(onSubmit)}
-              className={config.containerClasses}
-            >
-              {/* Form Fields */}
-              {visibleFields.map((fieldName) => (
-                <RenderField
-                  key={fieldName}
-                  fieldName={fieldName}
-                  fieldSchema={shape[fieldName]}
-                  form={formRequest}
-                  config={config}
-                  mode={id ? "edit" : "create"}
-                  setShowModal={(show: boolean) => {
-                    if (show) setCurrentFieldName(fieldName);
-                    setShowModal(show);
-                  }}
-                  fetchForginKey={fetchForginKey}
-                  setFetchForginKey={setFetchForginKey}
-                  t={t}
-                />
-              ))}
-
-              {/* Form Actions Footer */}
-              <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 pt-8 border-t border-border-main/50 mt-8">
-                {showResetButton && (
-                  <ActionButton
-                    type="button"
-                    variant="ghost"
-                    size="lg"
-                    label={t("reset")}
-                    onClick={() => formRequest.reset()}
-                    disabled={formRequest.formState.isSubmitting}
-                    icon={<RotateCcw size={20} />}
-                    className="rounded-xl"
+            <Form {...formRequest}>
+              <form
+                onSubmit={formRequest.handleSubmit(onSubmit)}
+                className={config.containerClasses}
+              >
+                {/* Form Fields */}
+                {visibleFields.map((fieldName) => (
+                  <RenderField
+                    key={fieldName}
+                    fieldName={fieldName}
+                    fieldSchema={shape[fieldName]}
+                    form={formRequest}
+                    config={config}
+                    mode={id ? "edit" : "create"}
+                    setShowModal={(show: boolean) => {
+                      if (show) setCurrentFieldName(fieldName);
+                      setShowModal(show);
+                    }}
+                    fetchForginKey={fetchForginKey}
+                    setFetchForginKey={setFetchForginKey}
+                    t={t}
                   />
-                )}
+                ))}
 
-                <ActionButton
-                  type="submit"
-                  variant={id ? "warning" : "success"}
-                  size="lg"
-                  label={submitText || t("create")}
-                  isLoading={formRequest.formState.isSubmitting}
-                  disabled={!canSubmit}
-                  icon={<Save size={20} />}
-                  className="rounded-xl shadow-lg hover:shadow-xl min-w-[200px] sm:min-w-[240px]"
-                  fullWidth={false}
-                />
-              </div>
-            </form>
+                {/* Form Actions Footer */}
+                <div className="col-span-1 md:col-span-2 flex flex-col sm:flex-row justify-end gap-3 pt-8 border-t border-border-main/50 mt-8">
+                  {showResetButton && (
+                    <ActionButton
+                      type="button"
+                      variant="ghost"
+                      size="lg"
+                      label={t("reset")}
+                      onClick={() => formRequest.reset()}
+                      disabled={formRequest.formState.isSubmitting}
+                      icon={<RotateCcw size={20} />}
+                      className="rounded-xl"
+                    />
+                  )}
+
+                  <ActionButton
+                    type="submit"
+                    variant={id ? "warning" : "success"}
+                    size="lg"
+                    label={submitText || t("create")}
+                    isLoading={formRequest.formState.isSubmitting}
+                    disabled={!canSubmit}
+                    icon={<Save size={20} />}
+                    className="rounded-xl shadow-lg hover:shadow-xl min-w-[200px] sm:min-w-[240px]"
+                    fullWidth={false}
+                  />
+                </div>
+              </form>
+            </Form>
           </div>
         </GlassCard>
       </div>

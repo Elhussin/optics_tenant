@@ -143,7 +143,7 @@ def verify_paypal_transaction(order_id, access_token):
     }
     response = requests.get(url, headers=headers)
     data = response.json()
-    print("verify_paypal_transaction data:", data)
+
 
     # Return 
     return data.get("status") == "COMPLETED"

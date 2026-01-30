@@ -401,6 +401,9 @@ class ProductSerializer(serializers.ModelSerializer):
         exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at',
                             'updated_at', 'description', 'usku']
+        extra_kwargs = {
+            'name': {'required': False}
+        }
 
     def create(self, validated_data):
         import logging

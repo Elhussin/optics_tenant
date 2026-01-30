@@ -128,8 +128,9 @@ export const relationshipConfigs: RelationshipConfig = {
     labelField: 'first_name',
     valueField: 'id',
     searchField: 'first_name',
-    entityName: 'customers',
+    entityName: 'crm-customers',
   },
+  
   customer_groups: {
     labelField: 'name',
     valueField: 'id',
@@ -140,7 +141,7 @@ export const relationshipConfigs: RelationshipConfig = {
     labelField: 'first_name',
     valueField: 'id',
     searchField: 'first_name',
-    entityName: 'customers',
+    entityName: 'crm-customers',
   },
   opportunity: {
     labelField: 'title',

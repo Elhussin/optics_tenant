@@ -29,6 +29,7 @@ import {
   FormControl,
   FormMessage,
 } from "@/src/shared/components/shadcn/ui/form";
+import { useTranslations } from "next-intl";
 
 interface ProductTypeStepProps {
   form: any;
@@ -56,6 +57,7 @@ const PRODUCT_COLORS: Record<string, string> = {
 };
 
 export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
+  const t = useTranslations("products");
   const handleTypeSelect = (value: string) => {
     form.setValue("type", value, { shouldValidate: true });
     // Reset variant_type when product type changes
@@ -66,7 +68,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
   const filteredVariantTypes = useMemo(() => {
     if (!productType) return [];
     return VARIANT_TYPE_CHOICES.filter(
-      (v) => v.role === "all" || v.role === productType
+      (v) => v.role === "all" || v.role === productType,
     );
   }, [productType]);
 
@@ -83,7 +85,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
         render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel className="text-xl font-black text-foreground mb-4 block ">
-              نوع المنتج *
+              {t("steps.type")} *
             </FormLabel>
             <FormControl>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -106,7 +108,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                         "transition-all duration-300 group cursor-pointer",
                         isSelected
                           ? "border-primary bg-primary/10 shadow-xl shadow-primary/20 scale-105"
-                          : "border-primary/50 bg-elevated hover:border-primary/50 hover:shadow-lg hover:scale-102"
+                          : "border-primary/50 bg-elevated hover:border-primary/50 hover:shadow-lg hover:scale-102",
                       )}
                     >
                       {/* ✨ Selection indicator */}
@@ -128,7 +130,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                           "transition-transform group-hover:scale-110",
                           isSelected
                             ? `bg-gradient-to-br ${gradientColor} text-white shadow-lg`
-                            : "bg-background text-muted-foreground"
+                            : "bg-background text-muted-foreground",
                         )}
                       >
                         <Icon className="w-8 h-8" />
@@ -138,10 +140,11 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                       <p
                         className={cn(
                           "font-bold text-center transition-colors text-base",
-                          isSelected ? "text-primary" : "text-foreground"
+                          isSelected ? "text-primary" : "text-foreground",
                         )}
                       >
-                        {type.label}
+                        {/* Translate Type Label */}
+                        {t(`types.${type.value}`)}
                       </p>
                     </motion.button>
                   );
@@ -159,12 +162,12 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                   className={cn(
                     "mt-4 px-4 py-3 rounded-xl",
                     "bg-destructive/10 border-2 border-destructive/20",
-                    "flex items-center gap-3"
+                    "flex items-center gap-3",
                   )}
                 >
                   <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
                   <p className="text-sm font-semibold text-destructive">
-                    {fieldState.error.message || "يرجى اختيار نوع المنتج"}
+                    {fieldState.error.message || t("validation.selectType")}
                   </p>
                 </motion.div>
               )}
@@ -188,10 +191,10 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
               render={({ field, fieldState }) => (
                 <FormItem>
                   <FormLabel className="text-xl font-black text-foreground mb-2 block">
-                    نوع المتغير *
+                    {t("steps.variantType")} *
                   </FormLabel>
                   <p className="text-sm text-muted-foreground mb-4">
-                    اختر نوع المتغير المناسب لهذا المنتج
+                    {t("steps.selectVariantTypeDescription")}
                   </p>
 
                   <FormControl>
@@ -218,10 +221,11 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                               "font-semibold",
                               isSelected
                                 ? "border-primary bg-primary/10 text-primary shadow-lg scale-105"
-                                : "border-primary/50 bg-elevated text-foreground hover:border-primary/40 hover:scale-102"
+                                : "border-primary/50 bg-elevated text-foreground hover:border-primary/40 hover:scale-102",
                             )}
                           >
-                            {variant.label}
+                            {/* Translate Variant Type Label */}
+                            {t(`variantTypes.${variant.value}`)}
                           </motion.button>
                         );
                       })}
@@ -238,13 +242,13 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                         className={cn(
                           "mt-4 px-4 py-3 rounded-xl",
                           "bg-destructive/10 border-2 border-destructive/20",
-                          "flex items-center gap-3"
+                          "flex items-center gap-3",
                         )}
                       >
                         <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
                         <p className="text-sm font-semibold text-destructive">
                           {fieldState.error.message ||
-                            "يرجى اختيار نوع المتغير"}
+                            t("validation.selectVariantType")}
                         </p>
                       </motion.div>
                     )}

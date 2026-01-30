@@ -87,7 +87,7 @@ export default function PricingSection() {
           <div
             className={cn(
               "inline-flex items-center gap-4 p-1.5 rounded-full",
-              "bg-elevated border-2 border-border",
+              "bg-elevated border-2 border-primary/20",
               "shadow-lg"
             )}
           >
@@ -165,7 +165,7 @@ export default function PricingSection() {
                         "scale-105 z-10",
                         "bg-gradient-to-b from-primary/5 to-transparent",
                       ]
-                    : "border-border hover:border-primary/30 hover:shadow-xl hover:-translate-y-1"
+                    : "border-primary/20 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1"
                 )}
               >
                 {/* ✨ Enhanced Popular Badge */}
@@ -291,7 +291,7 @@ export default function PricingSection() {
                           "bg-gradient-to-r from-primary to-blue-500",
                           "text-white shadow-lg hover:shadow-xl hover:shadow-primary/40",
                         ]
-                      : "bg-elevated border-2 border-border text-foreground hover:bg-background hover:border-primary/50"
+                      : "bg-elevated border-2 border-primary/20 text-foreground hover:bg-background hover:border-primary/50"
                   )}
                 >
                   {/* Shine effect for popular plan */}

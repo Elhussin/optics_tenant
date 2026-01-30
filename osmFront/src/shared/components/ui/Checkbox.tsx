@@ -20,7 +20,7 @@ export const Checkbox = ({ checked, onChange, className }: CheckboxProps) => {
         "w-5 h-5 rounded border transition-all flex items-center justify-center cursor-pointer",
         checked
           ? "bg-primary border-primary text-white"
-          : "bg-elevated border-border-main/50 hover:border-primary/50",
+          : "bg-elevated border-primary/20 hover:border-primary/50",
         className,
       )}
     >

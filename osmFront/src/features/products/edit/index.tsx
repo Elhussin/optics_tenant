@@ -10,7 +10,10 @@ interface ProductEditProps {
   productId: string;
 }
 
+import { useTranslations } from "next-intl";
+
 export function ProductEdit({ productId }: ProductEditProps) {
+  const t = useTranslations("products");
   // Convert productId to number
   const numericId = parseInt(productId, 10);
 
@@ -34,9 +37,7 @@ export function ProductEdit({ productId }: ProductEditProps) {
   }
 
   if (isError || !data) {
-    return (
-      <NotFound error="لم يتم العثور على المنتج - تأكد من صحة رابط المنتج" />
-    );
+    return <NotFound error={t("view.productNotFound")} />;
   }
 
   // Pass the fetched data as initialData to ProductAdd

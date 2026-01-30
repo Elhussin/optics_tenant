@@ -32,6 +32,7 @@ import { Dialog } from "./components/Dialog";
 import { cn } from "@/src/shared/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 
 // Premium UI Components
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
@@ -52,15 +53,24 @@ export interface ProductAddProps {
   initialData?: any;
 }
 
-const STEPS = [
-  { id: 1, title: "نوع المنتج", description: "اختر نوع المنتج والتصنيف" },
-  { id: 2, title: "المعلومات الأساسية", description: "أدخل بيانات المنتج" },
-  { id: 3, title: "المتغيرات والأسعار", description: "أضف المتغيرات والتسعير" },
-];
+// STEPS moved inside component for translation
 
 export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
   const [currentStep, setCurrentStep] = useState(1);
+  const t = useTranslations("products");
 
+  const STEPS = useMemo(
+    () => [
+      {
+        id: 1,
+        title: t("steps.type"),
+        description: t("steps.selectTypeDescription"),
+      },
+      { id: 2, title: t("steps.info"), description: t("steps.info") },
+      { id: 3, title: t("steps.variants"), description: t("steps.variants") },
+    ],
+    [t],
+  );
   // ✨ Get current locale for RTL/LTR detection
   const locale = useLocale();
   const isRTL = locale === "ar";
@@ -138,9 +148,10 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
       form,
       form.getValues("variants"),
       veriantConfig(variantType),
-      id
+      t,
+      id,
     );
-  }, [form, variantType, id]);
+  }, [form, variantType, id, t]);
 
   if (form.formState.isLoading || isRelationsLoading) {
     return <Loading />;
@@ -164,24 +175,24 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                       "inline-flex items-center justify-center",
                       "w-12 h-12 rounded-xl",
                       "bg-gradient-to-br from-primary to-blue-600",
-                      "text-white shadow-lg shadow-primary/30"
+                      "text-white shadow-lg shadow-primary/30",
                     )}
                   >
                     <Package className="w-6 h-6" />
                   </div>
                   <h1 className="text-3xl font-bold flex items-center gap-2">
                     <Sparkles className="w-7 h-7 text-primary" />
-                    {isEditMode ? "تعديل المنتج" : "إضافة منتج جديد"}
+                    {isEditMode ? t("actions.edit") : t("actions.add")}
                   </h1>
                   <Badge variant={isEditMode ? "warning" : "success"}>
-                    {isEditMode ? "وضع التعديل" : "وضع الإضافة"}
+                    {isEditMode ? t("actions.edit") : t("actions.add")}
                   </Badge>
                 </div>
 
                 <p className="text-sm text-secondary">
                   {isEditMode
-                    ? "قم بتعديل بيانات المنتج وحفظ التغييرات"
-                    : "اتبع الخطوات لإضافة منتج جديد إلى المتجر"}
+                    ? t("steps.selectTypeDescription")
+                    : t("steps.selectTypeDescription")}
                 </p>
               </div>
             </div>
@@ -216,18 +227,18 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                         "gap-2 px-8 py-6 text-base font-bold",
                         "bg-gradient-to-r from-primary to-blue-600",
                         "hover:shadow-xl hover:shadow-primary/40",
-                        "transition-all hover:scale-105"
+                        "transition-all hover:scale-105",
                       )}
                     >
                       {form.isBusy ? (
                         <>
                           <Loader2 className="w-5 h-5 animate-spin" />
-                          جارٍ الحفظ...
+                          {t("actions.save")}...
                         </>
                       ) : (
                         <>
                           <Save className="w-5 h-5" />
-                          حفظ التغييرات
+                          {t("actions.save")}
                         </>
                       )}
                     </Button>
@@ -250,14 +261,14 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                     className={cn(
                       "mt-8 border-none",
                       "bg-elevated/50 backdrop-blur-sm",
-                      "shadow-2xl rounded-3xl overflow-hidden"
+                      "shadow-2xl rounded-3xl overflow-hidden",
                     )}
                   >
                     <CardHeader
                       className={cn(
                         "border-b-2 border-primary/50",
                         "bg-elevated/50 backdrop-blur-md",
-                        "p-6"
+                        "p-6",
                       )}
                     >
                       <CardTitle className="text-2xl  font-black text-foreground">
@@ -301,7 +312,7 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                         "px-6 py-4",
                         "border-t-2 border-primary/50",
                         "bg-elevated/30 backdrop-blur-sm",
-                        "flex items-center justify-between"
+                        "flex items-center justify-between",
                       )}
                     >
                       {/* Back Button */}
@@ -318,7 +329,7 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                         ) : (
                           <ArrowLeft className="w-4 h-4" />
                         )}
-                        السابق
+                        {t("actions.back")}
                       </Button>
 
                       {/* Next / Submit Button */}
@@ -333,10 +344,10 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                           className={cn(
                             "gap-2",
                             "bg-primary hover:bg-primary/90",
-                            "hover:scale-105 transition-all"
+                            "hover:scale-105 transition-all",
                           )}
                         >
-                          التالي
+                          {t("actions.next")}
                           {/* ✨ Arrow changes based on locale */}
                           {isRTL ? (
                             <ArrowLeft className="w-4 h-4" />
@@ -353,18 +364,18 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
                             "gap-2 min-w-[140px]",
                             "bg-gradient-to-r from-success to-green-600",
                             "hover:shadow-xl hover:shadow-success/40",
-                            "hover:scale-105 transition-all"
+                            "hover:scale-105 transition-all",
                           )}
                         >
                           {form.isBusy ? (
                             <>
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                              جارٍ الحفظ...
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              {t("actions.saving")}
                             </>
                           ) : (
                             <>
-                              <Check className="w-4 h-4" />
-                              حفظ المنتج
+                              <Save className="w-5 h-5" />
+                              {t("actions.save")}
                             </>
                           )}
                         </Button>

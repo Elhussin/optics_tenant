@@ -11,6 +11,7 @@ import {
     SelectField,
     SearchableSelect,
     TextareaField,
+    FileField,
 } from "../Fields";
 import { ForeignKeyField } from "../components/ForeignKeyField";
 import { MultiSelectFieldWrapper } from "../components/MultiSelectFieldWrapper";
@@ -27,7 +28,8 @@ export type FieldType =
     | "select"
     | "foreignkey"
     | "multiSelect"
-    | "multiCheckbox";
+    | "multiCheckbox"
+    | "file";
 
 export type FieldComponent = React.ComponentType<any>;
 
@@ -46,6 +48,7 @@ export const FIELD_REGISTRY: Record<FieldType, FieldComponent> = {
     foreignkey: ForeignKeyField,
     multiSelect: MultiSelectFieldWrapper,
     multiCheckbox: MultiCheckboxWrapper,
+    file: FileField,
 };
 
 /**
