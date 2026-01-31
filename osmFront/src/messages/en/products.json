@@ -116,7 +116,22 @@
       "variantLabel": "Variant #{number}",
       "addNew": "Add New Variant",
       "addVariantDescription": "Add new variant for product ({type})",
-      "noVariants": "No variants for this product"
+      "noVariants": "No variants for this product",
+      "noProduct": "No product found",
+      "backToProduct": "Back to Product",
+      "forProduct": "For Product"
+    },
+    "editProduct": {
+      "title": "Edit Product",
+      "description": "Update product information",
+      "backToProducts": "Back to Products",
+      "backToProduct": "Back to Product"
+    },
+    "viewProduct": {
+      "title": "View Product",
+      "description": "View product information",
+      "backToProducts": "Back to Products",
+      "backToProduct": "Back to Product"
     },
     "attributes": {
       "title": "Additional Attributes",
@@ -151,6 +166,22 @@
       "cancel": "Cancel",
       "addVariant": "Add New Variant",
       "adding": "Adding..."
+    },
+    "importCsv": {
+      "importProducts": "Import Products",
+      "importProductsDescription": "Upload a CSV file to bulk import products. The file must follow the required format.",
+      "uploadCSV": "Upload CSV File",
+      "uploadCSVDescription": "Drag and drop your CSV file here, or click to browse.",
+      "selectFile": "Select File",
+      "startImport": "Start Import",
+      "importSuccess": "Import completed successfully",
+      "importFailed": "Import failed",
+      "importResult": "Import Result",
+      "created": "Created",
+      "skipped": "Skipped",
+      "failed": "Failed",
+      "errorLog": "Error Log",
+      "unknownError": "Unknown error"
     }
   }
 }

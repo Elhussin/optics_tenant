@@ -681,18 +681,5 @@
     "placeholder": "Search...",
     "clearSearch": "Clear Search",
     "filters": "Filters"
-  },
-  "importProducts": "Import Products",
-  "importProductsDescription": "Upload a CSV file to bulk import products. The file must follow the required format.",
-  "uploadCSV": "Upload CSV File",
-  "uploadCSVDescription": "Drag and drop your CSV file here, or click to browse.",
-  "selectFile": "Select File",
-  "startImport": "Start Import",
-  "importSuccess": "Import completed successfully",
-  "importFailed": "Import failed",
-  "importResult": "Import Result",
-  "created": "Created",
-  "skipped": "Skipped",
-  "failed": "Failed",
-  "errorLog": "Error Log"
+  }
 }

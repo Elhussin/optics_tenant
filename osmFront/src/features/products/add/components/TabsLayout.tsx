@@ -149,7 +149,7 @@ export function TabsLayout({
 
       {/* ✨ Enhanced Tab Contents with Animations */}
       <AnimatePresence mode="wait">
-        <TabsContent value="type" className="mt-0">
+        <TabsContent value="type" key="type" className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -166,7 +166,7 @@ export function TabsLayout({
           </motion.div>
         </TabsContent>
 
-        <TabsContent value="info" className="mt-0">
+        <TabsContent value="info" key="info" className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -183,7 +183,7 @@ export function TabsLayout({
           </motion.div>
         </TabsContent>
 
-        <TabsContent value="variants" className="mt-0">
+        <TabsContent value="variants" key="variants" className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

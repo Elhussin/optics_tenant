@@ -323,3 +323,103 @@
 [2026-01-30 14:54:57,081] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': 0, 'sku': '556456660000'}
 [2026-01-30 14:54:57,082] INFO product: M2M fields for FrameVariant: []
 [2026-01-30 14:54:57,082] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': 0, 'sku': '556456660000'}
+[2026-01-31 01:47:35,923] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'type', 'name', 'variant_type', 'brand'])
+[2026-01-31 01:47:35,926] INFO product: 📦 variants in validated_data: []
+[2026-01-31 01:47:35,927] INFO product: 📦 variants_data after pop: []
+[2026-01-31 01:47:35,946] INFO product: ✅ Product created: 21 - 3025
+[2026-01-31 01:47:35,962] INFO product: 🔍 _manage_variants called for product 21 (3025)
+[2026-01-31 01:47:35,963] INFO product: 📋 variants_data received: []
+[2026-01-31 01:47:35,964] WARNING product: ⚠️ variants_data is empty or None, skipping variant creation
+[2026-01-31 01:52:51,036] INFO product: 🔍 _manage_variants called for product 2 (Avtor)
+[2026-01-31 01:52:51,038] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '500', 'discount_percentage': '30', 'sku': '', 'warranty': 182, 'weight': '', 'dimensions': '', 'frame_color': 13, 'lens_diameter': 119, 'temple_length': 20, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 18, 'attributes': [], 'id': ''}]
+[2026-01-31 01:52:51,039] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 01:52:51,040] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 01:52:51,040] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-01-31 01:52:51,043] INFO product: Converted FK field: frame_color=13 -> frame_color_id=13
+[2026-01-31 01:52:51,046] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-01-31 01:52:51,046] INFO product: Converted FK field: temple_length=20 -> temple_length_id=20
+[2026-01-31 01:52:51,047] INFO product: Converted FK field: bridge_width=113 -> bridge_width_id=113
+[2026-01-31 01:52:51,047] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-01-31 01:52:51,047] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-01-31 01:52:51,048] INFO product: Converted FK field: lens_color=18 -> lens_color_id=18
+[2026-01-31 01:52:51,048] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '500', 'discount_percentage': '30', 'warranty_id': 182, 'frame_color_id': 13, 'lens_diameter_id': 119, 'temple_length_id': 20, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 18}
+[2026-01-31 01:52:51,048] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 01:52:51,048] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '500', 'discount_percentage': '30', 'warranty_id': 182, 'frame_color_id': 13, 'lens_diameter_id': 119, 'temple_length_id': 20, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 18}
+[2026-01-31 01:53:36,183] INFO product: 🔍 _manage_variants called for product 2 (Avtor)
+[2026-01-31 01:53:36,186] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '500', 'discount_percentage': '30', 'sku': '', 'warranty': 182, 'weight': '', 'dimensions': '', 'frame_color': 13, 'lens_diameter': 119, 'temple_length': 20, 'bridge_width': 113, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 18, 'attributes': [], 'id': ''}]
+[2026-01-31 01:53:36,234] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 01:53:36,234] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 01:53:36,234] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-01-31 01:53:36,235] INFO product: Converted FK field: frame_color=13 -> frame_color_id=13
+[2026-01-31 01:53:36,235] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-01-31 01:53:36,236] INFO product: Converted FK field: temple_length=20 -> temple_length_id=20
+[2026-01-31 01:53:36,236] INFO product: Converted FK field: bridge_width=113 -> bridge_width_id=113
+[2026-01-31 01:53:36,236] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-01-31 01:53:36,236] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-01-31 01:53:36,236] INFO product: Converted FK field: lens_color=18 -> lens_color_id=18
+[2026-01-31 01:53:36,236] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '500', 'discount_percentage': '30', 'warranty_id': 182, 'frame_color_id': 13, 'lens_diameter_id': 119, 'temple_length_id': 20, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 18}
+[2026-01-31 01:53:36,236] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 01:53:36,237] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '500', 'discount_percentage': '30', 'warranty_id': 182, 'frame_color_id': 13, 'lens_diameter_id': 119, 'temple_length_id': 20, 'bridge_width_id': 113, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 18}
+[2026-01-31 03:01:37,957] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:01:37,969] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:01:37,978] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:01:37,982] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:01:37,984] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:01:37,984] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:01:37,984] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:05:25,547] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:05:25,551] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:05:25,552] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:05:25,553] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:05:25,554] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:05:25,555] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:05:25,556] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:06:03,380] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:06:03,382] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:06:03,384] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:06:03,385] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:06:03,386] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:06:03,388] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:06:03,392] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:12:19,744] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:12:19,746] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:12:19,746] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:12:19,747] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:12:19,747] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:12:19,747] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:12:19,747] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:12:19,802] ERROR product: Validation errors found in variants: [{'frame_color': ['This field cannot be null.'], 'lens_diameter': ['This field cannot be null.'], 'temple_length': ['This field cannot be null.'], 'bridge_width': ['This field cannot be null.']}]
+[2026-01-31 03:12:34,919] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:12:34,919] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:12:34,922] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:12:34,923] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:12:34,924] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:12:34,925] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:12:34,926] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020'}
+[2026-01-31 03:12:34,960] ERROR product: Validation errors found in variants: [{'frame_color': ['This field cannot be null.'], 'lens_diameter': ['This field cannot be null.'], 'temple_length': ['This field cannot be null.'], 'bridge_width': ['This field cannot be null.']}]
+[2026-01-31 03:13:26,018] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:13:26,019] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': 9, 'lens_diameter': 118, 'temple_length': 20, 'bridge_width': 91, 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:13:26,020] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:13:26,022] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:13:26,023] INFO product: Converted FK field: frame_color=9 -> frame_color_id=9
+[2026-01-31 03:13:26,023] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-01-31 03:13:26,026] INFO product: Converted FK field: temple_length=20 -> temple_length_id=20
+[2026-01-31 03:13:26,027] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-01-31 03:13:26,027] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020', 'frame_color_id': 9, 'lens_diameter_id': 118, 'temple_length_id': 20, 'bridge_width_id': 91}
+[2026-01-31 03:13:26,027] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:13:26,028] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020', 'frame_color_id': 9, 'lens_diameter_id': 118, 'temple_length_id': 20, 'bridge_width_id': 91}
+[2026-01-31 03:13:56,692] INFO product: 🔍 _manage_variants called for product 3 (Ovel)
+[2026-01-31 03:13:56,692] INFO product: 📋 variants_data received: [{'product_type': 171, 'last_purchase_price': '', 'selling_price': '600', 'discount_percentage': '020', 'sku': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': 9, 'lens_diameter': 118, 'temple_length': 20, 'bridge_width': 91, 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-01-31 03:13:56,723] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-01-31 03:13:56,723] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-01-31 03:13:56,723] INFO product: Converted FK field: frame_color=9 -> frame_color_id=9
+[2026-01-31 03:13:56,724] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-01-31 03:13:56,724] INFO product: Converted FK field: temple_length=20 -> temple_length_id=20
+[2026-01-31 03:13:56,728] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-01-31 03:13:56,729] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020', 'frame_color_id': 9, 'lens_diameter_id': 118, 'temple_length_id': 20, 'bridge_width_id': 91}
+[2026-01-31 03:13:56,729] INFO product: M2M fields for FrameVariant: []
+[2026-01-31 03:13:56,730] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '600', 'discount_percentage': '020', 'frame_color_id': 9, 'lens_diameter_id': 118, 'temple_length_id': 20, 'bridge_width_id': 91}
+[2026-01-31 03:13:56,884] ERROR product: Unexpected error creating variant: duplicate key value violates unique constraint "products_productvariant_usku_key"
+DETAIL:  Key (usku)=(V-FR-RA-1013-4E074085) already exists.
+
+[2026-01-31 03:13:56,886] ERROR product: Validation errors found in variants: [{'non_field_errors': ['duplicate key value violates unique constraint "products_productvariant_usku_key"\nDETAIL:  Key (usku)=(V-FR-RA-1013-4E074085) already exists.\n']}]

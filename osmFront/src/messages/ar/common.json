@@ -678,18 +678,5 @@
     "placeholder": "بحث...",
     "clearSearch": "مسح البحث",
     "filters": "الفلاتر"
-  },
-  "importProducts": "استيراد المنتجات",
-  "importProductsDescription": "قم برفع ملف CSV لاستيراد المنتجات بالجملة. يجب أن يتبع الملف التنسيق المطلوب.",
-  "uploadCSV": "رفع ملف CSV",
-  "uploadCSVDescription": "اسحب وأفلت الملف هنا، أو انقر للاختيار.",
-  "selectFile": "اختيار ملف",
-  "startImport": "بدء الاستيراد",
-  "importSuccess": "تم الاستيراد بنجاح",
-  "importFailed": "فشل الاستيراد",
-  "importResult": "نتيجة الاستيراد",
-  "created": "تم إنشاؤها",
-  "skipped": "تم تخطيها",
-  "failed": "فشلت",
-  "errorLog": "سجل الأخطاء"
+  }
 }

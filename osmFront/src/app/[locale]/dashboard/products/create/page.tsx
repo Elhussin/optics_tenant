@@ -1,13 +1,9 @@
 "use client";
 import React, { Suspense } from "react";
 import { LoadingSpinner } from "@/src/shared/components/ui/loding";
-// const ProductForm = React.lazy(
-//   () => import("@/src/features/products/components/ProductForm")
-// );
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 
-const ProductForm = React.lazy(
-  () => import("@/src/features/products/add")
-);
+const ProductForm = React.lazy(() => import("@/src/features/products/add"));
 export default function CreateProductPage() {
   return (
     <Suspense
@@ -17,10 +13,7 @@ export default function CreateProductPage() {
         </div>
       }
     >
-      <ProductForm
-        alias="products_products_create"
-
-      />
+      <ProductForm alias={formsConfig.product.createAlias} />
     </Suspense>
   );
 }

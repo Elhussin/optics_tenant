@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema_field
@@ -400,9 +401,9 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at',
-                            'updated_at', 'description', 'usku']
+                            'updated_at', 'description', 'usku', 'last_purchase_price']
         extra_kwargs = {
-            'name': {'required': False}
+            'name': {'required': False, 'validators': []}
         }
 
     def create(self, validated_data):
@@ -418,14 +419,15 @@ class ProductSerializer(serializers.ModelSerializer):
 
         categories = validated_data.pop('categories', [])
 
-        product = Product.objects.create(**validated_data)
-        logger.info(f"✅ Product created: {product.id} - {product.name}")
+        with transaction.atomic():
+            product = Product.objects.create(**validated_data)
+            logger.info(f"✅ Product created: {product.id} - {product.name}")
 
-        if categories:
-            product.categories.set(categories)
+            if categories:
+                product.categories.set(categories)
 
-        # Create variants based on specific type
-        self._manage_variants(product, variants_data)
+            # Create variants based on specific type
+            self._manage_variants(product, variants_data)
 
         return product
 
@@ -433,21 +435,23 @@ class ProductSerializer(serializers.ModelSerializer):
         variants_data = validated_data.pop('variants', [])
         categories = validated_data.pop('categories', [])
 
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
+        with transaction.atomic():
+            for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+            instance.save()
 
-        if categories is not None:
-            instance.categories.set(categories)
+            if categories is not None:
+                instance.categories.set(categories)
 
-        # Manage variants
-        self._manage_variants(instance, variants_data)
+            # Manage variants
+            self._manage_variants(instance, variants_data)
 
         return instance
 
     def _manage_variants(self, product, variants_data):
         """Helper to create/update variants polymorphically"""
         import logging
+        from django.core.exceptions import ValidationError as DjangoValidationError
         logger = logging.getLogger('product')
         logger.info(
             f"🔍 _manage_variants called for product {product.id} ({product.name})")
@@ -469,154 +473,187 @@ class ProductSerializer(serializers.ModelSerializer):
             if str(variant.id) not in [str(x) for x in sent_variant_ids]:
                 variant.delete()
 
-        for vdata in variants_data:
-            variant_id = vdata.get('id')
-            attributes_data = vdata.pop('attributes', [])
+        variant_errors = []
+        has_errors = False
 
-            # Clean vdata: remove empty strings/nulls for optional fields to avoid validation errors
-            # Also convert ForeignKey fields to use _id suffix
-            clean_vdata = {}
+        for index, vdata in enumerate(variants_data):
+            # Default empty error dict for this index
+            error_dict = {}
 
-            # Get all ForeignKey field names from the model
-            fk_field_names = [
-                field.name for field in ModelClass._meta.get_fields()
-                if hasattr(field, 'related_model') and field.related_model is not None
-                # Exclude reverse relations
-                and not field.name.endswith('_set')
-            ]
-            logger.info(
-                f"FK fields for {ModelClass.__name__}: {fk_field_names}")
+            try:
+                variant_id = vdata.get('id')
+                attributes_data = vdata.pop('attributes', [])
 
-            for k, v in vdata.items():
-                if v == "" or v is None:
-                    continue
+                # Clean vdata: remove empty strings/nulls for optional fields to avoid validation errors
+                # Also convert ForeignKey fields to use _id suffix
+                clean_vdata = {}
 
-                # If this field is a ForeignKey and value is an ID (int or numeric string)
-                # Convert to _id suffix format
-                if k in fk_field_names:
-                    try:
-                        # Try to convert to int - if it works, it's an ID
-                        int_value = int(v)
-                        clean_vdata[f"{k}_id"] = int_value
-                        logger.info(
-                            f"Converted FK field: {k}={v} -> {k}_id={int_value}")
-                    except (ValueError, TypeError):
-                        # Not a numeric ID, use as-is (could be an instance)
+                # Get all ForeignKey field names from the model
+                fk_field_names = [
+                    field.name for field in ModelClass._meta.get_fields()
+                    if hasattr(field, 'related_model') and field.related_model is not None
+                    # Exclude reverse relations
+                    and not field.name.endswith('_set')
+                ]
+                logger.info(
+                    f"FK fields for {ModelClass.__name__}: {fk_field_names}")
+
+                for k, v in vdata.items():
+                    if v == "" or v is None:
+                        continue
+
+                    # If this field is a ForeignKey and value is an ID (int or numeric string)
+                    # Convert to _id suffix format
+                    if k in fk_field_names:
+                        try:
+                            # Try to convert to int - if it works, it's an ID
+                            int_value = int(v)
+                            clean_vdata[f"{k}_id"] = int_value
+                            logger.info(
+                                f"Converted FK field: {k}={v} -> {k}_id={int_value}")
+                        except (ValueError, TypeError):
+                            # Not a numeric ID, use as-is (could be an instance)
+                            clean_vdata[k] = v
+                    else:
                         clean_vdata[k] = v
+
+                logger.info(f"clean_vdata for variant: {clean_vdata}")
+
+                # 1. Create/Update Variant
+                current_variant = None
+                if variant_id and int(variant_id) in existing_variant_ids:
+                    try:
+                        current_variant = ModelClass.objects.get(
+                            id=variant_id, product=product)
+
+                        # Get M2M field names for update handling
+                        model_m2m_field_names = [
+                            field.name for field in ModelClass._meta.get_fields()
+                            if field.many_to_many and not field.auto_created
+                        ]
+
+                        m2m_updates = {}
+                        for attr, value in clean_vdata.items():
+                            # Check if this is a M2M field
+                            base_attr = attr.replace(
+                                '_id', '') if attr.endswith('_id') else attr
+                            if base_attr in model_m2m_field_names:
+                                m2m_updates[base_attr] = value
+                            elif hasattr(current_variant, attr):
+                                setattr(current_variant, attr, value)
+
+                        current_variant.save()
+
+                        # Handle M2M fields for update
+                        for m2m_field, m2m_value in m2m_updates.items():
+                            if m2m_value is not None:
+                                m2m_manager = getattr(
+                                    current_variant, m2m_field)
+                                if isinstance(m2m_value, list):
+                                    m2m_manager.set(m2m_value)
+                                else:
+                                    m2m_manager.set([m2m_value])
+                                logger.info(
+                                    f"Updated M2M field {m2m_field} = {m2m_value}")
+
+                        # Update description after M2M fields are set
+                        if m2m_updates:
+                            current_variant.save(force_description_update=True)
+                            logger.info(
+                                f"✅ Updated description after M2M fields")
+
+                    except ModelClass.DoesNotExist:
+                        pass
                 else:
-                    clean_vdata[k] = v
+                    # Remove 'id' from create data if present and empty/invalid
+                    if 'id' in clean_vdata:
+                        del clean_vdata['id']
 
-            logger.info(f"clean_vdata for variant: {clean_vdata}")
-
-            # 1. Create/Update Variant
-            current_variant = None
-            if variant_id and int(variant_id) in existing_variant_ids:
-                try:
-                    current_variant = ModelClass.objects.get(
-                        id=variant_id, product=product)
-
-                    # Get M2M field names for update handling
+                    # Extract ManyToMany fields before create
+                    # ManyToMany fields cannot be passed directly to create()
+                    m2m_fields = {}
                     model_m2m_field_names = [
                         field.name for field in ModelClass._meta.get_fields()
                         if field.many_to_many and not field.auto_created
                     ]
+                    logger.info(
+                        f"M2M fields for {ModelClass.__name__}: {model_m2m_field_names}")
 
-                    m2m_updates = {}
-                    for attr, value in clean_vdata.items():
-                        # Check if this is a M2M field
-                        base_attr = attr.replace(
-                            '_id', '') if attr.endswith('_id') else attr
-                        if base_attr in model_m2m_field_names:
-                            m2m_updates[base_attr] = value
-                        elif hasattr(current_variant, attr):
-                            setattr(current_variant, attr, value)
+                    for m2m_field in model_m2m_field_names:
+                        if m2m_field in clean_vdata:
+                            m2m_fields[m2m_field] = clean_vdata.pop(m2m_field)
+                        # Also check for _id suffix
+                        if f"{m2m_field}_id" in clean_vdata:
+                            m2m_fields[m2m_field] = clean_vdata.pop(
+                                f"{m2m_field}_id")
 
-                    current_variant.save()
+                    # Create the variant without M2M fields
+                    logger.info(f"Creating variant with data: {clean_vdata}")
+                    current_variant = ModelClass.objects.create(
+                        product=product, **clean_vdata)
 
-                    # Handle M2M fields for update
-                    for m2m_field, m2m_value in m2m_updates.items():
-                        if m2m_value is not None:
+                    # Now set M2M fields
+                    for m2m_field, m2m_value in m2m_fields.items():
+                        if m2m_value:
                             m2m_manager = getattr(current_variant, m2m_field)
                             if isinstance(m2m_value, list):
                                 m2m_manager.set(m2m_value)
                             else:
                                 m2m_manager.set([m2m_value])
                             logger.info(
-                                f"Updated M2M field {m2m_field} = {m2m_value}")
+                                f"Set M2M field {m2m_field} = {m2m_value}")
 
                     # Update description after M2M fields are set
-                    if m2m_updates:
+                    if m2m_fields:
                         current_variant.save(force_description_update=True)
                         logger.info(f"✅ Updated description after M2M fields")
 
-                except ModelClass.DoesNotExist:
-                    pass
-            else:
-                # Remove 'id' from create data if present and empty/invalid
-                if 'id' in clean_vdata:
-                    del clean_vdata['id']
+                # 2. Handle Extra Attributes
+                # Don't pop, might need it? actually pop is safer if not fields
+                custom_variant_type_id = clean_vdata.get('variant_type', None)
 
-                # Extract ManyToMany fields before create
-                # ManyToMany fields cannot be passed directly to create()
-                m2m_fields = {}
-                model_m2m_field_names = [
-                    field.name for field in ModelClass._meta.get_fields()
-                    if field.many_to_many and not field.auto_created
-                ]
-                logger.info(
-                    f"M2M fields for {ModelClass.__name__}: {model_m2m_field_names}")
+                if current_variant and attributes_data:
+                    for attr_item in attributes_data:
+                        attr_id = attr_item.get('attribute')
+                        val_id = attr_item.get('value')
 
-                for m2m_field in model_m2m_field_names:
-                    if m2m_field in clean_vdata:
-                        m2m_fields[m2m_field] = clean_vdata.pop(m2m_field)
-                    # Also check for _id suffix
-                    if f"{m2m_field}_id" in clean_vdata:
-                        m2m_fields[m2m_field] = clean_vdata.pop(
-                            f"{m2m_field}_id")
+                        if not attr_id or not val_id:
+                            continue
 
-                # Create the variant without M2M fields
-                logger.info(f"Creating variant with data: {clean_vdata}")
-                current_variant = ModelClass.objects.create(
-                    product=product, **clean_vdata)
+                        v_type_id = attr_item.get(
+                            'variant_type') or custom_variant_type_id
 
-                # Now set M2M fields
-                for m2m_field, m2m_value in m2m_fields.items():
-                    if m2m_value:
-                        m2m_manager = getattr(current_variant, m2m_field)
-                        if isinstance(m2m_value, list):
-                            m2m_manager.set(m2m_value)
-                        else:
-                            m2m_manager.set([m2m_value])
-                        logger.info(f"Set M2M field {m2m_field} = {m2m_value}")
+                        # If we still don't have variant_type_id (e.g. basic product with extra attrs?), default to something?
+                        # Or maybe skip.
+                        if not v_type_id:
+                            continue
 
-                # Update description after M2M fields are set
-                if m2m_fields:
-                    current_variant.save(force_description_update=True)
-                    logger.info(f"✅ Updated description after M2M fields")
+                        ExtraVariantAttribute.objects.update_or_create(
+                            variant=current_variant,
+                            attribute_id=attr_id,
+                            variant_type_id=v_type_id,
+                            defaults={'value_id': val_id}
+                        )
 
-            # 2. Handle Extra Attributes
-            # Don't pop, might need it? actually pop is safer if not fields
-            custom_variant_type_id = clean_vdata.get('variant_type', None)
+            # Catch Model Validation Errors
+            except DjangoValidationError as e:
+                has_errors = True
+                if hasattr(e, 'message_dict'):
+                    error_dict = e.message_dict
+                else:
+                    error_dict = {'non_field_errors': e.messages}
 
-            if current_variant and attributes_data:
-                for attr_item in attributes_data:
-                    attr_id = attr_item.get('attribute')
-                    val_id = attr_item.get('value')
+            # Catch other unexpected errors
+            except Exception as e:
+                has_errors = True
+                logger.error(f"Unexpected error creating variant: {str(e)}")
+                error_dict = {'non_field_errors': [str(e)]}
 
-                    if not attr_id or not val_id:
-                        continue
+            # Append the error dict (empty or populated) to the list
+            variant_errors.append(error_dict)
 
-                    v_type_id = attr_item.get(
-                        'variant_type') or custom_variant_type_id
-
-                    # If we still don't have variant_type_id (e.g. basic product with extra attrs?), default to something?
-                    # Or maybe skip.
-                    if not v_type_id:
-                        continue
-
-                    ExtraVariantAttribute.objects.update_or_create(
-                        variant=current_variant,
-                        attribute_id=attr_id,
-                        variant_type_id=v_type_id,
-                        defaults={'value_id': val_id}
-                    )
+        # After Loop: If any errors were found, raise them all at once
+        if has_errors:
+            logger.error(
+                f"Validation errors found in variants: {variant_errors}")
+            raise serializers.ValidationError({'variants': variant_errors})

@@ -48,11 +48,11 @@ export function ProductsList() {
     setPage,
     setPageSize,
     setFilters,
-  } = useFilteredListRequest({ alias: formsConfig["products"].listAlias || "" });
+  } = useFilteredListRequest({ alias: formsConfig["product"].listAlias || "" });
   
 
-  const { fields, isLoading: isFieldsLoading } =  useFilterDataOptions(formsConfig["products"].filterAlias || "", {
-      enabled: !!formsConfig["products"].filterAlias,
+  const { fields, isLoading: isFieldsLoading } =  useFilterDataOptions(formsConfig["product"].filterAlias || "", {
+      enabled: !!formsConfig["product"].filterAlias,
     });
 
   if (isLoading || isFieldsLoading) return <Loading4 />;

@@ -5,6 +5,7 @@ import { Loading4 } from "@/src/shared/components/ui/loding";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { ProductAdd } from "@/src/features/products/add";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 
 interface ProductEditProps {
   productId: string;
@@ -19,7 +20,7 @@ export function ProductEdit({ productId }: ProductEditProps) {
 
   // Fetch product data
   const { query, isBusy } = useApiForm({
-    alias: "products_products_retrieve", // ← صحيح: retrieve للمنتج
+    alias: formsConfig["product"].retrieveAlias || "", // ← صحيح: retrieve للمنتج
     defaultValues: { id: numericId }, // ← number وليس string
     enabled: !isNaN(numericId), // ← فقط إذا كان الـ id صحيح
   });

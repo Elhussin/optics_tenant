@@ -3,17 +3,18 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Upload, FileText, CheckCircle, AlertTriangle } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
 
 export default function ProductImportPage() {
-  const t = useTranslations("common");
+  const t = useTranslations("products.importCsv");
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<any>(null);
 
   const { submitForm, isBusy } = useApiForm({
-    alias: "products_products_import_csv_create",
+    alias: formsConfig["products-import-csv"].createAlias,
     onSuccess: (data) => {
       setResult(data);
       toast.success(t("importSuccess"));
@@ -25,7 +26,7 @@ export default function ProductImportPage() {
       console.error("Import Error:", error);
       // Fallback for visual display if result wasn't set by success
       if (error && typeof error === "object") {
-        setResult({ errors: [error.message || "Unknown error"] });
+        setResult({ errors: [error.message || t("unknownError")] });
       }
     },
   });
@@ -44,8 +45,15 @@ export default function ProductImportPage() {
     await submitForm({ file });
   };
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
+  };
+
   return (
     <div className="container mx-auto p-6 max-w-4xl space-y-8">
+      {/* ... header ... */}
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
           {t("importProducts")}
@@ -64,19 +72,22 @@ export default function ProductImportPage() {
           </p>
 
           <input
+            ref={fileInputRef}
             type="file"
             accept=".csv"
+            title={t("uploadCSV")}
             onChange={handleFileChange}
             className="hidden"
             id="csv-upload"
           />
-          <label htmlFor="csv-upload">
-            <ActionButton
-              variant="secondary"
-              icon={<FileText className="w-5 h-5" />}
-              label={file ? file.name : t("selectFile")}
-            />
-          </label>
+
+          <ActionButton
+            onClick={triggerFileUpload}
+            variant="secondary"
+            icon={<FileText className="w-5 h-5" />}
+            label={file ? file.name : t("selectFile")}
+            type="button"
+          />
         </div>
 
         {file && (

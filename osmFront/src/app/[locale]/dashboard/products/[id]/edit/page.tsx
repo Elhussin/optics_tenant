@@ -4,7 +4,7 @@ import React, { Suspense, use } from "react";
 import { Loading4 } from "@/src/shared/components/ui/loding";
 import { ArrowRight } from "lucide-react";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-
+import { useTranslations } from "next-intl";
 const ProductEdit = React.lazy(() => import("@/src/features/products/edit"));
 
 interface PageProps {
@@ -14,6 +14,7 @@ interface PageProps {
 export default function ProductEditPage({ params }: PageProps) {
   const { id } = use(params);
     const numericId = parseInt(id, 10);
+    const t = useTranslations("products.editProduct");
 
 
   return (
@@ -24,11 +25,11 @@ export default function ProductEditPage({ params }: PageProps) {
           icon={<ArrowRight size={20} />}
           variant="ghost"
           navigateTo="/dashboard/products"
-          title="العودة للقائمة"
+          title={t("backToProducts")}
         />
         <div>
-          <h1 className="text-2xl font-bold text-main">تعديل المنتج</h1>
-          <p className="text-sm text-secondary">قم بتحديث بيانات المنتج</p>
+          <h1 className="text-2xl font-bold text-main">{t("title")}</h1>
+          <p className="text-sm text-secondary">{t("description")}</p>
         </div>
       </div>
 

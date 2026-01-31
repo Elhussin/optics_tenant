@@ -7,7 +7,8 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useRouter } from "next/navigation";
-
+import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { useTranslations } from "next-intl";
 const AddVariant = React.lazy(
   () => import("@/src/features/products/variant/AddVariant")
 );
@@ -21,9 +22,11 @@ export default function AddVariantPage({ params }: PageProps) {
   const router = useRouter();
   const numericId = parseInt(id, 10);
 
+  const t = useTranslations("products.variants");
+
   // Fetch product to get variant_type and type
   const { query, isBusy } = useApiForm({
-    alias: "products_products_retrieve",
+    alias:formsConfig["product-variants"].retrieveAlias,
     defaultValues: { id: numericId },
     enabled: !isNaN(numericId),
   });
@@ -35,7 +38,7 @@ export default function AddVariantPage({ params }: PageProps) {
   }
 
   if (isError || !product) {
-    return <NotFound error="لم يتم العثور على المنتج" />;
+    return <NotFound error={t("noProduct")}/>;
   }
 
   return (
@@ -46,12 +49,12 @@ export default function AddVariantPage({ params }: PageProps) {
           icon={<ArrowRight size={20} />}
           variant="ghost"
           navigateTo={`/dashboard/products/${id}`}
-          title="العودة للمنتج"
+          title={t("backToProduct")}
         />
         <div>
-          <h1 className="text-2xl font-bold text-main">إضافة متغير جديد</h1>
+          <h1 className="text-2xl font-bold text-main">{t("addNew")}</h1>
           <p className="text-sm text-secondary">
-            للمنتج: {product.name || `${product.brand_name} ${product.model}`}
+            {t("forProduct")}: {product.name || `${product.brand_name} ${product.model}`}
           </p>
         </div>
       </div>

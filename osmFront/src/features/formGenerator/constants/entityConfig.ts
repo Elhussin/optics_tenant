@@ -149,7 +149,7 @@ export const formsConfig: Record<string, FormConfig> = {
       "permission",
     ],
   },
-  "contact-us":{
+  "contact-us": {
     schemaName: "ContactUsRequest",
     listAlias: "users_contact_us_list",
     createAlias: "users_contact_us_create",
@@ -1422,6 +1422,11 @@ export const formsConfig: Record<string, FormConfig> = {
       "description",
     ],
   },
+
+  // fast action
+  "products-import-csv": {
+    createAlias: "products_products_import_csv_create",
+  },
 };
 
 export const featuresConfig: Record<string, FormConfig> = {
@@ -1469,5 +1474,7 @@ export const featuresConfig: Record<string, FormConfig> = {
   "tenants-activate": {
     retrieveAlias: "tenants_activate_retrieve",
   },
+
+
 
 };
