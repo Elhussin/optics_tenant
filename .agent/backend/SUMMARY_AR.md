@@ -185,7 +185,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         model = ProductVariant
         fields = [
             'id', 
-            'usku', 
+            'sku', 
             'description',  # ← جاهز للاستخدام!
             'selling_price',
             'discount_price',
@@ -248,7 +248,7 @@ class FrameVariantSerializer(ProductVariantSerializer):
 // في osmFront
 interface ProductVariant {
   id: number;
-  usku: string;
+  sku: string;
   description: string;  // ← استخدام الوصف
   selling_price: number;
 }
@@ -261,8 +261,8 @@ interface ProductVariant {
 ```python
 # في apps/products/admin.py
 class ProductVariantAdmin(admin.ModelAdmin):
-    readonly_fields = ['usku', 'description']
-    list_display = ['usku', 'product', 'description', 'selling_price']
+    readonly_fields = ['sku', 'description']
+    list_display = ['sku', 'product', 'description', 'selling_price']
 ```
 
 ---

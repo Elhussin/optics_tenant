@@ -23,21 +23,21 @@ def generate_sku_code(instance):
 
     # Add variant specific fields to hash if available
     if variant:
-        if product.type in ['EW', 'SG'] and hasattr(variant, '_eyewear_fields'):
+        if product.main_group in ['EW', 'SG'] and hasattr(variant, '_eyewear_fields'):
             fields += variant._eyewear_fields()
-        elif product.type in ['SL', 'CL'] and hasattr(variant, '_lenses_fields'):
+        elif product.main_group in ['SL', 'CL'] and hasattr(variant, '_lenses_fields'):
             fields += variant._lenses_fields()
 
     # Fallback or specific types
-    if product.type in ['AX', 'DV', 'OT'] or not variant:
-        fields += [str(product.type), str(product.model or '')]
+    if product.main_group in ['AX', 'DV', 'OT'] or not variant:
+        fields += [str(product.main_group), str(product.model or '')]
 
     # Join all fields to create a base string
     base_string = "-".join([str(f).strip() for f in fields])
     hash_value = hashlib.sha256(base_string.encode()).hexdigest()[:8].upper()
 
     # Human Readable Part
-    type_code = product.type
+    type_code = product.main_group
 
     # Get Brand Name safely
     brand_name = 'XX'

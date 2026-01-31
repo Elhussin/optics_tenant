@@ -59,7 +59,7 @@ const PRODUCT_COLORS: Record<string, string> = {
 export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
   const t = useTranslations("products");
   const handleTypeSelect = (value: string) => {
-    form.setValue("type", value, { shouldValidate: true });
+    form.setValue("main_group", value, { shouldValidate: true });
     // Reset variant_type when product type changes
     form.setValue("variant_type", "", { shouldValidate: false });
   };
@@ -73,7 +73,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
   }, [productType]);
 
   // Get form errors
-  const typeError = form.formState.errors?.type;
+  const typeError = form.formState.errors?.main_group;
   const variantError = form.formState.errors?.variant_type;
 
   return (
@@ -81,7 +81,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
       {/* ✨ Product Type Selection */}
       <FormField
         control={form.control}
-        name="type"
+        name="main_group"
         render={({ field, fieldState }) => (
           <FormItem>
             <FormLabel className="text-xl font-black text-foreground mb-4 block ">

@@ -144,7 +144,7 @@
       {variants.map((variant, index) => (
         <div className="p-4 border rounded-lg">
           <span>المتغير #{index + 1}</span>
-          <span>{variant.usku}</span>
+          <span>{variant.sku}</span>
           ...
         </div>
       ))}
@@ -185,7 +185,7 @@
 <div className="p-4 border rounded-lg dark:border-gray-700">
   <div className="flex justify-between mb-3">
     <span className="text-sm font-medium">المتغير #{index + 1}</span>
-    <span className="text-xs">{variant.usku}</span>
+    <span className="text-xs">{variant.sku}</span>
   </div>
   <div className="space-y-2 text-sm">
     <div className="flex justify-between">
@@ -212,7 +212,7 @@
   <div className="relative p-5 border-2 border-primary/30 rounded-xl bg-elevated/50 hover:bg-elevated hover:scale-[1.02]">
     <div className="flex items-center justify-between mb-4">
       <Badge variant="default">المتغير #{index + 1}</Badge>
-      <span className="font-mono">{variant.usku}</span>
+      <span className="font-mono">{variant.sku}</span>
     </div>
 
     <div className="space-y-3">

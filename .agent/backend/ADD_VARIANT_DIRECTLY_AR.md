@@ -71,7 +71,7 @@ POST /api/product-variants/
 ```json
 {
   "id": 456,
-  "usku": "V-SL-ZE-1153-ABC123",
+  "sku": "V-SL-ZE-1153-ABC123",
   "description": "Zeiss 1153 | SPH -20.00 - CYL -07.50 | DIAM 62 - MATERIAL Plastic - COLOR Green - COATINGS Anti-Glare, UV Protection",
   "product": 55,
   "product_name": "Zeiss 1153",

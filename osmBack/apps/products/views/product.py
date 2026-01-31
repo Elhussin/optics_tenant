@@ -51,7 +51,6 @@ class ProductVariantViewSet(ProductBaseViewSet):
     # Actual search fields - use product__name for relationships
     search_fields = [
         "sku",
-        "usku",
         "product__name",
         "product__model",
         "product__brand__name",

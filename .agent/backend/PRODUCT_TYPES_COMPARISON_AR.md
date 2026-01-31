@@ -282,7 +282,7 @@ SHA-256 hash → "F1A2B3C4"
     ↓
 بناء الكود → "V-EW-RA-AVIA-F1A2B3C4"
     ↓
-حفظ في variant.usku
+حفظ في variant.sku
 ```
 
 ---

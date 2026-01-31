@@ -43,7 +43,7 @@ class ProductVariantSerializer(serializers.ModelSerializer):
         model = ProductVariant
         exclude = ['is_deleted']
         read_only_fields = [
-            'id', 'usku', 'discount_price', 'images',
+            'id', 'sku', 'discount_price', 'images',
             'created_at', 'updated_at', 'product'
         ]
 
@@ -58,7 +58,7 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
         model = ProductVariant
         exclude = ['is_deleted']
         read_only_fields = [
-            'id', 'usku', 'discount_price', 'images',
+            'id', 'sku', 'discount_price', 'images',
             'created_at', 'updated_at', 'description'
         ]
         # Use extra_kwargs to make all fields optional
@@ -363,12 +363,12 @@ class ProductSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    # Use CharField with source for read, but allow write on 'type' model field
-    # Actually, default ModelSerializer behavior for 'type' (a choice field) is fine.
+    # Use CharField with source for read, but allow write on 'main_group' model field
+    # actually default ModelSerializer behavior for 'main_group' (a choice field) is fine.
     # We only override it if we want the DISPLAY value in GET.
-    # Let's use a separate field for display to keep 'type' writable.
-    type_display = serializers.CharField(
-        source='get_type_display', read_only=True)
+    # Let's use a separate field for display to keep 'main_group' writable.
+    main_group_display = serializers.CharField(
+        source='get_main_group_display', read_only=True)
 
     # 👈 variants READ logic
     variants = serializers.SerializerMethodField()
@@ -401,7 +401,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         exclude = ['is_deleted']
         read_only_fields = ['id', 'created_at',
-                            'updated_at', 'description', 'usku', 'last_purchase_price']
+                            'updated_at', 'description', 'sku', 'last_purchase_price']
         extra_kwargs = {
             'name': {'required': False, 'validators': []}
         }

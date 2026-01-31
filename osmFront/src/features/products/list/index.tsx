@@ -170,8 +170,8 @@ function ProductCard({ product }: { product: any }) {
 
         {/* SKU */}
         <div className="pt-2 border-t border-gray-100 dark:border-gray-700">
-          <p className="text-xs text-secondary truncate" title={product.usku}>
-            SKU: {product.usku || "-"}
+          <p className="text-xs text-secondary truncate" title={product.sku}>
+            SKU: {product.sku || "-"}
           </p>
         </div>
 

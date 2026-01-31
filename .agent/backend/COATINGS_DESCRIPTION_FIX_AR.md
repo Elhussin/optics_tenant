@@ -113,7 +113,7 @@ variant.save(force_description_update=True)
 ### قبل الحل:
 ```json
 {
-  "usku": "V-SL-ZE-1153-ABC123",
+  "sku": "V-SL-ZE-1153-ABC123",
   "description": "Zeiss 1153 | SPH -19.50 - CYL -07.00 | DIAM 62 - MATERIAL Plastic - COLOR Green"
 }
 ```
@@ -121,7 +121,7 @@ variant.save(force_description_update=True)
 ### بعد الحل:
 ```json
 {
-  "usku": "V-SL-ZE-1153-ABC123",
+  "sku": "V-SL-ZE-1153-ABC123",
   "description": "Zeiss 1153 | SPH -19.50 - CYL -07.00 | DIAM 62 - MATERIAL Plastic - COLOR Green - COATINGS Anti-Glare, UV Protection, Scratch Resistant"
 }
 ```

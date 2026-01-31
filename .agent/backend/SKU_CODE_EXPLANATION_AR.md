@@ -286,8 +286,8 @@ variant = StokLensVariant(
 
 ### من `Product.save()`:
 ```python
-if not self.usku:
-    self.usku = generate_sku_code(self)
+if not self.sku:
+    self.sku = generate_sku_code(self)
 ```
 
 ### من `ProductVariant.build_sku()`:
@@ -296,9 +296,9 @@ return generate_sku_code(self)
 ```
 
 ### من `ProductVariant.clean()`:
-```python
-if not self.usku:
-    self.usku = self.build_sku()
+```python   
+if not self.sku:
+    self.sku = self.build_sku()
 ```
 
 ---

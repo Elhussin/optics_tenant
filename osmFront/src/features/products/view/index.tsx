@@ -145,7 +145,7 @@ export function ProductView({ productId }: ProductViewProps) {
             <InfoItem
               icon={<Barcode size={18} />}
               label={t("fields.sku")}
-              value={product.usku || "-"}
+              value={product.sku || "-"}
             />
             <InfoItem
               icon={<Sparkles size={18} />}
@@ -280,7 +280,7 @@ function VariantCard({ variant, index }: { variant: any; index: number }) {
             {t("variants.variantLabel", { number: index + 1 })}
           </Badge>
           <span className="text-xs text-secondary font-mono">
-            {variant.usku || "-"}
+            {variant.sku || "-"}
           </span>
         </div>
 

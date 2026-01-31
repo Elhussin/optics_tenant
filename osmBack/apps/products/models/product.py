@@ -75,10 +75,10 @@ class Product(BaseModel):
     # manufacturer = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
     brand = models.ForeignKey("Brand", on_delete=models.CASCADE)
     model = models.CharField(max_length=50)
-    type = models.CharField(max_length=50, choices=PRODUCT_TYPE_CHOICES)
+    main_group = models.CharField(max_length=50, choices=PRODUCT_TYPE_CHOICES)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True, editable=False)
-    usku = models.CharField(max_length=64, unique=True, editable=False,
+    sku = models.CharField(max_length=64, unique=True, editable=False,
                             help_text=_("Unique product SKU generated automatically"))
     variant_type = models.CharField(
         max_length=20, choices=VARIANT_TYPE_CHOICES, default='basic')
@@ -86,7 +86,7 @@ class Product(BaseModel):
     objects = ProductManager()
 
     class Meta:
-        unique_together = ('type', 'brand', 'model', 'name')
+        unique_together = ('main_group', 'brand', 'model')
 
     def __str__(self):
         return f"{self.brand.name} {self.model}"
@@ -94,24 +94,24 @@ class Product(BaseModel):
     def save(self, *args, **kwargs):
         if not self.name:
             self.name = f"{self.brand.name} {self.model}".title()
-            self.description = f"{self.type} {self.name}".upper()
+            self.description = f"{self.main_group} {self.name}".upper()
         else:
-            self.description = f"{self.type} {self.brand.name} {self.model} {self.name}".upper(
+            self.description = f"{self.main_group} {self.brand.name} {self.model} {self.name}".upper(
             )
 
         # 🔹 Generate Unique SKU
         # CHANGED: Use services.generate_sku_code (single source of truth)
-        if not self.usku:
+        if not self.sku:
             # Product doesn't have complex fields like variant, pass self
-            self.usku = generate_sku_code(self)
+            self.sku = generate_sku_code(self)
         super().save(*args, **kwargs)
 
 
 class ProductVariant(BaseModel):
     product = models.ForeignKey(
         Product, related_name='variants', on_delete=models.CASCADE)
-    sku = models.CharField(max_length=50, unique=True, blank=True, null=True)
-    usku = models.CharField(max_length=64, unique=True, editable=False)
+    factory_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    sku = models.CharField(max_length=64, unique=True, editable=False,  help_text=_("Unique product variant SKU generated automatically"))
     description = models.TextField(blank=True, editable=False,
                                    help_text=_("Auto-generated description based on variant specifications"))
     product_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE,
@@ -140,11 +140,11 @@ class ProductVariant(BaseModel):
                               'variant_id', 'attribute', 'value']
 
     def clean(self):
-        if not self.usku:
-            self.usku = self.build_sku()
+        if not self.sku:
+            self.sku = self.build_sku()
 
         # تحقق من التكرار
-        exists = self.__class__.objects.filter(usku=self.usku)
+        exists = self.__class__.objects.filter(sku=self.sku)
         if self.pk:
             exists = exists.exclude(pk=self.pk)
         if exists.exists():
@@ -168,12 +168,12 @@ class ProductVariant(BaseModel):
 
     class Meta:
         indexes = [
-            models.Index(fields=['usku']),
+            models.Index(fields=['sku']),
             models.Index(fields=['product_id'])
         ]
         constraints = [
             models.UniqueConstraint(
-                fields=['usku'], name='unique_variant_by_hash')
+                fields=['sku'], name='unique_variant_by_hash')
         ]
         verbose_name = _("Product Variant")
         verbose_name_plural = _("Product Variants")

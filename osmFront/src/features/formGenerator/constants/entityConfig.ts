@@ -904,7 +904,7 @@ export const formsConfig: Record<string, FormConfig> = {
       "supplier_name",
       "supplier_id",
       "model",
-      "type",
+      "main_group",
       "is_active",
     ],
   },

@@ -40,7 +40,7 @@
     },
     "fields": {
       "name": "Product Name",
-      "sku": "SKU",
+      "factory_code": "Factory Code",
       "brand": "Brand",
       "model": "Model",
       "category": "Category",

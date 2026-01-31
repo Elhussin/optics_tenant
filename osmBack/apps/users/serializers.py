@@ -68,21 +68,21 @@ class UserSerializer(serializers.ModelSerializer):
         source='roles',
         required=False
     )
-    tenant_settings = serializers.SerializerMethodField()
+    # tenant_settings = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
             'roles', 'role_ids', 'phone', 'password', 'client', 'is_active', 'is_staff',
-            'is_deleted', 'deleted_at', 'tenant_settings'
+            'is_deleted', 'deleted_at',
         ]
         read_only_fields = ['id', 'deleted_at', 'client']
 
-    def get_tenant_settings(self, obj):
-        if obj.client and hasattr(obj.client, 'tenantsettings'):
-            return TenantSettingsSerializer(obj.client.tenantsettings).data
-        return None
+    # def get_tenant_settings(self, obj):
+    #     if obj.client and hasattr(obj.client, 'tenantsettings'):
+    #         return TenantSettingsSerializer(obj.client.tenantsettings).data
+    #     return None
 
     def create(self, validated_data):
         from django.db import connection

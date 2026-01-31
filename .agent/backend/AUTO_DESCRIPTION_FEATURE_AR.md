@@ -217,10 +217,10 @@ class Command(BaseCommand):
                 # Force update description
                 variant.save(force_description_update=True)
                 updated_count += 1
-                self.stdout.write(f"✓ Updated: {variant.usku}")
+                self.stdout.write(f"✓ Updated: {variant.sku}")
             except Exception as e:
                 self.stdout.write(
-                    self.style.ERROR(f"✗ Failed: {variant.usku} - {str(e)}")
+                    self.style.ERROR(f"✗ Failed: {variant.sku} - {str(e)}")
                 )
         
         self.stdout.write(
@@ -243,7 +243,7 @@ pdm run python manage.py update_variant_descriptions
 class ProductVariantSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductVariant
-        fields = ['id', 'usku', 'description', 'selling_price', ...]
+        fields = ['id', 'sku', 'description', 'selling_price', ...]
 ```
 
 ### 2. **البحث في الأوصاف**
@@ -361,7 +361,7 @@ print(frame.description)
 # استخدام في API
 response = {
     'id': frame.id,
-    'sku': frame.usku,
+    'sku': frame.sku,
     'description': frame.description,  # ← جاهز للاستخدام!
     'price': frame.selling_price,
 }

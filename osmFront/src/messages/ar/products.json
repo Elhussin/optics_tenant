@@ -40,7 +40,7 @@
     },
     "fields": {
       "name": "اسم المنتج",
-      "sku": "رمز SKU",
+      "factory_code": "رمز SKU",
       "brand": "العلامة التجارية",
       "model": "الموديل",
       "category": "التصنيف",
