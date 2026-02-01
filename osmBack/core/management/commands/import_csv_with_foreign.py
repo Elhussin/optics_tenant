@@ -62,6 +62,26 @@ class Command(BaseCommand):
                     f"[ERROR] Model {app_label}.{model_name} not found.")
                 return
 
+            # Check if table exists in the current schema
+            from django.db import connection
+            table_name = model._meta.db_table
+            # For public schema, we can verify via introspection or try-catch later.
+            # But simpler is to wrap the whole operation in try-catch for ProgrammingError
+            # However, checking beforehand is cleaner if possible.
+
+            # Using cursor to simple check
+            with connection.cursor() as cursor:
+                # This is postgres specific check
+                cursor.execute(
+                    "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_schema = %s AND table_name = %s)",
+                    (schema_name, table_name)
+                )
+                exists = cursor.fetchone()[0]
+                if not exists:
+                    self.stdout.write(
+                        f"[WARN] Table {table_name} does not exist in schema {schema_name}. Skipping safe mode.")
+                    return
+
             created_count = 0
             skipped_count = 0
             failed_rows = []

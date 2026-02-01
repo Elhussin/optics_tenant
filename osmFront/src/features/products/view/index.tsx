@@ -24,6 +24,8 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { cn } from "@/src/shared/utils/cn";
 import { useTranslations } from "next-intl";
+import { InfoItem } from "../components/InfoItem";
+import { VariantCard } from "../components/VariantCard";
 
 // Product type badges (Premium variants)
 const TYPE_VARIANTS: Record<
@@ -37,10 +39,8 @@ const TYPE_VARIANTS: Record<
   DV: "primary",
   OT: "primary", // Changed from "neutral" to "primary"
 };
+import { ProductViewProps } from "../types";
 
-interface ProductViewProps {
-  productId: string;
-}
 
 export function ProductView({ productId }: ProductViewProps) {
   const t = useTranslations("products");
@@ -103,8 +103,8 @@ export function ProductView({ productId }: ProductViewProps) {
                   </h1>
                   <Badge variant={typeVariant}>
                     {product.type_display ||
-                      t(`types.${product.type}`) ||
-                      product.type}
+                      t(`main_group.${product.main_group}`) ||
+                      product.main_group}
                   </Badge>
                 </div>
                 {product.description && (
@@ -237,93 +237,5 @@ export function ProductView({ productId }: ProductViewProps) {
   );
 }
 
-// ✨ Info Item Component - Premium Design
-function InfoItem({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 p-3 rounded-xl bg-elevated/50 hover:bg-elevated transition-all duration-300 border-2 border-primary/20 hover:border-primary/40 group">
-      <div className="text-primary group-hover:scale-110 transition-transform">
-        {icon}
-      </div>
-      <div className="flex-1">
-        <p className="text-xs text-secondary mb-0.5">{label}</p>
-        <p className="font-semibold text-foreground">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-// ✨ Variant Card Component - Premium Design
-function VariantCard({ variant, index }: { variant: any; index: number }) {
-  const t = useTranslations("products");
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      transition={{ delay: index * 0.1, duration: 0.3 }}
-      className="relative group"
-    >
-      {/* Hover Glow */}
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-      <div className="relative p-5 border-2 border-primary/30 rounded-xl bg-elevated/50 hover:bg-elevated transition-all duration-300 hover:scale-[1.02]">
-        <div className="flex items-center justify-between mb-4">
-          <Badge variant="primary" className="text-xs">
-            {t("variants.variantLabel", { number: index + 1 })}
-          </Badge>
-          <span className="text-xs text-secondary font-mono">
-            {variant.sku || "-"}
-          </span>
-        </div>
-
-        <div className="space-y-3 text-sm">
-          <div className="flex justify-between items-center">
-            <span className="text-secondary">{t("fields.sellingPrice")}:</span>
-            <span className="font-bold text-primary text-base">
-              {variant.selling_price ? `${variant.selling_price} ` : "-"}
-            </span>
-          </div>
-
-          {variant.discount_percentage > 0 && (
-            <div className="flex justify-between items-center">
-              <span className="text-secondary">{t("fields.discount")}:</span>
-              <Badge variant="success" className="text-xs">
-                {variant.discount_percentage}%
-              </Badge>
-            </div>
-          )}
-
-          {variant.last_purchase_price && (
-            <div className="flex justify-between items-center">
-              <span className="text-secondary">
-                {t("fields.purchasePrice")}:
-              </span>
-              <span className="font-medium">{variant.last_purchase_price}</span>
-            </div>
-          )}
-
-          {variant.description && (
-            <div className="pt-3 border-t border-primary/20">
-              <p className="text-xs text-secondary mb-1">
-                {t("fields.description")}:
-              </p>
-              <p className="text-sm text-foreground line-clamp-2">
-                {variant.description}
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
 
 export default ProductView;

@@ -1,6 +1,6 @@
 {
   "products": {
-    "types": {
+    "main_group": {
       "CL": "عدسات لاصقة",
       "SL": "عدسات طبية",
       "SG": "نظارات شمسية",
@@ -94,7 +94,8 @@
       "attribute": "الخاصية",
       "value": "القيمة",
       "variant_type_custom": "نوع المتغير المخصص",
-      "product_type": "نوع المنتج"
+      "product_type": "نوع المنتج",
+      "sku": "رمز SKU"
     },
     "view": {
       "productNotFound": "لم يتم العثور على المنتج - تأكد من صحة رابط المنتج"

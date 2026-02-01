@@ -26,14 +26,19 @@ pdm run python manage.py migrate_schemas --shared
 pdm run python manage.py migrate_schemas --tenant
 ```
 
-### 3. إنشاء المستأجر العام (Public)
+# pdm run python manage.py create_public_tenant 
 ```bash
-pdm run python manage.py create_public_tenant
+pdm run python manage.py setup_tenant --name "Public Site" --schema public --domain localhost --password "3112"
+pdm run python manage.py setup_tenant --name "Store 1" --schema store1 --domain store1.localhost --password "3112"
+```
+
+
+# pdm run python manage.py create_tenant 
+```bash
+pdm run python manage.py setup_tenant --name "Store 1" --schema store1 --domain store1.localhost --password "3112"
 ```
 
 ### 4. تشغيل السيرفر
-```bash
-pdm run python manage.py runserver
 ```
 
 ---

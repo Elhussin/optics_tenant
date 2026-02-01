@@ -1,6 +1,6 @@
 {
   "products": {
-    "types": {
+    "main_group": {
       "CL": "Contact Lenses",
       "SL": "Spectacle Lenses",
       "SG": "Sunglasses",
@@ -95,7 +95,8 @@
       "attribute": "Attribute",
       "value": "Value",
       "variant_type_custom": "Custom Variant Type",
-      "product_type": "Product Type"
+      "product_type": "Product Type",
+      "sku":"SKU Serial"
     },
     "view": {
       "productNotFound": "Product not found - check the product link"

@@ -178,28 +178,37 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
+    username = serializers.CharField(label=_("Username or Email"))
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
         username = attrs.get("username")
         password = attrs.get("password")
 
-        # Optimize: Don't check DB twice manually. authenticate() does it.
-        # But here we want custom error msg "User does not exist" vs "Incorrect password"
-        user_check = User.objects.filter(username=username).first()
-        if user_check is None:
-            raise serializers.ValidationError(
-                {"username": [str(_("User does not exist"))]})
+        # Support login by email or username
+        user = None
 
-        user = authenticate(username=username, password=password)
+        # 1. Try to fetch user by email or username
+        from django.db.models import Q
+        user_obj = User.objects.filter(
+            Q(username=username) | Q(email=username)
+        ).first()
+
+        if user_obj:
+            # 2. Authenticate using the username found (even if email was provided)
+            # authenticate() usually expects the actual 'username' field of the model
+            user = authenticate(username=user_obj.username, password=password)
+
+        # 3. Security: Use generic error message to prevent enumeration attacks
+        # "Invalid credentials" is better than telling "User does not exist"
         if user is None:
-            # Could be inactive or wrong password
-            if user_check and not user_check.is_active:
+            # Check for inactive user specifically if you want, or just generic error
+            if user_obj and not user_obj.is_active:
                 raise serializers.ValidationError(
                     {"detail": [str(_("User account is disabled"))]})
+
             raise serializers.ValidationError(
-                {"password": [str(_("Incorrect password"))]})
+                {"detail": [str(_("Invalid credentials"))]})
 
         attrs['user'] = user
         return attrs

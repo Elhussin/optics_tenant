@@ -42,8 +42,8 @@ def send_message_acount_activated(email, schema_name, name):
         "Your store name: {schema_name}\n"
         "Your domain: {domain}\n"
         "Your login link: {protocol}://{domain}/auth/login\n"
-        "Your superuser email: {email}\n"
-        "Your superuser password: ***Enter at Registration\n\n"
+        "Your username: {email}\n"
+        "Your password: ***Enter at Registration\n\n"
         "Thanks,\n"
         "Solo Vizion Team"
     )
