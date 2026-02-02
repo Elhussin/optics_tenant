@@ -30,7 +30,7 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../store/useOrderFormStore";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 
 // Step Components
 import { CustomerStep } from "../create/steps/CustomerStep";
@@ -159,15 +159,15 @@ export function EditOrder({ orderId }: EditOrderProps) {
   // Step validation
   const canProceedToStep2 = useMemo(
     () => !!store.customerId,
-    [store.customerId]
+    [store.customerId],
   );
   const canProceedToStep3 = useMemo(
     () => !!store.customerId,
-    [store.customerId]
+    [store.customerId],
   );
   const canProceedToStep4 = useMemo(
     () => store.items.length > 0,
-    [store.items]
+    [store.items],
   );
 
   const handleNext = () => {
@@ -239,7 +239,7 @@ export function EditOrder({ orderId }: EditOrderProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-body flex items-center justify-center">
-        <Loading4 />
+        <SectionLoading />
       </div>
     );
   }

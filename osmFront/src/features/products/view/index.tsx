@@ -6,7 +6,7 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+// Loading4 removed
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
@@ -26,7 +26,7 @@ import { cn } from "@/src/shared/utils/cn";
 import { useTranslations } from "next-intl";
 import { InfoItem } from "../components/InfoItem";
 import { VariantCard } from "../components/VariantCard";
-
+import { Skeleton } from "@/src/shared/components/ui/Skeleton";
 // Product type badges (Premium variants)
 const TYPE_VARIANTS: Record<
   string,
@@ -40,7 +40,6 @@ const TYPE_VARIANTS: Record<
   OT: "primary", // Changed from "neutral" to "primary"
 };
 import { ProductViewProps } from "../types";
-
 
 export function ProductView({ productId }: ProductViewProps) {
   const t = useTranslations("products");
@@ -61,7 +60,7 @@ export function ProductView({ productId }: ProductViewProps) {
   }, [numericId]);
 
   if (isLoading || isBusy) {
-    return <Loading4 />;
+    return <Skeleton />;
   }
 
   if (isError || !product) {
@@ -102,9 +101,11 @@ export function ProductView({ productId }: ProductViewProps) {
                     {product.name || `${product.brand_name} ${product.model}`}
                   </h1>
                   <Badge variant={typeVariant}>
-                    {product.type_display ||
-                      t(`main_group.${product.main_group}`) ||
-                      product.main_group}
+                    {
+                      // product.type_display ||
+                      //   t(`main_group.${product.main_group}`) ||
+                      product.main_group
+                    }
                   </Badge>
                 </div>
                 {product.description && (
@@ -236,6 +237,5 @@ export function ProductView({ productId }: ProductViewProps) {
     </div>
   );
 }
-
 
 export default ProductView;

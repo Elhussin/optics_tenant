@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+
 import {
   Card,
   CardContent,
@@ -11,8 +11,6 @@ import {
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { Pencil, Eye, Plus, Package } from "lucide-react";
 import { useTranslations } from "next-intl";
-
-
 
 const TYPE_COLORS: Record<string, string> = {
   frames: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
@@ -27,7 +25,6 @@ const TYPE_COLORS: Record<string, string> = {
   accessories: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400",
   lenses: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
 };
-
 
 // Product Card Component
 export function ProductCard({ product }: { product: any }) {
@@ -45,7 +42,7 @@ export function ProductCard({ product }: { product: any }) {
           <span
             className={`px-2 py-1 text-xs font-medium rounded-full shrink-0 ${typeColor}`}
           >
-            { product.main_group}
+            {product.main_group}
             {/* /t(`main_group.${product.main_group}`) ||  */}
           </span>
         </div>

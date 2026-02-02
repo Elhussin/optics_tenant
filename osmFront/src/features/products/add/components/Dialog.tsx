@@ -16,7 +16,6 @@ export const Dialog = ({ setValue,defaultValues }: Props) => {
 
       <DynamicFormDialog
         entity={entityName}
-        // defaultValues={{currentFieldName:defaultValues}}
         onClose={(newItem) => {
             if (newItem) {
               setData(entityName, newItem);

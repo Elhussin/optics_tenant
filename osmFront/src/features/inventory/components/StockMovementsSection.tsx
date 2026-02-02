@@ -14,7 +14,7 @@ import {
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import type { StockMovement, MovementType } from "../types";
 
@@ -111,7 +111,7 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
     return (
       <GlassCard className="border-border-main/50" hover>
         <div className="p-6 flex items-center justify-center min-h-[300px]">
-          <Loading4 />
+          <SectionLoading />
         </div>
       </GlassCard>
     );

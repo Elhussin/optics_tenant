@@ -1,16 +1,17 @@
 "use client";
 
 import React, { Suspense, use } from "react";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { ArrowRight } from "lucide-react";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useRouter } from "next/navigation";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 import { useTranslations } from "next-intl";
+import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 const AddVariant = React.lazy(
-  () => import("@/src/features/products/variant/AddVariant")
+  () => import("@/src/features/products/variant/AddVariant"),
 );
 
 interface PageProps {
@@ -26,7 +27,7 @@ export default function AddVariantPage({ params }: PageProps) {
 
   // Fetch product to get variant_type and type
   const { query, isBusy } = useApiForm({
-    alias:formsConfig["product-variants"].retrieveAlias,
+    alias: featuresConfig["product"].retrieveAlias,
     defaultValues: { id: numericId },
     enabled: !isNaN(numericId),
   });
@@ -34,16 +35,16 @@ export default function AddVariantPage({ params }: PageProps) {
   const { data: product, isLoading, isError } = query;
 
   if (isLoading || isBusy) {
-    return <Loading4 />;
+    return <SectionLoading />;
   }
 
   if (isError || !product) {
-    return <NotFound error={t("noProduct")}/>;
+    return <NotFound error={t("noProduct")} />;
   }
 
   return (
     <div className="container mx-auto py-6 px-4">
-      {/* Header */}
+      {/* Header
       <div className="flex items-center gap-4 mb-6">
         <ActionButton
           icon={<ArrowRight size={20} />}
@@ -54,12 +55,19 @@ export default function AddVariantPage({ params }: PageProps) {
         <div>
           <h1 className="text-2xl font-bold text-main">{t("addNew")}</h1>
           <p className="text-sm text-secondary">
-            {t("forProduct")}: {product.name || `${product.brand_name} ${product.model}`}
+            {t("forProduct")}:{" "}
+            {product.name || `${product.brand_name} ${product.model}`}
           </p>
         </div>
-      </div>
+      </div> */}
+      <PageHeader
+        title={t("addNew")}
+        description={t("forProduct") + ": " + (product.name || `${product.brand_name} ${product.model}`)}
+        backUrl={`/dashboard/products/${id}`}
+        backTitle={t("backToProduct")}
+      />
 
-      <Suspense fallback={<Loading4 />}>
+      <Suspense fallback={<SectionLoading />}>
         <AddVariant
           productId={numericId}
           variantType={product.variant_type}

@@ -46,7 +46,7 @@ export function Spinner({
         "animate-spin",
         sizeStyles[size],
         variantStyles[variant],
-        className
+        className,
       )}
     />
   );
@@ -107,7 +107,7 @@ export function LoadingOverlay({
       className={cn(
         "absolute inset-0 flex flex-col items-center justify-center bg-surface/80 z-50 rounded-inherit",
         blur && "backdrop-blur-sm",
-        className
+        className,
       )}
     >
       <Spinner size="lg" />
@@ -135,6 +135,32 @@ export function ButtonSpinner({
       <Spinner size="xs" variant="white" />
       {loadingText || children}
     </span>
+  );
+}
+
+// Section Loading (Block Level)
+interface SectionLoadingProps {
+  message?: string;
+  className?: string;
+  height?: string;
+}
+
+export function SectionLoading({
+  message,
+  className,
+  height = "h-64",
+}: SectionLoadingProps) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col items-center justify-center gap-4 bg-muted/30 rounded-lg border border-dashed border-border/50",
+        height,
+        className,
+      )}
+    >
+      <Spinner size="lg" />
+      {message && <p className="text-secondary font-medium">{message}</p>}
+    </div>
   );
 }
 

@@ -144,7 +144,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                         )}
                       >
                         {/* Translate Type Label */}
-                        {t(`types.${type.value}`)}
+                        {t(`main_group.${type.value}`)}
                       </p>
                     </motion.button>
                   );
@@ -246,7 +246,7 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                         )}
                       >
                         <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
-                        <p className="text-sm font-semibold text-destructive">
+                        <p className="text-sm font-semibold text-destructive text-danger">
                           {fieldState.error.message ||
                             t("validation.selectVariantType")}
                         </p>

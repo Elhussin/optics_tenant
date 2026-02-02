@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { Package, Search, CheckCircle, AlertTriangle, Box } from "lucide-react";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import {
@@ -43,7 +44,7 @@ export function ProductStep() {
       });
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Fetch all product variants for adding new stock
@@ -52,13 +53,10 @@ export function ProductStep() {
   >(
     activeTab === "new" ? "products_variants_list" : null,
     async () => {
-      const response = await api.customRequest(
-        "products_variants_list",
-        {}
-      );
+      const response = await api.customRequest("products_variants_list", {});
       return extractArrayData<ProductVariant>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Filter existing stocks - with safe array check
@@ -69,7 +67,7 @@ export function ProductStep() {
       (stock) =>
         stock.variant_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         stock.variant_sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        stock.product_name?.toLowerCase().includes(searchQuery.toLowerCase())
+        stock.product_name?.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [stocks, searchQuery]);
 
@@ -85,7 +83,7 @@ export function ProductStep() {
         (variant.sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
           variant.product?.name
             ?.toLowerCase()
-            .includes(searchQuery.toLowerCase()))
+            .includes(searchQuery.toLowerCase())),
     );
   }, [variants, stocks, searchQuery]);
 
@@ -147,9 +145,7 @@ export function ProductStep() {
         {/* Existing Stocks Tab */}
         <TabsContent value="existing" className="mt-4">
           {stocksLoading ? (
-            <div className="text-center py-8 text-secondary">
-              جاري التحميل...
-            </div>
+            <SectionLoading message="جاري التحميل..." />
           ) : filteredStocks?.length === 0 ? (
             <div className="text-center py-12">
               <Box className="w-16 h-16 mx-auto text-gray-300 mb-4" />
@@ -207,7 +203,7 @@ export function ProductStep() {
                   <div className="flex items-center gap-2 mt-3">
                     <span
                       className={`px-2 py-0.5 text-xs rounded-full ${getStockStatusColor(
-                        stock.stock_status
+                        stock.stock_status,
                       )}`}
                     >
                       {stock.stock_status === "In Stock" && "متوفر"}
@@ -228,9 +224,7 @@ export function ProductStep() {
         {/* New Products Tab */}
         <TabsContent value="new" className="mt-4">
           {variantsLoading ? (
-            <div className="text-center py-8 text-secondary">
-              جاري التحميل...
-            </div>
+            <SectionLoading message="جاري التحميل..." />
           ) : filteredVariants?.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />

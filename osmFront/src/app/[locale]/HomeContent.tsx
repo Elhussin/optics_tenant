@@ -2,7 +2,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { Loading } from "@/src/shared/components/ui/Loading";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
 import LoginPage from "@/src/app/[locale]/auth/login/page";
 import ProfilePage from "@/src/app/[locale]/profile/page";
@@ -34,7 +34,7 @@ export default function HomeContent({ subdomain }: Props) {
   // Public landing page – keep the premium layout you already have
   return (
     <div className="bg-body text-main min-h-screen flex flex-col">
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<SectionLoading />}>
         <HeroSection />
         <FeaturesSection />
         <TestimonialsSection />

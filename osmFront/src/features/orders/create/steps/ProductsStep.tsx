@@ -9,7 +9,7 @@ import { Card, CardContent } from "@/src/shared/components/shadcn/ui/card";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../../store/useOrderFormStore";
 import { OrderItem } from "../../types";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 
 export function ProductsStep() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -95,7 +95,7 @@ export function ProductsStep() {
             <div className="absolute z-10 w-full mt-1 bg-elevated rounded-lg shadow-lg border max-h-72 overflow-y-auto">
               {isBusy ? (
                 <div className="p-4">
-                  <Loading4 />
+                  <SectionLoading height="h-32" />
                 </div>
               ) : searchResults.length > 0 ? (
                 searchResults.map((variant) => (

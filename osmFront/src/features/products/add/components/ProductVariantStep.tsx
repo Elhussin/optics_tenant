@@ -19,7 +19,6 @@ import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { RenderFields } from "@/src/shared/components/field/RenderFields";
 import {
   veriantConfig,
-  BasicVariantConfig,
   CustomVariantMainConfig,
 } from "@/src/features/products/constants/config";
 import { cn } from "@/src/shared/utils/cn";

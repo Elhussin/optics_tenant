@@ -1,17 +1,14 @@
-
-
 "use client";
 import LoginForm from "@/src/features/auth/components/LoginForm";
-import { getSubdomain} from "@/src/shared/utils/getSubdomain";
-import {useTranslations} from 'next-intl';
-import {formRequestProps} from "@/src/shared/types";
-import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { getSubdomain } from "@/src/shared/utils/getSubdomain";
+import { useTranslations } from "next-intl";
+import { formRequestProps } from "@/src/shared/types";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 
-
-export default  function RegisterPage(){
-const t = useTranslations('register');
-const t2 = useTranslations('tenants');
-const subdomain = getSubdomain();
+export default function RegisterPage() {
+  const t = useTranslations("register");
+  const t2 = useTranslations("tenants");
+  const subdomain = getSubdomain();
 
   const props: formRequestProps = {
     alias: featuresConfig["register-users"].createAlias!,
@@ -31,13 +28,13 @@ const subdomain = getSubdomain();
   }
 
   return (
-    <LoginForm 
+    <LoginForm
       istenant={props.istenant}
       alias={props.alias}
       submitText={props.submitText}
       mode="create"
       title={props.title}
-      message={props.message}     
+      message={props.message}
     />
   );
 }

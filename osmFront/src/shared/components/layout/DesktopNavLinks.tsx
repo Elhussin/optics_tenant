@@ -121,7 +121,7 @@ export default function DesktopNavLinks({
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleSearch}
                 className={cn(
-                  "relative p-2.5 rounded-xl",
+                  "relative p-2.5 rounded-xl cursor-pointer",
                   "transition-all duration-200",
                   isSearchVisible
                     ? "bg-destructive/10 text-destructive hover:bg-destructive/20"

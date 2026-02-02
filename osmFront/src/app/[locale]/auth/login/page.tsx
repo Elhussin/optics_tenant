@@ -2,7 +2,7 @@
 
 import LoginForm from "@/src/features/auth/components/LoginForm";
 import { useTranslations } from "next-intl";
-import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 export default function LoginPage() {
   const t = useTranslations("login");
   return (

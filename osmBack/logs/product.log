@@ -437,3 +437,169 @@ DETAIL:  Key (usku)=(V-FR-RA-1013-4E074085) already exists.
 [2026-01-31 13:51:07,378] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '900', 'discount_percentage': '20', 'warranty_id': 183, 'weight_id': 207, 'dimensions_id': 184}
 [2026-01-31 13:51:07,381] INFO product: M2M fields for ProductVariant: []
 [2026-01-31 13:51:07,386] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '900', 'discount_percentage': '20', 'warranty_id': 183, 'weight_id': 207, 'dimensions_id': 184}
+[2026-02-02 01:48:46,569] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'main_group', 'variant_type', 'brand'])
+[2026-02-02 01:48:46,572] INFO product: 📦 variants in validated_data: [{'product_type': 171, 'selling_price': '300', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-02-02 01:48:46,573] INFO product: 📦 variants_data after pop: [{'product_type': 171, 'selling_price': '300', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-02-02 01:48:46,610] INFO product: ✅ Product created: 16 - Ray Ban 3019
+[2026-02-02 01:48:46,635] INFO product: 🔍 _manage_variants called for product 16 (Ray Ban 3019)
+[2026-02-02 01:48:46,635] INFO product: 📋 variants_data received: [{'product_type': 171, 'selling_price': '300', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'frame_color': '', 'lens_diameter': '', 'temple_length': '', 'bridge_width': '', 'frame_shape': '', 'frame_material': '', 'lens_color': '', 'attributes': [], 'id': ''}]
+[2026-02-02 01:48:46,660] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 01:48:46,660] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-02 01:48:46,660] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '300', 'discount_percentage': 0}
+[2026-02-02 01:48:46,661] INFO product: M2M fields for FrameVariant: []
+[2026-02-02 01:48:46,664] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '300', 'discount_percentage': 0}
+[2026-02-02 01:48:46,700] ERROR product: Validation errors found in variants: [{'frame_color': ['This field cannot be null.'], 'lens_diameter': ['This field cannot be null.'], 'temple_length': ['This field cannot be null.'], 'bridge_width': ['This field cannot be null.']}]
+[2026-02-02 11:03:01,535] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'main_group', 'variant_type', 'brand'])
+[2026-02-02 11:03:01,537] INFO product: 📦 variants in validated_data: [{'product_type': 171, 'selling_price': '6000', 'discount_percentage': '020', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-02-02 11:03:01,538] INFO product: 📦 variants_data after pop: [{'product_type': 171, 'selling_price': '6000', 'discount_percentage': '020', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-02-02 11:03:01,554] INFO product: ✅ Product created: 17 - Ray Ban 5466
+[2026-02-02 11:03:01,569] INFO product: 🔍 _manage_variants called for product 17 (Ray Ban 5466)
+[2026-02-02 11:03:01,569] INFO product: 📋 variants_data received: [{'product_type': 171, 'selling_price': '6000', 'discount_percentage': '020', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-02-02 11:03:01,586] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: dimensions=186 -> dimensions_id=186
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: frame_color=11 -> frame_color_id=11
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: lens_diameter=122 -> lens_diameter_id=122
+[2026-02-02 11:03:01,587] INFO product: Converted FK field: temple_length=21 -> temple_length_id=21
+[2026-02-02 11:03:01,589] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-02-02 11:03:01,590] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-02-02 11:03:01,590] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-02-02 11:03:01,591] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-02-02 11:03:01,591] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '6000', 'discount_percentage': '020', 'factory_code': '111', 'warranty_id': 182, 'weight_id': 206, 'dimensions_id': 186, 'frame_color_id': 11, 'lens_diameter_id': 122, 'temple_length_id': 21, 'bridge_width_id': 91, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-02-02 11:03:01,592] INFO product: M2M fields for FrameVariant: []
+[2026-02-02 11:03:01,592] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '6000', 'discount_percentage': '020', 'factory_code': '111', 'warranty_id': 182, 'weight_id': 206, 'dimensions_id': 186, 'frame_color_id': 11, 'lens_diameter_id': 122, 'temple_length_id': 21, 'bridge_width_id': 91, 'frame_shape_id': 1, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-02-02 11:15:27,977] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'main_group', 'name', 'variant_type', 'brand'])
+[2026-02-02 11:15:27,984] INFO product: 📦 variants in validated_data: [{'product_type': 172, 'selling_price': '900', 'discount_percentage': '20', 'factory_code': '500', 'warranty': 182, 'weight': 207, 'dimensions': 184, 'frame_color': 9, 'lens_diameter': 121, 'temple_length': 20, 'bridge_width': 92, 'frame_shape': 2, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-02-02 11:15:27,987] INFO product: 📦 variants_data after pop: [{'product_type': 172, 'selling_price': '900', 'discount_percentage': '20', 'factory_code': '500', 'warranty': 182, 'weight': 207, 'dimensions': 184, 'frame_color': 9, 'lens_diameter': 121, 'temple_length': 20, 'bridge_width': 92, 'frame_shape': 2, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-02-02 11:15:28,005] INFO product: ✅ Product created: 18 - husaaa
+[2026-02-02 11:15:28,025] INFO product: 🔍 _manage_variants called for product 18 (husaaa)
+[2026-02-02 11:15:28,027] INFO product: 📋 variants_data received: [{'product_type': 172, 'selling_price': '900', 'discount_percentage': '20', 'factory_code': '500', 'warranty': 182, 'weight': 207, 'dimensions': 184, 'frame_color': 9, 'lens_diameter': 121, 'temple_length': 20, 'bridge_width': 92, 'frame_shape': 2, 'frame_material': 5, 'lens_color': 9, 'attributes': [], 'id': ''}]
+[2026-02-02 11:15:28,044] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 11:15:28,044] INFO product: Converted FK field: product_type=172 -> product_type_id=172
+[2026-02-02 11:15:28,045] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-02-02 11:15:28,045] INFO product: Converted FK field: weight=207 -> weight_id=207
+[2026-02-02 11:15:28,045] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-02-02 11:15:28,045] INFO product: Converted FK field: frame_color=9 -> frame_color_id=9
+[2026-02-02 11:15:28,045] INFO product: Converted FK field: lens_diameter=121 -> lens_diameter_id=121
+[2026-02-02 11:15:28,046] INFO product: Converted FK field: temple_length=20 -> temple_length_id=20
+[2026-02-02 11:15:28,046] INFO product: Converted FK field: bridge_width=92 -> bridge_width_id=92
+[2026-02-02 11:15:28,046] INFO product: Converted FK field: frame_shape=2 -> frame_shape_id=2
+[2026-02-02 11:15:28,047] INFO product: Converted FK field: frame_material=5 -> frame_material_id=5
+[2026-02-02 11:15:28,047] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-02-02 11:15:28,048] INFO product: clean_vdata for variant: {'product_type_id': 172, 'selling_price': '900', 'discount_percentage': '20', 'factory_code': '500', 'warranty_id': 182, 'weight_id': 207, 'dimensions_id': 184, 'frame_color_id': 9, 'lens_diameter_id': 121, 'temple_length_id': 20, 'bridge_width_id': 92, 'frame_shape_id': 2, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-02-02 11:15:28,049] INFO product: M2M fields for FrameVariant: []
+[2026-02-02 11:15:28,049] INFO product: Creating variant with data: {'product_type_id': 172, 'selling_price': '900', 'discount_percentage': '20', 'factory_code': '500', 'warranty_id': 182, 'weight_id': 207, 'dimensions_id': 184, 'frame_color_id': 9, 'lens_diameter_id': 121, 'temple_length_id': 20, 'bridge_width_id': 92, 'frame_shape_id': 2, 'frame_material_id': 5, 'lens_color_id': 9}
+[2026-02-02 13:31:10,584] INFO product: 🔍 _manage_variants called for product 17 (Ray Ban 5466)
+[2026-02-02 13:31:10,588] INFO product: 📋 variants_data received: [{'id': 13, 'product_type': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 6, 'lens_color': 9, 'attributes': ''}]
+[2026-02-02 13:31:10,589] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 13:31:10,590] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-02 13:31:10,590] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-02-02 13:31:10,590] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 13:31:10,590] INFO product: Converted FK field: dimensions=186 -> dimensions_id=186
+[2026-02-02 13:31:10,590] INFO product: Converted FK field: frame_color=11 -> frame_color_id=11
+[2026-02-02 13:31:10,591] INFO product: Converted FK field: lens_diameter=122 -> lens_diameter_id=122
+[2026-02-02 13:31:10,591] INFO product: Converted FK field: temple_length=21 -> temple_length_id=21
+[2026-02-02 13:31:10,592] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-02-02 13:31:10,592] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-02-02 13:31:10,594] INFO product: Converted FK field: frame_material=6 -> frame_material_id=6
+[2026-02-02 13:31:10,594] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-02-02 13:31:10,595] INFO product: clean_vdata for variant: {'id': 13, 'product_type_id': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty_id': 182, 'weight_id': 206, 'dimensions_id': 186, 'frame_color_id': 11, 'lens_diameter_id': 122, 'temple_length_id': 21, 'bridge_width_id': 91, 'frame_shape_id': 1, 'frame_material_id': 6, 'lens_color_id': 9}
+[2026-02-02 13:31:35,739] INFO product: 🔍 _manage_variants called for product 17 (Ray Ban 5466)
+[2026-02-02 13:31:35,740] INFO product: 📋 variants_data received: [{'id': 13, 'product_type': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 6, 'lens_color': 9, 'attributes': ''}]
+[2026-02-02 13:31:35,741] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 13:31:35,741] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-02 13:31:35,741] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-02-02 13:31:35,741] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 13:31:35,741] INFO product: Converted FK field: dimensions=186 -> dimensions_id=186
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: frame_color=11 -> frame_color_id=11
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: lens_diameter=122 -> lens_diameter_id=122
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: temple_length=21 -> temple_length_id=21
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: frame_material=6 -> frame_material_id=6
+[2026-02-02 13:31:35,742] INFO product: Converted FK field: lens_color=9 -> lens_color_id=9
+[2026-02-02 13:31:35,743] INFO product: clean_vdata for variant: {'id': 13, 'product_type_id': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty_id': 182, 'weight_id': 206, 'dimensions_id': 186, 'frame_color_id': 11, 'lens_diameter_id': 122, 'temple_length_id': 21, 'bridge_width_id': 91, 'frame_shape_id': 1, 'frame_material_id': 6, 'lens_color_id': 9}
+[2026-02-02 13:31:49,570] INFO product: 🔍 _manage_variants called for product 17 (Ray Ban 5466)
+[2026-02-02 13:31:49,571] INFO product: 📋 variants_data received: [{'id': 13, 'product_type': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 6, 'lens_color': 10, 'attributes': ''}]
+[2026-02-02 13:31:49,573] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 13:31:49,574] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-02 13:31:49,574] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-02-02 13:31:49,574] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: dimensions=186 -> dimensions_id=186
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: frame_color=11 -> frame_color_id=11
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: lens_diameter=122 -> lens_diameter_id=122
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: temple_length=21 -> temple_length_id=21
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: frame_material=6 -> frame_material_id=6
+[2026-02-02 13:31:49,575] INFO product: Converted FK field: lens_color=10 -> lens_color_id=10
+[2026-02-02 13:31:49,576] INFO product: clean_vdata for variant: {'id': 13, 'product_type_id': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty_id': 182, 'weight_id': 206, 'dimensions_id': 186, 'frame_color_id': 11, 'lens_diameter_id': 122, 'temple_length_id': 21, 'bridge_width_id': 91, 'frame_shape_id': 1, 'frame_material_id': 6, 'lens_color_id': 10}
+[2026-02-02 13:41:25,112] INFO product: 🔍 _manage_variants called for product 17 (Ray Ban 5466)
+[2026-02-02 13:41:25,114] INFO product: 📋 variants_data received: [{'id': 13, 'product_type': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty': 182, 'weight': 206, 'dimensions': 186, 'frame_color': 11, 'lens_diameter': 122, 'temple_length': 21, 'bridge_width': 91, 'frame_shape': 1, 'frame_material': 6, 'lens_color': 10, 'attributes': ''}]
+[2026-02-02 13:41:25,117] INFO product: FK fields for FrameVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 13:41:25,121] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-02 13:41:25,123] INFO product: Converted FK field: warranty=182 -> warranty_id=182
+[2026-02-02 13:41:25,134] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 13:41:25,135] INFO product: Converted FK field: dimensions=186 -> dimensions_id=186
+[2026-02-02 13:41:25,135] INFO product: Converted FK field: frame_color=11 -> frame_color_id=11
+[2026-02-02 13:41:25,137] INFO product: Converted FK field: lens_diameter=122 -> lens_diameter_id=122
+[2026-02-02 13:41:25,140] INFO product: Converted FK field: temple_length=21 -> temple_length_id=21
+[2026-02-02 13:41:25,140] INFO product: Converted FK field: bridge_width=91 -> bridge_width_id=91
+[2026-02-02 13:41:25,143] INFO product: Converted FK field: frame_shape=1 -> frame_shape_id=1
+[2026-02-02 13:41:25,153] INFO product: Converted FK field: frame_material=6 -> frame_material_id=6
+[2026-02-02 13:41:25,161] INFO product: Converted FK field: lens_color=10 -> lens_color_id=10
+[2026-02-02 13:41:25,163] INFO product: clean_vdata for variant: {'id': 13, 'product_type_id': 171, 'selling_price': '6000.00', 'discount_percentage': '20.00', 'factory_code': '111', 'warranty_id': 182, 'weight_id': 206, 'dimensions_id': 186, 'frame_color_id': 11, 'lens_diameter_id': 122, 'temple_length_id': 21, 'bridge_width_id': 91, 'frame_shape_id': 1, 'frame_material_id': 6, 'lens_color_id': 10}
+[2026-02-02 13:46:18,115] INFO product: Converted product ID 17 to instance
+[2026-02-02 13:46:18,116] INFO product: Creating variant for product 17, variant_type: frames
+[2026-02-02 13:46:18,116] INFO product: Using model class: FrameVariant
+[2026-02-02 13:46:18,116] INFO product: M2M fields for FrameVariant: []
+[2026-02-02 13:46:18,116] INFO product: ForeignKey fields for FrameVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 13:46:18,121] INFO product: 📋 validated_data before conversion: {'product': <Product: Ray Ban 5466>, 'product_type': 172, 'selling_price': '500', 'discount_percentage': '20', 'factory_code': '554666'}
+[2026-02-02 13:46:18,124] INFO product:   Processing: product=Ray Ban 5466 (type: Product)
+[2026-02-02 13:46:18,125] INFO product:   ➡️  Kept as-is: product=Ray Ban 5466
+[2026-02-02 13:46:18,125] INFO product:   Processing: product_type=172 (type: int)
+[2026-02-02 13:46:18,140] INFO product:   ✅ Converted FK: product_type=172 → Product Type: Frames Spectacle Glasses
+[2026-02-02 13:46:18,140] INFO product:   Processing: selling_price=500 (type: str)
+[2026-02-02 13:46:18,141] INFO product:   ➡️  Kept as-is: selling_price=500
+[2026-02-02 13:46:18,141] INFO product:   Processing: discount_percentage=20 (type: str)
+[2026-02-02 13:46:18,141] INFO product:   ➡️  Kept as-is: discount_percentage=20
+[2026-02-02 13:46:18,141] INFO product:   Processing: factory_code=554666 (type: str)
+[2026-02-02 13:46:18,141] INFO product:   ➡️  Kept as-is: factory_code=554666
+[2026-02-02 13:46:18,141] INFO product: Creating FrameVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'factory_code'])
+[2026-02-02 13:46:18,142] INFO product: Full create_data: {'product': <Product: Ray Ban 5466>, 'product_type': <AttributeValue: Product Type: Frames Spectacle Glasses>, 'selling_price': '500', 'discount_percentage': '20', 'factory_code': '554666'}
+[2026-02-02 13:46:46,238] INFO product: Converted product ID 17 to instance
+[2026-02-02 13:46:46,238] INFO product: Creating variant for product 17, variant_type: frames
+[2026-02-02 13:46:46,238] INFO product: Using model class: FrameVariant
+[2026-02-02 13:46:46,240] INFO product: M2M fields for FrameVariant: []
+[2026-02-02 13:46:46,241] INFO product: ForeignKey fields for FrameVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color']
+[2026-02-02 13:46:46,247] INFO product: 📋 validated_data before conversion: {'product': <Product: Ray Ban 5466>, 'product_type': 172, 'selling_price': '500', 'discount_percentage': '20', 'factory_code': '554666', 'dimensions': 184, 'frame_color': 10, 'lens_diameter': 121, 'temple_length': 25, 'bridge_width': 92, 'frame_shape': 2, 'frame_material': 5, 'lens_color': 9}
+[2026-02-02 13:46:46,248] INFO product:   Processing: product=Ray Ban 5466 (type: Product)
+[2026-02-02 13:46:46,248] INFO product:   ➡️  Kept as-is: product=Ray Ban 5466
+[2026-02-02 13:46:46,248] INFO product:   Processing: product_type=172 (type: int)
+[2026-02-02 13:46:46,263] INFO product:   ✅ Converted FK: product_type=172 → Product Type: Frames Spectacle Glasses
+[2026-02-02 13:46:46,263] INFO product:   Processing: selling_price=500 (type: str)
+[2026-02-02 13:46:46,264] INFO product:   ➡️  Kept as-is: selling_price=500
+[2026-02-02 13:46:46,264] INFO product:   Processing: discount_percentage=20 (type: str)
+[2026-02-02 13:46:46,264] INFO product:   ➡️  Kept as-is: discount_percentage=20
+[2026-02-02 13:46:46,264] INFO product:   Processing: factory_code=554666 (type: str)
+[2026-02-02 13:46:46,264] INFO product:   ➡️  Kept as-is: factory_code=554666
+[2026-02-02 13:46:46,264] INFO product:   Processing: dimensions=184 (type: int)
+[2026-02-02 13:46:46,273] INFO product:   ✅ Converted FK: dimensions=184 → Dimensions: Dimensions 30MM-140MM-150MM
+[2026-02-02 13:46:46,275] INFO product:   Processing: frame_color=10 (type: int)
+[2026-02-02 13:46:46,290] INFO product:   ✅ Converted FK: frame_color=10 → Color: Red
+[2026-02-02 13:46:46,292] INFO product:   Processing: lens_diameter=121 (type: int)
+[2026-02-02 13:46:46,302] INFO product:   ✅ Converted FK: lens_diameter=121 → Diameter: 56MM
+[2026-02-02 13:46:46,303] INFO product:   Processing: temple_length=25 (type: int)
+[2026-02-02 13:46:46,323] INFO product:   ✅ Converted FK: temple_length=25 → Length: 140
+[2026-02-02 13:46:46,324] INFO product:   Processing: bridge_width=92 (type: int)
+[2026-02-02 13:46:46,350] INFO product:   ✅ Converted FK: bridge_width=92 → Width: 60MM
+[2026-02-02 13:46:46,350] INFO product:   Processing: frame_shape=2 (type: int)
+[2026-02-02 13:46:46,364] INFO product:   ✅ Converted FK: frame_shape=2 → Shape: Round
+[2026-02-02 13:46:46,365] INFO product:   Processing: frame_material=5 (type: int)
+[2026-02-02 13:46:46,377] INFO product:   ✅ Converted FK: frame_material=5 → Material: Plastic
+[2026-02-02 13:46:46,378] INFO product:   Processing: lens_color=9 (type: int)
+[2026-02-02 13:46:46,388] INFO product:   ✅ Converted FK: lens_color=9 → Color: Green
+[2026-02-02 13:46:46,389] INFO product: Creating FrameVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'factory_code', 'dimensions', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color'])
+[2026-02-02 13:46:46,390] INFO product: Full create_data: {'product': <Product: Ray Ban 5466>, 'product_type': <AttributeValue: Product Type: Frames Spectacle Glasses>, 'selling_price': '500', 'discount_percentage': '20', 'factory_code': '554666', 'dimensions': <AttributeValue: Dimensions: Dimensions 30MM-140MM-150MM>, 'frame_color': <AttributeValue: Color: Red>, 'lens_diameter': <AttributeValue: Diameter: 56MM>, 'temple_length': <AttributeValue: Length: 140>, 'bridge_width': <AttributeValue: Width: 60MM>, 'frame_shape': <AttributeValue: Shape: Round>, 'frame_material': <AttributeValue: Material: Plastic>, 'lens_color': <AttributeValue: Color: Green>}

@@ -16,7 +16,7 @@ import { Link } from "@/src/app/i18n/navigation";
 import { cn } from "@/src/shared/utils/cn";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 
 export default function ForgotPasswordPage() {
   const [status, setStatus] = useState<
@@ -130,7 +130,7 @@ export default function ForgotPasswordPage() {
                       "absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors",
                       formRequest.errors.email
                         ? "text-danger"
-                        : "text-secondary group-focus-within:text-primary"
+                        : "text-secondary group-focus-within:text-primary",
                     )}
                   >
                     <Mail size={18} />
@@ -146,7 +146,7 @@ export default function ForgotPasswordPage() {
                       "focus:outline-none focus:ring-2 focus:ring-offset-1",
                       formRequest.errors.email
                         ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                        : "border-border-main focus:border-primary focus:ring-primary/20"
+                        : "border-border-main focus:border-primary focus:ring-primary/20",
                     )}
                     placeholder={t("emailPlaceholder")}
                   />
@@ -177,7 +177,7 @@ export default function ForgotPasswordPage() {
                         ? "bg-success/5 text-success border-success/20"
                         : status === "error" || status === "invalid"
                         ? "bg-danger/5 text-danger border-danger/20"
-                        : "bg-primary/5 text-primary border-primary/20"
+                        : "bg-primary/5 text-primary border-primary/20",
                     )}
                   >
                     {status === "success" ? (

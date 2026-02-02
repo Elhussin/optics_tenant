@@ -17,7 +17,7 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { Pagination } from "@/src/shared/components/views/Pagination";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { ConfirmDialog } from "@/src/shared/components/ui/dialogs/ConfirmDialog";
 
@@ -43,7 +43,9 @@ function getCustomerLabel(order: any) {
     );
   }
 
-  return order?.customer_name || (customer !== undefined ? String(customer) : "-");
+  return (
+    order?.customer_name || (customer !== undefined ? String(customer) : "-")
+  );
 }
 
 export default function OrdersListPage() {
@@ -73,7 +75,7 @@ export default function OrdersListPage() {
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [status, setStatus] = useState(searchParams.get("status") ?? "");
   const [paymentStatus, setPaymentStatus] = useState(
-    searchParams.get("payment_status") ?? ""
+    searchParams.get("payment_status") ?? "",
   );
   const [customer, setCustomer] = useState(searchParams.get("customer") ?? "");
 
@@ -149,12 +151,12 @@ export default function OrdersListPage() {
       s === "delivered"
         ? "success"
         : s === "cancelled"
-          ? "danger"
-          : s === "confirmed"
-            ? "info"
-            : s === "ready"
-              ? "warning"
-              : "neutral";
+        ? "danger"
+        : s === "confirmed"
+        ? "info"
+        : s === "ready"
+        ? "warning"
+        : "neutral";
 
     return (
       <Badge variant={variant as any} outline dot>
@@ -169,12 +171,12 @@ export default function OrdersListPage() {
       s === "paid"
         ? "success"
         : s === "partial"
-          ? "warning"
-          : s === "refunded"
-            ? "neutral"
-            : s === "disputed"
-              ? "danger"
-              : "danger";
+        ? "warning"
+        : s === "refunded"
+        ? "neutral"
+        : s === "disputed"
+        ? "danger"
+        : "danger";
 
     return (
       <Badge variant={variant as any} outline dot>
@@ -186,7 +188,7 @@ export default function OrdersListPage() {
   if (isLoading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
-        <Loading4 />
+        <SectionLoading />
       </div>
     );
   }
@@ -214,7 +216,8 @@ export default function OrdersListPage() {
                 <RefreshCw
                   className={cn(
                     "w-4 h-4",
-                    (cancelRequest.mutation.isPending || isLoading) && "animate-spin"
+                    (cancelRequest.mutation.isPending || isLoading) &&
+                      "animate-spin",
                   )}
                 />
               }
@@ -297,7 +300,9 @@ export default function OrdersListPage() {
           </div>
 
           <div className="lg:col-span-2">
-            <label className="block text-sm text-secondary mb-2">{t("table.date")}</label>
+            <label className="block text-sm text-secondary mb-2">
+              {t("table.date")}
+            </label>
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="date"
@@ -361,7 +366,8 @@ export default function OrdersListPage() {
               <tbody>
                 {filteredData.map((order: any) => {
                   const canCancel =
-                    order?.status !== "cancelled" && order?.status !== "delivered";
+                    order?.status !== "cancelled" &&
+                    order?.status !== "delivered";
 
                   return (
                     <tr
@@ -374,14 +380,17 @@ export default function OrdersListPage() {
                       <td className="py-3 px-4 text-main font-medium">
                         {getCustomerLabel(order)}
                       </td>
-                      <td className="py-3 px-4">{renderOrderStatus(order.status)}</td>
+                      <td className="py-3 px-4">
+                        {renderOrderStatus(order.status)}
+                      </td>
                       <td className="py-3 px-4 text-main font-semibold">
-                        {formatMoney(order.total_amount, locale)} {t("currency")}
+                        {formatMoney(order.total_amount, locale)}{" "}
+                        {t("currency")}
                       </td>
                       <td className="py-3 px-4 text-secondary">
                         {order.created_at
                           ? new Intl.DateTimeFormat(locale).format(
-                              new Date(order.created_at)
+                              new Date(order.created_at),
                             )
                           : "-"}
                       </td>
@@ -411,7 +420,9 @@ export default function OrdersListPage() {
                             size="sm"
                             icon={<XCircle size={18} />}
                             title={t("actions.cancel")}
-                            disabled={!canCancel || cancelRequest.mutation.isPending}
+                            disabled={
+                              !canCancel || cancelRequest.mutation.isPending
+                            }
                             onClick={() => openCancelDialog(order.id)}
                             className="rounded-lg border-2"
                           />

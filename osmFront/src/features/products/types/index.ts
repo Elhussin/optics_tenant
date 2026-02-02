@@ -70,3 +70,8 @@ export interface MultiSelectFieldProps {
 export interface ProductViewProps {
   productId: string;
 }
+
+export interface ProductAddProps {
+  id?: string;
+  initialData?: any;
+}

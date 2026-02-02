@@ -11,7 +11,7 @@ import {
 import { RenderField } from "./RenderField";
 import { cn } from "@/src/shared/utils/cn";
 import { Save, ArrowLeft, Sparkles, RotateCcw } from "lucide-react";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useTranslations } from "next-intl";
 import { ActionButton } from "@/src/shared/components/ui/buttons";

@@ -7,7 +7,7 @@ import { Pagination } from "@/src/shared/components/views/Pagination";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -45,7 +45,7 @@ const ViewEyeTest: React.FC<{ id?: string | number; title?: string }> = ({
     filterAlias || "",
     {
       enabled: !!filterAlias,
-    }
+    },
   );
 
   // Loading State

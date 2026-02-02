@@ -19,7 +19,7 @@ import { Link } from "@/src/app/i18n/navigation";
 import { cn } from "@/src/shared/utils/cn";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid") || "";
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
                             "absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors",
                             formRequest.formState.errors.new_password
                               ? "text-danger"
-                              : "text-secondary group-focus-within:text-primary"
+                              : "text-secondary group-focus-within:text-primary",
                           )}
                         >
                           <Lock size={18} />
@@ -155,7 +155,7 @@ export default function ResetPasswordPage() {
                             "focus:outline-none focus:ring-2 focus:ring-offset-1",
                             formRequest.formState.errors.new_password
                               ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                              : "border-border-main focus:border-primary focus:ring-primary/20"
+                              : "border-border-main focus:border-primary focus:ring-primary/20",
                           )}
                           placeholder={t("passwordPlaceholder")}
                           {...formRequest.register("new_password", {

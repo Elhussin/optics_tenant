@@ -10,7 +10,7 @@ import {
 import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
 import { ViewCardProps } from "@/src/shared/types";
 import { RenderButtons } from "@/src/shared/components/ui/buttons/RenderButtons";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import {
   Copy,
@@ -185,7 +185,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
                   onClick={() =>
                     handlePrint(
                       printRef as React.RefObject<HTMLDivElement>,
-                      t("detailsTitle")
+                      t("detailsTitle"),
                     )
                   }
                   title={t("print")}
@@ -247,7 +247,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
                       "border border-border-main/50",
                       "hover:border-primary/50 hover:bg-primary/5 hover:shadow-md",
                       "hover:-translate-y-0.5",
-                      isPrimary && "bg-primary/5 border-primary/20"
+                      isPrimary && "bg-primary/5 border-primary/20",
                     )}
                   >
                     {/* Field Label */}
@@ -264,7 +264,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
                         "font-semibold text-main break-words",
                         isPrimary ? "text-xl" : "text-base",
                         field.includes("status") &&
-                          "inline-block px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm"
+                          "inline-block px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm",
                       )}
                     >
                       {formatRelatedValue(value, field, t)}

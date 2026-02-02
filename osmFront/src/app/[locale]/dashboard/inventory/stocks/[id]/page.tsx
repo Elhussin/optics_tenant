@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { ArrowRight, Plus, Edit, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { StockInfo } from "@/src/features/inventory/components/StockInfo";
 import { StockMovementsSection } from "@/src/features/inventory/components/StockMovementsSection";
@@ -26,7 +26,7 @@ export default function StockDetailsPage() {
   if (isBusy || !stock) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loading4 />
+        <SectionLoading />
       </div>
     );
   }

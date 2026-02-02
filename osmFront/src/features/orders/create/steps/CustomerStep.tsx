@@ -7,13 +7,13 @@ import { Label } from "@/src/shared/components/shadcn/ui/label";
 import { Card, CardContent } from "@/src/shared/components/shadcn/ui/card";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../../store/useOrderFormStore";
-import { Loading4 } from "@/src/shared/components/ui/loding";
-import {ActionButton} from "@/src/shared/components/ui/buttons"
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
+import { ActionButton } from "@/src/shared/components/ui/buttons";
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
 export function CustomerStep() {
   const [searchTerm, setSearchTerm] = useState("");
   const [customers, setCustomers] = useState<any[]>([]);
-    const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const store = useOrderFormStore();
 
   // Search customers
@@ -38,7 +38,7 @@ export function CustomerStep() {
   const handleSelectCustomer = (customer: any) => {
     store.setCustomer(
       customer.id,
-      customer.full_name || `${customer.first_name} ${customer.last_name}`
+      customer.full_name || `${customer.first_name} ${customer.last_name}`,
     );
     setSearchTerm("");
     setCustomers([]);
@@ -51,8 +51,11 @@ export function CustomerStep() {
         <Label className="text-lg font-semibold flex items-center gap-2">
           <User size={20} />
           اختيار العميل
-          <ActionButton variant="success" icon={<User size={20} />} onClick={() => setShowModal(true)}/>
-            
+          <ActionButton
+            variant="success"
+            icon={<User size={20} />}
+            onClick={() => setShowModal(true)}
+          />
         </Label>
 
         {/* Selected Customer */}
@@ -98,7 +101,7 @@ export function CustomerStep() {
               <div className="absolute z-10 w-full mt-1 bg-elevated rounded-lg shadow-lg border max-h-60 overflow-y-auto">
                 {isBusy ? (
                   <div className="p-4 text-center">
-                    <Loading4 />
+                    <SectionLoading height="h-32" />
                   </div>
                 ) : customers.length > 0 ? (
                   customers.map((customer) => (
@@ -126,7 +129,7 @@ export function CustomerStep() {
           </div>
         )}
       </div>
-                {showModal && (
+      {showModal && (
         <DynamicFormDialog
           entity={"customers"}
           onClose={() => {

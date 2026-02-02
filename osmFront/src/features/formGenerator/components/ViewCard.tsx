@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { SearchFilterForm } from "../../../shared/components/search/SearchFilterForm";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { ArrowLeft, Eye, Pencil, Plus, ListFilter } from "lucide-react";
 import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
@@ -21,6 +21,7 @@ import { Badge } from "@/src/shared/components/ui/Badge";
 import { SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { cn } from "@/src/shared/utils/cn";
+import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 
 export default function ViewCard({ entity }: { entity: string }) {
   const { filterAlias, listAlias, fields, isViewOnly } = formsConfig[entity];
@@ -88,53 +89,35 @@ export default function ViewCard({ entity }: { entity: string }) {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* 3. Header Section with Glassmorphism */}
-      <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 blur-xl opacity-50" />
-        <GlassCard
-          className="relative border-none overflow-visible"
-          padding="sm"
-        >
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-4">
-              <div className="p-3 rounded-2xl bg-primary/10 text-primary">
-                <ListFilter size={24} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold flex items-center gap-3">
-                  {t("title")}
-                  <Badge variant="neutral" className="font-mono">
-                    {count}
-                  </Badge>
-                </h2>
-                <p className="text-sm text-secondary">
-                  {t("manageAndView")} {entity}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
-              {!isViewOnly && (
-                <ActionButton
-                  variant="success"
-                  size="md"
-                  icon={<Plus size={20} />}
-                  label={t("createNew")}
-                  navigateTo={`/dashboard/${entity}/create`}
-                  title={t("createTitle")}
-                  className="shadow-lg shadow-success/30 hover:shadow-xl hover:shadow-success/40 rounded-xl"
-                />
-              )}
-              <ActionButton
-                variant="secondary"
-                size="md"
-                icon={<ArrowLeft size={20} />}
-                navigateTo={`/dashboard/`}
-                title={t("backToDashboard")}
-              />
-            </div>
-          </div>
-        </GlassCard>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={`${t("manageAndView")} ${entity}`}
+        icon={<ListFilter />}
+        badge={
+          <Badge variant="neutral" className="font-mono">
+            {count}
+          </Badge>
+        }
+      >
+        {!isViewOnly && (
+          <ActionButton
+            variant="success"
+            size="md"
+            icon={<Plus size={20} />}
+            label={t("createNew")}
+            navigateTo={`/dashboard/${entity}/create`}
+            title={t("createTitle")}
+            className="shadow-lg shadow-success/30 hover:shadow-xl hover:shadow-success/40 rounded-xl"
+          />
+        )}
+        <ActionButton
+          variant="secondary"
+          size="md"
+          icon={<ArrowLeft size={20} />}
+          navigateTo={`/dashboard/`}
+          title={t("backToDashboard")}
+        />
+      </PageHeader>
 
       {/* 4. Filter Form */}
       <SearchFilterForm fields={filterFields} setFilters={setFilters} />
@@ -162,7 +145,7 @@ export default function ViewCard({ entity }: { entity: string }) {
                       className={cn(
                         "flex justify-between items-start gap-2",
                         !isPrimary &&
-                          "text-sm border-b border-border-main/30 pb-2 last:border-0 last:pb-0"
+                          "text-sm border-b border-border-main/30 pb-2 last:border-0 last:pb-0",
                       )}
                     >
                       <span className="text-secondary font-medium shrink-0">
@@ -173,7 +156,7 @@ export default function ViewCard({ entity }: { entity: string }) {
                           "font-semibold text-main text-left truncate",
                           isPrimary ? "text-lg text-primary" : "text-sm",
                           field.includes("status") &&
-                            "px-2 py-0.5 rounded-full bg-primary/5 text-primary text-xs"
+                            "px-2 py-0.5 rounded-full bg-primary/5 text-primary text-xs",
                         )}
                       >
                         {formatRelatedValue(value, field, t)}

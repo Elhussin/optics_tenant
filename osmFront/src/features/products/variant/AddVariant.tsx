@@ -12,11 +12,11 @@ import {
   CardTitle,
 } from "@/src/shared/components/shadcn/ui/card";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
+
 import { useProductRelations } from "@/src/features/products/hooks/useProductRelations";
-import { Loading } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { RenderFields } from "@/src/shared/components/field/RenderFields";
-import { veriantConfig, BasicVariantConfig } from "../constants/config";
+import { veriantConfig } from "../constants/config";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useTranslations } from "next-intl";
@@ -124,7 +124,7 @@ export function AddVariant({
   }, [form, productId]);
 
   if (form.formState.isLoading || isRelationsLoading) {
-    return <Loading />;
+    return <SectionLoading />;
   }
 
   return (

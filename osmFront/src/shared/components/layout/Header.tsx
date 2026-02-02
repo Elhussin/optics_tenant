@@ -11,13 +11,10 @@ import Image from "next/image";
 import { Link } from "@/src/app/i18n/navigation";
 import { AsideButton } from "@/src/shared/components/ui/buttons/AsideButton";
 import DesktopNavLinks from "./DesktopNavLinks";
-// import MobileNavMenu from "./MobileNavMenu"; // Removed
-import { Search } from "lucide-react";
 import { useSearch } from "@/src/shared/contexts/SearchContext";
 import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
 import { AutoHideSearchOnRouteChange } from "../search/AutoHideSearchOnRouteChange";
 import { getSubdomain } from "@/src/shared/utils/getSubdomain";
-import { Menu, X, Sparkles } from "lucide-react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
 import LogoutButton from "../ui/buttons/logout";
@@ -161,27 +158,6 @@ export default function Header() {
               </div>
             )}
 
-            {/* ✨ Enhanced Mobile Menu Toggle */}
-
-            {/* ✨ Search Toggle (Mobile/Desktop)
-            {isSearchVisibleButton && (
-              <button
-                onClick={toggleSearch}
-                className={cn(
-                  "p-2.5 rounded-xl cursor-pointer",
-                  "transition-all duration-200",
-                  "border-2",
-                  isSearchVisible
-                    ? "bg-destructive/10 text-destructive border-destructive/20"
-                    : "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20",
-                  "shadow-sm hover:shadow-md",
-                )}
-                aria-label={isSearchVisible ? t("closeSearch") : t("search")}
-                title={isSearchVisible ? t("closeSearch") : t("search")}
-              >
-                {isSearchVisible ? <X size={20} /> : <Search size={20} />}
-              </button>
-            )} */}
           </div>
         </div>
       </div>

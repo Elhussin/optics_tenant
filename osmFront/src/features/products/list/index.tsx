@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import {
   Card,
   CardContent,
@@ -15,16 +15,16 @@ import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { Pagination } from "@/src/shared/components/views/Pagination";
 import { useTranslations } from "next-intl";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 import { ProductCard } from "../components/ProductCard";
-// ... (imports)
-
-
+import { PageHeader } from "@/src/shared/components/ui/PageHeader";
+import { Badge } from "@/src/shared/components/ui/Badge";
+import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { useSearchButton } from "@/src/shared/contexts/SearchButtonContext";
+import { useEffect } from "react";
 export function ProductsList() {
   const t = useTranslations("products");
-  // const { show } = useSearchButton(); // Removed non-existent hook
-  // show();
-
+  const { show } = useSearchButton();
   const {
     data,
     isLoading,
@@ -35,32 +35,40 @@ export function ProductsList() {
     setPage,
     setPageSize,
     setFilters,
-  } = useFilteredListRequest({ alias: formsConfig["product"].listAlias || "" });
-  
+  } = useFilteredListRequest({ alias: featuresConfig.product.listAlias || "" });
 
-  const { fields, isLoading: isFieldsLoading } =  useFilterDataOptions(formsConfig["product"].filterAlias || "", {
-      enabled: !!formsConfig["product"].filterAlias,
-    });
+  useEffect(() => {
+    show();
+  }, [show]);
 
-  if (isLoading || isFieldsLoading) return <Loading4 />;
+  const { fields, isLoading: isFieldsLoading } = useFilterDataOptions(
+    featuresConfig.product.filterAlias || "",
+    {
+      enabled: !!featuresConfig.product.filterAlias,
+    },
+  );
+
+  if (isLoading || isFieldsLoading) return <SectionLoading />;
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-main">{t("list.title")}</h1>
-          <p className="text-sm text-secondary mt-1">
-            {t("list.totalProducts", { count: count || 0 })}
-          </p>
-        </div>
+
+      <PageHeader
+        title={t("list.title")}
+        description={t("list.totalProducts", { count: count || 0 })}
+        icon={<Package />}
+        badge={<Badge variant="success">{t("list.title")}</Badge>}
+        backUrl="/dashboard/products"
+        backTitle={t("actions.back")}
+      >
         <ActionButton
           label={t("actions.add")}
           icon={<Plus size={18} />}
           variant="primary"
           navigateTo="/dashboard/products/create"
         />
-      </div>
+      </PageHeader>
 
       {/* Search & Filters */}
       {fields?.length > 0 && (
@@ -109,7 +117,5 @@ export function ProductsList() {
     </div>
   );
 }
-
-
 
 export default ProductsList;

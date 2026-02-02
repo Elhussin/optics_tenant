@@ -26,7 +26,7 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { cn } from "@/src/shared/utils/cn";
 import { useTenant } from "@/src/shared/contexts/TenantContext";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 export default function ContactPage() {
   const t = useTranslations("contact");
   const { user } = useUser();

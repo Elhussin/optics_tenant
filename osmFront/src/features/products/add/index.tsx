@@ -1,8 +1,3 @@
-/**
- * ✨ ProductAdd - النموذج الهجين (Hybrid Mode)
- * @description Steps wizard للإضافة + Tabs للتعديل مع Premium UI Design
- */
-
 "use client";
 
 import React, { useState, useCallback, useMemo } from "react";
@@ -10,7 +5,6 @@ import {
   Package,
   ArrowLeft,
   ArrowRight,
-  Check,
   Loader2,
   Save,
   Sparkles,
@@ -27,7 +21,7 @@ import {
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
 import { useProductRelations } from "@/src/features/products/hooks/useProductRelations";
-import { Loading } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { Dialog } from "./components/Dialog";
 import { cn } from "@/src/shared/utils/cn";
 import { motion, AnimatePresence } from "framer-motion";
@@ -35,7 +29,6 @@ import { useLocale } from "next-intl";
 import { useTranslations } from "next-intl";
 
 // Premium UI Components
-import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 
 // Import sub-components
@@ -46,16 +39,12 @@ import { ProductVariantStep } from "./components/ProductVariantStep";
 import { TabsLayout } from "./components/TabsLayout";
 import { handleSave } from "../utils/handleSave";
 import { veriantConfig } from "../constants/config";
-
-export interface ProductAddProps {
-  alias?: string;
-  id?: string;
-  initialData?: any;
-}
-
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { ProductAddProps } from "../types";
+import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 // STEPS moved inside component for translation
 
-export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
+export function ProductAdd({ id, initialData }: ProductAddProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const t = useTranslations("products");
 
@@ -93,8 +82,9 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
 
   const form = useApiForm({
     alias:
-      alias ||
-      (isEditMode ? "products_products_update" : "products_products_create"),
+      (isEditMode
+        ? featuresConfig.product.partialUpdateAlias
+        : featuresConfig.product.createAlias),
     defaultValues,
     onSuccess: () => {
       if (!isEditMode) {
@@ -120,7 +110,7 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
   }, [initialData, isEditMode]);
 
   // Watch key fields
-  const [productType, variantType] = form.watch(["type", "variant_type"]);
+  const [productType, variantType] = form.watch(["main_group", "variant_type"]);
 
   // Step validation
   const canProceedToStep2 = useMemo(() => {
@@ -154,50 +144,29 @@ export function ProductAdd({ alias, id, initialData }: ProductAddProps) {
   }, [form, variantType, id, t]);
 
   if (form.formState.isLoading || isRelationsLoading) {
-    return <Loading />;
+    return <SectionLoading />;
   }
 
   return (
     <div className={cn("min-h-screen py-8", "bg-background")}>
       <div className="container mx-auto px-4 max-w-5xl">
         {/* ✨ Enhanced Header with Glassmorphism */}
-        <div className="relative mb-8">
-          {/* Gradient Background Glow */}
-          <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-secondary/20 to-primary/20 blur-2xl opacity-30 -z-10" />
-
-          <GlassCard className="border-none overflow-visible" padding="sm">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              {/* Title Section */}
-              <div className="space-y-2 text-center sm:text-start flex-1">
-                <div className="flex items-center justify-center sm:justify-start gap-3 flex-wrap">
-                  <div
-                    className={cn(
-                      "inline-flex items-center justify-center",
-                      "w-12 h-12 rounded-xl",
-                      "bg-gradient-to-br from-primary to-blue-600",
-                      "text-white shadow-lg shadow-primary/30",
-                    )}
-                  >
-                    <Package className="w-6 h-6" />
-                  </div>
-                  <h1 className="text-3xl font-bold flex items-center gap-2">
-                    <Sparkles className="w-7 h-7 text-primary" />
-                    {isEditMode ? t("actions.edit") : t("actions.add")}
-                  </h1>
-                  <Badge variant={isEditMode ? "warning" : "success"}>
-                    {isEditMode ? t("actions.edit") : t("actions.add")}
-                  </Badge>
-                </div>
-
-                <p className="text-sm text-secondary">
-                  {isEditMode
-                    ? t("steps.selectTypeDescription")
-                    : t("steps.selectTypeDescription")}
-                </p>
-              </div>
-            </div>
-          </GlassCard>
-        </div>
+        <PageHeader
+          title={isEditMode ? t("actions.edit") : t("actions.add")}
+          description={
+            isEditMode
+              ? t("steps.selectTypeDescription")
+              : t("steps.selectTypeDescription")
+          }
+          icon={<Package />}
+          badge={
+            <Badge variant={isEditMode ? "warning" : "success"}>
+              {isEditMode ? t("actions.edit") : t("actions.add")}
+            </Badge>
+          }
+          backUrl={isEditMode ? `/products/${id}` : "/products"}
+          backTitle={isEditMode ? t("actions.back") : t("actions.back")}
+        />
 
         {/* Form Container */}
         <Form {...form}>

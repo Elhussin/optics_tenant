@@ -115,7 +115,7 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                 <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none z-10">
                   <Search
                     className={cn(
-                      "h-5 w-5 transition-all duration-300",
+                      "h-5 w-5 transition-all duration-300 cursor-pointer",
                       "text-muted-foreground group-focus-within:text-primary group-focus-within:scale-110"
                     )}
                   />
@@ -145,15 +145,15 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                     type="button"
                     onClick={() => handleChange("search", "")}
                     className={cn(
-                      "absolute inset-y-0 right-3 flex items-center",
+                      "absolute inset-y-0 right-3 flex items-center cursor-pointer",
                       "p-2 rounded-xl",
                       "text-muted-foreground hover:text-destructive",
                       "hover:bg-destructive/10",
-                      "transition-all duration-200 hover-scale"
+                      "transition-all duration-200 hover-scale "
                     )}
                     aria-label={t("clearSearch")}
                   >
-                    <X className="h-5 w-5" />
+                    <X className="h-5 w-5 cursor-pointer" />
                   </motion.button>
                 )}
               </div>
@@ -212,12 +212,12 @@ export const SearchFilterForm = ({ fields, setFilters }: Props) => {
                           "text-xs font-semibold",
                           "text-muted-foreground hover:text-destructive",
                           "border-2 border-primary/20 hover:border-destructive/50",
-                          "rounded-lg",
+                          "rounded-lg cursor-pointer",
                           "transition-all duration-200 hover-scale",
                           "hover:bg-destructive/5"
                         )}
                       >
-                        <RotateCcw className="w-3.5 h-3.5" />
+                        <RotateCcw className="w-3.5 h-3.5 cursor-pointer" />
                         {t("clearSearch")}
                       </motion.button>
                     )}

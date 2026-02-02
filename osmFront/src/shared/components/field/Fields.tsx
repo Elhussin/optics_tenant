@@ -88,7 +88,7 @@ export const SwitchField = ({ fieldRow, field }: FieldsProps) => {
       <Switch
         checked={field.value}
         onCheckedChange={field.onChange}
-        className="transition-all duration-300 data-[state=checked]:scale-105"
+        className="transition-all duration-300 data-[state=checked]:scale-105 "
       />
     </div>
   );
@@ -446,7 +446,7 @@ export function MultiSelectField({
                     )}
                     <ChevronsUpDown
                       className={cn(
-                        "w-4 h-4 opacity-50 transition-transform flex-shrink-0",
+                        "w-4 h-4 opacity-50 transition-transform flex-shrink-0 ",
                         open && "rotate-180",
                       )}
                     />
@@ -470,7 +470,7 @@ export function MultiSelectField({
                         return (
                           <CommandItem
                             className={cn(
-                              "cursor-pointer px-4 py-2.5 transition-colors hover:bg-primary/10 animate-fade-in-left",
+                              "cursor-pointer px-4 py-2.5 transition-colors hover:bg-primary/10 animate-fade-in-left capitalize",
                               isSelected &&
                                 "bg-primary/10 font-semibold text-primary",
                             )}

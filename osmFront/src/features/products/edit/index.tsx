@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { ProductAdd } from "@/src/features/products/add";
-import { formsConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import {  featuresConfig } from "@/src/shared/constants/entityConfig";
 
 interface ProductEditProps {
   productId: string;
@@ -20,7 +20,7 @@ export function ProductEdit({ productId }: ProductEditProps) {
 
   // Fetch product data
   const { query, isBusy } = useApiForm({
-    alias: formsConfig["product"].retrieveAlias || "", // ← صحيح: retrieve للمنتج
+    alias: featuresConfig.product.retrieveAlias || "", // ← صحيح: retrieve للمنتج
     defaultValues: { id: numericId }, // ← number وليس string
     enabled: !isNaN(numericId), // ← فقط إذا كان الـ id صحيح
   });
@@ -34,7 +34,7 @@ export function ProductEdit({ productId }: ProductEditProps) {
   }, [numericId]);
 
   if (isLoading || isBusy) {
-    return <Loading4 />;
+    return <SectionLoading />;
   }
 
   if (isError || !data) {
@@ -44,7 +44,6 @@ export function ProductEdit({ productId }: ProductEditProps) {
   // Pass the fetched data as initialData to ProductAdd
   return (
     <ProductAdd
-      alias="products_products_update"
       id={productId}
       initialData={data} // ← تمرير البيانات المحملة
     />

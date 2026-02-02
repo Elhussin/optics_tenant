@@ -20,7 +20,7 @@ import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { safeToast } from "@/src/shared/utils/safeToast";
@@ -319,7 +319,7 @@ export function TransfersList() {
 
             {isBusy ? (
               <div className="flex items-center justify-center min-h-[300px]">
-                <Loading4 />
+                <SectionLoading />
               </div>
             ) : filteredTransfers.length === 0 ? (
               <EmptyState

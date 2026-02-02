@@ -12,7 +12,7 @@ import { useRouter } from "@/src/app/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { UserContextType, User } from "@/src/shared/types";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { featuresConfig } from "@/src/features/formGenerator/constants/entityConfig";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -26,7 +26,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // 1️⃣ جلب تلقائي عند تحميل التطبيق (للحفاظ على الجلسة عند التحديث)
   const fetchUser = useApiForm({
     alias: featuresConfig["user-profile"].retrieveAlias!,
-    enabled: true,          // <-- غيرنا هذا إلى true ليتم الجلب عند بدء التشغيل
+    enabled: true, // <-- غيرنا هذا إلى true ليتم الجلب عند بدء التشغيل
     // retry: false,
     // staleTime: 5 * 60 * 1000, // يمكن استخدام cache بسيط
   });
@@ -89,7 +89,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       },
       logout,
     }),
-    [user, loading]
+    [user, loading],
   );
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;

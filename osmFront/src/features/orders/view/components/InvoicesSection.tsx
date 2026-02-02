@@ -4,7 +4,7 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 
 interface InvoicesSectionProps {
@@ -63,7 +63,7 @@ export function InvoicesSection({ orderId }: InvoicesSectionProps) {
     return (
       <GlassCard className="border-border-main/50" hover>
         <div className="p-6 flex items-center justify-center min-h-[200px]">
-          <Loading4 />
+          <SectionLoading />
         </div>
       </GlassCard>
     );

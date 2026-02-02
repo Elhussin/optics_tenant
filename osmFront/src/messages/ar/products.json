@@ -40,7 +40,7 @@
     },
     "fields": {
       "name": "اسم المنتج",
-      "factory_code": "رمز SKU",
+      "factory_code": "رمز المصنع",
       "brand": "العلامة التجارية",
       "model": "الموديل",
       "category": "التصنيف",
@@ -182,6 +182,7 @@
       "failed": "فشلت",
       "errorLog": "سجل الأخطاء",
       "unknownError": "حدث خطأ غير معروف"
-    }
+    },
+    "additional_info": "معلومات إضافية"
   }
 }

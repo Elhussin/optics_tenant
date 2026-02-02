@@ -183,6 +183,7 @@
       "failed": "Failed",
       "errorLog": "Error Log",
       "unknownError": "Unknown error"
-    }
+    },
+    "additional_info": "Additional Info"
   }
 }

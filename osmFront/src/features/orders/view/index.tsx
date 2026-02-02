@@ -26,7 +26,7 @@ import {
   CardTitle,
 } from "@/src/shared/components/shadcn/ui/card";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { Loading4 } from "@/src/shared/components/ui/loding";
+import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 
 // New Components
 import { StatusTimeline } from "./components/StatusTimeline";
@@ -125,7 +125,7 @@ export function ViewOrder({ orderId }: ViewOrderProps) {
   if (isBusy || !order) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loading4 />
+        <SectionLoading />
       </div>
     );
   }
