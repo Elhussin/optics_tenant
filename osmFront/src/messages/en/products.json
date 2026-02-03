@@ -84,7 +84,8 @@
       "lens_material": "Lens Material",
       "lens_coatings": "Lens Coatings",
       "spherical": "SPH",
-
+      "cylinder": "CYL",
+      "axis": "AXIS",
       "addition": "ADD",
       "right_or_left": "Right or Left",
       "lens_water_content": "Water Content",
@@ -96,10 +97,15 @@
       "value": "Value",
       "variant_type_custom": "Custom Variant Type",
       "product_type": "Product Type",
-      "sku":"SKU Serial"
+      "sku":"SKU Serial",
+      "price": "Price",
+      "currency": "Currency"
     },
     "view": {
-      "productNotFound": "Product not found - check the product link"
+      "productNotFound": "Product not found - check the product link",
+      "variantNotFound": "Variant not found - check the variant link",
+      "variantDetails": "Variant Details"
+
     },
     "list": {
       "title": "Products List",
@@ -120,7 +126,12 @@
       "noVariants": "No variants for this product",
       "noProduct": "No product found",
       "backToProduct": "Back to Product",
-      "forProduct": "For Product"
+      "forProduct": "For Product",
+      "variantUpdatedSuccess": "Variant updated successfully",
+      "variantUpdateError": "Failed to update variant",
+      "variantAddedSuccess": "Variant added successfully",
+      "variantAddError": "Failed to add variant"
+
     },
     "editProduct": {
       "title": "Edit Product",
@@ -166,7 +177,12 @@
       "view": "View",
       "cancel": "Cancel",
       "addVariant": "Add New Variant",
-      "adding": "Adding..."
+      "adding": "Adding...",
+      "import": "Import",
+      "importing": "Importing...",
+      "importCsv": "Import CSV",
+      "editVariant":"Edit Variant",
+      "backToProduct": "Back to Product"
     },
     "importCsv": {
       "importProducts": "Import Products",

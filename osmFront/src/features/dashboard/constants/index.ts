@@ -31,7 +31,7 @@ import {
   BarChart3,
 } from "lucide-react";
 
-export const DashboardLink = [
+export const dashboardLink = [
   // Tenant
   {
     href: "clients",

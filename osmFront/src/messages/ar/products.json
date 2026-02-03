@@ -84,7 +84,9 @@
       "lens_material": "مادة العدسة",
       "lens_coatings": "طلاء العدسة",
       "spherical": "SPH",
+      "cylinder": "CYL",
       "addition": "ADD",
+      "axis": "AXIS",
       "right_or_left": "يمين أو يسار",
       "lens_water_content": "محتوى الماء",
       "replacement_schedule": "جدول الاستبدال",
@@ -95,10 +97,14 @@
       "value": "القيمة",
       "variant_type_custom": "نوع المتغير المخصص",
       "product_type": "نوع المنتج",
-      "sku": "رمز SKU"
+      "sku": "رمز SKU",
+      "price": "السعر",
+      "currency": "العملة"
     },
     "view": {
-      "productNotFound": "لم يتم العثور على المنتج - تأكد من صحة رابط المنتج"
+      "productNotFound": "لم يتم العثور على المنتج - تأكد من صحة رابط المنتج",
+      "variantNotFound": "لم يتم العثور على المتغير - تأكد من صحة رابط المتغير",
+      "variantDetails": "تفاصيل المتغير"
     },
     "list": {
       "title": "قائمة المنتجات",
@@ -119,7 +125,13 @@
       "noVariants": "لا توجد متغيرات لهذا المنتج",
       "noProduct": "لم يتم العثور على المنتج",
       "backToProduct": "العودة للمنتج",
-      "forProduct": "للمنتج"
+      "forProduct": "للمنتج",
+      "editVariant": "تعديل المتغير",
+      "editVariantDescription": "قم بتحديث بيانات المتغير",
+      "variantUpdatedSuccess": "تم تحديث المتغير بنجاح",
+      "variantUpdateError": "فشل تحديث المتغير",
+      "variantAddedSuccess": "تم إضافة المتغير بنجاح",
+      "variantAddError": "فشل إضافة المتغير"
     },
     "editProduct": {
       "title": "تعديل المنتج",
@@ -165,7 +177,12 @@
       "view": "عـرض",
       "cancel": "إلغاء",
       "addVariant": "إضافة متغير جديد",
-      "adding": "جاري الإضافة..."
+      "adding": "جاري الإضافة...",
+      "import": "استيراد",
+      "importing": "جاري الاستيراد...",
+      "importCsv": "استيراد CSV",
+      "editVariant": "تعديل المتغير",
+      "backToProduct": "العودة للمنتج"
     },
     "importCsv": {
       "importProducts": "استيراد المنتجات",

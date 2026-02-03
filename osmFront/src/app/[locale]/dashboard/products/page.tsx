@@ -3,7 +3,9 @@
 import React, { Suspense } from "react";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 
-const ProductsList = React.lazy(() => import("@/src/features/products/list"));
+const ProductsList = React.lazy(
+  () => import("@/src/features/products/components/viewProduct/list"),
+);
 
 export default function ProductsPage() {
   return (

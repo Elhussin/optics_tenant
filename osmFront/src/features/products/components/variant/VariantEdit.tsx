@@ -4,23 +4,26 @@ import React, { useEffect } from "react";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { ProductAdd } from "@/src/features/products/add";
-import {  featuresConfig } from "@/src/shared/constants/entityConfig";
+import { ProductAdd } from "@/src/features/products/components/addProduct";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 
-interface ProductEditProps {
+interface VariantEditProps {
+  variantId: string;
   productId: string;
 }
 
 import { useTranslations } from "next-intl";
+import AddVariant from "./AddVariant";
 
-export function ProductEdit({ productId }: ProductEditProps) {
+export function VariantEdit({ variantId, productId }: VariantEditProps) {
   const t = useTranslations("products");
   // Convert productId to number
-  const numericId = parseInt(productId, 10);
+  const numericId = parseInt(variantId, 10);
+  const numericProductId = parseInt(productId, 10);
 
   // Fetch product data
   const { query, isBusy } = useApiForm({
-    alias: featuresConfig.product.retrieveAlias || "", // ← صحيح: retrieve للمنتج
+    alias: featuresConfig["product-variants"].retrieveAlias || "", // ← صحيح: retrieve للمنتج
     defaultValues: { id: numericId }, // ← number وليس string
     enabled: !isNaN(numericId), // ← فقط إذا كان الـ id صحيح
   });
@@ -43,11 +46,14 @@ export function ProductEdit({ productId }: ProductEditProps) {
 
   // Pass the fetched data as initialData to ProductAdd
   return (
-    <ProductAdd
-      id={productId}
+    <AddVariant
+      variantId={numericId}
+      productId={numericProductId}
+      variantType={data.product_variant_type}
+      productType={data.product_type_code}
       initialData={data} // ← تمرير البيانات المحملة
     />
   );
 }
 
-export default ProductEdit;
+export default VariantEdit;

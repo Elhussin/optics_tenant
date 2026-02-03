@@ -603,3 +603,439 @@ DETAIL:  Key (usku)=(V-FR-RA-1013-4E074085) already exists.
 [2026-02-02 13:46:46,388] INFO product:   ✅ Converted FK: lens_color=9 → Color: Green
 [2026-02-02 13:46:46,389] INFO product: Creating FrameVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'factory_code', 'dimensions', 'frame_color', 'lens_diameter', 'temple_length', 'bridge_width', 'frame_shape', 'frame_material', 'lens_color'])
 [2026-02-02 13:46:46,390] INFO product: Full create_data: {'product': <Product: Ray Ban 5466>, 'product_type': <AttributeValue: Product Type: Frames Spectacle Glasses>, 'selling_price': '500', 'discount_percentage': '20', 'factory_code': '554666', 'dimensions': <AttributeValue: Dimensions: Dimensions 30MM-140MM-150MM>, 'frame_color': <AttributeValue: Color: Red>, 'lens_diameter': <AttributeValue: Diameter: 56MM>, 'temple_length': <AttributeValue: Length: 140>, 'bridge_width': <AttributeValue: Width: 60MM>, 'frame_shape': <AttributeValue: Shape: Round>, 'frame_material': <AttributeValue: Material: Plastic>, 'lens_color': <AttributeValue: Color: Green>}
+[2026-02-02 23:46:53,359] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'main_group', 'name', 'variant_type', 'brand'])
+[2026-02-02 23:46:53,362] INFO product: 📦 variants in validated_data: [{'product_type': 164, 'selling_price': '200', 'discount_percentage': 0, 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': [], 'id': ''}]
+[2026-02-02 23:46:53,363] INFO product: 📦 variants_data after pop: [{'product_type': 164, 'selling_price': '200', 'discount_percentage': 0, 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': [], 'id': ''}]
+[2026-02-02 23:46:53,380] INFO product: ✅ Product created: 19 - smart
+[2026-02-02 23:46:53,410] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-02 23:46:53,416] INFO product: 📋 variants_data received: [{'product_type': 164, 'selling_price': '200', 'discount_percentage': 0, 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': [], 'id': ''}]
+[2026-02-02 23:46:53,452] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-02 23:46:53,453] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-02 23:46:53,453] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-02 23:46:53,454] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 23:46:53,454] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-02 23:46:53,454] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-02 23:46:53,454] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-02 23:46:53,455] INFO product: clean_vdata for variant: {'product_type_id': 164, 'selling_price': '200', 'discount_percentage': 0, 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-02 23:46:53,455] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-02 23:46:53,456] INFO product: Creating variant with data: {'product_type_id': 164, 'selling_price': '200', 'discount_percentage': 0, 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'is_active': True}
+[2026-02-02 23:46:53,606] INFO product: Set M2M field lens_coatings = [195, 203, 205]
+[2026-02-02 23:46:53,743] INFO product: ✅ Updated description after M2M fields
+[2026-02-02 23:49:09,415] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'main_group', 'name', 'variant_type', 'brand'])
+[2026-02-02 23:49:09,425] INFO product: 📦 variants in validated_data: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}]
+[2026-02-02 23:49:09,425] INFO product: 📦 variants_data after pop: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}]
+[2026-02-02 23:49:09,445] INFO product: ✅ Product created: 20 - smarteyewear
+[2026-02-02 23:49:09,473] INFO product: 🔍 _manage_variants called for product 20 (smarteyewear)
+[2026-02-02 23:49:09,478] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}]
+[2026-02-02 23:49:09,519] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-02 23:49:09,523] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-02 23:49:09,524] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-02 23:49:09,524] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-02 23:49:09,525] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-02 23:49:09,525] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-02 23:49:09,534] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-02 23:49:09,534] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-02 23:49:09,535] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-02 23:49:09,536] INFO product: Creating variant with data: {'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'is_active': True}
+[2026-02-02 23:49:09,729] INFO product: Set M2M field lens_coatings = [195, 203, 205]
+[2026-02-02 23:49:09,847] INFO product: ✅ Updated description after M2M fields
+[2026-02-02 23:51:12,300] INFO product: Converted product ID 19 to instance
+[2026-02-02 23:51:12,301] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-02 23:51:12,301] INFO product: Using model class: StokLensVariant
+[2026-02-02 23:51:12,302] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-02 23:51:12,302] INFO product: Extracted M2M field: lens_coatings = [195, 204]
+[2026-02-02 23:51:12,304] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-02 23:51:12,308] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'product_type': 164, 'selling_price': '250', 'warranty': 183, 'weight': 206, 'spherical': '-00.75', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'is_active': True}
+[2026-02-02 23:51:12,309] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-02 23:51:12,312] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-02 23:51:12,317] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-02 23:51:12,327] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-02 23:51:12,327] INFO product:   Processing: selling_price=250 (type: str)
+[2026-02-02 23:51:12,327] INFO product:   ➡️  Kept as-is: selling_price=250
+[2026-02-02 23:51:12,329] INFO product:   Processing: warranty=183 (type: int)
+[2026-02-02 23:51:12,338] INFO product:   ✅ Converted FK: warranty=183 → Warranty: Warranty 1 Year
+[2026-02-02 23:51:12,338] INFO product:   Processing: weight=206 (type: int)
+[2026-02-02 23:51:12,350] INFO product:   ✅ Converted FK: weight=206 → Weight: 100g
+[2026-02-02 23:51:12,351] INFO product:   Processing: spherical=-00.75 (type: str)
+[2026-02-02 23:51:12,351] INFO product:   ➡️  Kept as-is: spherical=-00.75
+[2026-02-02 23:51:12,351] INFO product:   Processing: lens_diameter=123 (type: int)
+[2026-02-02 23:51:12,356] INFO product:   ✅ Converted FK: lens_diameter=123 → Diameter: 52MM
+[2026-02-02 23:51:12,357] INFO product:   Processing: lens_color=216 (type: int)
+[2026-02-02 23:51:12,364] INFO product:   ✅ Converted FK: lens_color=216 → Color: Clear
+[2026-02-02 23:51:12,365] INFO product:   Processing: lens_material=5 (type: int)
+[2026-02-02 23:51:12,375] INFO product:   ✅ Converted FK: lens_material=5 → Material: Plastic
+[2026-02-02 23:51:12,378] INFO product:   Processing: is_active=True (type: bool)
+[2026-02-02 23:51:12,379] INFO product:   ➡️  Kept as-is: is_active=True
+[2026-02-02 23:51:12,379] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'warranty', 'weight', 'spherical', 'lens_diameter', 'lens_color', 'lens_material', 'is_active'])
+[2026-02-02 23:51:12,380] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '250', 'warranty': <AttributeValue: Warranty: Warranty 1 Year>, 'weight': <AttributeValue: Weight: 100g>, 'spherical': '-00.75', 'lens_diameter': <AttributeValue: Diameter: 52MM>, 'lens_color': <AttributeValue: Color: Clear>, 'lens_material': <AttributeValue: Material: Plastic>, 'is_active': True}
+[2026-02-02 23:51:12,427] INFO product: Created variant with ID: 17
+[2026-02-02 23:51:12,443] INFO product: Set M2M field lens_coatings = [195, 204]
+[2026-02-02 23:51:12,519] INFO product: ✅ Updated description: Zeiss 1920 | SPH: -00.75 | Diameter: 52MM - Material: Plastic - Color: Clear - Coatings: MC Green, Coatings: UV400
+[2026-02-02 23:56:34,474] INFO product: Converted product ID 19 to instance
+[2026-02-02 23:56:34,474] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-02 23:56:34,474] INFO product: Using model class: StokLensVariant
+[2026-02-02 23:56:34,475] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-02 23:56:34,475] INFO product: Extracted M2M field: lens_coatings = [195, 204]
+[2026-02-02 23:56:34,475] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-02 23:56:34,478] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'product_type': 164, 'selling_price': '250', 'warranty': 183, 'weight': 206, 'spherical': '-00.75', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'is_active': True}
+[2026-02-02 23:56:34,478] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-02 23:56:34,478] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-02 23:56:34,479] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-02 23:56:34,486] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-02 23:56:34,487] INFO product:   Processing: selling_price=250 (type: str)
+[2026-02-02 23:56:34,487] INFO product:   ➡️  Kept as-is: selling_price=250
+[2026-02-02 23:56:34,487] INFO product:   Processing: warranty=183 (type: int)
+[2026-02-02 23:56:34,492] INFO product:   ✅ Converted FK: warranty=183 → Warranty: Warranty 1 Year
+[2026-02-02 23:56:34,492] INFO product:   Processing: weight=206 (type: int)
+[2026-02-02 23:56:34,496] INFO product:   ✅ Converted FK: weight=206 → Weight: 100g
+[2026-02-02 23:56:34,496] INFO product:   Processing: spherical=-00.75 (type: str)
+[2026-02-02 23:56:34,496] INFO product:   ➡️  Kept as-is: spherical=-00.75
+[2026-02-02 23:56:34,496] INFO product:   Processing: lens_diameter=123 (type: int)
+[2026-02-02 23:56:34,503] INFO product:   ✅ Converted FK: lens_diameter=123 → Diameter: 52MM
+[2026-02-02 23:56:34,503] INFO product:   Processing: lens_color=216 (type: int)
+[2026-02-02 23:56:34,510] INFO product:   ✅ Converted FK: lens_color=216 → Color: Clear
+[2026-02-02 23:56:34,511] INFO product:   Processing: lens_material=5 (type: int)
+[2026-02-02 23:56:34,520] INFO product:   ✅ Converted FK: lens_material=5 → Material: Plastic
+[2026-02-02 23:56:34,526] INFO product:   Processing: is_active=True (type: bool)
+[2026-02-02 23:56:34,527] INFO product:   ➡️  Kept as-is: is_active=True
+[2026-02-02 23:56:34,527] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'warranty', 'weight', 'spherical', 'lens_diameter', 'lens_color', 'lens_material', 'is_active'])
+[2026-02-02 23:56:34,527] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '250', 'warranty': <AttributeValue: Warranty: Warranty 1 Year>, 'weight': <AttributeValue: Weight: 100g>, 'spherical': '-00.75', 'lens_diameter': <AttributeValue: Diameter: 52MM>, 'lens_color': <AttributeValue: Color: Clear>, 'lens_material': <AttributeValue: Material: Plastic>, 'is_active': True}
+[2026-02-02 23:57:59,814] INFO product: Converted product ID 19 to instance
+[2026-02-02 23:57:59,820] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-02 23:57:59,820] INFO product: Using model class: StokLensVariant
+[2026-02-02 23:57:59,821] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-02 23:57:59,821] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-02 23:57:59,835] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'product_type': 164, 'selling_price': '20'}
+[2026-02-02 23:57:59,837] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-02 23:57:59,838] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-02 23:57:59,839] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-02 23:57:59,859] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-02 23:57:59,860] INFO product:   Processing: selling_price=20 (type: str)
+[2026-02-02 23:57:59,860] INFO product:   ➡️  Kept as-is: selling_price=20
+[2026-02-02 23:57:59,860] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'product_type', 'selling_price'])
+[2026-02-02 23:57:59,861] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '20'}
+[2026-02-03 00:02:32,121] INFO product: Converted product ID 19 to instance
+[2026-02-03 00:02:32,122] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-03 00:02:32,122] INFO product: Using model class: StokLensVariant
+[2026-02-03 00:02:32,122] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-03 00:02:32,122] INFO product: Extracted M2M field: lens_coatings = [195, 204]
+[2026-02-03 00:02:32,123] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-03 00:02:32,127] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'variants': [{'product_type': 164, 'selling_price': '20'}], 'product_type': 164, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': 119, 'is_active': True}
+[2026-02-03 00:02:32,127] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-03 00:02:32,130] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-03 00:02:32,130] INFO product:   Processing: variants=[{'product_type': 164, 'selling_price': '20'}] (type: list)
+[2026-02-03 00:02:32,130] INFO product:   ➡️  Kept as-is: variants=[{'product_type': 164, 'selling_price': '20'}]
+[2026-02-03 00:02:32,131] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-03 00:02:32,154] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-03 00:02:32,154] INFO product:   Processing: selling_price=200 (type: str)
+[2026-02-03 00:02:32,155] INFO product:   ➡️  Kept as-is: selling_price=200
+[2026-02-03 00:02:32,155] INFO product:   Processing: discount_percentage= (type: str)
+[2026-02-03 00:02:32,156] INFO product:   ➡️  Kept as-is: discount_percentage=
+[2026-02-03 00:02:32,158] INFO product:   Processing: spherical=-01.00 (type: str)
+[2026-02-03 00:02:32,161] INFO product:   ➡️  Kept as-is: spherical=-01.00
+[2026-02-03 00:02:32,166] INFO product:   Processing: lens_diameter=119 (type: int)
+[2026-02-03 00:02:32,178] INFO product:   ✅ Converted FK: lens_diameter=119 → Diameter: 60MM
+[2026-02-03 00:02:32,179] INFO product:   Processing: is_active=True (type: bool)
+[2026-02-03 00:02:32,179] INFO product:   ➡️  Kept as-is: is_active=True
+[2026-02-03 00:02:32,179] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'variants', 'product_type', 'selling_price', 'discount_percentage', 'spherical', 'lens_diameter', 'is_active'])
+[2026-02-03 00:02:32,179] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'variants': [{'product_type': 164, 'selling_price': '20'}], 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': <AttributeValue: Diameter: 60MM>, 'is_active': True}
+[2026-02-03 00:13:50,350] INFO product: Converted product ID 19 to instance
+[2026-02-03 00:13:50,361] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-03 00:13:50,361] INFO product: Using model class: StokLensVariant
+[2026-02-03 00:13:50,362] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-03 00:13:50,370] INFO product: Extracted M2M field: lens_coatings = [195, 204]
+[2026-02-03 00:13:50,371] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-03 00:13:50,401] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'variants': [{'product_type': 164, 'selling_price': '20'}], 'product_type': 164, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': 119, 'is_active': True}
+[2026-02-03 00:13:50,402] INFO product:   ⚠️ Removing 'variants' from validated_data before model creation
+[2026-02-03 00:13:50,410] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-03 00:13:50,420] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-03 00:13:50,421] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-03 00:13:50,452] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-03 00:13:50,456] INFO product:   Processing: selling_price=200 (type: str)
+[2026-02-03 00:13:50,456] INFO product:   ➡️  Kept as-is: selling_price=200
+[2026-02-03 00:13:50,456] INFO product:   Processing: discount_percentage= (type: str)
+[2026-02-03 00:13:50,457] INFO product:   ➡️  Kept as-is: discount_percentage=
+[2026-02-03 00:13:50,457] INFO product:   Processing: spherical=-01.00 (type: str)
+[2026-02-03 00:13:50,457] INFO product:   ➡️  Kept as-is: spherical=-01.00
+[2026-02-03 00:13:50,457] INFO product:   Processing: lens_diameter=119 (type: int)
+[2026-02-03 00:13:50,487] INFO product:   ✅ Converted FK: lens_diameter=119 → Diameter: 60MM
+[2026-02-03 00:13:50,488] INFO product:   Processing: is_active=True (type: bool)
+[2026-02-03 00:13:50,488] INFO product:   ➡️  Kept as-is: is_active=True
+[2026-02-03 00:13:50,489] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'spherical', 'lens_diameter', 'is_active'])
+[2026-02-03 00:13:50,489] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': <AttributeValue: Diameter: 60MM>, 'is_active': True}
+[2026-02-03 00:14:39,112] INFO product: Converted product ID 19 to instance
+[2026-02-03 00:14:39,119] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-03 00:14:39,121] INFO product: Using model class: StokLensVariant
+[2026-02-03 00:14:39,123] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-03 00:14:39,125] INFO product: Extracted M2M field: lens_coatings = [195, 204]
+[2026-02-03 00:14:39,126] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-03 00:14:39,137] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'variants': [{'product_type': 164, 'selling_price': '20'}], 'product_type': 164, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': 118, 'is_active': True}
+[2026-02-03 00:14:39,138] INFO product:   ⚠️ Removing 'variants' from validated_data before model creation
+[2026-02-03 00:14:39,138] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-03 00:14:39,138] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-03 00:14:39,138] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-03 00:14:39,159] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-03 00:14:39,159] INFO product:   Processing: selling_price=200 (type: str)
+[2026-02-03 00:14:39,159] INFO product:   ➡️  Kept as-is: selling_price=200
+[2026-02-03 00:14:39,159] INFO product:   Processing: discount_percentage= (type: str)
+[2026-02-03 00:14:39,160] INFO product:   ➡️  Kept as-is: discount_percentage=
+[2026-02-03 00:14:39,160] INFO product:   Processing: spherical=-01.00 (type: str)
+[2026-02-03 00:14:39,160] INFO product:   ➡️  Kept as-is: spherical=-01.00
+[2026-02-03 00:14:39,160] INFO product:   Processing: lens_diameter=118 (type: int)
+[2026-02-03 00:14:39,168] INFO product:   ✅ Converted FK: lens_diameter=118 → Diameter: 62MM
+[2026-02-03 00:14:39,168] INFO product:   Processing: is_active=True (type: bool)
+[2026-02-03 00:14:39,168] INFO product:   ➡️  Kept as-is: is_active=True
+[2026-02-03 00:14:39,168] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'spherical', 'lens_diameter', 'is_active'])
+[2026-02-03 00:14:39,169] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': <AttributeValue: Diameter: 62MM>, 'is_active': True}
+[2026-02-03 00:16:30,448] INFO product: Converted product ID 19 to instance
+[2026-02-03 00:16:30,448] INFO product: Creating variant for product 19, variant_type: stockLenses
+[2026-02-03 00:16:30,449] INFO product: Using model class: StokLensVariant
+[2026-02-03 00:16:30,449] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-02-03 00:16:30,449] INFO product: Extracted M2M field: lens_coatings = [195, 204]
+[2026-02-03 00:16:30,450] INFO product: ForeignKey fields for StokLensVariant: ['product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material']
+[2026-02-03 00:16:30,452] INFO product: 📋 validated_data before conversion: {'product': <Product: Zeiss 1920>, 'variants': [{'product_type': 164, 'selling_price': '20'}], 'product_type': 164, 'selling_price': '200', 'discount_percentage': '', 'spherical': '-01.00', 'lens_diameter': 118, 'is_active': True}
+[2026-02-03 00:16:30,452] INFO product:   ⚠️ Removing 'variants' from validated_data before model creation
+[2026-02-03 00:16:30,453] INFO product:   Processing: product=Zeiss 1920 (type: Product)
+[2026-02-03 00:16:30,453] INFO product:   ➡️  Kept as-is: product=Zeiss 1920
+[2026-02-03 00:16:30,453] INFO product:   Processing: product_type=164 (type: int)
+[2026-02-03 00:16:30,460] INFO product:   ✅ Converted FK: product_type=164 → Product Type: Single Stock
+[2026-02-03 00:16:30,461] INFO product:   Processing: selling_price=200 (type: str)
+[2026-02-03 00:16:30,461] INFO product:   ➡️  Kept as-is: selling_price=200
+[2026-02-03 00:16:30,461] INFO product:   Processing: discount_percentage= (type: str)
+[2026-02-03 00:16:30,462] INFO product:   ➡️  Converted empty string to None: discount_percentage
+[2026-02-03 00:16:30,462] INFO product:   Processing: spherical=-01.00 (type: str)
+[2026-02-03 00:16:30,462] INFO product:   ➡️  Kept as-is: spherical=-01.00
+[2026-02-03 00:16:30,462] INFO product:   Processing: lens_diameter=118 (type: int)
+[2026-02-03 00:16:30,468] INFO product:   ✅ Converted FK: lens_diameter=118 → Diameter: 62MM
+[2026-02-03 00:16:30,469] INFO product:   Processing: is_active=True (type: bool)
+[2026-02-03 00:16:30,469] INFO product:   ➡️  Kept as-is: is_active=True
+[2026-02-03 00:16:30,469] INFO product: Creating StokLensVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'spherical', 'lens_diameter', 'is_active'])
+[2026-02-03 00:16:30,469] INFO product: Full create_data: {'product': <Product: Zeiss 1920>, 'product_type': <AttributeValue: Product Type: Single Stock>, 'selling_price': '200', 'discount_percentage': None, 'spherical': '-01.00', 'lens_diameter': <AttributeValue: Diameter: 62MM>, 'is_active': True}
+[2026-02-03 00:16:30,514] INFO product: Created variant with ID: 18
+[2026-02-03 00:16:30,525] INFO product: Set M2M field lens_coatings = [195, 204]
+[2026-02-03 00:16:30,565] INFO product: ✅ Updated description: Zeiss 1920 | SPH: -01.00 | Diameter: 62MM - Coatings: MC Green, Coatings: UV400
+[2026-02-03 00:20:54,624] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'model', 'main_group', 'name', 'variant_type', 'brand'])
+[2026-02-03 00:20:54,626] INFO product: 📦 variants in validated_data: [{'product_type': 170, 'selling_price': '170', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-03.00', 'cylinder': '', 'axis': '', 'addition': '', 'lens_water_content': 176, 'replacement_schedule': 179, 'units': '', 'expiration_date': '', 'lens_diameter': '', 'lens_color': 18, 'lens_material': '', 'lens_coatings': [204, 203], 'is_active': '', 'attributes': [], 'id': ''}]
+[2026-02-03 00:20:54,627] INFO product: 📦 variants_data after pop: [{'product_type': 170, 'selling_price': '170', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-03.00', 'cylinder': '', 'axis': '', 'addition': '', 'lens_water_content': 176, 'replacement_schedule': 179, 'units': '', 'expiration_date': '', 'lens_diameter': '', 'lens_color': 18, 'lens_material': '', 'lens_coatings': [204, 203], 'is_active': '', 'attributes': [], 'id': ''}]
+[2026-02-03 00:20:54,637] INFO product: ✅ Product created: 21 - gray
+[2026-02-03 00:20:54,653] INFO product: 🔍 _manage_variants called for product 21 (gray)
+[2026-02-03 00:20:54,658] INFO product: 📋 variants_data received: [{'product_type': 170, 'selling_price': '170', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-03.00', 'cylinder': '', 'axis': '', 'addition': '', 'lens_water_content': 176, 'replacement_schedule': 179, 'units': '', 'expiration_date': '', 'lens_diameter': '', 'lens_color': 18, 'lens_material': '', 'lens_coatings': [204, 203], 'is_active': '', 'attributes': [], 'id': ''}]
+[2026-02-03 00:20:54,703] INFO product: FK fields for ContactLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'contactlensvariantexpirationdate', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_water_content', 'replacement_schedule', 'units', 'lens_base_curve', 'lens_coatings']
+[2026-02-03 00:20:54,706] INFO product: Converted FK field: product_type=170 -> product_type_id=170
+[2026-02-03 00:20:54,709] INFO product: Converted FK field: lens_water_content=176 -> lens_water_content_id=176
+[2026-02-03 00:20:54,714] INFO product: Converted FK field: replacement_schedule=179 -> replacement_schedule_id=179
+[2026-02-03 00:20:54,718] INFO product: Converted FK field: lens_color=18 -> lens_color_id=18
+[2026-02-03 00:20:54,719] INFO product: clean_vdata for variant: {'product_type_id': 170, 'selling_price': '170', 'discount_percentage': 0, 'spherical': '-03.00', 'lens_water_content_id': 176, 'replacement_schedule_id': 179, 'lens_color_id': 18, 'lens_coatings': [204, 203]}
+[2026-02-03 00:20:54,721] INFO product: M2M fields for ContactLensVariant: ['lens_coatings']
+[2026-02-03 00:20:54,724] INFO product: Creating variant with data: {'product_type_id': 170, 'selling_price': '170', 'discount_percentage': 0, 'spherical': '-03.00', 'lens_water_content_id': 176, 'replacement_schedule_id': 179, 'lens_color_id': 18}
+[2026-02-03 00:20:54,864] ERROR product: Validation errors found in variants: [{'lens_diameter': ['This field cannot be null.']}]
+[2026-02-03 00:21:23,096] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'model', 'main_group', 'name', 'variant_type', 'brand'])
+[2026-02-03 00:21:23,101] INFO product: 📦 variants in validated_data: [{'product_type': 170, 'selling_price': '170', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-03.00', 'cylinder': '', 'axis': '', 'addition': '', 'lens_water_content': 176, 'replacement_schedule': 179, 'units': '', 'expiration_date': '', 'lens_diameter': 136, 'lens_color': 18, 'lens_material': '', 'lens_coatings': [204, 203], 'is_active': '', 'attributes': [], 'id': ''}]
+[2026-02-03 00:21:23,102] INFO product: 📦 variants_data after pop: [{'product_type': 170, 'selling_price': '170', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-03.00', 'cylinder': '', 'axis': '', 'addition': '', 'lens_water_content': 176, 'replacement_schedule': 179, 'units': '', 'expiration_date': '', 'lens_diameter': 136, 'lens_color': 18, 'lens_material': '', 'lens_coatings': [204, 203], 'is_active': '', 'attributes': [], 'id': ''}]
+[2026-02-03 00:21:23,118] INFO product: ✅ Product created: 22 - gray
+[2026-02-03 00:21:23,130] INFO product: 🔍 _manage_variants called for product 22 (gray)
+[2026-02-03 00:21:23,133] INFO product: 📋 variants_data received: [{'product_type': 170, 'selling_price': '170', 'discount_percentage': 0, 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-03.00', 'cylinder': '', 'axis': '', 'addition': '', 'lens_water_content': 176, 'replacement_schedule': 179, 'units': '', 'expiration_date': '', 'lens_diameter': 136, 'lens_color': 18, 'lens_material': '', 'lens_coatings': [204, 203], 'is_active': '', 'attributes': [], 'id': ''}]
+[2026-02-03 00:21:23,148] INFO product: FK fields for ContactLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'contactlensvariantexpirationdate', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_water_content', 'replacement_schedule', 'units', 'lens_base_curve', 'lens_coatings']
+[2026-02-03 00:21:23,149] INFO product: Converted FK field: product_type=170 -> product_type_id=170
+[2026-02-03 00:21:23,149] INFO product: Converted FK field: lens_water_content=176 -> lens_water_content_id=176
+[2026-02-03 00:21:23,150] INFO product: Converted FK field: replacement_schedule=179 -> replacement_schedule_id=179
+[2026-02-03 00:21:23,150] INFO product: Converted FK field: lens_diameter=136 -> lens_diameter_id=136
+[2026-02-03 00:21:23,150] INFO product: Converted FK field: lens_color=18 -> lens_color_id=18
+[2026-02-03 00:21:23,151] INFO product: clean_vdata for variant: {'product_type_id': 170, 'selling_price': '170', 'discount_percentage': 0, 'spherical': '-03.00', 'lens_water_content_id': 176, 'replacement_schedule_id': 179, 'lens_diameter_id': 136, 'lens_color_id': 18, 'lens_coatings': [204, 203]}
+[2026-02-03 00:21:23,151] INFO product: M2M fields for ContactLensVariant: ['lens_coatings']
+[2026-02-03 00:21:23,152] INFO product: Creating variant with data: {'product_type_id': 170, 'selling_price': '170', 'discount_percentage': 0, 'spherical': '-03.00', 'lens_water_content_id': 176, 'replacement_schedule_id': 179, 'lens_diameter_id': 136, 'lens_color_id': 18}
+[2026-02-03 00:21:23,296] INFO product: Set M2M field lens_coatings = [204, 203]
+[2026-02-03 00:21:23,502] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:22:52,930] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-03 00:22:52,930] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}, {'id': 17, 'product_type': 164, 'selling_price': '200', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-00.75', 'cylinder': '', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}, {'id': 18, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '', 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 118, 'lens_color': '', 'lens_material': '', 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}]
+[2026-02-03 00:22:52,930] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:22:52,930] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:22:52,931] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:22:52,931] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:22:52,931] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-03 00:22:52,931] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:22:52,931] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:22:52,931] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-03 00:22:53,005] INFO product: Updated M2M field lens_coatings = [195, 203, 205]
+[2026-02-03 00:22:53,074] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:22:53,075] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:22:53,075] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:22:53,075] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:22:53,075] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:22:53,075] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-02-03 00:22:53,075] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:22:53,076] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:22:53,076] INFO product: clean_vdata for variant: {'id': 17, 'product_type_id': 164, 'selling_price': '200', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-00.75', 'lens_diameter_id': 123, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:22:53,131] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:22:53,206] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:22:53,206] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:22:53,207] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:22:53,207] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-02-03 00:22:53,207] INFO product: clean_vdata for variant: {'id': 18, 'product_type_id': 164, 'selling_price': '200.00', 'spherical': '-01.00', 'lens_diameter_id': 118, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:22:53,248] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:22:53,306] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:23:19,336] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-03 00:23:19,337] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}, {'id': 17, 'product_type': 164, 'selling_price': '200', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-00.75', 'cylinder': '', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}, {'id': 18, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '', 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 118, 'lens_color': '', 'lens_material': '', 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}]
+[2026-02-03 00:23:19,337] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:23:19,338] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:23:19,338] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:23:19,339] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:23:19,340] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-03 00:23:19,343] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:23:19,344] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:23:19,346] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-03 00:23:19,496] INFO product: Updated M2M field lens_coatings = [195, 203, 205]
+[2026-02-03 00:23:19,664] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:23:19,665] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:23:19,667] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:23:19,667] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:23:19,667] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:23:19,668] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-02-03 00:23:19,668] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:23:19,668] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:23:19,669] INFO product: clean_vdata for variant: {'id': 17, 'product_type_id': 164, 'selling_price': '200', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-00.75', 'lens_diameter_id': 123, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:23:19,765] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:23:19,881] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:23:19,882] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:23:19,883] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:23:19,883] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-02-03 00:23:19,883] INFO product: clean_vdata for variant: {'id': 18, 'product_type_id': 164, 'selling_price': '200.00', 'spherical': '-01.00', 'lens_diameter_id': 118, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:23:19,931] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:23:20,025] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:28:17,103] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-03 00:28:17,111] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}, {'id': 17, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-00.75', 'cylinder': '', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}, {'id': 18, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '', 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 118, 'lens_color': '', 'lens_material': '', 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}]
+[2026-02-03 00:28:17,112] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:28:17,113] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:28:17,115] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:28:17,117] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:28:17,120] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-03 00:28:17,123] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:28:17,123] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:28:17,124] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-03 00:28:17,270] INFO product: Updated M2M field lens_coatings = [195, 203, 205]
+[2026-02-03 00:28:17,378] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:28:17,378] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:28:17,379] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:28:17,379] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:28:17,379] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:28:17,379] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-02-03 00:28:17,379] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:28:17,379] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:28:17,379] INFO product: clean_vdata for variant: {'id': 17, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-00.75', 'lens_diameter_id': 123, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:28:17,473] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:28:17,599] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:28:17,600] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:28:17,601] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:28:17,601] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-02-03 00:28:17,602] INFO product: clean_vdata for variant: {'id': 18, 'product_type_id': 164, 'selling_price': '200.00', 'spherical': '-01.00', 'lens_diameter_id': 118, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:28:17,659] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:28:17,760] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:28:57,876] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-03 00:28:57,877] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}, {'id': 17, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-00.75', 'cylinder': '', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}, {'id': 18, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '', 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 118, 'lens_color': '', 'lens_material': '', 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}]
+[2026-02-03 00:28:57,877] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:28:57,877] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:28:57,877] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:28:57,878] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:28:57,878] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-03 00:28:57,878] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:28:57,878] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:28:57,878] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-03 00:28:57,933] INFO product: Updated M2M field lens_coatings = [195, 203, 205]
+[2026-02-03 00:28:58,009] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:28:58,010] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:28:58,010] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:28:58,010] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:28:58,010] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:28:58,010] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-02-03 00:28:58,010] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:28:58,010] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:28:58,010] INFO product: clean_vdata for variant: {'id': 17, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-00.75', 'lens_diameter_id': 123, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:28:58,058] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:28:58,132] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:28:58,133] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:28:58,134] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:28:58,134] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-02-03 00:28:58,135] INFO product: clean_vdata for variant: {'id': 18, 'product_type_id': 164, 'selling_price': '200.00', 'spherical': '-01.00', 'lens_diameter_id': 118, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:28:58,170] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:28:58,224] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:30:43,083] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-03 00:30:43,083] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}, {'id': 17, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-00.75', 'cylinder': '', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}, {'id': 18, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '', 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 118, 'lens_color': '', 'lens_material': '', 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}]
+[2026-02-03 00:30:43,084] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:30:43,084] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:30:43,084] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:30:43,084] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:30:43,084] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-03 00:30:43,085] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:30:43,085] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:30:43,085] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-03 00:30:43,162] INFO product: Updated M2M field lens_coatings = [195, 203, 205]
+[2026-02-03 00:30:43,277] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:30:43,277] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:30:43,278] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:30:43,278] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:30:43,278] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:30:43,278] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-02-03 00:30:43,278] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:30:43,278] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:30:43,279] INFO product: clean_vdata for variant: {'id': 17, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-00.75', 'lens_diameter_id': 123, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:30:43,340] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:30:43,428] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:30:43,429] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:30:43,429] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:30:43,429] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-02-03 00:30:43,429] INFO product: clean_vdata for variant: {'id': 18, 'product_type_id': 164, 'selling_price': '200.00', 'spherical': '-01.00', 'lens_diameter_id': 118, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:30:43,474] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:30:43,547] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:31:55,107] INFO product: 🔍 _manage_variants called for product 19 (smart)
+[2026-02-03 00:31:55,113] INFO product: 📋 variants_data received: [{'id': 15, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter': 119, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 203, 205], 'is_active': True, 'attributes': ''}, {'id': 17, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'factory_code': '', 'warranty': 183, 'weight': 206, 'dimensions': '', 'spherical': '-00.75', 'cylinder': '', 'lens_diameter': 123, 'lens_color': 216, 'lens_material': 5, 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}, {'id': 18, 'product_type': 164, 'selling_price': '200.00', 'discount_percentage': '', 'factory_code': '', 'warranty': '', 'weight': '', 'dimensions': '', 'spherical': '-01.00', 'cylinder': '', 'lens_diameter': 118, 'lens_color': '', 'lens_material': '', 'lens_coatings': [195, 204], 'is_active': True, 'attributes': ''}]
+[2026-02-03 00:31:55,116] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:31:55,117] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:31:55,118] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:31:55,119] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:31:55,120] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-02-03 00:31:55,120] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:31:55,121] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:31:55,122] INFO product: clean_vdata for variant: {'id': 15, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-03.00', 'cylinder': '-01.00', 'lens_diameter_id': 119, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 203, 205], 'is_active': True}
+[2026-02-03 00:31:55,231] INFO product: Updated M2M field lens_coatings = [195, 203, 205]
+[2026-02-03 00:31:55,452] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:31:55,454] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:31:55,456] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:31:55,457] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-03 00:31:55,458] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-03 00:31:55,459] INFO product: Converted FK field: lens_diameter=123 -> lens_diameter_id=123
+[2026-02-03 00:31:55,460] INFO product: Converted FK field: lens_color=216 -> lens_color_id=216
+[2026-02-03 00:31:55,462] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-02-03 00:31:55,471] INFO product: clean_vdata for variant: {'id': 17, 'product_type_id': 164, 'selling_price': '200.00', 'discount_percentage': '0.00', 'warranty_id': 183, 'weight_id': 206, 'spherical': '-00.75', 'lens_diameter_id': 123, 'lens_color_id': 216, 'lens_material_id': 5, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:31:55,587] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:31:55,782] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:31:55,783] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-02-03 00:31:55,785] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-02-03 00:31:55,787] INFO product: Converted FK field: lens_diameter=118 -> lens_diameter_id=118
+[2026-02-03 00:31:55,789] INFO product: clean_vdata for variant: {'id': 18, 'product_type_id': 164, 'selling_price': '200.00', 'spherical': '-01.00', 'lens_diameter_id': 118, 'lens_coatings': [195, 204], 'is_active': True}
+[2026-02-03 00:31:55,908] INFO product: Updated M2M field lens_coatings = [195, 204]
+[2026-02-03 00:31:56,025] INFO product: ✅ Updated description after M2M fields
+[2026-02-03 00:36:26,663] INFO product: Converted product ID 1 to instance
+[2026-02-03 00:36:26,664] INFO product: Creating variant for product 1, variant_type: basic
+[2026-02-03 00:36:26,666] INFO product: Using model class: ProductVariant
+[2026-02-03 00:36:26,666] INFO product: M2M fields for ProductVariant: []
+[2026-02-03 00:36:26,667] INFO product: ForeignKey fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-02-03 00:36:26,670] INFO product: 📋 validated_data before conversion: {'product': <Product: Ray Ban 3025>, 'product_type': 171, 'selling_price': '200', 'discount_percentage': '20', 'factory_code': '10101021', 'warranty': 183, 'weight': 206, 'dimensions': 184}
+[2026-02-03 00:36:26,670] INFO product:   Processing: product=Ray Ban 3025 (type: Product)
+[2026-02-03 00:36:26,671] INFO product:   ➡️  Kept as-is: product=Ray Ban 3025
+[2026-02-03 00:36:26,671] INFO product:   Processing: product_type=171 (type: int)
+[2026-02-03 00:36:26,677] INFO product:   ✅ Converted FK: product_type=171 → Product Type: Frames Sun Glasses
+[2026-02-03 00:36:26,678] INFO product:   Processing: selling_price=200 (type: str)
+[2026-02-03 00:36:26,678] INFO product:   ➡️  Kept as-is: selling_price=200
+[2026-02-03 00:36:26,678] INFO product:   Processing: discount_percentage=20 (type: str)
+[2026-02-03 00:36:26,679] INFO product:   ➡️  Kept as-is: discount_percentage=20
+[2026-02-03 00:36:26,679] INFO product:   Processing: factory_code=10101021 (type: str)
+[2026-02-03 00:36:26,679] INFO product:   ➡️  Kept as-is: factory_code=10101021
+[2026-02-03 00:36:26,679] INFO product:   Processing: warranty=183 (type: int)
+[2026-02-03 00:36:26,687] INFO product:   ✅ Converted FK: warranty=183 → Warranty: Warranty 1 Year
+[2026-02-03 00:36:26,687] INFO product:   Processing: weight=206 (type: int)
+[2026-02-03 00:36:26,694] INFO product:   ✅ Converted FK: weight=206 → Weight: 100g
+[2026-02-03 00:36:26,694] INFO product:   Processing: dimensions=184 (type: int)
+[2026-02-03 00:36:26,700] INFO product:   ✅ Converted FK: dimensions=184 → Dimensions: Dimensions 30MM-140MM-150MM
+[2026-02-03 00:36:26,701] INFO product: Creating ProductVariant with data: dict_keys(['product', 'product_type', 'selling_price', 'discount_percentage', 'factory_code', 'warranty', 'weight', 'dimensions'])
+[2026-02-03 00:36:26,701] INFO product: Full create_data: {'product': <Product: Ray Ban 3025>, 'product_type': <AttributeValue: Product Type: Frames Sun Glasses>, 'selling_price': '200', 'discount_percentage': '20', 'factory_code': '10101021', 'warranty': <AttributeValue: Warranty: Warranty 1 Year>, 'weight': <AttributeValue: Weight: 100g>, 'dimensions': <AttributeValue: Dimensions: Dimensions 30MM-140MM-150MM>}
+[2026-02-03 00:36:26,760] INFO product: Created variant with ID: 20

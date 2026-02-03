@@ -2,18 +2,19 @@
 
 import React, { Suspense, use } from "react";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
-import { VariantView } from "@/src/features/products/components/variant/VeriantDetails";
+const VariantEdit = React.lazy(
+  () => import("@/src/features/products/components/variant/VariantEdit"),
+);
 
 interface PageProps {
   params: Promise<{ id: string; variantId: string }>;
 }
 
-export default function VariantDetailsPage({ params }: PageProps) {
+export default function VariantEditPage({ params }: PageProps) {
   const { id, variantId } = use(params);
-
   return (
     <Suspense fallback={<SectionLoading />}>
-      <VariantView productId={id} variantId={variantId} />
+      <VariantEdit variantId={variantId} productId={id} />
     </Suspense>
   );
 }

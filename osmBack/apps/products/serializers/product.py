@@ -38,6 +38,12 @@ class ProductImageSerializer(serializers.ModelSerializer):
 
 class ProductVariantSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source='product.name', read_only=True)
+    product_type_name = serializers.CharField(
+        source='product_type.label', read_only=True)
+    product_type_code = serializers.CharField(
+        source='product_type.value', read_only=True)
+    product_variant_type = serializers.CharField(
+        source='product.variant_type', read_only=True)
 
     class Meta:
         model = ProductVariant
@@ -66,8 +72,6 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
                         for field in ProductVariant._meta.get_fields()
                         if not field.auto_created and not field.primary_key}
 
-    # 👈 variants READ logic
-    variants = serializers.SerializerMethodField()
     # 👈 variants WRITE logic (input)
     variants_input = serializers.ListField(child=serializers.DictField(
     ), write_only=True, required=False, source='variants')
@@ -143,6 +147,13 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
         # Convert FK fields from ID to model instance
         from apps.products.models import AttributeValue
         create_data = {}
+
+        # Pop variants if exists in validated_data to prevent passing it to model
+        if 'variants' in validated_data:
+            logger.info(
+                "  ⚠️ Removing 'variants' from validated_data before model creation")
+            validated_data.pop('variants')
+
         for key, value in validated_data.items():
             logger.info(
                 f"  Processing: {key}={value} (type: {type(value).__name__})")
@@ -163,8 +174,13 @@ class CreateProductVariantSerializer(serializers.ModelSerializer):
                     raise serializers.ValidationError(
                         {key: str(_('{model} with ID {id} does not exist').format(model=related_model.__name__, id=value))})
             else:
-                create_data[key] = value
-                logger.info(f"  ➡️  Kept as-is: {key}={value}")
+                # Handle empty strings for optional fields (like DecimalField/IntegerField)
+                if value == "" and ModelClass._meta.get_field(key).null:
+                    create_data[key] = None
+                    logger.info(f"  ➡️  Converted empty string to None: {key}")
+                else:
+                    create_data[key] = value
+                    logger.info(f"  ➡️  Kept as-is: {key}={value}")
 
         # Create variant with the correct model class
         logger.info(

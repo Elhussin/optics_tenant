@@ -37,10 +37,10 @@ import { ProductTypeStep } from "./components/ProductTypeStep";
 import { ProductInfoStep } from "./components/ProductInfoStep";
 import { ProductVariantStep } from "./components/ProductVariantStep";
 import { TabsLayout } from "./components/TabsLayout";
-import { handleSave } from "../utils/handleSave";
-import { veriantConfig } from "../constants/config";
+import { handleSave } from "../../utils/handleSave";
+import { veriantConfig } from "../../constants/config";
 import { featuresConfig } from "@/src/shared/constants/entityConfig";
-import { ProductAddProps } from "../types";
+import { ProductAddProps } from "../../types";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 // STEPS moved inside component for translation
 
@@ -81,10 +81,9 @@ export function ProductAdd({ id, initialData }: ProductAddProps) {
   }, [initialData, id, isEditMode]);
 
   const form = useApiForm({
-    alias:
-      (isEditMode
-        ? featuresConfig.product.partialUpdateAlias
-        : featuresConfig.product.createAlias),
+    alias: isEditMode
+      ? featuresConfig.product.partialUpdateAlias
+      : featuresConfig.product.createAlias,
     defaultValues,
     onSuccess: () => {
       if (!isEditMode) {

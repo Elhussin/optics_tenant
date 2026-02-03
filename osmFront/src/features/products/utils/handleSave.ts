@@ -122,7 +122,10 @@ export const handleSave = (
       // Debug: Log final payload
       // console.log("✅ Final Payload to be sent:", JSON.stringify(finalPayload, null, 2));
 
-      onSubmit(finalPayload, form, t, id);
+      const res =  onSubmit(finalPayload, form, t, id);
+      console.log("res", res);
+     
+
     },
     (errors: any) => {
       console.error("Form Validation Errors:", errors);

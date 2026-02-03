@@ -16,17 +16,19 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useProductRelations } from "@/src/features/products/hooks/useProductRelations";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { RenderFields } from "@/src/shared/components/field/RenderFields";
-import { veriantConfig } from "../constants/config";
+import { veriantConfig } from "../../constants/config";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useTranslations } from "next-intl";
-
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 interface AddVariantProps {
   productId: number;
   variantType: string;
   productType: string;
   onSuccess?: () => void;
   onCancel?: () => void;
+  variantId?: number;
+  initialData?: Record<string, any>;
 }
 
 export function AddVariant({
@@ -35,18 +37,28 @@ export function AddVariant({
   productType,
   onSuccess,
   onCancel,
+  variantId,
+  initialData,
 }: AddVariantProps) {
   const t = useTranslations("products");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  console.log("variantType", initialData);
   const form = useApiForm({
-    alias: "products_variants_create",
-    defaultValues: {
+    alias: variantId
+      ? featuresConfig["product-variants"].partialUpdateAlias
+      : featuresConfig["product-variants"].createAlias,
+    defaultValues: initialData || {
       product: productId,
     },
+    enabled: true, // Always enabled as we either create or have initialData
     onSuccess: () => {
-      safeToast(t("validation.variantAddedSuccess"), { type: "success" });
-      form.reset();
+      safeToast(
+        variantId
+          ? t("validation.variantUpdatedSuccess")
+          : t("validation.variantAddedSuccess"),
+        { type: "success" },
+      );
+      if (!variantId) form.reset(); // Only reset on create
       onSuccess?.();
     },
     onError: (error) => {
@@ -79,22 +91,10 @@ export function AddVariant({
       const values = form.getValues();
       console.log("🔍 Form values:", values);
 
-      // Extract variant data from variants array
-      let variantData = {};
-      if (
-        values.variants &&
-        Array.isArray(values.variants) &&
-        values.variants.length > 0
-      ) {
-        // Get the first variant data
-        variantData = values.variants[0];
-        console.log("📦 Extracted variant data:", variantData);
-      }
-
-      // Build the final payload - merge variant data directly (no variants wrapper)
+      // Build the final payload - flat structure
       const payload: Record<string, any> = {
         product: productId,
-        ...variantData, // Spread variant fields directly
+        ...values,
       };
 
       // Remove undefined values
@@ -135,9 +135,13 @@ export function AddVariant({
             <Package className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <CardTitle className="text-lg">{t("variants.addNew")}</CardTitle>
+            <CardTitle className="text-lg">
+              {variantId ? t("variants.editVariant") : t("variants.addNew")}
+            </CardTitle>
             <CardDescription>
-              {t("variants.addVariantDescription", { type: variantType })}
+              {variantId
+                ? t("variants.editVariantDescription")
+                : t("variants.addVariantDescription", { type: variantType })}
             </CardDescription>
           </div>
         </div>
@@ -157,7 +161,6 @@ export function AddVariant({
               fields={variantFields}
               form={form}
               selectedType={productType}
-              variantNumber={0}
             />
 
             {/* Actions */}
@@ -186,7 +189,7 @@ export function AddVariant({
                 ) : (
                   <>
                     <Check className="w-4 h-4 ml-2" />
-                    {t("variants.add")}
+                    {variantId ? t("actions.save") : t("variants.add")}
                   </>
                 )}
               </Button>

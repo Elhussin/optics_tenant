@@ -24,9 +24,10 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { cn } from "@/src/shared/utils/cn";
 import { useTranslations } from "next-intl";
-import { InfoItem } from "../components/InfoItem";
-import { VariantCard } from "../components/VariantCard";
+import { InfoItem } from "../../../../../shared/components/ui/InfoItem";
+import { VariantCard } from "../../variant/VariantCard";
 import { Skeleton } from "@/src/shared/components/ui/Skeleton";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 // Product type badges (Premium variants)
 const TYPE_VARIANTS: Record<
   string,
@@ -39,14 +40,14 @@ const TYPE_VARIANTS: Record<
   DV: "primary",
   OT: "primary", // Changed from "neutral" to "primary"
 };
-import { ProductViewProps } from "../types";
+import { ProductViewProps } from "../../../types";
 
 export function ProductView({ productId }: ProductViewProps) {
   const t = useTranslations("products");
   const numericId = parseInt(productId, 10);
 
   const { query, isBusy } = useApiForm({
-    alias: "products_products_retrieve",
+    alias: featuresConfig["product"].retrieveAlias,
     defaultValues: { id: numericId },
     enabled: !isNaN(numericId),
   });

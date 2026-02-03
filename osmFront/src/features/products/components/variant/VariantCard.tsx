@@ -3,11 +3,13 @@ import { Badge } from "@/src/shared/components/ui/Badge";
 import { cn } from "@/src/shared/utils/cn";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-
+import { ActionButton } from "@/src/shared/components/ui/buttons";
+import { Pencil } from "lucide-react";
 
 // ✨ Variant Card Component - Premium Design
 export function VariantCard({ variant, index }: { variant: any; index: number }) {
   const t = useTranslations("products");
+  console.log(variant);
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -65,6 +67,20 @@ export function VariantCard({ variant, index }: { variant: any; index: number })
               </p>
             </div>
           )}
+          <ActionButton
+            label={t("actions.editVariant")}
+            icon={<Pencil size={16} />}
+            variant="outline"
+            navigateTo={`/dashboard/products/${variant.product}/variants/${variant.id}/edit`}
+            className="hover:scale-105 transition-transform"
+          />
+                    <ActionButton
+            label={t("actions.view")}
+            icon={<Pencil size={16} />}
+            variant="outline"
+            navigateTo={`/dashboard/products/${variant.product}/variants/${variant.id}`}
+            className="hover:scale-105 transition-transform"
+          />
         </div>
       </div>
     </motion.div>

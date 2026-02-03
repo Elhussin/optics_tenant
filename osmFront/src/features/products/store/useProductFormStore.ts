@@ -39,19 +39,6 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
   attributeCount: 0,
   isAttribute: false,
 
-  // setVariantCount: (count: number) =>
-  //   set((state) => {
-  //     const updated = [...state.variants];
-  //     if (count > state.variants.length) {
-  //       updated.push(...Array.from({ length: count - state.variants.length }, () => ({})));
-  //     } else if (count < state.variants.length) {
-  //       updated.length = count;
-  //     }
-  //     // if openVariantIndex is now out of range, close it
-  //     const openIdx = get().openVariantIndex;
-  //     const newOpenIdx = openIdx !== null && openIdx >= count ? null : openIdx;
-  //     return { variantCount: count, variants: updated, openVariantIndex: newOpenIdx };
-  //   }),
   setVariantCount: (count: number) =>
     set((state) => {
       if (state.variantCount === count) return state; // ✅ لا تحدث أي تغييرات

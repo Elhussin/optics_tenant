@@ -148,7 +148,7 @@ export function TabsLayout({
       </TabsList>
 
       {/* ✨ Enhanced Tab Contents with Animations */}
-      <AnimatePresence mode="wait">
+      <div className="relative">
         <TabsContent value="type" key="type" className="mt-0">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -203,7 +203,7 @@ export function TabsLayout({
             </GlassCard>
           </motion.div>
         </TabsContent>
-      </AnimatePresence>
+      </div>
     </Tabs>
   );
 }

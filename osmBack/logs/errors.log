@@ -2230,3 +2230,52 @@ Traceback (most recent call last):
 apps.users.models.User.DoesNotExist: User matching query does not exist.
 [2026-02-01 11:11:40,402] ERROR django.request: Internal Server Error: /api/users/token/refresh/
 [2026-02-01 11:11:40,403] ERROR django.server: "POST /api/users/token/refresh/ HTTP/1.1" 500 166
+[2026-02-02 23:51:12,519] ERROR core.exceptions: Unhandled exception: 'CreateProductVariantSerializer' object has no attribute 'get_variants'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/mixins.py", line 20, in create
+    headers = self.get_success_headers(serializer.data)
+                                       ^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/serializers.py", line 573, in data
+    ret = super().data
+          ^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/serializers.py", line 251, in data
+    self._data = self.to_representation(self.instance)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/serializers.py", line 540, in to_representation
+    ret[field.field_name] = field.to_representation(attribute)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/fields.py", line 1869, in to_representation
+    method = getattr(self.parent, self.method_name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'CreateProductVariantSerializer' object has no attribute 'get_variants'
+[2026-02-02 23:51:12,573] ERROR django.request: Internal Server Error: /api/products/variants/
+[2026-02-02 23:51:12,574] ERROR django.server: "POST /api/products/variants/ HTTP/1.1" 500 235
+[2026-02-03 00:02:32,184] ERROR core.exceptions: Unhandled exception: StokLensVariant() got unexpected keyword arguments: 'variants'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/mixins.py", line 19, in create
+    self.perform_create(serializer)
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/mixins.py", line 24, in perform_create
+    serializer.save()
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/apps/products/serializers/product.py", line 171, in create
+    variant = ModelClass.objects.create(**create_data)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/django/db/models/query.py", line 663, in create
+    obj = self.model(**kwargs)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/django/db/models/base.py", line 569, in __init__
+    raise TypeError(
+TypeError: StokLensVariant() got unexpected keyword arguments: 'variants'
+[2026-02-03 00:02:32,243] ERROR django.request: Internal Server Error: /api/products/variants/
+[2026-02-03 00:02:32,254] ERROR django.server: "POST /api/products/variants/ HTTP/1.1" 500 226

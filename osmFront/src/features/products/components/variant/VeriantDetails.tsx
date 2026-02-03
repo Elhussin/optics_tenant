@@ -18,7 +18,7 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 import { cn } from "@/src/shared/utils/cn";
 import { useTranslations } from "next-intl";
-import { InfoItem } from "../../components/InfoItem";
+import { InfoItem } from "../../../../shared/components/ui/InfoItem";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 import { featuresConfig } from "@/src/shared/constants/entityConfig";
@@ -57,12 +57,12 @@ export function VariantView({ productId, variantId }: VariantViewProps) {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <PageHeader
-        title={variant.name || `${variant.brand_name} ${variant.model}`}
+        title={variant.product_name || `${variant.brand_name} ${variant.model}`}
         description={variant.description || t("view.variantDetails")}
         icon={<Layers />}
         backUrl={`/dashboard/products/${productId}`}
         backTitle={t("actions.backToProduct")}
-        badge={<Badge variant="primary">{variant.type}</Badge>}
+        badge={<Badge variant="primary">{variant.product_type_name}</Badge>}
       >
         <ActionButton
           label={t("actions.editVariant")}

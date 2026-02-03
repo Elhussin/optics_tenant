@@ -2,7 +2,7 @@
 
 import React, { Suspense, use } from "react";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
-const ProductEdit = React.lazy(() => import("@/src/features/products/edit"));
+const ProductEdit = React.lazy(() => import("@/src/features/products/components/editProduct"));
 
 interface PageProps {
   params: Promise<{ id: string }>;

@@ -5,7 +5,8 @@ export const onSubmit = async (data: any, form: any, t: any, id?: string) => {
     try {
         let result;
         if (id) {
-            result = await form.mutation.mutateAsync(data);
+            const response = await form.mutation.mutateAsync(data);
+            result = { success: true, data: response };
             // console.log("result", result);
         } else {
             result = await form.submitForm(data);

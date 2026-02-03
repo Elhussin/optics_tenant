@@ -4,7 +4,7 @@ import { getSubdomain } from "@/src/shared/utils/getSubdomain";
 import { Link } from "@/src/app/i18n/navigation";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
 
-import {DashboardLink} from "@/src/features/dashboard/constants";
+import {dashboardLink} from "@/src/features/dashboard/constants";
 export default function DashboardLinks() {
   const { user } = useUser();
 
@@ -13,7 +13,7 @@ export default function DashboardLinks() {
   const subdomain = getSubdomain();
   const userRoles = user?.roles?.map((r: any) => r.name) || [];
   console.log(user, userRoles);
-  const allowedLinks = DashboardLink.filter((link) => {
+  const allowedLinks = dashboardLink.filter((link) => {
     // 1. فلترة حسب الصلاحية
     const hasAccess = link.roles.some((role) => userRoles.includes(role));
     if (!hasAccess) return false;
@@ -32,7 +32,7 @@ export default function DashboardLinks() {
     if (!acc[link.group]) acc[link.group] = [];
     acc[link.group].push(link);
     return acc;
-  }, {} as Record<string, typeof DashboardLink>);
+  }, {} as Record<string, typeof dashboardLink>);
 
   return (
     <div className="space-y-6">
@@ -43,7 +43,7 @@ export default function DashboardLinks() {
             {group}
           </h2>
           <div className="grid gap-4 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {DashboardLink.map(({ href, icon: Icon }) => (
+            {links.map(({ href, icon: Icon }) => (
               <Link
                 href={`/dashboard/${href}/`}
                 key={href}

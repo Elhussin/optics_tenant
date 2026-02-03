@@ -1,4 +1,6 @@
 // ✨ Info Item Component - Premium Design
+// this component is used in the product view details page and variant view details page
+//  it give a hint to the user about thie field 
 export function InfoItem({
   icon,
   label,
