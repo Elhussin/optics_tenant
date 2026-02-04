@@ -9,14 +9,16 @@ import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { StockInfo } from "@/src/features/inventory/components/StockInfo";
 import { StockMovementsSection } from "@/src/features/inventory/components/StockMovementsSection";
-
+import { useTranslations } from "next-intl";
+import { featuresConfig } from "@/src/shared/constants/entityConfig";
 export default function StockDetailsPage() {
+  const t = useTranslations("inventory");
   const params = useParams();
   const router = useRouter();
   const stockId = params.id ? parseInt(params.id as string, 10) : null;
 
   const { query, isBusy } = useApiForm({
-    alias: "products_stocks_retrieve",
+    alias: featuresConfig.stocks.retrieveAlias,
     defaultValues: { id: stockId },
     enabled: !!stockId,
   });
@@ -42,16 +44,18 @@ export default function StockDetailsPage() {
               className="text-sm text-secondary hover:text-primary flex items-center gap-1 mb-2 transition-colors"
             >
               <ArrowRight size={16} />
-              العودة للمخزون
+              {t("details.backToInventory")}
             </Link>
-            <h1 className="text-3xl font-bold text-main">تفاصيل المخزون</h1>
+            <h1 className="text-3xl font-bold text-main">
+              {t("details.title")}
+            </h1>
           </div>
 
           <div className="flex gap-3">
             <ActionButton
               variant="outline"
               icon={<BarChart3 size={18} />}
-              label="التقارير"
+              label={t("details.reports")}
               onClick={() => {
                 // TODO: Navigate to reports
               }}
@@ -59,13 +63,13 @@ export default function StockDetailsPage() {
             <ActionButton
               variant="secondary"
               icon={<Edit size={18} />}
-              label="تعديل المخزون"
+              label={t("details.editStock")}
               navigateTo={`/dashboard/inventory/add?stock=${stockId}`}
             />
             <ActionButton
               variant="primary"
               icon={<Plus size={18} />}
-              label="إضافة حركة"
+              label={t("details.addMovement")}
               navigateTo={`/dashboard/inventory/add?stock=${stockId}`}
               className="shadow-lg shadow-primary/20"
             />

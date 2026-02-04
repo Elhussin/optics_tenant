@@ -1,0 +1,82 @@
+{
+  "roles": {
+    "title": "Roles",
+    "detailsTitle": "Role Details",
+    "name": "Name",
+    "description": "Description",
+    "updateDescription": "Update Role",
+    "createDescription": "Add New Role",
+    "permission_ids": "Permissions",
+    "permissions": "Permissions"
+  },
+  "users": {
+    "title": "Users",
+    "detailsTitle": "User Details",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "website": "Website",
+    "roles": "Roles",
+    "role_ids": "Select Roles",
+    "updateDescription": "Update User",
+    "createDescription": "Add New User",
+    "last_name": "Last Name",
+    "first_name": "First Name",
+    "is_staff": "Staff",
+    "is_active": "Active",
+    "password": "Password"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "detailsTitle": "Permission Details",
+    "code": "Code",
+    "description": "Description",
+    "updateDescription": "Update Permission",
+    "createDescription": "Add New Permission"
+  },
+  "role-permissions": {
+    "title": "Role Permissions",
+    "detailsTitle": "Role Permission Details",
+    "role_name": "Role Name",
+    "permission_name": "Permission Name",
+    "updateDescription": "Update Role Permission",
+    "createDescription": "Add New Permission"
+  },
+  "tenant-settings": {
+    "title": "Tenant Settings",
+    "detailsTitle": "Tenant Settings Details",
+    "business_name": "Business Name",
+    "phone": "Phone",
+    "email": "Email",
+    "facebook": "Facebook",
+    "twitter": "Twitter",
+    "instagram": "Instagram",
+    "linkedin": "LinkedIn",
+    "description": "Description",
+    "website": "Website",
+    "updateDescription": "Update Settings",
+    "createDescription": "Add New Settings"
+  },
+  "branches": {
+    "title": "Branches",
+    "detailsTitle": "Branch Details",
+    "name": "Branch Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "country": "Country",
+    "updateDescription": "Update Branch",
+    "createDescription": "Add New Branch"
+  },
+  "branch-users": {
+    "title": "Branch Users",
+    "detailsTitle": "User Details",
+    "branch_name": "Branch",
+    "employee_name": "Employee",
+    "status": "Status",
+    "updateDescription": "Update User",
+    "createDescription": "Add New User"
+  }
+}

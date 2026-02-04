@@ -10,10 +10,11 @@ import {
 } from "lucide-react";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Label } from "@/src/shared/components/shadcn/ui/label";
-import { useTransferFormStore } from "../../store";
+import { useTransferFormStore } from "../../../store";
 import useSWR from "swr";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
+import { useTranslations } from "next-intl";
 
 interface Branch {
   id: number;
@@ -25,6 +26,7 @@ interface Branch {
 }
 
 export function BranchesStep() {
+  const t = useTranslations("inventory");
   const store = useTransferFormStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeSelection, setActiveSelection] = useState<"from" | "to">("from");
@@ -36,7 +38,7 @@ export function BranchesStep() {
       const response = await api.customRequest("branches_branches_list", {});
       return extractArrayData<Branch>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Filter branches by search - with safe array check
@@ -47,7 +49,7 @@ export function BranchesStep() {
       (branch) =>
         branch.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         branch.branch_code?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        branch.city?.toLowerCase().includes(searchQuery.toLowerCase())
+        branch.city?.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [branches, searchQuery]);
 
@@ -64,7 +66,9 @@ export function BranchesStep() {
   };
 
   const getBranchTypeLabel = (type: string) => {
-    return type === "store" ? "مستودع" : "فرع";
+    return type === "store"
+      ? t("transfers.create.branchesStep.store")
+      : t("transfers.create.branchesStep.branch");
   };
 
   const getBranchTypeColor = (type: string) => {
@@ -78,7 +82,9 @@ export function BranchesStep() {
       <div className="flex justify-center items-center py-12">
         <div className="animate-pulse flex flex-col items-center gap-4">
           <Warehouse className="w-12 h-12 text-gray-300" />
-          <p className="text-secondary">جاري تحميل الفروع...</p>
+          <p className="text-secondary">
+            {t("transfers.create.branchesStep.loading")}
+          </p>
         </div>
       </div>
     );
@@ -97,11 +103,14 @@ export function BranchesStep() {
               : "border-gray-200 dark:border-gray-700"
           }`}
         >
-          <Label className="text-xs text-secondary">من الفرع</Label>
+          <Label className="text-xs text-secondary">
+            {t("transfers.create.branchesStep.fromBranch")}
+          </Label>
           <div className="flex items-center gap-2 mt-1">
             <Warehouse className="w-5 h-5 text-red-500" />
             <span className="font-semibold text-main">
-              {store.fromBranchName || "اختر الفرع المرسل"}
+              {store.fromBranchName ||
+                t("transfers.create.branchesStep.selectSender")}
             </span>
           </div>
         </div>
@@ -122,11 +131,14 @@ export function BranchesStep() {
               : "border-gray-200 dark:border-gray-700"
           }`}
         >
-          <Label className="text-xs text-secondary">إلى الفرع</Label>
+          <Label className="text-xs text-secondary">
+            {t("transfers.create.branchesStep.toBranch")}
+          </Label>
           <div className="flex items-center gap-2 mt-1">
             <Warehouse className="w-5 h-5 text-green-500" />
             <span className="font-semibold text-main">
-              {store.toBranchName || "اختر الفرع المستلم"}
+              {store.toBranchName ||
+                t("transfers.create.branchesStep.selectReceiver")}
             </span>
           </div>
         </div>
@@ -139,7 +151,7 @@ export function BranchesStep() {
           <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-center gap-2">
             <AlertCircle className="w-4 h-4 text-red-500" />
             <span className="text-sm text-red-700 dark:text-red-300">
-              لا يمكن التحويل إلى نفس الفرع
+              {t("transfers.create.branchesStep.sameBranchError")}
             </span>
           </div>
         )}
@@ -148,7 +160,7 @@ export function BranchesStep() {
       <div className="relative">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <Input
-          placeholder="ابحث عن فرع..."
+          placeholder={t("transfers.create.branchesStep.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pr-10"
@@ -157,9 +169,11 @@ export function BranchesStep() {
 
       {/* Selection Label */}
       <div className="text-sm text-secondary">
-        اختر{" "}
+        {t("transfers.create.branchesStep.select")}{" "}
         <span className="font-medium text-primary">
-          {activeSelection === "from" ? "الفرع المرسل" : "الفرع المستلم"}
+          {activeSelection === "from"
+            ? t("transfers.create.branchesStep.sender")
+            : t("transfers.create.branchesStep.receiver")}
         </span>
       </div>
 
@@ -211,7 +225,7 @@ export function BranchesStep() {
               {/* Type Badge */}
               <span
                 className={`absolute top-3 right-3 px-2 py-0.5 text-xs rounded-full ${getBranchTypeColor(
-                  branch.branch_type
+                  branch.branch_type,
                 )}`}
               >
                 {getBranchTypeLabel(branch.branch_type)}
@@ -228,7 +242,9 @@ export function BranchesStep() {
               {isDisabled && (
                 <div className="absolute inset-0 rounded-xl bg-gray-100/50 dark:bg-gray-900/50 flex items-center justify-center">
                   <span className="text-xs text-gray-500">
-                    {activeSelection === "from" ? "المستلم" : "المرسل"}
+                    {activeSelection === "from"
+                      ? t("transfers.create.branchesStep.receiverLabel")
+                      : t("transfers.create.branchesStep.senderLabel")}
                   </span>
                 </div>
               )}
@@ -241,7 +257,9 @@ export function BranchesStep() {
       {filteredBranches?.length === 0 && (
         <div className="text-center py-8">
           <Warehouse className="w-12 h-12 mx-auto text-gray-300 mb-4" />
-          <p className="text-secondary">لا توجد نتائج مطابقة للبحث</p>
+          <p className="text-secondary">
+            {t("transfers.create.branchesStep.noResults")}
+          </p>
         </div>
       )}
     </div>

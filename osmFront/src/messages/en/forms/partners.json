@@ -1,0 +1,44 @@
+{
+  "partners": {
+    "title": "Partners & Insurance",
+    "detailsTitle": "Partner Details",
+    "name": "Partner Name",
+    "name_en": "English Name",
+    "partner_type": "Partner Type",
+    "code": "Partner Code",
+    "contact_person": "Contact Person",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "address": "Address",
+    "contract_number": "Contract Number",
+    "contract_start": "Contract Start",
+    "contract_end": "Contract End",
+    "payment_terms": "Payment Terms",
+    "default_discount": "Default Discount %",
+    "credit_limit": "Credit Limit",
+    "current_balance": "Current Balance",
+    "patient_share_percentage": "Patient Share %",
+    "tax_number": "Tax Number",
+    "notes": "Notes",
+    "updateDescription": "Update Partner",
+    "createDescription": "Add New Partner",
+    "values": {
+      "partner_type": {
+        "insurance": "Insurance Company",
+        "bnpl": "BNPL Company",
+        "corporate": "Corporate Client",
+        "wholesaler": "Wholesaler",
+        "agent": "Agent"
+      },
+      "payment_terms": {
+        "immediate": "Immediate",
+        "7_days": "7 Days",
+        "15_days": "15 Days",
+        "30_days": "30 Days",
+        "60_days": "60 Days",
+        "90_days": "90 Days"
+      }
+    }
+  }
+}

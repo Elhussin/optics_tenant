@@ -1,0 +1,69 @@
+{
+  "viewCard": {
+    "view": "View",
+    "edit": "Edit",
+    "createTitle": "Create",
+    "updateTitle": "Update",
+    "noDataFound": "No Data Found",
+    "tryAdjustingFilters": "Try adjusting the filters",
+    "title": "Title",
+    "manageAndView": "Manage and View",
+    "back": "Back",
+    "errorGetFormData": "Invalid entity Detected",
+    "is_active": "Active",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      }
+    }
+  },
+  "viewDetailsCard": {
+    "print": "Print Details",
+    "copy": "Copy Details",
+    "pdf": "PDF Details",
+    "entityError": "Invalid entity Or ID",
+    "noConfigError": "Invalid entity - No config Detected",
+    "errorLoadingData": "Error loading data",
+    "deletedItem": "This item is deleted. You can restore it or delete it permanently.",
+    "is_active": "Active",
+    "is_deleted": "Deleted",
+    "created_at": "Created At",
+    "updated_at": "Updated At",
+    "enter": "Enter",
+    "unsupportedField": "  Unsupported field type:",
+    "values": {
+      "is_active": {
+        "true": "Active",
+        "false": "Inactive"
+      },
+      "is_deleted": {
+        "true": "Deleted",
+        "false": "Not Deleted"
+      }
+    }
+  },
+  "dashboardLinks": {
+    "create": "Add",
+    "update": "Update",
+    "back": "Back",
+    "reset": "Reset",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "print": "Print",
+    "refresh": "Refresh",
+    "settings": "Settings",
+    "logout": "Logout",
+    "profile": "Profile",
+    "dashboard": "Dashboard",
+    "reports": "Reports",
+    "help": "Help",
+    "notifications": "Notifications",
+    "messages": "Messages"
+  }
+}

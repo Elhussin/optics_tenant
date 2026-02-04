@@ -1,0 +1,48 @@
+{
+  "products": {
+    "title": "المنتجات",
+    "detailsTitle": "تفاصيل المنتج",
+    "name": "اسم المنتج",
+    "category_name": "التصنيف",
+    "brand_name": "العلامة التجارية",
+    "description": "الوصف",
+    "supplier_name": "المورد",
+    "manufacturer_name": "المصنع",
+    "model": "الموديل",
+    "type": "النوع",
+    "updateDescription": "تحديث بيانات المنتج",
+    "createDescription": "إضافة منتج جديد"
+  },
+  "product-variants": {
+    "title": "  تفاصيل المنتجات ",
+    "detailsTitle": "تفاصيل اضافات المنتج",
+    "name": "اسم اضافات المنتج",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات اضافات المنتج",
+    "createDescription": "إضافة اضافات منتج جديدة"
+  },
+  "product-images": {
+    "title": "صور المنتج",
+    "detailsTitle": "تفاصيل صورة المنتج",
+    "name": "اسم صورة المنتج",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات صورة المنتج",
+    "createDescription": "إضافة صورة منتج جديدة"
+  },
+  "flexible-prices": {
+    "title": "السعر المرن",
+    "detailsTitle": "تفاصيل السعر المرن",
+    "name": "اسم السعر المرن",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات السعر المرن",
+    "createDescription": "إضافة سعر مرن جديد"
+  },
+  "lens-coatings": {
+    "title": "طبقات الحماية",
+    "detailsTitle": "تفاصيل طبقة الحماية",
+    "name": "اسم طبقة الحماية",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات طبقة الحماية",
+    "createDescription": "إضافة طبقة حماية جديدة"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "branches-shift": {
+    "title": "مناوبات الفرع",
+    "detailsTitle": "تفاصيل المناوبة",
+    "branch_name": "اسم الفرع",
+    "employee_name": "اسم الموظف",
+    "is_active": "نشط",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات المناوبة",
+    "createDescription": "إضافة مناوبة جديدة"
+  },
+  "product-supplier": {
+    "title": "موردي المنتجات",
+    "detailsTitle": "تفاصيل مورد المنتج",
+    "name": "اسم مورد المنتج",
+    "category_name": "التصنيف",
+    "brand_name": "العلامة التجارية",
+    "supplier_name": "المورد",
+    "manufacturer_name": "المصنع",
+    "updateDescription": "تحديث بيانات مورد المنتج",
+    "createDescription": "إضافة مورد منتج جديد"
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "detailsTitle": "تفاصيل الفاتورة",
+    "invoice_number": "رقم الفاتورة",
+    "customer_name": "اسم العميل",
+    "total_amount": "المبلغ الإجمالي",
+    "status": "الحالة",
+    "updateDescription": "تحديث بيانات الفاتورة",
+    "createDescription": "إضافة فاتورة جديدة"
+  },
+  "sales-payments": {
+    "title": "دفعات المبيعات",
+    "detailsTitle": "تفاصيل الدفعة",
+    "invoice_number": "رقم الفاتورة",
+    "amount": "المبلغ",
+    "payment_method": "طريقة الدفع",
+    "updateDescription": "تحديث بيانات الدفعة",
+    "createDescription": "إضافة دفعة جديدة"
+  },
+  "stocks": {
+    "title": "المخزون",
+    "detailsTitle": "تفاصيل المخزون",
+    "product_name": "اسم المنتج",
+    "branch_name": "الفرع",
+    "quantity": "الكمية",
+    "updateDescription": "تحديث بيانات المخزون",
+    "createDescription": "إضافة مخزون جديد"
+  },
+  "stock-movements": {
+    "title": "حركات المخزون",
+    "detailsTitle": "تفاصيل الحركة",
+    "product_name": "اسم المنتج",
+    "branch_name": "الفرع",
+    "movement_type": "نوع الحركة",
+    "quantity": "الكمية",
+    "updateDescription": "تحديث بيانات الحركة",
+    "createDescription": "إضافة حركة جديدة"
+  }
+}

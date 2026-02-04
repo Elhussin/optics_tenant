@@ -1,0 +1,36 @@
+{
+  "payment-methods": {
+    "title": "Payment Methods",
+    "detailsTitle": "Payment Method Details",
+    "name_ar": "Name (Arabic)",
+    "name_en": "Name (English)",
+    "code": "Code",
+    "is_active": "Active",
+    "icon": "Icon",
+    "provider_fees_percent": "Provider Fees %",
+    "is_installment": "Installment (BNPL)",
+    "updateDescription": "Update Payment Method",
+    "createDescription": "Add New Payment Method"
+  },
+  "prescriptions": {
+    "title": "Prescriptions",
+    "detailsTitle": "Prescription Details",
+    "customer_name": "Patient Name",
+    "notes": "Notes",
+    "user_name": "Username",
+    "updateDescription": "Update Prescription",
+    "createDescription": "Add New Prescription"
+  },
+  "pages": {
+    "title": "Pages",
+    "detailsTitle": "Page Details",
+    "name": "Page Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "message": "Message",
+    "description": "Description",
+    "updateDescription": "Update Page",
+    "createDescription": "Add New Page"
+  }
+}

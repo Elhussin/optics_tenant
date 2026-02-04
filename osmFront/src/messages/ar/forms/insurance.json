@@ -1,0 +1,98 @@
+{
+  "crm-insurance-claims": {
+    "title": "مطالبات التأمين",
+    "detailsTitle": "تفاصيل المطالبة",
+    "claim_number": "رقم المطالبة",
+    "customer_name": "اسم العميل",
+    "partner_name": "شركة التأمين",
+    "invoice_number": "رقم الفاتورة",
+    "claim_date": "تاريخ المطالبة",
+    "claim_amount": "مبلغ المطالبة",
+    "approved_amount": "المبلغ المعتمد",
+    "patient_share": "حصة المريض",
+    "status": "الحالة",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات المطالبة",
+    "createDescription": "إضافة مطالبة جديدة"
+  },
+  "crm-claim-items": {
+    "title": "عناصر المطالبة",
+    "detailsTitle": "تفاصيل العنصر",
+    "claim_number": "رقم المطالبة",
+    "product_name": "اسم المنتج",
+    "quantity": "الكمية",
+    "unit_price": "سعر الوحدة",
+    "total_price": "السعر الإجمالي",
+    "approved_amount": "المبلغ المعتمد",
+    "updateDescription": "تحديث بيانات العنصر",
+    "createDescription": "إضافة عنصر جديد"
+  },
+  "crm-claim-documents": {
+    "title": "مستندات المطالبة",
+    "detailsTitle": "تفاصيل المستند",
+    "claim_number": "رقم المطالبة",
+    "document_type": "نوع المستند",
+    "file": "الملف",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات المستند",
+    "createDescription": "إضافة مستند جديد"
+  },
+  "crm-customer-partner-links": {
+    "title": "ربط العملاء بالتأمين",
+    "detailsTitle": "تفاصيل الربط",
+    "customer_name": "اسم العميل",
+    "partner_name": "شركة التأمين",
+    "policy_number": "رقم البوليصة",
+    "coverage_percentage": "نسبة التغطية %",
+    "valid_from": "صالح من",
+    "valid_to": "صالح حتى",
+    "updateDescription": "تحديث بيانات الربط",
+    "createDescription": "إضافة ربط جديد"
+  },
+  "crm-partner-branches": {
+    "title": "فروع الشركاء",
+    "detailsTitle": "تفاصيل الفرع",
+    "partner_name": "اسم الشريك",
+    "branch_name": "اسم الفرع",
+    "contact_person": "مسؤول التواصل",
+    "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "updateDescription": "تحديث بيانات الفرع",
+    "createDescription": "إضافة فرع جديد"
+  },
+  "crm-partner-price-lists": {
+    "title": "قوائم أسعار الشركاء",
+    "detailsTitle": "تفاصيل قائمة الأسعار",
+    "partner_name": "اسم الشريك",
+    "name": "اسم قائمة الأسعار",
+    "valid_from": "صالح من",
+    "valid_to": "صالح حتى",
+    "is_active": "نشطة",
+    "updateDescription": "تحديث بيانات قائمة الأسعار",
+    "createDescription": "إضافة قائمة أسعار جديدة"
+  },
+  "crm-partner-price-list-items": {
+    "title": "عناصر قائمة الأسعار",
+    "detailsTitle": "تفاصيل العنصر",
+    "price_list_name": "قائمة الأسعار",
+    "product_name": "اسم المنتج",
+    "partner_price": "سعر الشريك",
+    "discount_percentage": "نسبة الخصم %",
+    "updateDescription": "تحديث بيانات العنصر",
+    "createDescription": "إضافة عنصر جديد"
+  },
+  "crm-partner-settlements": {
+    "title": "تسويات الشركاء",
+    "detailsTitle": "تفاصيل التسوية",
+    "partner_name": "اسم الشريك",
+    "settlement_number": "رقم التسوية",
+    "settlement_date": "تاريخ التسوية",
+    "total_claims": "إجمالي المطالبات",
+    "total_amount": "المبلغ الإجمالي",
+    "paid_amount": "المبلغ المدفوع",
+    "status": "الحالة",
+    "updateDescription": "تحديث بيانات التسوية",
+    "createDescription": "إضافة تسوية جديدة"
+  }
+}

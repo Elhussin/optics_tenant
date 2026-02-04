@@ -62,11 +62,11 @@ export const PageHeader = ({
                 )}
               >
                 {/* Clone element to enforce size if needed, or just render */}
-                {React.isValidElement(icon)
+                {/* {React.isValidElement(icon)
                   ? React.cloneElement(icon as React.ReactElement, {
-                      className: "w-6 h-6",
+                      size: 20,
                     })
-                  : icon}
+                  : icon} */}
               </div>
             )}
 

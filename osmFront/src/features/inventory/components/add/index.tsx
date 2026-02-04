@@ -3,13 +3,13 @@
 import React, { useState, useMemo } from "react";
 import {
   Package,
-  Warehouse,
-  ArrowUpCircle,
   Check,
   Loader2,
   ArrowLeft,
   ArrowRight,
   AlertCircle,
+  Warehouse,
+  ArrowUpCircle,
 } from "lucide-react";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import {
@@ -19,10 +19,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/shared/components/shadcn/ui/card";
-import { useInventoryFormStore, useTransferFormStore } from "../store";
+import { useInventoryFormStore, useTransferFormStore } from "../../store";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
 import api from "@/src/shared/api/axios";
+import { useTranslations } from "next-intl";
 
 // Step Components
 import { BranchStep } from "./steps/BranchStep";
@@ -67,25 +68,32 @@ const StepIndicator = ({
   </div>
 );
 
-const STEPS = [
-  { id: 1, title: "المستودع", icon: <Warehouse size={18} /> },
-  { id: 2, title: "المنتج", icon: <Package size={18} /> },
-  { id: 3, title: "الحركة", icon: <ArrowUpCircle size={18} /> },
-  { id: 4, title: "المراجعة", icon: <Check size={18} /> },
-];
+// STEPS moved inside component for translation
 
 export function AddInventory() {
+  const t = useTranslations("inventory");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const store = useInventoryFormStore();
+
+  const steps = [
+    { id: 1, title: t("add.steps.warehouse"), icon: <Warehouse size={18} /> },
+    { id: 2, title: t("add.steps.product"), icon: <Package size={18} /> },
+    {
+      id: 3,
+      title: t("add.steps.movement"),
+      icon: <ArrowUpCircle size={18} />,
+    },
+    { id: 4, title: t("add.steps.review"), icon: <Check size={18} /> },
+  ];
 
   // Step validation
   const canProceedToStep2 = useMemo(() => !!store.branchId, [store.branchId]);
 
   const canProceedToStep3 = useMemo(
     () => !!store.variantId || !!store.stockId,
-    [store.variantId, store.stockId]
+    [store.variantId, store.stockId],
   );
 
   const canProceedToStep4 = useMemo(() => {
@@ -105,17 +113,17 @@ export function AddInventory() {
 
   const handleSubmit = async () => {
     if (!store.stockId && !store.variantId) {
-      safeToast("يجب اختيار المنتج", { type: "error" });
+      safeToast(t("add.validation.selectProduct"), { type: "error" });
       return;
     }
 
     if (store.quantity <= 0) {
-      safeToast("يجب إدخال كمية صحيحة", { type: "error" });
+      safeToast(t("add.validation.invalidQuantity"), { type: "error" });
       return;
     }
 
     if (store.movementType === "purchase" && store.costPerUnit <= 0) {
-      safeToast("يجب إدخال سعر الشراء", { type: "error" });
+      safeToast(t("add.validation.enterCost"), { type: "error" });
       return;
     }
 
@@ -133,13 +141,13 @@ export function AddInventory() {
             variant: store.variantId,
             quantity_in_stock: 0,
             reorder_level: 5,
-          }
+          },
         );
         stockId = stockResponse.id;
       }
 
       if (!stockId) {
-        safeToast("فشل في إعداد المخزون", { type: "error" });
+        safeToast(t("add.validation.stockSetupFailed"), { type: "error" });
         return;
       }
 
@@ -155,7 +163,7 @@ export function AddInventory() {
 
       await api.customRequest("products_stock-movements_create", payload);
 
-      safeToast("تم إضافة حركة المخزون بنجاح", { type: "success" });
+      safeToast(t("add.validation.success"), { type: "success" });
       store.reset();
       router.push("/dashboard/inventory");
     } catch (error: any) {
@@ -165,7 +173,7 @@ export function AddInventory() {
         Object.values(error?.response?.data || {})
           .flat()
           .join(", ") ||
-        "فشل في إضافة حركة المخزون";
+        t("add.validation.error");
       safeToast(message, { type: "error" });
     } finally {
       setIsSubmitting(false);
@@ -193,10 +201,8 @@ export function AddInventory() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white mb-4 shadow-lg shadow-emerald-500/30">
             <Package className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold text-main">إضافة حركة مخزون</h1>
-          <p className="text-secondary mt-2">
-            سجل حركات الشراء والتعديل والخسائر
-          </p>
+          <h1 className="text-3xl font-bold text-main">{t("add.title")}</h1>
+          <p className="text-secondary mt-2">{t("add.subtitle")}</p>
         </div>
 
         {/* Warning for non-store branches */}
@@ -204,29 +210,28 @@ export function AddInventory() {
           <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-amber-800 dark:text-amber-200 font-medium">
-              ملاحظة هامة
+              {t("add.warning.title")}
             </p>
             <p className="text-amber-700 dark:text-amber-300 text-sm">
-              يمكن إضافة المخزون فقط للفروع من نوع &quot;مستودع&quot; (Store).
-              الفروع العادية تستلم المخزون عن طريق التحويلات.
+              {t("add.warning.message")}
             </p>
           </div>
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator steps={STEPS} currentStep={currentStep} />
+        <StepIndicator steps={steps} currentStep={currentStep} />
 
         {/* Form Card */}
         <Card className="shadow-xl border-0 bg-elevated">
           <CardHeader>
             <CardTitle className="text-xl">
-              {STEPS[currentStep - 1].title}
+              {steps[currentStep - 1].title}
             </CardTitle>
             <CardDescription>
-              {currentStep === 1 && "اختر المستودع الذي ستضيف له المخزون"}
-              {currentStep === 2 && "اختر المنتج الذي تريد إضافة حركة له"}
-              {currentStep === 3 && "حدد نوع الحركة والكمية والتكلفة"}
-              {currentStep === 4 && "راجع البيانات قبل الحفظ"}
+              {currentStep === 1 && t("add.stepDescriptions.warehouse")}
+              {currentStep === 2 && t("add.stepDescriptions.product")}
+              {currentStep === 3 && t("add.stepDescriptions.movement")}
+              {currentStep === 4 && t("add.stepDescriptions.review")}
             </CardDescription>
           </CardHeader>
 
@@ -246,7 +251,7 @@ export function AddInventory() {
                 disabled={currentStep === 1}
               >
                 <ArrowRight className="w-4 h-4 ml-2" />
-                السابق
+                {t("add.buttons.previous")}
               </Button>
 
               {currentStep < 4 ? (
@@ -256,7 +261,7 @@ export function AddInventory() {
                   disabled={!canProceed()}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  التالي
+                  {t("add.buttons.next")}
                   <ArrowLeft className="w-4 h-4 mr-2" />
                 </Button>
               ) : (
@@ -269,12 +274,12 @@ export function AddInventory() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                      جاري الحفظ...
+                      {t("add.buttons.saving")}
                     </>
                   ) : (
                     <>
                       <Check className="w-4 h-4 ml-2" />
-                      تأكيد الحركة
+                      {t("add.buttons.save")}
                     </>
                   )}
                 </Button>
@@ -292,13 +297,14 @@ export function AddInventory() {
 
 // Summary Component
 function InventorySummary() {
+  const t = useTranslations("inventory");
   const store = useInventoryFormStore();
 
   const movementTypeLabels: Record<string, string> = {
-    purchase: "شراء / إعادة تخزين",
-    adjustment: "تعديل المخزون",
-    damage: "تلف / خسارة",
-    return: "مرتجع من عميل",
+    purchase: t("add.movementTypes.purchase"),
+    adjustment: t("add.movementTypes.adjustment"),
+    damage: t("add.movementTypes.damage"),
+    return: t("add.movementTypes.return"),
   };
 
   if (!store.branchId && !store.variantId) return null;
@@ -308,25 +314,27 @@ function InventorySummary() {
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <Package size={20} />
-          ملخص الحركة
+          {t("add.summary.title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {store.branchName && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">المستودع:</span>
+            <span className="text-secondary">
+              {t("add.summary.warehouse")}:
+            </span>
             <span className="font-medium">{store.branchName}</span>
           </div>
         )}
         {store.variantName && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">المنتج:</span>
+            <span className="text-secondary">{t("add.summary.product")}:</span>
             <span className="font-medium">{store.variantName}</span>
           </div>
         )}
         {store.movementType && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">نوع الحركة:</span>
+            <span className="text-secondary">{t("add.summary.type")}:</span>
             <span className="font-medium">
               {movementTypeLabels[store.movementType] || store.movementType}
             </span>
@@ -334,23 +342,25 @@ function InventorySummary() {
         )}
         {store.quantity > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">الكمية:</span>
+            <span className="text-secondary">{t("add.summary.quantity")}:</span>
             <span className="font-medium text-primary">{store.quantity}</span>
           </div>
         )}
         {store.costPerUnit > 0 && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">سعر الوحدة:</span>
+            <span className="text-secondary">
+              {t("add.summary.unitPrice")}:
+            </span>
             <span className="font-medium">
-              {store.costPerUnit.toFixed(2)} ر.س
+              {store.costPerUnit.toFixed(2)} {t("add.summary.total")}
             </span>
           </div>
         )}
         {store.quantity > 0 && store.costPerUnit > 0 && (
           <div className="flex justify-between text-lg font-bold border-t pt-3">
-            <span>الإجمالي:</span>
+            <span>{t("add.summary.total")}:</span>
             <span className="text-primary">
-              {(store.quantity * store.costPerUnit).toFixed(2)} ر.س
+              {(store.quantity * store.costPerUnit).toFixed(2)}
             </span>
           </div>
         )}

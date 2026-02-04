@@ -1,0 +1,36 @@
+{
+  "payment-methods": {
+    "title": "طرق الدفع",
+    "detailsTitle": "تفاصيل طريقة الدفع",
+    "name_ar": "الاسم (بالعربي)",
+    "name_en": "الاسم (بالإنجليزي)",
+    "code": "الكود البرمجي",
+    "is_active": "نشطة",
+    "icon": "الأيقونة",
+    "provider_fees_percent": "رسوم المزود (%)",
+    "is_installment": "تقسيط (BNPL)",
+    "updateDescription": "تحديث بيانات طريقة الدفع",
+    "createDescription": "إضافة طريقة دفع جديدة"
+  },
+  "prescriptions": {
+    "title": "الفحوصات",
+    "detailsTitle": "تفاصيل الفحص",
+    "customer_name": "اسم المريض",
+    "notes": "الملاحظات",
+    "user_name": "اسم المستخدم",
+    "updateDescription": "تحديث بيانات الفحص",
+    "createDescription": "إضافة فحص جديد"
+  },
+  "pages": {
+    "title": "الصفحات",
+    "detailsTitle": "تفاصيل الصفحة",
+    "name": "اسم الصفحة",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "message": "الرسالة",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الصفحة",
+    "createDescription": "إضافة صفحة جديدة"
+  }
+}

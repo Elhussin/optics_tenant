@@ -1,0 +1,46 @@
+{
+  "viewCard": {
+    "view": "عرض",
+    "edit": "تحديث",
+    "createTitle": "إضافة",
+    "updateTitle": "تحديث",
+    "noDataFound": "لم يتم العثور على بيانات",
+    "tryAdjustingFilters": "حاول تعديل الفلاتر",
+    "title": "العنوان",
+    "manageAndView": "إدارة وعرض",
+    "back": "الرجوع",
+    "errorGetFormData": "حدث خطأ أثناء الحصول على بيانات الصفحة.",
+    "is_active": "نشط",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      }
+    }
+  },
+  "viewDetailsCard": {
+    "print": "طباعة",
+    "copy": "نسخ",
+    "pdf": "pdf",
+    "entityError": "العنصر غير صحيح أو ID",
+    "noConfigError": "العنصر غير صحيح - تم اكتشاف الـ config",
+    "errorLoadingData": "حدث خطأ أثناء تحميل البيانات",
+    "deletedItem": "تم حذف هذا العنصر. يمكنك استرجاعه أو حذفه بشكل نهائي.",
+    "is_active": "نشط",
+    "is_deleted": "الحذف",
+    "created_at": "تاريخ الاستلام ",
+    "updated_at": "اخر تحديث",
+    "enter": "ادخال",
+    "unsupportedField": "هذا الحقل غير مدعوم",
+    "values": {
+      "is_active": {
+        "true": "مفعل",
+        "false": "غير مفعل"
+      },
+      "is_deleted": {
+        "true": "محذوف",
+        "false": "غير محذوف"
+      }
+    }
+  }
+}

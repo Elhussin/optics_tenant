@@ -12,13 +12,15 @@ import {
 } from "lucide-react";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
-import { useTransferFormStore } from "../../store";
-import { TransferItem, Stock } from "../../types";
+import { useTransferFormStore } from "../../../store";
+import { TransferItem, Stock } from "../../../types";
 import useSWR from "swr";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
+import { useTranslations } from "next-intl";
 
 export function ItemsStep() {
+  const t = useTranslations("inventory");
   const store = useTransferFormStore();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -31,7 +33,7 @@ export function ItemsStep() {
       });
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Filter available stocks (with available quantity > 0) - with safe array check
@@ -47,7 +49,9 @@ export function ItemsStep() {
           stock.variant_sku
             ?.toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          stock.product_name?.toLowerCase().includes(searchQuery.toLowerCase()))
+          stock.product_name
+            ?.toLowerCase()
+            .includes(searchQuery.toLowerCase())),
     );
   }, [stocks, searchQuery]);
 
@@ -83,7 +87,7 @@ export function ItemsStep() {
     const item = store.items[index];
     const newQuantity = Math.max(
       1,
-      Math.min(item.availableQuantity, item.quantityRequested + delta)
+      Math.min(item.availableQuantity, item.quantityRequested + delta),
     );
     store.updateItem(index, { quantityRequested: newQuantity });
   };
@@ -101,7 +105,9 @@ export function ItemsStep() {
       <div className="flex justify-center items-center py-12">
         <div className="animate-pulse flex flex-col items-center gap-4">
           <Package className="w-12 h-12 text-gray-300" />
-          <p className="text-secondary">جاري تحميل المخزون...</p>
+          <p className="text-secondary">
+            {t("transfers.create.itemsStep.loading")}
+          </p>
         </div>
       </div>
     );
@@ -116,7 +122,8 @@ export function ItemsStep() {
             <div className="flex items-center gap-2">
               <ShoppingCart className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <span className="font-semibold text-blue-800 dark:text-blue-200">
-                المنتجات المختارة ({store.items.length})
+                {t("transfers.create.itemsStep.selectedItems")} (
+                {store.items.length})
               </span>
             </div>
             <Button
@@ -126,7 +133,7 @@ export function ItemsStep() {
               className="text-red-500 hover:text-red-700"
             >
               <Trash2 className="w-4 h-4 ml-1" />
-              مسح الكل
+              {t("transfers.create.itemsStep.clearAll")}
             </Button>
           </div>
 
@@ -185,7 +192,7 @@ export function ItemsStep() {
       <div className="relative">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <Input
-          placeholder="ابحث عن منتج..."
+          placeholder={t("transfers.create.itemsStep.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pr-10"
@@ -222,7 +229,9 @@ export function ItemsStep() {
                   <div className="text-xl font-bold text-main">
                     {stock.available_quantity}
                   </div>
-                  <p className="text-xs text-secondary">متاح</p>
+                  <p className="text-xs text-secondary">
+                    {t("transfers.create.itemsStep.available")}
+                  </p>
                 </div>
               </div>
 
@@ -232,7 +241,9 @@ export function ItemsStep() {
                 {stock.stock_status === "Low Stock" && (
                   <div className="flex items-center gap-1 text-amber-600">
                     <AlertTriangle className="w-4 h-4" />
-                    <span className="text-xs">مخزون منخفض</span>
+                    <span className="text-xs">
+                      {t("transfers.create.itemsStep.lowStock")}
+                    </span>
                   </div>
                 )}
                 {stock.stock_status !== "Low Stock" && <div />}
@@ -280,7 +291,7 @@ export function ItemsStep() {
                     className="bg-primary hover:bg-primary/90"
                   >
                     <Plus className="w-4 h-4 ml-1" />
-                    إضافة
+                    {t("transfers.create.itemsStep.add")}
                   </Button>
                 )}
               </div>
@@ -294,12 +305,14 @@ export function ItemsStep() {
         <div className="text-center py-12">
           <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-main mb-2">
-            {searchQuery ? "لا توجد نتائج" : "لا يوجد مخزون متاح للتحويل"}
+            {searchQuery
+              ? t("transfers.create.itemsStep.noResults")
+              : t("transfers.create.itemsStep.noStock")}
           </h3>
           <p className="text-secondary">
             {searchQuery
-              ? "جرب البحث بكلمات مختلفة"
-              : "تأكد من وجود منتجات في مخزون الفرع المرسل"}
+              ? t("transfers.create.itemsStep.searchHint")
+              : t("transfers.create.itemsStep.noStockHint")}
           </p>
         </div>
       )}

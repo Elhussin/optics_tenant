@@ -11,11 +11,13 @@ import {
   FileText,
   AlertCircle,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Textarea } from "@/src/shared/components/shadcn/ui/textarea";
 import { Label } from "@/src/shared/components/shadcn/ui/label";
-import { useTransferFormStore } from "../../store";
+import { useTransferFormStore } from "../../../store";
 
 export function TransferReviewStep() {
+  const t = useTranslations("inventory");
   const store = useTransferFormStore();
 
   const isComplete =
@@ -47,7 +49,9 @@ export function TransferReviewStep() {
                 : "text-amber-800 dark:text-amber-200"
             }`}
           >
-            {isComplete ? "جاهز للإنشاء" : "يرجى إكمال البيانات المطلوبة"}
+            {isComplete
+              ? t("transfers.create.reviewStep.ready")
+              : t("transfers.create.reviewStep.incomplete")}
           </h3>
           <p
             className={`text-sm ${
@@ -57,8 +61,8 @@ export function TransferReviewStep() {
             }`}
           >
             {isComplete
-              ? "سيتم إنشاء طلب التحويل بحالة 'معلق' ويحتاج للموافقة قبل الشحن"
-              : "بعض الحقول المطلوبة غير مكتملة"}
+              ? t("transfers.create.reviewStep.readyDesc")
+              : t("transfers.create.reviewStep.incompleteDesc")}
           </p>
         </div>
       </div>
@@ -71,9 +75,12 @@ export function TransferReviewStep() {
             <div className="w-12 h-12 mx-auto rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-2">
               <Warehouse className="w-6 h-6 text-red-600 dark:text-red-400" />
             </div>
-            <p className="text-xs text-secondary">من</p>
+            <p className="text-xs text-secondary">
+              {t("transfers.create.reviewStep.from")}
+            </p>
             <p className="font-semibold text-main">
-              {store.fromBranchName || "غير محدد"}
+              {store.fromBranchName ||
+                t("transfers.create.reviewStep.notSelected")}
             </p>
           </div>
 
@@ -89,9 +96,12 @@ export function TransferReviewStep() {
             <div className="w-12 h-12 mx-auto rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-2">
               <Warehouse className="w-6 h-6 text-green-600 dark:text-green-400" />
             </div>
-            <p className="text-xs text-secondary">إلى</p>
+            <p className="text-xs text-secondary">
+              {t("transfers.create.reviewStep.to")}
+            </p>
             <p className="font-semibold text-main">
-              {store.toBranchName || "غير محدد"}
+              {store.toBranchName ||
+                t("transfers.create.reviewStep.notSelected")}
             </p>
           </div>
         </div>
@@ -102,12 +112,14 @@ export function TransferReviewStep() {
         <div className="flex items-center gap-2 mb-4">
           <Package className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           <h4 className="font-semibold text-main">
-            المنتجات ({store.items.length})
+            {t("transfers.create.reviewStep.items")} ({store.items.length})
           </h4>
         </div>
 
         {store.items.length === 0 ? (
-          <p className="text-center text-secondary py-4">لم تتم إضافة منتجات</p>
+          <p className="text-center text-secondary py-4">
+            {t("transfers.create.reviewStep.noItems")}
+          </p>
         ) : (
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {store.items.map((item, index) => (
@@ -126,7 +138,8 @@ export function TransferReviewStep() {
                     {item.quantityRequested}
                   </p>
                   <p className="text-xs text-secondary">
-                    من {item.availableQuantity}
+                    {t("transfers.create.reviewStep.fromTotal")}{" "}
+                    {item.availableQuantity}
                   </p>
                 </div>
               </div>
@@ -140,7 +153,7 @@ export function TransferReviewStep() {
         <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-center">
           <Hash className="w-5 h-5 mx-auto text-blue-600 dark:text-blue-400 mb-1" />
           <p className="text-xs text-blue-700 dark:text-blue-300">
-            عدد المنتجات
+            {t("transfers.create.reviewStep.itemsCount")}
           </p>
           <p className="font-bold text-xl text-blue-800 dark:text-blue-200">
             {store.totalItems}
@@ -150,7 +163,7 @@ export function TransferReviewStep() {
         <div className="p-4 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 text-center">
           <Package className="w-5 h-5 mx-auto text-indigo-600 dark:text-indigo-400 mb-1" />
           <p className="text-xs text-indigo-700 dark:text-indigo-300">
-            إجمالي الكميات
+            {t("transfers.create.reviewStep.totalQuantity")}
           </p>
           <p className="font-bold text-xl text-indigo-800 dark:text-indigo-200">
             {store.totalQuantity}
@@ -160,7 +173,7 @@ export function TransferReviewStep() {
         <div className="p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-center">
           <DollarSign className="w-5 h-5 mx-auto text-green-600 dark:text-green-400 mb-1" />
           <p className="text-xs text-green-700 dark:text-green-300">
-            القيمة التقديرية
+            {t("transfers.create.reviewStep.estimatedValue")}
           </p>
           <p className="font-bold text-xl text-green-800 dark:text-green-200">
             {store.totalValue.toFixed(2)}
@@ -172,40 +185,48 @@ export function TransferReviewStep() {
       <div className="space-y-2">
         <Label htmlFor="notes" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
-          ملاحظات (اختياري)
+          {t("transfers.create.reviewStep.notes")}
         </Label>
         <Textarea
           id="notes"
           value={store.notes}
           onChange={(e) => store.setNotes(e.target.value)}
-          placeholder="أي ملاحظات إضافية على التحويل..."
+          placeholder={t("transfers.create.reviewStep.notesPlaceholder")}
           rows={3}
         />
       </div>
 
       {/* Workflow Info */}
       <div className="p-4 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-        <h4 className="font-medium text-main mb-3">الخطوات التالية:</h4>
+        <h4 className="font-medium text-main mb-3">
+          {t("transfers.create.reviewStep.nextSteps")}
+        </h4>
         <div className="flex items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs font-bold">
               1
             </div>
-            <span className="text-secondary">تقديم للموافقة</span>
+            <span className="text-secondary">
+              {t("transfers.create.reviewStep.step1")}
+            </span>
           </div>
           <ArrowRight className="w-4 h-4 text-gray-400 rotate-180" />
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-bold">
               2
             </div>
-            <span className="text-secondary">شحن</span>
+            <span className="text-secondary">
+              {t("transfers.create.reviewStep.step2")}
+            </span>
           </div>
           <ArrowRight className="w-4 h-4 text-gray-400 rotate-180" />
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">
               3
             </div>
-            <span className="text-secondary">استلام</span>
+            <span className="text-secondary">
+              {t("transfers.create.reviewStep.step3")}
+            </span>
           </div>
         </div>
       </div>

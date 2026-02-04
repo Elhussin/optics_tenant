@@ -24,7 +24,7 @@ import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { safeToast } from "@/src/shared/utils/safeToast";
-import type { StockTransfer } from "../types";
+import type { StockTransfer } from "../../types";
 import {
   Select,
   SelectContent,
@@ -33,8 +33,10 @@ import {
   SelectValue,
 } from "@/src/shared/components/shadcn/ui/select";
 import { ConfirmDialog } from "@/src/shared/components/ui/dialogs/ConfirmDialog";
+import { useTranslations } from "next-intl";
 
 export function TransfersList() {
+  const t = useTranslations("inventory");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [branchFilter, setBranchFilter] = useState<string>("all");
@@ -114,12 +116,21 @@ export function TransfersList() {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { variant: any; label: string }> = {
-      pending: { variant: "warning", label: "قيد الانتظار" },
-      submitted: { variant: "info", label: "مُقدم" },
-      shipped: { variant: "info", label: "تم الشحن" },
-      received: { variant: "success", label: "تم الاستلام" },
-      completed: { variant: "success", label: "مكتمل" },
-      cancelled: { variant: "danger", label: "ملغي" },
+      pending: { variant: "warning", label: t("transfers.status.pending") },
+      submitted: { variant: "info", label: t("transfers.status.submitted") },
+      shipped: { variant: "info", label: t("transfers.status.shipped") },
+      received: {
+        variant: "success",
+        label: t("transfers.status.received"),
+      },
+      completed: {
+        variant: "success",
+        label: t("transfers.status.completed"),
+      },
+      cancelled: {
+        variant: "danger",
+        label: t("transfers.status.cancelled"),
+      },
     };
 
     const config = statusMap[status] || { variant: "neutral", label: status };
@@ -149,13 +160,13 @@ export function TransfersList() {
       await receiveMutation.mutation.mutateAsync({
         id: confirmDialog.transferId,
       });
-      safeToast("تم استلام التحويل بنجاح", { type: "success" });
+      safeToast(t("transfers.messages.receiveSuccess"), { type: "success" });
       query.refetch();
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.detail ||
         error?.response?.data?.message ||
-        "حدث خطأ أثناء استلام التحويل";
+        t("transfers.messages.receiveError");
       safeToast(errorMessage, { type: "error" });
     } finally {
       setConfirmDialog({ open: false, transferId: null, action: null });
@@ -187,15 +198,15 @@ export function TransfersList() {
           <div>
             <h1 className="text-3xl font-bold text-main flex items-center gap-3">
               <ArrowLeftRight className="w-8 h-8 text-primary" />
-              التحويلات بين الفروع
+              {t("transfers.title")}
             </h1>
-            <p className="text-secondary mt-1">إدارة ومتابعة تحويلات المخزون</p>
+            <p className="text-secondary mt-1">{t("transfers.subtitle")}</p>
           </div>
 
           <Link href="/dashboard/inventory/transfers/create">
             <Button className="gap-2 bg-primary hover:bg-primary/90 mt-4 md:mt-0 shadow-lg shadow-primary/20">
               <Plus className="w-4 h-4" />
-              تحويل جديد
+              {t("transfers.newTransfer")}
             </Button>
           </Link>
         </div>
@@ -208,7 +219,9 @@ export function TransfersList() {
                 <div className="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                   <ArrowLeftRight className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <p className="text-sm text-secondary">الإجمالي</p>
+                <p className="text-sm text-secondary">
+                  {t("transfers.stats.total")}
+                </p>
               </div>
               <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">
                 {stats.total}
@@ -222,7 +235,9 @@ export function TransfersList() {
                 <div className="w-12 h-12 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                   <Loader2 className="w-6 h-6 text-amber-600 dark:text-amber-400" />
                 </div>
-                <p className="text-sm text-secondary">قيد الانتظار</p>
+                <p className="text-sm text-secondary">
+                  {t("transfers.stats.pending")}
+                </p>
               </div>
               <p className="text-4xl font-bold text-amber-600 dark:text-amber-400">
                 {stats.pending}
@@ -236,7 +251,9 @@ export function TransfersList() {
                 <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
                   <Package className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
-                <p className="text-sm text-secondary">تم الشحن</p>
+                <p className="text-sm text-secondary">
+                  {t("transfers.stats.shipped")}
+                </p>
               </div>
               <p className="text-4xl font-bold text-indigo-600 dark:text-indigo-400">
                 {stats.shipped}
@@ -250,7 +267,9 @@ export function TransfersList() {
                 <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                   <Check className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <p className="text-sm text-secondary">مكتمل</p>
+                <p className="text-sm text-secondary">
+                  {t("transfers.stats.completed")}
+                </p>
               </div>
               <p className="text-4xl font-bold text-green-600 dark:text-green-400">
                 {stats.completed}
@@ -267,7 +286,7 @@ export function TransfersList() {
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
-                  placeholder="بحث برقم التحويل أو الفرع..."
+                  placeholder={t("transfers.filters.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pr-9"
@@ -278,16 +297,30 @@ export function TransfersList() {
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-40">
                   <Filter className="w-4 h-4 ml-2" />
-                  <SelectValue placeholder="الحالة" />
+                  <SelectValue placeholder={t("transfers.filters.status")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">كل الحالات</SelectItem>
-                  <SelectItem value="pending">قيد الانتظار</SelectItem>
-                  <SelectItem value="submitted">مُقدم</SelectItem>
-                  <SelectItem value="shipped">تم الشحن</SelectItem>
-                  <SelectItem value="received">تم الاستلام</SelectItem>
-                  <SelectItem value="completed">مكتمل</SelectItem>
-                  <SelectItem value="cancelled">ملغي</SelectItem>
+                  <SelectItem value="all">
+                    {t("transfers.filters.allStatus")}
+                  </SelectItem>
+                  <SelectItem value="pending">
+                    {t("transfers.status.pending")}
+                  </SelectItem>
+                  <SelectItem value="submitted">
+                    {t("transfers.status.submitted")}
+                  </SelectItem>
+                  <SelectItem value="shipped">
+                    {t("transfers.status.shipped")}
+                  </SelectItem>
+                  <SelectItem value="received">
+                    {t("transfers.status.received")}
+                  </SelectItem>
+                  <SelectItem value="completed">
+                    {t("transfers.status.completed")}
+                  </SelectItem>
+                  <SelectItem value="cancelled">
+                    {t("transfers.status.cancelled")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -295,10 +328,12 @@ export function TransfersList() {
               <Select value={branchFilter} onValueChange={setBranchFilter}>
                 <SelectTrigger className="w-48">
                   <Warehouse className="w-4 h-4 ml-2" />
-                  <SelectValue placeholder="الفرع" />
+                  <SelectValue placeholder={t("transfers.filters.branch")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">كل الفروع</SelectItem>
+                  <SelectItem value="all">
+                    {t("transfers.filters.allBranches")}
+                  </SelectItem>
                   {uniqueBranches.map((branch) => (
                     <SelectItem key={branch.id} value={branch.id.toString()}>
                       {branch.name}
@@ -314,7 +349,7 @@ export function TransfersList() {
         <GlassCard className="border-border-main/50">
           <div className="p-6">
             <h3 className="text-lg font-semibold text-main mb-4">
-              قائمة التحويلات ({filteredTransfers.length})
+              {t("transfers.list.title")} ({filteredTransfers.length})
             </h3>
 
             {isBusy ? (
@@ -323,8 +358,8 @@ export function TransfersList() {
               </div>
             ) : filteredTransfers.length === 0 ? (
               <EmptyState
-                title="لا توجد تحويلات"
-                description="لم يتم العثور على تحويلات تطابق الفلاتر المحددة"
+                title={t("transfers.list.emptyTitle")}
+                description={t("transfers.list.emptyDescription")}
               />
             ) : (
               <div className="space-y-3">
@@ -350,7 +385,9 @@ export function TransfersList() {
 
                       <div className="grid grid-cols-2 gap-4 mb-3">
                         <div>
-                          <p className="text-xs text-secondary mb-1">من</p>
+                          <p className="text-xs text-secondary mb-1">
+                            {t("transfers.list.from")}
+                          </p>
                           <div className="flex items-center gap-2">
                             <Warehouse size={16} className="text-primary" />
                             <p className="font-medium text-main">
@@ -359,7 +396,9 @@ export function TransfersList() {
                           </div>
                         </div>
                         <div>
-                          <p className="text-xs text-secondary mb-1">إلى</p>
+                          <p className="text-xs text-secondary mb-1">
+                            {t("transfers.list.to")}
+                          </p>
                           <div className="flex items-center gap-2">
                             <Warehouse size={16} className="text-primary" />
                             <p className="font-medium text-main">
@@ -371,7 +410,8 @@ export function TransfersList() {
 
                       <div className="flex items-center justify-between pt-3 border-t border-border-main/50">
                         <div className="text-sm text-secondary">
-                          {transfer.items_count} منتج
+                          {transfer.items_count}{" "}
+                          {t("transfers.list.itemsCount")}
                         </div>
                         <div className="flex gap-2">
                           {/* زر قبول التحويل - يظهر فقط للتحويلات المشحونة */}
@@ -380,7 +420,7 @@ export function TransfersList() {
                               variant="success"
                               size="sm"
                               icon={<Check size={16} />}
-                              label="قبول التحويل"
+                              label={t("transfers.actions.accept")}
                               onClick={() => handleReceive(transfer.id)}
                               disabled={receiveMutation.mutation.isPending}
                             />
@@ -392,7 +432,7 @@ export function TransfersList() {
                               variant="icon-view"
                               size="sm"
                               icon={<Eye size={16} />}
-                              title="عرض التفاصيل"
+                              title={t("transfers.actions.view")}
                             />
                           </Link>
                         </div>
@@ -409,14 +449,14 @@ export function TransfersList() {
       {/* Confirm Dialog */}
       <ConfirmDialog
         open={confirmDialog.open}
-        title="تأكيد استلام التحويل"
-        message="هل أنت متأكد من استلام هذا التحويل؟ سيتم إضافة المنتجات إلى مخزون الفرع المستلم."
+        title={t("transfers.dialog.receiveTitle")}
+        message={t("transfers.dialog.receiveMessage")}
         onCancel={() =>
           setConfirmDialog({ open: false, transferId: null, action: null })
         }
         onConfirm={executeReceive}
-        confirmText="تأكيد الاستلام"
-        cancelText="إلغاء"
+        confirmText={t("transfers.dialog.confirm")}
+        cancelText={t("transfers.dialog.cancel")}
         isDanger={false}
       />
     </div>

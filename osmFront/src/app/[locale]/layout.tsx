@@ -8,8 +8,8 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | OSM',
-    default: 'OSM - Optical Store Management',
+    template: "%s | OSM",
+    default: "OSM - Optical Store Management",
   },
   description: "Advanced Optical Store Management Solution",
   manifest: "/manifest.webmanifest",
@@ -37,6 +37,8 @@ export default async function LocaleLayout({
   // Load messages for simple I18n
   let messages;
   try {
+    // Load all messages globally to ensure all components have access to translations.
+    // Optimization can be done by passing specific namespaces if needed.
     messages = await getTrenMessagesFiles(locale);
   } catch (error) {
     notFound();

@@ -1,0 +1,61 @@
+{
+  "branches-shift": {
+    "title": "Branch Shifts",
+    "detailsTitle": "Shift Details",
+    "branch_name": "Branch Name",
+    "employee_name": "Employee Name",
+    "is_active": "Active",
+    "notes": "Notes",
+    "updateDescription": "Update Shift",
+    "createDescription": "Add New Shift"
+  },
+  "product-supplier": {
+    "title": "Product Suppliers",
+    "detailsTitle": "Product Supplier Details",
+    "name": "Product Supplier Name",
+    "category_name": "Category",
+    "brand_name": "Brand",
+    "supplier_name": "Supplier",
+    "manufacturer_name": "Manufacturer",
+    "updateDescription": "Update Product Supplier",
+    "createDescription": "Add New Product Supplier"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "detailsTitle": "Invoice Details",
+    "invoice_number": "Invoice Number",
+    "customer_name": "Customer Name",
+    "total_amount": "Total Amount",
+    "status": "Status",
+    "updateDescription": "Update Invoice",
+    "createDescription": "Add New Invoice"
+  },
+  "sales-payments": {
+    "title": "Sales Payments",
+    "detailsTitle": "Payment Details",
+    "invoice_number": "Invoice Number",
+    "amount": "Amount",
+    "payment_method": "Payment Method",
+    "updateDescription": "Update Payment",
+    "createDescription": "Add New Payment"
+  },
+  "stocks": {
+    "title": "Stock",
+    "detailsTitle": "Stock Details",
+    "product_name": "Product Name",
+    "branch_name": "Branch",
+    "quantity": "Quantity",
+    "updateDescription": "Update Stock",
+    "createDescription": "Add New Stock"
+  },
+  "stock-movements": {
+    "title": "Stock Movements",
+    "detailsTitle": "Movement Details",
+    "product_name": "Product Name",
+    "branch_name": "Branch",
+    "movement_type": "Movement Type",
+    "quantity": "Quantity",
+    "updateDescription": "Update Movement",
+    "createDescription": "Add New Movement"
+  }
+}

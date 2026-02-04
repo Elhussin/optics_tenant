@@ -1,5 +1,4 @@
 {
-  "products": {
     "main_group": {
       "CL": "Contact Lenses",
       "SL": "Spectacle Lenses",
@@ -105,7 +104,6 @@
       "productNotFound": "Product not found - check the product link",
       "variantNotFound": "Variant not found - check the variant link",
       "variantDetails": "Variant Details"
-
     },
     "list": {
       "title": "Products List",
@@ -127,11 +125,12 @@
       "noProduct": "No product found",
       "backToProduct": "Back to Product",
       "forProduct": "For Product",
+      "editVariant": "Edit Variant",
+      "editVariantDescription": "Edit variant for product ({type})",
       "variantUpdatedSuccess": "Variant updated successfully",
       "variantUpdateError": "Failed to update variant",
       "variantAddedSuccess": "Variant added successfully",
       "variantAddError": "Failed to add variant"
-
     },
     "editProduct": {
       "title": "Edit Product",
@@ -202,4 +201,4 @@
     },
     "additional_info": "Additional Info"
   }
-}
+

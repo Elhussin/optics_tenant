@@ -1,0 +1,44 @@
+{
+  "partners": {
+    "title": "الشركاء والتأمين",
+    "detailsTitle": "تفاصيل الشريك",
+    "name": "اسم الشريك",
+    "name_en": "الاسم بالإنجليزية",
+    "partner_type": "نوع الشريك",
+    "code": "رمز الشريك",
+    "contact_person": "مسؤول التواصل",
+    "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
+    "website": "الموقع الإلكتروني",
+    "address": "العنوان",
+    "contract_number": "رقم العقد",
+    "contract_start": "بداية العقد",
+    "contract_end": "نهاية العقد",
+    "payment_terms": "شروط الدفع",
+    "default_discount": "نسبة الخصم %",
+    "credit_limit": "حد الائتمان",
+    "current_balance": "الرصيد الحالي",
+    "patient_share_percentage": "نسبة مشاركة العميل %",
+    "tax_number": "الرقم الضريبي",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات الشريك",
+    "createDescription": "إضافة شريك جديد",
+    "values": {
+      "partner_type": {
+        "insurance": "شركة تأمين",
+        "bnpl": "شركة تقسيط",
+        "corporate": "شركة عملاء",
+        "wholesaler": "تاجر جملة",
+        "agent": "وكيل"
+      },
+      "payment_terms": {
+        "immediate": "فوري",
+        "7_days": "7 أيام",
+        "15_days": "15 يوم",
+        "30_days": "30 يوم",
+        "60_days": "60 يوم",
+        "90_days": "90 يوم"
+      }
+    }
+  }
+}

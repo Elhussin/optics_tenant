@@ -1,0 +1,28 @@
+{
+  "orders": {
+    "title": "الطلبات",
+    "detailsTitle": "تفاصيل الطلب",
+    "order_number": "رقم الطلب",
+    "customer_name": "اسم العميل",
+    "total_amount": "المبلغ الإجمالي",
+    "status": "الحالة",
+    "payment_status": "حالة الدفع",
+    "payment_method": "طريقة الدفع",
+    "order_date": "تاريخ الطلب",
+    "delivery_date": "تاريخ التسليم",
+    "updateDescription": "تحديث بيانات الطلب",
+    "createDescription": "إضافة طلب جديد"
+  },
+  "sales_installments": {
+    "title": "الأقساط",
+    "detailsTitle": "تفاصيل القسط",
+    "installment_number": "رقم القسط",
+    "amount": "المبلغ",
+    "due_date": "تاريخ الاستحقاق",
+    "status": "الحالة",
+    "paid_at": "تاريخ الدفع",
+    "paid_amount": "المبلغ المدفوع",
+    "updateDescription": "تحديث بيانات القسط",
+    "createDescription": "إضافة قسط"
+  }
+}

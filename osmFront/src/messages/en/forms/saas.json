@@ -1,0 +1,66 @@
+{
+  "clients": {
+    "title": "Clients",
+    "detailsTitle": "Client Details",
+    "name": "Client Name",
+    "max_branches": "Max Branches",
+    "max_users": "Max Users",
+    "website": "Website",
+    "paid_until": "Paid Until",
+    "max_products": "Max Products",
+    "on_trial": "On Trial",
+    "updateDescription": "Update Client",
+    "createDescription": "Add New Client"
+  },
+  "register-tenants": {
+    "title": "Register New Tenant",
+    "detailsTitle": "Tenant Details",
+    "name": "Tenant Name",
+    "email": "Subdomain",
+    "updateDescription": "Update Tenant",
+    "createDescription": "Add New Tenant"
+  },
+  "domains": {
+    "title": "Domains",
+    "detailsTitle": "Domain Details",
+    "domain": "Domain",
+    "updateDescription": "Update Domain",
+    "createDescription": "Add New Domain"
+  },
+  "payments": {
+    "title": "Payments",
+    "detailsTitle": "Payment Details",
+    "amount": "Amount",
+    "transaction_id": "Transaction ID",
+    "status": "Status",
+    "client": "Client",
+    "method": "Method",
+    "currency": "Currency",
+    "updateDescription": "Update Payment",
+    "createDescription": "Add New Payment"
+  },
+  "subscription-plans": {
+    "title": "Subscription Plans",
+    "detailsTitle": "Subscription Plan Details",
+    "name": "Plan Name",
+    "description": "Description",
+    "max_branches": "Max Branches",
+    "max_users": "Max Users",
+    "month_price": "Monthly Price",
+    "year_price": "Yearly Price",
+    "currency": "Currency",
+    "discount": "Discount",
+    "updateDescription": "Update Plan",
+    "createDescription": "Add New Plan"
+  },
+  "contact_us": {
+    "title": "Contact",
+    "detailsTitle": "Message Details",
+    "name": "Sender Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "updateDescription": "Update Message",
+    "createDescription": "Add New Message"
+  }
+}

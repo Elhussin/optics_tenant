@@ -12,7 +12,7 @@ export const useMobileDashboard = (branchId?: number) => {
 export const useMobileProductSearch = (query: string, branchId?: number) => {
     return useQuery({
         queryKey: ['mobile', 'products', query, branchId],
-        queryFn: () => api.mobile_products_search_retrieve({ queries: { q: query, limit: 20, branch_id: branchId } }),
+        queryFn: () => api.mobile_products_search_list({ queries: { q: query, limit: 20, branch_id: branchId } }),
         enabled: query.length >= 2,
     });
 };
@@ -20,7 +20,7 @@ export const useMobileProductSearch = (query: string, branchId?: number) => {
 export const useMobileCustomerSearch = (query: string) => {
     return useQuery({
         queryKey: ['mobile', 'customers', query],
-        queryFn: () => api.mobile_customers_search_retrieve({ queries: { q: query, limit: 10 } }),
+        queryFn: () => api.mobile_customers_search_list({ queries: { q: query, limit: 10 } }),
         enabled: query.length >= 2,
     });
 };

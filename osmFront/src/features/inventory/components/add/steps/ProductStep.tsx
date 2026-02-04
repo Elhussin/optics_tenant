@@ -11,11 +11,12 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/src/shared/components/shadcn/ui/tabs";
-import { useInventoryFormStore } from "../../store";
+import { useInventoryFormStore } from "../../../store";
 import useSWR from "swr";
 import api from "@/src/shared/api/axios";
-import { Stock } from "../../types";
+import { Stock } from "../../../types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
+import { useTranslations } from "next-intl";
 
 interface ProductVariant {
   id: number;
@@ -31,6 +32,7 @@ interface ProductVariant {
 }
 
 export function ProductStep() {
+  const t = useTranslations("inventory");
   const store = useInventoryFormStore();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"existing" | "new">("existing");
@@ -123,11 +125,11 @@ export function ProductStep() {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="existing" className="gap-2">
             <Box className="w-4 h-4" />
-            منتجات موجودة في المخزون
+            {t("add.productStep.tabs.existing")}
           </TabsTrigger>
           <TabsTrigger value="new" className="gap-2">
             <Package className="w-4 h-4" />
-            إضافة منتج جديد للمخزون
+            {t("add.productStep.tabs.new")}
           </TabsTrigger>
         </TabsList>
 
@@ -135,7 +137,7 @@ export function ProductStep() {
         <div className="relative mt-4">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
-            placeholder="ابحث بالاسم أو الكود..."
+            placeholder={t("add.productStep.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pr-10"
@@ -145,18 +147,18 @@ export function ProductStep() {
         {/* Existing Stocks Tab */}
         <TabsContent value="existing" className="mt-4">
           {stocksLoading ? (
-            <SectionLoading message="جاري التحميل..." />
+            <SectionLoading message={t("add.productStep.loading")} />
           ) : filteredStocks?.length === 0 ? (
             <div className="text-center py-12">
               <Box className="w-16 h-16 mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-medium text-main mb-2">
-                لا توجد منتجات في المخزون
+                {t("add.productStep.existing.noProducts")}
               </h3>
               <p className="text-secondary mb-4">
-                يمكنك إضافة منتج جديد للمخزون من التبويب الثاني
+                {t("add.productStep.existing.hint")}
               </p>
               <Button onClick={() => setActiveTab("new")} variant="outline">
-                إضافة منتج جديد
+                {t("add.productStep.existing.addNewButton")}
               </Button>
             </div>
           ) : (
@@ -195,7 +197,9 @@ export function ProductStep() {
                       <div className="text-2xl font-bold text-main">
                         {stock.available_quantity}
                       </div>
-                      <p className="text-xs text-secondary">متاح</p>
+                      <p className="text-xs text-secondary">
+                        {t("add.productStep.existing.available")}
+                      </p>
                     </div>
                   </div>
 
@@ -206,10 +210,14 @@ export function ProductStep() {
                         stock.stock_status,
                       )}`}
                     >
-                      {stock.stock_status === "In Stock" && "متوفر"}
-                      {stock.stock_status === "Low Stock" && "مخزون منخفض"}
-                      {stock.stock_status === "Out of Stock" && "نفذ المخزون"}
-                      {stock.stock_status === "Overstocked" && "مخزون زائد"}
+                      {stock.stock_status === "In Stock" &&
+                        t("add.productStep.existing.status.inStock")}
+                      {stock.stock_status === "Low Stock" &&
+                        t("add.productStep.existing.status.lowStock")}
+                      {stock.stock_status === "Out of Stock" &&
+                        t("add.productStep.existing.status.outOfStock")}
+                      {stock.stock_status === "Overstocked" &&
+                        t("add.productStep.existing.status.overstocked")}
                     </span>
                     {stock.stock_status === "Low Stock" && (
                       <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -224,19 +232,19 @@ export function ProductStep() {
         {/* New Products Tab */}
         <TabsContent value="new" className="mt-4">
           {variantsLoading ? (
-            <SectionLoading message="جاري التحميل..." />
+            <SectionLoading message={t("add.productStep.loading")} />
           ) : filteredVariants?.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
               <h3 className="text-lg font-medium text-main mb-2">
                 {searchQuery
-                  ? "لا توجد نتائج"
-                  : "جميع المنتجات موجودة في المخزون"}
+                  ? t("add.productStep.new.noResults")
+                  : t("add.productStep.new.allInStock")}
               </h3>
               <p className="text-secondary">
                 {searchQuery
-                  ? "جرب البحث بكلمات مختلفة"
-                  : "يمكنك تعديل كميات المنتجات الموجودة من التبويب الأول"}
+                  ? t("add.productStep.new.searchHint")
+                  : t("add.productStep.new.allInStockHint")}
               </p>
             </div>
           ) : (
@@ -275,13 +283,15 @@ export function ProductStep() {
                       <div className="text-lg font-bold text-primary">
                         {parseFloat(variant.selling_price).toFixed(2)} ر.س
                       </div>
-                      <p className="text-xs text-secondary">سعر البيع</p>
+                      <p className="text-xs text-secondary">
+                        {t("add.productStep.new.sellingPrice")}
+                      </p>
                     </div>
                   </div>
 
                   {variant.last_purchase_price && (
                     <div className="mt-2 text-xs text-gray-500">
-                      آخر سعر شراء:{" "}
+                      {t("add.productStep.new.lastPurchasePrice")}{" "}
                       {parseFloat(variant.last_purchase_price).toFixed(2)} ر.س
                     </div>
                   )}

@@ -1,0 +1,66 @@
+{
+  "clients": {
+    "title": "العملاء",
+    "detailsTitle": "تفاصيل العميل",
+    "name": "اسم العميل",
+    "max_branches": "عدد الفروع",
+    "max_users": "عدد المستخدمين",
+    "website": "الموقع الإلكتروني",
+    "paid_until": "تاريخ الانتهاء",
+    "max_products": "عدد المنتجات",
+    "on_trial": "تجريبي",
+    "updateDescription": "تحديث بيانات العميل",
+    "createDescription": "إضافة عميل جديد"
+  },
+  "register-tenants": {
+    "title": "تسجيل مستأجر جديد",
+    "detailsTitle": "تفاصيل المستأجر",
+    "name": "اسم المستأجر",
+    "email": "النطاق الفرعي",
+    "updateDescription": "تحديث بيانات المستأجر",
+    "createDescription": "إضافة مستأجر جديد"
+  },
+  "domains": {
+    "title": "النطاقات",
+    "detailsTitle": "تفاصيل النطاق",
+    "domain": "النطاق",
+    "updateDescription": "تحديث بيانات النطاق",
+    "createDescription": "إضافة نطاق جديد"
+  },
+  "payments": {
+    "title": "الدفعات",
+    "detailsTitle": "تفاصيل الدفع",
+    "amount": "المبلغ",
+    "transaction_id": "رقم الحركة",
+    "status": "الحالة",
+    "client": "العميل",
+    "method": "نوع العملية",
+    "currency": "العملة",
+    "updateDescription": "تحديث بيانات الدفع",
+    "createDescription": "إضافة دفع جديد"
+  },
+  "subscription-plans": {
+    "title": "خطط الاشتراك",
+    "detailsTitle": "تفاصيل خطة الاشتراك",
+    "name": "اسم الخطة",
+    "description": "الوصف",
+    "max_branches": "عدد الفروع",
+    "max_users": "عدد المستخدمين",
+    "month_price": "السعر الشهري",
+    "year_price": "السعر السنوي",
+    "currency": "العملة",
+    "discount": "الخصم",
+    "updateDescription": "تحديث بيانات الخطة",
+    "createDescription": "إضافة خطة جديدة"
+  },
+  "contact_us": {
+    "title": "تواصل",
+    "detailsTitle": "تفاصيل الرسالة",
+    "name": "اسم المرسل",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "message": "الرسالة",
+    "updateDescription": "تحديث بيانات الرسالة",
+    "createDescription": "إضافة رسالة جديدة"
+  }
+}

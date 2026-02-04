@@ -1,0 +1,118 @@
+{
+  "chart-of-accounts": {
+    "title": "دليل الحسابات",
+    "detailsTitle": "تفاصيل الحساب",
+    "code": "رمز الحساب",
+    "name": "اسم الحساب",
+    "name_en": "الاسم بالإنجليزية",
+    "account_type": "نوع الحساب",
+    "account_subtype": "النوع الفرعي",
+    "parent": "الحساب الأب",
+    "parent_name": "الحساب الرئيسي",
+    "normal_balance": "الطبيعة",
+    "opening_balance": "الرصيد الافتتاحي",
+    "current_balance": "الرصيد الحالي",
+    "description": "الوصف",
+    "is_header": "حساب رئيسي",
+    "updateDescription": "تحديث بيانات الحساب",
+    "createDescription": "إضافة حساب جديد",
+    "values": {
+      "account_type": {
+        "asset": "أصل",
+        "liability": "التزام",
+        "equity": "حقوق ملكية",
+        "revenue": "إيراد",
+        "expense": "مصروف",
+        "cogs": "تكلفة البضاعة"
+      },
+      "normal_balance": {
+        "debit": "مدين",
+        "credit": "دائن"
+      }
+    }
+  },
+  "journal-entries": {
+    "title": "قيود اليومية",
+    "detailsTitle": "تفاصيل القيد",
+    "entry_number": "رقم القيد",
+    "entry_date": "تاريخ القيد",
+    "entry_type": "نوع القيد",
+    "source_type": "مصدر القيد",
+    "source_document": "رقم المستند",
+    "source_id": "معرف المستند",
+    "description": "الوصف",
+    "total_debit": "إجمالي المدين",
+    "total_credit": "إجمالي الدائن",
+    "is_posted": "مرحل",
+    "posted_by_name": "بواسطة",
+    "posted_at": "تاريخ الترحيل",
+    "notes": "ملاحظات",
+    "updateDescription": "تحديث بيانات القيد",
+    "createDescription": "إضافة قيد جديد",
+    "values": {
+      "entry_type": {
+        "standard": "قيد عادي",
+        "adjustment": "قيد تسوية",
+        "closing": "قيد إقفال",
+        "opening": "قيد افتتاحي",
+        "reversal": "قيد عكسي"
+      },
+      "source_type": {
+        "manual": "يدوي",
+        "sales_invoice": "فاتورة مبيعات",
+        "purchase_invoice": "فاتورة مشتريات",
+        "payment": "دفعة",
+        "receipt": "قبض",
+        "return": "مرتجع",
+        "adjustment": "تسوية مخزون",
+        "payroll": "رواتب"
+      },
+      "is_posted": {
+        "true": "مرحل",
+        "false": "غير مرحل"
+      }
+    }
+  },
+  "financial-periods": {
+    "title": "الفترات المالية",
+    "detailsTitle": "تفاصيل الفترة المالية",
+    "name": "اسم الفترة",
+    "start_date": "تاريخ البداية",
+    "end_date": "تاريخ النهاية",
+    "is_closed": "مغلقة",
+    "updateDescription": "تحديث بيانات الفترة",
+    "createDescription": "إضافة فترة مالية جديدة",
+    "values": {
+      "is_closed": {
+        "true": "مغلقة",
+        "false": "مفتوحة"
+      }
+    }
+  },
+  "accounting-taxes": {
+    "title": "الضرائب",
+    "detailsTitle": "تفاصيل الضريبة",
+    "name": "اسم الضريبة",
+    "rate": "النسبة %",
+    "effective_date": "تاريخ السريان",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الضريبة",
+    "createDescription": "إضافة ضريبة جديدة"
+  },
+  "accounting-categories": {
+    "title": "فئات المحاسبة",
+    "detailsTitle": "تفاصيل الفئة",
+    "name": "اسم الفئة",
+    "category_type": "نوع الفئة",
+    "parent": "الفئة الأب",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الفئة",
+    "createDescription": "إضافة فئة جديدة",
+    "values": {
+      "category_type": {
+        "income": "إيراد",
+        "expense": "مصروف"
+      }
+    }
+  }
+}

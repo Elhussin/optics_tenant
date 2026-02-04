@@ -174,7 +174,7 @@ export default function ViewDetailsCard(props: ViewCardProps) {
                   variant="icon-info"
                   size="sm"
                   icon={<Copy size={18} />}
-                  onClick={() => handleCopy(data, form.detailsField)}
+                  onClick={() => handleCopy(data, form.detailsField as any)}
                   title={t("copy")}
                   className="rounded-lg"
                 />

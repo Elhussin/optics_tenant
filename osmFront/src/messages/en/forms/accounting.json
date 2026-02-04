@@ -1,0 +1,118 @@
+{
+  "chart-of-accounts": {
+    "title": "Chart of Accounts",
+    "detailsTitle": "Account Details",
+    "code": "Account Code",
+    "name": "Account Name",
+    "name_en": "English Name",
+    "account_type": "Account Type",
+    "account_subtype": "Account Subtype",
+    "parent": "Parent Account",
+    "parent_name": "Parent Account",
+    "normal_balance": "Normal Balance",
+    "opening_balance": "Opening Balance",
+    "current_balance": "Current Balance",
+    "description": "Description",
+    "is_header": "Is Header",
+    "updateDescription": "Update Account",
+    "createDescription": "Add New Account",
+    "values": {
+      "account_type": {
+        "asset": "Asset",
+        "liability": "Liability",
+        "equity": "Equity",
+        "revenue": "Revenue",
+        "expense": "Expense",
+        "cogs": "Cost of Goods Sold"
+      },
+      "normal_balance": {
+        "debit": "Debit",
+        "credit": "Credit"
+      }
+    }
+  },
+  "journal-entries": {
+    "title": "Journal Entries",
+    "detailsTitle": "Entry Details",
+    "entry_number": "Entry Number",
+    "entry_date": "Entry Date",
+    "entry_type": "Entry Type",
+    "source_type": "Source Type",
+    "source_document": "Source Document",
+    "source_id": "Source ID",
+    "description": "Description",
+    "total_debit": "Total Debit",
+    "total_credit": "Total Credit",
+    "is_posted": "Is Posted",
+    "posted_by_name": "Posted By",
+    "posted_at": "Posted At",
+    "notes": "Notes",
+    "updateDescription": "Update Entry",
+    "createDescription": "Add New Entry",
+    "values": {
+      "entry_type": {
+        "standard": "Standard Entry",
+        "adjustment": "Adjustment Entry",
+        "closing": "Closing Entry",
+        "opening": "Opening Entry",
+        "reversal": "Reversal Entry"
+      },
+      "source_type": {
+        "manual": "Manual",
+        "sales_invoice": "Sales Invoice",
+        "purchase_invoice": "Purchase Invoice",
+        "payment": "Payment",
+        "receipt": "Receipt",
+        "return": "Return",
+        "adjustment": "Inventory Adjustment",
+        "payroll": "Payroll"
+      },
+      "is_posted": {
+        "true": "Posted",
+        "false": "Not Posted"
+      }
+    }
+  },
+  "financial-periods": {
+    "title": "Financial Periods",
+    "detailsTitle": "Financial Period Details",
+    "name": "Period Name",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "is_closed": "Is Closed",
+    "updateDescription": "Update Period",
+    "createDescription": "Add New Financial Period",
+    "values": {
+      "is_closed": {
+        "true": "Closed",
+        "false": "Open"
+      }
+    }
+  },
+  "accounting-taxes": {
+    "title": "Taxes",
+    "detailsTitle": "Tax Details",
+    "name": "Tax Name",
+    "rate": "Rate %",
+    "effective_date": "Effective Date",
+    "description": "Description",
+    "updateDescription": "Update Tax",
+    "createDescription": "Add New Tax"
+  },
+  "accounting-categories": {
+    "title": "Accounting Categories",
+    "detailsTitle": "Category Details",
+    "name": "Category Name",
+    "category_type": "Category Type",
+    "parent": "Parent Category",
+    "description": "Description",
+    "updateDescription": "Update Category",
+    "createDescription": "Add New Category",
+    "values": {
+      "category_type": {
+        "income": "Income",
+        "expense": "Expense"
+      }
+    }
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "crm-insurance-claims": {
+    "title": "Insurance Claims",
+    "detailsTitle": "Claim Details",
+    "claim_number": "Claim Number",
+    "customer_name": "Customer Name",
+    "partner_name": "Insurance Company",
+    "invoice_number": "Invoice Number",
+    "claim_date": "Claim Date",
+    "claim_amount": "Claim Amount",
+    "approved_amount": "Approved Amount",
+    "patient_share": "Patient Share",
+    "status": "Status",
+    "notes": "Notes",
+    "updateDescription": "Update Claim",
+    "createDescription": "Add New Claim"
+  },
+  "crm-claim-items": {
+    "title": "Claim Items",
+    "detailsTitle": "Claim Item Details",
+    "claim_number": "Claim Number",
+    "product_name": "Product Name",
+    "quantity": "Quantity",
+    "unit_price": "Unit Price",
+    "total_price": "Total Price",
+    "approved_amount": "Approved Amount",
+    "updateDescription": "Update Claim Item",
+    "createDescription": "Add New Claim Item"
+  },
+  "crm-claim-documents": {
+    "title": "Claim Documents",
+    "detailsTitle": "Document Details",
+    "claim_number": "Claim Number",
+    "document_type": "Document Type",
+    "file": "File",
+    "notes": "Notes",
+    "updateDescription": "Update Document",
+    "createDescription": "Add New Document"
+  },
+  "crm-customer-partner-links": {
+    "title": "Customer Insurance Links",
+    "detailsTitle": "Link Details",
+    "customer_name": "Customer Name",
+    "partner_name": "Insurance Company",
+    "policy_number": "Policy Number",
+    "coverage_percentage": "Coverage %",
+    "valid_from": "Valid From",
+    "valid_to": "Valid To",
+    "updateDescription": "Update Link",
+    "createDescription": "Add New Link"
+  },
+  "crm-partner-branches": {
+    "title": "Partner Branches",
+    "detailsTitle": "Branch Details",
+    "partner_name": "Partner Name",
+    "branch_name": "Branch Name",
+    "contact_person": "Contact Person",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "updateDescription": "Update Branch",
+    "createDescription": "Add New Branch"
+  },
+  "crm-partner-price-lists": {
+    "title": "Partner Price Lists",
+    "detailsTitle": "Price List Details",
+    "partner_name": "Partner Name",
+    "name": "Price List Name",
+    "valid_from": "Valid From",
+    "valid_to": "Valid To",
+    "is_active": "Active",
+    "updateDescription": "Update Price List",
+    "createDescription": "Add New Price List"
+  },
+  "crm-partner-price-list-items": {
+    "title": "Price List Items",
+    "detailsTitle": "Item Details",
+    "price_list_name": "Price List",
+    "product_name": "Product Name",
+    "partner_price": "Partner Price",
+    "discount_percentage": "Discount %",
+    "updateDescription": "Update Item",
+    "createDescription": "Add New Item"
+  },
+  "crm-partner-settlements": {
+    "title": "Partner Settlements",
+    "detailsTitle": "Settlement Details",
+    "partner_name": "Partner Name",
+    "settlement_number": "Settlement Number",
+    "settlement_date": "Settlement Date",
+    "total_claims": "Total Claims",
+    "total_amount": "Total Amount",
+    "paid_amount": "Paid Amount",
+    "status": "Status",
+    "updateDescription": "Update Settlement",
+    "createDescription": "Add New Settlement"
+  }
+}

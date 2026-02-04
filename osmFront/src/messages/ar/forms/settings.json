@@ -1,0 +1,82 @@
+{
+  "roles": {
+    "title": "الادوار",
+    "detailsTitle": "تفاصيل الدور",
+    "name": "الاسم",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الدور",
+    "createDescription": "إضافة دور جديد",
+    "permission_ids": "الصلاحيات",
+    "permissions": "الصلاحيات"
+  },
+  "users": {
+    "title": "المستخدمين",
+    "detailsTitle": "تفاصيل المستخدم",
+    "username": "اسم المستخدم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "website": "الموقع الإلكتروني",
+    "roles": "الأدوار",
+    "role_ids": "اختر الأدوار",
+    "updateDescription": "تحديث بيانات المستخدم",
+    "createDescription": "إضافة مستخدم جديد",
+    "last_name": "اسم العائلة ",
+    "first_name": "الاسم الاول",
+    "is_staff": "موظف",
+    "is_active": "نشط",
+    "password": "كلمة المرور"
+  },
+  "permissions": {
+    "title": "الصلاحيات",
+    "detailsTitle": "تفاصيل الصلاحية",
+    "code": "الكود",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الصلاحية",
+    "createDescription": "إضافة صلاحية جديدة"
+  },
+  "role-permissions": {
+    "title": " الصلاحيات والادوار",
+    "detailsTitle": "تفاصيل الصلاحيات والادوار",
+    "role_name": "اسم الدور",
+    "permission_name": "اسم الصلاحية",
+    "updateDescription": "تحديث بيانات الصلاحيات والادوار",
+    "createDescription": "إضافة صلاحية جديدة"
+  },
+  "tenant-settings": {
+    "title": "الأعدادت الأساسية",
+    "detailsTitle": "تفاصيل الأعدادت الأساسية",
+    "business_name": "الاسم",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "facebook": "الفيسبوك",
+    "twitter": "تويتر",
+    "instagram": "الانستغرام",
+    "linkedin": "لينكدإن",
+    "description": "الوصف",
+    "website": "الموقع الإلكتروني",
+    "updateDescription": "تحديث بيانات الأعدادت الأساسية",
+    "createDescription": "إضافة اعدادت جديدة"
+  },
+  "branches": {
+    "title": "الفروع",
+    "detailsTitle": "تفاصيل الفرع",
+    "name": "اسم الفرع",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "city": "المدينة",
+    "country": "البلد",
+    "updateDescription": "تحديث بيانات الفرع",
+    "createDescription": "إضافة فرع جديد"
+  },
+  "branch-users": {
+    "title": "مستخدم الفرع",
+    "detailsTitle": "تفاصيل المستخدم",
+    "branch_name": "الفرع",
+    "employee_name": "الموظف",
+    "status": "الحالة",
+    "updateDescription": "تحديث بيانات المستخدم",
+    "createDescription": "إضافة مستخدم جديد"
+  }
+}

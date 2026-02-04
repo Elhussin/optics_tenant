@@ -1,0 +1,80 @@
+{
+  "hrm-departments": {
+    "title": "Departments",
+    "detailsTitle": "Department Details",
+    "name": "Department Name",
+    "description": "Description",
+    "updateDescription": "Update Department",
+    "createDescription": "Add New Department"
+  },
+  "hrm-employees": {
+    "title": "Employees",
+    "detailsTitle": "Employee Details",
+    "name": "Employee Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "user_name": "Username",
+    "department_name": "Department",
+    "hire_date": "Hire Date",
+    "salary": "Salary",
+    "position": "Position",
+    "updateDescription": "Update Employee",
+    "createDescription": "Add New Employee"
+  },
+  "hrm-employee-leave": {
+    "title": "Leaves",
+    "detailsTitle": "Leave Details",
+    "updateDescription": "Update Leave",
+    "createDescription": "Add New Leave"
+  },
+  "hrm-attendance": {
+    "title": "Attendance",
+    "detailsTitle": "Attendance Details",
+    "employee_name": "Employee Name",
+    "date": "Date",
+    "hours_worked": "Hours Worked",
+    "check_in": "Check In",
+    "check_out": "Check Out",
+    "updateDescription": "Update Attendance",
+    "createDescription": "Record Attendance"
+  },
+  "hrm-performance-review": {
+    "title": "Performance Review",
+    "detailsTitle": "Review Details",
+    "employee_name": "Employee Name",
+    "month": "Month",
+    "review_date": "Review Date",
+    "rating": "Rating",
+    "comments": "Comments",
+    "updateDescription": "Update Review",
+    "createDescription": "Add New Review"
+  },
+  "hrm-payroll": {
+    "title": "Payroll",
+    "detailsTitle": "Payroll Details",
+    "employee_name": "Employee Name",
+    "month": "Month",
+    "basic_salary": "Basic Salary",
+    "bonuses": "Bonuses",
+    "deductions": "Deductions",
+    "net_salary": "Net Salary",
+    "updateDescription": "Update Payroll",
+    "createDescription": "Add New Payroll"
+  },
+  "hrm-tasks": {
+    "title": "Employee Tasks",
+    "detailsTitle": "Task Details",
+    "updateDescription": "Update Task",
+    "createDescription": "Add New Task"
+  },
+  "hrm-notifications": {
+    "title": "Notifications",
+    "detailsTitle": "Notification Details",
+    "notification_type": "Notification Type",
+    "message": "Message",
+    "is_read": "Read",
+    "updateDescription": "Update Notification",
+    "createDescription": "Add New Notification"
+  }
+}

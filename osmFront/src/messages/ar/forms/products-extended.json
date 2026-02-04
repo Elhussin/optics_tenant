@@ -1,0 +1,84 @@
+{
+  "product-reviews": {
+    "title": "تقييمات المنتجات",
+    "detailsTitle": "تفاصيل التقييم",
+    "ProductVariant_id": "معرف المنتج",
+    "rating": "التقييم",
+    "review": "المراجعة",
+    "reviewed_by": "بواسطة",
+    "updateDescription": "تحديث بيانات التقييم",
+    "createDescription": "إضافة تقييم جديد"
+  },
+  "product-questions": {
+    "title": "أسئلة المنتجات",
+    "detailsTitle": "تفاصيل السؤال",
+    "ProductVariant_id": "معرف المنتج",
+    "question": "السؤال",
+    "asked_by": "بواسطة",
+    "updateDescription": "تحديث بيانات السؤال",
+    "createDescription": "حذف السؤال"
+  },
+  "product-answers": {
+    "title": "إجابات المنتجات",
+    "detailsTitle": "تفاصيل الإجابة",
+    "question_id": "معرف السؤال",
+    "answer": "الإجابة",
+    "answered_by": "بواسطة",
+    "updateDescription": "تحديث بيانات الإجابة",
+    "createDescription": "إضافة إجابة جديدة"
+  },
+  "product-offers": {
+    "title": "عروض المنتجات",
+    "detailsTitle": "تفاصيل العرض",
+    "ProductVariant_id": "معرف المنتج",
+    "offer": "العرض",
+    "start_date": "تاريخ البداية",
+    "end_date": "تاريخ النهاية",
+    "updateDescription": "تحديث بيانات العرض",
+    "createDescription": "إضافة عرض جديد"
+  },
+  "product-marketing": {
+    "title": "تسويق المنتجات",
+    "detailsTitle": "تفاصيل التسويق",
+    "variant_name": "اسم المنتج",
+    "slug": "الرابط",
+    "gender": "الجنس",
+    "meta_title": "عنوان الميتا",
+    "meta_description": "وصف الميتا",
+    "meta_keywords": "كلمات مفتاحية",
+    "seo_image": "صورة SEO",
+    "seo_image_alt": "نص بديل للصورة",
+    "age_group": "الفئة العمرية",
+    "updateDescription": "تحديث بيانات التسويق",
+    "createDescription": "إضافة معلومات تسويقية"
+  },
+  "product-stock-transfers": {
+    "title": "تحويلات المخزون",
+    "detailsTitle": "تفاصيل التحويل",
+    "transfer_number": "رقم التحويل",
+    "from_branch_name": "من فرع",
+    "to_branch_name": "إلى فرع",
+    "status": "الحالة",
+    "notes": "ملاحظات",
+    "items_count": "عدد العناصر",
+    "approved_date": "تاريخ الموافقة",
+    "shipped_date": "تاريخ الشحن",
+    "received_date": "تاريخ الاستلام",
+    "requested_by": "طلب بواسطة",
+    "updateDescription": "تحديث بيانات التحويل",
+    "createDescription": "إنشاء تحويل"
+  },
+  "product-stock-transfer-items": {
+    "title": "عناصر التحويل",
+    "detailsTitle": "تفاصيل العنصر",
+    "transfer": "التحويل",
+    "variant_name": "اسم المنتج",
+    "quantity_requested": "الكمية المطلوبة",
+    "quantity_sent": "الكمية المرسلة",
+    "quantity_received": "الكمية المستلمة",
+    "variant_sku": "رمز المنتج",
+    "unit_cost": "تكلفة الوحدة",
+    "updateDescription": "تحديث بيانات العنصر",
+    "createDescription": "إضافة عنصر"
+  }
+}

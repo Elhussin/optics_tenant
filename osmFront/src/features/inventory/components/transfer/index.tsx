@@ -19,10 +19,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/src/shared/components/shadcn/ui/card";
-import { useTransferFormStore } from "../store";
+import { useTransferFormStore } from "../../store";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
 import api from "@/src/shared/api/axios";
+import { useTranslations } from "next-intl";
 
 // Step Components
 import { BranchesStep } from "./steps/BranchesStep";
@@ -66,17 +67,30 @@ const StepIndicator = ({
   </div>
 );
 
-const STEPS = [
-  { id: 1, title: "الفروع", icon: <Warehouse size={18} /> },
-  { id: 2, title: "المنتجات", icon: <Package size={18} /> },
-  { id: 3, title: "المراجعة", icon: <Check size={18} /> },
-];
-
 export function CreateTransfer() {
+  const t = useTranslations("inventory");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const store = useTransferFormStore();
+
+  const STEPS = [
+    {
+      id: 1,
+      title: t("transfers.create.steps.branches"),
+      icon: <Warehouse size={18} />,
+    },
+    {
+      id: 2,
+      title: t("transfers.create.steps.items"),
+      icon: <Package size={18} />,
+    },
+    {
+      id: 3,
+      title: t("transfers.create.steps.review"),
+      icon: <Check size={18} />,
+    },
+  ];
 
   // Step validation
   const canProceedToStep2 = useMemo(
@@ -84,12 +98,12 @@ export function CreateTransfer() {
       !!store.fromBranchId &&
       !!store.toBranchId &&
       store.fromBranchId !== store.toBranchId,
-    [store.fromBranchId, store.toBranchId]
+    [store.fromBranchId, store.toBranchId],
   );
 
   const canProceedToStep3 = useMemo(
     () => store.items.length > 0,
-    [store.items]
+    [store.items],
   );
 
   const handleNext = () => {
@@ -102,12 +116,14 @@ export function CreateTransfer() {
 
   const handleSubmit = async () => {
     if (!store.fromBranchId || !store.toBranchId) {
-      safeToast("يجب اختيار الفروع", { type: "error" });
+      safeToast(t("transfers.create.validation.selectBranches"), {
+        type: "error",
+      });
       return;
     }
 
     if (store.items.length === 0) {
-      safeToast("يجب إضافة منتج واحد على الأقل", { type: "error" });
+      safeToast(t("transfers.create.validation.addItems"), { type: "error" });
       return;
     }
 
@@ -126,7 +142,7 @@ export function CreateTransfer() {
 
       await api.customRequest("products_stock-transfers_create", payload);
 
-      safeToast("تم إنشاء طلب التحويل بنجاح", { type: "success" });
+      safeToast(t("transfers.create.validation.success"), { type: "success" });
       store.reset();
       router.push("/dashboard/inventory/transfers");
     } catch (error: any) {
@@ -136,7 +152,7 @@ export function CreateTransfer() {
         Object.values(error?.response?.data || {})
           .flat()
           .join(", ") ||
-        "فشل في إنشاء طلب التحويل";
+        t("transfers.create.validation.error");
       safeToast(message, { type: "error" });
     } finally {
       setIsSubmitting(false);
@@ -162,9 +178,11 @@ export function CreateTransfer() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white mb-4 shadow-lg shadow-blue-500/30">
             <ArrowLeftRight className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold text-main">تحويل مخزون</h1>
+          <h1 className="text-3xl font-bold text-main">
+            {t("transfers.create.title")}
+          </h1>
           <p className="text-secondary mt-2">
-            نقل المخزون بين الفروع والمستودعات
+            {t("transfers.create.subtitle")}
           </p>
         </div>
 
@@ -173,11 +191,10 @@ export function CreateTransfer() {
           <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
           <div>
             <p className="text-blue-800 dark:text-blue-200 font-medium">
-              كيف تعمل التحويلات؟
+              {t("transfers.create.infoBanner.title")}
             </p>
             <p className="text-blue-700 dark:text-blue-300 text-sm">
-              1. أنشئ طلب التحويل → 2. قدّم الطلب للموافقة → 3. شحن المخزون → 4.
-              استلام المخزون في الفرع المستلم
+              {t("transfers.create.infoBanner.content")}
             </p>
           </div>
         </div>
@@ -192,9 +209,12 @@ export function CreateTransfer() {
               {STEPS[currentStep - 1].title}
             </CardTitle>
             <CardDescription>
-              {currentStep === 1 && "اختر الفرع المرسل والفرع المستلم"}
-              {currentStep === 2 && "أضف المنتجات التي تريد تحويلها"}
-              {currentStep === 3 && "راجع البيانات قبل إنشاء طلب التحويل"}
+              {currentStep === 1 &&
+                t("transfers.create.stepDescriptions.branches")}
+              {currentStep === 2 &&
+                t("transfers.create.stepDescriptions.items")}
+              {currentStep === 3 &&
+                t("transfers.create.stepDescriptions.review")}
             </CardDescription>
           </CardHeader>
 
@@ -213,7 +233,7 @@ export function CreateTransfer() {
                 disabled={currentStep === 1}
               >
                 <ArrowRight className="w-4 h-4 ml-2" />
-                السابق
+                {t("transfers.create.buttons.previous")}
               </Button>
 
               {currentStep < 3 ? (
@@ -223,7 +243,7 @@ export function CreateTransfer() {
                   disabled={!canProceed()}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  التالي
+                  {t("transfers.create.buttons.next")}
                   <ArrowLeft className="w-4 h-4 mr-2" />
                 </Button>
               ) : (
@@ -236,12 +256,12 @@ export function CreateTransfer() {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                      جاري الإنشاء...
+                      {t("transfers.create.buttons.creating")}
                     </>
                   ) : (
                     <>
                       <Check className="w-4 h-4 ml-2" />
-                      إنشاء طلب التحويل
+                      {t("transfers.create.buttons.create")}
                     </>
                   )}
                 </Button>
@@ -259,6 +279,7 @@ export function CreateTransfer() {
 
 // Summary Component
 function TransferSummary() {
+  const t = useTranslations("inventory");
   const store = useTransferFormStore();
 
   if (!store.fromBranchId && store.items.length === 0) return null;
@@ -268,35 +289,43 @@ function TransferSummary() {
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <ArrowLeftRight size={20} />
-          ملخص التحويل
+          {t("transfers.create.summary.title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {store.fromBranchName && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">من:</span>
+            <span className="text-secondary">
+              {t("transfers.create.summary.from")}:
+            </span>
             <span className="font-medium">{store.fromBranchName}</span>
           </div>
         )}
         {store.toBranchName && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">إلى:</span>
+            <span className="text-secondary">
+              {t("transfers.create.summary.to")}:
+            </span>
             <span className="font-medium">{store.toBranchName}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-secondary">عدد المنتجات:</span>
+          <span className="text-secondary">
+            {t("transfers.create.summary.itemsCount")}:
+          </span>
           <span className="font-medium">{store.totalItems}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-secondary">إجمالي الكميات:</span>
+          <span className="text-secondary">
+            {t("transfers.create.summary.totalQuantity")}:
+          </span>
           <span className="font-medium">{store.totalQuantity}</span>
         </div>
         {store.totalValue > 0 && (
           <div className="flex justify-between text-lg font-bold border-t pt-3">
-            <span>القيمة التقديرية:</span>
+            <span>{t("transfers.create.summary.estimatedValue")}:</span>
             <span className="text-primary">
-              {store.totalValue.toFixed(2)} ر.س
+              {store.totalValue.toFixed(2)} {t("info.currency")}
             </span>
           </div>
         )}

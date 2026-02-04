@@ -1,0 +1,382 @@
+{
+  "title": "إدارة المخزون",
+  "subtitle": "متابعة المخزون والحركات والتحويلات",
+  "transferStock": "تحويل مخزون",
+  "addMovement": "إضافة حركة",
+  "stats": {
+    "totalItems": "إجمالي المنتجات",
+    "lowStock": "مخزون منخفض",
+    "outOfStock": "نفذ المخزون",
+    "pendingTransfers": "تحويلات معلقة"
+  },
+  "tabs": {
+    "stocks": "المخزون",
+    "transfers": "التحويلات"
+  },
+  "stocks": {
+    "title": "قائمة المخزون",
+    "searchPlaceholder": "بحث...",
+    "filters": {
+      "status": "الحالة",
+      "branch": "الفرع",
+      "allBranches": "كل الفروع",
+      "all": "الكل",
+      "inStock": "متوفر",
+      "low": "منخفض",
+      "out": "نفذ"
+    },
+    "table": {
+      "product": "المنتج",
+      "branch": "الفرع",
+      "available": "المتاح",
+      "reserved": "المحجوز",
+      "status": "الحالة",
+      "actions": "إجراءات"
+    },
+    "branchPrefix": "فرع",
+    "loading": "جاري التحميل...",
+    "noResults": "لا توجد نتائج"
+  },
+  "status": {
+    "inStock": "متوفر",
+    "lowStock": "منخفض",
+    "outOfStock": "نفذ",
+    "overstocked": "زائد"
+  },
+  "details": {
+    "title": "تفاصيل المخزون",
+    "backToInventory": "العودة للمخزون",
+    "reports": "التقارير",
+    "editStock": "تعديل المخزون",
+    "addMovement": "إضافة حركة"
+  },
+  "add": {
+    "title": "إضافة حركة مخزون",
+    "subtitle": "سجل حركات الشراء والتعديل والخسائر",
+    "steps": {
+      "warehouse": "المستودع",
+      "product": "المنتج",
+      "movement": "الحركة",
+      "review": "المراجعة"
+    },
+    "stepDescriptions": {
+      "warehouse": "اختر المستودع الذي ستضيف له المخزون",
+      "product": "اختر المنتج الذي تريد إضافة حركة له",
+      "movement": "حدد نوع الحركة والكمية والتكلفة",
+      "review": "راجع البيانات قبل الحفظ"
+    },
+    "warning": {
+      "title": "ملاحظة هامة",
+      "message": "يمكن إضافة المخزون فقط للفروع من نوع \"مستودع\" (Store). الفروع العادية تستلم المخزون عن طريق التحويلات."
+    },
+    "summary": {
+      "title": "ملخص الحركة",
+      "warehouse": "المستودع",
+      "product": "المنتج",
+      "type": "نوع الحركة",
+      "quantity": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "total": "الإجمالي"
+    },
+    "movementTypes": {
+      "purchase": "شراء / إعادة تخزين",
+      "adjustment": "تعديل المخزون",
+      "damage": "تلف / خسارة",
+      "return": "مرتجع من عميل"
+    },
+    "buttons": {
+      "next": "التالي",
+      "previous": "السابق",
+      "save": "تأكيد الحركة",
+      "saving": "جاري الحفظ..."
+    },
+    "validation": {
+      "selectProduct": "يجب اختيار المنتج",
+      "invalidQuantity": "يجب إدخال كمية صحيحة",
+      "enterCost": "يجب إدخال سعر الشراء",
+      "stockSetupFailed": "فشل في إعداد المخزون",
+      "success": "تم إضافة حركة المخزون بنجاح",
+      "error": "فشل في إنشاء المخزون"
+    },
+    "branchStep": {
+      "loading": "جاري تحميل المستودعات...",
+      "searchPlaceholder": "ابحث عن مستودع...",
+      "store": "مستودع",
+      "noStores": "لا توجد مستودعات",
+      "noResults": "لا توجد نتائج مطابقة للبحث",
+      "addStoreHint": "يجب إضافة فرع من نوع 'مستودع' أولاً"
+    },
+    "movementStep": {
+      "typeLabel": "نوع الحركة",
+      "types": {
+        "purchase": {
+          "label": "شراء / إعادة تخزين",
+          "description": "إضافة مخزون جديد من المورد"
+        },
+        "adjustment": {
+          "label": "تعديل المخزون",
+          "description": "تعديل يدوي: موجب للإضافة، سالب للنقصان"
+        },
+        "damage": {
+          "label": "تلف / خسارة",
+          "description": "تسجيل منتجات تالفة أو مفقودة"
+        },
+        "return": {
+          "label": "مرتجع من عميل",
+          "description": "إضافة منتجات مرتجعة للمخزون"
+        }
+      },
+      "quantity": {
+        "label": "الكمية",
+        "adjustmentHint": "(موجب للإضافة، سالب للنقصان)",
+        "placeholder": "أدخل الكمية",
+        "placeholderAdjustment": "مثال: 5 للإضافة، -3 للنقصان",
+        "current": "الكمية الحالية في المخزون: {quantity}"
+      },
+      "unitCost": {
+        "label": "سعر الوحدة (الشراء)",
+        "currency": "ر.س",
+        "error": "يجب إدخال سعر الشراء"
+      },
+      "totalCost": "إجمالي تكلفة الشراء:",
+      "reference": {
+        "label": "رقم المرجع (اختياري)",
+        "placeholder": "مثال: فاتورة رقم 12345",
+        "hint": "يمكنك إضافة رقم فاتورة الشراء أو أي مرجع آخر"
+      },
+      "notes": {
+        "label": "ملاحظات (اختياري)",
+        "placeholder": "أي ملاحظات إضافية..."
+      }
+    },
+    "productStep": {
+      "tabs": {
+        "existing": "منتجات موجودة في المخزون",
+        "new": "إضافة منتج جديد للمخزون"
+      },
+      "searchPlaceholder": "ابحث بالاسم أو الكود...",
+      "loading": "جاري التحميل...",
+      "existing": {
+        "noProducts": "لا توجد منتجات في المخزون",
+        "hint": "يمكنك إضافة منتج جديد للمخزون من التبويب الثاني",
+        "addNewButton": "إضافة منتج جديد",
+        "available": "متاح",
+        "status": {
+          "inStock": "متوفر",
+          "lowStock": "مخزون منخفض",
+          "outOfStock": "نفذ المخزون",
+          "overstocked": "مخزون زائد"
+        }
+      },
+      "new": {
+        "noResults": "لا توجد نتائج",
+        "allInStock": "جميع المنتجات موجودة في المخزون",
+        "searchHint": "جرب البحث بكلمات مختلفة",
+        "allInStockHint": "يمكنك تعديل كميات المنتجات الموجودة من التبويب الأول",
+        "sellingPrice": "سعر البيع",
+        "lastPurchasePrice": "آخر سعر شراء:"
+      }
+    },
+    "reviewStep": {
+      "ready": "جاهز للحفظ",
+      "incomplete": "يرجى إكمال البيانات المطلوبة",
+      "readyDesc": "راجع البيانات أدناه ثم اضغط تأكيد الحركة",
+      "incompleteDesc": "بعض الحقول المطلوبة غير مكتملة",
+      "branch": "المستودع",
+      "notSelected": "غير محدد",
+      "product": "المنتج",
+      "movementType": "نوع الحركة",
+      "quantity": "الكمية",
+      "costDetails": {
+        "title": "تفاصيل التكلفة",
+        "unitPrice": "سعر الوحدة",
+        "quantity": "الكمية",
+        "total": "الإجمالي"
+      },
+      "additionalInfo": "معلومات إضافية",
+      "reference": "رقم المرجع: ",
+      "notes": "ملاحظات: ",
+      "stockChange": "تغيير المخزون المتوقع",
+      "before": "قبل",
+      "after": "بعد",
+      "types": {
+        "purchase": "شراء / إعادة تخزين",
+        "adjustment": "تعديل المخزون",
+        "damage": "تلف / خسارة",
+        "return": "مرتجع من عميل"
+      }
+    }
+  },
+  "info": {
+    "branch": "الفرع",
+    "available": "المتاح",
+    "reserved": "المحجوز",
+    "total": "الإجمالي",
+    "additionalInfo": "معلومات إضافية",
+    "averageCost": "التكلفة المتوسطة",
+    "reorderLevel": "مستوى إعادة الطلب",
+    "lastPurchase": "آخر عملية شراء",
+    "lastSale": "آخر عملية بيع",
+    "currency": "ر.س"
+  },
+  "movements": {
+    "title": "حركات المخزون",
+    "all": "جميع الحركات",
+    "emptyTitle": "لا توجد حركات",
+    "emptyDescription": "لم يتم تسجيل أي حركات لهذا المخزون بعد",
+    "before": "قبل",
+    "after": "بعد",
+    "cost": "التكلفة",
+    "reference": "المرجع",
+    "types": {
+      "purchase": "شراء",
+      "sale": "بيع",
+      "transfer_in": "تحويل وارد",
+      "transfer_out": "تحويل صادر",
+      "adjustment": "تعديل",
+      "damage": "تلف",
+      "return": "إرجاع",
+      "reserve": "حجز",
+      "release": "تحرير"
+    }
+  },
+  "transfers": {
+    "title": "التحويلات بين الفروع",
+    "subtitle": "إدارة ومتابعة تحويلات المخزون",
+    "newTransfer": "تحويل جديد",
+    "stats": {
+      "total": "الإجمالي",
+      "pending": "قيد الانتظار",
+      "shipped": "تم الشحن",
+      "completed": "مكتمل"
+    },
+    "filters": {
+      "searchPlaceholder": "بحث برقم التحويل أو الفرع...",
+      "status": "الحالة",
+      "branch": "الفرع",
+      "allStatus": "كل الحالات",
+      "allBranches": "كل الفروع"
+    },
+    "list": {
+      "title": "قائمة التحويلات",
+      "emptyTitle": "لا توجد تحويلات",
+      "emptyDescription": "لم يتم العثور على تحويلات تطابق الفلاتر المحددة",
+      "from": "من",
+      "to": "إلى",
+      "itemsCount": "منتج"
+    },
+    "actions": {
+      "accept": "قبول التحويل",
+      "view": "عرض التفاصيل"
+    },
+    "dialog": {
+      "receiveTitle": "تأكيد استلام التحويل",
+      "receiveMessage": "هل أنت متأكد من استلام هذا التحويل؟ سيتم إضافة المنتجات إلى مخزون الفرع المستلم.",
+      "confirm": "تأكيد الاستلام",
+      "cancel": "إلغاء"
+    },
+    "messages": {
+      "receiveSuccess": "تم استلام التحويل بنجاح",
+      "receiveError": "حدث خطأ أثناء استلام التحويل"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "submitted": "مُقدم",
+      "shipped": "تم الشحن",
+      "received": "تم الاستلام",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
+    },
+    "create": {
+      "title": "تحويل مخزون",
+      "subtitle": "نقل المخزون بين الفروع والمستودعات",
+      "steps": {
+        "branches": "الفروع",
+        "items": "المنتجات",
+        "review": "المراجعة"
+      },
+      "stepDescriptions": {
+        "branches": "اختر الفرع المرسل والفرع المستلم",
+        "items": "أضف المنتجات التي تريد تحويلها",
+        "review": "راجع البيانات قبل إنشاء طلب التحويل"
+      },
+      "infoBanner": {
+        "title": "كيف تعمل التحويلات؟",
+        "content": "1. أنشئ طلب التحويل → 2. قدّم الطلب للموافقة → 3. شحن المخزون → 4. استلام المخزون في الفرع المستلم"
+      },
+      "buttons": {
+        "next": "التالي",
+        "previous": "السابق",
+        "create": "إنشاء طلب التحويل",
+        "creating": "جاري الإنشاء..."
+      },
+      "summary": {
+        "title": "ملخص التحويل",
+        "from": "من",
+        "to": "إلى",
+        "itemsCount": "عدد المنتجات",
+        "totalQuantity": "إجمالي الكميات",
+        "estimatedValue": "القيمة التقديرية"
+      },
+      "validation": {
+        "selectBranches": "يجب اختيار الفروع",
+        "addItems": "يجب إضافة منتج واحد على الأقل",
+        "success": "تم إنشاء طلب التحويل بنجاح",
+        "error": "فشل في إنشاء طلب التحويل"
+      },
+      "branchesStep": {
+        "loading": "جاري تحميل الفروع...",
+        "fromBranch": "من الفرع",
+        "selectSender": "اختر الفرع المرسل",
+        "toBranch": "إلى الفرع",
+        "selectReceiver": "اختر الفرع المستلم",
+        "sameBranchError": "لا يمكن التحويل إلى نفس الفرع",
+        "searchPlaceholder": "ابحث عن فرع...",
+        "select": "اختر",
+        "sender": "الفرع المرسل",
+        "receiver": "الفرع المستلم",
+        "store": "مستودع",
+        "branch": "فرع",
+        "noResults": "لا توجد نتائج مطابقة للبحث",
+        "senderLabel": "المرسل",
+        "receiverLabel": "المستلم"
+      },
+      "itemsStep": {
+        "loading": "جاري تحميل المخزون...",
+        "selectedItems": "المنتجات المختارة",
+        "clearAll": "مسح الكل",
+        "searchPlaceholder": "ابحث عن منتج...",
+        "available": "متاح",
+        "lowStock": "مخزون منخفض",
+        "add": "إضافة",
+        "noResults": "لا توجد نتائج",
+        "noStock": "لا يوجد مخزون متاح للتحويل",
+        "searchHint": "جرب البحث بكلمات مختلفة",
+        "noStockHint": "تأكد من وجود منتجات في مخزون الفرع المرسل"
+      },
+      "reviewStep": {
+        "ready": "جاهز للإنشاء",
+        "incomplete": "يرجى إكمال البيانات المطلوبة",
+        "readyDesc": "سيتم إنشاء طلب التحويل بحالة 'معلق' ويحتاج للموافقة قبل الشحن",
+        "incompleteDesc": "بعض الحقول المطلوبة غير مكتملة",
+        "from": "من",
+        "to": "إلى",
+        "notSelected": "غير محدد",
+        "items": "المنتجات",
+        "noItems": "لم تتم إضافة منتجات",
+        "fromTotal": "من",
+        "itemsCount": "عدد المنتجات",
+        "totalQuantity": "إجمالي الكميات",
+        "estimatedValue": "القيمة التقديرية",
+        "notes": {
+          "label": "ملاحظات (اختياري)",
+          "placeholder": "أي ملاحظات إضافية على التحويل..."
+        },
+        "nextSteps": "الخطوات التالية:",
+        "step1": "تقديم للموافقة",
+        "step2": "شحن",
+        "step3": "استلام"
+      }
+    }
+  }
+}

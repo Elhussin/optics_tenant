@@ -17,12 +17,14 @@ import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import type { StockMovement, MovementType } from "../types";
+import { useTranslations } from "next-intl";
 
 interface StockMovementsSectionProps {
   stockId: number;
 }
 
 export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
+  const t = useTranslations("inventory");
   const [filterType, setFilterType] = useState<MovementType | "all">("all");
 
   const { query } = useApiForm({
@@ -66,15 +68,21 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
 
   const getMovementBadge = (type: MovementType, display: string) => {
     const badgeMap: Record<MovementType, { variant: any; label: string }> = {
-      purchase: { variant: "success", label: display || "شراء" },
-      sale: { variant: "danger", label: display || "بيع" },
-      transfer_in: { variant: "info", label: display || "تحويل وارد" },
-      transfer_out: { variant: "warning", label: display || "تحويل صادر" },
-      adjustment: { variant: "neutral", label: display || "تعديل" },
-      damage: { variant: "danger", label: display || "تلف" },
-      return: { variant: "success", label: display || "إرجاع" },
-      reserve: { variant: "warning", label: display || "حجز" },
-      release: { variant: "success", label: display || "تحرير" },
+      purchase: { variant: "success", label: t("movements.types.purchase") },
+      sale: { variant: "danger", label: t("movements.types.sale") },
+      transfer_in: { variant: "info", label: t("movements.types.transfer_in") },
+      transfer_out: {
+        variant: "warning",
+        label: t("movements.types.transfer_out"),
+      },
+      adjustment: {
+        variant: "neutral",
+        label: t("movements.types.adjustment"),
+      },
+      damage: { variant: "danger", label: t("movements.types.damage") },
+      return: { variant: "success", label: t("movements.types.return") },
+      reserve: { variant: "warning", label: t("movements.types.reserve") },
+      release: { variant: "success", label: t("movements.types.release") },
     };
 
     const config = badgeMap[type] || { variant: "neutral", label: display };
@@ -123,7 +131,7 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-main flex items-center gap-2">
             <Package size={20} className="text-primary" />
-            حركات المخزون ({filteredMovements.length})
+            {t("movements.title")} ({filteredMovements.length})
           </h3>
 
           {/* Filter */}
@@ -134,23 +142,29 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
             }
             className="px-4 py-2 rounded-xl bg-surface border border-border-main text-sm focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
           >
-            <option value="all">جميع الحركات</option>
-            <option value="purchase">شراء</option>
-            <option value="sale">بيع</option>
-            <option value="transfer_in">تحويل وارد</option>
-            <option value="transfer_out">تحويل صادر</option>
-            <option value="adjustment">تعديل</option>
-            <option value="damage">تلف</option>
-            <option value="return">إرجاع</option>
-            <option value="reserve">حجز</option>
-            <option value="release">تحرير</option>
+            <option value="all">{t("movements.all")}</option>
+            <option value="purchase">{t("movements.types.purchase")}</option>
+            <option value="sale">{t("movements.types.sale")}</option>
+            <option value="transfer_in">
+              {t("movements.types.transfer_in")}
+            </option>
+            <option value="transfer_out">
+              {t("movements.types.transfer_out")}
+            </option>
+            <option value="adjustment">
+              {t("movements.types.adjustment")}
+            </option>
+            <option value="damage">{t("movements.types.damage")}</option>
+            <option value="return">{t("movements.types.return")}</option>
+            <option value="reserve">{t("movements.types.reserve")}</option>
+            <option value="release">{t("movements.types.release")}</option>
           </select>
         </div>
 
         {filteredMovements.length === 0 ? (
           <EmptyState
-            title="لا توجد حركات"
-            description="لم يتم تسجيل أي حركات لهذا المخزون بعد"
+            title={t("movements.emptyTitle")}
+            description={t("movements.emptyDescription")}
           />
         ) : (
           <div className="space-y-3">
@@ -180,13 +194,17 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
 
                 <div className="grid grid-cols-3 gap-4 text-sm">
                   <div>
-                    <p className="text-secondary mb-1">قبل</p>
+                    <p className="text-secondary mb-1">
+                      {t("movements.before")}
+                    </p>
                     <p className="font-semibold text-main">
                       {movement.quantity_before}
                     </p>
                   </div>
                   <div>
-                    <p className="text-secondary mb-1">بعد</p>
+                    <p className="text-secondary mb-1">
+                      {t("movements.after")}
+                    </p>
                     <p className="font-semibold text-main">
                       {movement.quantity_after}
                     </p>
@@ -194,7 +212,9 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
                   {movement.cost_per_unit &&
                     parseFloat(movement.cost_per_unit) > 0 && (
                       <div>
-                        <p className="text-secondary mb-1">التكلفة</p>
+                        <p className="text-secondary mb-1">
+                          {t("movements.cost")}
+                        </p>
                         <p className="font-semibold text-main">
                           {parseFloat(movement.cost_per_unit).toLocaleString(
                             "ar-SA",
@@ -202,7 +222,7 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
                               maximumFractionDigits: 2,
                             },
                           )}{" "}
-                          ر.س
+                          {t("info.currency")}
                         </p>
                       </div>
                     )}
@@ -220,7 +240,7 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
                     )}
                     {movement.reference_number && (
                       <p className="text-sm text-secondary">
-                        المرجع:{" "}
+                        {t("movements.reference")}:{" "}
                         <span className="font-mono">
                           {movement.reference_number}
                         </span>

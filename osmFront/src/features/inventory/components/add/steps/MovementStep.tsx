@@ -14,8 +14,8 @@ import {
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Label } from "@/src/shared/components/shadcn/ui/label";
 import { Textarea } from "@/src/shared/components/shadcn/ui/textarea";
-import { useInventoryFormStore } from "../../store";
-import { MovementType } from "../../types";
+import { useInventoryFormStore } from "../../../store";
+import { MovementType } from "../../../types";
 
 const movementTypes: {
   type: MovementType;

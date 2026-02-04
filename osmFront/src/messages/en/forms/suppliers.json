@@ -1,0 +1,67 @@
+{
+  "suppliers": {
+    "title": "Suppliers",
+    "detailsTitle": "Supplier Details",
+    "name": "Supplier Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "contact_person": "Contact Person",
+    "country": "Country",
+    "website": "Website",
+    "payment_terms": "Payment Terms",
+    "updateDescription": "Update Supplier",
+    "createDescription": "Add New Supplier"
+  },
+  "manufacturers": {
+    "title": "Manufacturers",
+    "detailsTitle": "Manufacturer Details",
+    "name": "Manufacturer Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "country": "Country",
+    "website": "Website",
+    "updateDescription": "Update Manufacturer",
+    "createDescription": "Add New Manufacturer"
+  },
+  "brands": {
+    "title": "Brands",
+    "detailsTitle": "Brand Details",
+    "name": "Brand Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "country": "Country",
+    "website": "Website",
+    "description": "Description",
+    "logo": "Logo",
+    "updateDescription": "Update Brand",
+    "createDescription": "Add New Brand"
+  },
+  "categories": {
+    "title": "Categories",
+    "detailsTitle": "Category Details",
+    "name": "Category Name",
+    "description": "Description",
+    "parent_name": "Parent Category",
+    "updateDescription": "Update Category",
+    "createDescription": "Add New Category"
+  },
+  "attributes": {
+    "title": "Attributes",
+    "detailsTitle": "Attribute Details",
+    "name": "Attribute Name",
+    "description": "Description",
+    "updateDescription": "Update Attribute",
+    "createDescription": "Add New Attribute"
+  },
+  "attribute-values": {
+    "title": "Attribute Values",
+    "detailsTitle": "Attribute Value Details",
+    "attribute_name": "Attribute Name",
+    "value": "Value",
+    "updateDescription": "Update Attribute Value",
+    "createDescription": "Add New Attribute Value"
+  }
+}

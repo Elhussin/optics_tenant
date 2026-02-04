@@ -54,8 +54,8 @@ export function AddVariant({
     onSuccess: () => {
       safeToast(
         variantId
-          ? t("validation.variantUpdatedSuccess")
-          : t("validation.variantAddedSuccess"),
+          ? t("variants.variantUpdatedSuccess")
+          : t("variants.variantAddedSuccess"),
         { type: "success" },
       );
       if (!variantId) form.reset(); // Only reset on create
@@ -63,7 +63,7 @@ export function AddVariant({
     },
     onError: (error) => {
       safeToast(
-        t("validation.variantAddError", {
+        t("variants.variantAddError", {
           error: error?.message || t("validation.error"),
         }),
         {
@@ -104,17 +104,29 @@ export function AddVariant({
         }
       });
 
-      console.log("📤 Final payload being sent:", payload);
-      console.log("📍 Product ID:", productId);
+    
 
       const result = await form.submitForm(payload);
 
-      console.log("📥 Result:", result);
 
       if (!result.success) {
-        console.error("❌ Submit failed:", result.error);
+        safeToast(
+          t("variants.variantAddError", {
+            error: result.error?.message || t("validation.error"),
+          }),
+          {
+            type: "error",
+          },
+        );
       } else {
-        console.log("✅ Submit successful!");
+        safeToast(
+          t("variants.variantAddedSuccess", {
+            error: result.error?.message || t("validation.error"),
+          }),
+          {
+            type: "success",
+          },
+        );
       }
     } catch (error) {
       console.error("💥 Exception during submit:", error);
@@ -140,13 +152,12 @@ export function AddVariant({
             </CardTitle>
             <CardDescription>
               {variantId
-                ? t("variants.editVariantDescription")
-                : t("variants.addVariantDescription", { type: variantType })}
+                ? t("variants.editVariantDescription", { type: variantType })
+                : t("variants.addVariantDescription")}
             </CardDescription>
           </div>
         </div>
       </CardHeader>
-
       <CardContent>
         <Form {...form}>
           <form
@@ -189,7 +200,7 @@ export function AddVariant({
                 ) : (
                   <>
                     <Check className="w-4 h-4 ml-2" />
-                    {variantId ? t("actions.save") : t("variants.add")}
+                    {variantId ? t("actions.editVariant") : t("actions.save")}
                   </>
                 )}
               </Button>

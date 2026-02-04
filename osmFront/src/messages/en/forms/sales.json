@@ -1,0 +1,28 @@
+{
+  "orders": {
+    "title": "Orders",
+    "detailsTitle": "Order Details",
+    "order_number": "Order Number",
+    "customer_name": "Customer Name",
+    "total_amount": "Total Amount",
+    "status": "Status",
+    "payment_status": "Payment Status",
+    "payment_method": "Payment Method",
+    "order_date": "Order Date",
+    "delivery_date": "Delivery Date",
+    "updateDescription": "Update Order",
+    "createDescription": "Add New Order"
+  },
+  "sales_installments": {
+    "title": "Installments",
+    "detailsTitle": "Installment Details",
+    "installment_number": "Installment Number",
+    "amount": "Amount",
+    "due_date": "Due Date",
+    "status": "Status",
+    "paid_at": "Paid At",
+    "paid_amount": "Paid Amount",
+    "updateDescription": "Update Installment",
+    "createDescription": "Add Installment"
+  }
+}

@@ -14,7 +14,7 @@ export default function ViewPrescriptionPage() {
     <Suspense
       fallback={
         <div>
-          <LoadingSpinner />
+          <SectionLoading />
         </div>
       }
     >

@@ -105,7 +105,6 @@ export function FinancialReportsPage() {
 
   useEffect(() => {
     fetchReport();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
   const handlePrint = () => {

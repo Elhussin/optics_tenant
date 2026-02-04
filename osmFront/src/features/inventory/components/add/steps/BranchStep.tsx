@@ -3,10 +3,11 @@
 import React, { useState } from "react";
 import { Warehouse, MapPin, Search, CheckCircle } from "lucide-react";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
-import { useInventoryFormStore } from "../../store";
+import { useInventoryFormStore } from "../../../store";
 import useSWR from "swr";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
+import { useTranslations } from "next-intl";
 
 interface Branch {
   id: number;
@@ -18,6 +19,7 @@ interface Branch {
 }
 
 export function BranchStep() {
+  const t = useTranslations("inventory");
   const store = useInventoryFormStore();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -30,7 +32,7 @@ export function BranchStep() {
       });
       return extractArrayData<Branch>(response);
     },
-    { revalidateOnFocus: false }
+    { revalidateOnFocus: false },
   );
 
   // Filter stores only and by search
@@ -39,7 +41,7 @@ export function BranchStep() {
       branch.branch_type === "store" &&
       (branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         branch.branch_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        branch.city?.toLowerCase().includes(searchQuery.toLowerCase()))
+        branch.city?.toLowerCase().includes(searchQuery.toLowerCase())),
   );
 
   const handleSelectBranch = (branch: Branch) => {
@@ -51,7 +53,7 @@ export function BranchStep() {
       <div className="flex justify-center items-center py-12">
         <div className="animate-pulse flex flex-col items-center gap-4">
           <Warehouse className="w-12 h-12 text-gray-300" />
-          <p className="text-secondary">جاري تحميل المستودعات...</p>
+          <p className="text-secondary">{t("add.branchStep.loading")}</p>
         </div>
       </div>
     );
@@ -63,7 +65,7 @@ export function BranchStep() {
       <div className="relative">
         <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <Input
-          placeholder="ابحث عن مستودع..."
+          placeholder={t("add.branchStep.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pr-10"
@@ -113,7 +115,7 @@ export function BranchStep() {
 
             {/* Store Badge */}
             <span className="absolute top-3 right-3 px-2 py-0.5 text-xs rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
-              مستودع
+              {t("add.branchStep.store")}
             </span>
           </div>
         ))}
@@ -124,12 +126,12 @@ export function BranchStep() {
         <div className="text-center py-12">
           <Warehouse className="w-16 h-16 mx-auto text-gray-300 mb-4" />
           <h3 className="text-lg font-medium text-main mb-2">
-            لا توجد مستودعات
+            {t("add.branchStep.noStores")}
           </h3>
           <p className="text-secondary">
             {searchQuery
-              ? "لا توجد نتائج مطابقة للبحث"
-              : "يجب إضافة فرع من نوع 'مستودع' أولاً"}
+              ? t("add.branchStep.noResults")
+              : t("add.branchStep.addStoreHint")}
           </p>
         </div>
       )}

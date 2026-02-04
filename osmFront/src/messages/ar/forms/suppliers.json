@@ -1,0 +1,67 @@
+{
+  "suppliers": {
+    "title": "الموردين",
+    "detailsTitle": "تفاصيل المورد",
+    "name": "اسم المورد",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "contact_person": "مسؤول التواصل",
+    "country": "البلد",
+    "website": "الموقع الإلكتروني",
+    "payment_terms": "شروط الدفع",
+    "updateDescription": "تحديث بيانات المورد",
+    "createDescription": "إضافة مورد جديد"
+  },
+  "manufacturers": {
+    "title": "المصنع",
+    "detailsTitle": "تفاصيل المصنع",
+    "name": "اسم المصنع",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "country": "البلد",
+    "website": "الموقع الإلكتروني",
+    "updateDescription": "تحديث بيانات المصنع",
+    "createDescription": "إضافة مصنع جديد"
+  },
+  "brands": {
+    "title": "العلامات التجارية",
+    "detailsTitle": "تفاصيل العلامة التجارية",
+    "name": "اسم العلامة التجارية",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "address": "العنوان",
+    "country": "البلد",
+    "website": "الموقع الإلكتروني",
+    "description": "الوصف",
+    "logo": "الشعار",
+    "updateDescription": "تحديث بيانات العلامة التجارية",
+    "createDescription": "إضافة علامة تجارية جديدة"
+  },
+  "categories": {
+    "title": "الاقسام",
+    "detailsTitle": "تفاصيل القسم",
+    "name": "اسم القسم",
+    "description": "الوصف",
+    "parent_name": "القسم الرئيسي",
+    "updateDescription": "تحديث بيانات القسم",
+    "createDescription": "إضافة قسم جديد"
+  },
+  "attributes": {
+    "title": "الخصائص",
+    "detailsTitle": "تفاصيل الخصائص",
+    "name": "اسم الخصائص",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الخصائص",
+    "createDescription": "إضافة خصائص جديدة"
+  },
+  "attribute-values": {
+    "title": "قيم الخصائص",
+    "detailsTitle": "تفاصيل قيمة الخصائص",
+    "attribute_name": "اسم قيمة الخصائص",
+    "value": "الوصف",
+    "updateDescription": "تحديث بيانات قيمة الخصائص",
+    "createDescription": "إضافة قيمة خصائص جديدة"
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "hrm-departments": {
+    "title": "الاقسام",
+    "detailsTitle": "تفاصيل القسم",
+    "name": "اسم القسم",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات القسم",
+    "createDescription": "إضافة قسم جديد"
+  },
+  "hrm-employees": {
+    "title": "الموظفين",
+    "detailsTitle": "تفاصيل الموظف",
+    "address": "العنوان",
+    "user_name": "اسم المستخدم",
+    "department_name": "القسم",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "hire_date": "تاريخ التعيين",
+    "salary": "الراتب",
+    "position": "المنصب",
+    "updateDescription": "تحديث بيانات الموظف",
+    "createDescription": "إضافة موظف جديد"
+  },
+  "hrm-employee-leave": {
+    "title": "الإجازات",
+    "detailsTitle": "تفاصيل الإجازة",
+    "updateDescription": "تحديث بيانات الإجازة",
+    "createDescription": "إضافة إجازة جديدة"
+  },
+  "hrm-attendance": {
+    "title": "الحضور والانصراف",
+    "detailsTitle": "تفاصيل الحضور",
+    "employee_name": "اسم الموظف",
+    "date": "التاريخ",
+    "hours_worked": "ساعات العمل",
+    "check_in": "وقت الدخول",
+    "check_out": "وقت الخروج",
+    "updateDescription": "تحديث بيانات الحضور",
+    "createDescription": "تسجيل حضور جديد"
+  },
+  "hrm-performance-review": {
+    "title": "تقييم الأداء",
+    "detailsTitle": "تفاصيل التقييم",
+    "employee_name": "اسم الموظف",
+    "month": "الشهر",
+    "review_date": "تاريخ التقييم",
+    "rating": "التقييم",
+    "comments": "ملاحظات",
+    "updateDescription": "تحديث التقييم",
+    "createDescription": "إضافة تقييم جديد"
+  },
+  "hrm-payroll": {
+    "title": "الرواتب",
+    "detailsTitle": "تفاصيل الراتب",
+    "employee_name": "اسم الموظف",
+    "month": "الشهر",
+    "basic_salary": "الراتب الأساسي",
+    "bonuses": "المكافآت",
+    "deductions": "الخصومات",
+    "net_salary": "صافي الراتب",
+    "updateDescription": "تحديث الراتب",
+    "createDescription": "إضافة راتب جديد"
+  },
+  "hrm-tasks": {
+    "title": "المهام",
+    "detailsTitle": "تفاصيل المهمة",
+    "updateDescription": "تحديث المهمة",
+    "createDescription": "إضافة مهمة جديدة"
+  },
+  "hrm-notifications": {
+    "title": "الإشعارات",
+    "detailsTitle": "تفاصيل الإشعار",
+    "notification_type": "نوع الإشعار",
+    "message": "الرسالة",
+    "is_read": "مقروء",
+    "updateDescription": "تحديث الإشعار",
+    "createDescription": "إضافة إشعار جديد"
+  }
+}

@@ -31,7 +31,6 @@ import {
   FormField,
   FormControl,
 } from "@/src/shared/components/shadcn/ui/form";
-import { InfoPopover } from "@/src/shared/components/field/RenderFields"; // Import InfoPopover if available or create local
 
 // Field Icons Mapping
 const fieldIcons: Record<string, any> = {

@@ -208,9 +208,7 @@ export const actionListConfig: Record<string, FormConfig> = {
   "products_stocks_by_branch": {
     createAlias: "products_stocks_by_branch_list",
   },
-  "products_stocks_low_stock": {
-    createAlias: "products_stocks_low_stock_list",
-  },
+
   "products_stocks_out_of_stock": {
     createAlias: "products_stocks_out_of_stock_list",
   },

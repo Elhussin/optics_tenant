@@ -1,0 +1,84 @@
+{
+  "product-reviews": {
+    "title": "Product Reviews",
+    "detailsTitle": "Review Details",
+    "ProductVariant_id": "Variant ID",
+    "rating": "Rating",
+    "review": "Review",
+    "reviewed_by": "Reviewed By",
+    "updateDescription": "Update Review",
+    "createDescription": "Add New Review"
+  },
+  "product-questions": {
+    "title": "Product Questions",
+    "detailsTitle": "Question Details",
+    "ProductVariant_id": "Variant ID",
+    "question": "Question",
+    "asked_by": "Asked By",
+    "updateDescription": "Update Question",
+    "createDescription": "Delete Question"
+  },
+  "product-answers": {
+    "title": "Product Answers",
+    "detailsTitle": "Answer Details",
+    "question_id": "Question ID",
+    "answer": "Answer",
+    "answered_by": "Answered By",
+    "updateDescription": "Update Answer",
+    "createDescription": "Add New Answer"
+  },
+  "product-offers": {
+    "title": "Product Offers",
+    "detailsTitle": "Offer Details",
+    "ProductVariant_id": "Variant ID",
+    "offer": "Offer",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "updateDescription": "Update Offer",
+    "createDescription": "Add New Offer"
+  },
+  "product-marketing": {
+    "title": "Product Marketing",
+    "detailsTitle": "Marketing Details",
+    "variant_name": "Variant Name",
+    "slug": "Slug",
+    "gender": "Gender",
+    "meta_title": "Meta Title",
+    "meta_description": "Meta Description",
+    "meta_keywords": "Meta Keywords",
+    "seo_image": "SEO Image",
+    "seo_image_alt": "SEO Image Alt",
+    "age_group": "Age Group",
+    "updateDescription": "Update Marketing",
+    "createDescription": "Add Marketing Info"
+  },
+  "product-stock-transfers": {
+    "title": "Stock Transfers",
+    "detailsTitle": "Transfer Details",
+    "transfer_number": "Transfer Number",
+    "from_branch_name": "From Branch",
+    "to_branch_name": "To Branch",
+    "status": "Status",
+    "notes": "Notes",
+    "items_count": "Items Count",
+    "approved_date": "Approved Date",
+    "shipped_date": "Shipped Date",
+    "received_date": "Received Date",
+    "requested_by": "Requested By",
+    "updateDescription": "Update Transfer",
+    "createDescription": "Create Transfer"
+  },
+  "product-stock-transfer-items": {
+    "title": "Stock Transfer Items",
+    "detailsTitle": "Transfer Item Details",
+    "transfer": "Transfer",
+    "variant_name": "Variant Name",
+    "quantity_requested": "Quantity Requested",
+    "quantity_sent": "Quantity Sent",
+    "quantity_received": "Quantity Received",
+    "variant_sku": "Variant SKU",
+    "unit_cost": "Unit Cost",
+    "updateDescription": "Update Transfer Item",
+    "createDescription": "Add Transfer Item"
+  }
+}

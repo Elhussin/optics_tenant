@@ -1,0 +1,380 @@
+{
+  "title": "Inventory Management",
+  "subtitle": "Track stock, movements, and transfers",
+  "transferStock": "Stock Transfer",
+  "addMovement": "Add Movement",
+  "stats": {
+    "totalItems": "Total Products",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "pendingTransfers": "Pending Transfers"
+  },
+  "tabs": {
+    "stocks": "Stocks",
+    "transfers": "Transfers"
+  },
+  "stocks": {
+    "title": "Stock List",
+    "searchPlaceholder": "Search...",
+    "filters": {
+      "status": "Status",
+      "branch": "Branch",
+      "allBranches": "All Branches",
+      "all": "All",
+      "inStock": "In Stock",
+      "low": "Low",
+      "out": "Out"
+    },
+    "table": {
+      "product": "Product",
+      "branch": "Branch",
+      "available": "Available",
+      "reserved": "Reserved",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "branchPrefix": "Branch",
+    "loading": "Loading...",
+    "noResults": "No results found"
+  },
+  "status": {
+    "inStock": "In Stock",
+    "lowStock": "Low Stock",
+    "outOfStock": "Out of Stock",
+    "overstocked": "Overstocked"
+  },
+  "details": {
+    "title": "Stock Details",
+    "backToInventory": "Back to Inventory",
+    "reports": "Reports",
+    "editStock": "Edit Stock",
+    "addMovement": "Add Movement"
+  },
+  "add": {
+    "title": "Add Stock Movement",
+    "subtitle": "Record purchases, adjustments, and losses",
+    "steps": {
+      "warehouse": "Warehouse",
+      "product": "Product",
+      "movement": "Movement",
+      "review": "Review"
+    },
+    "stepDescriptions": {
+      "warehouse": "Select the warehouse to add stock to",
+      "product": "Select the product to add movement for",
+      "movement": "Specify movement type, quantity, and cost",
+      "review": "Review data before saving"
+    },
+    "warning": {
+      "title": "Important Note",
+      "message": "Stock can only be added to 'Store' type branches. Regular branches receive stock via transfers."
+    },
+    "summary": {
+      "title": "Movement Summary",
+      "warehouse": "Warehouse",
+      "product": "Product",
+      "type": "Movement Type",
+      "quantity": "Quantity",
+      "unitPrice": "Unit Price",
+      "total": "Total"
+    },
+    "movementTypes": {
+      "purchase": "Purchase / Restock",
+      "adjustment": "Stock Adjustment",
+      "damage": "Damage / Loss",
+      "return": "Customer Return"
+    },
+    "buttons": {
+      "next": "Next",
+      "previous": "Previous",
+      "save": "Confirm Movement",
+      "saving": "Saving..."
+    },
+    "validation": {
+      "selectProduct": "Product must be selected",
+      "invalidQuantity": "Must enter a valid quantity",
+      "enterCost": "Must enter purchase price",
+      "stockSetupFailed": "Failed to setup stock",
+      "success": "Stock movement added successfully",
+      "error": "Failed to add stock movement"
+    },
+    "branchStep": {
+      "loading": "Loading warehouses...",
+      "searchPlaceholder": "Search for warehouse...",
+      "store": "Warehouse",
+      "noStores": "No warehouses found",
+      "noResults": "No results found",
+      "addStoreHint": "Must add a 'warehouse' type branch first"
+    },
+    "movementStep": {
+      "typeLabel": "Movement Type",
+      "types": {
+        "purchase": {
+          "label": "Purchase / Restock",
+          "description": "Add new stock from supplier"
+        },
+        "adjustment": {
+          "label": "Stock Adjustment",
+          "description": "Manual adjustment: positive to add, negative to subtract"
+        },
+        "damage": {
+          "label": "Damage / Loss",
+          "description": "Record damaged or lost items"
+        },
+        "return": {
+          "label": "Customer Return",
+          "description": "Add returned items to stock"
+        }
+      },
+      "quantity": {
+        "label": "Quantity",
+        "adjustmentHint": "(positive to add, negative to subtract)",
+        "placeholder": "Enter quantity",
+        "placeholderAdjustment": "Ex: 5 to add, -3 to subtract",
+        "current": "Current quantity in stock: {quantity}"
+      },
+      "unitCost": {
+        "label": "Unit Price (Purchase)",
+        "currency": "SAR",
+        "error": "Must enter purchase price"
+      },
+      "totalCost": "Total Purchase Cost:",
+      "reference": {
+        "label": "Reference Number (Optional)",
+        "placeholder": "Ex: Invoice #12345",
+        "hint": "You can add purchase invoice number or any other reference"
+      },
+      "notes": {
+        "label": "Notes (Optional)",
+        "placeholder": "Any additional notes..."
+      }
+    },
+    "productStep": {
+      "tabs": {
+        "existing": "Existing Products in Stock",
+        "new": "Add New Product to Stock"
+      },
+      "searchPlaceholder": "Search by name or code...",
+      "loading": "Loading...",
+      "existing": {
+        "noProducts": "No products in stock",
+        "hint": "You can add a new product to stock from the second tab",
+        "addNewButton": "Add New Product",
+        "available": "Available",
+        "status": {
+          "inStock": "In Stock",
+          "lowStock": "Low Stock",
+          "outOfStock": "Out of Stock",
+          "overstocked": "Overstocked"
+        }
+      },
+      "new": {
+        "noResults": "No results found",
+        "allInStock": "All products are in stock",
+        "searchHint": "Try different search terms",
+        "allInStockHint": "You can edit existing product quantities from the first tab",
+        "sellingPrice": "Selling Price",
+        "lastPurchasePrice": "Last Purchase Price:"
+      }
+    },
+    "reviewStep": {
+      "ready": "Ready to Save",
+      "incomplete": "Please complete required fields",
+      "readyDesc": "Review details below then click Confirm Movement",
+      "incompleteDesc": "Some required fields are missing",
+      "branch": "Warehouse",
+      "notSelected": "Not Selected",
+      "product": "Product",
+      "movementType": "Movement Type",
+      "quantity": "Quantity",
+      "costDetails": {
+        "title": "Cost Details",
+        "unitPrice": "Unit Price",
+        "quantity": "Quantity",
+        "total": "Total"
+      },
+      "additionalInfo": "Additional Information",
+      "reference": "Reference: ",
+      "notes": "Notes: ",
+      "stockChange": "Expected Stock Change",
+      "before": "Before",
+      "after": "After",
+      "types": {
+        "purchase": "Purchase / Restock",
+        "adjustment": "Stock Adjustment",
+        "damage": "Damage / Loss",
+        "return": "Customer Return"
+      }
+    }
+  },
+  "info": {
+    "branch": "Branch",
+    "available": "Available",
+    "reserved": "Reserved",
+    "total": "Total",
+    "additionalInfo": "Additional Info",
+    "averageCost": "Average Cost",
+    "reorderLevel": "Reorder Level",
+    "lastPurchase": "Last Purchase",
+    "lastSale": "Last Sale",
+    "currency": "SAR"
+  },
+  "movements": {
+    "title": "Stock Movements",
+    "all": "All Movements",
+    "emptyTitle": "No movements",
+    "emptyDescription": "No movements recorded for this stock yet",
+    "before": "Before",
+    "after": "After",
+    "cost": "Cost",
+    "reference": "Ref",
+    "types": {
+      "purchase": "Purchase",
+      "sale": "Sale",
+      "transfer_in": "Transfer In",
+      "transfer_out": "Transfer Out",
+      "adjustment": "Adjustment",
+      "damage": "Damage",
+      "return": "Return",
+      "reserve": "Reserve",
+      "release": "Release"
+    }
+  },
+  "transfers": {
+    "title": "Inter-Branch Transfers",
+    "subtitle": "Manage and track stock transfers",
+    "newTransfer": "New Transfer",
+    "stats": {
+      "total": "Total",
+      "pending": "Pending",
+      "shipped": "Shipped",
+      "completed": "Completed"
+    },
+    "filters": {
+      "searchPlaceholder": "Search by transfer # or branch...",
+      "status": "Status",
+      "branch": "Branch",
+      "allStatus": "All Statuses",
+      "allBranches": "All Branches"
+    },
+    "list": {
+      "title": "Transfers List",
+      "emptyTitle": "No transfers",
+      "emptyDescription": "No transfers found matching the selected filters",
+      "from": "From",
+      "to": "To",
+      "itemsCount": "items"
+    },
+    "actions": {
+      "accept": "Accept Transfer",
+      "view": "View Details"
+    },
+    "dialog": {
+      "receiveTitle": "Confirm Transfer Receipt",
+      "receiveMessage": "Are you sure you want to receive this transfer? Items will be added to the receiving branch stock.",
+      "confirm": "Confirm Receipt",
+      "cancel": "Cancel"
+    },
+    "messages": {
+      "receiveSuccess": "Transfer received successfully",
+      "receiveError": "Error receiving transfer"
+    },
+    "status": {
+      "pending": "Pending",
+      "submitted": "Submitted",
+      "shipped": "Shipped",
+      "received": "Received",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "create": {
+      "title": "Stock Transfer",
+      "subtitle": "Transfer stock between branches and warehouses",
+      "steps": {
+        "branches": "Branches",
+        "items": "Items",
+        "review": "Review"
+      },
+      "stepDescriptions": {
+        "branches": "Select sending and receiving branches",
+        "items": "Add items to transfer",
+        "review": "Review data before creating transfer"
+      },
+      "infoBanner": {
+        "title": "How transfers work?",
+        "content": "1. Create Request → 2. Submit for Approval → 3. Ship Stock → 4. Receive Stock"
+      },
+      "buttons": {
+        "next": "Next",
+        "previous": "Previous",
+        "create": "Create Transfer",
+        "creating": "Creating..."
+      },
+      "summary": {
+        "title": "Transfer Summary",
+        "from": "From",
+        "to": "To",
+        "itemsCount": "Items Count",
+        "totalQuantity": "Total Quantity",
+        "estimatedValue": "Estimated Value"
+      },
+      "validation": {
+        "selectBranches": "Branches must be selected",
+        "addItems": "At least one item must be added",
+        "success": "Transfer request created successfully",
+        "error": "Failed to create stock"
+      },
+
+      "branchesStep": {
+        "loading": "Loading branches...",
+        "fromBranch": "From Branch",
+        "selectSender": "Select Sending Branch",
+        "toBranch": "To Branch",
+        "sameBranchError": "Cannot transfer to same branch",
+        "searchPlaceholder": "Search for branch...",
+        "select": "Select",
+        "sender": "Sending Branch",
+        "receiver": "Receiving Branch",
+        "store": "Warehouse",
+        "branch": "Branch",
+        "noResults": "No results found",
+        "senderLabel": "Sender",
+        "receiverLabel": "Receiver"
+      },
+      "itemsStep": {
+        "loading": "Loading stock...",
+        "selectedItems": "Selected Items",
+        "clearAll": "Clear All",
+        "searchPlaceholder": "Search for item...",
+        "available": "Available",
+        "lowStock": "Low Stock",
+        "add": "Add",
+        "noResults": "No results found",
+        "noStock": "No stock available for transfer",
+        "searchHint": "Try different search terms",
+        "noStockHint": "Ensure there are items in the sending branch stock"
+      },
+      "reviewStep": {
+        "ready": "Ready to Create",
+        "incomplete": "Please complete required data",
+        "readyDesc": "Transfer request will be created as 'Pending' and requires approval before shipping",
+        "incompleteDesc": "Some required fields are incomplete",
+        "from": "From",
+        "to": "To",
+        "notSelected": "Not Selected",
+        "items": "Items",
+        "noItems": "No items added",
+        "fromTotal": "of",
+        "itemsCount": "Items Count",
+        "totalQuantity": "Total Quantity",
+        "estimatedValue": "Estimated Value",
+        "notes": "Notes (Optional)",
+        "notesPlaceholder": "Any additional notes for the transfer...",
+        "nextSteps": "Next Steps:",
+        "step1": "Submit for Approval",
+        "step2": "Ship",
+        "step3": "Receive"
+      }
+    }
+  }
+}

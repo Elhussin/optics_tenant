@@ -1,0 +1,112 @@
+{
+  "crm-customers": {
+    "title": "Customers",
+    "detailsTitle": "Customer Details",
+    "name": "Customer Name",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "identification_number": "ID Number",
+    "email": "Email",
+    "phone": "Phone",
+    "date_of_birth": "Date of Birth",
+    "is_vip": "VIP Customer",
+    "address": "Address",
+    "updateDescription": "Update Customer",
+    "createDescription": "Add New Customer"
+  },
+  "crm-customer-groups": {
+    "title": "Customer Groups",
+    "detailsTitle": "Customer Group Details",
+    "name": "Group Name",
+    "description": "Description",
+    "customers_name": "Customer Names",
+    "updateDescription": "Update Customer Group",
+    "createDescription": "Add New Customer Group"
+  },
+  "crm-opportunities": {
+    "title": "Opportunities",
+    "detailsTitle": "Opportunity Details",
+    "name": "Opportunity Name",
+    "customer_name": "Customer Name",
+    "stage": "Stage",
+    "expected_revenue": "Expected Revenue",
+    "close_date": "Close Date",
+    "amount": "Amount",
+    "description": "Description",
+    "updateDescription": "Update Opportunity",
+    "createDescription": "Add New Opportunity"
+  },
+  "crm-interactions": {
+    "title": "Interactions",
+    "detailsTitle": "Interaction Details",
+    "name": "Name",
+    "customer_name": "Customer Name",
+    "interaction_type": "Interaction Type",
+    "notes": "Notes",
+    "description": "Description",
+    "updateDescription": "Update Interaction",
+    "createDescription": "Add New Interaction"
+  },
+  "crm-complaints": {
+    "title": "Complaints",
+    "detailsTitle": "Complaint Details",
+    "name": "Complaint Name",
+    "customer_name": "Customer Name",
+    "description": "Description",
+    "status": "Status",
+    "updateDescription": "Update Complaint",
+    "createDescription": "Add New Complaint"
+  },
+  "crm-subscriptions": {
+    "title": "Subscriptions",
+    "detailsTitle": "Subscription Details",
+    "name": "Subscription Name",
+    "description": "Description",
+    "updateDescription": "Update Subscription",
+    "createDescription": "Add New Subscription"
+  },
+  "crm-tasks": {
+    "title": "Tasks",
+    "detailsTitle": "Task Details",
+    "name": "Task Name",
+    "customer_name": "Customer Name",
+    "opportunity": "Opportunity",
+    "priority": "Priority",
+    "completed": "Completed",
+    "due_date": "Due Date",
+    "description": "Description",
+    "updateDescription": "Update Task",
+    "createDescription": "Add New Task"
+  },
+  "crm-campaigns": {
+    "title": "Campaigns",
+    "detailsTitle": "Campaign Details",
+    "name": "Campaign Name",
+    "description": "Description",
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "updateDescription": "Update Campaign",
+    "createDescription": "Add New Campaign"
+  },
+  "crm-documents": {
+    "title": "Documents",
+    "detailsTitle": "Document Details",
+    "name": "Document Name",
+    "customer_name": "Customer Name",
+    "description": "Description",
+    "file": "File",
+    "updateDescription": "Update Document",
+    "createDescription": "Add New Document"
+  },
+  "crm-contacts": {
+    "title": "Contacts",
+    "detailsTitle": "Contact Details",
+    "name": "Contact Name",
+    "email": "Email",
+    "phone": "Phone",
+    "message": "Message",
+    "description": "Description",
+    "updateDescription": "Update Contact",
+    "createDescription": "Add New Contact"
+  }
+}

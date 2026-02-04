@@ -23,7 +23,7 @@ interface LazyComponentProps {
   loadingSize?: LoadingSize;
   loadingMessage?: string;
   fallback?: React.ReactNode;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   [key: string]: any;
 }
 
@@ -112,7 +112,7 @@ export function createLazyComponent<P extends Record<string, unknown>>(
     );
   };
 }
-
+import Image from "next/image";
 /**
  * Lazy image with blur placeholder
  * صورة كسولة مع صورة ضبابية مؤقتة
@@ -152,7 +152,7 @@ export function LazyImage({
           <span>فشل التحميل</span>
         </div>
       )}
-      <img
+      <Image
         src={src}
         alt={alt}
         loading="lazy"

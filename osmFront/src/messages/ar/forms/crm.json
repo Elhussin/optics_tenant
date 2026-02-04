@@ -1,0 +1,112 @@
+{
+  "crm-customers": {
+    "title": "العملاء",
+    "detailsTitle": "تفاصيل العميل",
+    "name": "اسم العميل",
+    "first_name": "الاسم الأول",
+    "last_name": "اسم العائلة",
+    "identification_number": "رقم الهوية",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "date_of_birth": "تاريخ الميلاد",
+    "is_vip": "عميل مميز (VIP)",
+    "address": "العنوان",
+    "updateDescription": "تحديث بيانات العميل",
+    "createDescription": "إضافة عميل جديد"
+  },
+  "crm-customer-groups": {
+    "title": "مجموعات العملاء",
+    "detailsTitle": "تفاصيل مجموعة العملاء",
+    "name": "اسم مجموعة العملاء",
+    "description": "الوصف",
+    "customers_name": "أسماء العملاء",
+    "updateDescription": "تحديث بيانات مجموعة العملاء",
+    "createDescription": "إضافة مجموعة عملاء جديدة"
+  },
+  "crm-opportunities": {
+    "title": "فرص",
+    "detailsTitle": "تفاصيل الفرصة",
+    "name": "اسم الفرصة",
+    "customer_name": "اسم العميل",
+    "stage": "المرحلة",
+    "expected_revenue": "الإيراد المتوقع",
+    "close_date": "تاريخ الإغلاق",
+    "amount": "المبلغ",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الفرصة",
+    "createDescription": "إضافة فرصة جديدة"
+  },
+  "crm-interactions": {
+    "title": "التفاعلات",
+    "detailsTitle": "تفاصيل التفاعل",
+    "name": "اسم ",
+    "customer_name": "اسم العميل",
+    "interaction_type": "نوع التفاعل",
+    "notes": "ملاحظات",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات التفاعل",
+    "createDescription": "إضافة تفاعل جديد"
+  },
+  "crm-complaints": {
+    "title": "الشكاوى",
+    "detailsTitle": "تفاصيل الشكوى",
+    "name": "اسم الشكوى",
+    "customer_name": "اسم العميل",
+    "description": "الوصف",
+    "status": "الحالة",
+    "updateDescription": "تحديث بيانات الشكوى",
+    "createDescription": "إضافة شكوى جديدة"
+  },
+  "crm-subscriptions": {
+    "title": "الاشتراكات",
+    "detailsTitle": "تفاصيل الاشتراك",
+    "name": "اسم الاشتراك",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات الاشتراك",
+    "createDescription": "إضافة اشتراك جديد"
+  },
+  "crm-tasks": {
+    "title": "المهام",
+    "detailsTitle": "تفاصيل المهمة",
+    "name": "اسم المهمة",
+    "customer_name": "اسم العميل",
+    "opportunity": "الفرصة",
+    "priority": "الأولوية",
+    "completed": "مكتملة",
+    "due_date": "تاريخ الاستحقاق",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات المهمة",
+    "createDescription": "إضافة مهمة جديدة"
+  },
+  "crm-campaigns": {
+    "title": "حملات",
+    "detailsTitle": "تفاصيل الحملة",
+    "name": "اسم الحملة",
+    "description": "الوصف",
+    "start_date": "تاريخ البداية",
+    "end_date": "تاريخ النهاية",
+    "updateDescription": "تحديث بيانات الحملة",
+    "createDescription": "إضافة حملة جديدة"
+  },
+  "crm-documents": {
+    "title": "مستندات",
+    "detailsTitle": "تفاصيل المستند",
+    "name": "اسم المستند",
+    "customer_name": "اسم العميل",
+    "description": "الوصف",
+    "file": "الملف",
+    "updateDescription": "تحديث بيانات المستند",
+    "createDescription": "إضافة مستند جديد"
+  },
+  "crm-contacts": {
+    "title": "اتصالات",
+    "detailsTitle": "تفاصيل اتصال",
+    "name": "اسم اتصال",
+    "email": "البريد الإلكتروني",
+    "phone": "رقم الهاتف",
+    "message": "الرسالة",
+    "description": "الوصف",
+    "updateDescription": "تحديث بيانات اتصال",
+    "createDescription": "إضافة اتصال جديد"
+  }
+}
