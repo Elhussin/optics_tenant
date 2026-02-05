@@ -2451,7 +2451,6 @@ const User = z
     is_staff: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
-    tenant_settings: z.string(),
   })
   .passthrough();
 const RightSphereEnum = z.enum([
@@ -3715,7 +3714,7 @@ const PatchedProductImageRequest = z
   })
   .partial()
   .passthrough();
-const TypeEnum = z.enum(["CL", "SL", "FR", "AX", "OT", "DV"]);
+const MainGroupEnum = z.enum(["CL", "SL", "FR", "AX", "OT", "DV"]);
 const VariantTypeEnum = z.enum([
   "basic",
   "frames",
@@ -3729,16 +3728,16 @@ const Product = z
     id: z.number().int(),
     brand_name: z.string(),
     categories: z.array(Category),
-    type_display: z.string(),
+    main_group_display: z.string(),
     variants: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     model: z.string().max(50),
-    type: TypeEnum,
-    name: z.string().max(200),
+    main_group: MainGroupEnum,
+    name: z.string().max(200).optional(),
     description: z.string(),
-    usku: z.string(),
+    sku: z.string(),
     variant_type: VariantTypeEnum.optional(),
     brand: z.number().int(),
   })
@@ -3757,8 +3756,8 @@ const ProductRequest = z
     variants_input: z.array(z.object({}).partial().passthrough()).optional(),
     is_active: z.boolean().optional(),
     model: z.string().min(1).max(50),
-    type: TypeEnum,
-    name: z.string().max(200),
+    main_group: MainGroupEnum,
+    name: z.string().max(200).optional(),
     variant_type: VariantTypeEnum.optional(),
     brand: z.number().int(),
   })
@@ -3769,7 +3768,7 @@ const PatchedProductRequest = z
     variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean(),
     model: z.string().min(1).max(50),
-    type: TypeEnum,
+    main_group: MainGroupEnum,
     name: z.string().max(200),
     variant_type: VariantTypeEnum,
     brand: z.number().int(),
@@ -3792,6 +3791,127 @@ const ProductImportSuccessResponse = z
   .passthrough();
 const ProductImportBadRequest = z.object({ error: z.string() }).passthrough();
 const ProductImportServerError = z.object({ detail: z.string() }).passthrough();
+const PurchaseOrderItem = z
+  .object({
+    id: z.number().int(),
+    variant_name: z.string(),
+    variant_sku: z.string(),
+    product_name: z.string(),
+    line_total: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    remaining_quantity: z.number().int(),
+    is_fully_received: z.boolean(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    quantity_ordered: z.number().int().gte(0).lte(2147483647),
+    quantity_received: z.number().int(),
+    unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    notes: z.string().optional(),
+    order: z.number().int(),
+    variant: z.number().int(),
+  })
+  .passthrough();
+const PurchaseOrderStatusEnum = z.enum([
+  "draft",
+  "submitted",
+  "approved",
+  "partially_received",
+  "received",
+  "cancelled",
+]);
+const PurchaseOrder = z
+  .object({
+    id: z.number().int(),
+    supplier_name: z.string(),
+    branch_name: z.string(),
+    status_display: z.string(),
+    created_by_name: z.string(),
+    approved_by_name: z.string(),
+    items: z.array(PurchaseOrderItem),
+    items_count: z.string(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    order_number: z.string(),
+    status: PurchaseOrderStatusEnum.optional(),
+    order_date: z.string().optional(),
+    expected_date: z.string().nullish(),
+    received_date: z.string().datetime({ offset: true }).nullable(),
+    approved_date: z.string().datetime({ offset: true }).nullable(),
+    subtotal: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    tax_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    notes: z.string().optional(),
+    supplier: z.number().int(),
+    branch: z.number().int(),
+    created_by: z.number().int().nullish(),
+    approved_by: z.number().int().nullish(),
+  })
+  .passthrough();
+const PaginatedPurchaseOrderList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PurchaseOrder),
+  })
+  .passthrough();
+const PurchaseOrderItemCreateRequest = z
+  .object({
+    variant: z.number().int(),
+    quantity_ordered: z.number().int().gte(1),
+    unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    notes: z.string().optional().default(""),
+  })
+  .passthrough();
+const PurchaseOrderCreateRequest = z
+  .object({
+    supplier: z.number().int(),
+    branch: z.number().int(),
+    order_date: z.string().optional(),
+    expected_date: z.string().nullish(),
+    notes: z.string().optional().default(""),
+    items: z.array(PurchaseOrderItemCreateRequest),
+  })
+  .passthrough();
+const PurchaseOrderRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    status: PurchaseOrderStatusEnum.optional(),
+    order_date: z.string().optional(),
+    expected_date: z.string().nullish(),
+    tax_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    notes: z.string().optional(),
+    supplier: z.number().int(),
+    branch: z.number().int(),
+    created_by: z.number().int().nullish(),
+    approved_by: z.number().int().nullish(),
+  })
+  .passthrough();
+const PatchedPurchaseOrderRequest = z
+  .object({
+    is_active: z.boolean(),
+    status: PurchaseOrderStatusEnum,
+    order_date: z.string(),
+    expected_date: z.string().nullable(),
+    tax_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    notes: z.string(),
+    supplier: z.number().int(),
+    branch: z.number().int(),
+    created_by: z.number().int().nullable(),
+    approved_by: z.number().int().nullable(),
+  })
+  .partial()
+  .passthrough();
+const ReceiveItemsRequest = z
+  .object({ items: z.array(z.object({}).partial().passthrough()).min(1) })
+  .passthrough();
 const ProductVariantQuestion = z
   .object({
     id: z.number().int(),
@@ -4215,11 +4335,14 @@ const ProductVariant = z
   .object({
     id: z.number().int(),
     product_name: z.string(),
+    product_type_name: z.string(),
+    product_type_code: z.string(),
+    product_variant_type: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
-    sku: z.string().max(50).nullish(),
-    usku: z.string(),
+    factory_code: z.string().max(50).nullish(),
+    sku: z.string(),
     description: z.string(),
     last_purchase_price: z
       .string()
@@ -4249,7 +4372,7 @@ const CreateProductVariantRequest = z
   .object({
     variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean().nullable(),
-    sku: z.string().max(50).nullable(),
+    factory_code: z.string().max(50).nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -4273,12 +4396,11 @@ const CreateProductVariantRequest = z
 const CreateProductVariant = z
   .object({
     id: z.number().int(),
-    variants: z.string(),
     created_at: z.string().datetime({ offset: true }).nullable(),
     updated_at: z.string().datetime({ offset: true }).nullable(),
     is_active: z.boolean().nullish(),
-    sku: z.string().max(50).nullish(),
-    usku: z.string().nullable(),
+    factory_code: z.string().max(50).nullish(),
+    sku: z.string().nullable(),
     description: z.string().nullable(),
     last_purchase_price: z
       .string()
@@ -4302,7 +4424,7 @@ const CreateProductVariant = z
 const ProductVariantRequest = z
   .object({
     is_active: z.boolean().optional(),
-    sku: z.string().max(50).nullish(),
+    factory_code: z.string().max(50).nullish(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -4321,7 +4443,7 @@ const ProductVariantRequest = z
 const PatchedProductVariantRequest = z
   .object({
     is_active: z.boolean(),
-    sku: z.string().max(50).nullable(),
+    factory_code: z.string().max(50).nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -6425,7 +6547,7 @@ export const schemas = {
   PaginatedProductImageList,
   ProductImageRequest,
   PatchedProductImageRequest,
-  TypeEnum,
+  MainGroupEnum,
   VariantTypeEnum,
   Product,
   PaginatedProductList,
@@ -6435,6 +6557,15 @@ export const schemas = {
   ProductImportSuccessResponse,
   ProductImportBadRequest,
   ProductImportServerError,
+  PurchaseOrderItem,
+  PurchaseOrderStatusEnum,
+  PurchaseOrder,
+  PaginatedPurchaseOrderList,
+  PurchaseOrderItemCreateRequest,
+  PurchaseOrderCreateRequest,
+  PurchaseOrderRequest,
+  PatchedPurchaseOrderRequest,
+  ReceiveItemsRequest,
   ProductVariantQuestion,
   PaginatedProductVariantQuestionList,
   ProductVariantQuestionRequest,
@@ -15038,6 +15169,11 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
         schema: z.boolean().optional(),
       },
       {
+        name: "main_group",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "model",
         type: "Query",
         schema: z.string().optional(),
@@ -15068,17 +15204,12 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
         schema: z.string().optional(),
       },
       {
-        name: "type",
+        name: "sku",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "usku",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -15212,6 +15343,278 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
         schema: z.object({ detail: z.string() }).passthrough(),
       },
     ],
+  },
+  {
+    method: "get",
+    path: "/api/products/purchase-orders/",
+    alias: "products_purchase_orders_list",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "partially_received",
+            "received",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "supplier",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPurchaseOrderList,
+  },
+  {
+    method: "post",
+    path: "/api/products/purchase-orders/",
+    alias: "products_purchase_orders_create",
+    description: `Create a new purchase order with items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderCreateRequest,
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "get",
+    path: "/api/products/purchase-orders/:id/",
+    alias: "products_purchase_orders_retrieve",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "put",
+    path: "/api/products/purchase-orders/:id/",
+    alias: "products_purchase_orders_update",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "patch",
+    path: "/api/products/purchase-orders/:id/",
+    alias: "products_purchase_orders_partial_update",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "delete",
+    path: "/api/products/purchase-orders/:id/",
+    alias: "products_purchase_orders_destroy",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/products/purchase-orders/:id/approve/",
+    alias: "products_purchase_orders_approve_create",
+    description: `Approve the order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "post",
+    path: "/api/products/purchase-orders/:id/cancel/",
+    alias: "products_purchase_orders_cancel_create",
+    description: `Cancel the order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "post",
+    path: "/api/products/purchase-orders/:id/receive/",
+    alias: "products_purchase_orders_receive_create",
+    description: `Receive items and update stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ReceiveItemsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "post",
+    path: "/api/products/purchase-orders/:id/submit/",
+    alias: "products_purchase_orders_submit_create",
+    description: `Submit order for approval`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "get",
+    path: "/api/products/purchase-orders/filter_options/",
+    alias: "products_purchase_orders_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PurchaseOrder,
   },
   {
     method: "get",
@@ -17017,6 +17420,11 @@ Custom logic for creation to support nested pricing/attributes.`,
         schema: z.number().optional(),
       },
       {
+        name: "factory_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "id",
         type: "Query",
         schema: z.string().optional(),
@@ -17073,11 +17481,6 @@ Custom logic for creation to support nested pricing/attributes.`,
       },
       {
         name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "usku",
         type: "Query",
         schema: z.string().optional(),
       },

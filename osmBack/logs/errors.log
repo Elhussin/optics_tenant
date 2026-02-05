@@ -2347,3 +2347,139 @@ Traceback (most recent call last):
 AttributeError: 'list' object has no attribute 'keys'
 [2026-02-04 01:15:23,602] ERROR django.request: Internal Server Error: /api/products/stocks/filter_options/
 [2026-02-04 01:15:23,602] ERROR django.server: "GET /api/products/stocks/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:15,002] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:15,033] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-05 00:17:15,035] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:16,346] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:16,358] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-05 00:17:16,360] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:18,426] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:18,429] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-05 00:17:18,431] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:22,548] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:22,551] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-05 00:17:22,552] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:42,967] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:42,979] ERROR django.request: Internal Server Error: /api/products/stock-transfer-items/filter_options/
+[2026-02-05 00:17:42,979] ERROR django.server: "GET /api/products/stock-transfer-items/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:44,127] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:44,130] ERROR django.request: Internal Server Error: /api/products/stock-transfer-items/filter_options/
+[2026-02-05 00:17:44,132] ERROR django.server: "GET /api/products/stock-transfer-items/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:46,188] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:46,191] ERROR django.request: Internal Server Error: /api/products/stock-transfer-items/filter_options/
+[2026-02-05 00:17:46,192] ERROR django.server: "GET /api/products/stock-transfer-items/filter_options/ HTTP/1.1" 500 201
+[2026-02-05 00:17:50,256] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-05 00:17:50,259] ERROR django.request: Internal Server Error: /api/products/stock-transfer-items/filter_options/
+[2026-02-05 00:17:50,261] ERROR django.server: "GET /api/products/stock-transfer-items/filter_options/ HTTP/1.1" 500 201

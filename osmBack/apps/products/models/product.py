@@ -72,14 +72,19 @@ class Product(BaseModel):
     # category = models.ForeignKey("Category", on_delete=models.CASCADE)
     categories = models.ManyToManyField("Category", related_name="products")
     # supplier = models.ForeignKey("Supplier", on_delete=models.CASCADE)
-    # manufacturer = models.ForeignKey("Manufacturer", on_delete=models.CASCADE)
+    manufacturer = models.ForeignKey(
+        "Manufacturer", on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="products",
+        help_text=_("Optional manufacturer for the product")
+    )
     brand = models.ForeignKey("Brand", on_delete=models.CASCADE)
     model = models.CharField(max_length=50)
     main_group = models.CharField(max_length=50, choices=PRODUCT_TYPE_CHOICES)
     name = models.CharField(max_length=200, blank=True)
     description = models.TextField(blank=True, editable=False)
     sku = models.CharField(max_length=64, unique=True, editable=False,
-                            help_text=_("Unique product SKU generated automatically"))
+                           help_text=_("Unique product SKU generated automatically"))
     variant_type = models.CharField(
         max_length=20, choices=VARIANT_TYPE_CHOICES, default='basic')
 
@@ -110,8 +115,10 @@ class Product(BaseModel):
 class ProductVariant(BaseModel):
     product = models.ForeignKey(
         Product, related_name='variants', on_delete=models.CASCADE)
-    factory_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
-    sku = models.CharField(max_length=64, unique=True, editable=False,  help_text=_("Unique product variant SKU generated automatically"))
+    factory_code = models.CharField(
+        max_length=50, unique=True, blank=True, null=True)
+    sku = models.CharField(max_length=64, unique=True, editable=False,  help_text=_(
+        "Unique product variant SKU generated automatically"))
     description = models.TextField(blank=True, editable=False,
                                    help_text=_("Auto-generated description based on variant specifications"))
     product_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE,

@@ -847,6 +847,36 @@ export const formsConfig: Record<string, FormConfig> = {
       "is_active",
     ],
   },
+  "purchase-orders": {
+    schemaName: "PurchaseOrderCreateRequest",
+    listAlias: "products_purchase_orders_list",
+    createAlias: "products_purchase_orders_create",
+    retrieveAlias: "products_purchase_orders_retrieve",
+    partialUpdateAlias: "products_purchase_orders_partial_update",
+    hardDeleteAlias: "products_purchase_orders_destroy",
+    filterAlias: "products_purchase_orders_filter_options_retrieve",
+    fields: ["order_number", "supplier_name", "branch_name", "status", "total_amount"],
+    detailsField: [
+      "order_number",
+      "supplier",
+      "supplier_name",
+      "branch",
+      "branch_name",
+      "status",
+      "status_display",
+      "order_date",
+      "expected_date",
+      "received_date",
+      "subtotal",
+      "tax_amount",
+      "total_amount",
+      "notes",
+      "created_by_name",
+      "approved_by_name",
+      "items_count",
+      "created_at",
+    ],
+  },
   brands: {
     schemaName: "BrandRequest",
     listAlias: "products_brands_list",
@@ -1342,7 +1372,7 @@ export const featuresConfig: Record<string, FormConfig> = {
     filterAlias: "users_pages_filter_options_retrieve",
     detailsField: ["name", "slug", "is_published", "is_active"],
   },
-    product: {
+  product: {
     schemaName: "ProductRequest",
     listAlias: "products_products_list",
     createAlias: "products_products_create",
@@ -1392,7 +1422,7 @@ export const featuresConfig: Record<string, FormConfig> = {
       "is_active",
     ],
   },
-    stocks: {
+  stocks: {
     schemaName: "StockRequest",
     listAlias: "products_stocks_list",
     createAlias: "products_stocks_create",
@@ -1409,7 +1439,7 @@ export const featuresConfig: Record<string, FormConfig> = {
       "reorder_level",
     ],
   },
-    "product-stock-transfers": {
+  "product-stock-transfers": {
     schemaName: "StockTransferRequest",
     listAlias: "products_stock_transfers_list",
     createAlias: "products_stock_transfers_create",
@@ -1442,10 +1472,10 @@ export const featuresConfig: Record<string, FormConfig> = {
       "updated_at",
     ],
   },
-    "products-stocks-low-stock": {
-      listAlias: "products_stocks_low_stock_list",
-    },
-    "products-import-csv": {
+  "products-stocks-low-stock": {
+    listAlias: "products_stocks_low_stock_list",
+  },
+  "products-import-csv": {
     createAlias: "products_products_import_csv_create",
   },
   "public-pages": {

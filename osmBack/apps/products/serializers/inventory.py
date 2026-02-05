@@ -157,16 +157,15 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
             validated_data['created_by'] = request.user
 
         with transaction.atomic():
-            # Update stock
-            stock.quantity_in_stock = max(0, quantity_after)
-
-            # Update average cost for purchase
+            # Update average cost for purchase (BEFORE updating quantity)
             if movement_type == 'purchase' and validated_data.get('cost_per_unit', 0) > 0:
                 stock.update_average_cost(
                     abs(quantity), validated_data['cost_per_unit'])
                 from django.utils import timezone
                 stock.last_restocked = timezone.now()
 
+            # Update stock quantity
+            stock.quantity_in_stock = max(0, quantity_after)
             stock.save()
 
             return super().create(validated_data)

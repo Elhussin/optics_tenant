@@ -1,0 +1,48 @@
+{
+  "products": {
+    "title": "Products",
+    "detailsTitle": "Product Details",
+    "name": "Product Name",
+    "category_name": "Category",
+    "brand_name": "Brand",
+    "description": "Description",
+    "supplier_name": "Supplier",
+    "manufacturer_name": "Manufacturer",
+    "model": "Model",
+    "type": "Type",
+    "updateDescription": "Update Product",
+    "createDescription": "Add New Product"
+  },
+  "product-variants": {
+    "title": "Product Variants",
+    "detailsTitle": "Product Variant Details",
+    "name": "Variant Name",
+    "description": "Description",
+    "updateDescription": "Update Product Variant",
+    "createDescription": "Add New Product Variant"
+  },
+  "product-images": {
+    "title": "Product Images",
+    "detailsTitle": "Product Image Details",
+    "name": "Image Name",
+    "description": "Description",
+    "updateDescription": "Update Product Image",
+    "createDescription": "Add New Product Image"
+  },
+  "flexible-prices": {
+    "title": "Flexible Prices",
+    "detailsTitle": "Flexible Price Details",
+    "name": "Price Name",
+    "description": "Description",
+    "updateDescription": "Update Flexible Price",
+    "createDescription": "Add New Flexible Price"
+  },
+  "lens-coatings": {
+    "title": "Lens Coatings",
+    "detailsTitle": "Lens Coating Details",
+    "name": "Coating Name",
+    "description": "Description",
+    "updateDescription": "Update Lens Coating",
+    "createDescription": "Add New Lens Coating"
+  }
+}

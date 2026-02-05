@@ -511,7 +511,7 @@ export const dashboardLink = [
   },
   // Inventory
   {
-    href: "inventory",
+    href: "stock-management",
     roles: ["TenantOwner", "TenantAdmin", "InventoryManager", "BranchManager"],
     group: "Inventory",
     isTenant: true,

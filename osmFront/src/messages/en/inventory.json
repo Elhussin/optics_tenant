@@ -88,7 +88,8 @@
       "next": "Next",
       "previous": "Previous",
       "save": "Confirm Movement",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "addFinally": "Add to Batch"
     },
     "validation": {
       "selectProduct": "Product must be selected",
@@ -96,7 +97,9 @@
       "enterCost": "Must enter purchase price",
       "stockSetupFailed": "Failed to setup stock",
       "success": "Stock movement added successfully",
-      "error": "Failed to add stock movement"
+      "successBatch": "{count} items added successfully",
+      "error": "Failed to add stock movement",
+      "noItems": "No items to submit"
     },
     "branchStep": {
       "loading": "Loading warehouses...",
@@ -204,6 +207,9 @@
         "adjustment": "Stock Adjustment",
         "damage": "Damage / Loss",
         "return": "Customer Return"
+      },
+      "batchList": {
+        "title": "Items in Batch ({count})"
       }
     }
   },
@@ -244,6 +250,8 @@
     "title": "Inter-Branch Transfers",
     "subtitle": "Manage and track stock transfers",
     "newTransfer": "New Transfer",
+    "description": "Manage and track stock transfers between branches and warehouses",
+    "noTransfers": "No transfers found",
     "stats": {
       "total": "Total",
       "pending": "Pending",
@@ -263,11 +271,17 @@
       "emptyDescription": "No transfers found matching the selected filters",
       "from": "From",
       "to": "To",
-      "itemsCount": "items"
+      "itemsCount": "items",
+      "includes": "Includes:",
+      "more": "more"
     },
     "actions": {
       "accept": "Accept Transfer",
-      "view": "View Details"
+      "view": "View Details",
+      "submit": "Submit",
+      "approve": "Approve",
+      "ship": "Ship",
+      "reject": "Reject"
     },
     "dialog": {
       "receiveTitle": "Confirm Transfer Receipt",
@@ -277,7 +291,11 @@
     },
     "messages": {
       "receiveSuccess": "Transfer received successfully",
-      "receiveError": "Error receiving transfer"
+      "receiveError": "Error receiving transfer",
+      "submitSuccess": "Transfer submitted successfully",
+      "approveSuccess": "Transfer approved successfully",
+      "shipSuccess": "Transfer shipped successfully",
+      "actionError": "Action failed"
     },
     "status": {
       "pending": "Pending",
@@ -339,7 +357,8 @@
         "branch": "Branch",
         "noResults": "No results found",
         "senderLabel": "Sender",
-        "receiverLabel": "Receiver"
+        "receiverLabel": "Receiver",
+        "selectReceiver": "Select Receiving Branch"
       },
       "itemsStep": {
         "loading": "Loading stock...",

@@ -371,6 +371,8 @@ VARIANT_MODEL_MAPPING = {
 
 class ProductSerializer(serializers.ModelSerializer):
     brand_name = serializers.CharField(source='brand.name', read_only=True)
+    manufacturer_name = serializers.CharField(
+        source='manufacturer.name', read_only=True, allow_null=True)
     categories = CategorySerializer(many=True, read_only=True)
     categories_ids = serializers.PrimaryKeyRelatedField(
         queryset=Category.objects.all(),

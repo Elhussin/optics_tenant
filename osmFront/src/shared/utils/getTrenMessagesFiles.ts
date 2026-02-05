@@ -29,7 +29,6 @@ export async function getTrenMessagesFiles(
     const filesToFlatten = [
       "common",
       "formGenerator",
-      "products",
       "orders",
       "auth",
       "forms/_shared", // Shared form components

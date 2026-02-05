@@ -36,6 +36,8 @@ router.register(r'stock-transfers', StockTransferViewSet,
                 basename='stock-transfer')
 router.register(r'stock-transfer-items', StockTransferItemViewSet,
                 basename='stock-transfer-item')
+router.register(r'purchase-orders', PurchaseOrderViewSet,
+                basename='purchase-order')
 
 
 urlpatterns = [
