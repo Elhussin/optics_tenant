@@ -58,7 +58,7 @@ export default function AddVariantPage({ params }: PageProps) {
         <AddVariant
           productId={numericId}
           variantType={product.variant_type}
-          productType={product.type}
+          productType={product.main_group}
           onSuccess={() => {
             router.push(`/dashboard/products/${id}`);
           }}

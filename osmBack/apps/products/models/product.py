@@ -214,15 +214,15 @@ class ProductVariant(BaseModel):
             parts.append(str(_("Type: {0}").format(
                 self._get_safe_attr_name(self.product_type))))
 
-        # Add price
-        price_text = str(_("Price: {0} SAR").format(self.selling_price))
-        discount_pct = Decimal(str(self.discount_percentage or 0))
-        if self.discount_price and discount_pct > 0:
-            price_text = str(_("Price: {0} SAR (after {1}% discount)").format(
-                self.discount_price, discount_pct))
-        parts.append(price_text)
+        # Add price to description
+        # price_text = str(_("Price: {0} SAR").format(self.selling_price))
+        # discount_pct = Decimal(str(self.discount_percentage or 0))
+        # if self.discount_price and discount_pct > 0:
+        #     price_text = str(_("Price: {0} SAR (after {1}% discount)").format(
+        #         self.discount_price, discount_pct))
+        # parts.append(price_text)
 
-        return " | ".join(parts)
+        return " - ".join(parts)
 
     def save(self, *args, **kwargs):
         # Build description before validation

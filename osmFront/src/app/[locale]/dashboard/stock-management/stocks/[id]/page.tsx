@@ -7,8 +7,8 @@ import Link from "next/link";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { StockInfo } from "@/src/features/stock-management/components/StockInfo";
-import { StockMovementsSection } from "@/src/features/stock-management/components/StockMovementsSection";
+import { StockInfo } from "@/src/features/stock-management/components/stock/StockInfo";
+import { StockMovementsSection } from "@/src/features/stock-management/components/stock/add/StockMovementsSection";
 import { useTranslations } from "next-intl";
 import { featuresConfig } from "@/src/shared/constants/entityConfig";
 export default function StockDetailsPage() {
@@ -24,7 +24,7 @@ export default function StockDetailsPage() {
   });
 
   const stock = query.data;
-console.log(stock);
+  console.log(stock);
 
   if (isBusy || !stock) {
     return (
@@ -65,13 +65,13 @@ console.log(stock);
               variant="secondary"
               icon={<Edit size={18} />}
               label={t("details.editStock")}
-              navigateTo={`/dashboard/stock-management/add?stock=${stockId}`}
+              navigateTo={`/dashboard/stock-management/stocks/create?stock=${stockId}`}
             />
             <ActionButton
               variant="primary"
               icon={<Plus size={18} />}
               label={t("details.addMovement")}
-              navigateTo={`/dashboard/stock-management/add?stock=${stockId}`}
+              navigateTo={`/dashboard/stock-management/stocks/create?stock=${stockId}`}
               className="shadow-lg shadow-primary/20"
             />
           </div>

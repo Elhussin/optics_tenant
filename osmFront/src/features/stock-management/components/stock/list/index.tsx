@@ -43,9 +43,10 @@ import { Stock, StockTransfer } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { useTranslations } from "next-intl";
 import { featuresConfig } from "@/src/shared/constants/entityConfig";
-import { PurchaseOrderList } from "../purchase-orders";
+import { PurchaseOrderList } from "../../purchase-orders";
+import { StockListCard } from "../StockListCard";
 
-export default function InventoryList() {
+export default function StockListView() {
   const t = useTranslations("inventory");
   const [searchQuery, setSearchQuery] = useState("");
   const [stockFilter, setStockFilter] = useState<string>("all");
@@ -191,10 +192,16 @@ export default function InventoryList() {
                 {t("transferStock")}
               </Button>
             </Link>
-            <Link href="/dashboard/stock-management/add">
-              <Button className="gap-2 bg-primary hover:bg-primary/90">
+            <Link href="/dashboard/stock-management/stocks/create">
+              <Button className="gap-2 bg-primary/20 hover:bg-primary/90">
                 <Plus className="w-4 h-4" />
                 {t("addMovement")}
+              </Button>
+            </Link>
+            <Link href="/dashboard/stock-management/purchase-orders/create">
+              <Button className="gap-2 bg-primary/20 hover:bg-primary/90">
+                <Plus className="w-4 h-4" />
+                {t("purchaseOrders.title")}
               </Button>
             </Link>
           </div>
@@ -305,170 +312,7 @@ export default function InventoryList() {
 
           {/* Stocks Tab */}
           <TabsContent value="stocks">
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                  <CardTitle>{t("stocks.title")}</CardTitle>
-
-                  <div className="flex flex-wrap gap-3">
-                    {/* Search */}
-                    <div className="relative">
-                      <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                      <Input
-                        placeholder={t("stocks.searchPlaceholder")}
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pr-9 w-48"
-                      />
-                    </div>
-
-                    {/* Stock Filter */}
-                    <Select value={stockFilter} onValueChange={setStockFilter}>
-                      <SelectTrigger className="w-36">
-                        <Filter className="w-4 h-4 ml-2" />
-                        <SelectValue placeholder={t("stocks.filters.status")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">
-                          {t("stocks.filters.all")}
-                        </SelectItem>
-                        <SelectItem value="in_stock">
-                          {t("stocks.filters.inStock")}
-                        </SelectItem>
-                        <SelectItem value="low">
-                          {t("stocks.filters.low")}
-                        </SelectItem>
-                        <SelectItem value="out">
-                          {t("stocks.filters.out")}
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-
-                    {/* Branch Filter */}
-                    <Select
-                      value={branchFilter}
-                      onValueChange={setBranchFilter}
-                    >
-                      <SelectTrigger className="w-40">
-                        <Warehouse className="w-4 h-4 ml-2" />
-                        <SelectValue placeholder={t("stocks.filters.branch")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">
-                          {t("stocks.filters.allBranches")}
-                        </SelectItem>
-                        {uniqueBranches.map((branch) => (
-                          <SelectItem
-                            key={branch.id}
-                            value={branch.id.toString()}
-                          >
-                            {branch.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-
-                    {/* Refresh */}
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => refreshStocks()}
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent>
-                {stocksLoading ? (
-                  <div className="text-center py-12 text-secondary">
-                    {t("stocks.loading")}
-                  </div>
-                ) : filteredStocks?.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-                    <p className="text-secondary">{t("stocks.noResults")}</p>
-                  </div>
-                ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-right py-3 px-4 text-sm font-medium text-secondary">
-                            {t("stocks.table.product")}
-                          </th>
-                          <th className="text-right py-3 px-4 text-sm font-medium text-secondary">
-                            {t("stocks.table.branch")}
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                            {t("stocks.table.available")}
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                            {t("stocks.table.reserved")}
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                            {t("stocks.table.status")}
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                            {t("stocks.table.actions")}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredStocks?.map((stock) => (
-                          <tr
-                            key={stock.id}
-                            className="border-b hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                          >
-                            <td className="py-3 px-4">
-                              <div>
-                                <p className="font-medium text-main">
-                                  {stock.product_name}
-                                </p>
-                                <p className="text-xs text-secondary">
-                                  {stock.variant_sku}
-                                </p>
-                              </div>
-                            </td>
-                            <td className="py-3 px-4">
-                              <div className="flex items-center gap-2">
-                                <Warehouse className="w-4 h-4 text-gray-400" />
-                                <span className="text-sm text-main">
-                                  {stock.branch_name}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="text-center py-3 px-4">
-                              <span className="font-bold text-lg text-main">
-                                {stock.available_quantity}
-                              </span>
-                            </td>
-                            <td className="text-center py-3 px-4">
-                              <span className="text-secondary">
-                                {stock.reserved_quantity}
-                              </span>
-                            </td>
-                            <td className="text-center py-3 px-4">
-                              {getStockStatusBadge(stock.stock_status)}
-                            </td>
-                            <td className="text-center py-3 px-4">
-                              <Link
-                                href={`/dashboard/stock-management/stocks/${stock.id}`}
-                              >
-                                <Button variant="ghost" size="sm">
-                                  <Eye className="w-4 h-4" />
-                                </Button>
-                              </Link>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+            <StockListCard />
           </TabsContent>
 
           {/* Transfers Tab */}

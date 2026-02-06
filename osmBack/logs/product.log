@@ -1051,3 +1051,25 @@ DETAIL:  Key (usku)=(V-FR-RA-1013-4E074085) already exists.
 [2026-02-04 00:24:47,979] INFO product: clean_vdata for variant: {'product_type_id': 175, 'selling_price': '5000', 'discount_percentage': 0, 'warranty_id': 182}
 [2026-02-04 00:24:47,979] INFO product: M2M fields for ProductVariant: []
 [2026-02-04 00:24:47,980] INFO product: Creating variant with data: {'product_type_id': 175, 'selling_price': '5000', 'discount_percentage': 0, 'warranty_id': 182}
+[2026-02-06 01:33:15,578] INFO product: 📦 ProductSerializer.create called with validated_data keys: dict_keys(['categories', 'variants', 'is_active', 'model', 'main_group', 'name', 'variant_type', 'manufacturer', 'brand'])
+[2026-02-06 01:33:15,582] INFO product: 📦 variants in validated_data: [{'product_type': 171, 'selling_price': '2000', 'discount_percentage': '20', 'factory_code': '154689771', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-02-06 01:33:15,582] INFO product: 📦 variants_data after pop: [{'product_type': 171, 'selling_price': '2000', 'discount_percentage': '20', 'factory_code': '154689771', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-02-06 01:33:15,612] INFO product: ✅ Product created: 24 - husdf
+[2026-02-06 01:33:15,647] INFO product: 🔍 _manage_variants called for product 24 (husdf)
+[2026-02-06 01:33:15,648] INFO product: 📋 variants_data received: [{'product_type': 171, 'selling_price': '2000', 'discount_percentage': '20', 'factory_code': '154689771', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': [], 'id': ''}]
+[2026-02-06 01:33:15,668] INFO product: FK fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'purchase_order_items', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-02-06 01:33:15,669] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-06 01:33:15,670] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-06 01:33:15,671] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-06 01:33:15,672] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-02-06 01:33:15,673] INFO product: clean_vdata for variant: {'product_type_id': 171, 'selling_price': '2000', 'discount_percentage': '20', 'factory_code': '154689771', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-02-06 01:33:15,676] INFO product: M2M fields for ProductVariant: []
+[2026-02-06 01:33:15,677] INFO product: Creating variant with data: {'product_type_id': 171, 'selling_price': '2000', 'discount_percentage': '20', 'factory_code': '154689771', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-02-06 01:34:54,044] INFO product: 🔍 _manage_variants called for product 24 (husdf)
+[2026-02-06 01:34:54,044] INFO product: 📋 variants_data received: [{'id': 22, 'product_type': 171, 'selling_price': '250.00', 'discount_percentage': '30.00', 'factory_code': '154689771', 'warranty': 183, 'weight': 206, 'dimensions': 184, 'attributes': ''}]
+[2026-02-06 01:34:54,047] INFO product: FK fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'purchase_order_items', 'partnerpricelistitem', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-02-06 01:34:54,047] INFO product: Converted FK field: product_type=171 -> product_type_id=171
+[2026-02-06 01:34:54,048] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-02-06 01:34:54,050] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-02-06 01:34:54,050] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-02-06 01:34:54,050] INFO product: clean_vdata for variant: {'id': 22, 'product_type_id': 171, 'selling_price': '250.00', 'discount_percentage': '30.00', 'factory_code': '154689771', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}

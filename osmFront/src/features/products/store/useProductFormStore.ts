@@ -95,13 +95,7 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
     attributes: [],
   },
 
-  // setData: (key, value) =>
-  //   set((state) => {
-  //     const existing = state.data[key];
-  //     // نتأكد أن البيانات مختلفة فعلًا قبل إعادة تعيينها
-  //     if (JSON.stringify(existing) === JSON.stringify(value)) return state;
-  //     return { data: { ...state.data, [key]: value } };
-  //   }),
+
   setData: (key, value) =>
     set((state) => {
       const existing = state.data[key] || [];

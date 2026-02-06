@@ -98,7 +98,8 @@
       "product_type": "Product Type",
       "sku":"SKU Serial",
       "price": "Price",
-      "currency": "Currency"
+      "currency": "Currency",
+      "manufacturer":"Manufacturer"
     },
     "view": {
       "productNotFound": "Product not found - check the product link",
@@ -120,7 +121,7 @@
       "options": "Variant Options",
       "variantLabel": "Variant #{number}",
       "addNew": "Add New Variant",
-      "addVariantDescription": "Add new variant for product ({type})",
+      "addVariantDescription": "Add new variant for product",
       "noVariants": "No variants for this product",
       "noProduct": "No product found",
       "backToProduct": "Back to Product",

@@ -23,7 +23,7 @@ import {
   formsConfig,
   featuresConfig,
 } from "@/src/shared/constants/entityConfig";
-import { ProductVariantSelect } from "../shared";
+import { ProductVariantSelect } from "../../shared";
 
 interface StockMovementItem {
   variantId: number;

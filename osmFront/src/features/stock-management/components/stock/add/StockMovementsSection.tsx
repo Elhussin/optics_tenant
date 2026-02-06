@@ -16,7 +16,7 @@ import { Badge } from "@/src/shared/components/ui/Badge";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import type { StockMovement, MovementType } from "../types";
+import type { StockMovement, MovementType } from "../../../types";
 import { useTranslations } from "next-intl";
 
 interface StockMovementsSectionProps {

@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import {
   Filter,
   Package,
-  Search,
   X,
   ChevronsUpDown,
   Check,
@@ -156,7 +155,7 @@ export function ProductVariantSelect({
           )}
         >
           <Filter size={14} />
-          {t("filters.title") || "Filters"}
+          {t("transfers.filters.title") || "Filters"}
           {hasActiveFilters && (
             <span className="bg-primary text-white px-1.5 rounded-full text-xs">
               {
@@ -187,15 +186,15 @@ export function ProductVariantSelect({
             {/* Brand Filter */}
             <div>
               <label className="block text-xs font-medium text-secondary mb-1.5">
-                {t("filters.brand") || "Brand"}
+                {t("transfers.filters.brand") || "Brand"}
               </label>
               <select
                 value={brandFilter}
                 onChange={(e) => setBrandFilter(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-main/20 bg-card text-sm
+                className="w-full px-3 py-2 rounded-lg border border-main/20 bg-surface text-sm
                   focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               >
-                <option value="">{t("filters.all") || "All"}</option>
+                <option value="">{t("transfers.filters.all") || "All"}</option>
                 {brands.map((b: FilterOption) => (
                   <option key={b.value} value={b.value}>
                     {b.label}
@@ -207,15 +206,15 @@ export function ProductVariantSelect({
             {/* Category Filter */}
             <div>
               <label className="block text-xs font-medium text-secondary mb-1.5">
-                {t("filters.category") || "Category"}
+                {t("transfers.filters.category") || "Category"}
               </label>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-main/20 bg-card text-sm
+                className="w-full px-3 py-2 rounded-lg border border-main/20 bg-surface text-sm
                   focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               >
-                <option value="">{t("filters.all") || "All"}</option>
+                <option value="">{t("transfers.filters.all") || "All"}</option>
                 {categories.map((c: FilterOption) => (
                   <option key={c.value} value={c.value}>
                     {c.label}
@@ -227,15 +226,15 @@ export function ProductVariantSelect({
             {/* Supplier Filter */}
             <div>
               <label className="block text-xs font-medium text-secondary mb-1.5">
-                {t("filters.supplier") || "Supplier"}
+                {t("transfers.filters.supplier") || "Supplier"}
               </label>
               <select
                 value={supplierFilter}
                 onChange={(e) => setSupplierFilter(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-main/20 bg-card text-sm
+                className="w-full px-3 py-2 rounded-lg border border-main/20 bg-surface text-sm
                   focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               >
-                <option value="">{t("filters.all") || "All"}</option>
+                <option value="">{t("transfers.filters.all") || "All"}</option>
                 {suppliers.map((s: FilterOption) => (
                   <option key={s.value} value={s.value}>
                     {s.label}
@@ -257,7 +256,7 @@ export function ProductVariantSelect({
             disabled={disabled}
             className={cn(
               "w-full justify-between h-12 px-4 font-normal rounded-xl transition-all duration-300",
-              "bg-card border border-main/20 hover:border-primary/50",
+              "bg-surface border border-main/20 hover:border-primary/50",
               open && "border-primary ring-2 ring-primary/20",
               disabled && "opacity-50 cursor-not-allowed",
             )}
@@ -290,10 +289,10 @@ export function ProductVariantSelect({
         </PopoverTrigger>
 
         <PopoverContent
-          className="w-[400px] p-0 border border-main/20 bg-card shadow-xl"
+          className="w-[400px] p-0 border border-main/20 bg-surface shadow-xl"
           align="start"
         >
-          <Command className="bg-card">
+          <Command className=" bg-surface">
             <CommandInput
               placeholder={t("search.product") || "Search products..."}
               className="h-11 px-4 border-b border-main/10"
@@ -320,7 +319,7 @@ export function ProductVariantSelect({
                           }`}
                           onSelect={() => handleSelect(variant)}
                           className={cn(
-                            "cursor-pointer px-4 py-3 transition-colors hover:bg-primary/5",
+                            "cursor-pointer bg-surface px-4 py-3 transition-colors hover:bg-primary/5",
                             isSelected && "bg-primary/10",
                           )}
                         >

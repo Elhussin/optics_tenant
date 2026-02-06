@@ -11,7 +11,8 @@
   },
   "tabs": {
     "stocks": "المخزون",
-    "transfers": "التحويلات"
+    "transfers": "التحويلات",
+    "purchaseOrders": "أوامر الشراء"
   },
   "stocks": {
     "title": "قائمة المخزون",
@@ -53,6 +54,31 @@
   "add": {
     "title": "إضافة حركة مخزون",
     "subtitle": "سجل حركات الشراء والتعديل والخسائر",
+    "sections": {
+      "info": "معلومات الحركة",
+      "addProduct": "إضافة منتج",
+      "items": "العناصر"
+    },
+    "fields": {
+      "branch": "الفرع",
+      "movementType": "نوع الحركة",
+      "referenceNumber": "رقم المرجع",
+      "notes": "ملاحظات",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "unitCost": "سعر الوحدة"
+    },
+    "placeholders": {
+      "selectBranch": "اختر الفرع...",
+      "referenceNumber": "مثال: فاتورة #12345",
+      "notes": "أي ملاحظات إضافية...",
+      "selectProduct": "اختر المنتج..."
+    },
+    "hints": {
+      "negativeAllowed": "يمكن إدخال قيمة سالبة"
+    },
+    "currentStock": "المخزون الحالي",
+    "noItems": "لم تتم إضافة عناصر بعد",
     "steps": {
       "warehouse": "المستودع",
       "product": "المنتج",
@@ -89,12 +115,16 @@
       "previous": "السابق",
       "save": "تأكيد الحركة",
       "saving": "جاري الحفظ...",
-      "addFinally": "إضافة للدفعة"
+      "addFinally": "إضافة للدفعة",
+      "addToList": "إضافة للقائمة",
+      "cancel": "إلغاء"
     },
     "validation": {
+      "selectBranch": "يجب اختيار الفرع",
       "selectProduct": "يجب اختيار المنتج",
       "invalidQuantity": "يجب إدخال كمية صحيحة",
       "enterCost": "يجب إدخال سعر الشراء",
+      "duplicateItem": "هذا المنتج مضاف مسبقاً",
       "stockSetupFailed": "فشل في إعداد المخزون",
       "success": "تم إضافة حركة المخزون بنجاح",
       "successBatch": "تم إضافة {count} عناصر بنجاح",
@@ -263,7 +293,12 @@
       "status": "الحالة",
       "branch": "الفرع",
       "allStatus": "كل الحالات",
-      "allBranches": "كل الفروع"
+      "allBranches": "كل الفروع",
+      "all": "الجميع",
+      "category": "القسم",
+      "brand": "العلامة التجارية",
+      "supplier": "المورد",
+      "title": "الفلاتر"
     },
     "list": {
       "title": "قائمة التحويلات",
@@ -281,6 +316,7 @@
       "submit": "تقديم",
       "approve": "موافقة",
       "ship": "شحن",
+      "edit": "تعديل",
       "reject": "رفض"
     },
     "dialog": {
@@ -297,6 +333,25 @@
       "shipSuccess": "تم شحن التحويل بنجاح",
       "actionError": "فشل الإجراء"
     },
+    "details": {
+      "loadError": "فشل في تحميل التحويل",
+      "fromBranch": "من الفرع",
+      "toBranch": "إلى الفرع",
+      "branchCode": "الكود",
+      "timeline": "الجدول الزمني",
+      "requested": "مطلوب",
+      "approved": "تمت الموافقة",
+      "shipped": "تم الشحن",
+      "received": "تم الاستلام",
+      "sent": "مُرسل",
+      "users": "المستخدمون",
+      "requestedBy": "طلب بواسطة",
+      "approvedBy": "موافقة بواسطة",
+      "notes": "ملاحظات",
+      "items": "المنتجات",
+      "noItems": "لا توجد منتجات في هذا التحويل",
+      "unitCost": "تكلفة الوحدة"
+    },
     "status": {
       "pending": "قيد الانتظار",
       "submitted": "مُقدم",
@@ -311,12 +366,14 @@
       "steps": {
         "branches": "الفروع",
         "items": "المنتجات",
-        "review": "المراجعة"
+        "review": "المراجعة",
+        "branchesAndItems": "الفروع والمنتجات"
       },
       "stepDescriptions": {
         "branches": "اختر الفرع المرسل والفرع المستلم",
         "items": "أضف المنتجات التي تريد تحويلها",
-        "review": "راجع البيانات قبل إنشاء طلب التحويل"
+        "review": "راجع البيانات قبل إنشاء طلب التحويل",
+        "branchesAndItems": "اختر الفرع المصدر والوجهة، ثم أضف المنتجات للتحويل"
       },
       "infoBanner": {
         "title": "كيف تعمل التحويلات؟",
@@ -341,6 +398,15 @@
         "addItems": "يجب إضافة منتج واحد على الأقل",
         "success": "تم إنشاء طلب التحويل بنجاح",
         "error": "فشل في إنشاء طلب التحويل"
+      },
+      "edit": {
+        "title": "تعديل التحويل",
+        "subtitle": "تعديل تفاصيل التحويل قبل الإرسال",
+        "success": "تم تحديث التحويل بنجاح",
+        "update": "تحديث التحويل",
+        "notEditable": "لا يمكن تعديل هذا التحويل",
+        "loadError": "فشل في تحميل التحويل",
+        "tryAgain": "يرجى المحاولة مرة أخرى"
       },
       "branchesStep": {
         "loading": "جاري تحميل الفروع...",
@@ -370,7 +436,8 @@
         "noResults": "لا توجد نتائج",
         "noStock": "لا يوجد مخزون متاح للتحويل",
         "searchHint": "جرب البحث بكلمات مختلفة",
-        "noStockHint": "تأكد من وجود منتجات في مخزون الفرع المرسل"
+        "noStockHint": "تأكد من وجود منتجات في مخزون الفرع المرسل",
+        "selectBranchFirst": "اختر الفرع المصدر أولاً لرؤية المنتجات المتاحة"
       },
       "reviewStep": {
         "ready": "جاهز للإنشاء",
@@ -396,5 +463,130 @@
         "step3": "استلام"
       }
     }
+  },
+  "purchaseOrders": {
+    "title": "أوامر الشراء",
+    "description": "إدارة ومتابعة أوامر الشراء من الموردين",
+    "createNew": "إنشاء أمر شراء",
+    "createFirst": "إنشاء أول أمر شراء",
+    "createSuccess": "تم إنشاء أمر الشراء بنجاح",
+    "createError": "فشل في إنشاء أمر الشراء",
+    "statuses": {
+      "all": "الكل",
+      "draft": "مسودة",
+      "submitted": "مُقدم",
+      "approved": "موافق عليه",
+      "partially_received": "مستلم جزئياً",
+      "received": "مستلم",
+      "cancelled": "ملغي"
+    },
+    "columns": {
+      "orderNumber": "رقم الأمر",
+      "supplier": "المورد",
+      "branch": "الفرع",
+      "status": "الحالة",
+      "total": "الإجمالي",
+      "items": "العناصر",
+      "actions": "إجراءات"
+    },
+    "empty": {
+      "title": "لا توجد أوامر شراء",
+      "description": "لم يتم العثور على أوامر شراء بعد",
+      "filtered": "لا توجد أوامر بهذه الحالة",
+      "tryOther": "جرب فلتر مختلف"
+    },
+    "actions": {
+      "submit": "تقديم",
+      "approve": "موافقة",
+      "cancel": "إلغاء",
+      "edit": "تعديل",
+      "submitSuccess": "تم تقديم الأمر بنجاح",
+      "approveSuccess": "تمت الموافقة على الأمر بنجاح",
+      "cancelSuccess": "تم إلغاء الأمر بنجاح",
+      "submitError": "فشل في تقديم الأمر",
+      "approveError": "فشل في الموافقة على الأمر",
+      "cancelError": "فشل في إلغاء الأمر"
+    },
+    "errors": {
+      "invalidItem": "بيانات العنصر غير صالحة",
+      "duplicateItem": "هذا المنتج مضاف مسبقاً",
+      "selectSupplier": "يجب اختيار المورد",
+      "selectBranch": "يجب اختيار الفرع",
+      "noItems": "يجب إضافة عنصر واحد على الأقل"
+    },
+    "fields": {
+      "supplier": "المورد",
+      "branch": "الفرع",
+      "orderDate": "تاريخ الأمر",
+      "expectedDate": "تاريخ التسليم المتوقع",
+      "notes": "ملاحظات",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "unitCost": "سعر الوحدة",
+      "lineTotal": "إجمالي السطر",
+      "total": "الإجمالي"
+    },
+    "placeholders": {
+      "selectSupplier": "اختر المورد...",
+      "selectBranch": "اختر الفرع...",
+      "selectProduct": "اختر المنتج...",
+      "notes": "أي ملاحظات إضافية..."
+    },
+    "create": {
+      "title": "إنشاء أمر شراء",
+      "description": "إنشاء أمر شراء جديد من المورد",
+      "orderInfo": "معلومات الأمر",
+      "addItem": "إضافة عنصر",
+      "addToOrder": "إضافة للأمر",
+      "orderItems": "عناصر الأمر",
+      "noItems": "لم تتم إضافة عناصر بعد",
+      "submit": "إنشاء أمر الشراء"
+    },
+    "details": {
+      "loadError": "فشل في تحميل أمر الشراء",
+      "supplier": "المورد",
+      "branch": "الفرع",
+      "total": "الإجمالي",
+      "dates": "التواريخ",
+      "orderDate": "تاريخ الطلب",
+      "expectedDate": "التاريخ المتوقع",
+      "approvedDate": "تاريخ الموافقة",
+      "receivedDate": "تاريخ الاستلام",
+      "users": "المستخدمون",
+      "createdBy": "أنشئ بواسطة",
+      "approvedBy": "وافق عليه",
+      "notes": "ملاحظات",
+      "items": "المنتجات",
+      "product": "المنتج",
+      "ordered": "مطلوب",
+      "received": "مستلم",
+      "remaining": "متبقي",
+      "unitCost": "سعر الوحدة",
+      "lineTotal": "إجمالي السطر",
+      "subtotal": "المجموع الفرعي",
+      "tax": "الضريبة",
+      "discount": "الخصم",
+      "grandTotal": "الإجمالي الكلي",
+      "noItems": "لا توجد منتجات في هذا الأمر"
+    },
+    "edit": {
+      "title": "تعديل أمر الشراء",
+      "description": "تعديل بيانات أمر الشراء",
+      "submit": "حفظ التعديلات",
+      "success": "تم تحديث أمر الشراء بنجاح",
+      "error": "فشل تحديث أمر الشراء",
+      "notEditable": "لا يمكن تعديل أمر الشراء هذا",
+      "onlyDraft": "يمكن تعديل أوامر الشراء في حالة المسودة فقط",
+      "currentStatus": "الحالة الحالية"
+    }
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "cancel": "إلغاء",
+    "view": "عرض"
+  },
+  "search": {
+    "product": "بحث المنتجات...",
+    "noResults": "لا توجد نتائج"
   }
 }

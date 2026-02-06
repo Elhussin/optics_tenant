@@ -66,10 +66,12 @@ export function useProductRelations() {
 
   useEffect(() => {
     syncData("manufacturers", fetchManufacturers.data || []);
+    console.log(fetchManufacturers.data);
   }, [fetchManufacturers.data]);
 
   useEffect(() => {
     syncData("brands", fetchBrands.data || []);
+ 
   }, [fetchBrands.data]);
 
   useEffect(() => {

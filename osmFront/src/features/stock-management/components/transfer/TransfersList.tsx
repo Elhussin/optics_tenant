@@ -13,6 +13,7 @@ import {
   Warehouse,
   Calendar,
   Package,
+  Edit3,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
@@ -48,7 +49,7 @@ export function TransfersList() {
 
   // Fetch transfers
   const { query, isBusy } = useApiForm({
-    alias: "products_stock-transfers_list",
+    alias: "products_stock_transfers_list",
     defaultValues: {
       page_size: 100,
       ordering: "-created_at",
@@ -58,19 +59,19 @@ export function TransfersList() {
 
   // Mutations
   const receiveMutation = useApiForm({
-    alias: "products_stock-transfers_receive_create",
+    alias: "products_stock_transfers_receive_create",
     showToast: false,
   });
   const submitMutation = useApiForm({
-    alias: "products_stock-transfers_submit_create",
+    alias: "products_stock_transfers_submit_create",
     showToast: false,
   });
   const approveMutation = useApiForm({
-    alias: "products_stock-transfers_approve_create",
+    alias: "products_stock_transfers_approve_create",
     showToast: false,
   });
   const shipMutation = useApiForm({
-    alias: "products_stock-transfers_ship_create",
+    alias: "products_stock_transfers_ship_create",
     showToast: false,
   });
 
@@ -516,6 +517,20 @@ export function TransfersList() {
                               onClick={() => handleReceive(transfer.id)}
                               disabled={receiveMutation.mutation.isPending}
                             />
+                          )}
+                          {/* Edit button for pending/approved transfers */}
+                          {(transfer.status === "pending" ||
+                            transfer.status === "approved") && (
+                            <Link
+                              href={`/dashboard/stock-management/transfers/${transfer.id}/edit`}
+                            >
+                              <ActionButton
+                                variant="icon-edit"
+                                size="sm"
+                                icon={<Edit3 size={16} />}
+                                title={t("transfers.actions.edit") || "Edit"}
+                              />
+                            </Link>
                           )}
                           <Link
                             href={`/dashboard/stock-management/transfers/${transfer.id}`}

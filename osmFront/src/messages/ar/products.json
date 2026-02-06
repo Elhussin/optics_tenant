@@ -98,7 +98,8 @@
     "product_type": "نوع المنتج",
     "sku": "رمز SKU",
     "price": "السعر",
-    "currency": "العملة"
+    "currency": "العملة",
+    "manufacturer": "المصنع"
   },
   "view": {
     "productNotFound": "لم يتم العثور على المنتج - تأكد من صحة رابط المنتج",
@@ -120,7 +121,7 @@
     "options": "خيارات المتغير",
     "variantLabel": "متغير #{number}",
     "addNew": "إضافة متغير جديد",
-    "addVariantDescription": "أضف متغير جديد للمنتج ({type})",
+    "addVariantDescription": "أضف متغير جديد للمنتج",
     "noVariants": "لا توجد متغيرات لهذا المنتج",
     "noProduct": "لم يتم العثور على المنتج",
     "backToProduct": "العودة للمنتج",

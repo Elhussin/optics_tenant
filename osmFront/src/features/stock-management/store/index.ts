@@ -116,6 +116,10 @@ export const useInventoryFormStore = create<InventoryFormState>((set) => ({
 
 // ===== Transfer Store =====
 interface TransferFormState {
+    // Edit mode
+    transferId: number | null;
+    isEditMode: boolean;
+
     // Branches
     fromBranchId: number | null;
     fromBranchName: string;
@@ -142,13 +146,16 @@ interface TransferFormState {
     setItems: (items: TransferItem[]) => void;
     setNotes: (notes: string) => void;
     calculateTotals: () => void;
+    loadFromTransfer: (transfer: any) => void;
     reset: () => void;
 }
 
 const transferInitialState = {
-    fromBranchId: null,
+    transferId: null as number | null,
+    isEditMode: false,
+    fromBranchId: null as number | null,
     fromBranchName: "",
-    toBranchId: null,
+    toBranchId: null as number | null,
     toBranchName: "",
     items: [] as TransferItem[],
     notes: "",
@@ -197,5 +204,32 @@ export const useTransferFormStore = create<TransferFormState>((set, get) => ({
         set({ totalItems, totalQuantity, totalValue });
     },
 
+    loadFromTransfer: (transfer: any) => {
+        // Convert transfer items to store format
+        const items: TransferItem[] = (transfer.items || []).map((item: any) => ({
+            variantId: item.variant,
+            variantName: item.variant_name || "",
+            variantSku: item.variant_sku || "",
+            productName: item.product_name || "",
+            quantityRequested: item.quantity_requested,
+            unitCost: parseFloat(item.unit_cost) || 0,
+            availableQuantity: item.quantity_requested, // In edit mode, use requested as available
+        }));
+
+        set({
+            transferId: transfer.id,
+            isEditMode: true,
+            fromBranchId: transfer.from_branch,
+            fromBranchName: transfer.from_branch_name || "",
+            toBranchId: transfer.to_branch,
+            toBranchName: transfer.to_branch_name || "",
+            notes: transfer.notes || "",
+            items,
+        });
+
+        get().calculateTotals();
+    },
+
     reset: () => set(transferInitialState),
 }));
+

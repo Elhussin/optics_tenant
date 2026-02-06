@@ -11,7 +11,8 @@
   },
   "tabs": {
     "stocks": "Stocks",
-    "transfers": "Transfers"
+    "transfers": "Transfers",
+    "purchaseOrders": "Purchase Orders"
   },
   "stocks": {
     "title": "Stock List",
@@ -53,6 +54,31 @@
   "add": {
     "title": "Add Stock Movement",
     "subtitle": "Record purchases, adjustments, and losses",
+    "sections": {
+      "info": "Movement Info",
+      "addProduct": "Add Product",
+      "items": "Items"
+    },
+    "fields": {
+      "branch": "Branch",
+      "movementType": "Movement Type",
+      "referenceNumber": "Reference Number",
+      "notes": "Notes",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit Cost"
+    },
+    "placeholders": {
+      "selectBranch": "Select branch...",
+      "referenceNumber": "Ex: Invoice #12345",
+      "notes": "Any additional notes...",
+      "selectProduct": "Select product..."
+    },
+    "hints": {
+      "negativeAllowed": "Negative value allowed"
+    },
+    "currentStock": "Current Stock",
+    "noItems": "No items added yet",
     "steps": {
       "warehouse": "Warehouse",
       "product": "Product",
@@ -89,12 +115,16 @@
       "previous": "Previous",
       "save": "Confirm Movement",
       "saving": "Saving...",
-      "addFinally": "Add to Batch"
+      "addFinally": "Add to Batch",
+      "addToList": "Add to List",
+      "cancel": "Cancel"
     },
     "validation": {
+      "selectBranch": "Branch must be selected",
       "selectProduct": "Product must be selected",
       "invalidQuantity": "Must enter a valid quantity",
       "enterCost": "Must enter purchase price",
+      "duplicateItem": "This product is already added",
       "stockSetupFailed": "Failed to setup stock",
       "success": "Stock movement added successfully",
       "successBatch": "{count} items added successfully",
@@ -263,7 +293,12 @@
       "status": "Status",
       "branch": "Branch",
       "allStatus": "All Statuses",
-      "allBranches": "All Branches"
+      "allBranches": "All Branches",
+      "all": "All",
+      "category": "Category",
+      "brand": "Brand",
+      "supplier": "Supplier",
+      "title": "Filters"
     },
     "list": {
       "title": "Transfers List",
@@ -281,6 +316,7 @@
       "submit": "Submit",
       "approve": "Approve",
       "ship": "Ship",
+      "edit": "Edit",
       "reject": "Reject"
     },
     "dialog": {
@@ -297,6 +333,25 @@
       "shipSuccess": "Transfer shipped successfully",
       "actionError": "Action failed"
     },
+    "details": {
+      "loadError": "Failed to load transfer",
+      "fromBranch": "From Branch",
+      "toBranch": "To Branch",
+      "branchCode": "Code",
+      "timeline": "Timeline",
+      "requested": "Requested",
+      "approved": "Approved",
+      "shipped": "Shipped",
+      "received": "Received",
+      "sent": "Sent",
+      "users": "Users",
+      "requestedBy": "Requested By",
+      "approvedBy": "Approved By",
+      "notes": "Notes",
+      "items": "Items",
+      "noItems": "No items in this transfer",
+      "unitCost": "Unit Cost"
+    },
     "status": {
       "pending": "Pending",
       "submitted": "Submitted",
@@ -311,12 +366,14 @@
       "steps": {
         "branches": "Branches",
         "items": "Items",
-        "review": "Review"
+        "review": "Review",
+        "branchesAndItems": "Branches & Items"
       },
       "stepDescriptions": {
         "branches": "Select sending and receiving branches",
         "items": "Add items to transfer",
-        "review": "Review data before creating transfer"
+        "review": "Review data before creating transfer",
+        "branchesAndItems": "Select source and destination branches, then add items to transfer"
       },
       "infoBanner": {
         "title": "How transfers work?",
@@ -341,6 +398,15 @@
         "addItems": "At least one item must be added",
         "success": "Transfer request created successfully",
         "error": "Failed to create stock"
+      },
+      "edit": {
+        "title": "Edit Transfer",
+        "subtitle": "Modify transfer details before submission",
+        "success": "Transfer updated successfully",
+        "update": "Update Transfer",
+        "notEditable": "This transfer cannot be edited",
+        "loadError": "Failed to load transfer",
+        "tryAgain": "Please try again"
       },
 
       "branchesStep": {
@@ -371,7 +437,8 @@
         "noResults": "No results found",
         "noStock": "No stock available for transfer",
         "searchHint": "Try different search terms",
-        "noStockHint": "Ensure there are items in the sending branch stock"
+        "noStockHint": "Ensure there are items in the sending branch stock",
+        "selectBranchFirst": "Select source branch first to see available items"
       },
       "reviewStep": {
         "ready": "Ready to Create",
@@ -395,5 +462,130 @@
         "step3": "Receive"
       }
     }
+  },
+  "purchaseOrders": {
+    "title": "Purchase Orders",
+    "description": "Manage and track purchase orders from suppliers",
+    "createNew": "Create Purchase Order",
+    "createFirst": "Create First Purchase Order",
+    "createSuccess": "Purchase order created successfully",
+    "createError": "Failed to create purchase order",
+    "statuses": {
+      "all": "All",
+      "draft": "Draft",
+      "submitted": "Submitted",
+      "approved": "Approved",
+      "partially_received": "Partially Received",
+      "received": "Received",
+      "cancelled": "Cancelled"
+    },
+    "columns": {
+      "orderNumber": "Order Number",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "status": "Status",
+      "total": "Total",
+      "items": "Items",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No Purchase Orders",
+      "description": "No purchase orders found yet",
+      "filtered": "No orders with this status",
+      "tryOther": "Try a different filter"
+    },
+    "actions": {
+      "submit": "Submit",
+      "approve": "Approve",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "submitSuccess": "Order submitted successfully",
+      "approveSuccess": "Order approved successfully",
+      "cancelSuccess": "Order cancelled successfully",
+      "submitError": "Failed to submit order",
+      "approveError": "Failed to approve order",
+      "cancelError": "Failed to cancel order"
+    },
+    "errors": {
+      "invalidItem": "Invalid item data",
+      "duplicateItem": "This product is already added",
+      "selectSupplier": "Please select a supplier",
+      "selectBranch": "Please select a branch",
+      "noItems": "At least one item must be added"
+    },
+    "fields": {
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "orderDate": "Order Date",
+      "expectedDate": "Expected Delivery Date",
+      "notes": "Notes",
+      "product": "Product",
+      "quantity": "Quantity",
+      "unitCost": "Unit Cost",
+      "lineTotal": "Line Total",
+      "total": "Total"
+    },
+    "placeholders": {
+      "selectSupplier": "Select supplier...",
+      "selectBranch": "Select branch...",
+      "selectProduct": "Select product...",
+      "notes": "Any additional notes..."
+    },
+    "create": {
+      "title": "Create Purchase Order",
+      "description": "Create a new purchase order from supplier",
+      "orderInfo": "Order Information",
+      "addItem": "Add Item",
+      "addToOrder": "Add to Order",
+      "orderItems": "Order Items",
+      "noItems": "No items added yet",
+      "submit": "Create Purchase Order"
+    },
+    "details": {
+      "loadError": "Failed to load purchase order",
+      "supplier": "Supplier",
+      "branch": "Branch",
+      "total": "Total",
+      "dates": "Dates",
+      "orderDate": "Order Date",
+      "expectedDate": "Expected Date",
+      "approvedDate": "Approved Date",
+      "receivedDate": "Received Date",
+      "users": "Users",
+      "createdBy": "Created By",
+      "approvedBy": "Approved By",
+      "notes": "Notes",
+      "items": "Items",
+      "product": "Product",
+      "ordered": "Ordered",
+      "received": "Received",
+      "remaining": "Remaining",
+      "unitCost": "Unit Cost",
+      "lineTotal": "Line Total",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "discount": "Discount",
+      "grandTotal": "Grand Total",
+      "noItems": "No items in this order"
+    },
+    "edit": {
+      "title": "Edit Purchase Order",
+      "description": "Modify purchase order details",
+      "submit": "Save Changes",
+      "success": "Purchase order updated successfully",
+      "error": "Failed to update purchase order",
+      "notEditable": "This order cannot be edited",
+      "onlyDraft": "Only draft orders can be edited",
+      "currentStatus": "Current status"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "cancel": "Cancel",
+    "view": "View"
+  },
+  "search": {
+    "product": "Search products...",
+    "noResults": "No products found."
   }
 }

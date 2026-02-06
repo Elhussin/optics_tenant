@@ -4,12 +4,13 @@ import React, { useState, useMemo } from "react";
 import {
   ArrowLeftRight,
   Warehouse,
-  Package,
   Check,
   Loader2,
   ArrowLeft,
   ArrowRight,
   AlertCircle,
+  Package,
+  Edit3,
 } from "lucide-react";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import {
@@ -26,8 +27,7 @@ import api from "@/src/shared/api/axios";
 import { useTranslations } from "next-intl";
 
 // Step Components
-import { BranchesStep } from "./steps/BranchesStep";
-import { ItemsStep } from "./steps/ItemsStep";
+import { BranchesAndItemsStep } from "./steps/BranchesAndItemsStep";
 import { TransferReviewStep } from "./steps/TransferReviewStep";
 
 // Step Indicator
@@ -67,47 +67,48 @@ const StepIndicator = ({
   </div>
 );
 
-export function CreateTransfer() {
+interface CreateTransferProps {
+  mode?: "create" | "edit";
+  transferId?: number;
+}
+
+export function CreateTransfer({
+  mode = "create",
+  transferId,
+}: CreateTransferProps) {
   const t = useTranslations("inventory");
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const store = useTransferFormStore();
+  const isEditMode = mode === "edit";
 
+  // Simplified to 2 steps
   const STEPS = [
     {
       id: 1,
-      title: t("transfers.create.steps.branches"),
-      icon: <Warehouse size={18} />,
-    },
-    {
-      id: 2,
-      title: t("transfers.create.steps.items"),
+      title: t("transfers.create.steps.branchesAndItems") || "Branches & Items",
       icon: <Package size={18} />,
     },
     {
-      id: 3,
+      id: 2,
       title: t("transfers.create.steps.review"),
       icon: <Check size={18} />,
     },
   ];
 
-  // Step validation
+  // Step validation - Step 1 needs branches + items
   const canProceedToStep2 = useMemo(
     () =>
       !!store.fromBranchId &&
       !!store.toBranchId &&
-      store.fromBranchId !== store.toBranchId,
-    [store.fromBranchId, store.toBranchId],
-  );
-
-  const canProceedToStep3 = useMemo(
-    () => store.items.length > 0,
-    [store.items],
+      store.fromBranchId !== store.toBranchId &&
+      store.items.length > 0,
+    [store.fromBranchId, store.toBranchId, store.items.length],
   );
 
   const handleNext = () => {
-    if (currentStep < 3) setCurrentStep((prev) => prev + 1);
+    if (currentStep < 2) setCurrentStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
@@ -140,9 +141,24 @@ export function CreateTransfer() {
         })),
       };
 
-      await api.customRequest("products_stock-transfers_create", payload);
+      if (isEditMode && transferId) {
+        // Update existing transfer
+        await api.customRequest("products_stock_transfers_partial_update", {
+          id: transferId,
+          ...payload,
+        });
+        safeToast(
+          t("transfers.edit.success") || "Transfer updated successfully",
+          { type: "success" },
+        );
+      } else {
+        // Create new transfer
+        await api.customRequest("products_stock_transfers_create", payload);
+        safeToast(t("transfers.create.validation.success"), {
+          type: "success",
+        });
+      }
 
-      safeToast(t("transfers.create.validation.success"), { type: "success" });
       store.reset();
       router.push("/dashboard/stock-management/transfers");
     } catch (error: any) {
@@ -163,8 +179,6 @@ export function CreateTransfer() {
     switch (currentStep) {
       case 1:
         return canProceedToStep2;
-      case 2:
-        return canProceedToStep3;
       default:
         return true;
     }
@@ -175,14 +189,28 @@ export function CreateTransfer() {
       <div className="container mx-auto px-4 max-w-5xl">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white mb-4 shadow-lg shadow-blue-500/30">
-            <ArrowLeftRight className="w-8 h-8" />
+          <div
+            className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl text-white mb-4 shadow-lg ${
+              isEditMode
+                ? "bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/30"
+                : "bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/30"
+            }`}
+          >
+            {isEditMode ? (
+              <Edit3 className="w-8 h-8" />
+            ) : (
+              <ArrowLeftRight className="w-8 h-8" />
+            )}
           </div>
           <h1 className="text-3xl font-bold text-main">
-            {t("transfers.create.title")}
+            {isEditMode
+              ? t("transfers.edit.title") || "Edit Transfer"
+              : t("transfers.create.title")}
           </h1>
           <p className="text-secondary mt-2">
-            {t("transfers.create.subtitle")}
+            {isEditMode
+              ? t("transfers.edit.subtitle") || "Modify transfer details"
+              : t("transfers.create.subtitle")}
           </p>
         </div>
 
@@ -210,19 +238,19 @@ export function CreateTransfer() {
             </CardTitle>
             <CardDescription>
               {currentStep === 1 &&
-                t("transfers.create.stepDescriptions.branches")}
+                (t("transfers.create.stepDescriptions.branchesAndItems") ||
+                  "Select source and destination branches, then add items to transfer")}
               {currentStep === 2 &&
-                t("transfers.create.stepDescriptions.items")}
-              {currentStep === 3 &&
                 t("transfers.create.stepDescriptions.review")}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
             {/* Step Content */}
-            {currentStep === 1 && <BranchesStep />}
-            {currentStep === 2 && <ItemsStep />}
-            {currentStep === 3 && <TransferReviewStep />}
+            {currentStep === 1 && (
+              <BranchesAndItemsStep isEditMode={isEditMode} />
+            )}
+            {currentStep === 2 && <TransferReviewStep />}
 
             {/* Navigation */}
             <div className="flex justify-between mt-8 pt-6 border-t">
@@ -236,7 +264,7 @@ export function CreateTransfer() {
                 {t("transfers.create.buttons.previous")}
               </Button>
 
-              {currentStep < 3 ? (
+              {currentStep < 2 ? (
                 <Button
                   type="button"
                   onClick={handleNext}
@@ -261,7 +289,9 @@ export function CreateTransfer() {
                   ) : (
                     <>
                       <Check className="w-4 h-4 ml-2" />
-                      {t("transfers.create.buttons.create")}
+                      {isEditMode
+                        ? t("transfers.edit.update") || "Update Transfer"
+                        : t("transfers.create.buttons.create")}
                     </>
                   )}
                 </Button>

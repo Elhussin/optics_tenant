@@ -1,24 +1,25 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
   Plus,
   Trash2,
   Package,
-  Calendar,
-  Building2,
   Truck,
   FileText,
   Receipt,
+  Edit3,
+  Loader2,
 } from "lucide-react";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { Badge } from "@/src/shared/components/ui/Badge";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { ProductVariantSelect } from "../shared";
+import { SearchableSelect } from "@/src/shared/components/field/Fields";
+import api from "@/src/shared/api/axios";
 
 interface PurchaseOrderItem {
   variant: number;
@@ -46,9 +47,26 @@ interface ProductVariant {
   selling_price: number;
 }
 
-export default function CreatePurchaseOrder() {
+interface CreatePurchaseOrderProps {
+  mode?: "create" | "edit";
+  initialData?: {
+    id: number;
+    supplier: number;
+    branch: number;
+    order_date: string;
+    expected_date: string;
+    notes: string;
+    items: PurchaseOrderItem[];
+  };
+}
+
+export default function CreatePurchaseOrder({
+  mode = "create",
+  initialData,
+}: CreatePurchaseOrderProps) {
   const t = useTranslations("inventory");
   const router = useRouter();
+  const isEditMode = mode === "edit";
 
   // Form state
   const [supplier, setSupplier] = useState<number | null>(null);
@@ -59,11 +77,26 @@ export default function CreatePurchaseOrder() {
   const [expectedDate, setExpectedDate] = useState("");
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<PurchaseOrderItem[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Current item being added
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [unitCost, setUnitCost] = useState(0);
+
+  // Load initial data for edit mode
+  useEffect(() => {
+    if (isEditMode && initialData) {
+      setSupplier(initialData.supplier);
+      setBranch(initialData.branch);
+      setOrderDate(
+        initialData.order_date || new Date().toISOString().split("T")[0],
+      );
+      setExpectedDate(initialData.expected_date || "");
+      setNotes(initialData.notes || "");
+      setItems(initialData.items || []);
+    }
+  }, [isEditMode, initialData]);
 
   // Fetch suppliers
   const suppliersQuery = useApiForm({
@@ -109,6 +142,17 @@ export default function CreatePurchaseOrder() {
     return data?.results || data || [];
   }, [variantsQuery.query.data]);
 
+  // Convert to options format for SearchableSelect
+  const supplierOptions = useMemo(
+    () => suppliers.map((s) => ({ value: s.id, label: s.name })),
+    [suppliers],
+  );
+
+  const branchOptions = useMemo(
+    () => branches.map((b) => ({ value: b.id, label: b.name })),
+    [branches],
+  );
+
   const selectedVariantData = useMemo(() => {
     return variants.find((v) => v.id === selectedVariant);
   }, [variants, selectedVariant]);
@@ -122,7 +166,7 @@ export default function CreatePurchaseOrder() {
 
   const handleAddItem = () => {
     if (!selectedVariant || quantity <= 0 || unitCost <= 0) {
-      safeToast(t("purchaseOrders.errors.invalidItem"),{type:"error"});
+      safeToast(t("purchaseOrders.errors.invalidItem"), { type: "error" });
       return;
     }
 
@@ -131,7 +175,7 @@ export default function CreatePurchaseOrder() {
 
     // Check if already added
     if (items.some((item) => item.variant === selectedVariant)) {
-      safeToast(t("purchaseOrders.errors.duplicateItem"),{type:"error"});
+      safeToast(t("purchaseOrders.errors.duplicateItem"), { type: "error" });
       return;
     }
 
@@ -158,15 +202,15 @@ export default function CreatePurchaseOrder() {
 
   const handleSubmit = async () => {
     if (!supplier) {
-      safeToast(t("purchaseOrders.errors.selectSupplier"),{type:"error"});
+      safeToast(t("purchaseOrders.errors.selectSupplier"), { type: "error" });
       return;
     }
     if (!branch) {
-      safeToast(t("purchaseOrders.errors.selectBranch"),{type:"error"});
+      safeToast(t("purchaseOrders.errors.selectBranch"), { type: "error" });
       return;
     }
     if (items.length === 0) {
-      safeToast(t("purchaseOrders.errors.noItems"),{type:"error"});
+      safeToast(t("purchaseOrders.errors.noItems"), { type: "error" });
       return;
     }
 
@@ -183,12 +227,38 @@ export default function CreatePurchaseOrder() {
       })),
     };
 
+    setIsSubmitting(true);
+
     try {
-      await createMutation.mutation.mutateAsync(payload as any);
-      safeToast(t("purchaseOrders.createSuccess"),{type:"success"});
-      router.push("/dashboard/stock-management?tab=purchase-orders");
+      if (isEditMode && initialData) {
+        // Update existing order
+        await api.customRequest("products_purchase_orders_partial_update", {
+          id: initialData.id,
+          ...payload,
+        });
+        safeToast(
+          t("purchaseOrders.edit.success") || "تم تحديث أمر الشراء بنجاح",
+          { type: "success" },
+        );
+        router.push(
+          `/dashboard/stock-management/purchase-orders/${initialData.id}`,
+        );
+      } else {
+        // Create new order
+        await createMutation.mutation.mutateAsync(payload as any);
+        safeToast(t("purchaseOrders.createSuccess"), { type: "success" });
+        router.push("/dashboard/stock-management/purchase-orders");
+      }
     } catch (error: any) {
-      safeToast(error?.message || t("purchaseOrders.createError"),{type:"error"});
+      const message =
+        error?.response?.data?.detail ||
+        error?.message ||
+        (isEditMode
+          ? t("purchaseOrders.edit.error") || "فشل تحديث أمر الشراء"
+          : t("purchaseOrders.createError"));
+      safeToast(message, { type: "error" });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -197,11 +267,21 @@ export default function CreatePurchaseOrder() {
       <div className="container mx-auto px-4 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-main mb-2">
-            {t("purchaseOrders.create.title")}
+          <h1 className="text-3xl font-bold text-main mb-2 flex items-center gap-3">
+            {isEditMode ? (
+              <>
+                <Edit3 className="w-8 h-8 text-primary" />
+                {t("purchaseOrders.edit.title") || "تعديل أمر الشراء"}
+              </>
+            ) : (
+              t("purchaseOrders.create.title")
+            )}
           </h1>
           <p className="text-secondary">
-            {t("purchaseOrders.create.description")}
+            {isEditMode
+              ? t("purchaseOrders.edit.description") ||
+                "تعديل بيانات أمر الشراء"
+              : t("purchaseOrders.create.description")}
           </p>
         </div>
 
@@ -220,21 +300,22 @@ export default function CreatePurchaseOrder() {
                 <label className="block text-sm font-medium text-secondary mb-2">
                   {t("purchaseOrders.fields.supplier")} *
                 </label>
-                <select
-                  value={supplier || ""}
-                  onChange={(e) => setSupplier(Number(e.target.value) || null)}
-                  className="w-full px-4 py-3 rounded-xl border border-main/20 bg-body text-main 
-                    focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                >
-                  <option value="">
-                    {t("purchaseOrders.placeholders.selectSupplier")}
-                  </option>
-                  {suppliers.map((s) => (
-                    <option key={s.id} value={s.id}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  fieldRow={
+                    {
+                      name: "supplier",
+                      label: t("purchaseOrders.fields.supplier"),
+                      placeholder: t(
+                        "purchaseOrders.placeholders.selectSupplier",
+                      ),
+                    } as any
+                  }
+                  options={supplierOptions}
+                  field={{
+                    value: supplier,
+                    onChange: (val: number) => setSupplier(val),
+                  }}
+                />
               </div>
 
               {/* Branch */}
@@ -242,21 +323,22 @@ export default function CreatePurchaseOrder() {
                 <label className="block text-sm font-medium text-secondary mb-2">
                   {t("purchaseOrders.fields.branch")} *
                 </label>
-                <select
-                  value={branch || ""}
-                  onChange={(e) => setBranch(Number(e.target.value) || null)}
-                  className="w-full px-4 py-3 rounded-xl border border-main/20 bg-body text-main 
-                    focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                >
-                  <option value="">
-                    {t("purchaseOrders.placeholders.selectBranch")}
-                  </option>
-                  {branches.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
+                <SearchableSelect
+                  fieldRow={
+                    {
+                      name: "branch",
+                      label: t("purchaseOrders.fields.branch"),
+                      placeholder: t(
+                        "purchaseOrders.placeholders.selectBranch",
+                      ),
+                    } as any
+                  }
+                  options={branchOptions}
+                  field={{
+                    value: branch,
+                    onChange: (val: number) => setBranch(val),
+                  }}
+                />
               </div>
 
               {/* Order Date */}
@@ -321,54 +403,55 @@ export default function CreatePurchaseOrder() {
                   value={selectedVariant}
                   onChange={(id, variantData) => {
                     setSelectedVariant(id);
-                    if (variantData) setUnitCost(Number(variantData.selling_price) || 0);
+                    if (variantData)
+                      setUnitCost(Number(variantData.selling_price) || 0);
                   }}
                   placeholder={t("purchaseOrders.placeholders.selectProduct")}
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-
-              {/* Quantity */}
-              <div>
-                <label className="block text-sm font-medium text-secondary mb-2">
-                  {t("purchaseOrders.fields.quantity")}
-                </label>
-                <input
-                  type="number"
-                  min="1"
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value) || 1)}
-                  className="w-full px-4 py-3 rounded-xl border border-main/20 bg-card text-main 
+                {/* Quantity */}
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-2">
+                    {t("purchaseOrders.fields.quantity")}
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Number(e.target.value) || 1)}
+                    className="w-full px-4 py-3 rounded-xl border border-main/20 bg-card text-main 
                     focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                />
+                  />
+                </div>
+
+                {/* Unit Cost */}
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-2">
+                    {t("purchaseOrders.fields.unitCost")}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={unitCost}
+                    onChange={(e) => setUnitCost(Number(e.target.value) || 0)}
+                    className="w-full px-4 py-3 rounded-xl border border-main/20 bg-card text-main 
+                    focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
               </div>
 
-              {/* Unit Cost */}
-              <div>
-                <label className="block text-sm font-medium text-secondary mb-2">
-                  {t("purchaseOrders.fields.unitCost")}
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={unitCost}
-                  onChange={(e) => setUnitCost(Number(e.target.value) || 0)}
-                  className="w-full px-4 py-3 rounded-xl border border-main/20 bg-card text-main 
-                    focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                />
-              </div>
+              <ActionButton
+                variant="secondary"
+                icon={<Plus size={18} />}
+                label={t("purchaseOrders.create.addToOrder")}
+                onClick={handleAddItem}
+                className="mt-4"
+                disabled={!selectedVariant || quantity <= 0 || unitCost <= 0}
+              />
             </div>
-
-            <ActionButton
-              variant="secondary"
-              icon={<Plus size={18} />}
-              label={t("purchaseOrders.create.addToOrder")}
-              onClick={handleAddItem}
-              className="mt-4"
-              disabled={!selectedVariant || quantity <= 0 || unitCost <= 0}
-            />
           </div>
 
           {/* Items List */}
@@ -455,13 +538,26 @@ export default function CreatePurchaseOrder() {
             />
             <ActionButton
               variant="primary"
-              icon={<Truck size={18} />}
-              label={t("purchaseOrders.create.submit")}
+              icon={
+                isSubmitting ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : isEditMode ? (
+                  <Edit3 size={18} />
+                ) : (
+                  <Truck size={18} />
+                )
+              }
+              label={
+                isEditMode
+                  ? t("purchaseOrders.edit.submit") || "حفظ التعديلات"
+                  : t("purchaseOrders.create.submit")
+              }
               onClick={handleSubmit}
               disabled={
                 !supplier ||
                 !branch ||
                 items.length === 0 ||
+                isSubmitting ||
                 createMutation.mutation.isPending
               }
               className="shadow-lg shadow-primary/20"
@@ -470,6 +566,5 @@ export default function CreatePurchaseOrder() {
         </div>
       </div>
     </div>
-     </div>
   );
 }

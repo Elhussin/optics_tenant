@@ -76,8 +76,8 @@ export const ProductConfig: ProductConfigType[] = [
     name: "manufacturer",
     label: "Manufacturer",
     role: "all",
-    filter: "Manufacturer",
-    subFilter: "product_type",
+    filter: "manufacturers",
+    subFilter: "",  // Removed "product_type" - manufacturers don't have this field
     title: "Select Manufacturer | Manufacturer Name",
     entityName: "manufacturers",
     fieldName: "name",

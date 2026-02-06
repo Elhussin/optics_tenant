@@ -53,7 +53,7 @@ export function VariantView({ productId, variantId }: VariantViewProps) {
   if (isError || !variant) {
     return <NotFound error={t("view.variantNotFound")} />;
   }
-
+  console.log(variant.description );
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <PageHeader

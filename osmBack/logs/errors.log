@@ -2483,3 +2483,71 @@ Traceback (most recent call last):
 AttributeError: 'list' object has no attribute 'keys'
 [2026-02-05 00:17:50,259] ERROR django.request: Internal Server Error: /api/products/stock-transfer-items/filter_options/
 [2026-02-05 00:17:50,261] ERROR django.server: "GET /api/products/stock-transfer-items/filter_options/ HTTP/1.1" 500 201
+[2026-02-06 12:26:59,521] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-06 12:26:59,609] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-06 12:26:59,615] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-06 12:27:00,736] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-06 12:27:00,741] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-06 12:27:00,742] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-06 12:27:02,828] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-06 12:27:02,831] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-06 12:27:02,833] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
+[2026-02-06 12:27:06,902] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-06 12:27:06,905] ERROR django.request: Internal Server Error: /api/products/stock-movements/filter_options/
+[2026-02-06 12:27:06,906] ERROR django.server: "GET /api/products/stock-movements/filter_options/ HTTP/1.1" 500 201
