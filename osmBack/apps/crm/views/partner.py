@@ -14,12 +14,11 @@ from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParam
 from rest_framework import serializers
 
 from apps.crm.models import (
-    Partner, PartnerBranch, PartnerPriceList, PartnerPriceListItem,
+    Partner, PartnerBranch,
     CustomerPartnerLink, InsuranceClaim, ClaimItem, ClaimDocument, PartnerSettlement
 )
 from apps.crm.serializers.partner import (
     PartnerSerializer, PartnerListSerializer, PartnerBranchSerializer,
-    PartnerPriceListSerializer, PartnerPriceListItemSerializer,
     CustomerPartnerLinkSerializer,
     InsuranceClaimSerializer, InsuranceClaimCreateSerializer, InsuranceClaimListSerializer,
     ClaimItemSerializer, ClaimDocumentSerializer, PartnerSettlementSerializer
@@ -187,36 +186,6 @@ class PartnerBranchViewSet(BaseViewSet):
         )
     ]
     filterset_fields = ['partner', 'branch', 'is_active']
-
-
-class PartnerPriceListViewSet(BaseViewSet):
-    """قوائم أسعار الشركاء"""
-    queryset = PartnerPriceList.objects.select_related(
-        'partner').prefetch_related('items').all()
-    serializer_class = PartnerPriceListSerializer
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES
-        )
-    ]
-    filterset_fields = ['partner', 'is_active', 'price_type']
-    search_fields = ['name', 'partner__name']
-
-
-class PartnerPriceListItemViewSet(BaseViewSet):
-    """عناصر قوائم الأسعار"""
-    queryset = PartnerPriceListItem.objects.select_related(
-        'price_list', 'product', 'variant', 'category'
-    ).all()
-    serializer_class = PartnerPriceListItemSerializer
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            allowed_roles=PARTNER_ROLES
-        )
-    ]
-    filterset_fields = ['price_list', 'product', 'category']
 
 
 class CustomerPartnerLinkViewSet(BaseViewSet):

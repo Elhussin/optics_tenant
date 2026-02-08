@@ -1486,120 +1486,6 @@ const PatchedPartnerBranchRequest = z
   })
   .partial()
   .passthrough();
-const PartnerPriceListItem = z
-  .object({
-    id: z.number().int(),
-    price_list: z.number().int(),
-    product: z.number().int().nullish(),
-    product_name: z.string(),
-    variant: z.number().int().nullish(),
-    variant_sku: z.string(),
-    category: z.number().int().nullish(),
-    category_name: z.string(),
-    special_price: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullish(),
-    special_discount: z
-      .string()
-      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
-      .nullish(),
-  })
-  .passthrough();
-const PaginatedPartnerPriceListItemList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(PartnerPriceListItem),
-  })
-  .passthrough();
-const PartnerPriceListItemRequest = z
-  .object({
-    price_list: z.number().int(),
-    product: z.number().int().nullish(),
-    variant: z.number().int().nullish(),
-    category: z.number().int().nullish(),
-    special_price: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullish(),
-    special_discount: z
-      .string()
-      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
-      .nullish(),
-  })
-  .passthrough();
-const PatchedPartnerPriceListItemRequest = z
-  .object({
-    price_list: z.number().int(),
-    product: z.number().int().nullable(),
-    variant: z.number().int().nullable(),
-    category: z.number().int().nullable(),
-    special_price: z
-      .string()
-      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
-      .nullable(),
-    special_discount: z
-      .string()
-      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
-      .nullable(),
-  })
-  .partial()
-  .passthrough();
-const PriceTypeEnum = z.enum(["discount", "fixed", "markup"]);
-const PartnerPriceList = z
-  .object({
-    id: z.number().int(),
-    partner: z.number().int(),
-    partner_name: z.string(),
-    name: z.string().max(100),
-    description: z.string().optional(),
-    price_type: PriceTypeEnum.optional(),
-    adjustment_value: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    valid_from: z.string().nullish(),
-    valid_until: z.string().nullish(),
-    applies_to_all: z.boolean().optional(),
-    items: z.array(PartnerPriceListItem),
-    items_count: z.string(),
-    is_active: z.boolean().optional(),
-  })
-  .passthrough();
-const PaginatedPartnerPriceListList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(PartnerPriceList),
-  })
-  .passthrough();
-const PartnerPriceListRequest = z
-  .object({
-    partner: z.number().int(),
-    name: z.string().min(1).max(100),
-    description: z.string().optional(),
-    price_type: PriceTypeEnum.optional(),
-    adjustment_value: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    valid_from: z.string().nullish(),
-    valid_until: z.string().nullish(),
-    applies_to_all: z.boolean().optional(),
-    is_active: z.boolean().optional(),
-  })
-  .passthrough();
-const PatchedPartnerPriceListRequest = z
-  .object({
-    partner: z.number().int(),
-    name: z.string().min(1).max(100),
-    description: z.string(),
-    price_type: PriceTypeEnum,
-    adjustment_value: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
-    valid_from: z.string().nullable(),
-    valid_until: z.string().nullable(),
-    applies_to_all: z.boolean(),
-    is_active: z.boolean(),
-  })
-  .partial()
-  .passthrough();
 const PartnerSettlementStatusEnum = z.enum([
   "pending",
   "confirmed",
@@ -3452,6 +3338,7 @@ const FlexiblePrice = z
   .object({
     id: z.number().int(),
     variant: z.number().int(),
+    pricing_policy: z.number().int().nullish(),
     customer: z.number().int().nullable(),
     customer_group: CustomerGroup,
     branch: Branch,
@@ -3474,6 +3361,7 @@ const PaginatedFlexiblePriceList = z
 const FlexiblePriceRequest = z
   .object({
     variant: z.number().int(),
+    pricing_policy: z.number().int().nullish(),
     customer: z.number().int().nullable(),
     customer_group_id: z.number().int().nullable(),
     branch_id: z.number().int().nullable(),
@@ -3488,6 +3376,7 @@ const FlexiblePriceRequest = z
 const PatchedFlexiblePriceRequest = z
   .object({
     variant: z.number().int(),
+    pricing_policy: z.number().int().nullable(),
     customer: z.number().int().nullable(),
     customer_group_id: z.number().int().nullable(),
     branch_id: z.number().int().nullable(),
@@ -3677,6 +3566,37 @@ const VariantFulfillmentPlan = z
 const OrderFulfillmentCheckResponse = z
   .object({ variant_id: z.array(VariantFulfillmentPlan) })
   .passthrough();
+const PricingPolicy = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(100),
+    description: z.string().optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PaginatedPricingPolicyList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PricingPolicy),
+  })
+  .passthrough();
+const PricingPolicyRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string().optional(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedPricingPolicyRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    description: z.string(),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
 const ProductImage = z
   .object({
     id: z.number().int(),
@@ -3727,6 +3647,7 @@ const Product = z
   .object({
     id: z.number().int(),
     brand_name: z.string(),
+    manufacturer_name: z.string().nullable(),
     categories: z.array(Category),
     main_group_display: z.string(),
     variants: z.string(),
@@ -3739,6 +3660,7 @@ const Product = z
     description: z.string(),
     sku: z.string(),
     variant_type: VariantTypeEnum.optional(),
+    manufacturer: z.number().int().nullish(),
     brand: z.number().int(),
   })
   .passthrough();
@@ -3759,6 +3681,7 @@ const ProductRequest = z
     main_group: MainGroupEnum,
     name: z.string().max(200).optional(),
     variant_type: VariantTypeEnum.optional(),
+    manufacturer: z.number().int().nullish(),
     brand: z.number().int(),
   })
   .passthrough();
@@ -3771,6 +3694,7 @@ const PatchedProductRequest = z
     main_group: MainGroupEnum,
     name: z.string().max(200),
     variant_type: VariantTypeEnum,
+    manufacturer: z.number().int().nullable(),
     brand: z.number().int(),
   })
   .partial()
@@ -4001,6 +3925,7 @@ const MovementTypeEnum = z.enum([
   "adjustment",
   "damage",
   "return",
+  "return_to_supplier",
   "reserve",
   "release",
 ]);
@@ -4563,6 +4488,54 @@ const CreateDamageRecordRequestRequest = z
 const CreateDamageRecordResponse = z
   .object({ status: z.string(), message: z.string() })
   .passthrough();
+const InvoiceType = z
+  .object({
+    id: z.number().int(),
+    name: z.string().max(100),
+    code: z
+      .string()
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    pricing_policy: PricingPolicy,
+    revenue_account: ChartOfAccounts,
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PaginatedInvoiceTypeList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(InvoiceType),
+  })
+  .passthrough();
+const InvoiceTypeRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    code: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    pricing_policy_id: z.number().int(),
+    revenue_account_id: z.number().int(),
+    is_active: z.boolean().optional(),
+  })
+  .passthrough();
+const PatchedInvoiceTypeRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    code: z
+      .string()
+      .min(1)
+      .max(50)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    pricing_policy_id: z.number().int(),
+    revenue_account_id: z.number().int(),
+    is_active: z.boolean(),
+  })
+  .partial()
+  .passthrough();
 const InvoiceItem = z
   .object({
     id: z.number().int(),
@@ -4576,7 +4549,7 @@ const InvoiceItem = z
     invoice: z.number().int(),
   })
   .passthrough();
-const InvoiceTypeEnum = z.enum([
+const InvoiceTypeCodeEnum = z.enum([
   "purchase",
   "sale",
   "return_purchase",
@@ -4593,6 +4566,8 @@ const Invoice = z
   .object({
     id: z.number().int(),
     items: z.array(InvoiceItem),
+    invoice_type_details: InvoiceType,
+    insurance_details: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -4612,12 +4587,23 @@ const Invoice = z
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
     invoice_number: z.string(),
-    invoice_type: InvoiceTypeEnum.optional(),
+    invoice_type_code: InvoiceTypeCodeEnum.optional(),
+    pricing_policy_snapshot: z.unknown(),
+    tax_snapshot: z.unknown(),
+    currency: z.string().max(3).optional(),
+    exchange_rate: z
+      .string()
+      .regex(/^-?\d{0,4}(?:\.\d{0,6})?$/)
+      .optional(),
+    total_amount_base: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    total_amount_foreign: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     due_date: z.string().nullish(),
     status: InvoiceStatusEnum,
     notes: z.string().nullish(),
+    confirmed_at: z.string().datetime({ offset: true }).nullable(),
     branch: z.number().int().nullish(),
     customer: z.number().int(),
+    invoice_type: z.number().int().nullish(),
     created_by: z.number().int().nullable(),
     order: z.number().int().nullish(),
   })
@@ -4654,11 +4640,17 @@ const InvoiceRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
-    invoice_type: InvoiceTypeEnum.optional(),
+    invoice_type_code: InvoiceTypeCodeEnum.optional(),
+    currency: z.string().min(1).max(3).optional(),
+    exchange_rate: z
+      .string()
+      .regex(/^-?\d{0,4}(?:\.\d{0,6})?$/)
+      .optional(),
     due_date: z.string().nullish(),
     notes: z.string().nullish(),
     branch: z.number().int().nullish(),
     customer: z.number().int(),
+    invoice_type: z.number().int().nullish(),
     order: z.number().int().nullish(),
   })
   .passthrough();
@@ -4669,11 +4661,14 @@ const PatchedInvoiceRequest = z
     tax_rate: z.string().regex(/^-?\d{0,1}(?:\.\d{0,4})?$/),
     discount_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     paid_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
-    invoice_type: InvoiceTypeEnum,
+    invoice_type_code: InvoiceTypeCodeEnum,
+    currency: z.string().min(1).max(3),
+    exchange_rate: z.string().regex(/^-?\d{0,4}(?:\.\d{0,6})?$/),
     due_date: z.string().nullable(),
     notes: z.string().nullable(),
     branch: z.number().int().nullable(),
     customer: z.number().int(),
+    invoice_type: z.number().int().nullable(),
     order: z.number().int().nullable(),
   })
   .partial()
@@ -4737,6 +4732,7 @@ const Order = z
     items: z.array(OrderItem),
     remaining_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     payment_method_display: z.string(),
+    insurance_details: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -4924,6 +4920,7 @@ const PaymentMethod = z
       .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .optional(),
     is_installment: z.boolean().optional(),
+    gl_account: z.number().int().nullish(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
   })
@@ -4952,6 +4949,7 @@ const PaymentMethodRequest = z
       .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .optional(),
     is_installment: z.boolean().optional(),
+    gl_account: z.number().int().nullish(),
   })
   .passthrough();
 const PatchedPaymentMethodRequest = z
@@ -4967,6 +4965,7 @@ const PatchedPaymentMethodRequest = z
     icon: z.instanceof(File).nullable(),
     provider_fees_percent: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
     is_installment: z.boolean(),
+    gl_account: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
@@ -5039,6 +5038,15 @@ const PaymentCreate = z
     notes: z.string().optional(),
   })
   .passthrough();
+const PaymentAllocation = z
+  .object({
+    id: z.number().int(),
+    invoice: z.number().int(),
+    invoice_number: z.string(),
+    invoice_item: z.number().int().nullish(),
+    amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+  })
+  .passthrough();
 const Payment = z
   .object({
     id: z.number().int(),
@@ -5047,13 +5055,27 @@ const Payment = z
     order: z.number().int().nullish(),
     order_number: z.string(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    amount_base: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    amount_foreign: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     currency: z.string().max(3).optional(),
+    exchange_rate: z
+      .string()
+      .regex(/^-?\d{0,4}(?:\.\d{0,6})?$/)
+      .optional(),
     payment_method: z.number().int().nullish(),
     payment_method_display: z.string(),
     payment_method_name_en: z.string(),
     payment_method_code: z.string(),
     status: StatusB5aEnum.optional(),
     status_display: z.string(),
+    payer_content_type: z.number().int().nullish(),
+    payer_object_id: z.number().int().gte(0).lte(2147483647).nullish(),
     partner: z.number().int().nullish(),
     partner_name: z.string(),
     gateway_transaction_id: z.string(),
@@ -5080,6 +5102,8 @@ const Payment = z
       .optional(),
     notes: z.string().optional(),
     installments: z.string(),
+    allocations: z.array(PaymentAllocation),
+    created_by: z.number().int().nullable(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
   })
@@ -5089,9 +5113,23 @@ const PaymentRequest = z
     invoice: z.number().int().nullish(),
     order: z.number().int().nullish(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    amount_base: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    amount_foreign: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     currency: z.string().min(1).max(3).optional(),
+    exchange_rate: z
+      .string()
+      .regex(/^-?\d{0,4}(?:\.\d{0,6})?$/)
+      .optional(),
     payment_method: z.number().int().nullish(),
     status: StatusB5aEnum.optional(),
+    payer_content_type: z.number().int().nullish(),
+    payer_object_id: z.number().int().gte(0).lte(2147483647).nullish(),
     partner: z.number().int().nullish(),
     gateway_reference: z.string().max(100).optional(),
     is_installment: z.boolean().optional(),
@@ -5120,9 +5158,14 @@ const PatchedPaymentRequest = z
     invoice: z.number().int().nullable(),
     order: z.number().int().nullable(),
     amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    amount_base: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    amount_foreign: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     currency: z.string().min(1).max(3),
+    exchange_rate: z.string().regex(/^-?\d{0,4}(?:\.\d{0,6})?$/),
     payment_method: z.number().int().nullable(),
     status: StatusB5aEnum,
+    payer_content_type: z.number().int().nullable(),
+    payer_object_id: z.number().int().gte(0).lte(2147483647).nullable(),
     partner: z.number().int().nullable(),
     gateway_reference: z.string().max(100),
     is_installment: z.boolean(),
@@ -6398,15 +6441,6 @@ export const schemas = {
   PaginatedPartnerBranchList,
   PartnerBranchRequest,
   PatchedPartnerBranchRequest,
-  PartnerPriceListItem,
-  PaginatedPartnerPriceListItemList,
-  PartnerPriceListItemRequest,
-  PatchedPartnerPriceListItemRequest,
-  PriceTypeEnum,
-  PartnerPriceList,
-  PaginatedPartnerPriceListList,
-  PartnerPriceListRequest,
-  PatchedPartnerPriceListRequest,
   PartnerSettlementStatusEnum,
   PartnerSettlement,
   PaginatedPartnerSettlementList,
@@ -6543,6 +6577,10 @@ export const schemas = {
   OrderFulfillmentCheckRequestRequest,
   VariantFulfillmentPlan,
   OrderFulfillmentCheckResponse,
+  PricingPolicy,
+  PaginatedPricingPolicyList,
+  PricingPolicyRequest,
+  PatchedPricingPolicyRequest,
   ProductImage,
   PaginatedProductImageList,
   ProductImageRequest,
@@ -6621,8 +6659,12 @@ export const schemas = {
   DamageItemRequestRequest,
   CreateDamageRecordRequestRequest,
   CreateDamageRecordResponse,
+  InvoiceType,
+  PaginatedInvoiceTypeList,
+  InvoiceTypeRequest,
+  PatchedInvoiceTypeRequest,
   InvoiceItem,
-  InvoiceTypeEnum,
+  InvoiceTypeCodeEnum,
   InvoiceStatusEnum,
   Invoice,
   PaginatedInvoiceList,
@@ -6659,6 +6701,7 @@ export const schemas = {
   PaginatedPaymentListList,
   PaymentCreateRequest,
   PaymentCreate,
+  PaymentAllocation,
   Payment,
   PaymentRequest,
   PatchedPaymentRequest,
@@ -10728,282 +10771,6 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/crm/partner-price-list-items/",
-    alias: "crm_partner_price_list_items_list",
-    description: `عناصر قوائم الأسعار`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "category",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "price_list",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "product",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedPartnerPriceListItemList,
-  },
-  {
-    method: "post",
-    path: "/api/crm/partner-price-list-items/",
-    alias: "crm_partner_price_list_items_create",
-    description: `عناصر قوائم الأسعار`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PartnerPriceListItemRequest,
-      },
-    ],
-    response: PartnerPriceListItem,
-  },
-  {
-    method: "get",
-    path: "/api/crm/partner-price-list-items/:id/",
-    alias: "crm_partner_price_list_items_retrieve",
-    description: `عناصر قوائم الأسعار`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PartnerPriceListItem,
-  },
-  {
-    method: "put",
-    path: "/api/crm/partner-price-list-items/:id/",
-    alias: "crm_partner_price_list_items_update",
-    description: `عناصر قوائم الأسعار`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PartnerPriceListItemRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PartnerPriceListItem,
-  },
-  {
-    method: "patch",
-    path: "/api/crm/partner-price-list-items/:id/",
-    alias: "crm_partner_price_list_items_partial_update",
-    description: `عناصر قوائم الأسعار`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedPartnerPriceListItemRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PartnerPriceListItem,
-  },
-  {
-    method: "delete",
-    path: "/api/crm/partner-price-list-items/:id/",
-    alias: "crm_partner_price_list_items_destroy",
-    description: `عناصر قوائم الأسعار`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/crm/partner-price-list-items/filter_options/",
-    alias: "crm_partner_price_list_items_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: PartnerPriceListItem,
-  },
-  {
-    method: "get",
-    path: "/api/crm/partner-price-lists/",
-    alias: "crm_partner_price_lists_list",
-    description: `قوائم أسعار الشركاء`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "partner",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "price_type",
-        type: "Query",
-        schema: z.enum(["discount", "fixed", "markup"]).optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedPartnerPriceListList,
-  },
-  {
-    method: "post",
-    path: "/api/crm/partner-price-lists/",
-    alias: "crm_partner_price_lists_create",
-    description: `قوائم أسعار الشركاء`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PartnerPriceListRequest,
-      },
-    ],
-    response: PartnerPriceList,
-  },
-  {
-    method: "get",
-    path: "/api/crm/partner-price-lists/:id/",
-    alias: "crm_partner_price_lists_retrieve",
-    description: `قوائم أسعار الشركاء`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PartnerPriceList,
-  },
-  {
-    method: "put",
-    path: "/api/crm/partner-price-lists/:id/",
-    alias: "crm_partner_price_lists_update",
-    description: `قوائم أسعار الشركاء`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PartnerPriceListRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PartnerPriceList,
-  },
-  {
-    method: "patch",
-    path: "/api/crm/partner-price-lists/:id/",
-    alias: "crm_partner_price_lists_partial_update",
-    description: `قوائم أسعار الشركاء`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedPartnerPriceListRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: PartnerPriceList,
-  },
-  {
-    method: "delete",
-    path: "/api/crm/partner-price-lists/:id/",
-    alias: "crm_partner_price_lists_destroy",
-    description: `قوائم أسعار الشركاء`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/crm/partner-price-lists/filter_options/",
-    alias: "crm_partner_price_lists_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: PartnerPriceList,
-  },
-  {
-    method: "get",
     path: "/api/crm/partner-settlements/",
     alias: "crm_partner_settlements_list",
     description: `التسويات المالية`,
@@ -14298,6 +14065,11 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
         schema: z.number().int().optional(),
       },
       {
+        name: "pricing_policy",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "priority",
         type: "Query",
         schema: z.string().optional(),
@@ -14980,6 +14752,105 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
   },
   {
     method: "get",
+    path: "/api/products/pricing-policies/",
+    alias: "products_pricing_policies_list",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPricingPolicyList,
+  },
+  {
+    method: "post",
+    path: "/api/products/pricing-policies/",
+    alias: "products_pricing_policies_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PricingPolicyRequest,
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "get",
+    path: "/api/products/pricing-policies/:id/",
+    alias: "products_pricing_policies_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "put",
+    path: "/api/products/pricing-policies/:id/",
+    alias: "products_pricing_policies_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PricingPolicyRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "patch",
+    path: "/api/products/pricing-policies/:id/",
+    alias: "products_pricing_policies_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPricingPolicyRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "delete",
+    path: "/api/products/pricing-policies/:id/",
+    alias: "products_pricing_policies_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
     path: "/api/products/product-images/",
     alias: "products_product_images_list",
     description: `ViewSet for managing Product Images.`,
@@ -15170,6 +15041,11 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
       },
       {
         name: "main_group",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "manufacturer",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -15970,6 +15846,7 @@ Endpoints:
             "release",
             "reserve",
             "return",
+            "return_to_supplier",
             "sale",
             "transfer_in",
             "transfer_out",
@@ -16149,6 +16026,7 @@ Endpoints:
             "release",
             "reserve",
             "return",
+            "return_to_supplier",
             "sale",
             "transfer_in",
             "transfer_out",
@@ -17861,6 +17739,140 @@ Custom logic for creation to support nested pricing/attributes.`,
   },
   {
     method: "get",
+    path: "/api/sales/invoice-types/",
+    alias: "sales_invoice_types_list",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInvoiceTypeList,
+  },
+  {
+    method: "post",
+    path: "/api/sales/invoice-types/",
+    alias: "sales_invoice_types_create",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InvoiceTypeRequest,
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "get",
+    path: "/api/sales/invoice-types/:id/",
+    alias: "sales_invoice_types_retrieve",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "put",
+    path: "/api/sales/invoice-types/:id/",
+    alias: "sales_invoice_types_update",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InvoiceTypeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "patch",
+    path: "/api/sales/invoice-types/:id/",
+    alias: "sales_invoice_types_partial_update",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInvoiceTypeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "delete",
+    path: "/api/sales/invoice-types/:id/",
+    alias: "sales_invoice_types_destroy",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/sales/invoice-types/filter_options/",
+    alias: "sales_invoice_types_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: InvoiceType,
+  },
+  {
+    method: "get",
     path: "/api/sales/invoices/",
     alias: "sales_invoices_list",
     description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
@@ -17873,12 +17885,22 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "confirmed_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "created_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -17898,6 +17920,11 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "exchange_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
         name: "id",
         type: "Query",
         schema: z.string().optional(),
@@ -17909,6 +17936,11 @@ Users only see data from their assigned branches.`,
       },
       {
         name: "invoice_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type_code",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -17953,6 +17985,11 @@ Users only see data from their assigned branches.`,
         schema: z.number().optional(),
       },
       {
+        name: "pricing_policy_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
@@ -17978,7 +18015,22 @@ Users only see data from their assigned branches.`,
         schema: z.number().optional(),
       },
       {
+        name: "tax_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_base",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_foreign",
         type: "Query",
         schema: z.number().optional(),
       },
@@ -18124,12 +18176,22 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "confirmed_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "created_at",
         type: "Query",
         schema: z.string().optional(),
       },
       {
         name: "created_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18149,6 +18211,11 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "exchange_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
         name: "id",
         type: "Query",
         schema: z.string().optional(),
@@ -18160,6 +18227,11 @@ Users only see data from their assigned branches.`,
       },
       {
         name: "invoice_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type_code",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18209,6 +18281,11 @@ Users only see data from their assigned branches.`,
         schema: z.number().optional(),
       },
       {
+        name: "pricing_policy_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
@@ -18234,7 +18311,22 @@ Users only see data from their assigned branches.`,
         schema: z.number().optional(),
       },
       {
+        name: "tax_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_base",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_foreign",
         type: "Query",
         schema: z.number().optional(),
       },

@@ -87,6 +87,8 @@ export const ENTITY_TRANSLATION_MAP: Record<string, string> = {
     // Sales & Orders
     "orders": "forms/sales",
     "sales_installments": "forms/sales",
+    "invoice-types": "forms/sales",
+    "pricing-policies": "forms/products",
 
     // SaaS Module
     "clients": "forms/saas",

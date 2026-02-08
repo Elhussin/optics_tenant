@@ -34,7 +34,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
             onClick={onCancel}
             className={cn(
               "fixed inset-0 z-50",
-              "bg-black/60 backdrop-blur-sm",
+              "bg-black/50 backdrop-blur-sm",
               "flex items-center justify-center p-4"
             )}
           >
@@ -50,7 +50,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               onClick={(e) => e.stopPropagation()}
               className={cn(
                 "relative w-full max-w-md",
-                "bg-background/95 backdrop-blur-xl",
+                "bg-surface/95 backdrop-blur-xl",
                 "border-2 border-primary/20",
                 "rounded-3xl shadow-2xl",
                 "p-8"

@@ -5,7 +5,14 @@ import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { cn } from "@/src/shared/utils/cn";
 
 export const OtherEyeTestFailed = (props: OtherFailedProps) => {
-  const { register, customers, setShowModal, errors, isView } = props;
+  const {
+    register,
+    customers,
+    setShowModal,
+    errors,
+    isView,
+    disableCustomerSelect,
+  } = props;
 
   return (
     <div className="relative group">
@@ -42,14 +49,16 @@ export const OtherEyeTestFailed = (props: OtherFailedProps) => {
                     {...register("customer", {
                       required: "Customer is required",
                     })}
-                    disabled={isView}
+                    disabled={isView || disableCustomerSelect}
                     className={cn(
                       "w-full appearance-none rounded-xl px-4 py-3 text-sm outline-none transition-all cursor-pointer",
                       "border-2 bg-white dark:bg-gray-800",
                       "focus:ring-2 focus:ring-offset-1",
                       errors?.customer
                         ? "border-danger/50 focus:border-danger focus:ring-danger/20"
-                        : "border-border-main focus:border-primary focus:ring-primary/20"
+                        : "border-border-main focus:border-primary focus:ring-primary/20",
+                      (isView || disableCustomerSelect) &&
+                        "bg-gray-100 dark:bg-gray-700 opacity-70 cursor-not-allowed",
                     )}
                   >
                     <option value="" title="Select Customer">
@@ -86,7 +95,7 @@ export const OtherEyeTestFailed = (props: OtherFailedProps) => {
                   </div>
                 </div>
 
-                {!isView && (
+                {!isView && !disableCustomerSelect && (
                   <button
                     type="button"
                     onClick={() => setShowModal(true)}
@@ -121,7 +130,7 @@ export const OtherEyeTestFailed = (props: OtherFailedProps) => {
                   "focus:ring-2 focus:ring-offset-1",
                   "border-border-main focus:border-primary focus:ring-primary/20",
                   "placeholder:text-secondary/50",
-                  "min-h-[100px]"
+                  "min-h-[100px]",
                 )}
                 rows={3}
                 placeholder="Add any additional notes here..."

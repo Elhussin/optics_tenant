@@ -2,7 +2,7 @@
   "orders": {
     "title": "Orders",
     "description": "Manage orders and payments",
-    "create": "New Order",
+
     "refresh": "Refresh",
     "totalCount": "Total",
     "currency": "SAR",
@@ -13,6 +13,28 @@
       "apply": "Apply",
       "reset": "Reset"
     },
+    "steps": {
+      "customerAndPrescription": "Customer & Prescription",
+      "products": "Products",
+      "payment": "Payment"
+    },
+    "customer": {
+      "title": "Customer Selection",
+      "searchPlaceholder": "Search by name or phone...",
+      "select": "Select Customer",
+      "selected": "Selected Customer",
+      "change": "Change",
+      "noResults": "No results found",
+      "registerNew": "Register New Customer",
+      "note": "Branch and Sales Person will be set automatically based on login"
+    },
+    "prescription": {
+      "title": "Prescriptions",
+      "new": "New Test",
+      "previous": "Previous Tests",
+      "noPrescriptions": "No previous tests found for this customer",
+      "skipNote": "Note: You can skip this step if no prescription is needed"
+    },
     "table": {
       "orderNumber": "Order #",
       "customer": "Customer",
@@ -21,11 +43,6 @@
       "date": "Date",
       "paymentStatus": "Payment Status",
       "actions": "Actions"
-    },
-    "actions": {
-      "view": "View",
-      "edit": "Edit",
-      "cancel": "Cancel"
     },
     "dialogs": {
       "cancelTitle": "Cancel order?",
@@ -47,9 +64,38 @@
       "refunded": "Refunded",
       "disputed": "Disputed"
     },
+    "validation": {
+      "customerRequired": "Please select a customer",
+      "itemsRequired": "Please add at least one item"
+    },
+    "summary": {
+      "title": "Order Summary",
+      "customer": "Customer:",
+      "itemsCount": "Items Count:",
+      "subtotal": "Subtotal:",
+      "discount": "Discount:",
+      "tax": "Tax",
+      "total": "Total:"
+    },
+    "create": {
+      "title": "New Order",
+      "description": "Enter order details step by step",
+      "submitting": "Creating...",
+      "confirm": "Confirm Order"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "cancel": "Cancel",
+      "next": "Next",
+      "back": "Back"
+    },
     "toasts": {
+      "createSuccess": "Order created successfully",
+      "createError": "Failed to create order",
       "cancelSuccess": "Order cancelled successfully",
-      "cancelError": "Failed to cancel order"
+      "cancelError": "Failed to cancel order",
+      "unexpectedError": "Unexpected error occurred while creating order"
     },
     "empty": {
       "title": "No orders",

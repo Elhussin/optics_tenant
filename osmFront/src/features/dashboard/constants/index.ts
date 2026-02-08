@@ -474,6 +474,27 @@ export const dashboardLink = [
     icon: ShoppingCart,
   },
   {
+    href: "invoice-types",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
+    group: "Sales",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "pricing-policies",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
+    group: "Sales",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
+    href: "flexible-prices",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
+    group: "Sales",
+    isTenant: true,
+    icon: FileText,
+  },
+  {
     href: "invoices",
     roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
     group: "Sales",

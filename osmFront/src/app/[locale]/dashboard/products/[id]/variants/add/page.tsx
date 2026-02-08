@@ -7,7 +7,7 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useRouter } from "next/navigation";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 const AddVariant = React.lazy(
@@ -27,7 +27,7 @@ export default function AddVariantPage({ params }: PageProps) {
 
   // Fetch product to get variant_type and type
   const { query, isBusy } = useApiForm({
-    alias: featuresConfig["product"].retrieveAlias,
+    alias: formsConfig["product"].retrieveAlias,
     defaultValues: { id: numericId },
     enabled: !isNaN(numericId),
   });

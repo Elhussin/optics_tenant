@@ -25,11 +25,12 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../store/useOrderFormStore";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
-import {useUser} from "@/src/features/auth/hooks/UserContext";
+import { useUser } from "@/src/features/auth/hooks/UserContext";
+import { useTranslations } from "next-intl";
 
 // Step Components
-import { CustomerStep } from "./steps/CustomerStep";
-import { PrescriptionStep } from "./steps/PrescriptionStep";
+// Step Components
+import { CustomerAndPrescriptionStep } from "./steps/CustomerAndPrescriptionStep";
 import { ProductsStep } from "./steps/ProductsStep";
 import { PaymentStep } from "./steps/PaymentStep";
 
@@ -37,9 +38,11 @@ import { PaymentStep } from "./steps/PaymentStep";
 const StepIndicator = ({
   steps,
   currentStep,
+  t,
 }: {
   steps: { id: number; title: string; icon: React.ReactNode }[];
   currentStep: number;
+  t: any;
 }) => (
   <div className="flex items-center justify-center gap-2 mb-8">
     {steps.map((step, index) => (
@@ -55,7 +58,7 @@ const StepIndicator = ({
         >
           {step.icon}
           <span className="text-sm font-medium hidden md:inline">
-            {step.title}
+            {t(`steps.${step.title}`)}
           </span>
         </div>
         {index < steps.length - 1 && (
@@ -71,19 +74,19 @@ const StepIndicator = ({
 );
 
 const STEPS = [
-  { id: 1, title: "العميل", icon: <User size={18} /> },
-  { id: 2, title: "الوصفة", icon: <FileText size={18} /> },
-  { id: 3, title: "المنتجات", icon: <Package size={18} /> },
-  { id: 4, title: "الدفع", icon: <CreditCard size={18} /> },
+  { id: 1, title: "customerAndPrescription", icon: <User size={18} /> },
+  { id: 2, title: "products", icon: <Package size={18} /> },
+  { id: 3, title: "payment", icon: <CreditCard size={18} /> },
 ];
 
 export function CreateOrder() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations("orders");
 
   const router = useRouter();
   const store = useOrderFormStore();
-  const {user:currentUser} = useUser();
+  const { user: currentUser } = useUser();
 
   // // جلب بيانات المستخدم الحالي لتحديد الفرع ومندوب المبيعات تلقائياً
   // const { query: userQuery } = useApiForm({
@@ -104,14 +107,19 @@ export function CreateOrder() {
   const form = useApiForm({
     alias: "sales_orders_create",
     onSuccess: (data) => {
-      safeToast("تم إنشاء الطلب بنجاح", { type: "success" });
+      safeToast(t("toasts.createSuccess"), { type: "success" });
       store.reset();
       router.push(`/dashboard/orders/${data.id}`);
     },
     onError: (error) => {
-      safeToast(`فشل في إنشاء الطلب: ${error?.message || "خطأ غير معروف"}`, {
-        type: "error",
-      });
+      safeToast(
+        `${t("toasts.createError")}: ${
+          error?.message || t("toasts.unexpectedError")
+        }`,
+        {
+          type: "error",
+        },
+      );
     },
   });
 
@@ -130,7 +138,7 @@ export function CreateOrder() {
   );
 
   const handleNext = () => {
-    if (currentStep < 4) setCurrentStep((prev) => prev + 1);
+    if (currentStep < 3) setCurrentStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
@@ -139,14 +147,14 @@ export function CreateOrder() {
 
   const handleSubmit = async () => {
     if (!store.customerId) {
-      safeToast("يجب اختيار العميل", { type: "error" });
+      safeToast(t("validation.customerRequired"), { type: "error" });
       setCurrentStep(1);
       return;
     }
 
     if (store.items.length === 0) {
-      safeToast("يجب إضافة منتج واحد على الأقل", { type: "error" });
-      setCurrentStep(3);
+      safeToast(t("validation.itemsRequired"), { type: "error" });
+      setCurrentStep(2);
       return;
     }
 
@@ -188,7 +196,7 @@ export function CreateOrder() {
             ? errors.non_field_errors.join(", ")
             : String(errors.items || errors.non_field_errors);
           safeToast(errorMsg, { type: "error" });
-          setCurrentStep(3); // الرجوع لخطوة المنتجات
+          setCurrentStep(2); // الرجوع لخطوة المنتجات
         }
         // إذا كان الخطأ في العميل
         else if (errors.customer) {
@@ -205,10 +213,12 @@ export function CreateOrder() {
           errors.payment_method
         ) {
           const errorMsg = String(
-            errors.discount_amount || errors.paid_amount || errors.payment_method,
+            errors.discount_amount ||
+              errors.paid_amount ||
+              errors.payment_method,
           );
           safeToast(errorMsg, { type: "error" });
-          setCurrentStep(4);
+          setCurrentStep(3);
         }
         // أخطاء عامة
         else if (typeof errors === "object") {
@@ -222,7 +232,7 @@ export function CreateOrder() {
           safeToast(String(errors), { type: "error" });
         }
       } else {
-        safeToast(error?.message || "حدث خطأ غير متوقع أثناء إنشاء الطلب", {
+        safeToast(error?.message || t("toasts.unexpectedError"), {
           type: "error",
         });
       }
@@ -236,9 +246,7 @@ export function CreateOrder() {
       case 1:
         return canProceedToStep2;
       case 2:
-        return canProceedToStep3;
-      case 3:
-        return canProceedToStep4;
+        return canProceedToStep4; // Step 3 logic (Products -> Payment)
       default:
         return true;
     }
@@ -252,34 +260,32 @@ export function CreateOrder() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-blue-600 text-white mb-4 shadow-lg shadow-primary/30">
             <ShoppingCart className="w-8 h-8" />
           </div>
-          <h1 className="text-3xl font-bold text-main">إنشاء طلب جديد</h1>
-          <p className="text-secondary mt-2">أدخل بيانات الطلب خطوة بخطوة</p>
+          <h1 className="text-3xl font-bold text-main">{t("create.title")}</h1>
+          <p className="text-secondary mt-2">{t("create.description")}</p>
         </div>
 
         {/* Step Indicator */}
-        <StepIndicator steps={STEPS} currentStep={currentStep} />
+        <StepIndicator steps={STEPS} currentStep={currentStep} t={t} />
 
         {/* Form Card */}
         <Card className="shadow-xl border-0 bg-elevated">
           <CardHeader>
             <CardTitle className="text-xl">
-              {STEPS[currentStep - 1].title}
+              {t(`steps.${STEPS[currentStep - 1].title}`)}
             </CardTitle>
             <CardDescription>
-              {currentStep === 1 && "اختر العميل المطلوب"}
-              {currentStep === 2 && "اختر الوصفة الطبية أو أدخل وصفة جديدة"}
-              {currentStep === 3 && "أضف المنتجات وحدد الكميات والأسعار"}
-              {currentStep === 4 && "حدد نوع الطلب وطريقة الدفع والخصم"}
+              {currentStep === 1 && t("customer.title")}
+              {currentStep === 2 && t("filters.paymentStatus")}
+              {currentStep === 3 && t("table.total")}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
             <Form {...form}>
               {/* Step Content */}
-              {currentStep === 1 && <CustomerStep />}
-              {currentStep === 2 && <PrescriptionStep />}
-              {currentStep === 3 && <ProductsStep />}
-              {currentStep === 4 && <PaymentStep />}
+              {currentStep === 1 && <CustomerAndPrescriptionStep />}
+              {currentStep === 2 && <ProductsStep />}
+              {currentStep === 3 && <PaymentStep />}
 
               {/* Navigation */}
               <div className="flex justify-between mt-8 pt-6 border-t">
@@ -290,17 +296,17 @@ export function CreateOrder() {
                   disabled={currentStep === 1}
                 >
                   <ArrowRight className="w-4 h-4 ml-2" />
-                  السابق
+                  {t("back")}
                 </Button>
 
-                {currentStep < 4 ? (
+                {currentStep < 3 ? (
                   <Button
                     type="button"
                     onClick={handleNext}
                     disabled={!canProceed()}
                     className="bg-primary hover:bg-primary/90"
                   >
-                    التالي
+                    {t("next")}
                     <ArrowLeft className="w-4 h-4 mr-2" />
                   </Button>
                 ) : (
@@ -313,12 +319,12 @@ export function CreateOrder() {
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                        جاري الإنشاء...
+                        {t("create.submitting")}
                       </>
                     ) : (
                       <>
                         <Check className="w-4 h-4 ml-2" />
-                        تأكيد الطلب
+                        {t("create.confirm")}
                       </>
                     )}
                   </Button>
@@ -326,8 +332,6 @@ export function CreateOrder() {
               </div>
             </Form>
           </CardContent>
-
-          
         </Card>
 
         {/* Order Summary (sticky on desktop) */}
@@ -342,46 +346,53 @@ export function CreateOrder() {
 // Order Summary Component
 function OrderSummary() {
   const store = useOrderFormStore();
+  const t = useTranslations("orders");
 
   return (
     <Card className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg flex items-center gap-2">
           <ShoppingCart size={20} />
-          ملخص الطلب
+          {t("summary.title")}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {store.customerName && (
           <div className="flex justify-between text-sm">
-            <span className="text-secondary">العميل:</span>
+            <span className="text-secondary">{t("summary.customer")}</span>
             <span className="font-medium">{store.customerName}</span>
           </div>
         )}
         <div className="flex justify-between text-sm">
-          <span className="text-secondary">عدد المنتجات:</span>
+          <span className="text-secondary">{t("summary.itemsCount")}</span>
           <span className="font-medium">{store.items.length}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-secondary">المجموع الفرعي:</span>
-          <span className="font-medium">{store.subtotal.toFixed(2)} ر.س</span>
+          <span className="text-secondary">{t("summary.subtotal")}</span>
+          <span className="font-medium">
+            {store.subtotal.toFixed(2)} {t("currency")}
+          </span>
         </div>
         {store.discountAmount > 0 && (
           <div className="flex justify-between text-sm text-green-600">
-            <span>الخصم:</span>
-            <span>-{store.discountAmount.toFixed(2)} ر.س</span>
+            <span>{t("summary.discount")}</span>
+            <span>
+              -{store.discountAmount.toFixed(2)} {t("currency")}
+            </span>
           </div>
         )}
         <div className="flex justify-between text-sm">
           <span className="text-secondary">
-            الضريبة ({(store.taxRate * 100).toFixed(0)}%):
+            {t("summary.tax")} ({(store.taxRate * 100).toFixed(0)}%):
           </span>
-          <span className="font-medium">{store.taxAmount.toFixed(2)} ر.س</span>
+          <span className="font-medium">
+            {store.taxAmount.toFixed(2)} {t("currency")}
+          </span>
         </div>
         <div className="flex justify-between text-lg font-bold border-t pt-3">
-          <span>الإجمالي:</span>
+          <span>{t("summary.total")}</span>
           <span className="text-primary">
-            {store.totalAmount.toFixed(2)} ر.س
+            {store.totalAmount.toFixed(2)} {t("currency")}
           </span>
         </div>
       </CardContent>

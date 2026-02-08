@@ -652,6 +652,16 @@ class FlexiblePrice(BaseModel):
     # Priority Order (to determine which price to use when multiple options exist)
     priority = models.PositiveIntegerField(default=0)
 
+    # Link to Pricing Policy
+    pricing_policy = models.ForeignKey(
+        "products.PricingPolicy",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='flexible_prices',
+        verbose_name=_("Pricing Policy")
+    )
+
     # Notes
     notes = models.TextField(blank=True)
 

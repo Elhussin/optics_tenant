@@ -21,8 +21,10 @@ from apps.accounting.models.accounting_models import (
     RecurringTransaction,
 )
 
+# Import new ERP Tax Rate
+from .tax import TaxRate
+
 __all__ = [
-    # Accounting models
     'FinancialPeriod',
     'Account',
     'Tax',
@@ -30,9 +32,8 @@ __all__ = [
     'Transaction',
     'JournalEntry',
     'RecurringTransaction',
-
-    # Chart of Accounts models
     'ChartOfAccounts',
     'GeneralJournal',
     'JournalLine',
+    'TaxRate',
 ]

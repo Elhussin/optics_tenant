@@ -22,8 +22,6 @@ from apps.crm.views.customer import (
 from apps.crm.views.partner import (
     PartnerViewSet,
     PartnerBranchViewSet,
-    PartnerPriceListViewSet,
-    PartnerPriceListItemViewSet,
     CustomerPartnerLinkViewSet,
     InsuranceClaimViewSet,
     ClaimItemViewSet,
@@ -48,8 +46,6 @@ __all__ = [
     # Partner views
     'PartnerViewSet',
     'PartnerBranchViewSet',
-    'PartnerPriceListViewSet',
-    'PartnerPriceListItemViewSet',
     'CustomerPartnerLinkViewSet',
     'InsuranceClaimViewSet',
     'ClaimItemViewSet',

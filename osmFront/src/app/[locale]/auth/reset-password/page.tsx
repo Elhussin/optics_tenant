@@ -19,7 +19,7 @@ import { Link } from "@/src/app/i18n/navigation";
 import { cn } from "@/src/shared/utils/cn";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 export default function ResetPasswordPage() {
   const searchParams = useSearchParams();
   const uid = searchParams.get("uid") || "";
@@ -28,7 +28,7 @@ export default function ResetPasswordPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   const formRequest = useApiForm({
-    alias: featuresConfig["password-reset-confirm"].createAlias,
+    alias: formsConfig["password-reset-confirm"].createAlias,
     defaultValues: { uid, token, new_password: "" },
     onSuccess: () => {
       safeToast(t("SuccessMessage"), { type: "success" });

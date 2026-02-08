@@ -130,7 +130,7 @@ export const relationshipConfigs: RelationshipConfig = {
     searchField: 'first_name',
     entityName: 'crm-customers',
   },
-  
+
   customer_groups: {
     labelField: 'name',
     valueField: 'id',
@@ -250,6 +250,48 @@ export const relationshipConfigs: RelationshipConfig = {
     valueField: 'id',
     searchField: 'name',
     entityName: 'flexible-prices',
+  },
+  pricing_policy: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'pricing-policies',
+  },
+  revenue_account: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'code',
+    entityName: 'chart-of-accounts',
+  },
+  pricing_policy_id: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'pricing-policies',
+  },
+  revenue_account_id: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'code',
+    entityName: 'chart-of-accounts',
+  },
+  variant: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'sku',
+    entityName: 'product-variants',
+  },
+  customer_group_id: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'crm-customer-groups',
+  },
+  branch_id: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'branches',
   },
   // Keep backwards compatibility or manual _id fields if necessary:
   client_id: {

@@ -19,7 +19,7 @@ import { RenderFields } from "@/src/shared/components/field/RenderFields";
 import { veriantConfig } from "../../constants/config";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useTranslations } from "next-intl";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 interface AddVariantProps {
   productId: number;
   variantType: string;
@@ -44,8 +44,8 @@ export function AddVariant({
   console.log("variantType", initialData);
   const form = useApiForm({
     alias: variantId
-      ? featuresConfig["product-variants"].partialUpdateAlias
-      : featuresConfig["product-variants"].createAlias,
+      ? formsConfig["product-variants"].partialUpdateAlias
+      : formsConfig["product-variants"].createAlias,
     defaultValues: initialData || {
       product: productId,
     },

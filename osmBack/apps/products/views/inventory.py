@@ -57,6 +57,19 @@ class StocksViewSet(InventoryBaseViewSet):
     ordering_fields = ['quantity_in_stock', 'created_at', 'last_restocked']
     ordering = ['-created_at']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        status_param = self.request.query_params.get('status')
+
+        if status_param == 'in_stock':
+            queryset = queryset.in_stock()
+        elif status_param == 'low':
+            queryset = queryset.low_stock()
+        elif status_param == 'out':
+            queryset = queryset.out_of_stock()
+
+        return queryset
+
     @extend_schema(responses=StockSerializer(many=True))
     @action(detail=False, methods=['get'])
     def low_stock(self, request):

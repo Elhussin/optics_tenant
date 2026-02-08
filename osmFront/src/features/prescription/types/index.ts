@@ -30,6 +30,8 @@ export interface PrescriptionFormProps extends formRequestProps {
    customerId?: number | string; // تعيين العميل من الخارج
    onSaveSuccess?: (data: any) => void; // callback بعد الحفظ الناجح
    compact?: boolean; // عرض مضغوط بدون العناوين الكبيرة
+   disableCustomerSelect?: boolean;
+   hideBackButton?: boolean;
 }
 
 export interface OtherFailedProps {

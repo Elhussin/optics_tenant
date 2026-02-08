@@ -20,10 +20,17 @@ import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import {
-  formsConfig,
-  featuresConfig,
+  formsConfig
 } from "@/src/shared/constants/entityConfig";
 import { ProductVariantSelect } from "../../shared";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/src/shared/components/shadcn/ui/dialog";
 
 interface StockMovementItem {
   variantId: number;
@@ -88,6 +95,13 @@ const MOVEMENT_TYPES = [
     color: "text-amber-600",
     bg: "bg-amber-100",
   },
+  {
+    value: "return_to_supplier",
+    label: "إرجاع للمورد",
+    labelEn: "Return to Supplier",
+    color: "text-red-600",
+    bg: "bg-red-100",
+  },
 ];
 
 export function AddInventory() {
@@ -101,6 +115,7 @@ export function AddInventory() {
   const [globalNotes, setGlobalNotes] = useState("");
   const [items, setItems] = useState<StockMovementItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
   // Current item being added
   const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
@@ -136,7 +151,7 @@ export function AddInventory() {
     branch ? `stocks_branch_${branch}` : null,
     async () => {
       const response = await api.customRequest(
-        featuresConfig.stocks.listAlias!,
+        formsConfig.stocks.listAlias!,
         { branch },
       );
       return extractArrayData<Stock>(response);
@@ -145,17 +160,36 @@ export function AddInventory() {
   );
 
   const branches = useMemo(() => {
-    return (branchesData || []).filter(
-      (b: Branch) => b.branch_type === "store",
-    );
+    return branchesData || [];
   }, [branchesData]);
 
   const variants = variantsData || [];
   const stocks = stocksData || [];
 
-  const selectedBranchName = useMemo(() => {
-    return branches.find((b: Branch) => b.id === branch)?.name || "";
+  const selectedBranch = useMemo(() => {
+    return branches.find((b: Branch) => b.id === branch);
   }, [branches, branch]);
+
+  const selectedBranchName = selectedBranch?.name || "";
+
+  // Filter movement types based on branch type
+  const availableMovementTypes = useMemo(() => {
+    if (!selectedBranch) return MOVEMENT_TYPES;
+
+    // Only stores can create 'purchase' movements
+    if (selectedBranch.branch_type !== "store") {
+      return MOVEMENT_TYPES.filter((type) => type.value !== "purchase");
+    }
+
+    return MOVEMENT_TYPES;
+  }, [selectedBranch]);
+
+  // Reset movement type if current selection is invalid for new branch
+  React.useEffect(() => {
+    if (!availableMovementTypes.find((t) => t.value === movementType)) {
+      setMovementType(availableMovementTypes[0]?.value || "adjustment");
+    }
+  }, [availableMovementTypes, movementType]);
 
   const selectedVariantData = useMemo(() => {
     return variants.find((v: ProductVariant) => v.id === selectedVariant);
@@ -294,7 +328,7 @@ export function AddInventory() {
         safeToast(t("add.validation.successBatch", { count: successCount }), {
           type: "success",
         });
-        router.push("/dashboard/stock-management");
+        router.push("/dashboard/stock-management/movements");
       }
 
       if (failCount > 0) {
@@ -319,7 +353,7 @@ export function AddInventory() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-card rounded-2xl shadow-lg border border-main/10 overflow-hidden">
+        <div className="bg-surface rounded-2xl shadow-lg border border-main/10 overflow-hidden">
           {/* Order Info Section */}
           <div className="p-6 border-b border-main/10">
             <h2 className="text-lg font-semibold text-main mb-4 flex items-center gap-2">
@@ -359,7 +393,7 @@ export function AddInventory() {
                   className="w-full px-4 py-3 rounded-xl border border-main/20 bg-body text-main 
                     focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 >
-                  {MOVEMENT_TYPES.map((type) => (
+                  {availableMovementTypes.map((type) => (
                     <option key={type.value} value={type.value}>
                       {t(`add.movementTypes.${type.value}`) || type.labelEn}
                     </option>
@@ -445,7 +479,7 @@ export function AddInventory() {
                     min={movementType === "adjustment" ? undefined : "1"}
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value) || 0)}
-                    className="w-full px-4 py-3 rounded-xl border border-main/20 bg-card text-main 
+                    className="w-full px-4 py-3 rounded-xl border border-main/20 bg-surface text-main 
                     focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                   />
                 </div>
@@ -462,7 +496,7 @@ export function AddInventory() {
                       step="0.01"
                       value={unitCost}
                       onChange={(e) => setUnitCost(Number(e.target.value) || 0)}
-                      className="w-full px-4 py-3 rounded-xl border border-main/20 bg-card text-main 
+                      className="w-full px-4 py-3 rounded-xl border border-main/20 bg-surface text-main 
                       focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                     />
                   </div>
@@ -585,7 +619,7 @@ export function AddInventory() {
               {t("add.buttons.cancel") || "Cancel"}
             </Button>
             <Button
-              onClick={handleSubmit}
+              onClick={() => setShowConfirmDialog(true)}
               disabled={isSubmitting || items.length === 0}
               className="bg-green-600 hover:bg-green-700 gap-2"
             >
@@ -604,6 +638,45 @@ export function AddInventory() {
           </div>
         </div>
       </div>
+
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog} >
+        <DialogContent className="bg-surface">
+          <DialogHeader>
+            <DialogTitle>
+              {t("add.confirmation.title") || "Confirm Stock Movement"}
+            </DialogTitle>
+            <DialogDescription>
+              {t("add.confirmation.message") ||
+                "This action will direct update the stock levels. Are you sure?"}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
+            >
+              {t("add.buttons.cancel")}
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  {t("add.buttons.saving")}
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 mr-2" />
+                  {t("add.buttons.confirm") || "Confirm"}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { Pencil, Eye, FileText, Globe, Check, X } from "lucide-react";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { Pagination } from "@/src/shared/components/views/Pagination";
@@ -23,7 +23,7 @@ export const PagesList = () => {
   const { show } = useSearchButton();
   show();
 
-  const { filterAlias, listAlias } = featuresConfig["pages"];
+  const { filterAlias, listAlias } = formsConfig["pages"];
 
   const {
     data,

@@ -131,7 +131,7 @@ export function CustomerStep() {
       </div>
       {showModal && (
         <DynamicFormDialog
-          entity={"customers"}
+          entity={"crm-customers"}
           onClose={() => {
             setShowModal(false);
             query.refetch();

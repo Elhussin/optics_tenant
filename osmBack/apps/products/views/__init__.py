@@ -8,6 +8,7 @@ from .purchase import PurchaseOrderViewSet
 from .import_export import ProductImportView
 from .helper_views import VariantStockSummaryAPIView, NearestBranchAPIView, OrderFulfillmentCheckAPIView
 from .managers_views import ActiveBranchesView, MainBranchView, LowStockByBranchView, VariantTotalStockView
+from .pricing_policy import PricingPolicyViewSet
 
 __all__ = [
     "ProductViewSet", "ProductVariantViewSet", "CategoryViewSet",
@@ -20,5 +21,6 @@ __all__ = [
     "ProductImageViewSet",
     "FlexiblePriceViewSet", "ProductImportView",
     "VariantStockSummaryAPIView", "NearestBranchAPIView", "OrderFulfillmentCheckAPIView",
-    "ActiveBranchesView", "MainBranchView", "LowStockByBranchView", "VariantTotalStockView"
+    "ActiveBranchesView", "MainBranchView", "LowStockByBranchView", "VariantTotalStockView",
+    "PricingPolicyViewSet"
 ]

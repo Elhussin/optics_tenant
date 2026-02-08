@@ -161,7 +161,7 @@ export function PaymentStep() {
       )}
 
       {/* Payment Type & Order Type */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4">
         {/* Payment Type */}
         <div className="space-y-2">
           <Label className="text-base font-semibold flex items-center gap-2">
@@ -182,7 +182,7 @@ export function PaymentStep() {
                 "shadow-[0_0_0_0px_transparent]",
                 "focus:outline-none focus:border-primary",
                 "focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.2)]",
-                "hover:border-primary/50 hover:shadow-sm"
+                "hover:border-primary/50 hover:shadow-sm",
               )}
             >
               <SelectValue placeholder="اختر طريقة الدفع" />
@@ -195,51 +195,10 @@ export function PaymentStep() {
                   className={cn(
                     "cursor-pointer transition-colors bg-surface",
                     "focus:bg-primary/10 focus:text-primary",
-                    "data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary data-[state=checked]:font-semibold"
+                    "data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary data-[state=checked]:font-semibold",
                   )}
                 >
                   {method.name_ar || method.name_en || method.code}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Order Type */}
-        <div className="space-y-2">
-          <Label className="text-base font-semibold flex items-center gap-2">
-            <FileText size={18} />
-            نوع الطلب
-          </Label>
-          <Select
-            value={store.orderType}
-            onValueChange={(value) => store.setOrderType(value as any)}
-          >
-            <SelectTrigger
-              className={cn(
-                "w-full h-11 rounded-lg transition-all duration-300",
-                "bg-surface",
-                "border-2 border-primary/50",
-                "shadow-[0_0_0_0px_transparent]",
-                "focus:outline-none focus:border-primary",
-                "focus:shadow-[0_0_0_3px_hsl(var(--primary)/0.2)]",
-                "hover:border-primary/50 hover:shadow-sm"
-              )}
-            >
-              <SelectValue placeholder="اختر نوع الطلب" />
-            </SelectTrigger>
-            <SelectContent className="animate-fade-in-down border-2 border-primary/50">
-              {ORDER_TYPE_OPTIONS.map((option) => (
-                <SelectItem
-                  key={option.value}
-                  value={option.value}
-                  className={cn(
-                    "cursor-pointer transition-colors bg-surface",
-                    "focus:bg-primary/10 focus:text-primary",
-                    "data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary data-[state=checked]:font-semibold"
-                  )}
-                >
-                  {option.label}
                 </SelectItem>
               ))}
             </SelectContent>

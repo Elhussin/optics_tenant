@@ -55,6 +55,7 @@ export type MovementType =
     | 'adjustment'
     | 'damage'
     | 'return'
+    | 'return_to_supplier'
     | 'reserve'
     | 'release';
 

@@ -10,6 +10,8 @@ import {
   Unlock,
   Calendar,
   User,
+  Eye,
+  Edit2,
 } from "lucide-react";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -60,6 +62,7 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
       adjustment: <Package size={18} className="text-purple-600" />,
       damage: <AlertTriangle size={18} className="text-red-600" />,
       return: <RotateCcw size={18} className="text-green-600" />,
+      return_to_supplier: <TrendingDown size={18} className="text-red-500" />,
       reserve: <Lock size={18} className="text-amber-600" />,
       release: <Unlock size={18} className="text-green-600" />,
     };
@@ -81,6 +84,10 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
       },
       damage: { variant: "danger", label: t("movements.types.damage") },
       return: { variant: "success", label: t("movements.types.return") },
+      return_to_supplier: {
+        variant: "danger",
+        label: t("movements.types.return_to_supplier"),
+      },
       reserve: { variant: "warning", label: t("movements.types.reserve") },
       release: { variant: "success", label: t("movements.types.release") },
     };
@@ -156,6 +163,9 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
             </option>
             <option value="damage">{t("movements.types.damage")}</option>
             <option value="return">{t("movements.types.return")}</option>
+            <option value="return_to_supplier">
+              {t("movements.types.return_to_supplier")}
+            </option>
             <option value="reserve">{t("movements.types.reserve")}</option>
             <option value="release">{t("movements.types.release")}</option>
           </select>
@@ -186,6 +196,22 @@ export function StockMovementsSection({ stockId }: StockMovementsSectionProps) {
                     </div>
                   </div>
                   <div className="text-right">
+                    <div className="flex gap-2 justify-end mb-2">
+                      <a
+                        href={`/dashboard/stock-management/movements/${movement.id}`}
+                        className="p-1.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        title={t("movements.view")}
+                      >
+                        <Eye size={16} />
+                      </a>
+                      <a
+                        href={`/dashboard/stock-management/movements/${movement.id}/edit`}
+                        className="p-1.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                        title={t("movements.edit")}
+                      >
+                        <Edit2 size={16} />
+                      </a>
+                    </div>
                     <div className="text-2xl font-bold">
                       {formatQuantity(movement.quantity)}
                     </div>

@@ -1,3 +1,4 @@
+from apps.sales.serializers.invoice_type import InvoiceTypeSerializer
 
 
 from rest_framework import serializers
@@ -29,7 +30,14 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         exclude = ['is_deleted']
         read_only_fields = ['order_number', 'total_amount',
-                            'subtotal', 'tax_amount', 'confirmed_at', 'delivered_at']
+                            'subtotal', 'tax_amount', 'confirmed_at', 'delivered_at', 'insurance_details']
+
+    insurance_details = serializers.SerializerMethodField()
+
+    def get_insurance_details(self, obj):
+        if obj.order_type == 'insurance' and obj.partner:
+            return InsuranceDetailsSerializer(obj).data
+        return None
 
     def validate_paid_amount(self, value):
         """Validate paid amount is not negative"""
@@ -197,23 +205,37 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
 class InvoiceSerializer(serializers.ModelSerializer):
     items = InvoiceItemSerializer(many=True)
 
+    invoice_type_details = InvoiceTypeSerializer(
+        source='invoice_type', read_only=True)
+
+    # Dynamically inject insurance details
+    insurance_details = serializers.SerializerMethodField()
+
     class Meta:
         model = Invoice
         exclude = ['is_deleted']
         read_only_fields = [
             'invoice_number', 'total_amount', 'subtotal', 'tax_amount',
-            'created_by', 'status'
+            'created_by', 'status', 'total_amount_base', 'total_amount_foreign',
+            'pricing_policy_snapshot', 'tax_snapshot', 'confirmed_at',
+            'insurance_details'
         ]
 
+    def get_insurance_details(self, obj):
+        if obj.order and obj.order.order_type == 'insurance' and obj.order.partner:
+            # Use the order's partner/link for details
+            return InsuranceDetailsSerializer(obj.order).data
+        return None
+
     def validate_items(self, items):
-        seen = set()
-        for item in items:
-            variant_id = item.get('product_variant')
-            if variant_id in seen:
-                raise serializers.ValidationError(
-                    str(_('Duplicate variant in invoice: {id}').format(id=variant_id)))
-            seen.add(variant_id)
-        return items
+            seen = set()
+            for item in items:
+                variant_id = item.get('product_variant')
+                if variant_id in seen:
+                    raise serializers.ValidationError(
+                        str(_('Duplicate variant in invoice: {id}').format(id=variant_id)))
+                seen.add(variant_id)
+            return items
 
     def create(self, validated_data):
         items_data = validated_data.pop('items', [])
@@ -224,8 +246,28 @@ class InvoiceSerializer(serializers.ModelSerializer):
         return invoice
 
 
+class InsuranceDetailsSerializer(serializers.Serializer):
+    """
+    Serializer for insurance details to be embedded in Order/Invoice
+    """
+    policy_number= serializers.CharField(
+        source = 'customer_partner_link.policy_number', read_only = True)
+    member_id = serializers.CharField(
+        source = 'customer_partner_link.member_id', read_only = True)
+    provider_name = serializers.CharField(
+        source = 'partner.name', read_only = True)
+    provider_name_en = serializers.CharField(
+        source = 'partner.name_en', read_only = True)
+    coverage_percentage = serializers.DecimalField(
+        source = 'customer_partner_link.copay_percentage', max_digits = 5, decimal_places = 2, read_only = True)
+    coverage_limit = serializers.DecimalField(
+        source = 'customer_partner_link.annual_limit', max_digits = 12, decimal_places = 2, read_only = True)
+    remaining_limit = serializers.DecimalField(
+        source = 'customer_partner_link.remaining_limit', max_digits = 12, decimal_places = 2, read_only = True)
+
+
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Payment
-        exclude = ['is_deleted']
-        read_only_fields = ['id']
+        model= Payment
+        exclude= ['is_deleted']
+        read_only_fields= ['id']

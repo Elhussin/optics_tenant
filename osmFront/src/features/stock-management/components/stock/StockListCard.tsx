@@ -34,7 +34,12 @@ import api from "@/src/shared/api/axios";
 import { Stock } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { useTranslations } from "next-intl";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import {
+  formsConfig,
+} from "@/src/shared/constants/entityConfig";
+
+import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
+import { Pagination } from "@/src/shared/components/views/Pagination";
 
 interface StockListCardProps {
   // Optional: filter by branch
@@ -69,112 +74,112 @@ export function StockListCard({
   onlyStores = false,
 }: StockListCardProps) {
   const t = useTranslations("inventory");
+
+  // Initialize hook with default values
+  const {
+    data: stocks,
+    count,
+    page,
+    setPage,
+    setFilters,
+    isLoading,
+    page_size,
+    setPageSize,
+    totalPages,
+    refetch,
+  } = useFilteredListRequest({
+    alias: formsConfig.stocks.listAlias!,
+    defaultPageSize: maxItems,
+  });
+
+  // Local state for UI controls (synced with hook via setFilters)
   const [searchQuery, setSearchQuery] = useState("");
   const [stockFilter, setStockFilter] = useState<string>(defaultStatus);
   const [branchFilter, setBranchFilter] = useState<string>(
     branchId ? branchId.toString() : "all",
   );
 
-  // Fetch stocks
-  const {
-    data: stocks = [],
-    isLoading,
-    mutate: refreshStocks,
-  } = useSWR<Stock[]>(
-    featuresConfig.stocks.listAlias!,
+  // Apply filters when UI controls change
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setFilters({ search: value });
+  };
+
+  const handleStockFilterChange = (value: string) => {
+    setStockFilter(value);
+    // Map UI values to backend expected values if needed, or pass as is
+    // Assuming backend takes 'stock_status' or similar if implemented,
+    // or we might need to rely on client side if backend doesn't support complex status filtering yet.
+    // For now passing it as 'status' param.
+    setFilters({ status: value === "all" ? "" : value });
+  };
+
+  const handleBranchFilterChange = (value: string) => {
+    setBranchFilter(value);
+    setFilters({ branch: value === "all" ? "" : value });
+  };
+
+  // Sync props with hook on mount if needed
+  React.useEffect(() => {
+    if (branchId) {
+      setFilters({ branch: branchId.toString() });
+    }
+    if (defaultStatus !== "all") {
+      setFilters({ status: defaultStatus });
+    }
+  }, [branchId, defaultStatus]);
+
+  // Fetch branches for filter (Keep this independent)
+  const { data: branchesData = [] } = useSWR(
+    formsConfig.branches.listAlias,
     async () => {
       const response = await api.customRequest(
-        featuresConfig.stocks.listAlias!,
+        formsConfig.branches.listAlias!,
         {},
       );
-      return extractArrayData<Stock>(response);
+      return extractArrayData<{
+        id: number;
+        name: string;
+        branch_type: string;
+      }>(response);
     },
     { revalidateOnFocus: false },
   );
 
-    console.log("Stocks",stocks);
-  // Filter stocks
-  const filteredStocks = useMemo(() => {
-    if (!stocks || !Array.isArray(stocks)) return [];
+  // Get branches for filter
+  const branchOptions = useMemo(() => {
+    if (!branchesData) return [];
 
-    let result = stocks.filter((stock) => {
-      // Filter by store type if onlyStores is true
-      const matchesStoreType = !onlyStores || stock.branch_type === "store";
-
-      const matchesSearch =
-        !searchQuery ||
-        stock.variant_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        stock.variant_sku?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        stock.product_name?.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesStockFilter =
-        stockFilter === "all" ||
-        (stockFilter === "in_stock" && stock.stock_status === "In Stock") ||
-        (stockFilter === "low" && stock.stock_status === "Low Stock") ||
-        (stockFilter === "out" && stock.stock_status === "Out of Stock");
-
-      const matchesBranch =
-        branchFilter === "all" || stock.branch?.toString() === branchFilter;
-
-      return (
-        matchesStoreType && matchesSearch && matchesStockFilter && matchesBranch
-      );
+    return branchesData.filter((b) => {
+      if (onlyStores && b.branch_type !== "store") return false;
+      return true;
     });
-
-    // Apply max items limit if set
-    if (maxItems && result.length > maxItems) {
-      result = result.slice(0, maxItems);
-    }
-
-    return result;
-  }, [stocks, searchQuery, stockFilter, branchFilter, maxItems, onlyStores]);
-
-  // Get unique branches from stocks (filter by store type if onlyStores)
-  const uniqueBranches = useMemo(() => {
-    if (!stocks || !Array.isArray(stocks)) return [];
-
-    const branchMap = new Map<
-      number,
-      { id: number; name: string; branch_type?: string }
-    >();
-    stocks.forEach((s) => {
-      // Skip non-store branches if onlyStores is true
-      if (onlyStores && s.branch_type !== "store") return;
-
-      if (s.branch && !branchMap.has(s.branch)) {
-        branchMap.set(s.branch, {
-          id: s.branch,
-          name: s.branch_name || `${t("stocks.branchPrefix")} ${s.branch}`,
-          branch_type: s.branch_type,
-        });
-      }
-    });
-    return Array.from(branchMap.values());
-  }, [stocks, t, onlyStores]);
+  }, [branchesData, onlyStores]);
 
   const getStockStatusBadge = (status: string) => {
     switch (status) {
       case "In Stock":
         return (
-          <Badge className="bg-green-100 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-400">
+          <Badge className="bg-success/10 text-success hover:bg-success/20 border-success/20">
             {t("status.inStock")}
           </Badge>
         );
       case "Low Stock":
         return (
-          <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 dark:bg-amber-900/30 dark:text-amber-400">
+          <Badge className="bg-warning/10 text-warning hover:bg-warning/20 border-warning/20">
             {t("status.lowStock")}
           </Badge>
         );
       case "Out of Stock":
         return (
-          <Badge className="bg-red-100 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400">
+          <Badge className="bg-danger/10 text-danger hover:bg-danger/20 border-danger/20">
             {t("status.outOfStock")}
           </Badge>
         );
       case "Overstocked":
         return (
-          <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400">
+          <Badge className="bg-primary/10 text-info hover:bg-info/20 border-info/20">
             {t("status.overstocked")}
           </Badge>
         );
@@ -231,7 +236,7 @@ export function StockListCard({
                     <Input
                       placeholder={t("stocks.searchPlaceholder")}
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={handleSearch}
                       className="pr-9 w-48"
                     />
                   </div>
@@ -240,7 +245,10 @@ export function StockListCard({
                 {showFilters && (
                   <>
                     {/* Stock Filter */}
-                    <Select value={stockFilter} onValueChange={setStockFilter}>
+                    <Select
+                      value={stockFilter}
+                      onValueChange={handleStockFilterChange}
+                    >
                       <SelectTrigger className="w-36">
                         <Filter className="w-4 h-4 ml-2" />
                         <SelectValue placeholder={t("stocks.filters.status")} />
@@ -265,7 +273,7 @@ export function StockListCard({
                     {!branchId && (
                       <Select
                         value={branchFilter}
-                        onValueChange={setBranchFilter}
+                        onValueChange={handleBranchFilterChange}
                       >
                         <SelectTrigger className="w-40">
                           <Warehouse className="w-4 h-4 ml-2" />
@@ -277,7 +285,7 @@ export function StockListCard({
                           <SelectItem value="all">
                             {t("stocks.filters.allBranches")}
                           </SelectItem>
-                          {uniqueBranches.map((branch) => (
+                          {branchOptions.map((branch) => (
                             <SelectItem
                               key={branch.id}
                               value={branch.id.toString()}
@@ -292,11 +300,7 @@ export function StockListCard({
                 )}
 
                 {/* Refresh */}
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => refreshStocks()}
-                >
+                <Button variant="outline" size="icon" onClick={() => refetch()}>
                   <RefreshCw className="w-4 h-4" />
                 </Button>
               </div>
@@ -310,85 +314,98 @@ export function StockListCard({
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
               {t("stocks.loading")}
             </div>
-          ) : filteredStocks?.length === 0 ? (
+          ) : !stocks || stocks.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-16 h-16 mx-auto text-gray-300 mb-4" />
               <p className="text-secondary">{t("stocks.noResults")}</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-right py-3 px-4 text-sm font-medium text-secondary">
-                      {t("stocks.table.product")}
-                    </th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-secondary">
-                      {t("stocks.table.branch")}
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                      {t("stocks.table.available")}
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                      {t("stocks.table.reserved")}
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                      {t("stocks.table.status")}
-                    </th>
-                    <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
-                      {t("stocks.table.actions")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredStocks?.map((stock) => (
-                    <tr
-                      key={stock.id}
-                      className="border-b hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                    >
-                      <td className="py-3 px-4">
-                        <div>
-                          <p className="font-medium text-main">
-                            {stock.product_name}
-                          </p>
-                          <p className="text-xs text-secondary">
-                            {stock.variant_sku}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          <Warehouse className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-main">
-                            {stock.branch_name}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="text-center py-3 px-4">
-                        <span className="font-bold text-lg text-main">
-                          {stock.available_quantity}
-                        </span>
-                      </td>
-                      <td className="text-center py-3 px-4">
-                        <span className="text-secondary">
-                          {stock.reserved_quantity}
-                        </span>
-                      </td>
-                      <td className="text-center py-3 px-4">
-                        {getStockStatusBadge(stock.stock_status)}
-                      </td>
-                      <td className="text-center py-3 px-4">
-                        <Link href={`${linkBase}/${stock.id}`}>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </Link>
-                      </td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-right py-3 px-4 text-sm font-medium text-secondary">
+                        {t("stocks.table.product")}
+                      </th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-secondary">
+                        {t("stocks.table.branch")}
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
+                        {t("stocks.table.available")}
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
+                        {t("stocks.table.reserved")}
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
+                        {t("stocks.table.status")}
+                      </th>
+                      <th className="text-center py-3 px-4 text-sm font-medium text-secondary">
+                        {t("stocks.table.actions")}
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {stocks.map((stock: any) => (
+                      <tr
+                        key={stock.id}
+                        className="border-b hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                      >
+                        <td className="py-3 px-4">
+                          <div>
+                            <p className="font-medium text-main">
+                              {stock.product_name}
+                            </p>
+                            <p className="text-xs text-secondary">
+                              {stock.variant_sku}
+                            </p>
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center gap-2">
+                            <Warehouse className="w-4 h-4 text-gray-400" />
+                            <span className="text-sm text-main">
+                              {stock.branch_name}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <span className="font-bold text-lg text-main">
+                            {stock.available_quantity}
+                          </span>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <span className="text-secondary">
+                            {stock.reserved_quantity}
+                          </span>
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          {getStockStatusBadge(stock.stock_status)}
+                        </td>
+                        <td className="text-center py-3 px-4">
+                          <Link href={`${linkBase}/${stock.id}`}>
+                            <Button variant="ghost" size="sm">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              {!maxItems && (
+                <Pagination
+                  page={page}
+                  totalPages={totalPages}
+                  onPageChange={setPage}
+                  pageSize={page_size}
+                  onPageSizeChange={setPageSize}
+                />
+              )}
+            </>
           )}
         </CardContent>
       </Card>

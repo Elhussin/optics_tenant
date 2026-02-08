@@ -21,7 +21,7 @@ import { useTranslations } from "next-intl";
 import { InfoItem } from "../../../../shared/components/ui/InfoItem";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 
 interface VariantViewProps {
   productId: string;
@@ -33,7 +33,7 @@ export function VariantView({ productId, variantId }: VariantViewProps) {
   const numericId = parseInt(variantId, 10);
 
   const { query, isBusy } = useApiForm({
-    alias: featuresConfig["product-variants"].retrieveAlias || "",
+    alias: formsConfig["product-variants"].retrieveAlias || "",
     defaultValues: { id: numericId },
     enabled: !isNaN(numericId),
   });

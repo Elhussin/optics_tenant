@@ -26,6 +26,7 @@ import {
   Grid,
   Lock,
   FileText,
+  CreditCard,
   HelpCircle,
   LucideIcon
 } from "lucide-react";
@@ -41,6 +42,8 @@ export const URLDATA: NavItem[] = [
   { "path": "/dashboard", "name": "dashboard", icon: Shield },
   { "path": "/profile", "name": "Profile", icon: User },
   { "path": "/admin", "name": "Admin", icon: Shield },
+  { "path": "/dashboard/invoices", "name": "Invoices", icon: FileText },
+  { "path": "/dashboard/payments", "name": "Payments", icon: CreditCard },
   // { "path": "/prescriptions", "name": "Prescriptions", icon: Eye },
   // { "path": "/about", "name": "About", icon: Info },
   // { "path": "/contact", "name": "Contact", icon: Phone },

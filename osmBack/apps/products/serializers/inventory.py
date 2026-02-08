@@ -71,7 +71,7 @@ class StockMovementSerializer(serializers.ModelSerializer):
             })
 
         # Check available quantity when withdrawing
-        if movement_type in ['sale', 'transfer_out', 'damage']:
+        if movement_type in ['sale', 'transfer_out', 'damage', 'return_to_supplier']:
             stock = data.get('stock')
             quantity = abs(data.get('quantity', 0))
             if stock and stock.available_quantity < quantity:
@@ -118,7 +118,7 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
                 })
 
         # Check available quantity when withdrawing
-        if movement_type in ['sale', 'transfer_out', 'damage']:
+        if movement_type in ['sale', 'transfer_out', 'damage', 'return_to_supplier']:
             if stock.available_quantity < abs(quantity):
                 raise serializers.ValidationError({
                     'quantity': _("Requested quantity exceeds available quantity ({available})").format(available=stock.available_quantity)

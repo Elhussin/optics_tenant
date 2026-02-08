@@ -1,0 +1,38 @@
+This is a great question! It addresses a core architectural decision.
+
+Here is the best practice for your system design to avoid conflicts and keep your data clean:
+
+1. Where to put Insurance Companies?
+✅ Correct Place: apps/crm/models/partner.py (Model: Partner)
+
+Why? Partner is designed for entities that pay on behalf of customers (Insurance, BNPL, Companies).
+Fields: It has fields like credit_limit, payment_terms, and partner_type='insurance', which are exactly what you need for an insurance company.
+❌ Wrong Place: apps/crm/models/customer.py (Model: Customer)
+
+Why? Customer is designed for the person receiving the service (the patient).
+But what about company type in Customer? This is only used if you are selling goods directly to a company for their own use (e.g., selling 50 safety goggles to a construction firm). It is NOT for insurance coverage.
+2. How to handle "Many Insurance Companies"?
+You do NOT need to create a separate InvoiceType for every single insurance company (e.g., "Invoice AXA", "Invoice BUPA", "Invoice Tawuniya"). That is unmanageable.
+
+The Recommended Flow:
+
+Create 1 Invoice Type:
+Name: "Insurance Claim" (or "Credit Sales").
+Pricing Policy: Link it to a general "Insurance Pricing Policy".
+Add Insurance Companies as Partners:
+Go to Partners menu.
+Add "BUPA" (Type: Insurance).
+Add "Tawuniya" (Type: Insurance).
+The "Magic" Link (Flexible Pricing):
+Go to Flexible Prices.
+Create a price rule.
+Select Pricing Policy: "Insurance Pricing Policy".
+Select Partner: "BUPA".
+Now this price only applies when the invoice type is "Insurance Claim" AND the selected partner is "BUPA".
+Summary Table
+Concept	Model	Example Data	Function
+Who wears the glasses?	Customer	"John Doe"	Medical records, Prescription
+Who pays the bill?	Partner	"BUPA Insurance"	Credit Limit, Contracts, Claims
+What is the transaction?	InvoiceType	"Insurance Invoice"	GL Accounts, General Pricing Policy
+How much does it cost?	FlexiblePrice	"BUPA Frame Price"	Specific price for BUPA
+Conclusion: Keep Customer for individuals (patients). Use Partner for all your insurance companies. This design is conflict-free and scalable!

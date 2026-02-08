@@ -14,10 +14,10 @@ import {
   LogIn,
   ArrowLeft,
 } from "lucide-react";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 export default function ActivatePage() {
   const t = useTranslations("activation");
-  const alias = featuresConfig["tenants-activate"].retrieveAlias;
+  const alias = formsConfig["tenants-activate"].retrieveAlias;
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const [status, setStatus] = useState<

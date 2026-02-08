@@ -2,7 +2,7 @@
   "orders": {
     "title": "الطلبات",
     "description": "إدارة الطلبات والمدفوعات",
-    "create": "طلب جديد",
+
     "refresh": "تحديث",
     "totalCount": "الإجمالي",
     "currency": "ر.س",
@@ -13,6 +13,28 @@
       "apply": "تطبيق",
       "reset": "إعادة ضبط"
     },
+    "steps": {
+      "customerAndPrescription": "العميل والوصفة",
+      "products": "المنتجات",
+      "payment": "الدفع"
+    },
+    "customer": {
+      "title": "اختيار العميل",
+      "searchPlaceholder": "ابحث باسم العميل أو رقم الهاتف...",
+      "select": "اختيار العميل",
+      "selected": "العميل المحدد",
+      "change": "تغيير",
+      "noResults": "لا توجد نتائج",
+      "registerNew": "تسجيل عميل جديد",
+      "note": "سيتم تحديد الفرع والمستخدم تلقائياً بناء على بيانات تسجيل الدخول"
+    },
+    "prescription": {
+      "title": "الوصفات الطبية للعميل",
+      "new": "فحص جديد",
+      "previous": "الفحوصات السابقة",
+      "noPrescriptions": "لا توجد فحوصات سابقة للعميل",
+      "skipNote": "ملاحظة: يمكنك تخطي هذه الخطوة إذا لم تكن هناك وصفة طبية للطلب"
+    },
     "table": {
       "orderNumber": "رقم الطلب",
       "customer": "العميل",
@@ -21,11 +43,6 @@
       "date": "التاريخ",
       "paymentStatus": "حالة الدفع",
       "actions": "الإجراءات"
-    },
-    "actions": {
-      "view": "عرض",
-      "edit": "تعديل",
-      "cancel": "إلغاء"
     },
     "dialogs": {
       "cancelTitle": "إلغاء الطلب؟",
@@ -47,9 +64,38 @@
       "refunded": "مسترد",
       "disputed": "متنازع عليه"
     },
+    "validation": {
+      "customerRequired": "يجب اختيار العميل",
+      "itemsRequired": "يجب إضافة منتج واحد على الأقل"
+    },
+    "summary": {
+      "title": "ملخص الطلب",
+      "customer": "العميل:",
+      "itemsCount": "عدد المنتجات:",
+      "subtotal": "المجموع الفرعي:",
+      "discount": "الخصم:",
+      "tax": "الضريبة",
+      "total": "الإجمالي:"
+    },
+    "create": {
+      "title": "إنشاء طلب جديد",
+      "description": "أدخل بيانات الطلب خطوة بخطوة",
+      "submitting": "جاري الإنشاء...",
+      "confirm": "تأكيد الطلب"
+    },
+    "actions": {
+      "view": "عرض",
+      "edit": "تعديل",
+      "cancel": "إلغاء",
+      "next": "التالي",
+      "back": "السابق"
+    },
     "toasts": {
+      "createSuccess": "تم إنشاء الطلب بنجاح",
+      "createError": "فشل في إنشاء الطلب",
       "cancelSuccess": "تم إلغاء الطلب بنجاح",
-      "cancelError": "فشل إلغاء الطلب"
+      "cancelError": "فشل إلغاء الطلب",
+      "unexpectedError": "حدث خطأ غير متوقع أثناء إنشاء الطلب"
     },
     "empty": {
       "title": "لا توجد طلبات",

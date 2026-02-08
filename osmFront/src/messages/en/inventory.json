@@ -1,5 +1,5 @@
 {
-  "title": "Inventory Management",
+  "title": "Stock Management",
   "subtitle": "Track stock, movements, and transfers",
   "transferStock": "Stock Transfer",
   "addMovement": "Add Movement",
@@ -108,7 +108,8 @@
       "purchase": "Purchase / Restock",
       "adjustment": "Stock Adjustment",
       "damage": "Damage / Loss",
-      "return": "Customer Return"
+      "return": "Customer Return",
+      "return_to_supplier": "Return to Supplier"
     },
     "buttons": {
       "next": "Next",
@@ -117,7 +118,12 @@
       "saving": "Saving...",
       "addFinally": "Add to Batch",
       "addToList": "Add to List",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "confirm": "Confirm & Save"
+    },
+    "confirmation": {
+      "title": "Confirm Stock Movement",
+      "message": "This action will immediately update the stock levels in the system. Are you sure you want to proceed?"
     },
     "validation": {
       "selectBranch": "Branch must be selected",
@@ -257,13 +263,11 @@
   },
   "movements": {
     "title": "Stock Movements",
+    "subtitle": "Track all inventory changes across all branches",
     "all": "All Movements",
+    "filterByRef": "Filter by this Reference",
     "emptyTitle": "No movements",
     "emptyDescription": "No movements recorded for this stock yet",
-    "before": "Before",
-    "after": "After",
-    "cost": "Cost",
-    "reference": "Ref",
     "types": {
       "purchase": "Purchase",
       "sale": "Sale",
@@ -271,10 +275,32 @@
       "transfer_out": "Transfer Out",
       "adjustment": "Adjustment",
       "damage": "Damage",
-      "return": "Return",
+      "return": "Customer Return",
+      "return_to_supplier": "Return to Supplier",
       "reserve": "Reserve",
       "release": "Release"
-    }
+    },
+    "view": "View details",
+    "edit": "Edit",
+    "detailsTitle": "Movement Details",
+    "info": "Movement Information",
+    "type": "Type",
+    "quantity": "Quantity",
+    "before": "Before",
+    "after": "After",
+    "cost": "Cost",
+    "notes": "Notes",
+    "productInfo": "Product Information",
+    "product": "Product",
+    "variant": "Variant",
+    "branch": "Branch",
+    "auditInfo": "Audit Information",
+    "reference": "Reference",
+    "editTitle": "Edit Movement",
+    "editInfo": "Edit Information",
+    "editWarning": "Note: You can only edit reference numbers and notes. Quantity and type cannot be changed as they affect stock history.",
+    "referencePlaceholder": "Enter reference number",
+    "notesPlaceholder": "Enter notes"
   },
   "transfers": {
     "title": "Inter-Branch Transfers",
@@ -587,5 +613,8 @@
   "search": {
     "product": "Search products...",
     "noResults": "No products found."
+  },
+  "filters": {
+    "clear": "Clear"
   }
 }

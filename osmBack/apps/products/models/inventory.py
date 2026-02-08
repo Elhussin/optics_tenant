@@ -150,6 +150,7 @@ class StockMovement(BaseModel):
         ADJUSTMENT = 'adjustment', _('Stock Adjustment')
         DAMAGE = 'damage', _('Damage/Loss')
         RETURN = 'return', _('Customer Return')
+        RETURN_TO_SUPPLIER = 'return_to_supplier', _('Return to Supplier')
         RESERVE = 'reserve', _('Reserve Stock')
         RELEASE = 'release', _('Release Reserved')
 

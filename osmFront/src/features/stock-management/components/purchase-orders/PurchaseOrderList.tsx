@@ -320,7 +320,11 @@ export default function PurchaseOrderList() {
                     </td>
                     <td className="py-4 px-6 text-main">{order.branch_name}</td>
                     <td className="py-4 px-6">
-                      {getStatusBadge(order.status, order.status_display)}
+                      {getStatusBadge(
+                        order.status,
+                        t(`purchaseOrders.statuses.${order.status}`) ||
+                          order.status_display,
+                      )}
                     </td>
                     <td className="py-4 px-6 font-semibold text-primary">
                       {Number(order.total_amount).toFixed(2)}

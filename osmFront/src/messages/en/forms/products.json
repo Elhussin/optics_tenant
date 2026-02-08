@@ -37,6 +37,15 @@
     "updateDescription": "Update Flexible Price",
     "createDescription": "Add New Flexible Price"
   },
+  "pricing-policies": {
+    "title": "Pricing Policies",
+    "detailsTitle": "Pricing Policy Details",
+    "name": "Policy Name",
+    "code": "Code",
+    "description": "Description",
+    "updateDescription": "Update Policy",
+    "createDescription": "Add New Policy"
+  },
   "lens-coatings": {
     "title": "Lens Coatings",
     "detailsTitle": "Lens Coating Details",

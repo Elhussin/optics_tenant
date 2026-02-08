@@ -42,7 +42,7 @@ import api from "@/src/shared/api/axios";
 import { Stock, StockTransfer } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { useTranslations } from "next-intl";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { PurchaseOrderList } from "../../purchase-orders";
 import { StockListCard } from "../StockListCard";
 
@@ -58,10 +58,10 @@ export default function StockListView() {
     isLoading: stocksLoading,
     mutate: refreshStocks,
   } = useSWR<Stock[]>(
-    featuresConfig.stocks.listAlias!,
+    formsConfig.stocks.listAlias!,
     async () => {
       const response = await api.customRequest(
-        featuresConfig.stocks.listAlias!,
+        formsConfig.stocks.listAlias!,
         {},
       );
       return extractArrayData<Stock>(response);
@@ -71,10 +71,10 @@ export default function StockListView() {
 
   // Fetch pending transfers
   const { data: pendingTransfers = [] } = useSWR<StockTransfer[]>(
-    featuresConfig["product-stock-transfers"].listAlias!,
+    formsConfig["product-stock-transfers"].listAlias!,
     async () => {
       const response = await api.customRequest(
-        featuresConfig["product-stock-transfers"].listAlias!,
+        formsConfig["product-stock-transfers"].listAlias!,
         { status: "pending" },
       );
       return extractArrayData<StockTransfer>(response);
@@ -84,10 +84,10 @@ export default function StockListView() {
 
   // Fetch low stock
   const { data: lowStockItems = [] } = useSWR<Stock[]>(
-    featuresConfig["products-stocks-low-stock"].listAlias!,
+    formsConfig["products-stocks-low-stock"].listAlias!,
     async () => {
       const response = await api.customRequest(
-        featuresConfig["products-stocks-low-stock"].listAlias!,
+        formsConfig["products-stocks-low-stock"].listAlias!,
         {},
       );
       return extractArrayData<Stock>(response);

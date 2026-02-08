@@ -25,6 +25,8 @@ interface OrderFormState {
 
     // Order details
     orderType: OrderType;
+    invoiceTypeId: number | null;
+    customerPartnerLinkId: number | null;
     paymentMethodId: number | null;
 
     // Items
@@ -50,6 +52,8 @@ interface OrderFormState {
     setBranch: (id: number | null) => void;
     setPrescription: (id: number | null) => void;
     setOrderType: (type: OrderType) => void;
+    setInvoiceType: (id: number | null) => void;
+    setCustomerPartnerLink: (id: number | null) => void;
     setPaymentMethodId: (id: number | null) => void;
     setStatus: (status: OrderStatus) => void;
 
@@ -91,6 +95,8 @@ const initialState = {
     branchId: null,
     prescriptionId: null,
     orderType: "cash" as const,
+    invoiceTypeId: null,
+    customerPartnerLinkId: null,
     paymentMethodId: null,
     items: [],
     subtotal: 0,
@@ -113,6 +119,8 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
     setBranch: (id) => set({ branchId: id }),
     setPrescription: (id) => set({ prescriptionId: id }),
     setOrderType: (type) => set({ orderType: type }),
+    setInvoiceType: (id) => set({ invoiceTypeId: id }),
+    setCustomerPartnerLink: (id) => set({ customerPartnerLinkId: id }),
     setPaymentMethodId: (id) => set({ paymentMethodId: id }),
     setStatus: (status) => set({ status }),
 
@@ -210,6 +218,8 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
             salesPersonId: order.sales_person?.id || order.sales_person,
             prescriptionId: order.prescription?.id || order.prescription,
             orderType: order.order_type || "cash",
+            invoiceTypeId: order.invoice_type?.id || order.invoice_type,
+            customerPartnerLinkId: order.customer_partner_link?.id || order.customer_partner_link,
             paymentMethodId:
                 (typeof order.payment_method === "object"
                     ? order.payment_method?.id

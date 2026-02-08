@@ -1,5 +1,6 @@
 # models.py - Refactored for Thread Safety
 
+from apps.accounting.models.tax import TaxRate
 from django.db import models, transaction, IntegrityError
 from django.utils.translation import gettext_lazy as _
 from apps.crm.models import Customer
@@ -11,9 +12,14 @@ from decimal import Decimal
 import time
 
 # Services (Assuming they exist as imported)
-from apps.sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
-from apps.sales.services.invoice_service import confirm_invoice, calculate_invoice_totals
-from apps.sales.services.payment_service import apply_payment
+# Services imports moved to methods to avoid circular dependency
+# from apps.sales.services.order_service import confirm_order, cancel_order, calculate_order_totals
+# from apps.sales.services.invoice_service import confirm_invoice, calculate_invoice_totals
+# from apps.sales.services.payment_service import apply_payment
+from apps.products.models.pricing_policy import PricingPolicy
+from apps.accounting.models.chart_of_accounts import ChartOfAccounts
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class BaseDocument(BaseModel):
@@ -92,6 +98,31 @@ class BaseItem(BaseModel):
         super().save(*args, **kwargs)
 
 
+class InvoiceType(BaseModel):
+    name = models.CharField(
+        max_length=100, verbose_name=_("Invoice Type Name"))
+    code = models.SlugField(max_length=50, unique=True, verbose_name=_("Code"))
+    pricing_policy = models.ForeignKey(
+        PricingPolicy,
+        on_delete=models.PROTECT,
+        verbose_name=_("Pricing Policy")
+    )
+    revenue_account = models.ForeignKey(
+        ChartOfAccounts,
+        on_delete=models.PROTECT,
+        limit_choices_to={'account_type': 'revenue'},
+        verbose_name=_("Revenue GL Account")
+    )
+    is_active = models.BooleanField(default=True, verbose_name=_("Active"))
+
+    class Meta:
+        verbose_name = _("Invoice Type")
+        verbose_name_plural = _("Invoice Types")
+
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+
 class PaymentMethod(BaseModel):
     """
     Dynamic Payment Methods (e.g., Mada, Visa, Tabby, Apple Pay)
@@ -114,6 +145,14 @@ class PaymentMethod(BaseModel):
     )
     is_installment = models.BooleanField(
         default=False, verbose_name=_("Is Installment (BNPL)"))
+
+    gl_account = models.ForeignKey(
+        ChartOfAccounts,
+        on_delete=models.PROTECT,
+        null=True, blank=True,
+        limit_choices_to={'account_type': 'asset'},
+        verbose_name=_("GL Account (Asset)")
+    )
 
     def __str__(self):
         return f"{self.name_en} ({self.name_ar})"
@@ -287,12 +326,15 @@ class Order(BaseDocument):
                 time.sleep(0.1)  # Small backoff
 
     def calculate_totals(self):
+        from apps.sales.services.order_service import calculate_order_totals
         return calculate_order_totals(self)
 
     def confirm(self, user):
+        from apps.sales.services.order_service import confirm_order
         return confirm_order(self, user)
 
     def cancel(self, user):
+        from apps.sales.services.order_service import cancel_order
         return cancel_order(self, user)
 
 
@@ -334,10 +376,37 @@ class Invoice(BaseDocument):
         max_length=50, unique=True, editable=False,
         verbose_name=_("Invoice Number")
     )
-    invoice_type = models.CharField(
-        max_length=20, choices=INVOICE_TYPES, default='sale',
+    invoice_type = models.ForeignKey(
+        InvoiceType, on_delete=models.PROTECT, null=True,
         verbose_name=_("Invoice Type")
     )
+    # Legacy field, kept for migration but should be deprecated or synced
+    invoice_type_code = models.CharField(
+        max_length=20, choices=INVOICE_TYPES, default='sale',
+        verbose_name=_("Invoice Type Code (Legacy)")
+    )
+
+    pricing_policy_snapshot = models.JSONField(
+        default=dict, blank=True, verbose_name=_("Pricing Policy Snapshot")
+    )
+    tax_snapshot = models.JSONField(
+        default=dict, blank=True, verbose_name=_("Tax Snapshot")
+    )
+
+    # Multi-Currency Support
+    currency = models.CharField(
+        max_length=3, default='SAR', verbose_name=_("Currency")
+    )
+    exchange_rate = models.DecimalField(
+        max_digits=10, decimal_places=6, default=1.0, verbose_name=_("Exchange Rate")
+    )
+    total_amount_base = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0, verbose_name=_("Total Amount (Base)")
+    )
+    total_amount_foreign = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0, verbose_name=_("Total Amount (Foreign)")
+    )
+
     created_by = models.ForeignKey(
         BranchUsers, on_delete=models.SET_NULL, null=True,
         related_name='%(class)s_created_by',
@@ -359,6 +428,10 @@ class Invoice(BaseDocument):
     notes = models.TextField(
         blank=True, null=True,
         verbose_name=_("Notes")
+    )
+    confirmed_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Confirmation Date")
     )
 
     class Meta:
@@ -390,9 +463,11 @@ class Invoice(BaseDocument):
                 time.sleep(0.1)
 
     def calculate_totals(self):
+        from apps.sales.services.invoice_service import calculate_invoice_totals
         return calculate_invoice_totals(self)
 
     def confirm(self):
+        from apps.sales.services.invoice_service import confirm_invoice
         return confirm_invoice(self)
 
 
@@ -430,9 +505,20 @@ class Payment(BaseModel):
         max_digits=12, decimal_places=2,
         verbose_name=_("Amount")
     )
+    amount_base = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Amount (Base Currency)")
+    )
+    amount_foreign = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Amount (Foreign Currency)")
+    )
     currency = models.CharField(
         max_length=3, default='SAR',
         verbose_name=_("Currency")
+    )
+    exchange_rate = models.DecimalField(
+        max_digits=10, decimal_places=6, default=1.0, verbose_name=_("Exchange Rate")
     )
     payment_method = models.ForeignKey(
         PaymentMethod,
@@ -449,7 +535,15 @@ class Payment(BaseModel):
         verbose_name=_("Status")
     )
 
-    # For Partner (Insurance/Installment)
+    # Generic Payer Link
+    payer_content_type = models.ForeignKey(
+        ContentType, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    payer_object_id = models.PositiveIntegerField(null=True, blank=True)
+    payer = GenericForeignKey('payer_content_type', 'payer_object_id')
+
+    # For Partner (Insurance/Installment) - Deprecate in favor of Generic Payer?
+    # Keeping for backward compatibility for now
     partner = models.ForeignKey(
         'crm.Partner',
         on_delete=models.SET_NULL,
@@ -545,6 +639,15 @@ class Payment(BaseModel):
         verbose_name=_("Notes")
     )
 
+    created_by = models.ForeignKey(
+        'branches.BranchUsers',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='payments_created',
+        verbose_name=_("Created By")
+    )
+
     class Meta:
         verbose_name = _("Payment")
         verbose_name_plural = _("Payments")
@@ -568,6 +671,7 @@ class Payment(BaseModel):
 
         # Update invoice upon payment completion
         if self.status == 'completed' and self.invoice:
+            from apps.sales.services.payment_service import apply_payment
             apply_payment(self.invoice, self.amount)
 
     def mark_completed(self, transaction_id=None, response=None):
@@ -676,3 +780,62 @@ class Installment(BaseModel):
         self.paid_at = timezone.now()
         self.paid_amount = amount or self.amount
         self.save()
+
+
+class PaymentAllocation(BaseModel):
+    """
+    Allocates a Payment to one or more Invoices (or specific Invoice Items).
+    """
+    payment = models.ForeignKey(
+        Payment, on_delete=models.CASCADE,
+        related_name='allocations',
+        verbose_name=_("Payment")
+    )
+    invoice = models.ForeignKey(
+        Invoice, on_delete=models.CASCADE,
+        related_name='payment_allocations',
+        verbose_name=_("Invoice")
+    )
+    invoice_item = models.ForeignKey(
+        InvoiceItem, on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='allocations',
+        verbose_name=_("Invoice Item (Optional)")
+    )
+    amount = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        verbose_name=_("Allocated Amount")
+    )
+
+    class Meta:
+        verbose_name = _("Payment Allocation")
+        verbose_name_plural = _("Payment Allocations")
+        unique_together = ('payment', 'invoice', 'invoice_item')
+
+    def __str__(self):
+        return f"Allocation of {self.amount} from {self.payment} to {self.invoice}"
+
+
+class InvoiceTax(BaseModel):
+    invoice = models.ForeignKey(
+        Invoice, on_delete=models.CASCADE,
+        related_name='taxes',
+        verbose_name=_("Invoice")
+    )
+    tax = models.ForeignKey(
+        TaxRate,
+        on_delete=models.PROTECT,
+        verbose_name=_("Tax Rate")
+    )
+    base_amount = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        verbose_name=_("Base Amount")
+    )
+    tax_amount = models.DecimalField(
+        max_digits=12, decimal_places=2,
+        verbose_name=_("Tax Amount")
+    )
+
+    class Meta:
+        verbose_name = _("Invoice Tax")
+        verbose_name_plural = _("Invoice Taxes")

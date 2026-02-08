@@ -12,7 +12,7 @@ import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 
 export const PageDetail = ({ pageId }: { pageId: any }) => {
   const t = useTranslations("pagesList");
@@ -21,12 +21,12 @@ export const PageDetail = ({ pageId }: { pageId: any }) => {
   const [pageData, setPageData] = useState<any>(null);
 
   const aliases = {
-    deleteAlias: featuresConfig["pages"].hardDeleteAlias!,
-    editAlias: featuresConfig["pages"].updateAlias!,
+    deleteAlias: formsConfig["pages"].hardDeleteAlias!,
+    editAlias: formsConfig["pages"].updateAlias!,
   };
 
   const fetchPage = useApiForm({
-    alias: featuresConfig["pages"].retrieveAlias,
+    alias: formsConfig["pages"].retrieveAlias,
     defaultValues: { id: pageId },
   });
 

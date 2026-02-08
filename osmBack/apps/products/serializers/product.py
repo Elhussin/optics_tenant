@@ -304,7 +304,7 @@ class FlexiblePriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = FlexiblePrice
         fields = [
-            'id', 'variant', 'customer', 'customer_group', 'customer_group_id',
+            'id', 'variant', 'pricing_policy', 'customer', 'customer_group', 'customer_group_id',
             'branch', 'branch_id', 'special_price', 'start_date', 'end_date',
             'min_quantity', 'currency', 'priority'
         ]

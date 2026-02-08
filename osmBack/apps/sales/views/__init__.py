@@ -13,6 +13,8 @@ from apps.sales.views.sales import (
     CreateDamageRecordView,
 )
 
+from apps.sales.views.invoice_type import InvoiceTypeViewSet
+
 from apps.sales.views.payment import (
     PaymentViewSet,
     InstallmentViewSet,
@@ -64,5 +66,10 @@ __all__ = [
     'CustomerStatementView',
     'WholesaleCustomersView',
     'WholesaleDashboardView',
+    'CreateWholesaleOrderView',
+    'CustomerStatementView',
+    'WholesaleCustomersView',
+    'WholesaleDashboardView',
     'UpdateCustomerCreditView',
+    'InvoiceTypeViewSet',
 ]

@@ -12,7 +12,7 @@ import { useRouter } from "@/src/app/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { UserContextType, User } from "@/src/shared/types";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
@@ -25,7 +25,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // 1️⃣ جلب تلقائي عند تحميل التطبيق (للحفاظ على الجلسة عند التحديث)
   const fetchUser = useApiForm({
-    alias: featuresConfig["user-profile"].retrieveAlias!,
+    alias: formsConfig["user-profile"].retrieveAlias!,
     enabled: true, // <-- غيرنا هذا إلى true ليتم الجلب عند بدء التشغيل
     // retry: false,
     // staleTime: 5 * 60 * 1000, // يمكن استخدام cache بسيط
@@ -51,7 +51,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // لا نحتاج إلى effect آخر لتشغيل الجلب تلقائيًا – نستخدم refetch فقط
   const logoutRequest = useApiForm({
-    alias: featuresConfig["logout"].createAlias!,
+    alias: formsConfig["logout"].createAlias!,
     onSuccess: () => {
       setUser(null);
       router.replace(`/auth/login`);

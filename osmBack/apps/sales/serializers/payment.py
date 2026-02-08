@@ -8,6 +8,9 @@ from django.utils.translation import gettext_lazy as _
 from apps.sales.models import Payment, Installment
 
 
+from apps.sales.serializers.payment_allocation import PaymentAllocationSerializer
+
+
 class PaymentSerializer(serializers.ModelSerializer):
     """Payment Serializer"""
     payment_method_display = serializers.CharField(
@@ -31,26 +34,29 @@ class PaymentSerializer(serializers.ModelSerializer):
     partner_name = serializers.CharField(
         source='partner.name', read_only=True
     )
+    allocations = PaymentAllocationSerializer(many=True, read_only=True)
     installments = serializers.SerializerMethodField()
 
     class Meta:
         model = Payment
         fields = [
             'id', 'invoice', 'invoice_number', 'order', 'order_number',
-            'amount', 'currency', 'payment_method', 'payment_method_display', 'payment_method_name_en', 'payment_method_code',
-            'status', 'status_display', 'partner', 'partner_name',
+            'amount', 'amount_base', 'amount_foreign', 'currency', 'exchange_rate',
+            'payment_method', 'payment_method_display', 'payment_method_name_en', 'payment_method_code',
+            'status', 'status_display',
+            'payer_content_type', 'payer_object_id', 'partner', 'partner_name',
             'gateway_transaction_id', 'gateway_reference',
             'is_installment', 'installments_count', 'installment_amount', 'bnpl_order_id',
             'card_last_four', 'card_brand',
             'cheque_number', 'cheque_bank', 'cheque_date',
             'transfer_reference', 'transfer_bank',
             'paid_at', 'refunded_at', 'refund_amount',
-            'notes', 'installments',
-            'created_at', 'updated_at',
+            'notes', 'installments', 'allocations',
+            'created_by', 'created_at', 'updated_at',
         ]
         read_only_fields = [
             'id', 'gateway_transaction_id', 'paid_at', 'refunded_at',
-            'created_at', 'updated_at',
+            'created_at', 'updated_at', 'allocations', 'created_by'
         ]
 
     def get_installments(self, obj):

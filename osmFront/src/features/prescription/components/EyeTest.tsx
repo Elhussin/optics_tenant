@@ -34,6 +34,7 @@ export default function EyeTest(props: PrescriptionFormProps) {
     customerId: externalCustomerId,
     onSaveSuccess,
     compact = false,
+    hideBackButton = false,
   } = props;
   const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({});
   const [contactLensData, setContactLensData] = useState<any>({});
@@ -239,21 +240,34 @@ export default function EyeTest(props: PrescriptionFormProps) {
 
           {/* Other Eye Test Fields */}
           <OtherEyeTestFailed
-            {...{ register, customers, setShowModal, errors, isView }}
+            {...{
+              register,
+              customers,
+              setShowModal,
+              errors,
+              isView,
+              disableCustomerSelect: props.disableCustomerSelect,
+            }}
           />
 
           {/* Action Bar - Hide if in view mode */}
           {!isView && (
-            <div className="flex items-center justify-between pt-4">
+            <div
+              className={`flex items-center ${
+                hideBackButton ? "justify-end" : "justify-between"
+              } pt-4`}
+            >
               {/* Back Button */}
-              <ActionButton
-                variant="ghost"
-                size="lg"
-                icon={<ArrowLeft size={18} />}
-                label="Back"
-                navigateTo="/prescription"
-                className="rounded-xl"
-              />
+              {!hideBackButton && (
+                <ActionButton
+                  variant="ghost"
+                  size="lg"
+                  icon={<ArrowLeft size={18} />}
+                  label="Back"
+                  navigateTo="/prescription"
+                  className="rounded-xl"
+                />
+              )}
 
               {/* Save Button */}
               <motion.div

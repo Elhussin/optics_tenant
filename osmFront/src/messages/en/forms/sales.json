@@ -13,6 +13,16 @@
     "updateDescription": "Update Order",
     "createDescription": "Add New Order"
   },
+  "invoice-types": {
+    "title": "Invoice Types",
+    "detailsTitle": "Invoice Type Details",
+    "name": "Type Name",
+    "code": "Code",
+    "pricing_policy": "Pricing Policy",
+    "revenue_account": "Revenue Account",
+    "updateDescription": "Update Invoice Type",
+    "createDescription": "Add Invoice Type"
+  },
   "sales_installments": {
     "title": "Installments",
     "detailsTitle": "Installment Details",

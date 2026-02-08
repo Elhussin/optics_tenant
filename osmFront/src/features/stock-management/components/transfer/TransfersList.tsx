@@ -519,8 +519,9 @@ export function TransfersList() {
                             />
                           )}
                           {/* Edit button for pending/approved transfers */}
-                          {(transfer.status === "pending" ||
-                            transfer.status === "approved") && (
+                          {(transfer.status === "pending" )
+                          // || transfer.status === "approved") &&
+                           && (
                             <Link
                               href={`/dashboard/stock-management/transfers/${transfer.id}/edit`}
                             >

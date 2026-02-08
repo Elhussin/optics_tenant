@@ -11,8 +11,7 @@ from .views import (
     DocumentViewSet,
     ContactViewSet,
     # Partner views
-    PartnerViewSet, PartnerBranchViewSet, PartnerPriceListViewSet,
-    PartnerPriceListItemViewSet, CustomerPartnerLinkViewSet,
+    PartnerViewSet, PartnerBranchViewSet, CustomerPartnerLinkViewSet,
     InsuranceClaimViewSet, ClaimItemViewSet, ClaimDocumentViewSet,
     PartnerSettlementViewSet
 )
@@ -37,10 +36,7 @@ router.register(r'contact-us', ContactViewSet, basename='contact-us')
 router.register(r'partners', PartnerViewSet, basename='partner')
 router.register(r'partner-branches', PartnerBranchViewSet,
                 basename='partner-branch')
-router.register(r'partner-price-lists', PartnerPriceListViewSet,
-                basename='partner-price-list')
-router.register(r'partner-price-list-items',
-                PartnerPriceListItemViewSet, basename='partner-price-list-item')
+
 router.register(r'customer-partner-links',
                 CustomerPartnerLinkViewSet, basename='customer-partner-link')
 router.register(r'insurance-claims', InsuranceClaimViewSet,

@@ -9,7 +9,7 @@ import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { Pagination } from "@/src/shared/components/views/Pagination";
 import { useTranslations } from "next-intl";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 import { ProductCard } from "./ProductCard";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -28,16 +28,16 @@ export function ProductsList() {
     setPage,
     setPageSize,
     setFilters,
-  } = useFilteredListRequest({ alias: featuresConfig.product.listAlias || "" });
+  } = useFilteredListRequest({ alias: formsConfig.product.listAlias || "" });
 
   useEffect(() => {
     show();
   }, [show]);
 
   const { fields, isLoading: isFieldsLoading } = useFilterDataOptions(
-    featuresConfig.product.filterAlias || "",
+    formsConfig.product.filterAlias || "",
     {
-      enabled: !!featuresConfig.product.filterAlias,
+      enabled: !!formsConfig.product.filterAlias,
     },
   );
 

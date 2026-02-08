@@ -108,7 +108,8 @@
       "purchase": "شراء / إعادة تخزين",
       "adjustment": "تعديل المخزون",
       "damage": "تلف / خسارة",
-      "return": "مرتجع من عميل"
+      "return": "مرتجع من عميل",
+      "return_to_supplier": "مرتجع إلى المورد"
     },
     "buttons": {
       "next": "التالي",
@@ -117,7 +118,12 @@
       "saving": "جاري الحفظ...",
       "addFinally": "إضافة للدفعة",
       "addToList": "إضافة للقائمة",
-      "cancel": "إلغاء"
+      "cancel": "إلغاء",
+      "confirm": "تأكيد وحفظ"
+    },
+    "confirmation": {
+      "title": "تأكيد حركة المخزون",
+      "message": "سيؤدي هذا الإجراء إلى تحديث مستويات المخزون في النظام مباشرة. هل أنت متأكد من المتابعة؟"
     },
     "validation": {
       "selectBranch": "يجب اختيار الفرع",
@@ -257,24 +263,44 @@
   },
   "movements": {
     "title": "حركات المخزون",
+    "subtitle": "تتبع جميع تغييرات المخزون في كافة الفروع",
     "all": "جميع الحركات",
+    "filterByRef": "تصفية حسب هذا الرقم المرجعي",
     "emptyTitle": "لا توجد حركات",
     "emptyDescription": "لم يتم تسجيل أي حركات لهذا المخزون بعد",
-    "before": "قبل",
-    "after": "بعد",
-    "cost": "التكلفة",
-    "reference": "المرجع",
     "types": {
       "purchase": "شراء",
       "sale": "بيع",
-      "transfer_in": "تحويل وارد",
-      "transfer_out": "تحويل صادر",
+      "transfer_in": "وارد نقل",
+      "transfer_out": "صادر نقل",
       "adjustment": "تعديل",
       "damage": "تلف",
-      "return": "إرجاع",
+      "return": "مرتجع عميل",
+      "return_to_supplier": "إرجاع للمورد",
       "reserve": "حجز",
-      "release": "تحرير"
-    }
+      "release": "إلغاء حجز"
+    },
+    "view": "عرض التفاصيل",
+    "edit": "تعديل",
+    "detailsTitle": "تفاصيل الحركة",
+    "info": "معلومات الحركة",
+    "type": "النوع",
+    "quantity": "الكمية",
+    "before": "قبل",
+    "after": "بعد",
+    "cost": "التكلفة",
+    "notes": "ملاحظات",
+    "productInfo": "معلومات المنتج",
+    "product": "المنتج",
+    "variant": "المتغير",
+    "branch": "الفرع",
+    "auditInfo": "معلومات السجل",
+    "reference": "المرجع",
+    "editTitle": "تعديل الحركة",
+    "editInfo": "تعديل المعلومات",
+    "editWarning": "ملاحظة: يمكنك تعديل رقم المرجع والملاحظات فقط. لا يمكن تغيير الكمية أو النوع لأنها تؤثر على سجل المخزون.",
+    "referencePlaceholder": "أدخل رقم المرجع",
+    "notesPlaceholder": "أدخل الملاحظات"
   },
   "transfers": {
     "title": "التحويلات بين الفروع",
@@ -588,5 +614,8 @@
   "search": {
     "product": "بحث المنتجات...",
     "noResults": "لا توجد نتائج"
+  },
+  "filters": {
+    "clear": "مسح الفلاتر"
   }
 }

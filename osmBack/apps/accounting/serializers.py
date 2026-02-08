@@ -353,3 +353,13 @@ class BalanceSheetItemSerializer(serializers.Serializer):
     category = serializers.CharField()
     total = serializers.DecimalField(max_digits=14, decimal_places=2)
     items = serializers.ListField(child=serializers.DictField())
+
+from apps.accounting.models.tax import TaxRate
+
+class TaxRateSerializer(serializers.ModelSerializer):
+    """Serializer New TaxRate Model"""
+    gl_account_name = serializers.CharField(source='gl_account.name', read_only=True)
+
+    class Meta:
+        model = TaxRate
+        fields = ['id', 'name', 'rate', 'country', 'gl_account', 'gl_account_name', 'is_active']

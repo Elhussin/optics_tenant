@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 
 export default function ProductImportPage() {
   const t = useTranslations("products.importCsv");
@@ -14,7 +14,7 @@ export default function ProductImportPage() {
   const [result, setResult] = useState<any>(null);
 
   const { submitForm, isBusy } = useApiForm({
-    alias: featuresConfig["products-import-csv"].createAlias,
+    alias: formsConfig["products-import-csv"].createAlias,
     onSuccess: (data) => {
       setResult(data);
       toast.success(t("importSuccess"));

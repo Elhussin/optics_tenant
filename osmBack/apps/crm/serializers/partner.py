@@ -6,7 +6,7 @@ Serializers للشركاء والتأمين
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from apps.crm.models import (
-    Partner, PartnerBranch, PartnerPriceList, PartnerPriceListItem,
+    Partner, PartnerBranch,
     CustomerPartnerLink, InsuranceClaim, ClaimItem, ClaimDocument, PartnerSettlement
 )
 
@@ -97,41 +97,6 @@ class PartnerBranchSerializer(serializers.ModelSerializer):
             'id', 'partner', 'partner_name', 'branch', 'branch_name',
             'special_discount', 'is_active',
         ]
-
-
-class PartnerPriceListItemSerializer(serializers.ModelSerializer):
-    """Serializer لعنصر قائمة الأسعار"""
-    product_name = serializers.CharField(source='product.name', read_only=True)
-    variant_sku = serializers.CharField(source='variant.sku', read_only=True)
-    category_name = serializers.CharField(
-        source='category.name', read_only=True)
-
-    class Meta:
-        model = PartnerPriceListItem
-        fields = [
-            'id', 'price_list', 'product', 'product_name',
-            'variant', 'variant_sku', 'category', 'category_name',
-            'special_price', 'special_discount',
-        ]
-
-
-class PartnerPriceListSerializer(serializers.ModelSerializer):
-    """Serializer لقائمة أسعار الشريك"""
-    partner_name = serializers.CharField(source='partner.name', read_only=True)
-    items = PartnerPriceListItemSerializer(many=True, read_only=True)
-    items_count = serializers.SerializerMethodField()
-
-    class Meta:
-        model = PartnerPriceList
-        fields = [
-            'id', 'partner', 'partner_name', 'name', 'description',
-            'price_type', 'adjustment_value',
-            'valid_from', 'valid_until', 'applies_to_all',
-            'items', 'items_count', 'is_active',
-        ]
-
-    def get_items_count(self, obj):
-        return obj.items.count()
 
 
 class CustomerPartnerLinkSerializer(serializers.ModelSerializer):

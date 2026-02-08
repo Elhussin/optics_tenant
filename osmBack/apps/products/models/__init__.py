@@ -13,6 +13,8 @@ from .suppliers import Supplier, Manufacturer, Brand
 from .inventory import Stock, StockMovement, StockTransfer, StockTransferItem
 from .purchase import PurchaseOrder, PurchaseOrderItem
 
+from .pricing_policy import PricingPolicy
+
 __all__ = [
     "Product", "ProductVariant", "Category",
     "StockMovement", "Stock", "StockTransfer", "StockTransferItem",
@@ -29,4 +31,5 @@ __all__ = [
     "FrameVariant",
     "StokLensVariant",
     "RxLensVariant",
+    "PricingPolicy",
 ]

@@ -265,7 +265,11 @@ export function PurchaseOrderDetails() {
                 {order.order_number}
               </h1>
               <div className="flex items-center gap-3 mt-2">
-                {getStatusBadge(order.status, order.status_display)}
+                {getStatusBadge(
+                  order.status,
+                  t(`purchaseOrders.statuses.${order.status}`) ||
+                    order.status_display,
+                )}
                 <span className="text-secondary text-sm">
                   {formatDateTime(order.created_at)}
                 </span>

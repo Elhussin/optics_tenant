@@ -19,8 +19,6 @@ from apps.crm.models.customer import (
 from apps.crm.models.partner import (
     Partner,
     PartnerBranch,
-    PartnerPriceList,
-    PartnerPriceListItem,
     CustomerPartnerLink,
 )
 
@@ -47,8 +45,6 @@ __all__ = [
     # Partner models
     'Partner',
     'PartnerBranch',
-    'PartnerPriceList',
-    'PartnerPriceListItem',
     'CustomerPartnerLink',
 
     # Insurance models

@@ -3,7 +3,7 @@ import LoginForm from "@/src/features/auth/components/LoginForm";
 import { getSubdomain } from "@/src/shared/utils/getSubdomain";
 import { useTranslations } from "next-intl";
 import { formRequestProps } from "@/src/shared/types";
-import { featuresConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/entityConfig";
 
 export default function RegisterPage() {
   const t = useTranslations("register");
@@ -11,7 +11,7 @@ export default function RegisterPage() {
   const subdomain = getSubdomain();
 
   const props: formRequestProps = {
-    alias: featuresConfig["register-users"].createAlias!,
+    alias: formsConfig["register-users"].createAlias!,
     submitText: t("button"),
     mode: "create",
     title: t("title"),
@@ -20,7 +20,7 @@ export default function RegisterPage() {
   };
 
   if (!subdomain) {
-    props.alias = featuresConfig["register-tenants"].createAlias!;
+    props.alias = formsConfig["register-tenants"].createAlias!;
     props.message = t2("message");
     props.istenant = true;
     props.title = t2("title");
