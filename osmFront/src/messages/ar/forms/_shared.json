@@ -155,6 +155,8 @@
     "sales_installments": "الأقساط",
     "financial-periods": "الفترات المالية",
     "accounting-taxes": "الضرائب المحاسبية",
-    "accounting-categories": "فئات المحاسبة"
+    "accounting-categories": "فئات المحاسبة",
+    "invoice-types": "أنواع الفواتير",
+    "pricing-policies": "سياسات التسعير"
   }
 }

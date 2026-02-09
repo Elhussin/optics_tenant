@@ -21,7 +21,7 @@ import { useTranslations } from "next-intl";
 import { InfoItem } from "../../../../shared/components/ui/InfoItem";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 interface VariantViewProps {
   productId: string;
@@ -53,7 +53,7 @@ export function VariantView({ productId, variantId }: VariantViewProps) {
   if (isError || !variant) {
     return <NotFound error={t("view.variantNotFound")} />;
   }
-  console.log(variant.description );
+  console.log(variant.description);
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       <PageHeader

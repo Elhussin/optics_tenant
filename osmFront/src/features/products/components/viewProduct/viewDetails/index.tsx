@@ -27,7 +27,7 @@ import { useTranslations } from "next-intl";
 import { InfoItem } from "../../../../../shared/components/ui/InfoItem";
 import { VariantCard } from "../../variant/VariantCard";
 import { Skeleton } from "@/src/shared/components/ui/Skeleton";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 // Product type badges (Premium variants)
 const TYPE_VARIANTS: Record<
   string,

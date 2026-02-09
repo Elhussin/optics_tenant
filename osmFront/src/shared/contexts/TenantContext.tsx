@@ -9,7 +9,7 @@ import React, {
   useMemo,
 } from "react";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 // Define the shape of the Tenant Settings object based on your backend model
 export interface TenantSettings {

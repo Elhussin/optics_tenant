@@ -10,7 +10,7 @@ import {
 import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";
 import { ViewCardProps } from "@/src/shared/types";
 import { RenderButtons } from "@/src/shared/components/ui/buttons/RenderButtons";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import {
   Copy,

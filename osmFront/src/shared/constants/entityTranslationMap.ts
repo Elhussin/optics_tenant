@@ -100,6 +100,7 @@ export const ENTITY_TRANSLATION_MAP: Record<string, string> = {
 
     // Partners & Suppliers
     "partners": "forms/partners",
+    "crm-partners": "forms/partners",
     "suppliers": "forms/suppliers",
     "manufacturers": "forms/suppliers",
     "brands": "forms/suppliers",

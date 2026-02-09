@@ -30,6 +30,9 @@ import {
 import { SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import { Partner } from "../types/partners.types";
 import { format } from "date-fns";
+import { PartnerCustomersTab } from "../components/PartnerCustomersTab";
+import { PartnerClaimsTab } from "../components/PartnerClaimsTab";
+import { PartnerPriceListTab } from "../components/PartnerPriceListTab";
 
 export function PartnerDetailsPage() {
   const { id } = useParams();
@@ -90,7 +93,15 @@ export function PartnerDetailsPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end -mt-12 gap-4">
             <div className="flex items-end gap-6">
               <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-xl ring-4 ring-white/50 dark:ring-black/50">
-                <Building2 className="w-12 h-12 text-primary" />
+                {partner.logo ? (
+                  <img
+                    src={partner.logo}
+                    alt={partner.name}
+                    className="w-12 h-12 object-contain"
+                  />
+                ) : (
+                  <Building2 className="w-12 h-12 text-primary" />
+                )}
               </div>
               <div className="mb-2 space-y-1">
                 <div className="flex items-center gap-3">
@@ -100,9 +111,15 @@ export function PartnerDetailsPage() {
                   <Badge variant={partner.is_active ? "success" : "neutral"}>
                     {partner.is_active ? "نشط" : "غير نشط"}
                   </Badge>
+                  {partner.code && (
+                    <Badge variant="info" className="font-mono">
+                      {partner.code}
+                    </Badge>
+                  )}
                 </div>
                 <p className="text-secondary font-medium">
-                  {partner.name_en} • {partner.partner_type}
+                  {partner.name_en} •{" "}
+                  {partner.partner_type_display || partner.partner_type}
                 </p>
               </div>
             </div>
@@ -142,14 +159,16 @@ export function PartnerDetailsPage() {
           value={`${Number(partner.credit_limit).toLocaleString()} ر.س`}
           icon={<CreditCard size={20} />}
         />
+        {partner.default_discount && (
+          <StatsTile
+            label="الخصم الافتراضي"
+            value={`${Number(partner.default_discount)}%`}
+            icon={<Activity size={20} />}
+          />
+        )}
         <StatsTile
-          label="نسبة الخصم"
-          value={`${partner.discount_percentage}%`}
-          icon={<Activity size={20} />}
-        />
-        <StatsTile
-          label="مدة السداد"
-          value={`${partner.payment_terms_days} يوم`}
+          label="شروط الدفع"
+          value={partner.payment_terms.replace("_", " ")}
           icon={<Calendar size={20} />}
         />
       </div>
@@ -186,8 +205,11 @@ export function PartnerDetailsPage() {
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6 animate-fade-in-up">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <GlassCard >
-              {/* title="معلومات التواصل" icon={<Phone size={20} />} */}
+            <GlassCard>
+              <div className="flex items-center gap-2 mb-4">
+                <Phone className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-bold text-main">معلومات التواصل</h3>
+              </div>
               <div className="space-y-4">
                 <InfoRow
                   icon={<Users size={18} />}
@@ -219,37 +241,40 @@ export function PartnerDetailsPage() {
               </div>
             </GlassCard>
 
-            <GlassCard
-
-            >
-              
-              {/* title="تفاصيل العقد والضريبة"
-              icon={<FileText size={20} />} */}
+            <GlassCard>
+              <div className="flex items-center gap-2 mb-4">
+                <FileText className="w-5 h-5 text-primary" />
+                <h3 className="text-lg font-bold text-main">تفاصيل العقد</h3>
+              </div>
               <div className="space-y-4">
                 <InfoRow label="الرقم الضريبي" value={partner.tax_number} />
+                <InfoRow label="رقم العقد" value={partner.contract_number} />
                 <div className="divider" />
                 <InfoRow
                   label="تاريخ بداية العقد"
                   value={
-                    partner.contract_start_date
-                      ? format(
-                        new Date(partner.contract_start_date),
-                        "yyyy-MM-dd",
-                      )
+                    partner.contract_start
+                      ? format(new Date(partner.contract_start), "yyyy-MM-dd")
                       : "-"
                   }
                 />
                 <InfoRow
                   label="تاريخ نهاية العقد"
                   value={
-                    partner.contract_end_date
-                      ? format(
-                        new Date(partner.contract_end_date),
-                        "yyyy-MM-dd",
-                      )
+                    partner.contract_end
+                      ? format(new Date(partner.contract_end), "yyyy-MM-dd")
                       : "-"
                   }
                 />
+                <InfoRow
+                  label="نسبة تحمل المريض"
+                  value={
+                    partner.patient_share_percentage
+                      ? `${partner.patient_share_percentage}%`
+                      : "-"
+                  }
+                />
+
                 <div className="p-4 rounded-xl bg-gray-50 dark:bg-white/5 mt-4">
                   <h4 className="text-sm font-medium text-secondary mb-2">
                     ملاحظات
@@ -264,23 +289,15 @@ export function PartnerDetailsPage() {
         </TabsContent>
 
         <TabsContent value="customers">
-          <GlassCard className="min-h-[200px] flex items-center justify-center">
-            <p className="text-secondary">
-              قريباً: قائمة العملاء المرتبطين بهذا الشريك
-            </p>
-          </GlassCard>
+          <PartnerCustomersTab partnerId={partner.id} />
         </TabsContent>
 
         <TabsContent value="claims">
-          <GlassCard className="min-h-[200px] flex items-center justify-center">
-            <p className="text-secondary">قريباً: سجل المطالبات التأمينية</p>
-          </GlassCard>
+          <PartnerClaimsTab partnerId={partner.id} />
         </TabsContent>
 
         <TabsContent value="pricelist">
-          <GlassCard className="min-h-[200px] flex items-center justify-center">
-            <p className="text-secondary">قريباً: إدارة قوائم الأسعار الخاصة</p>
-          </GlassCard>
+          <PartnerPriceListTab partnerId={partner.id} />
         </TabsContent>
       </Tabs>
     </div>

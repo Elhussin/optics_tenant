@@ -7,7 +7,7 @@ import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useRouter } from "next/navigation";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { useTranslations } from "next-intl";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 const AddVariant = React.lazy(

@@ -1,7 +1,7 @@
 // app/[entity]/page.tsx
 "use client";
 import { useParams } from "next/navigation";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 import ViewCard from "@/src/features/formGenerator/components/ViewCard";
 import { NotFound } from "@/src/shared/components/views/NotFound";

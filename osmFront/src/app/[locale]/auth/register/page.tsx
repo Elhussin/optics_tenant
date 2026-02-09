@@ -3,7 +3,7 @@ import LoginForm from "@/src/features/auth/components/LoginForm";
 import { getSubdomain } from "@/src/shared/utils/getSubdomain";
 import { useTranslations } from "next-intl";
 import { formRequestProps } from "@/src/shared/types";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 export default function RegisterPage() {
   const t = useTranslations("register");

@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from "next/navigation";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import dynamic from "next/dynamic";
 const DynamicFormGenerator = dynamic(

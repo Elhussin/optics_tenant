@@ -6,5 +6,5 @@ import { useParams } from "next/navigation";
 export default function EditPartnerPage() {
   const { id } = useParams();
 
-  return <DynamicFormGenerator entity="partners" mode="edit" id={Number(id)} />;
+  return <DynamicFormGenerator entity="crm-partners" mode="edit" id={Number(id)} />;
 }

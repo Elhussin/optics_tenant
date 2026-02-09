@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { relationshipConfigs } from "@/src/features/formGenerator/constants/generatFormConfig";
 
 export function useFieldOptions(

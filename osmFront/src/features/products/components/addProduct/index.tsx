@@ -39,7 +39,7 @@ import { ProductVariantStep } from "./components/ProductVariantStep";
 import { TabsLayout } from "./components/TabsLayout";
 import { handleSave } from "../../utils/handleSave";
 import { veriantConfig } from "../../constants/config";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { ProductAddProps } from "../../types";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 // STEPS moved inside component for translation

@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 export default function ProductImportPage() {
   const t = useTranslations("products.importCsv");

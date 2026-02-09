@@ -11,9 +11,8 @@ import {
 import { RenderField } from "./RenderField";
 import { cn } from "@/src/shared/utils/cn";
 import { Save, ArrowLeft, Sparkles, RotateCcw } from "lucide-react";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { safeToast } from "@/src/shared/utils/safeToast";
-import { useTranslations } from "next-intl";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { useRouter } from "@/src/app/i18n/navigation";
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";

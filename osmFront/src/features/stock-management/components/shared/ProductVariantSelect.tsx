@@ -2,13 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import {
-  Filter,
-  Package,
-  X,
-  ChevronsUpDown,
-  Check,
-} from "lucide-react";
+import { Filter, Package, X, ChevronsUpDown, Check } from "lucide-react";
 import useSWR from "swr";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
@@ -27,7 +21,7 @@ import {
   CommandItem,
 } from "@/src/shared/components/shadcn/ui/command";
 import { cn } from "@/src/shared/utils/cn";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 interface ProductVariant {
   id: number;

@@ -199,7 +199,8 @@
     "closeMenu": "Close menu",
     "openMenu": "Open menu",
     "switchLanguage": "Switch language, country and currency",
-    "search": "Search"
+    "search": "Search",
+    "Payments": "Payments"
   },
   "unauthorized": {
     "title": "Unauthorized",
@@ -245,13 +246,13 @@
     "company": "Company",
     "email": "Email",
     "sendMessage": "Send us a Message",
-    "subject" :"Subject",
-    "subjectPlaceholder":"How can we help?",
+    "subject": "Subject",
+    "subjectPlaceholder": "How can we help?",
     "phone": "Phone",
     "address": "Address",
     "name": "Your Name",
     "message": "Your Message",
-    "messagePlaceholder":"Tell us more about your inquiry...",
+    "messagePlaceholder": "Tell us more about your inquiry...",
     "image": "Upload Image (optional)",
     "submit": "Send Message",
     "successMessage": "Message sent successfully!",

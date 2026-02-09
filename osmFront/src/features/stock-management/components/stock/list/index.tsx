@@ -42,7 +42,7 @@ import api from "@/src/shared/api/axios";
 import { Stock, StockTransfer } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { useTranslations } from "next-intl";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { PurchaseOrderList } from "../../purchase-orders";
 import { StockListCard } from "../StockListCard";
 

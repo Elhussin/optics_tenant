@@ -16,7 +16,7 @@ import {
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { safeToast } from "@/src/shared/utils/safeToast";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { ProductVariantSelect } from "../shared";
 import { SearchableSelect } from "@/src/shared/components/field/Fields";
 import api from "@/src/shared/api/axios";

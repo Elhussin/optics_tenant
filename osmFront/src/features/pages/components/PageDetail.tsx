@@ -12,7 +12,7 @@ import { useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 export const PageDetail = ({ pageId }: { pageId: any }) => {
   const t = useTranslations("pagesList");

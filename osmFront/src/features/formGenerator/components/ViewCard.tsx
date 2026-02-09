@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { SearchFilterForm } from "../../../shared/components/search/SearchFilterForm";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { ArrowLeft, Eye, Pencil, Plus, ListFilter } from "lucide-react";
 import { useMergedTranslations } from "@/src/shared/utils/useMergedTranslations";

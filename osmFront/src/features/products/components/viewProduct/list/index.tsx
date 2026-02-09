@@ -9,7 +9,7 @@ import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { Pagination } from "@/src/shared/components/views/Pagination";
 import { useTranslations } from "next-intl";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { ProductCard } from "./ProductCard";
 import { PageHeader } from "@/src/shared/components/ui/PageHeader";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -56,19 +56,18 @@ export function ProductsList() {
         backTitle={t("actions.back")}
       >
         <div className="flex flex-row gap-2">
-        <ActionButton
-          label={t("actions.add")}
-          icon={<Plus size={18} />}
-          variant="primary"
-          navigateTo="/dashboard/products/create"
-        />
-        <ActionButton
-          label={t("actions.import")}
-          icon={<Upload size={18} />}
-          variant="primary"
-          navigateTo="/dashboard/products/import"
-
-        />
+          <ActionButton
+            label={t("actions.add")}
+            icon={<Plus size={18} />}
+            variant="primary"
+            navigateTo="/dashboard/products/create"
+          />
+          <ActionButton
+            label={t("actions.import")}
+            icon={<Upload size={18} />}
+            variant="primary"
+            navigateTo="/dashboard/products/import"
+          />
         </div>
       </PageHeader>
 

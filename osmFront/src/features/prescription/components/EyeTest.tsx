@@ -16,7 +16,7 @@ import {
 import { OtherEyeTestFailed } from "./OtherEyeTestFailed";
 import ContactLensViewer from "./ContactLensViewer";
 import { motion } from "framer-motion";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
 

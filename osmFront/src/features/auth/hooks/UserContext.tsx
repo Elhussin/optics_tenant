@@ -12,7 +12,7 @@ import { useRouter } from "@/src/app/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { UserContextType, User } from "@/src/shared/types";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 

@@ -198,7 +198,8 @@
     "closeMenu": "إغلاق القائمة",
     "openMenu": "فتح القائمة",
     "switchLanguage": "تبديل اللغة",
-    "search": "بحث"
+    "search": "بحث",
+    "Payments": "المدفوعات"
   },
   "unauthorized": {
     "title": "غير مصرح",

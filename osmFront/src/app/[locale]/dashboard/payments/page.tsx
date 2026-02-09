@@ -1,18 +1,5 @@
-"use client";
-
-import React, { Suspense } from "react";
-import { SectionLoading } from "@/src/shared/components/ui/Spinner";
-
-const PaymentsListPage = React.lazy(() =>
-  import("@/src/features/payment").then((module) => ({
-    default: module.PaymentsListPage,
-  })),
-);
+import { UnifiedPaymentsPage } from "@/src/features/payment";
 
 export default function PaymentsPage() {
-  return (
-    <Suspense fallback={<SectionLoading />}>
-      <PaymentsListPage />
-    </Suspense>
-  );
+  return <UnifiedPaymentsPage />;
 }

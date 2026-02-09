@@ -27,6 +27,7 @@ interface OrderFormState {
     orderType: OrderType;
     invoiceTypeId: number | null;
     customerPartnerLinkId: number | null;
+    partnerId: number | null;
     paymentMethodId: number | null;
 
     // Items
@@ -40,6 +41,7 @@ interface OrderFormState {
     discountAmount: number;
     totalAmount: number;
     paidAmount: number;
+    insuranceCoverage: number;
 
     // Notes
     notes: string;
@@ -53,7 +55,8 @@ interface OrderFormState {
     setPrescription: (id: number | null) => void;
     setOrderType: (type: OrderType) => void;
     setInvoiceType: (id: number | null) => void;
-    setCustomerPartnerLink: (id: number | null) => void;
+    setCustomerPartnerLink: (id: number | null, partnerId?: number | null) => void;
+    setPartner: (id: number | null) => void;
     setPaymentMethodId: (id: number | null) => void;
     setStatus: (status: OrderStatus) => void;
 
@@ -67,6 +70,7 @@ interface OrderFormState {
     setDiscountPercent: (percent: number) => void;
     setDiscountAmount: (amount: number) => void;
     setPaidAmount: (amount: number) => void;
+    setInsuranceCoverage: (amount: number) => void;
     setTaxRate: (rate: number) => void;
 
     // Notes
@@ -97,6 +101,7 @@ const initialState = {
     orderType: "cash" as const,
     invoiceTypeId: null,
     customerPartnerLinkId: null,
+    partnerId: null,
     paymentMethodId: null,
     items: [],
     subtotal: 0,
@@ -106,6 +111,7 @@ const initialState = {
     discountAmount: 0,
     totalAmount: 0,
     paidAmount: 0,
+    insuranceCoverage: 0,
     notes: "",
     internalNotes: "",
     expectedDelivery: null,
@@ -120,7 +126,8 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
     setPrescription: (id) => set({ prescriptionId: id }),
     setOrderType: (type) => set({ orderType: type }),
     setInvoiceType: (id) => set({ invoiceTypeId: id }),
-    setCustomerPartnerLink: (id) => set({ customerPartnerLinkId: id }),
+    setCustomerPartnerLink: (id, partnerId) => set({ customerPartnerLinkId: id, ...(partnerId !== undefined && { partnerId }) }),
+    setPartner: (id) => set({ partnerId: id }),
     setPaymentMethodId: (id) => set({ paymentMethodId: id }),
     setStatus: (status) => set({ status }),
 
@@ -163,6 +170,7 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
     },
 
     setPaidAmount: (amount) => set({ paidAmount: amount }),
+    setInsuranceCoverage: (amount) => set({ insuranceCoverage: amount }),
     setTaxRate: (rate) => {
         set({ taxRate: rate });
         get().calculateTotals();
@@ -220,6 +228,7 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
             orderType: order.order_type || "cash",
             invoiceTypeId: order.invoice_type?.id || order.invoice_type,
             customerPartnerLinkId: order.customer_partner_link?.id || order.customer_partner_link,
+            partnerId: order.partner?.id || order.partner || null,
             paymentMethodId:
                 (typeof order.payment_method === "object"
                     ? order.payment_method?.id

@@ -34,9 +34,7 @@ import api from "@/src/shared/api/axios";
 import { Stock } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { useTranslations } from "next-intl";
-import {
-  formsConfig,
-} from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { Pagination } from "@/src/shared/components/views/Pagination";

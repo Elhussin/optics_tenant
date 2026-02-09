@@ -54,13 +54,7 @@ export const dashboardLink = [
     isTenant: false,
     icon: Globe,
   },
-  {
-    href: "payments",
-    roles: ["TenantOwner"],
-    group: "Billing",
-    isTenant: false,
-    icon: CreditCard,
-  },
+
   // Billing
   {
     href: "subscription-plans",
@@ -404,7 +398,7 @@ export const dashboardLink = [
   },
   {
     href: "flexible-prices",
-    roles: ["TenantOwner", "TenantAdmin", "InventoryManager", "BranchManager"],
+    roles: ["TenantOwner", "TenantAdmin", "InventoryManager", "BranchManager", "SalesClerk"],
     group: "Product",
     isTenant: true,
     icon: DollarSign,
@@ -487,13 +481,7 @@ export const dashboardLink = [
     isTenant: true,
     icon: FileText,
   },
-  {
-    href: "flexible-prices",
-    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
-    group: "Sales",
-    isTenant: true,
-    icon: FileText,
-  },
+
   {
     href: "invoices",
     roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
@@ -502,25 +490,18 @@ export const dashboardLink = [
     icon: FileText,
   },
   {
-    href: "sales-payments",
-    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
-    group: "Sales",
-    isTenant: true,
-    icon: DollarSign,
-  },
-  {
-    href: "sales_installments",
-    roles: ["TenantOwner", "TenantAdmin", "SalesClerk"],
-    group: "Sales",
-    isTenant: true,
-    icon: CreditCard,
-  },
-  {
     href: "payment-methods",
     roles: ["TenantOwner", "TenantAdmin"],
     group: "Sales",
     isTenant: true,
     icon: CreditCard,
+  },
+  {
+    href: "payments",
+    roles: ["TenantOwner", "TenantAdmin", "SalesClerk", "FinanceOfficer"],
+    group: "Sales",
+    isTenant: true,
+    icon: DollarSign,
   },
   // Wholesale
   {

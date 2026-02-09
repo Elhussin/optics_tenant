@@ -7,7 +7,7 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { Skeleton, SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 export default function PublicPageViews({
   slug,
   locale,

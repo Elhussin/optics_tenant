@@ -14,7 +14,7 @@ import {
   LogIn,
   ArrowLeft,
 } from "lucide-react";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 export default function ActivatePage() {
   const t = useTranslations("activation");
   const alias = formsConfig["tenants-activate"].retrieveAlias;

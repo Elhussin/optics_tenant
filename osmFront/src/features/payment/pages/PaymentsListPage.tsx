@@ -9,6 +9,7 @@ import {
   Search,
   CreditCard,
   XCircle,
+  Edit,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -150,13 +151,13 @@ export default function PaymentsListPage() {
               title="Refresh"
             />
             {/* Create Payment usually happens via Order, but if standalone supported: */}
-            {/* <ActionButton
+            <ActionButton
               variant="primary"
               icon={<Plus className="w-4 h-4" />}
               label="Create"
               navigateTo="/dashboard/payments/create"
               className="shadow-lg shadow-primary/20"
-            /> */}
+            />
           </div>
         </div>
       </GlassCard>
@@ -287,6 +288,15 @@ export default function PaymentsListPage() {
                           // navigateTo={`/dashboard/invoices/${payment.invoice}`} // Link to invoice
                           onClick={() => {}} // Placeholder or modal
                           className="rounded-lg"
+                        />
+                        <ActionButton
+                          variant="icon-edit"
+                          size="sm"
+                          icon={<Edit size={18} />}
+                          label=""
+                          navigateTo={`/dashboard/payments/${payment.id}/edit`}
+                          className="rounded-lg"
+                          title="Edit"
                         />
                       </div>
                     </td>

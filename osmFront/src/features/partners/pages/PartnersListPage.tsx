@@ -215,7 +215,15 @@ export function PartnersListPage() {
                   >
                     <div className="flex justify-between items-start mb-4">
                       <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-xl group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                        <Building2 className="w-6 h-6" />
+                        {partner.logo ? (
+                          <img
+                            src={partner.logo}
+                            alt={partner.name}
+                            className="w-6 h-6 object-contain"
+                          />
+                        ) : (
+                          <Building2 className="w-6 h-6" />
+                        )}
                       </div>
                       <Badge
                         variant={partner.is_active ? "success" : "neutral"}
@@ -228,7 +236,9 @@ export function PartnersListPage() {
                       {partner.name}
                     </h3>
                     <p className="text-sm text-secondary mb-4 font-medium">
-                      {partner.name_en || partner.partner_type}
+                      {partner.name_en ||
+                        partner.partner_type_display ||
+                        partner.partner_type}
                     </p>
 
                     <div className="space-y-3 pt-4 border-t border-border-main/50">
@@ -251,9 +261,11 @@ export function PartnersListPage() {
                         </span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span className="text-secondary">نسبة الخصم</span>
+                        <span className="text-secondary">الخصم الافتراضي</span>
                         <span className="font-medium text-main">
-                          {partner.discount_percentage}%
+                          {partner.default_discount
+                            ? `${Number(partner.default_discount)}%`
+                            : "-"}
                         </span>
                       </div>
                     </div>

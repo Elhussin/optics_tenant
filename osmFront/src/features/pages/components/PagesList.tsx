@@ -5,7 +5,7 @@ import { Pencil, Eye, FileText, Globe, Check, X } from "lucide-react";
 import { useFilteredListRequest } from "@/src/shared/hooks/useFilteredListRequest";
 import { useTranslations } from "next-intl";
 import { useLocale } from "next-intl";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { useFilterDataOptions } from "@/src/shared/hooks/useFilterDataOptions";
 import { SearchFilterForm } from "@/src/shared/components/search/SearchFilterForm";
 import { Pagination } from "@/src/shared/components/views/Pagination";

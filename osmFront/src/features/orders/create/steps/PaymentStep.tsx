@@ -322,6 +322,54 @@ export function PaymentStep() {
         </CardContent>
       </Card>
 
+      {/* Insurance Split Payment */}
+      {store.customerPartnerLinkId && (
+        <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2 text-blue-700 dark:text-blue-400">
+              <FileText size={20} />
+              تفاصيل التأمين
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>تغطية التأمين (ر.س)</Label>
+                <Input
+                  type="number"
+                  min="0"
+                  max={store.totalAmount}
+                  step="0.01"
+                  value={store.insuranceCoverage}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value) || 0;
+                    store.setInsuranceCoverage(val);
+                    // Update paid amount to reflect patient share immediately?
+                    // Usually patient share = Total - Insurance Coverage
+                    store.setPaidAmount(Math.max(0, store.totalAmount - val));
+                  }}
+                />
+              </div>
+              <div>
+                <Label>حصة المريض (ر.س)</Label>
+                <Input
+                  type="number"
+                  readOnly
+                  value={Math.max(
+                    0,
+                    store.totalAmount - store.insuranceCoverage,
+                  ).toFixed(2)}
+                  className="bg-gray-100 dark:bg-gray-800"
+                />
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
+              * سيتم تسجيل مبلغ التغطية كمديونية على شركة التأمين.
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Expected Delivery */}
       <div className="space-y-2">
         <Label className="flex items-center gap-2">

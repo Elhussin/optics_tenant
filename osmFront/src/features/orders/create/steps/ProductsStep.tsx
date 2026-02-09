@@ -19,6 +19,26 @@ export function ProductsStep() {
   const [editPrice, setEditPrice] = useState(0);
   const store = useOrderFormStore();
 
+  // Fetch Flexible Prices if Partner is selected
+  const { query: pricingQuery } = useApiForm({
+    alias: "products_flexible_prices_list",
+    defaultValues: {
+      partner: store.partnerId,
+      page_size: 1000, // optimize this later
+    },
+    enabled: !!store.partnerId,
+  });
+
+  const flexiblePricesMap = React.useMemo(() => {
+    const map = new Map<number, number>();
+    if (pricingQuery.data?.results) {
+      pricingQuery.data.results.forEach((fp: any) => {
+        map.set(fp.variant, parseFloat(fp.special_price));
+      });
+    }
+    return map;
+  }, [pricingQuery.data]);
+
   // Search products/variants
   const { query, isBusy } = useApiForm({
     alias: "products_variants_list",
@@ -40,12 +60,22 @@ export function ProductsStep() {
     }
   }, [query.data]);
 
+  const getPrice = (variant: any) => {
+    if (store.partnerId && flexiblePricesMap.has(variant.id)) {
+      return (
+        flexiblePricesMap.get(variant.id) || parseFloat(variant.selling_price)
+      );
+    }
+    return parseFloat(variant.selling_price);
+  };
+
   const handleAddProduct = (variant: any) => {
+    const price = getPrice(variant);
     const newItem: OrderItem = {
       product_variant: variant.id,
       product_name: `${variant.product_model || variant.sku} - ${variant.sku}`,
       quantity: 1,
-      unit_price: parseFloat(variant.selling_price) || 0,
+      unit_price: price || 0,
       prescription: store.prescriptionId,
     };
     store.addItem(newItem);
@@ -98,29 +128,48 @@ export function ProductsStep() {
                   <SectionLoading height="h-32" />
                 </div>
               ) : searchResults.length > 0 ? (
-                searchResults.map((variant) => (
-                  <div
-                    key={variant.id}
-                    className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 border-b last:border-0 flex items-center justify-between"
-                  >
-                    <div>
-                      <p className="font-medium">
-                        {variant.product_model || variant.sku}
-                      </p>
-                      <p className="text-sm text-secondary">
-                        SKU: {variant.sku} | السعر: {variant.selling_price} ر.س
-                      </p>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleAddProduct(variant)}
-                      className="bg-primary hover:bg-primary/90"
+                searchResults.map((variant) => {
+                  const price = getPrice(variant);
+                  const originalPrice = parseFloat(variant.selling_price);
+                  const hasSpecialPrice = price !== originalPrice;
+
+                  return (
+                    <div
+                      key={variant.id}
+                      className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-800 border-b last:border-0 flex items-center justify-between"
                     >
-                      <Plus size={16} className="ml-1" />
-                      إضافة
-                    </Button>
-                  </div>
-                ))
+                      <div>
+                        <p className="font-medium">
+                          {variant.product_model || variant.sku}
+                        </p>
+                        <p className="text-sm text-secondary flex gap-2 items-center">
+                          <span>SKU: {variant.sku}</span>
+                          <span>|</span>
+                          {hasSpecialPrice ? (
+                            <>
+                              <span className="line-through text-gray-400">
+                                {originalPrice} ر.س
+                              </span>
+                              <span className="text-green-600 font-bold">
+                                {price} ر.س
+                              </span>
+                            </>
+                          ) : (
+                            <span>السعر: {price} ر.س</span>
+                          )}
+                        </p>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleAddProduct(variant)}
+                        className="bg-primary hover:bg-primary/90"
+                      >
+                        <Plus size={16} className="ml-1" />
+                        إضافة
+                      </Button>
+                    </div>
+                  );
+                })
               ) : (
                 <p className="p-4 text-center text-secondary">لا توجد نتائج</p>
               )}

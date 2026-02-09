@@ -1,6 +1,6 @@
 "use client";
 import EyeTest from "@/src/features/prescription/components/EyeTest";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { useTranslations } from "next-intl";
 
 export default function CreatePrescriptionPage() {

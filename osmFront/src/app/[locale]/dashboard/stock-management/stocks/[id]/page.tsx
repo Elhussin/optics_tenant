@@ -10,7 +10,7 @@ import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { StockInfo } from "@/src/features/stock-management/components/stock/StockInfo";
 import { StockMovementsSection } from "@/src/features/stock-management/components/stock/add/StockMovementsSection";
 import { useTranslations } from "next-intl";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 export default function StockDetailsPage() {
   const t = useTranslations("inventory");
   const params = useParams();

@@ -37,7 +37,10 @@
     "method": "Method",
     "currency": "Currency",
     "updateDescription": "Update Payment",
-    "createDescription": "Add New Payment"
+    "createDescription": "Add New Payment",
+    "salesPayments": "Sales Payments",
+    "installments": "Installments",
+    "subscription": "My Subscription"
   },
   "subscription-plans": {
     "title": "Subscription Plans",

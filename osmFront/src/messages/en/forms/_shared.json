@@ -154,6 +154,8 @@
     "sales_installments": "Installments",
     "financial-periods": "Financial Periods",
     "accounting-taxes": "Accounting Taxes",
-    "accounting-categories": "Accounting Categories"
-  }
+    "accounting-categories": "Accounting Categories",
+    "invoice-types": "Invoice Types",
+    "pricing-policies": "Pricing Policies"
+    }
 }

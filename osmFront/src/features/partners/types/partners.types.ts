@@ -1,120 +1,204 @@
 // features/partners/types/partners.types.ts
 /**
  * Types for Partners & Insurance Module
+ * Synced with Backend Serializers
  */
 
 export type PartnerType =
-    | 'insurance_company'
+    | 'insurance'
+    | 'bnpl'
     | 'corporate'
-    | 'government'
-    | 'healthcare'
-    | 'other';
+    | 'wholesaler'
+    | 'agent';
+
+export type PaymentTerms =
+    | 'immediate'
+    | '7_days'
+    | '15_days'
+    | '30_days'
+    | '60_days'
+    | '90_days';
 
 export type ClaimStatus =
-    | 'pending'
+    | 'draft'
     | 'submitted'
+    | 'under_review'
     | 'approved'
+    | 'partial'
     | 'rejected'
     | 'paid'
-    | 'partially_paid';
+    | 'cancelled';
 
 export interface Partner {
     id: number;
     name: string;
     name_en?: string;
     partner_type: PartnerType;
+    partner_type_display?: string;
+    code: string;
+    logo?: string | null;
     contact_person?: string;
     phone?: string;
     email?: string;
+    website?: string;
     address?: string;
-    tax_number?: string;
-    discount_percentage: string;
-    payment_terms_days: number;
+    // Contract
+    contract_number?: string;
+    contract_start?: string;
+    contract_end?: string;
+    is_contract_active?: boolean;
+    // Financial
+    payment_terms: PaymentTerms;
+    default_discount: string;
     credit_limit: string;
     current_balance: string;
-    is_active: boolean;
+    available_credit: string;
+    patient_share_percentage: string;
+    tax_number?: string;
     notes?: string;
-    contract_start_date?: string;
-    contract_end_date?: string;
+    is_active: boolean;
     created_at: string;
-    website?:string;
+    updated_at: string;
 }
 
-export interface PartnerCustomer {
+export interface PartnerBranch {
+    id: number;
+    partner: number;
+    partner_name: string;
+    branch: number;
+    branch_name: string;
+    special_discount?: string;
+    is_active: boolean;
+}
+
+export interface CustomerPartnerLink {
     id: number;
     customer: number;
     customer_name: string;
     partner: number;
     partner_name: string;
-    membership_number?: string;
-    coverage_percentage: string;
-    coverage_limit?: string;
+    partner_type: string;
+    member_id?: string;
+    policy_number?: string;
+    coverage_start?: string;
+    coverage_end?: string;
+    annual_limit?: string;
+    remaining_limit?: string;
+    copay_percentage?: string;
+    copay_fixed?: string;
+    coverage_class?: string;
     is_active: boolean;
-    start_date?: string;
-    end_date?: string;
+    is_coverage_active: boolean;
+    notes?: string;
+}
+
+export interface ClaimItem {
+    id: number;
+    claim: number;
+    order_item: number;
+    description: string;
+    quantity: number;
+    unit_price: string;
+    total_price: string;
+    claim_amount: string;
+    approved_amount: string;
+    insurance_code?: string;
+}
+
+export interface ClaimDocument {
+    id: number;
+    claim: number;
+    document_type: string;
+    document_type_display: string;
+    title: string;
+    file: string;
+    notes?: string;
+    created_at: string;
 }
 
 export interface InsuranceClaim {
     id: number;
     claim_number: string;
+    external_claim_number?: string;
     order: number;
     order_number: string;
     partner: number;
     partner_name: string;
-    customer: number;
+    customer_partner_link?: number;
     customer_name: string;
+
+    // Dates
     claim_date: string;
-    total_amount: string;
-    partner_share: string;
-    customer_share: string;
-    approved_amount?: string;
-    status: ClaimStatus;
     submission_date?: string;
-    approval_date?: string;
+    response_date?: string;
     payment_date?: string;
-    rejection_reason?: string;
-    notes?: string;
-    created_at: string;
-}
 
-export interface ClaimCreate {
-    order_id: number;
-    partner_id: number;
-    customer_id: number;
+    // Amounts
     total_amount: string;
-    partner_share: string;
-    customer_share: string;
+    claim_amount: string;
+    approved_amount: string;
+    paid_amount: string;
+    patient_share: string;
+
+    status: ClaimStatus;
+    status_display: string;
+
+    rejection_reason?: string;
+    partial_reason?: string;
+    notes?: string;
+    internal_notes?: string;
+
+    items: ClaimItem[];
+    attached_documents: ClaimDocument[];
+
+    created_at: string;
+    updated_at: string;
+}
+
+export interface PartnerSettlement {
+    id: number;
+    settlement_number: string;
+    partner: number;
+    partner_name: string;
+    settlement_date: string;
+    period_start: string;
+    period_end: string;
+    total_claims: number;
+    total_amount: string;
+    adjustments: string;
+    net_amount: string;
+    status: string;
+    status_display: string;
+    payment_date?: string;
+    payment_reference?: string;
     notes?: string;
 }
 
-export interface PartnerStatement {
-    partner: {
-        id: number;
-        name: string;
-        credit_limit: string;
-        current_balance: string;
-    };
-    period: {
-        start_date: string | null;
-        end_date: string | null;
-    };
-    opening_balance: string;
-    transactions: {
-        date: string;
-        type: 'claim' | 'payment';
-        reference: string;
-        debit: string;
-        credit: string;
-        balance: string;
-    }[];
-    closing_balance: string;
-    summary: {
-        total_claims: string;
-        total_payments: string;
-        pending_claims: number;
-    };
+export interface FlexiblePrice {
+    id: number;
+    variant: number;
+    variant_name?: string; // Hypothetical, usually handled by API expansion
+    customer?: number;
+    customer_name?: string;
+    customer_group?: number;
+    customer_group_name?: string;
+    branch?: number;
+    branch_name?: string;
+    pricing_tier?: string;
+    partner?: number;
+    partner_name?: string;
+    special_price: string;
+    discount_percentage?: string;
+    start_date?: string;
+    end_date?: string;
+    min_quantity: number;
+    max_quantity?: number;
+    currency: string;
+    priority: number;
+    active: boolean; // Computed from dates helper?
 }
 
+// Dashboard Stats Interface (Keep existing or update as needed)
 export interface PartnerDashboard {
     total_partners: number;
     active_claims: number;
@@ -124,22 +208,9 @@ export interface PartnerDashboard {
         total_claimed: string;
         total_paid: string;
     };
-    top_partners: {
-        partner_id: number;
-        name: string;
-        claims_count: number;
-        total_amount: string;
-    }[];
     claims_by_status: {
         status: ClaimStatus;
         count: number;
         amount: string;
     }[];
-}
-
-export interface PaymentSplit {
-    total_amount: number;
-    partner_share: number;
-    customer_share: number;
-    coverage_percentage: number;
 }

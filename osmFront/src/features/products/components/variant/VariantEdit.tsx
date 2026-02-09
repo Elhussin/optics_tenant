@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 interface VariantEditProps {
   variantId: string;

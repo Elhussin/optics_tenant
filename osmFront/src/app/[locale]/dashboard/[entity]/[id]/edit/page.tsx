@@ -1,6 +1,6 @@
 // app/[entity]/[id]/edit/page.tsx
 "use client";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { useParams } from "next/navigation";
 import { NotFound } from "@/src/shared/components/views/NotFound";
 import dynamic from "next/dynamic";

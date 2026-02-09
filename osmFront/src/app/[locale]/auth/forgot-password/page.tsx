@@ -16,7 +16,7 @@ import { Link } from "@/src/app/i18n/navigation";
 import { cn } from "@/src/shared/utils/cn";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 
 export default function ForgotPasswordPage() {
   const [status, setStatus] = useState<

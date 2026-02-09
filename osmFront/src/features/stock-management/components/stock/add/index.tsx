@@ -19,9 +19,7 @@ import api from "@/src/shared/api/axios";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
-import {
-  formsConfig
-} from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 import { ProductVariantSelect } from "../../shared";
 import {
   Dialog,
@@ -150,10 +148,9 @@ export function AddInventory() {
   const { data: stocksData } = useSWR(
     branch ? `stocks_branch_${branch}` : null,
     async () => {
-      const response = await api.customRequest(
-        formsConfig.stocks.listAlias!,
-        { branch },
-      );
+      const response = await api.customRequest(formsConfig.stocks.listAlias!, {
+        branch,
+      });
       return extractArrayData<Stock>(response);
     },
     { revalidateOnFocus: false },
@@ -639,7 +636,7 @@ export function AddInventory() {
         </div>
       </div>
 
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog} >
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent className="bg-surface">
           <DialogHeader>
             <DialogTitle>

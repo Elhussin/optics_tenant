@@ -19,7 +19,7 @@ import { RenderFields } from "@/src/shared/components/field/RenderFields";
 import { veriantConfig } from "../../constants/config";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import { useTranslations } from "next-intl";
-import { formsConfig } from "@/src/shared/constants/entityConfig";
+import { formsConfig } from "@/src/shared/constants/formsConfig";
 interface AddVariantProps {
   productId: number;
   variantType: string;
@@ -103,10 +103,7 @@ export function AddVariant({
         }
       });
 
-    
-
       const result = await form.submitForm(payload);
-
 
       if (!result.success) {
         safeToast(

@@ -37,7 +37,10 @@
     "method": "نوع العملية",
     "currency": "العملة",
     "updateDescription": "تحديث بيانات الدفع",
-    "createDescription": "إضافة دفع جديد"
+    "createDescription": "إضافة دفع جديد",
+    "salesPayments": "دفعات المبيعات",
+    "installments": "الأقساط",
+    "subscription": "اشتراكي"
   },
   "subscription-plans": {
     "title": "خطط الاشتراك",
