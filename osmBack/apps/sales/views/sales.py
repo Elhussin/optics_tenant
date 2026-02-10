@@ -186,6 +186,73 @@ class OrderViewSet(BaseSalesViewSet):
             'total': order.total_amount
         })
 
+    @extend_schema(
+        request=inline_serializer(
+            name='OrderBulkUpdateStatusRequest',
+            fields={
+                'ids': serializers.ListField(child=serializers.IntegerField()),
+                'status': serializers.ChoiceField(choices=[
+                    ('confirmed', 'Confirmed'),
+                    ('ready', 'Ready'),
+                    ('delivered', 'Delivered'),
+                    ('cancelled', 'Cancelled')
+                ])
+            }
+        ),
+        responses={
+            200: inline_serializer(
+                name='OrderBulkUpdateStatusResponse',
+                fields={
+                    'status': serializers.CharField(),
+                    'message': serializers.CharField(),
+                    'updated_count': serializers.IntegerField(),
+                    'errors': serializers.ListField(child=serializers.CharField())
+                }
+            )
+        }
+    )
+    @action(detail=False, methods=['post'], url_path='bulk-update-status')
+    def bulk_update_status(self, request):
+        """تحديث حالة مجموعة من الطلبات دفعة واحدة"""
+        ids = request.data.get('ids', [])
+        new_status = request.data.get('status')
+
+        if not ids or not new_status:
+            return Response(
+                {'detail': _('IDs and status are required')},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        updated_count = 0
+        errors = []
+
+        # Fetch orders efficiently
+        orders = Order.objects.filter(id__in=ids, branch=request.branch)
+
+        for order in orders:
+            try:
+                if new_status == 'confirmed':
+                    confirm_order(order, request.user)
+                elif new_status == 'ready':
+                    ready_order(order, request.user)
+                elif new_status == 'delivered':
+                    deliver_order(order, request.user)
+                elif new_status == 'cancelled':
+                    cancel_order(order, request.user)
+                else:
+                    raise ValidationError(_("Invalid status"))
+
+                updated_count += 1
+            except Exception as e:
+                errors.append(f"Order {order.order_number}: {str(e)}")
+
+        return Response({
+            'status': 'success' if updated_count > 0 else 'warning',
+            'message': _('{0} orders updated successfully').format(updated_count),
+            'updated_count': updated_count,
+            'errors': errors
+        })
+
 
 class InvoiceViewSet(BaseSalesViewSet):
     queryset = Invoice.objects.select_related(

@@ -228,14 +228,14 @@ class InvoiceSerializer(serializers.ModelSerializer):
         return None
 
     def validate_items(self, items):
-            seen = set()
-            for item in items:
-                variant_id = item.get('product_variant')
-                if variant_id in seen:
-                    raise serializers.ValidationError(
-                        str(_('Duplicate variant in invoice: {id}').format(id=variant_id)))
-                seen.add(variant_id)
-            return items
+        seen = set()
+        for item in items:
+            variant_id = item.get('product_variant')
+            if variant_id in seen:
+                raise serializers.ValidationError(
+                    str(_('Duplicate variant in invoice: {id}').format(id=variant_id)))
+            seen.add(variant_id)
+        return items
 
     def create(self, validated_data):
         items_data = validated_data.pop('items', [])
@@ -250,24 +250,24 @@ class InsuranceDetailsSerializer(serializers.Serializer):
     """
     Serializer for insurance details to be embedded in Order/Invoice
     """
-    policy_number= serializers.CharField(
-        source = 'customer_partner_link.policy_number', read_only = True)
+    policy_number = serializers.CharField(
+        source='customer_partner_link.policy_number', read_only=True)
     member_id = serializers.CharField(
-        source = 'customer_partner_link.member_id', read_only = True)
+        source='customer_partner_link.member_id', read_only=True)
     provider_name = serializers.CharField(
-        source = 'partner.name', read_only = True)
+        source='partner.name', read_only=True)
     provider_name_en = serializers.CharField(
-        source = 'partner.name_en', read_only = True)
-    coverage_percentage = serializers.DecimalField(
-        source = 'customer_partner_link.copay_percentage', max_digits = 5, decimal_places = 2, read_only = True)
+        source='partner.name_en', read_only=True)
+    copay_percentage = serializers.DecimalField(
+        source='customer_partner_link.patient_share_percentage', max_digits=5, decimal_places=2, read_only=True)
     coverage_limit = serializers.DecimalField(
-        source = 'customer_partner_link.annual_limit', max_digits = 12, decimal_places = 2, read_only = True)
+        source='customer_partner_link.annual_limit', max_digits=12, decimal_places=2, read_only=True)
     remaining_limit = serializers.DecimalField(
-        source = 'customer_partner_link.remaining_limit', max_digits = 12, decimal_places = 2, read_only = True)
+        source='customer_partner_link.remaining_limit', max_digits=12, decimal_places=2, read_only=True)
 
 
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
-        model= Payment
-        exclude= ['is_deleted']
-        read_only_fields= ['id']
+        model = Payment
+        exclude = ['is_deleted']
+        read_only_fields = ['id']

@@ -82,151 +82,31 @@ class WholesaleService:
     @classmethod
     def get_variant_price(cls, variant, customer=None, quantity=1, branch=None):
         """
-        Get appropriate price for a variant
-
-        Priority (Highest to Lowest):
-        1. Special customer price
-        2. Partner price (if linked)
-        3. Wholesale tier price
-        4. Customer group price
-        5. Quantity price
-        6. Base price
+        Get appropriate price for a variant using unified PriceCalculator
         """
-        from apps.products.models import FlexiblePrice
+        from apps.products.services.pricing_service import PriceCalculator
 
-        date = timezone.now().date()
-        base_price = variant.price
-
-        # 1. Special customer price
+        # Determine Partner from customer link if not explicitly passed
+        partner = None
         if customer:
-            customer_price = FlexiblePrice.objects.filter(
-                variant=variant,
-                customer=customer,
-                is_active=True
-            ).filter(
-                models.Q(start_date__isnull=True) | models.Q(
-                    start_date__lte=date),
-                models.Q(end_date__isnull=True) | models.Q(end_date__gte=date),
-            ).order_by('-priority').first()
-
-            if customer_price:
-                return {
-                    'price': customer_price.get_final_price(base_price),
-                    'discount_type': 'customer_special',
-                    'source': _('Special Customer Price'),
-                }
-
-            # 2. Partner Price
             partner_link = customer.get_active_partner_link()
             if partner_link:
-                partner_price = FlexiblePrice.objects.filter(
-                    variant=variant,
-                    partner=partner_link.partner,
-                    is_active=True
-                ).filter(
-                    models.Q(start_date__isnull=True) | models.Q(
-                        start_date__lte=date),
-                    models.Q(end_date__isnull=True) | models.Q(
-                        end_date__gte=date),
-                ).order_by('-priority').first()
+                partner = partner_link.partner
 
-                if partner_price:
-                    return {
-                        'price': partner_price.get_final_price(base_price),
-                        'discount_type': 'partner',
-                        'source': _('Partner Price: {0}').format(partner_link.partner.name),
-                    }
+        context = {
+            'customer': customer,
+            'quantity': quantity,
+            'branch': branch,
+            'partner': partner,
+            # 'policy': None  # Wholesale service typically doesn't know policy yet, unless passed
+        }
 
-            # 3. Wholesale Tier Price
-            if customer.pricing_tier and customer.pricing_tier != 'retail':
-                tier_price = FlexiblePrice.objects.filter(
-                    variant=variant,
-                    pricing_tier=customer.pricing_tier,
-                    customer__isnull=True,
-                    is_active=True
-                ).filter(
-                    models.Q(start_date__isnull=True) | models.Q(
-                        start_date__lte=date),
-                    models.Q(end_date__isnull=True) | models.Q(
-                        end_date__gte=date),
-                ).order_by('-priority').first()
+        result = PriceCalculator.calculate_price(variant, context)
 
-                if tier_price:
-                    return {
-                        'price': tier_price.get_final_price(base_price),
-                        'discount_type': 'tier',
-                        'source': _('Wholesale Price: {0}').format(customer.get_pricing_tier_display()),
-                    }
-
-            # 4. Customer Group Price
-            customer_groups = customer.groups.all()
-            if customer_groups.exists():
-                group_price = FlexiblePrice.objects.filter(
-                    variant=variant,
-                    customer_group__in=customer_groups,
-                    is_active=True
-                ).filter(
-                    models.Q(start_date__isnull=True) | models.Q(
-                        start_date__lte=date),
-                    models.Q(end_date__isnull=True) | models.Q(
-                        end_date__gte=date),
-                ).order_by('-priority').first()
-
-                if group_price:
-                    return {
-                        'price': group_price.get_final_price(base_price),
-                        'discount_type': 'group',
-                        'source': _('Group Price: {0}').format(group_price.customer_group.name),
-                    }
-
-        # 5. Quantity Price
-        quantity_price = FlexiblePrice.objects.filter(
-            variant=variant,
-            customer__isnull=True,
-            customer_group__isnull=True,
-            pricing_tier__isnull=True,
-            partner__isnull=True,
-            min_quantity__lte=quantity,
-            is_active=True
-        ).filter(
-            models.Q(start_date__isnull=True) | models.Q(start_date__lte=date),
-            models.Q(end_date__isnull=True) | models.Q(end_date__gte=date),
-            models.Q(max_quantity__isnull=True) | models.Q(
-                max_quantity__gte=quantity),
-        ).order_by('-min_quantity', '-priority').first()
-
-        if quantity_price:
-            return {
-                'price': quantity_price.get_final_price(base_price),
-                'discount_type': 'quantity',
-                'source': _('Quantity Price ({0}+)').format(quantity_price.min_quantity),
-            }
-
-        # 6. Branch Price
-        if branch:
-            branch_price = FlexiblePrice.objects.filter(
-                variant=variant,
-                branch=branch,
-                customer__isnull=True,
-                is_active=True
-            ).filter(
-                models.Q(start_date__isnull=True) | models.Q(
-                    start_date__lte=date),
-                models.Q(end_date__isnull=True) | models.Q(end_date__gte=date),
-            ).order_by('-priority').first()
-
-            if branch_price:
-                return {
-                    'price': branch_price.get_final_price(base_price),
-                    'discount_type': 'branch',
-                    'source': _('Branch Price: {0}').format(branch.name),
-                }
-
-        # Base Price
         return {
-            'price': base_price,
-            'discount_type': 'none',
-            'source': _('Base Price'),
+            'price': result['price'],
+            'discount_type': result['source_type'],
+            'source': result['source_name'],
         }
 
     @classmethod

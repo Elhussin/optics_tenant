@@ -7,7 +7,10 @@ from apps.sales.services.base_document_service import calculate_document_totals
 
 
 def calculate_order_totals(order):
-    return calculate_document_totals(order)
+    calculate_document_totals(order)
+    order.calculate_partner_shares()
+    order.save(update_fields=['customer_share', 'partner_share'])
+    return order
 
 
 @transaction.atomic

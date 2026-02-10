@@ -196,10 +196,10 @@ class CustomerPartnerLink(BaseModel):
     )
 
     # معلومات خاصة بالربط
-    member_id = models.CharField(
+    membership_number = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name=_('Member ID / Policy Number')
+        verbose_name=_('Membership Number')
     )
     policy_number = models.CharField(
         max_length=50,
@@ -230,26 +230,27 @@ class CustomerPartnerLink(BaseModel):
     )
 
     # نسبة التحمل الخاصة بالعميل (قد تختلف عن الشريك)
-    copay_percentage = models.DecimalField(
+    patient_share_percentage = models.DecimalField(
         max_digits=5,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name=_('Copay Percentage %')
+        verbose_name=_('Patient Share %')
     )
-    copay_fixed = models.DecimalField(
+    # الحد الأقصى لتحمل العميل (Max Cap)
+    max_patient_share = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         null=True,
         blank=True,
-        verbose_name=_('Fixed Copay Amount')
+        verbose_name=_('Max Patient Share (Cap)')
     )
 
     # الفئة (مثلاً: VIP, Gold, Silver)
-    coverage_class = models.CharField(
+    insurance_class = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name=_('Coverage Class')
+        verbose_name=_('Insurance Class')
     )
 
     notes = models.TextField(blank=True, verbose_name=_('Notes'))
@@ -272,10 +273,15 @@ class CustomerPartnerLink(BaseModel):
             return False
         return self.is_active
 
-    def get_copay_amount(self, total_amount):
-        """حساب مبلغ تحمل العميل"""
-        if self.copay_fixed:
-            return min(self.copay_fixed, total_amount)
+    def get_patient_share(self, total_amount):
+        """
+        حساب مبلغ تحمل العميل
+        Formula: MIN(Total * Percentage, Max Cap)
+        """
+        percentage = self.patient_share_percentage or self.partner.patient_share_percentage or 0
+        share_amount = (total_amount * percentage) / 100
 
-        percentage = self.copay_percentage or self.partner.patient_share_percentage
-        return total_amount * percentage / 100
+        if self.max_patient_share and self.max_patient_share > 0:
+            return min(share_amount, self.max_patient_share)
+
+        return share_amount

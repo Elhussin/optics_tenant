@@ -112,10 +112,10 @@ class CustomerPartnerLinkSerializer(serializers.ModelSerializer):
         model = CustomerPartnerLink
         fields = [
             'id', 'customer', 'customer_name', 'partner', 'partner_name', 'partner_type',
-            'member_id', 'policy_number',
+            'membership_number', 'policy_number',
             'coverage_start', 'coverage_end',
             'annual_limit', 'remaining_limit',
-            'copay_percentage', 'copay_fixed', 'coverage_class',
+            'patient_share_percentage', 'max_patient_share', 'insurance_class',
             'is_active', 'is_coverage_active', 'notes',
         ]
 

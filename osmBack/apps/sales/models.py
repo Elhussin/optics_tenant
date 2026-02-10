@@ -290,7 +290,7 @@ class Order(BaseDocument):
         """Calculate amount distribution between Customer and Partner"""
         if self.order_type in ['insurance', 'bnpl', 'corporate'] and self.partner:
             if self.customer_partner_link:
-                self.customer_share = self.customer_partner_link.get_copay_amount(
+                self.customer_share = self.customer_partner_link.get_patient_share(
                     self.total_amount)
             elif self.partner:
                 percentage = self.partner.patient_share_percentage

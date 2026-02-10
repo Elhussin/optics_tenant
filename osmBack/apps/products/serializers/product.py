@@ -2,6 +2,8 @@ from django.db import transaction
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema_field
+from apps.crm.serializers import PartnerSerializer
+from apps.crm.models import Partner
 from apps.products.models import (
     Category, Product, ProductVariant,
     ProductImage, FlexiblePrice, Supplier, Manufacturer, Brand, AttributeValue,
@@ -300,23 +302,44 @@ class FlexiblePriceSerializer(serializers.ModelSerializer):
         write_only=True,
         allow_null=True
     )
+    partner = PartnerSerializer(read_only=True)
+    partner_id = serializers.PrimaryKeyRelatedField(
+        queryset=Partner.objects.all(),
+        source='partner',
+        write_only=True,
+        allow_null=True
+    )
 
     class Meta:
         model = FlexiblePrice
         fields = [
             'id', 'variant', 'pricing_policy', 'customer', 'customer_group', 'customer_group_id',
-            'branch', 'branch_id', 'special_price', 'start_date', 'end_date',
+            'branch', 'branch_id', 'partner', 'partner_id', 'special_price', 'start_date', 'end_date',
             'min_quantity', 'currency', 'priority'
         ]
 
     def validate(self, data):
-        # Ensure either customer or customer_group is set, not both
-        if data.get('customer') and data.get('customer_group'):
+        # 1. Validate Scope Conflicts
+        # A rule should ideally target ONE specific scope type to be clear.
+        # However, we might allow (Branch + Customer) or (Branch + Tier).
+        # We DEFINITELY want to avoid (Customer + Group) or (Partner + Tier) if they are contradictory.
+
+        scopes = [
+            bool(data.get('customer')),
+            bool(data.get('customer_group')),
+            bool(data.get('partner')),
+            bool(data.get('pricing_tier')),
+        ]
+
+        # Count how many main entity scopes are set
+        set_scopes = sum(scopes)
+
+        if set_scopes > 1:
             raise serializers.ValidationError(
-                str(_('Cannot set both customer and customer group'))
+                str(_('Cannot set multiple conflicting scopes (Customer, Group, Partner, Tier) in one rule. Create separate rules instead.'))
             )
 
-        # Validate date range
+        # 2. Validate date range
         if data.get('start_date') and data.get('end_date'):
             if data['start_date'] > data['end_date']:
                 raise serializers.ValidationError(

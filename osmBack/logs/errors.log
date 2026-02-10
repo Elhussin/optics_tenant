@@ -3333,3 +3333,504 @@ Traceback (most recent call last):
 AttributeError: 'list' object has no attribute 'keys'
 [2026-02-09 14:01:47,599] ERROR django.request: Internal Server Error: /api/crm/customer-partner-links/filter_options/
 [2026-02-09 14:01:47,600] ERROR django.server: "GET /api/crm/customer-partner-links/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:43:59,025] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:43:59,071] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:43:59,073] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:44:00,235] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:44:00,246] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:44:00,253] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:44:02,348] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:44:02,354] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:44:02,355] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:45:25,524] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:45:25,526] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:45:25,526] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:46:01,984] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:46:02,011] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:46:02,018] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:46:03,099] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:46:03,101] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:46:03,103] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:46:05,164] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:46:05,167] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:46:05,167] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:46:09,248] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:46:09,252] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:46:09,253] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:48:03,759] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:48:03,773] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:48:03,774] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:48:04,925] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:48:04,929] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:48:04,930] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:48:07,034] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:48:07,040] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:48:07,041] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:48:11,125] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:48:11,129] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:48:11,130] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:49:00,057] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:49:00,068] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:49:00,069] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:49:01,156] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:49:01,158] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:49:01,159] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:49:03,213] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:49:03,218] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:49:03,221] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:49:07,282] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:49:07,284] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:49:07,285] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:50:24,390] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:50:24,396] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:50:24,407] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:50:25,506] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:50:25,512] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:50:25,515] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:50:27,729] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:50:27,736] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:50:27,738] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:50:31,814] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:50:31,816] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:50:31,817] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:57:34,124] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:57:34,131] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:57:34,132] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:57:35,227] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:57:35,230] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:57:35,231] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:57:37,296] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:57:37,298] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:57:37,298] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 01:57:41,448] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 01:57:41,454] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 01:57:41,455] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 02:00:03,814] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 02:00:03,830] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 02:00:03,854] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 02:00:05,034] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 02:00:05,047] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 02:00:05,050] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 02:00:07,136] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 02:00:07,139] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 02:00:07,140] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 02:00:11,256] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/mixins/filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/core/utils/create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-02-10 02:00:11,258] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-02-10 02:00:11,259] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-02-10 11:51:39,424] ERROR core.exceptions: Unhandled exception: 'CustomerPartnerLink' object has no attribute 'get_copay_amount'
+Traceback (most recent call last):
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/mixins.py", line 19, in create
+    self.perform_create(serializer)
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/mixins.py", line 24, in perform_create
+    serializer.save()
+  File "/home/hussin/code/optics_tenant/osmBack/__pypackages__/3.12/lib/rest_framework/serializers.py", line 210, in save
+    self.instance = self.create(validated_data)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/apps/sales/serializers/order.py", line 174, in create
+    order.calculate_totals()
+  File "/home/hussin/code/optics_tenant/osmBack/apps/sales/models.py", line 330, in calculate_totals
+    return calculate_order_totals(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hussin/code/optics_tenant/osmBack/apps/sales/services/order_service.py", line 11, in calculate_order_totals
+    order.calculate_partner_shares()
+  File "/home/hussin/code/optics_tenant/osmBack/apps/sales/models.py", line 293, in calculate_partner_shares
+    self.customer_share = self.customer_partner_link.get_copay_amount(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'CustomerPartnerLink' object has no attribute 'get_copay_amount'
+[2026-02-10 11:51:39,461] ERROR django.request: Internal Server Error: /api/sales/orders/
+[2026-02-10 11:51:39,463] ERROR django.server: "POST /api/sales/orders/ HTTP/1.1" 500 228
