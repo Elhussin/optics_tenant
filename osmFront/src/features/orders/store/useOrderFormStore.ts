@@ -43,6 +43,13 @@ interface OrderFormState {
     paidAmount: number;
     insuranceCoverage: number;
 
+    // Split
+    customerShare: number;
+    partnerShare: number;
+    patientSharePercentage: number;
+    maxPatientShare: number;
+    remainingLimit: number; // Add remaining limit
+
     // Notes
     notes: string;
     internalNotes: string;
@@ -57,6 +64,7 @@ interface OrderFormState {
     setInvoiceType: (id: number | null) => void;
     setCustomerPartnerLink: (id: number | null, partnerId?: number | null) => void;
     setPartner: (id: number | null) => void;
+    setInsuranceDetails: (details: { patientSharePercentage?: number; maxPatientShare?: number; remainingLimit?: number }) => void;
     setPaymentMethodId: (id: number | null) => void;
     setStatus: (status: OrderStatus) => void;
 
@@ -112,6 +120,11 @@ const initialState = {
     totalAmount: 0,
     paidAmount: 0,
     insuranceCoverage: 0,
+    customerShare: 0,
+    partnerShare: 0,
+    patientSharePercentage: 0,
+    maxPatientShare: 0,
+    remainingLimit: 0,
     notes: "",
     internalNotes: "",
     expectedDelivery: null,
@@ -127,7 +140,11 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
     setOrderType: (type) => set({ orderType: type }),
     setInvoiceType: (id) => set({ invoiceTypeId: id }),
     setCustomerPartnerLink: (id, partnerId) => set({ customerPartnerLinkId: id, ...(partnerId !== undefined && { partnerId }) }),
-    setPartner: (id) => set({ partnerId: id }),
+    setPartner: (id) => set({ partnerId: id, customerPartnerLinkId: null }),
+    setInsuranceDetails: (details) => {
+        set((state) => ({ ...state, ...details }));
+        get().calculateTotals();
+    },
     setPaymentMethodId: (id) => set({ paymentMethodId: id }),
     setStatus: (status) => set({ status }),
 
@@ -181,7 +198,7 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
     setExpectedDelivery: (date) => set({ expectedDelivery: date }),
 
     calculateTotals: () => {
-        const { items, discountAmount, taxRate } = get();
+        const { items, discountAmount, taxRate, maxPatientShare, patientSharePercentage, remainingLimit, orderType } = get();
 
         // Calculate subtotal
         const subtotal = items.reduce((sum, item) => {
@@ -190,13 +207,63 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
         }, 0);
 
         // Calculate tax
-        const taxableAmount = subtotal - discountAmount;
+        const taxableAmount = Math.max(0, subtotal - discountAmount);
         const taxAmount = taxableAmount * taxRate;
 
         // Calculate total
         const totalAmount = taxableAmount + taxAmount;
 
-        set({ subtotal, taxAmount, totalAmount });
+        // Calculate Shares
+        let customerShare = totalAmount;
+        let partnerShare = 0;
+
+        if (orderType === 'insurance' || orderType === 'corporate') {
+            // Step 1: Determine Base Insurance Coverage (before copay)
+            // This is limited by the remaining limit if set
+            let baseInsuranceCoverage = totalAmount;
+            if (remainingLimit > 0) {
+                baseInsuranceCoverage = Math.min(totalAmount, remainingLimit);
+            }
+
+            // Step 2: Calculate Customer Share based on Base Coverage
+            // Logic: Share % is applied to what insurance WOULD cover
+            if (patientSharePercentage > 0) {
+                let copayAmount = (baseInsuranceCoverage * patientSharePercentage) / 100;
+
+                // Apply max cap to the copay amount
+                if (maxPatientShare > 0) {
+                    copayAmount = Math.min(copayAmount, maxPatientShare);
+                }
+
+                // Customer pays the copay
+                customerShare = copayAmount;
+            } else {
+                customerShare = 0;
+            }
+
+            // Step 3: Calculate Partner Share
+            // Partner pays Base Coverage minus Customer's Copay
+            partnerShare = Math.max(0, baseInsuranceCoverage - customerShare);
+
+            // Step 4: Add Excess to Customer Share
+            // If Total > Base Coverage, customer pays the difference
+            if (totalAmount > baseInsuranceCoverage) {
+                customerShare += (totalAmount - baseInsuranceCoverage);
+            }
+
+            // Auto-update payment fields for insurance
+            set({
+                subtotal,
+                taxAmount,
+                totalAmount,
+                customerShare,
+                partnerShare,
+                insuranceCoverage: partnerShare,
+                paidAmount: customerShare
+            });
+        } else {
+            set({ subtotal, taxAmount, totalAmount, customerShare: totalAmount, partnerShare: 0 });
+        }
     },
 
     loadOrder: (order) => {
@@ -241,12 +308,17 @@ export const useOrderFormStore = create<OrderFormState>((set, get) => ({
             discountPercent: 0, // سيتم حسابه
             totalAmount: parseFloat(order.total_amount) || 0,
             paidAmount: parseFloat(order.paid_amount) || 0,
+            customerShare: parseFloat(order.customer_share) || 0,
+            partnerShare: parseFloat(order.partner_share) || 0,
+            insuranceCoverage: parseFloat(order.partner_share) || 0, // Map partner share to insurance coverage
+            patientSharePercentage: parseFloat(order.customer_partner_link?.patient_share_percentage) || 0,
+            maxPatientShare: parseFloat(order.customer_partner_link?.max_patient_share) || 0,
             notes: order.notes || "",
             internalNotes: order.internal_notes || "",
             expectedDelivery: order.expected_delivery || null,
         });
 
-        // حساب نسبة الخصم
+        // Ensure totals are consistent
         const subtotal = parseFloat(order.subtotal) || 0;
         const discountAmount = parseFloat(order.discount_amount) || 0;
         if (subtotal > 0) {

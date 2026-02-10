@@ -7,7 +7,7 @@ import { useState, useCallback } from 'react';
 import { api } from '@/src/shared/api/axios';
 import type {
     Partner,
-    PartnerCustomer,
+    CustomerPartnerLink,
     InsuranceClaim,
     ClaimCreate,
     PartnerStatement,
@@ -88,7 +88,7 @@ export function usePartners() {
  * Hook for Partner-Customer Links
  */
 export function usePartnerCustomers() {
-    const [links, setLinks] = useState<PartnerCustomer[]>([]);
+    const [links, setLinks] = useState<CustomerPartnerLink[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -108,7 +108,7 @@ export function usePartnerCustomers() {
     const linkCustomer = useCallback(async (
         customerId: number,
         partnerId: number,
-        data: Partial<PartnerCustomer>
+        data: Partial<CustomerPartnerLink>
     ) => {
         setLoading(true);
         try {
@@ -269,23 +269,23 @@ export function usePartnerStatement(partnerId: number) {
 export function usePaymentSplit() {
     const calculateSplit = useCallback((
         totalAmount: number,
-        coveragePercentage: number,
-        coverageLimit?: number
+        patientSharePercentage: number,
+        maxPatientShare?: number
     ): PaymentSplit => {
-        let partnerShare = (totalAmount * coveragePercentage) / 100;
+        let customerShare = (totalAmount * patientSharePercentage) / 100;
 
-        // Apply coverage limit if exists
-        if (coverageLimit && partnerShare > coverageLimit) {
-            partnerShare = coverageLimit;
+        // Apply max patient share cap if exists
+        if (maxPatientShare && maxPatientShare > 0) {
+            customerShare = Math.min(customerShare, maxPatientShare);
         }
 
-        const customerShare = totalAmount - partnerShare;
+        const partnerShare = Math.max(0, totalAmount - customerShare);
 
         return {
             total_amount: totalAmount,
             partner_share: Math.round(partnerShare * 100) / 100,
             customer_share: Math.round(customerShare * 100) / 100,
-            coverage_percentage: coveragePercentage,
+            patient_share_percentage: patientSharePercentage,
         };
     }, []);
 

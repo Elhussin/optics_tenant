@@ -186,13 +186,6 @@ export default function InvoicesListPage() {
               onClick={() => refetch()}
               title={t("refresh")}
             />
-            <ActionButton
-              variant="primary"
-              icon={<Plus className="w-4 h-4" />}
-              label={t("create")}
-              navigateTo="/dashboard/invoices/create"
-              className="shadow-lg shadow-primary/20"
-            />
           </div>
         </div>
       </GlassCard>
@@ -291,6 +284,9 @@ export default function InvoicesListPage() {
                     {t("table.invoiceNumber")}
                   </th>
                   <th className="text-right py-3 px-4 font-semibold text-secondary">
+                    {t("table.type")}
+                  </th>
+                  <th className="text-right py-3 px-4 font-semibold text-secondary">
                     {t("table.customer")}
                   </th>
                   <th className="text-right py-3 px-4 font-semibold text-secondary">
@@ -314,6 +310,8 @@ export default function InvoicesListPage() {
                 {filteredData.map((invoice: any) => {
                   const canEdit = invoice?.status === "draft";
                   const canDelete = invoice?.status === "draft";
+                  const isInsurance =
+                    invoice?.invoice_type_details?.code === "INSURANCE";
 
                   return (
                     <tr
@@ -322,6 +320,19 @@ export default function InvoicesListPage() {
                     >
                       <td className="py-3 px-4 font-mono text-primary">
                         {invoice.invoice_number || invoice.id}
+                      </td>
+                      <td className="py-3 px-4">
+                        <Badge
+                          variant={isInsurance ? "info" : "neutral"}
+                          className="text-xs"
+                        >
+                          {invoice.invoice_type_details?.name || "-"}
+                        </Badge>
+                        {isInsurance && invoice.insurance_details && (
+                          <div className="text-xs text-secondary mt-1">
+                            {invoice.insurance_details.provider_name}
+                          </div>
+                        )}
                       </td>
                       <td className="py-3 px-4 text-main font-medium">
                         {invoice.customer_name || "-"}
@@ -353,6 +364,8 @@ export default function InvoicesListPage() {
                             navigateTo={`/dashboard/invoices/${invoice.id}`}
                             className="rounded-lg"
                           />
+                          {/* Edit hidden for now as Orders control logic */}
+                          {/*
                           <ActionButton
                             variant="icon-edit"
                             size="sm"
@@ -362,6 +375,7 @@ export default function InvoicesListPage() {
                             disabled={!canEdit}
                             className="rounded-lg"
                           />
+                          */}
                           <ActionButton
                             variant="icon-delete"
                             size="sm"
@@ -386,15 +400,7 @@ export default function InvoicesListPage() {
             type="orders"
             title={t("empty.title")}
             description={t("empty.description")}
-            action={
-              <ActionButton
-                variant="primary"
-                icon={<Plus className="w-4 h-4" />}
-                label={t("create")}
-                navigateTo="/dashboard/invoices/create"
-                className="mt-3"
-              />
-            }
+            // removed action to force Order creation
           />
         )}
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Search,
   User,
@@ -23,17 +23,24 @@ import {
   CardContent,
   CardHeader,
 } from "@/src/shared/components/shadcn/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/src/shared/components/shadcn/ui/select";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { useApiForm } from "@/src/shared/hooks/useApiForm";
 import { useOrderFormStore } from "../../store/useOrderFormStore";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import DynamicFormDialog from "@/src/shared/components/ui/dialogs/DynamicFormDialog";
-import { SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
+import { Skeleton, SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import EyeTest from "@/src/features/prescription/components/EyeTest";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-
+import { InsuranceDetailsForm } from "./InsuranceDetailsForm";
 interface PrescriptionCardProps {
   prescription: any;
   isSelected: boolean;
@@ -183,20 +190,20 @@ function PrescriptionCard({
   );
 }
 
+// ... imports ...
+
 export function CustomerAndPrescriptionStep() {
   const t = useTranslations("orders");
   const [searchTerm, setSearchTerm] = useState("");
   const [customers, setCustomers] = useState<any[]>([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
-  const [showInsuranceModal, setShowInsuranceModal] = useState(false);
-  const store = useOrderFormStore();
-
-  // Prescription state
   const [prescriptions, setPrescriptions] = useState<any[]>([]);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showNewPrescription, setShowNewPrescription] = useState(false);
-
+  const [showInlineInsuranceForm, setShowInlineInsuranceForm] = useState(false);
+  const [isEditingInsurance, setIsEditingInsurance] = useState(false);
+  const store = useOrderFormStore();
   // Search customers
   const { query: customerQuery, isBusy: isCustomerBusy } = useApiForm({
     alias: "crm_customers_list",
@@ -232,6 +239,9 @@ export function CustomerAndPrescriptionStep() {
       setShowNewPrescription(false);
       store.setPrescription(null);
       prescriptionQuery.refetch();
+    } else {
+      // Reset link if customer removed
+      store.setCustomerPartnerLink(null);
     }
   }, [store.customerId]);
 
@@ -249,6 +259,7 @@ export function CustomerAndPrescriptionStep() {
       customer.id,
       customer.full_name || `${customer.first_name} ${customer.last_name}`,
     );
+    store.setCustomerPartnerLink(null); // Reset link on customer change
     setSearchTerm("");
     setCustomers([]);
   };
@@ -274,6 +285,33 @@ export function CustomerAndPrescriptionStep() {
     defaultValues: { is_active: true },
   });
 
+  // Determine Partner Type filter based on Order Type
+  const partnerTypeFilter = useMemo(() => {
+    switch (store.orderType) {
+      case "insurance":
+        return "insurance";
+      case "corporate":
+        return "corporate";
+      case "wholesale":
+        return "wholesaler"; // Note: model uses 'wholesaler'
+      case "bnpl":
+        return "bnpl";
+      default:
+        return undefined;
+    }
+  }, [store.orderType]);
+
+  // Partners (Insurance Companies, Corporates, etc.)
+  const { query: partnersQuery } = useApiForm({
+    alias: "crm_partners_list",
+    defaultValues: {
+      partner_type: partnerTypeFilter,
+      is_active: true,
+    },
+    // Only fetch if we have a valid partner type filter
+    enabled: !!store.invoiceTypeId && !!partnerTypeFilter,
+  });
+
   // Insurance Links (Customer Partner Links)
   const { query: insuranceLinksQuery } = useApiForm({
     alias: "crm_customer_partner_links_list",
@@ -283,12 +321,26 @@ export function CustomerAndPrescriptionStep() {
 
   // Effects to handle Invoice Type selection
   const handleSelectInvoiceType = (type: any) => {
-    store.setInvoiceType(type.id);
+    if (store.invoiceTypeId !== type.id) {
+      store.setInvoiceType(type.id);
+      store.setPartner(null); // Reset partner
+      store.setCustomerPartnerLink(null); // Reset link
+    }
 
     // Auto-set order type
-    if (type.code === "insurance" || type.code?.includes("insurance")) {
-      // Robust check
+    const code = type.code?.toLowerCase() || "";
+    if (code === "insurance" || code.includes("insurance") || code === "1001") {
       store.setOrderType("insurance");
+    } else if (code.includes("corporate")) {
+      store.setOrderType("corporate");
+    } else if (code.includes("wholesale")) {
+      store.setOrderType("wholesale");
+    } else if (
+      code.includes("bnpl") ||
+      code.includes("tabby") ||
+      code.includes("tamara")
+    ) {
+      store.setOrderType("bnpl");
     } else {
       store.setOrderType("cash"); // Default
     }
@@ -298,197 +350,352 @@ export function CustomerAndPrescriptionStep() {
     (t: any) => t.id === store.invoiceTypeId,
   );
 
-  const isInsurance =
+  // Determine if this invoice type requires a Partner (Insurance, Corporate, etc.)
+  const requiresPartner =
     selectedInvoiceType?.code === "insurance" ||
-    selectedInvoiceType?.code?.includes("insurance");
+    selectedInvoiceType?.code === "1001" ||
+    selectedInvoiceType?.code?.includes("insurance") ||
+    selectedInvoiceType?.code?.includes("corporate") ||
+    selectedInvoiceType?.code?.includes("wholesale") ||
+    selectedInvoiceType?.name?.toLowerCase().includes("insurance") ||
+    selectedInvoiceType?.name?.toLowerCase().includes("corporate");
+
+  // Filter links based on selected partner
+  const insuranceLinks = insuranceLinksQuery.data?.results || [];
+  const selectedPartnerLink = insuranceLinks.find(
+    (link: any) => link.partner === store.partnerId,
+  );
+  useEffect(() => {
+    if (store.partnerId && selectedPartnerLink) {
+      if (store.customerPartnerLinkId !== selectedPartnerLink.id) {
+        store.setCustomerPartnerLink(selectedPartnerLink.id);
+      }
+      // Update store with insurance details for calculation
+      store.setInsuranceDetails({
+        patientSharePercentage:
+          Number(selectedPartnerLink.patient_share_percentage) || 0,
+        maxPatientShare: Number(selectedPartnerLink.max_patient_share) || 0,
+      });
+    } else if (
+      store.partnerId &&
+      !selectedPartnerLink &&
+      store.customerPartnerLinkId
+    ) {
+      store.setCustomerPartnerLink(null);
+      store.setInsuranceDetails({
+        patientSharePercentage: 0,
+        maxPatientShare: 0,
+      });
+    }
+  }, [store.partnerId, selectedPartnerLink]);
 
   return (
     <div className="space-y-8">
-      {/* Invoice Type Section - Always visible and First */}
-      <div className="space-y-4 pt-4 border-b border-dashed border-gray-200 dark:border-gray-700 pb-6">
-        <Label className="text-lg font-semibold flex items-center gap-2">
-          <FileText size={20} />
-          {t("details.invoiceType")}
-        </Label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {invoiceTypesQuery.isLoading ? (
-            <SkeletonGroup type="card" count={3} />
-          ) : (
-            invoiceTypesQuery.data?.results?.map((type: any) => (
-              <div
-                key={type.id}
-                onClick={() => handleSelectInvoiceType(type)}
-                className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${
-                  store.invoiceTypeId === type.id
-                    ? "border-primary bg-primary/5 shadow-sm"
-                    : "border-transparent bg-gray-50 dark:bg-gray-800 hover:bg-gray-100"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-semibold">{type.name}</span>
-                  {store.invoiceTypeId === type.id && (
-                    <Check size={16} className="text-primary" />
-                  )}
-                </div>
-                <p className="text-xs text-secondary">{type.code}</p>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      {/* Customer Section */}
+      {/* 1. Invoice Type Selection */}
       <div className="space-y-4">
-        <Label className="text-lg font-semibold flex items-center gap-2">
-          <User size={20} />
-          {t("customer.title")}
-          <ActionButton
-            variant="success"
-            icon={<User size={18} />}
-            onClick={() => setShowCustomerModal(true)}
-          />
-        </Label>
-
-        {store.customerId ? (
-          <Card className="bg-green-50 dark:bg-green-900/20 border-green-200">
-            <CardContent className="py-4 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-green-100 dark:bg-green-900">
-                  <UserCheck size={20} className="text-green-600" />
-                </div>
-                <div>
-                  <p className="font-medium">{store.customerName}</p>
-                  <p className="text-sm text-secondary">
-                    {t("customer.selected")}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  store.setCustomer(null, "");
-                  store.setPrescription(null);
-                  setPrescriptions([]);
-                }}
-                className="text-sm text-red-500 hover:text-red-700"
-              >
-                {t("customer.change")}
-              </button>
-            </CardContent>
-          </Card>
+        <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          {t("details.invoiceType")}
+        </label>
+        {invoiceTypesQuery.isLoading ? (
+          <SkeletonGroup type="input" count={1} />
         ) : (
-          <div className="relative">
-            <Search
-              size={18}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
-            />
-            <Input
-              type="text"
-              placeholder={t("customer.searchPlaceholder")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pr-10"
-            />
-
-            {searchTerm.length >= 2 && (
-              <div className="absolute z-10 w-full mt-1 bg-elevated rounded-lg shadow-lg border max-h-60 overflow-y-auto">
-                {isCustomerBusy ? (
-                  <div className="p-4 text-center">
-                    <SectionLoading height="h-32" />
-                  </div>
-                ) : customers.length > 0 ? (
-                  customers.map((customer) => (
-                    <button
-                      key={customer.id}
-                      onClick={() => handleSelectCustomer(customer)}
-                      className="w-full px-4 py-3 text-right hover:bg-gray-100 dark:hover:bg-gray-800 border-b last:border-0"
-                    >
-                      <p className="font-medium">
-                        {customer.full_name ||
-                          `${customer.first_name} ${customer.last_name}`}
-                      </p>
-                      <p className="text-sm text-secondary">
-                        {customer.phone || customer.email}
-                      </p>
-                    </button>
-                  ))
-                ) : (
-                  <p className="p-4 text-center text-secondary">
-                    {t("customer.noResults")}
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+          <Select
+            value={String(store.invoiceTypeId || "")}
+            onValueChange={(val) => {
+              const type = invoiceTypesQuery.data?.results?.find(
+                (t: any) => String(t.id) === val,
+              );
+              if (type) handleSelectInvoiceType(type);
+            }}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={t("details.selectInvoiceType")} />
+            </SelectTrigger>
+            <SelectContent>
+              {invoiceTypesQuery.data?.results?.map((type: any) => (
+                <SelectItem key={type.id} value={String(type.id)}>
+                  {type.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </div>
 
-      {/* Insurance Details Section */}
+      {/* 2. Partner Selection (Conditional) */}
       <AnimatePresence>
-        {isInsurance && store.customerId && (
+        {requiresPartner && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="space-y-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700"
+            className="space-y-2"
           >
-            <div className="flex items-center justify-between">
-              <Label className="text-lg font-semibold flex items-center gap-2 text-blue-600">
-                <Sparkles size={20} />
-                {t("details.insurance")}
-              </Label>
-              <Button
-                size="sm"
-                variant="outline"
-                className="gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
-                onClick={() => setShowInsuranceModal(true)}
-              >
-                <Plus size={16} />
-                {t("details.addInsurance")}
-              </Button>
-            </div>
-
-            {insuranceLinksQuery.isLoading ? (
-              <SkeletonGroup type="card" count={1} />
-            ) : (insuranceLinksQuery.data?.results?.length ?? 0) > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {insuranceLinksQuery.data?.results?.map((link: any) => (
-                  <div
-                    key={link.id}
-                    onClick={() =>
-                      store.setCustomerPartnerLink(link.id, link.partner)
-                    }
-                    className={`cursor-pointer p-4 rounded-lg border-2 transition-all ${
-                      store.customerPartnerLinkId === link.id
-                        ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                        : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-bold">{link.partner_name}</p>
-                        <p className="text-sm text-secondary">
-                          Policy: {link.policy_number}
-                        </p>
-                      </div>
-                      {store.customerPartnerLinkId === link.id && (
-                        <Check size={18} className="text-blue-500" />
-                      )}
-                    </div>
-                    <div className="mt-2 text-xs grid grid-cols-2 gap-2 text-secondary">
-                      <span>Limit: {link.annual_limit}</span>
-                      <span>Rem: {link.remaining_limit}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              {t("details.partner")}
+            </label>
+            {partnersQuery.isLoading ? (
+              <SkeletonGroup type="input" count={1} />
             ) : (
-              <div className="p-4 bg-yellow-50 text-yellow-700 rounded-lg text-sm">
-                No active insurance found for this customer. Please add one in
-                CRM.
-              </div>
+              <Select
+                value={String(store.partnerId || "")}
+                onValueChange={(val) => {
+                  store.setPartner(Number(val));
+                  store.setCustomerPartnerLink(null);
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t("details.selectPartner")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {partnersQuery.data?.results?.map((partner: any) => (
+                    <SelectItem key={partner.id} value={String(partner.id)}>
+                      {partner.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             )}
           </motion.div>
         )}
+      </AnimatePresence>
+
+      {/* 3. Customer Search */}
+      <div className="space-y-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700">
+        <div className="flex flex-col gap-2">
+          <Label className="text-base font-semibold">
+            {t("details.customer")}
+          </Label>
+
+          {!store.customerId ? (
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder={t("details.searchCustomer")}
+                    className="pl-9"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {isCustomerBusy && (
+                    <div className="absolute right-3 top-2.5">
+                      <SectionLoading />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  onClick={() => setShowCustomerModal(true)}
+                  variant="outline"
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("details.newCustomer")}
+                </Button>
+              </div>
+
+              {/* Search Results */}
+              <AnimatePresence>
+                {customers.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="border rounded-md shadow-sm divide-y max-h-60 overflow-y-auto bg-card"
+                  >
+                    {customers.map((customer) => (
+                      <div
+                        key={customer.id}
+                        className="p-3 hover:bg-accent cursor-pointer flex items-center justify-between"
+                        onClick={() => handleSelectCustomer(customer)}
+                      >
+                        <div>
+                          <p className="font-medium">
+                            {customer.first_name} {customer.last_name}
+                          </p>
+                          <p className="text-sm text-secondary">
+                            {customer.phone}
+                          </p>
+                        </div>
+                        <UserCheck
+                          size={16}
+                          className="text-muted-foreground"
+                        />
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="p-4 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                    <User size={20} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-foreground">
+                      {store.customerName}
+                    </h4>
+                    <p className="text-xs text-secondary">
+                      ID: {store.customerId}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    store.setCustomer(null, "");
+                    setCustomers([]);
+                    store.setCustomerPartnerLink(null);
+                  }}
+                >
+                  <span className="sr-only">Remove</span>
+                  <X size={18} />
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </div>
+
+      {/* Insurance/Partner Link Validation */}
+      <AnimatePresence>
+        {store.orderType === "insurance" &&
+          store.partnerId &&
+          store.customerId && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="space-y-4 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700"
+            >
+              <Label className="text-lg font-semibold flex items-center gap-2 text-blue-600">
+                <Sparkles size={20} />
+                {t("details.insuranceCoverage")}
+              </Label>
+
+              {insuranceLinksQuery.isLoading ? (
+                <SkeletonGroup type="card" count={1} />
+              ) : selectedPartnerLink && !isEditingInsurance ? (
+                // Found Link
+                <div className="p-4 rounded-lg border-2 border-blue-500 bg-blue-50 dark:bg-blue-900/20">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-bold text-lg mb-1">
+                        {selectedPartnerLink.partner_name}
+                      </h4>
+                      <div className="text-sm space-y-1">
+                        <p className="text-secondary">
+                          Policy:{" "}
+                          <span className="font-medium text-foreground">
+                            {selectedPartnerLink.policy_number}
+                          </span>
+                        </p>
+                        <p className="text-secondary">
+                          Member ID:{" "}
+                          <span className="font-medium text-foreground">
+                            {selectedPartnerLink.membership_number}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                        onClick={() => setIsEditingInsurance(true)}
+                      >
+                        <Edit3 size={16} />
+                      </Button>
+                      <div className="h-8 w-8 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                        <Check size={18} />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Limits & Copay Info */}
+                  <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 border-t border-blue-200 dark:border-blue-800">
+                    <div>
+                      <span className="text-xs text-secondary block">
+                        Annual Limit
+                      </span>
+                      <span className="font-medium">
+                        {selectedPartnerLink.annual_limit || "Limited"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-secondary block">
+                        Remaining
+                      </span>
+                      <span className="font-medium">
+                        {selectedPartnerLink.remaining_limit || "Limited"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-xs text-secondary block">
+                        Patient Share %
+                      </span>
+                      <span className="font-medium text-blue-700">
+                        {selectedPartnerLink.patient_share_percentage}%
+                      </span>
+                    </div>
+                    {/* Show Fixed Copay if exists */}
+                    {selectedPartnerLink.max_patient_share > 0 && (
+                      <div>
+                        <span className="text-xs text-secondary block">
+                          Max CapShare
+                        </span>
+                        <span className="font-medium text-blue-700">
+                          {selectedPartnerLink.max_patient_share}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : showInlineInsuranceForm || isEditingInsurance ? (
+                <InsuranceDetailsForm
+                  customerId={store.customerId}
+                  partnerId={store.partnerId}
+                  initialData={
+                    isEditingInsurance ? selectedPartnerLink : undefined
+                  }
+                  linkId={
+                    isEditingInsurance ? selectedPartnerLink?.id : undefined
+                  }
+                  onSuccess={() => {
+                    setShowInlineInsuranceForm(false);
+                    setIsEditingInsurance(false);
+                    insuranceLinksQuery.refetch();
+                  }}
+                  onCancel={() => {
+                    setShowInlineInsuranceForm(false);
+                    setIsEditingInsurance(false);
+                  }}
+                />
+              ) : (
+                // No Link Found - Prompt to Create
+                <div className="p-6 border-2 border-dashed border-yellow-300 bg-yellow-50 dark:bg-yellow-900/10 rounded-lg text-center space-y-3">
+                  <p className="text-yellow-700 dark:text-yellow-400 font-medium">
+                    {t("details.noInsuranceLinkFound")}
+                  </p>
+                  <div className="flex justify-center gap-2">
+                    <Button
+                      variant="default"
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white gap-2"
+                      onClick={() => setShowInlineInsuranceForm(true)}
+                    >
+                      <Plus size={16} />
+                      {t("details.linkToPartner")}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
       </AnimatePresence>
 
       {/* Prescription Section - Only visible if customer selected */}
@@ -500,7 +707,7 @@ export function CustomerAndPrescriptionStep() {
             exit={{ opacity: 0, height: 0 }}
             className="space-y-6 pt-4 border-t border-dashed border-gray-200 dark:border-gray-700"
           >
-            {/* ... Prescription content ... */}
+            {/* ... Prescription content/header ... */}
             <div className="flex items-center justify-between">
               <Label className="text-lg font-semibold flex items-center gap-2">
                 <FileText size={20} />
@@ -646,20 +853,6 @@ export function CustomerAndPrescriptionStep() {
           onClose={() => {
             setShowCustomerModal(false);
             if (searchTerm.length >= 2) customerQuery.refetch();
-          }}
-        />
-      )}
-
-      {showInsuranceModal && (
-        <DynamicFormDialog
-          entity="crm-customer-partner-links"
-          title={t("details.addInsurance")}
-          defaultValues={{
-            customer: store.customerId,
-          }}
-          onClose={() => {
-            setShowInsuranceModal(false);
-            insuranceLinksQuery.refetch();
           }}
         />
       )}

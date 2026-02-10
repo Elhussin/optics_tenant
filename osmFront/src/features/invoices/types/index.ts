@@ -37,6 +37,24 @@ export interface Invoice {
     confirmed_at?: string | null;
     created_by?: number;
     created_by_name?: string;
+
+    // Relations
+    invoice_type?: number;
+    invoice_type_details?: {
+        id: number;
+        name: string;
+        code: string;
+    };
+    insurance_details?: {
+        policy_number: string;
+        membership_number: string;
+        provider_name: string;
+        provider_name_en: string;
+        patient_share_percentage: number;
+        max_patient_share: number;
+        coverage_limit: number;
+        remaining_limit: number;
+    } | null;
 }
 
 export const INVOICE_STATUS_OPTIONS = [

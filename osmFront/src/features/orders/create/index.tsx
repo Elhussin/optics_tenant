@@ -165,6 +165,11 @@ export function CreateOrder() {
         branch: store.branchId,
         sales_person: store.salesPersonId,
         order_type: store.orderType,
+        // Add new fields for Insurance/Partner/Invoice Type
+        partner: store.partnerId,
+        customer_partner_link: store.customerPartnerLinkId,
+        // invoice_type: store.invoiceTypeId, // Optional: if backend supports it later
+
         payment_method: store.paymentMethodId,
         discount_amount: store.discountAmount.toFixed(2),
         tax_rate: store.taxRate.toFixed(4),

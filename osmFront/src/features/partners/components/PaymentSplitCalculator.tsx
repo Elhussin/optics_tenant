@@ -23,10 +23,10 @@ import {
 } from "@/src/shared/components/shadcn/ui/card";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { usePaymentSplit } from "../hooks/usePartners";
-import type { PartnerCustomer } from "../types/partners.types";
+import type { CustomerPartnerLink } from "../types/partners.types";
 
 interface PaymentSplitCalculatorProps {
-  partnerLink?: PartnerCustomer;
+  partnerLink?: CustomerPartnerLink;
   totalAmount?: number;
   onSplitChange?: (split: {
     partnerShare: number;
@@ -40,19 +40,22 @@ export function PaymentSplitCalculator({
   onSplitChange,
 }: PaymentSplitCalculatorProps) {
   const [amount, setAmount] = useState(initialAmount);
-  const [customCoverage, setCustomCoverage] = useState<number | null>(null);
+  const [customPatientShare, setCustomPatientShare] = useState<number | null>(
+    null,
+  );
 
   const { calculateSplit } = usePaymentSplit();
 
   // Calculate split
   const split = useMemo(() => {
-    const coverage =
-      customCoverage ?? parseFloat(partnerLink?.coverage_percentage || "0");
-    const limit = partnerLink?.coverage_limit
-      ? parseFloat(partnerLink.coverage_limit)
+    const sharePercentage =
+      customPatientShare ??
+      parseFloat(partnerLink?.patient_share_percentage || "0");
+    const maxShare = partnerLink?.max_patient_share
+      ? parseFloat(partnerLink.max_patient_share)
       : undefined;
-    return calculateSplit(amount, coverage, limit);
-  }, [amount, customCoverage, partnerLink, calculateSplit]);
+    return calculateSplit(amount, sharePercentage, maxShare);
+  }, [amount, customPatientShare, partnerLink, calculateSplit]);
 
   // Notify parent of changes
   React.useEffect(() => {
@@ -64,8 +67,9 @@ export function PaymentSplitCalculator({
     }
   }, [split, onSplitChange]);
 
-  const coveragePercentage =
-    customCoverage ?? parseFloat(partnerLink?.coverage_percentage || "0");
+  const patientSharePercentage =
+    customPatientShare ??
+    parseFloat(partnerLink?.patient_share_percentage || "0");
 
   return (
     <Card className="border-0 shadow-lg">
@@ -76,8 +80,7 @@ export function PaymentSplitCalculator({
         </CardTitle>
         {partnerLink && (
           <CardDescription>
-            {partnerLink.partner_name} - نسبة التغطية:{" "}
-            {partnerLink.coverage_percentage}%
+            {partnerLink.partner_name} - نسبة التحمل: {patientSharePercentage}%
           </CardDescription>
         )}
       </CardHeader>
@@ -100,18 +103,18 @@ export function PaymentSplitCalculator({
           />
         </div>
 
-        {/* Coverage Override */}
+        {/* Share Override */}
         {!partnerLink && (
           <div>
             <label className="text-sm font-medium text-gray-600 dark:text-gray-300 flex items-center gap-1 mb-2">
               <Percent className="w-4 h-4" />
-              نسبة التغطية
+              نسبة التحمل
             </label>
             <Input
               type="number"
-              value={customCoverage ?? ""}
+              value={customPatientShare ?? ""}
               onChange={(e) =>
-                setCustomCoverage(parseFloat(e.target.value) || 0)
+                setCustomPatientShare(parseFloat(e.target.value) || 0)
               }
               className="text-left"
               placeholder="0"
@@ -125,16 +128,17 @@ export function PaymentSplitCalculator({
         <div className="relative">
           <div className="flex overflow-hidden rounded-lg h-12">
             <div
-              className="bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium transition-all"
-              style={{ width: `${coveragePercentage}%` }}
+              className="bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-white font-medium transition-all"
+              style={{ width: `${patientSharePercentage}%` }}
             >
-              {coveragePercentage > 15 && `${coveragePercentage}%`}
+              {patientSharePercentage > 15 && `${patientSharePercentage}%`}
             </div>
             <div
-              className="bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center text-white font-medium transition-all"
-              style={{ width: `${100 - coveragePercentage}%` }}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium transition-all"
+              style={{ width: `${100 - patientSharePercentage}%` }}
             >
-              {100 - coveragePercentage > 15 && `${100 - coveragePercentage}%`}
+              {100 - patientSharePercentage > 15 &&
+                `${100 - patientSharePercentage}%`}
             </div>
           </div>
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
@@ -146,18 +150,6 @@ export function PaymentSplitCalculator({
 
         {/* Split Details */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Partner Share */}
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
-            <div className="flex items-center justify-center gap-2 text-blue-600 mb-2">
-              <Building2 className="w-5 h-5" />
-              <span className="text-sm font-medium">حصة الشريك</span>
-            </div>
-            <div className="text-2xl font-bold text-blue-700">
-              {split.partner_share.toLocaleString()}
-            </div>
-            <div className="text-xs text-blue-500">ر.س</div>
-          </div>
-
           {/* Customer Share */}
           <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-center">
             <div className="flex items-center justify-center gap-2 text-green-600 mb-2">
@@ -169,14 +161,26 @@ export function PaymentSplitCalculator({
             </div>
             <div className="text-xs text-green-500">ر.س</div>
           </div>
+
+          {/* Partner Share */}
+          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+            <div className="flex items-center justify-center gap-2 text-blue-600 mb-2">
+              <Building2 className="w-5 h-5" />
+              <span className="text-sm font-medium">حصة الشريك</span>
+            </div>
+            <div className="text-2xl font-bold text-blue-700">
+              {split.partner_share.toLocaleString()}
+            </div>
+            <div className="text-xs text-blue-500">ر.س</div>
+          </div>
         </div>
 
-        {/* Coverage Limit Warning */}
-        {partnerLink?.coverage_limit && (
+        {/* Max Cap Warning */}
+        {partnerLink?.max_patient_share && (
           <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-sm text-yellow-700">
             <p>
-              ⚠️ الحد الأقصى للتغطية:{" "}
-              {parseFloat(partnerLink.coverage_limit).toLocaleString()} ر.س
+              ⚠️ الحد الأقصى لتحمل العميل:{" "}
+              {parseFloat(partnerLink.max_patient_share).toLocaleString()} ر.س
             </p>
           </div>
         )}
@@ -188,8 +192,8 @@ export function PaymentSplitCalculator({
             <span className="font-bold">{amount.toLocaleString()} ر.س</span>
           </div>
           <div className="flex justify-between items-center text-sm mt-2">
-            <span className="text-gray-500">نسبة التغطية المطبقة</span>
-            <span className="font-medium">{coveragePercentage}%</span>
+            <span className="text-gray-500">نسبة التحمل المطبقة</span>
+            <span className="font-medium">{patientSharePercentage}%</span>
           </div>
         </div>
       </CardContent>

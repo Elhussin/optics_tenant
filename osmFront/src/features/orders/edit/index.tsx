@@ -33,8 +33,7 @@ import { useRouter } from "next/navigation";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 
 // Step Components
-import { CustomerStep } from "../create/steps/CustomerStep";
-import { PrescriptionStep } from "../create/steps/PrescriptionStep";
+import { CustomerAndPrescriptionStep } from "../create/steps/CustomerAndPrescriptionStep";
 import { ProductsStep } from "../create/steps/ProductsStep";
 import { PaymentStep } from "../create/steps/PaymentStep";
 
@@ -110,10 +109,9 @@ const StepIndicator = ({
 );
 
 const STEPS = [
-  { id: 1, title: "العميل", icon: <User size={18} /> },
-  { id: 2, title: "الوصفة", icon: <FileText size={18} /> },
-  { id: 3, title: "المنتجات", icon: <Package size={18} /> },
-  { id: 4, title: "الدفع", icon: <CreditCard size={18} /> },
+  { id: 1, title: "العميل والوصفة", icon: <User size={18} /> },
+  { id: 2, title: "المنتجات", icon: <Package size={18} /> },
+  { id: 3, title: "الدفع", icon: <CreditCard size={18} /> },
 ];
 
 interface EditOrderProps {
@@ -162,16 +160,12 @@ export function EditOrder({ orderId }: EditOrderProps) {
     [store.customerId],
   );
   const canProceedToStep3 = useMemo(
-    () => !!store.customerId,
-    [store.customerId],
-  );
-  const canProceedToStep4 = useMemo(
     () => store.items.length > 0,
     [store.items],
   );
 
   const handleNext = () => {
-    if (currentStep < 4) setCurrentStep((prev) => prev + 1);
+    if (currentStep < 3) setCurrentStep((prev) => prev + 1);
   };
 
   const handleBack = () => {
@@ -211,6 +205,12 @@ export function EditOrder({ orderId }: EditOrderProps) {
           unit_price: item.unit_price.toFixed(2),
           prescription: item.prescription || store.prescriptionId,
         })),
+        // Add partner & Link info if applicable
+        customer_partner_link: store.customerPartnerLinkId,
+        partner: store.partnerId,
+        invoice_type: store.invoiceTypeId,
+        customer_share: store.customerShare.toFixed(2),
+        partner_share: store.partnerShare.toFixed(2),
       };
 
       await form.submitForm(payload);
@@ -229,8 +229,6 @@ export function EditOrder({ orderId }: EditOrderProps) {
         return canProceedToStep2;
       case 2:
         return canProceedToStep3;
-      case 3:
-        return canProceedToStep4;
       default:
         return true;
     }
@@ -247,7 +245,9 @@ export function EditOrder({ orderId }: EditOrderProps) {
   return (
     <div className="min-h-screen bg-body py-8">
       <div className="container mx-auto px-4 max-w-5xl">
-        {/* Header */}
+        {/* Header and Status Card ... (Kept same mostly) */}
+
+        {/* ... (Header) ... */}
         <div className="mb-8 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-blue-600 text-white mb-4 shadow-lg shadow-blue-500/30">
             <ShoppingCart className="w-8 h-8" />
@@ -302,20 +302,18 @@ export function EditOrder({ orderId }: EditOrderProps) {
               {STEPS[currentStep - 1].title}
             </CardTitle>
             <CardDescription>
-              {currentStep === 1 && "تعديل بيانات العميل والفرع"}
-              {currentStep === 2 && "تعديل الوصفة الطبية"}
-              {currentStep === 3 && "تعديل المنتجات والكميات"}
-              {currentStep === 4 && "تعديل الدفع والخصم"}
+              {currentStep === 1 && "تعديل بيانات العميل، الوصفة، والتأمين"}
+              {currentStep === 2 && "تعديل المنتجات والكميات"}
+              {currentStep === 3 && "تعديل الدفع والخصم"}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
             <Form {...form}>
               {/* Step Content */}
-              {currentStep === 1 && <CustomerStep />}
-              {currentStep === 2 && <PrescriptionStep />}
-              {currentStep === 3 && <ProductsStep />}
-              {currentStep === 4 && <PaymentStep />}
+              {currentStep === 1 && <CustomerAndPrescriptionStep />}
+              {currentStep === 2 && <ProductsStep />}
+              {currentStep === 3 && <PaymentStep />}
 
               {/* Navigation */}
               <div className="flex justify-between mt-8 pt-6 border-t">
@@ -329,7 +327,7 @@ export function EditOrder({ orderId }: EditOrderProps) {
                   السابق
                 </Button>
 
-                {currentStep < 4 ? (
+                {currentStep < 3 ? (
                   <Button
                     type="button"
                     onClick={handleNext}

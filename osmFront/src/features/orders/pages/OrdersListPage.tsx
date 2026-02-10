@@ -85,6 +85,29 @@ export default function OrdersListPage() {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedCancelId, setSelectedCancelId] = useState<number | null>(null);
 
+  const [bulkUpdateOpen, setBulkUpdateOpen] = useState(false);
+  const bulkUpdateRequest = useApiForm({
+    alias: "sales_orders_bulk_update_status", // We will need to map this alias
+    method: "post",
+    url: "/sales/orders/bulk-update-status/", // Direct URL for now or via alias mapping
+    onSuccess: (response) => {
+      safeToast(response.message || "تم تحديث الطلبات بنجاح", {
+        type: "success",
+      });
+      setBulkUpdateOpen(false);
+      refetch();
+    },
+    onError: (error) => {
+      safeToast(error.message || "فشل تحديث الطلبات", { type: "error" });
+    },
+  });
+
+  const handleBulkUpdate = (newStatus: string) => {
+    if (!filteredData?.length) return;
+    const ids = filteredData.map((o: any) => o.id);
+    bulkUpdateRequest.submitForm({ ids, status: newStatus });
+  };
+
   const filteredData = useMemo(() => {
     const from = dateFrom ? new Date(`${dateFrom}T00:00:00`) : null;
     const to = dateTo ? new Date(`${dateTo}T23:59:59`) : null;
@@ -330,6 +353,15 @@ export default function OrdersListPage() {
               label={t("filters.apply")}
               onClick={applyFilters}
             />
+            {filteredData?.length > 0 && (
+              <ActionButton
+                variant="secondary"
+                label="تحديث الكل"
+                icon={<RefreshCw className="w-4 h-4" />}
+                onClick={() => setBulkUpdateOpen(true)}
+                className="bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100"
+              />
+            )}
           </div>
         </div>
       </GlassCard>
@@ -472,6 +504,68 @@ export default function OrdersListPage() {
         cancelText={t("dialogs.close")}
         isDanger
       />
+
+      <BulkUpdateStatusDialog
+        open={bulkUpdateOpen}
+        onOpenChange={setBulkUpdateOpen}
+        onConfirm={handleBulkUpdate}
+        isLoading={bulkUpdateRequest.mutation.isPending}
+        selectedCount={filteredData?.length ?? 0}
+      />
     </div>
+  );
+}
+
+function BulkUpdateStatusDialog({
+  open,
+  onOpenChange,
+  onConfirm,
+  isLoading,
+  selectedCount,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: (status: string) => void;
+  isLoading: boolean;
+  selectedCount: number;
+}) {
+  const [status, setStatus] = useState("");
+  const t = useTranslations("orders");
+
+  const handleSubmit = () => {
+    if (status) onConfirm(status);
+  };
+
+  return (
+    <ConfirmDialog
+      open={open}
+      onCancel={() => onOpenChange(false)}
+      onConfirm={handleSubmit}
+      title="تحديث حالة الطلبات المفلترة"
+      message={
+        <div className="space-y-4">
+          <p>
+            سيتم تحديث حالة <strong>{selectedCount}</strong> طلب. هل أنت متأكد؟
+          </p>
+          <div className="space-y-2">
+            <label className="text-sm font-medium">اختر الحالة الجديدة:</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="w-full bg-surface border border-border-main rounded-xl py-2.5 px-3 text-sm focus:ring-2 focus:ring-primary/20"
+            >
+              <option value="">اختر الحالة...</option>
+              <option value="confirmed">{t("status.confirmed")}</option>
+              <option value="ready">{t("status.ready")}</option>
+              <option value="delivered">{t("status.delivered")}</option>
+              <option value="cancelled">{t("status.cancelled")}</option>
+            </select>
+          </div>
+        </div>
+      }
+      confirmText={isLoading ? "جاري التحديث..." : "تحديث الحالة"}
+      cancelText="إلغاء"
+      isDanger={status === "cancelled"}
+    />
   );
 }

@@ -963,7 +963,7 @@ const CustomerPartnerLink = z
     partner: z.number().int(),
     partner_name: z.string(),
     partner_type: z.string(),
-    member_id: z.string().max(50).optional(),
+    membership_number: z.string().max(50).optional(),
     policy_number: z.string().max(50).optional(),
     coverage_start: z.string().nullish(),
     coverage_end: z.string().nullish(),
@@ -975,15 +975,15 @@ const CustomerPartnerLink = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .nullish(),
-    copay_percentage: z
+    patient_share_percentage: z
       .string()
       .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .nullish(),
-    copay_fixed: z
+    max_patient_share: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
-    coverage_class: z.string().max(50).optional(),
+    insurance_class: z.string().max(50).optional(),
     is_active: z.boolean().optional(),
     is_coverage_active: z.boolean(),
     notes: z.string().optional(),
@@ -1001,7 +1001,7 @@ const CustomerPartnerLinkRequest = z
   .object({
     customer: z.number().int(),
     partner: z.number().int(),
-    member_id: z.string().max(50).optional(),
+    membership_number: z.string().max(50).optional(),
     policy_number: z.string().max(50).optional(),
     coverage_start: z.string().nullish(),
     coverage_end: z.string().nullish(),
@@ -1013,15 +1013,15 @@ const CustomerPartnerLinkRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .nullish(),
-    copay_percentage: z
+    patient_share_percentage: z
       .string()
       .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .nullish(),
-    copay_fixed: z
+    max_patient_share: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
-    coverage_class: z.string().max(50).optional(),
+    insurance_class: z.string().max(50).optional(),
     is_active: z.boolean().optional(),
     notes: z.string().optional(),
   })
@@ -1030,7 +1030,7 @@ const PatchedCustomerPartnerLinkRequest = z
   .object({
     customer: z.number().int(),
     partner: z.number().int(),
-    member_id: z.string().max(50),
+    membership_number: z.string().max(50),
     policy_number: z.string().max(50),
     coverage_start: z.string().nullable(),
     coverage_end: z.string().nullable(),
@@ -1042,15 +1042,15 @@ const PatchedCustomerPartnerLinkRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .nullable(),
-    copay_percentage: z
+    patient_share_percentage: z
       .string()
       .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .nullable(),
-    copay_fixed: z
+    max_patient_share: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
-    coverage_class: z.string().max(50),
+    insurance_class: z.string().max(50),
     is_active: z.boolean(),
     notes: z.string(),
   })
@@ -3342,6 +3342,7 @@ const FlexiblePrice = z
     customer: z.number().int().nullable(),
     customer_group: CustomerGroup,
     branch: Branch,
+    partner: Partner,
     special_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     start_date: z.string().nullish(),
     end_date: z.string().nullish(),
@@ -3365,6 +3366,7 @@ const FlexiblePriceRequest = z
     customer: z.number().int().nullable(),
     customer_group_id: z.number().int().nullable(),
     branch_id: z.number().int().nullable(),
+    partner_id: z.number().int().nullable(),
     special_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     start_date: z.string().nullish(),
     end_date: z.string().nullish(),
@@ -3380,6 +3382,7 @@ const PatchedFlexiblePriceRequest = z
     customer: z.number().int().nullable(),
     customer_group_id: z.number().int().nullable(),
     branch_id: z.number().int().nullable(),
+    partner_id: z.number().int().nullable(),
     special_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     start_date: z.string().nullable(),
     end_date: z.string().nullable(),
@@ -14063,6 +14066,11 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
         name: "page_size",
         type: "Query",
         schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
       },
       {
         name: "pricing_policy",
