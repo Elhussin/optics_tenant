@@ -9,6 +9,7 @@ import { useSearchParams } from "next/navigation";
 import { BNPLCallbackPage } from "@/src/features/payment";
 import type { BNPLProvider } from "@/src/features/payment";
 
+
 interface PageProps {
   params: Promise<{
     provider: string;

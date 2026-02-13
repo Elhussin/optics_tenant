@@ -202,7 +202,7 @@ export default function DashboardLinks() {
             <Search className="w-8 h-8 opacity-50" />
           </div>
           <p className="text-secondary font-medium">
-            No results found for "{searchQuery}"
+            No results found for {searchQuery}
           </p>
           <button
             onClick={() => {

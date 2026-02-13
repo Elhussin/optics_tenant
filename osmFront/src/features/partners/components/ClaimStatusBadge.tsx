@@ -13,6 +13,10 @@ import {
   XCircle,
   DollarSign,
   AlertCircle,
+  FileText,
+  Eye,
+  Ban,
+  AlertTriangle,
 } from "lucide-react";
 import type { ClaimStatus } from "../types/partners.types";
 
@@ -30,6 +34,12 @@ const statusConfig: Record<
     label: string;
   }
 > = {
+  draft: {
+    icon: <FileText className="w-3.5 h-3.5" />,
+    color: "text-slate-700",
+    bgColor: "bg-slate-100 dark:bg-slate-900/30",
+    label: "مسودة",
+  },
   pending: {
     icon: <Clock className="w-3.5 h-3.5" />,
     color: "text-yellow-700",
@@ -42,11 +52,23 @@ const statusConfig: Record<
     bgColor: "bg-blue-100 dark:bg-blue-900/30",
     label: "تم الإرسال",
   },
+  under_review: {
+    icon: <Eye className="w-3.5 h-3.5" />,
+    color: "text-indigo-700",
+    bgColor: "bg-indigo-100 dark:bg-indigo-900/30",
+    label: "تحت المراجعة",
+  },
   approved: {
     icon: <CheckCircle className="w-3.5 h-3.5" />,
     color: "text-green-700",
     bgColor: "bg-green-100 dark:bg-green-900/30",
     label: "موافق عليها",
+  },
+  partial: {
+    icon: <AlertTriangle className="w-3.5 h-3.5" />,
+    color: "text-amber-700",
+    bgColor: "bg-amber-100 dark:bg-amber-900/30",
+    label: "موافقة جزئية",
   },
   rejected: {
     icon: <XCircle className="w-3.5 h-3.5" />,
@@ -65,6 +87,12 @@ const statusConfig: Record<
     color: "text-orange-700",
     bgColor: "bg-orange-100 dark:bg-orange-900/30",
     label: "مدفوعة جزئياً",
+  },
+  cancelled: {
+    icon: <Ban className="w-3.5 h-3.5" />,
+    color: "text-gray-700",
+    bgColor: "bg-gray-100 dark:bg-gray-900/30",
+    label: "ملغاة",
   },
 };
 

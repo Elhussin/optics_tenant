@@ -1,3 +1,5 @@
+import { ZodType } from "zod";
+import React from "react";
 import { PageData } from "@/src/features/pages/types";
 import { UseFormReturn, FieldValues } from "react-hook-form";
 
@@ -9,14 +11,12 @@ export type ApiSuccess = {
   [field: string]: string | string[];
 };
 
-
 export interface FormApiOptions<T = any> {
   alias: string;
   onSuccess?: (res: any) => void;
   onError?: (err: any) => void;
   transform?: (data: any) => any;
 }
-
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -38,13 +38,12 @@ export interface CrudFormOptions {
 export interface formRequestProps extends CrudFormOptions {
   onCancel?: () => void;
   showCancelButton?: boolean;
-  mode?: 'create' | 'edit' | 'login';
+  mode?: "create" | "edit" | "login";
   id?: string | number | undefined;
   submitForm?: (data?: any) => Promise<{ success: boolean; error?: any }>;
   istenant?: boolean;
   title?: string;
   message?: string;
-
 }
 
 export interface useFormRequestProps {
@@ -56,7 +55,7 @@ export interface useFormRequestProps {
   showToast?: boolean;
   skipCache?: boolean;
   enabled?: boolean;
-
+  zodSchema?: ZodType<any>;
 }
 
 export type UseFormRequestReturn = {
@@ -69,16 +68,17 @@ export type UseFormRequestReturn = {
   [key: string]: any; // للسماح بخصائص إضافية مثل methods الأخرى
 };
 
-export type UseApiFormReturn = UseFormReturn<any, any, any> & {
-  query: any, // للـ GET
-  mutation: any, // للـ POST/PUT/DELETE
-  submitForm: any, // دالة submit موحدة
-  isBusy: boolean,
-  resetForm: () => void,
-  prefetch: (newValues: any) => Promise<void>,
-  fetchDirect: () => Promise<{ success: boolean; error?: any }>,
-  errors: any,
-
+export type UseApiFormReturn<T extends FieldValues = any> = UseFormReturn<T> & {
+  query: any; // للـ GET
+  mutation: any; // للـ POST/PUT/DELETE
+  submitForm: (
+    data?: any,
+  ) => Promise<{ success: boolean; data?: any; error?: any }>; // Updated signature
+  isBusy: boolean;
+  resetForm: () => void;
+  prefetch: (newValues: any) => Promise<void>;
+  fetchDirect: () => Promise<{ success: boolean; error?: any }>;
+  errors: any;
 };
 export type UserContextType = {
   user: any | null;
@@ -116,35 +116,32 @@ export interface User {
   client: number;
 }
 
-
 export interface ViewCardProps {
   entity: string;
   id?: string | number | undefined;
 }
 
 export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'danger'
-  | 'success'
-  | 'info'
-  | 'outline'
-  | 'link'
-  | 'reset'
-  | 'cancel'
-  | 'close'
-  | 'warning'
-  | 'ghost'
-  | 'custom'
-  | 'glass'
+  | "primary"
+  | "secondary"
+  | "danger"
+  | "success"
+  | "info"
+  | "outline"
+  | "link"
+  | "reset"
+  | "cancel"
+  | "close"
+  | "warning"
+  | "ghost"
+  | "custom"
+  | "glass"
   // Icon Button Variants
-  | 'icon-view'
-  | 'icon-edit'
-  | 'icon-delete'
-  | 'icon-info'
-  | 'icon-success';
-
-
+  | "icon-view"
+  | "icon-edit"
+  | "icon-delete"
+  | "icon-info"
+  | "icon-success";
 
 export interface ButtonProps {
   label?: string;
@@ -161,14 +158,11 @@ export interface ButtonProps {
   entity?: string;
 }
 
-
-
 export interface PaginationProps {
   page: number;
   totalPages: number;
   onPageChange: (page: number) => void;
 }
-
 
 // for render buttons
 export interface Alias {
@@ -176,16 +170,13 @@ export interface Alias {
   editAlias: string;
 }
 
-
 export type RenderButtonsProps = {
   data: PageData;
   alias: Alias;
-  refetch: () => void;   // ✅ إضافة refetch
+  refetch: () => void; // ✅ إضافة refetch
   navigatePath: string;
   isViewOnly?: boolean;
 };
-
-
 
 export interface DynamicFormDialogProps {
   onClose: (e: any) => void;
@@ -194,11 +185,10 @@ export interface DynamicFormDialogProps {
   defaultValues?: any;
 }
 
-
 export interface ConfirmDialogProps {
   open: boolean;
   title?: string;
-  message?: string;
+  message?: React.ReactNode;
   onConfirm: () => void;
   onCancel: () => void;
   confirmText?: string;
@@ -211,7 +201,6 @@ export interface GlobalAlertProps {
   message?: string; // يمكن تمريرها من parent
   type?: GlobalAlertType; // يمكن تمريرها من parent
 }
-
 
 /**
  * Normalized error interface

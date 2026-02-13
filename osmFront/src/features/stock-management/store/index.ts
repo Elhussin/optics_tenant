@@ -4,232 +4,273 @@ import { create } from "zustand";
 import { MovementType, TransferItem } from "../types";
 
 // ===== Inventory Movement Store =====
-interface InventoryFormState {
-    // Selected Branch (Store only)
-    branchId: number | null;
-    branchName: string;
-
-    // Selected Variant
-    variantId: number | null;
-    variantName: string;
-    variantSku: string;
-
-    // Stock ID (if editing existing stock)
-    stockId: number | null;
-    currentQuantity: number;
-
-    // Movement Details
-    movementType: MovementType;
-    quantity: number;
-    costPerUnit: number;
-    referenceNumber: string;
-    notes: string;
-
-    // Actions
-    setBranch: (id: number | null, name: string) => void;
-    setVariant: (id: number | null, name: string, sku: string) => void;
-    setStock: (stockId: number | null, currentQty: number) => void;
-    setMovementType: (type: MovementType) => void;
-    setQuantity: (qty: number) => void;
-    setCostPerUnit: (cost: number) => void;
-    setReferenceNumber: (ref: string) => void;
-    setNotes: (notes: string) => void;
-    reset: () => void;
+interface InventoryItem {
+  branchId: number;
+  branchName: string;
+  variantId: number;
+  variantName: string;
+  variantSku: string;
+  stockId: number | null;
+  currentQuantity: number;
+  movementType: MovementType;
+  quantity: number;
+  costPerUnit: number;
+  referenceNumber: string;
+  notes: string;
 }
 
-const inventoryInitialState = {
-    branchId: null,
-    branchName: "",
-    variantId: null,
-    variantName: "",
-    variantSku: "",
-    stockId: null,
-    currentQuantity: 0,
-    movementType: "purchase" as MovementType,
-    quantity: 0,
-    costPerUnit: 0,
-    referenceNumber: "",
-    notes: "",
-    items: [],
+interface InventoryFormState {
+  // Selected Branch (Store only)
+  branchId: number | null;
+  branchName: string;
+
+  // Selected Variant
+  variantId: number | null;
+  variantName: string;
+  variantSku: string;
+
+  // Stock ID (if editing existing stock)
+  stockId: number | null;
+  currentQuantity: number;
+
+  // Movement Details
+  movementType: MovementType;
+  quantity: number;
+  costPerUnit: number;
+  referenceNumber: string;
+  notes: string;
+
+  // Items List
+  items: InventoryItem[];
+
+  // Actions
+  setBranch: (id: number | null, name: string) => void;
+  setVariant: (id: number | null, name: string, sku: string) => void;
+  setStock: (stockId: number | null, currentQty: number) => void;
+  setMovementType: (type: MovementType) => void;
+  setQuantity: (qty: number) => void;
+  setCostPerUnit: (cost: number) => void;
+  setReferenceNumber: (ref: string) => void;
+  setNotes: (notes: string) => void;
+  addItem: () => void;
+  removeItem: (index: number) => void;
+  reset: () => void;
+}
+
+const inventoryInitialState: Pick<
+  InventoryFormState,
+  | "branchId"
+  | "branchName"
+  | "variantId"
+  | "variantName"
+  | "variantSku"
+  | "stockId"
+  | "currentQuantity"
+  | "movementType"
+  | "quantity"
+  | "costPerUnit"
+  | "referenceNumber"
+  | "notes"
+  | "items"
+> = {
+  branchId: null,
+  branchName: "",
+  variantId: null,
+  variantName: "",
+  variantSku: "",
+  stockId: null,
+  currentQuantity: 0,
+  movementType: "purchase" as MovementType,
+  quantity: 0,
+  costPerUnit: 0,
+  referenceNumber: "",
+  notes: "",
+  items: [] as InventoryItem[],
 };
 
-export const useInventoryFormStore = create<InventoryFormState>((set) => ({
-    ...inventoryInitialState,
+export const useInventoryFormStore = create<InventoryFormState>((set, get) => ({
+  ...inventoryInitialState,
 
-    setBranch: (id, name) => set({ branchId: id, branchName: name }),
-    setVariant: (id, name, sku) => set({ variantId: id, variantName: name, variantSku: sku }),
-    setStock: (stockId, currentQty) => set({ stockId, currentQuantity: currentQty }),
-    setMovementType: (type) => set({ movementType: type }),
-    setQuantity: (qty) => set({ quantity: qty }),
-    setCostPerUnit: (cost) => set({ costPerUnit: cost }),
-    setReferenceNumber: (ref) => set({ referenceNumber: ref }),
-    setNotes: (notes) => set({ notes }),
+  setBranch: (id, name) => set({ branchId: id, branchName: name }),
+  setVariant: (id, name, sku) =>
+    set({ variantId: id, variantName: name, variantSku: sku }),
+  setStock: (stockId, currentQty) =>
+    set({ stockId, currentQuantity: currentQty }),
+  setMovementType: (type) => set({ movementType: type }),
+  setQuantity: (qty) => set({ quantity: qty }),
+  setCostPerUnit: (cost) => set({ costPerUnit: cost }),
+  setReferenceNumber: (ref) => set({ referenceNumber: ref }),
+  setNotes: (notes) => set({ notes }),
 
-    addItem: () => {
-        const state = get();
-        // Validation before adding? maintained in UI usually, but good to have safeguard
-        if (!state.branchId || !state.variantId) return;
+  addItem: () => {
+    const state = get();
+    // Validation before adding? maintained in UI usually, but good to have safeguard
+    if (!state.branchId || !state.variantId) return;
 
-        const newItem: InventoryItem = {
-            branchId: state.branchId,
-            branchName: state.branchName,
-            variantId: state.variantId,
-            variantName: state.variantName,
-            variantSku: state.variantSku,
-            stockId: state.stockId,
-            currentQuantity: state.currentQuantity,
-            movementType: state.movementType,
-            quantity: state.quantity,
-            costPerUnit: state.costPerUnit,
-            referenceNumber: state.referenceNumber,
-            notes: state.notes,
-        };
+    const newItem: InventoryItem = {
+      branchId: state.branchId,
+      branchName: state.branchName,
+      variantId: state.variantId,
+      variantName: state.variantName,
+      variantSku: state.variantSku,
+      stockId: state.stockId,
+      currentQuantity: state.currentQuantity,
+      movementType: state.movementType,
+      quantity: state.quantity,
+      costPerUnit: state.costPerUnit,
+      referenceNumber: state.referenceNumber,
+      notes: state.notes,
+    };
 
-        set({
-            items: [...state.items, newItem],
-            // Reset item-specific fields for next entry
-            variantId: null,
-            variantName: "",
-            variantSku: "",
-            stockId: null,
-            currentQuantity: 0,
-            quantity: 0,
-            costPerUnit: 0,
-            referenceNumber: "",
-            notes: "",
-            // Keep branch and movement type same for convenience? 
-            // Often users add many items to same branch. 
-            // Movement type might vary but usually batch is for "Purchase" or "Count".
-            // Let's keep branch and movement type.
-        });
-    },
+    set({
+      items: [...state.items, newItem],
+      // Reset item-specific fields for next entry
+      variantId: null,
+      variantName: "",
+      variantSku: "",
+      stockId: null,
+      currentQuantity: 0,
+      quantity: 0,
+      costPerUnit: 0,
+      referenceNumber: "",
+      notes: "",
+      // Keep branch and movement type same for convenience?
+      // Often users add many items to same branch.
+      // Movement type might vary but usually batch is for "Purchase" or "Count".
+      // Let's keep branch and movement type.
+    });
+  },
 
-    removeItem: (index) => {
-        const items = [...get().items];
-        items.splice(index, 1);
-        set({ items });
-    },
+  removeItem: (index: number) => {
+    const items = [...get().items];
+    items.splice(index, 1);
+    set({ items: items });
+  },
 
-    reset: () => set(inventoryInitialState),
+  reset: () => set(inventoryInitialState),
 }));
-
 
 // ===== Transfer Store =====
 interface TransferFormState {
-    // Edit mode
-    transferId: number | null;
-    isEditMode: boolean;
+  // Edit mode
+  transferId: number | null;
+  isEditMode: boolean;
 
-    // Branches
-    fromBranchId: number | null;
-    fromBranchName: string;
-    toBranchId: number | null;
-    toBranchName: string;
+  // Branches
+  fromBranchId: number | null;
+  fromBranchName: string;
+  toBranchId: number | null;
+  toBranchName: string;
 
-    // Items
-    items: TransferItem[];
+  // Items
+  items: TransferItem[];
 
-    // Notes
-    notes: string;
+  // Notes
+  notes: string;
 
-    // Total
-    totalItems: number;
-    totalQuantity: number;
-    totalValue: number;
+  // Total
+  totalItems: number;
+  totalQuantity: number;
+  totalValue: number;
 
-    // Actions
-    setFromBranch: (id: number | null, name: string) => void;
-    setToBranch: (id: number | null, name: string) => void;
-    addItem: (item: TransferItem) => void;
-    updateItem: (index: number, item: Partial<TransferItem>) => void;
-    removeItem: (index: number) => void;
-    setItems: (items: TransferItem[]) => void;
-    setNotes: (notes: string) => void;
-    calculateTotals: () => void;
-    loadFromTransfer: (transfer: any) => void;
-    reset: () => void;
+  // Actions
+  setFromBranch: (id: number | null, name: string) => void;
+  setToBranch: (id: number | null, name: string) => void;
+  addItem: (item: TransferItem) => void;
+  updateItem: (index: number, item: Partial<TransferItem>) => void;
+  removeItem: (index: number) => void;
+  setItems: (items: TransferItem[]) => void;
+  setNotes: (notes: string) => void;
+  calculateTotals: () => void;
+  loadFromTransfer: (transfer: any) => void;
+  reset: () => void;
 }
 
 const transferInitialState = {
-    transferId: null as number | null,
-    isEditMode: false,
-    fromBranchId: null as number | null,
-    fromBranchName: "",
-    toBranchId: null as number | null,
-    toBranchName: "",
-    items: [] as TransferItem[],
-    notes: "",
-    totalItems: 0,
-    totalQuantity: 0,
-    totalValue: 0,
+  transferId: null as number | null,
+  isEditMode: false,
+  fromBranchId: null as number | null,
+  fromBranchName: "",
+  toBranchId: null as number | null,
+  toBranchName: "",
+  items: [] as TransferItem[],
+  notes: "",
+  totalItems: 0,
+  totalQuantity: 0,
+  totalValue: 0,
 };
 
 export const useTransferFormStore = create<TransferFormState>((set, get) => ({
-    ...transferInitialState,
+  ...transferInitialState,
 
-    setFromBranch: (id, name) => set({ fromBranchId: id, fromBranchName: name }),
-    setToBranch: (id, name) => set({ toBranchId: id, toBranchName: name }),
+  setFromBranch: (id, name) => set({ fromBranchId: id, fromBranchName: name }),
+  setToBranch: (id, name) => set({ toBranchId: id, toBranchName: name }),
 
-    addItem: (item) => {
-        const items = [...get().items, item];
-        set({ items });
-        get().calculateTotals();
-    },
+  addItem: (item) => {
+    const items = [...get().items, item];
+    set({ items });
+    get().calculateTotals();
+  },
 
-    updateItem: (index, updates) => {
-        const items = [...get().items];
-        items[index] = { ...items[index], ...updates };
-        set({ items });
-        get().calculateTotals();
-    },
+  updateItem: (index, updates) => {
+    const items = [...get().items];
+    items[index] = { ...items[index], ...updates };
+    set({ items });
+    get().calculateTotals();
+  },
 
-    removeItem: (index) => {
-        const items = get().items.filter((_, i) => i !== index);
-        set({ items });
-        get().calculateTotals();
-    },
+  removeItem: (index) => {
+    const items = get().items.filter((_, i) => i !== index);
+    set({ items });
+    get().calculateTotals();
+  },
 
-    setItems: (items) => {
-        set({ items });
-        get().calculateTotals();
-    },
+  setItems: (items) => {
+    set({ items });
+    get().calculateTotals();
+  },
 
-    setNotes: (notes) => set({ notes }),
+  setNotes: (notes) => set({ notes }),
 
-    calculateTotals: () => {
-        const { items } = get();
-        const totalItems = items.length;
-        const totalQuantity = items.reduce((sum, item) => sum + item.quantityRequested, 0);
-        const totalValue = items.reduce((sum, item) => sum + (item.quantityRequested * item.unitCost), 0);
-        set({ totalItems, totalQuantity, totalValue });
-    },
+  calculateTotals: () => {
+    const { items } = get();
+    const totalItems = items.length;
+    const totalQuantity = items.reduce(
+      (sum, item) => sum + item.quantityRequested,
+      0,
+    );
+    const totalValue = items.reduce(
+      (sum, item) => sum + item.quantityRequested * item.unitCost,
+      0,
+    );
+    set({ totalItems, totalQuantity, totalValue });
+  },
 
-    loadFromTransfer: (transfer: any) => {
-        // Convert transfer items to store format
-        const items: TransferItem[] = (transfer.items || []).map((item: any) => ({
-            variantId: item.variant,
-            variantName: item.variant_name || "",
-            variantSku: item.variant_sku || "",
-            productName: item.product_name || "",
-            quantityRequested: item.quantity_requested,
-            unitCost: parseFloat(item.unit_cost) || 0,
-            availableQuantity: item.quantity_requested, // In edit mode, use requested as available
-        }));
+  loadFromTransfer: (transfer: any) => {
+    // Convert transfer items to store format
+    const items: TransferItem[] = (transfer.items || []).map((item: any) => ({
+      variantId: item.variant,
+      variantName: item.variant_name || "",
+      variantSku: item.variant_sku || "",
+      productName: item.product_name || "",
+      quantityRequested: item.quantity_requested,
+      unitCost: parseFloat(item.unit_cost) || 0,
+      availableQuantity: item.quantity_requested, // In edit mode, use requested as available
+    }));
 
-        set({
-            transferId: transfer.id,
-            isEditMode: true,
-            fromBranchId: transfer.from_branch,
-            fromBranchName: transfer.from_branch_name || "",
-            toBranchId: transfer.to_branch,
-            toBranchName: transfer.to_branch_name || "",
-            notes: transfer.notes || "",
-            items,
-        });
+    set({
+      transferId: transfer.id,
+      isEditMode: true,
+      fromBranchId: transfer.from_branch,
+      fromBranchName: transfer.from_branch_name || "",
+      toBranchId: transfer.to_branch,
+      toBranchName: transfer.to_branch_name || "",
+      notes: transfer.notes || "",
+      items,
+    });
 
-        get().calculateTotals();
-    },
+    get().calculateTotals();
+  },
 
-    reset: () => set(transferInitialState),
+  reset: () => set(transferInitialState),
 }));
-

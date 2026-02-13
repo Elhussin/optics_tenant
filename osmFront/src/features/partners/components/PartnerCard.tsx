@@ -34,16 +34,32 @@ interface PartnerCardProps {
 }
 
 const partnerTypeConfig: Record<PartnerType, { label: string; color: string }> =
-  {
-    insurance_company: {
-      label: "شركة تأمين",
-      color: "bg-blue-100 text-blue-700",
-    },
-    corporate: { label: "شركة", color: "bg-purple-100 text-purple-700" },
-    government: { label: "جهة حكومية", color: "bg-green-100 text-green-700" },
-    healthcare: { label: "مؤسسة صحية", color: "bg-red-100 text-red-700" },
-    other: { label: "أخرى", color: "bg-gray-100 text-gray-700" },
-  };
+{
+  insurance: {
+    label: "تأمين",
+    color: "bg-blue-100 text-blue-700",
+  },
+  insurance_company: {
+    label: "شركة تأمين",
+    color: "bg-blue-100 text-blue-700",
+  },
+  bnpl: {
+    label: "تجزئة الدفعات (BNPL)",
+    color: "bg-teal-100 text-teal-700",
+  },
+  corporate: { label: "شركة", color: "bg-purple-100 text-purple-700" },
+  wholesaler: {
+    label: "تاجر جملة",
+    color: "bg-amber-100 text-amber-700",
+  },
+  agent: {
+    label: "وكيل",
+    color: "bg-indigo-100 text-indigo-700",
+  },
+  government: { label: "جهة حكومية", color: "bg-green-100 text-green-700" },
+  healthcare: { label: "مؤسسة صحية", color: "bg-red-100 text-red-700" },
+  other: { label: "أخرى", color: "bg-gray-100 text-gray-700" },
+};
 
 export function PartnerCard({
   partner,
@@ -161,13 +177,12 @@ export function PartnerCard({
             </div>
             <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className={`h-full rounded-full transition-all ${
-                  utilizationPercent > 90
+                className={`h-full rounded-full transition-all ${utilizationPercent > 90
                     ? "bg-red-500"
                     : utilizationPercent > 70
-                    ? "bg-yellow-500"
-                    : "bg-green-500"
-                }`}
+                      ? "bg-yellow-500"
+                      : "bg-green-500"
+                  }`}
                 style={{ width: `${Math.min(utilizationPercent, 100)}%` }}
               />
             </div>
@@ -181,13 +196,12 @@ export function PartnerCard({
         {/* Contract Dates */}
         {(partner.contract_start_date || partner.contract_end_date) && (
           <div
-            className={`p-3 rounded-lg ${
-              isContractExpired
+            className={`p-3 rounded-lg ${isContractExpired
                 ? "bg-red-50 border border-red-200"
                 : isContractExpiringSoon
-                ? "bg-yellow-50 border border-yellow-200"
-                : "bg-gray-50"
-            }`}
+                  ? "bg-yellow-50 border border-yellow-200"
+                  : "bg-gray-50"
+              }`}
           >
             <div className="flex items-center gap-2 text-sm">
               <Calendar className="w-4 h-4" />

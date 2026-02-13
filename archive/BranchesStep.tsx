@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Label } from "@/src/shared/components/shadcn/ui/label";
-import { useTransferFormStore } from "../../../store";
+import { useTransferFormStore } from "@/src/features/inventory/store/transferForm.store";
 import useSWR from "swr";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
