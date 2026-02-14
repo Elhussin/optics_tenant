@@ -34,16 +34,16 @@ const statusFilters: {
   label: string;
   icon: React.ReactNode;
 }[] = [
-  { value: "all", label: "الكل", icon: <Calendar className="w-4 h-4" /> },
-  { value: "due", label: "مستحق", icon: <Clock className="w-4 h-4" /> },
-  {
-    value: "overdue",
-    label: "متأخر",
-    icon: <AlertTriangle className="w-4 h-4" />,
-  },
-  { value: "upcoming", label: "قادم", icon: <Calendar className="w-4 h-4" /> },
-  { value: "paid", label: "مدفوع", icon: <CheckCircle className="w-4 h-4" /> },
-];
+    { value: "all", label: "الكل", icon: <Calendar className="w-4 h-4" /> },
+    { value: "due", label: "مستحق", icon: <Clock className="w-4 h-4" /> },
+    {
+      value: "overdue",
+      label: "متأخر",
+      icon: <AlertTriangle className="w-4 h-4" />,
+    },
+    { value: "pending", label: "معلق", icon: <Calendar className="w-4 h-4" /> },
+    { value: "paid", label: "مدفوع", icon: <CheckCircle className="w-4 h-4" /> },
+  ];
 
 export function InstallmentsPage() {
   const { installments, loading, error, fetchInstallments, markAsPaid } =
@@ -58,7 +58,7 @@ export function InstallmentsPage() {
   // Filter installments
   const filteredInstallments = installments.filter((inst) => {
     const matchesStatus =
-      statusFilter === "all" || inst.status === statusFilter;
+      statusFilter === "all" || (inst.status || 'pending') === statusFilter;
     // Search would work with payment number if available
     return matchesStatus;
   });
@@ -77,8 +77,8 @@ export function InstallmentsPage() {
     0
   );
   const paidThisMonth = installments.filter((i) => {
-    if (i.status !== "paid" || !i.paid_date) return false;
-    const paidDate = new Date(i.paid_date);
+    if (i.status !== "paid" || !i.paid_at) return false;
+    const paidDate = new Date(i.paid_at);
     const now = new Date();
     return (
       paidDate.getMonth() === now.getMonth() &&

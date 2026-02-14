@@ -4,19 +4,16 @@ import React, { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, useParams } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
 import { SectionLoading } from "@/src/shared/components/ui/Spinner";
 import { safeToast } from "@/src/shared/utils/safeToast";
 import api from "@/src/shared/api/axios";
-import { handleServerErrors } from "@/src/shared/utils/handleServerErrors";
-import { handleErrorStatus } from "@/src/shared/utils/handleErrorStatus";
+import { useApiForm } from "@/src/shared/hooks/useApiForm";
 
-import { PaymentForm, paymentSchema } from "../components/PaymentForm";
+import { PaymentForm, paymentSchema, PaymentFormValues } from "../components/PaymentForm";
 
 export default function PaymentEditPage() {
   const t = useTranslations("payments");
@@ -30,10 +27,19 @@ export default function PaymentEditPage() {
     enabled: !!id,
   });
 
-  const form = useForm({
-    resolver: zodResolver(paymentSchema),
+  const { mutation, ...form } = useApiForm<PaymentFormValues>({
+    alias: "sales_payments_partial_update",
+    zodSchema: paymentSchema,
     defaultValues: {
       currency: "SAR",
+    },
+    onSuccess: () => {
+      safeToast(t("update_success"), { type: "success" });
+      queryClient.invalidateQueries({ queryKey: ["sales_payments_list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["sales_payments_retrieve", id],
+      });
+      router.push("/dashboard/payments?tab=sales-payments");
     },
   });
 
@@ -45,6 +51,7 @@ export default function PaymentEditPage() {
         currency: payment.currency,
         payment_method: String(payment.payment_method),
         invoice: payment.invoice ? String(payment.invoice) : undefined,
+        partner: payment.partner ? String(payment.partner) : undefined,
         notes: payment.notes,
         // Map other fields if they exist in response
         transfer_reference: payment.transfer_reference,
@@ -55,30 +62,11 @@ export default function PaymentEditPage() {
         card_last_four: payment.card_last_four,
       });
     }
-  }, [payment, form]);
+  }, [payment, form.reset]);
 
-  const mutation = useMutation({
-    mutationFn: (data: any) =>
-      api.customRequest("sales_payments_partial_update", { id, ...data }),
-    onSuccess: () => {
-      safeToast.success(
-        t("update_success", { fallback: "Payment updated successfully" }),
-      );
-      queryClient.invalidateQueries({ queryKey: ["sales_payments_list"] });
-      queryClient.invalidateQueries({
-        queryKey: ["sales_payments_retrieve", id],
-      });
-      router.push("/dashboard/payments?tab=sales-payments");
-    },
-    onError: (error: any) => {
-      handleServerErrors(error, form.setError);
-      const msg = handleErrorStatus(error);
-      safeToast.error(msg);
-    },
-  });
-
-  const onSubmit = (data: any) => {
-    mutation.mutate(data);
+  const onSubmit = (data: PaymentFormValues) => {
+    // We need to include the ID in the payload for the update
+    mutation.mutate({ id, ...data });
   };
 
   if (isLoadingData) {

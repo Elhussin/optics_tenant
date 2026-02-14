@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 import { SkeletonGroup } from "@/src/shared/components/ui/Skeleton";
 import { EmptyState } from "@/src/shared/components/ui/EmptyState";
 import { StatsCard } from "../components/StatsCard";
+import Image from "next/image";
 
 const partnerTypeFilters: { value: PartnerType | "all"; label: string }[] = [
   { value: "all", label: "الكل" },
@@ -216,7 +217,7 @@ export function PartnersListPage() {
                     <div className="flex justify-between items-start mb-4">
                       <div className="p-3 bg-gray-50 dark:bg-white/5 rounded-xl group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                         {partner.logo ? (
-                          <img
+                          <Image
                             src={partner.logo}
                             alt={partner.name}
                             className="w-6 h-6 object-contain"

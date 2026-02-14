@@ -99,14 +99,14 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
               </h2>
 
               {/* ✨ Message */}
-              <p
+              <div
                 className={cn(
                   "text-base leading-relaxed mb-8",
                   "text-muted-foreground"
                 )}
               >
                 {message}
-              </p>
+              </div>
 
               {/* ✨ Enhanced Actions */}
               <div className="flex gap-3">
@@ -135,13 +135,13 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
                     "hover:scale-105 active:scale-95",
                     isDanger
                       ? [
-                          "bg-gradient-to-r from-destructive to-red-600",
-                          "text-white shadow-lg hover:shadow-xl hover:shadow-destructive/40",
-                        ]
+                        "bg-gradient-to-r from-destructive to-red-600",
+                        "text-white shadow-lg hover:shadow-xl hover:shadow-destructive/40",
+                      ]
                       : [
-                          "bg-gradient-to-r from-primary to-blue-500",
-                          "text-white shadow-lg hover:shadow-xl hover:shadow-primary/40",
-                        ]
+                        "bg-gradient-to-r from-primary to-blue-500",
+                        "text-white shadow-lg hover:shadow-xl hover:shadow-primary/40",
+                      ]
                   )}
                 >
                   {/* Shine effect */}

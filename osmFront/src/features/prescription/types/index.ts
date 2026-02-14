@@ -40,5 +40,6 @@ export interface OtherFailedProps {
    setShowModal: (value: boolean) => void;
    errors: any;
    isView?: boolean;
+   disableCustomerSelect?: boolean;
 
 }

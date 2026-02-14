@@ -232,11 +232,10 @@ export function PartnerStatementPage() {
                         : "-"}
                     </td>
                     <td
-                      className={`px-6 py-4 font-bold ${
-                        Number(trx.balance) > 0
+                      className={`px-6 py-4 font-bold ${Number(trx.balance) > 0
                           ? "text-red-500"
                           : "text-green-500"
-                      }`}
+                        }`}
                       dir="ltr"
                     >
                       {Number(trx.balance).toLocaleString()}
@@ -262,9 +261,8 @@ function SummaryCard({ title, value, color, icon, highlight }: any) {
 
   return (
     <GlassCard
-      className={`relative ${
-        highlight ? "ring-2 ring-primary/20 bg-primary/5" : ""
-      }`}
+      className={`relative ${highlight ? "ring-2 ring-primary/20 bg-primary/5" : ""
+        }`}
     >
       <div className="space-y-2">
         <div className="flex justify-between items-start">
@@ -274,13 +272,12 @@ function SummaryCard({ title, value, color, icon, highlight }: any) {
           )}
         </div>
         <div
-          className={`text-2xl font-bold ${
-            color === "red"
+          className={`text-2xl font-bold ${color === "red"
               ? "text-red-600"
               : color === "green"
-              ? "text-emerald-600"
-              : "text-main"
-          }`}
+                ? "text-emerald-600"
+                : "text-main"
+            }`}
         >
           {Number(value).toLocaleString()}
           <span className="text-xs font-normal text-secondary mr-1">ر.س</span>

@@ -147,7 +147,7 @@ export function InsuranceClaimsPage() {
               variant="primary"
               icon={<Plus className="w-4 h-4" />}
               label="مطالبة جديدة"
-              // Add navigation to create claim page if exists
+            // Add navigation to create claim page if exists
             />
           </div>
         </div>

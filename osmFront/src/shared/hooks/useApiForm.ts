@@ -1,4 +1,3 @@
-
 /**
  * [useApiForm](cci:1://file:///home/hussin/code/summary/front-end/src/hooks/useApiForm.ts:16:0-138:1) is a custom hook designed to handle form submissions and API interactions.
  * It leverages `react-hook-form` for form management and `react-query` for data fetching and mutations.
@@ -24,7 +23,6 @@
  * @returns {object} formErrors - Comprehensive form errors including root errors.
  */
 
-
 "use client";
 import { useMemo } from "react";
 import { ZodType, ZodObject } from "zod";
@@ -37,12 +35,14 @@ import { handleServerErrors } from "../utils/handleServerErrors";
 import { handleErrorStatus } from "../utils/handleErrorStatus";
 // import { useTranslations } from 'next-intl';
 function hasParameters(
-  endpoint: any
+  endpoint: any,
 ): endpoint is { parameters: { body?: ZodType<any>; query?: ZodType<any> } } {
   return "parameters" in endpoint;
 }
 
-export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
+export function useApiForm<
+  T extends import("react-hook-form").FieldValues = any,
+>(options: useFormRequestProps): UseApiFormReturn<T> {
   const {
     alias,
     defaultValues,
@@ -51,7 +51,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     transform,
     showToast = true,
     skipCache = false,
-    enabled = true, // Default to true to maintain backward compatibility
+    enabled = true,
+    zodSchema,
   } = options;
   // const t = useTranslations("errors")
 
@@ -59,33 +60,34 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
 
   // Get endpoint
   const endpoint = useMemo(() => {
+    if (!alias) return null;
     const found = api.api.find((e) => e.alias === alias);
     if (!found) return null;
     return found;
   }, [alias]);
 
-  // Extract Schema 
+  // Extract Schema
   const schema: ZodType<any> | undefined =
-    endpoint && hasParameters(endpoint)
+    zodSchema ||
+    (endpoint && hasParameters(endpoint)
       ? endpoint.parameters?.body ?? endpoint.parameters?.query
-      : undefined;
+      : undefined);
 
   // Resolver
-  const resolver =
-    schema instanceof ZodObject
-      ? zodResolver(schema)
-      : (values: any) => ({ values, errors: {} });
+  const resolver = schema ? zodResolver(schema as any) : undefined;
 
   // useForm
-  const methods = useForm<any>({
-    resolver,
+  const methods = useForm<T>({
+    resolver: resolver as any,
     defaultValues,
     mode: "onChange",
   });
 
-
-  // GET 
-  const queryKey = useMemo(() => [alias, JSON.stringify(defaultValues || {})], [alias, defaultValues]);
+  // GET
+  const queryKey = useMemo(
+    () => [alias, JSON.stringify(defaultValues || {})],
+    [alias, defaultValues],
+  );
   const query = useQuery({
     queryKey,
     queryFn: () => api.customRequest(alias as string, defaultValues),
@@ -105,7 +107,6 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     }
   };
 
-
   const fetchDirect = async () => {
     await queryClient.invalidateQueries({ queryKey });
     return api.customRequest(alias as string, defaultValues);
@@ -113,7 +114,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
   // Mutation Form POST / PUT / DELETE
   const mutation = useMutation({
     mutationFn: async (payload: any) => {
-      if (!endpoint?.alias) throw new Error(`Endpoint alias is undefined for alias "${alias}"`);
+      if (!endpoint?.alias)
+        throw new Error(`Endpoint alias is undefined for alias "${alias}"`);
       return api.customRequest(endpoint.alias, payload);
     },
     onSuccess: (data) => {
@@ -121,8 +123,8 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       onSuccess?.(data);
     },
     onError: (error: any) => {
-      handleServerErrors(error, methods.setError, { showToast });
-      const normalized = handleErrorStatus(error,);
+      handleServerErrors(error, methods.setError as any, { showToast });
+      const normalized = handleErrorStatus(error);
       onError?.(normalized);
     },
   });
@@ -137,16 +139,18 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     const isValid = await methods.trigger();
     if (!isValid) {
       const fieldErrors = Object.values(methods.formState.errors).map(
-        (err: any) => err?.message
+        (err: any) => err?.message,
       );
-      return { success: false, error: fieldErrors.join(", ") || "Validation failed" };
+      return {
+        success: false,
+        error: fieldErrors.join(", ") || "Validation failed",
+      };
     }
 
     const values = data ?? methods.getValues();
     let payload = transform ? transform(values) : values;
 
     try {
-
       const isFile = (val: any) => {
         return (
           val instanceof File ||
@@ -200,16 +204,18 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
       onSuccess?.(response);
       return { success: true, data: response };
     } catch (error: any) {
-      handleServerErrors(error, methods.setError);
+      handleServerErrors(error, methods.setError as any);
       const normalized = handleErrorStatus(error);
       onError?.(normalized);
       return { success: false, error: normalized };
     }
   };
 
-
-
-  const isBusy = query.isLoading || query.isFetching || methods.formState.isSubmitting || mutation.isPending;
+  const isBusy =
+    query.isLoading ||
+    query.isFetching ||
+    methods.formState.isSubmitting ||
+    mutation.isPending;
   return {
     ...methods,
     query,
@@ -219,7 +225,9 @@ export function useApiForm(options: useFormRequestProps): UseApiFormReturn {
     fetchDirect,
     prefetch,
     isBusy: isBusy,
-    errors: { ...methods.formState.errors, root: methods.formState.errors.root?.message },
-  };
-
+    errors: {
+      ...methods.formState.errors,
+      root: methods.formState.errors.root?.message,
+    },
+  } as UseApiFormReturn<T>;
 }

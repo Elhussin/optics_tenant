@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { usePartners } from "../hooks/usePartners";
 import { useParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Building2,
   Calendar,
@@ -94,7 +95,7 @@ export function PartnerDetailsPage() {
             <div className="flex items-end gap-6">
               <div className="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-xl ring-4 ring-white/50 dark:ring-black/50">
                 {partner.logo ? (
-                  <img
+                  <Image
                     src={partner.logo}
                     alt={partner.name}
                     className="w-12 h-12 object-contain"

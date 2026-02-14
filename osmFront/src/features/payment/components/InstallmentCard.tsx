@@ -32,11 +32,11 @@ const statusConfig: Record<
     label: string;
   }
 > = {
-  upcoming: {
+  pending: {
     icon: <Clock className="w-4 h-4" />,
     color: "text-gray-600",
     bgColor: "bg-gray-100 dark:bg-gray-800",
-    label: "قادم",
+    label: "معلق",
   },
   due: {
     icon: <Calendar className="w-4 h-4" />,
@@ -69,7 +69,7 @@ export function InstallmentCard({
   onMarkPaid,
   loading = false,
 }: InstallmentCardProps) {
-  const config = statusConfig[installment.status];
+  const config = statusConfig[installment.status || 'pending'];
   const amount = parseFloat(installment.amount);
 
   // Calculate days until/since due
@@ -111,13 +111,12 @@ export function InstallmentCard({
           {installment.status !== "paid" &&
             installment.status !== "cancelled" && (
               <span
-                className={`text-xs mr-2 ${
-                  diffDays < 0
-                    ? "text-red-500"
-                    : diffDays <= 3
+                className={`text-xs mr-2 ${diffDays < 0
+                  ? "text-red-500"
+                  : diffDays <= 3
                     ? "text-yellow-500"
                     : "text-gray-400"
-                }`}
+                  }`}
               >
                 (
                 {diffDays > 0
@@ -128,10 +127,10 @@ export function InstallmentCard({
             )}
         </div>
 
-        {installment.status === "paid" && installment.paid_date && (
+        {installment.status === "paid" && installment.paid_at && (
           <div className="text-sm text-green-600">
             <span className="text-gray-500">تم الدفع:</span>
-            <span className="font-medium mr-1">{installment.paid_date}</span>
+            <span className="font-medium mr-1">{installment.paid_at}</span>
           </div>
         )}
 

@@ -397,7 +397,7 @@ export function CustomerAndPrescriptionStep() {
           {t("details.invoiceType")}
         </label>
         {invoiceTypesQuery.isLoading ? (
-          <SkeletonGroup type="input" count={1} />
+          <SkeletonGroup type="card" count={1} />
         ) : (
           <Select
             value={String(store.invoiceTypeId || "")}
@@ -435,7 +435,7 @@ export function CustomerAndPrescriptionStep() {
               {t("details.partner")}
             </label>
             {partnersQuery.isLoading ? (
-              <SkeletonGroup type="input" count={1} />
+              <SkeletonGroup type="card" count={1} />
             ) : (
               <Select
                 value={String(store.partnerId || "")}

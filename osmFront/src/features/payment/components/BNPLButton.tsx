@@ -14,8 +14,7 @@ import {
   DollarSign,
   CheckCircle,
 } from "lucide-react";
-import { Button } from "@/src/shared/components/shadcn/ui/button";
-import type { BNPLProvider, InstallmentPlan } from "../types/payment.types";
+import type { BNPLProvider } from "../types/payment.types";
 
 interface BNPLButtonProps {
   provider: BNPLProvider;
