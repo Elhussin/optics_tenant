@@ -88,8 +88,8 @@ export default function OrdersListPage() {
   const [bulkUpdateOpen, setBulkUpdateOpen] = useState(false);
   const bulkUpdateRequest = useApiForm({
     alias: "sales_orders_bulk_update_status", // We will need to map this alias
-    method: "post",
-    url: "/sales/orders/bulk-update-status/", // Direct URL for now or via alias mapping
+    // method: "post",
+    // url: "/sales/orders/bulk-update-status/", // Direct URL for now or via alias mapping
     onSuccess: (response) => {
       safeToast(response.message || "تم تحديث الطلبات بنجاح", {
         type: "success",

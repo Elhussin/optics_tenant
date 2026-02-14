@@ -164,6 +164,30 @@ class OrderSerializer(serializers.ModelSerializer):
                 ))
             })
 
+        # Enforce Branch/Sales Person for non-admins
+        request = self.context.get('request')
+        if request and request.user:
+            user = request.user
+            # Check if user is Super Admin or Owner (assuming 'owner' role or permission)
+            is_admin = user.is_superuser or getattr(
+                user, 'role', '') == 'owner'
+
+            if not is_admin:
+                # Force Branch and Sales Person for regular users
+                if hasattr(user, 'branch_user'):
+                    data['branch'] = user.branch_user.branch
+                    data['sales_person'] = user.branch_user
+                else:
+                    # Fallback or error if user has no branch linked
+                    # For now ensure we don't accidentally allow setting arbitrary branch
+                    pass
+            else:
+                # Admin: If not provided in data, maybe default to their own if applicable,
+                # or leave it to be validated as required if model requires it.
+                # The model requires branch, so if admin doesn't send it, it might fail model validation
+                # unless we set a default. But frontend should send it.
+                pass
+
         return data
 
     def create(self, validated_data):

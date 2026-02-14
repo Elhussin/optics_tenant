@@ -11,6 +11,8 @@ import {
   Loader2,
   ArrowLeft,
   ArrowRight,
+  Building,
+  Users,
 } from "lucide-react";
 import { Form } from "@/src/shared/components/shadcn/ui/form";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
@@ -27,6 +29,7 @@ import { safeToast } from "@/src/shared/utils/safeToast";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
 import { useTranslations } from "next-intl";
+import { SearchableSelect } from "@/src/shared/components/field/Fields";
 
 // Step Components
 // Step Components
@@ -96,13 +99,63 @@ export function CreateOrder() {
 
   // const currentUser = userQuery.data;
 
-  // تحديد الفرع ومندوب المبيعات تلقائياً
+  // Check if user is Admin or Owner
+  const isAdmin = useMemo(() => {
+    if (!currentUser) return false;
+    return (
+      currentUser.is_superuser ||
+      currentUser.roles?.some(
+        (r: any) => r.name === "TenantOwner" || r.name === "owner",
+      )
+    );
+  }, [currentUser]);
+
+  // Fetch Branches (Only if Admin)
+  const branchesQuery = useApiForm({
+    alias: "branches_branches_list",
+    enabled: isAdmin,
+  });
+
+  const branchesOptions = useMemo(() => {
+    const response = branchesQuery.query.data;
+    const data = response?.results || response?.data || response || [];
+    return Array.isArray(data)
+      ? data.map((b: any) => ({
+          label: b.name,
+          value: b.id,
+        }))
+      : [];
+  }, [branchesQuery.query.data]);
+
+  // Fetch Sales Persons for selected branch
+  const salesPersonsQuery = useApiForm({
+    alias: "branches_branch_users_list",
+    enabled: !!store.branchId && isAdmin,
+    defaultValues: { branch: store.branchId },
+  });
+
+  const salesPersonOptions = useMemo(() => {
+    const response = salesPersonsQuery.query.data;
+    const data = response?.results || response?.data || response || [];
+    return Array.isArray(data)
+      ? data.map((u: any) => ({
+          label:
+            u.employee?.user?.username ||
+            u.employee?.name ||
+            u.employee ||
+            "Unknown",
+          value: u.id,
+        }))
+      : [];
+  }, [salesPersonsQuery.query.data]);
+
+  // Set default branch/sales person for non-admins only
   React.useEffect(() => {
-    if (currentUser?.branch_user) {
+    if (currentUser?.branch_user && !isAdmin) {
       store.setBranch(currentUser.branch_user.branch);
       store.setSalesPerson(currentUser.branch_user.id);
     }
-  }, [currentUser, store]);
+  }, [currentUser, store, isAdmin]);
 
   const form = useApiForm({
     alias: "sales_orders_create",
@@ -268,6 +321,53 @@ export function CreateOrder() {
           <h1 className="text-3xl font-bold text-main">{t("create.title")}</h1>
           <p className="text-secondary mt-2">{t("create.description")}</p>
         </div>
+
+        {/* Admin Branch Selection */}
+        {isAdmin && (
+          <Card className="mb-8 border-primary/20 bg-primary/5">
+            <CardContent className="pt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Building className="w-4 h-4" />
+                    {t("filters.branch")}
+                  </label>
+                  <SearchableSelect
+                    fieldRow={{
+                      label: t("filters.branch"),
+                      placeholder: t("filters.selectBranch"),
+                    }}
+                    field={{
+                      value: store.branchId,
+                      onChange: (val: any) => {
+                        store.setBranch(val);
+                        store.setSalesPerson(null); // Reset sales person on branch change
+                      },
+                    }}
+                    options={branchesOptions}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    {t("filters.salesPerson")}
+                  </label>
+                  <SearchableSelect
+                    fieldRow={{
+                      label: t("filters.salesPerson"),
+                      placeholder: t("filters.selectSalesPerson"),
+                    }}
+                    field={{
+                      value: store.salesPersonId,
+                      onChange: (val: any) => store.setSalesPerson(val),
+                    }}
+                    options={salesPersonOptions}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Step Indicator */}
         <StepIndicator steps={STEPS} currentStep={currentStep} t={t} />

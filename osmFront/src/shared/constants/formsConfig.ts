@@ -1550,6 +1550,9 @@ export const formsConfig: Record<string, FormConfig> = {
   "sales_invoices_confirm": {
     createAlias: "sales_invoices_confirm_create",
   },
+  "sales_orders_bulk_update_status": {
+    createAlias: "sales_orders_bulk_update_status_create",
+  },
   "sales_orders_calculate_totals": {
     createAlias: "sales_orders_calculate_totals_create",
   },
@@ -1887,4 +1890,5 @@ export const formsConfig: Record<string, FormConfig> = {
     fields: ["customer_name", "notes", "user_name"],
     detailsField: ["customer_name", "notes", "user_name", "is_active"],
   },
+ 
 };

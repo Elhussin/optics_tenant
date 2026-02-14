@@ -21,15 +21,16 @@ def confirm_order(order, user):
     if order.status != 'pending':
         raise ValidationError("Only pending orders can be confirmed")
 
-    for item in order.items.select_related('product_variant'):
-        stock = Stock.objects.select_for_update().filter(
-            branch=order.branch,
-            variant=item.product_variant
-        ).first()
+    if not order.branch:
+        raise ValidationError(
+            _("Order must belong to a branch to manage stock"))
 
-        if not stock:
-            raise ValidationError(
-                _("Product {0} not found in branch stock").format(item.product_variant))
+    for item in order.items.select_related('product_variant'):
+        stock, _created = Stock.objects.select_for_update().get_or_create(
+            branch=order.branch,
+            variant=item.product_variant,
+            defaults={'quantity_in_stock': 0}
+        )
 
         if stock.available_quantity < item.quantity:
             raise ValidationError(
