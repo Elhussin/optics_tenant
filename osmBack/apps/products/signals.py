@@ -16,7 +16,8 @@ logger = logging.getLogger(__name__)
 def update_order_totals(sender, instance, **kwargs):
     """Update order totals when items change"""
     if hasattr(instance, 'order') and instance.order:
-        instance.order.calculate_totals()
+        from apps.sales.services.order_service import calculate_order_totals
+        calculate_order_totals(instance.order)
 
 
 @receiver(post_save, sender=InvoiceItem)
@@ -24,7 +25,8 @@ def update_order_totals(sender, instance, **kwargs):
 def update_invoice_totals(sender, instance, **kwargs):
     """Update invoice totals when items change"""
     if hasattr(instance, 'invoice') and instance.invoice:
-        instance.invoice.calculate_totals()
+        from apps.sales.services.invoice_service import calculate_invoice_totals
+        calculate_invoice_totals(instance.invoice)
 
 
 @receiver(post_save, sender=Order)

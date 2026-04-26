@@ -226,58 +226,7 @@ class Customer(BaseModel):
             is_active=True
         ).first()
 
-    def update_balance(self, amount, is_payment=False):
-        """تحديث رصيد العميل"""
-        from decimal import Decimal
-        amount = Decimal(str(amount))
 
-        if is_payment:
-            self.current_balance -= amount
-        else:
-            self.current_balance += amount
-
-        self.save(update_fields=['current_balance'])
-
-    def check_credit_available(self, amount):
-        """التحقق من توفر الائتمان للمبلغ المطلوب"""
-        if self.credit_status != 'approved':
-            return False, str(_('You do not have approved credit'))
-
-        if self.available_credit < amount:
-            return False, str(_('Available credit ({available}) is less than requested amount ({amount})').format(
-                available=self.available_credit,
-                amount=amount
-            ))
-
-        return True, str(_('Credit available'))
-
-    def get_applicable_price(self, product_variant):
-        """الحصول على السعر المناسب للعميل"""
-        # أولاً: التحقق من سعر خاص للعميل
-        from apps.products.models import FlexiblePrice
-
-        # سعر خاص للعميل
-        special_price = FlexiblePrice.objects.filter(
-            variant=product_variant,
-            customer=self,
-            is_active=True
-        ).first()
-
-        if special_price:
-            return special_price.price
-
-        # سعر المستوى (tier)
-        tier_price = FlexiblePrice.objects.filter(
-            variant=product_variant,
-            pricing_tier=self.pricing_tier,
-            is_active=True
-        ).first()
-
-        if tier_price:
-            return tier_price.price
-
-        # السعر الافتراضي
-        return product_variant.price
 
 
 class Interaction(BaseModel):

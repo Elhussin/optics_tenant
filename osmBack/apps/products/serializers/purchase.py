@@ -127,7 +127,8 @@ class PurchaseOrderCreateSerializer(serializers.Serializer):
                 )
 
             # Calculate totals
-            order.calculate_totals()
+            from apps.products.services.purchase_service import calculate_purchase_order_totals
+            calculate_purchase_order_totals(order)
 
             return order
 

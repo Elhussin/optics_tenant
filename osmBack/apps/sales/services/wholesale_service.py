@@ -131,9 +131,10 @@ class WholesaleService:
 
         # Check credit if payment is deferred
         if use_credit:
+            from apps.crm.services.customer_service import check_customer_credit_available
             pricing = cls.get_order_pricing(customer, order_items)
-            is_available, message = customer.check_credit_available(
-                pricing['final_total'])
+            is_available, message = check_customer_credit_available(
+                customer, pricing['final_total'])
             if not is_available:
                 errors.append(message)
 
@@ -192,7 +193,8 @@ class WholesaleService:
 
         # Update customer balance if credit
         if payment_method == 'credit':
-            customer.update_balance(pricing['final_total'], is_payment=False)
+            from apps.crm.services.customer_service import update_customer_balance
+            update_customer_balance(customer, pricing['final_total'], is_payment=False)
 
         logger.info(
             f"Wholesale order {order.order_number} created for customer {customer}")

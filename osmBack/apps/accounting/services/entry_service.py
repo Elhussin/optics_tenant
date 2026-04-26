@@ -4,7 +4,6 @@ from django.db import transaction
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 from apps.accounting.models.chart_of_accounts import GeneralJournal, JournalLine, ChartOfAccounts
-from apps.sales.models import Invoice
 
 
 def create_invoice_journal_entry(invoice):

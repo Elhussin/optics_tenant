@@ -4,6 +4,8 @@ from apps.sales.serializers.invoice_type import InvoiceTypeSerializer
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from apps.sales.models import Order, OrderItem, Invoice, InvoiceItem, Payment
+from apps.sales.services.order_service import calculate_order_totals
+from apps.sales.services.invoice_service import calculate_invoice_totals
 from apps.products.models import ProductVariant
 
 
@@ -195,7 +197,7 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
         for item_data in items_data:
             OrderItem.objects.create(order=order, **item_data)
-        order.calculate_totals()
+        calculate_order_totals(order)
         return order
 
     def update(self, instance, validated_data):
@@ -214,7 +216,7 @@ class OrderSerializer(serializers.ModelSerializer):
             for item_data in items_data:
                 OrderItem.objects.create(order=instance, **item_data)
 
-        instance.calculate_totals()
+        calculate_order_totals(instance)
         return instance
 
 
@@ -266,7 +268,7 @@ class InvoiceSerializer(serializers.ModelSerializer):
         invoice = Invoice.objects.create(**validated_data)
         for item_data in items_data:
             InvoiceItem.objects.create(invoice=invoice, **item_data)
-        invoice.calculate_totals()
+        calculate_invoice_totals(invoice)
         return invoice
 
 

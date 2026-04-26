@@ -305,37 +305,11 @@ class Order(BaseDocument):
 
     def save(self, *args, **kwargs):
         if not self.order_number:
-            self._save_with_retry(*args, **kwargs)
-        else:
-            super().save(*args, **kwargs)
+            from apps.sales.utils import generate_serial_number
+            self.order_number = generate_serial_number(Order, 'ORD', 'order_number')
+        super().save(*args, **kwargs)
 
-    def _save_with_retry(self, *args, **kwargs):
-        # Retry logic for unique constaint violation on order_number
-        from apps.sales.utils import generate_serial_number
-        max_retries = 5
-        for i in range(max_retries):
-            try:
-                self.order_number = generate_serial_number(
-                    Order, 'ORD', 'order_number')
-                with transaction.atomic():
-                    super().save(*args, **kwargs)
-                return  # Success
-            except IntegrityError:
-                if i == max_retries - 1:
-                    raise  # Give up
-                time.sleep(0.1)  # Small backoff
 
-    def calculate_totals(self):
-        from apps.sales.services.order_service import calculate_order_totals
-        return calculate_order_totals(self)
-
-    def confirm(self, user):
-        from apps.sales.services.order_service import confirm_order
-        return confirm_order(self, user)
-
-    def cancel(self, user):
-        from apps.sales.services.order_service import cancel_order
-        return cancel_order(self, user)
 
 
 class OrderItem(BaseItem):
@@ -443,32 +417,11 @@ class Invoice(BaseDocument):
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            self._save_with_retry(*args, **kwargs)
-        else:
-            super().save(*args, **kwargs)
+            from apps.sales.utils import generate_serial_number
+            self.invoice_number = generate_serial_number(Invoice, 'INV', 'invoice_number')
+        super().save(*args, **kwargs)
 
-    def _save_with_retry(self, *args, **kwargs):
-        from apps.sales.utils import generate_serial_number
-        max_retries = 5
-        for i in range(max_retries):
-            try:
-                self.invoice_number = generate_serial_number(
-                    Invoice, 'INV', 'invoice_number')
-                with transaction.atomic():
-                    super().save(*args, **kwargs)
-                return
-            except IntegrityError:
-                if i == max_retries - 1:
-                    raise
-                time.sleep(0.1)
 
-    def calculate_totals(self):
-        from apps.sales.services.invoice_service import calculate_invoice_totals
-        return calculate_invoice_totals(self)
-
-    def confirm(self):
-        from apps.sales.services.invoice_service import confirm_invoice
-        return confirm_invoice(self)
 
 
 class InvoiceItem(BaseItem):
@@ -663,16 +616,11 @@ class Payment(BaseModel):
         return f"Payment of {self.amount} {self.currency} via {self.get_payment_method_display()}"
 
     def save(self, *args, **kwargs):
-        # Calculate installment amount
+        # Calculation of installment amount
         if self.is_installment and self.installments_count > 1:
             self.installment_amount = self.amount / self.installments_count
 
         super().save(*args, **kwargs)
-
-        # Update invoice upon payment completion
-        if self.status == 'completed' and self.invoice:
-            from apps.sales.services.payment_service import apply_payment
-            apply_payment(self.invoice, self.amount)
 
     def mark_completed(self, transaction_id=None, response=None):
         """Update payment status to completed"""

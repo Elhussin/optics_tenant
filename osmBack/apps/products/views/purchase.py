@@ -87,7 +87,8 @@ class PurchaseOrderViewSet(BranchAccessMixin, BaseViewSet):
         order = self.get_object()
 
         try:
-            order.submit()
+            from apps.products.services.purchase_service import submit_purchase_order
+            submit_purchase_order(order)
             return Response(PurchaseOrderSerializer(order).data)
         except Exception as e:
             return Response(
@@ -105,7 +106,8 @@ class PurchaseOrderViewSet(BranchAccessMixin, BaseViewSet):
         order = self.get_object()
 
         try:
-            order.approve(request.user)
+            from apps.products.services.purchase_service import approve_purchase_order
+            approve_purchase_order(order, request.user)
             return Response(PurchaseOrderSerializer(order).data)
         except Exception as e:
             return Response(
@@ -132,7 +134,8 @@ class PurchaseOrderViewSet(BranchAccessMixin, BaseViewSet):
         }
 
         try:
-            order.receive_items(items_received)
+            from apps.products.services.purchase_service import receive_purchase_order_items
+            receive_purchase_order_items(order, items_received)
             return Response(PurchaseOrderSerializer(order).data)
         except Exception as e:
             return Response(
@@ -150,7 +153,8 @@ class PurchaseOrderViewSet(BranchAccessMixin, BaseViewSet):
         order = self.get_object()
 
         try:
-            order.cancel()
+            from apps.products.services.purchase_service import cancel_purchase_order
+            cancel_purchase_order(order)
             return Response(PurchaseOrderSerializer(order).data)
         except Exception as e:
             return Response(

@@ -301,7 +301,8 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
         transfer = self.get_object()
 
         try:
-            transfer.execute_shipment()
+            from apps.products.services.inventory_service import execute_transfer_shipment
+            execute_transfer_shipment(transfer)
             return Response(StockTransferSerializer(transfer).data)
         except ValueError as e:
             return Response(
@@ -316,7 +317,8 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
         transfer = self.get_object()
 
         try:
-            transfer.execute_receiving()
+            from apps.products.services.inventory_service import execute_transfer_receiving
+            execute_transfer_receiving(transfer)
             # Mark as completed
             transfer.status = 'completed'
             transfer.save()
