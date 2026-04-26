@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback } from "react";
 import { useTranslations } from "next-intl";
 import { Filter, Package, X, ChevronsUpDown, Check } from "lucide-react";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
@@ -71,10 +71,12 @@ export function ProductVariantSelect({
   const [supplierFilter, setSupplierFilter] = useState<string>("");
 
   // Fetch filter options
-  const { data: filterOptions } = useSWR<FilterOptions>(
-    formsConfig["product-variants"]?.filterAlias ||
-      "products_variants_filter_options_retrieve",
-    async () => {
+  const { data: filterOptions } = useQuery<FilterOptions>({
+    queryKey: [
+      formsConfig["product-variants"]?.filterAlias ||
+        "products_variants_filter_options_retrieve"
+    ],
+    queryFn: async () => {
       const response = await api.customRequest(
         formsConfig["product-variants"]?.filterAlias ||
           "products_variants_filter_options_retrieve",
@@ -82,8 +84,8 @@ export function ProductVariantSelect({
       );
       return response;
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Build query params based on filters
   const queryParams = useMemo(() => {
@@ -97,17 +99,17 @@ export function ProductVariantSelect({
   const hasActiveFilters = brandFilter || categoryFilter || supplierFilter;
 
   // Fetch variants with filters
-  const { data: variantsData, isLoading } = useSWR(
-    ["products_variants_list", queryParams],
-    async () => {
+  const { data: variantsData, isLoading } = useQuery({
+    queryKey: ["products_variants_list", queryParams],
+    queryFn: async () => {
       const response = await api.customRequest(
         "products_variants_list",
         queryParams,
       );
       return extractArrayData<ProductVariant>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const variants = variantsData || [];
 

@@ -14,7 +14,7 @@ import {
   Check,
   Loader2,
 } from "lucide-react";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { safeToast } from "@/src/shared/utils/safeToast";
@@ -122,39 +122,40 @@ export function AddInventory() {
   const [itemNotes, setItemNotes] = useState("");
 
   // Fetch branches (stores only)
-  const { data: branchesData } = useSWR(
-    formsConfig.branches.listAlias,
-    async () => {
+  const { data: branchesData } = useQuery({
+    queryKey: [formsConfig.branches.listAlias],
+    queryFn: async () => {
       const response = await api.customRequest(
         formsConfig.branches.listAlias!,
         {},
       );
       return extractArrayData<Branch>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch product variants
-  const { data: variantsData } = useSWR(
-    "products_variants_list",
-    async () => {
+  const { data: variantsData } = useQuery({
+    queryKey: ["products_variants_list"],
+    queryFn: async () => {
       const response = await api.customRequest("products_variants_list", {});
       return extractArrayData<ProductVariant>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch stocks for selected branch
-  const { data: stocksData } = useSWR(
-    branch ? `stocks_branch_${branch}` : null,
-    async () => {
+  const { data: stocksData } = useQuery({
+    queryKey: ["stocks_branch", branch],
+    queryFn: async () => {
       const response = await api.customRequest(formsConfig.stocks.listAlias!, {
         branch,
       });
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    enabled: !!branch,
+    refetchOnWindowFocus: false,
+  });
 
   const branches = useMemo(() => {
     return branchesData || [];

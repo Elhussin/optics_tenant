@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 import { CreateTransfer } from "@/src/features/stock-management/components/transfer";
 import { useTransferFormStore } from "@/src/features/stock-management/store";
@@ -27,9 +27,9 @@ export default function EditTransferPage() {
     data: transfer,
     error,
     isLoading,
-  } = useSWR(
-    transferId ? `transfer_${transferId}` : null,
-    async () => {
+  } = useQuery({
+    queryKey: ["transfer", transferId],
+    queryFn: async () => {
       const response = await api.customRequest(
         "products_stock_transfers_retrieve",
         {
@@ -38,8 +38,9 @@ export default function EditTransferPage() {
       );
       return response;
     },
-    { revalidateOnFocus: false },
-  );
+    enabled: !!transferId,
+    refetchOnWindowFocus: false,
+  });
 
   // Load transfer data into store when fetched
   useEffect(() => {

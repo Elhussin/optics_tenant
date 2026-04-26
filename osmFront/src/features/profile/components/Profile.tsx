@@ -1,6 +1,6 @@
 "use client";
 import { useMemo } from "react";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
 import PricingPlans from "@/src/features/payment/components/PricingPlans";
 import {
@@ -60,14 +60,13 @@ export default function Profile() {
     data: clientData,
     error,
     isLoading,
-  } = useSWR(
-    shouldFetch ? `/api/tenants/clients/${user.client}` : null,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 60000,
-    },
-  );
+  } = useQuery({
+    queryKey: ["tenant_client", user?.client],
+    queryFn: () => fetcher(`/api/tenants/clients/${user.client}`),
+    enabled: !!shouldFetch,
+    refetchOnWindowFocus: false,
+    staleTime: 60000,
+  });
 
   const { daysLeft, statusVariant, progressWidth, statusText, statusIcon } =
     useMemo(() => {

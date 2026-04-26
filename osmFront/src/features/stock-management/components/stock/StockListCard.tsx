@@ -29,7 +29,7 @@ import {
 } from "@/src/shared/components/shadcn/ui/select";
 import { Badge } from "@/src/shared/components/shadcn/ui/badge";
 import Link from "next/link";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 import { Stock } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
@@ -129,9 +129,9 @@ export function StockListCard({
   }, [branchId, defaultStatus]);
 
   // Fetch branches for filter (Keep this independent)
-  const { data: branchesData = [] } = useSWR(
-    formsConfig.branches.listAlias,
-    async () => {
+  const { data: branchesData = [] } = useQuery({
+    queryKey: [formsConfig.branches.listAlias],
+    queryFn: async () => {
       const response = await api.customRequest(
         formsConfig.branches.listAlias!,
         {},
@@ -142,8 +142,8 @@ export function StockListCard({
         branch_type: string;
       }>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Get branches for filter
   const branchOptions = useMemo(() => {

@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -45,10 +45,10 @@ export function TransferDetails() {
     data: transfer,
     error,
     isLoading,
-    mutate,
-  } = useSWR<StockTransfer>(
-    transferId ? `transfer_detail_${transferId}` : null,
-    async () => {
+    refetch: mutate,
+  } = useQuery<StockTransfer>({
+    queryKey: ["transfer_detail", transferId],
+    queryFn: async () => {
       const response = await api.customRequest(
         "products_stock_transfers_retrieve",
         {
@@ -57,8 +57,9 @@ export function TransferDetails() {
       );
       return response;
     },
-    { revalidateOnFocus: false },
-  );
+    enabled: !!transferId,
+    refetchOnWindowFocus: false,
+  });
 
   // Mutations
   const submitMutation = useApiForm({

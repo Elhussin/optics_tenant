@@ -21,7 +21,7 @@ import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { useTransferFormStore } from "../../../store";
 import { TransferItem, Stock } from "../../../types";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
 import { useTranslations } from "next-intl";
@@ -63,26 +63,27 @@ export function BranchesAndItemsStep({
   const [toOpen, setToOpen] = useState(false);
 
   // Fetch all branches
-  const { data: branches = [], isLoading: branchesLoading } = useSWR<Branch[]>(
-    "branches_branches_list",
-    async () => {
+  const { data: branches = [], isLoading: branchesLoading } = useQuery<Branch[]>({
+    queryKey: ["branches_branches_list"],
+    queryFn: async () => {
       const response = await api.customRequest("branches_branches_list", {});
       return extractArrayData<Branch>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch stocks for the source branch
-  const { data: stocks = [], isLoading: stocksLoading } = useSWR<Stock[]>(
-    store.fromBranchId ? ["stocks_by_branch", store.fromBranchId] : null,
-    async () => {
+  const { data: stocks = [], isLoading: stocksLoading } = useQuery<Stock[]>({
+    queryKey: ["stocks_by_branch", store.fromBranchId],
+    queryFn: async () => {
       const response = await api.customRequest("products_stocks_list", {
         branch: store.fromBranchId,
       });
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    enabled: !!store.fromBranchId,
+    refetchOnWindowFocus: false,
+  });
 
   // Branch options for selects
   const branchOptions = useMemo(() => {

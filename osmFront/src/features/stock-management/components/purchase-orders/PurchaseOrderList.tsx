@@ -4,7 +4,7 @@ import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import {
   Plus,
   FileText,
@@ -86,15 +86,15 @@ export default function PurchaseOrderList() {
   const router = useRouter();
   const [statusFilter, setStatusFilter] = useState<string>("");
 
-  // Fetch orders with useSWR for reactive filtering
+  // Fetch orders with useQuery for reactive filtering
   const {
     data: ordersData,
     error,
     isLoading,
-    mutate,
-  } = useSWR(
-    ["purchase_orders_list", statusFilter],
-    async () => {
+    refetch: mutate,
+  } = useQuery({
+    queryKey: ["purchase_orders_list", statusFilter],
+    queryFn: async () => {
       const params: Record<string, any> = {
         page_size: 100,
         ordering: "-created_at",
@@ -108,8 +108,8 @@ export default function PurchaseOrderList() {
       );
       return response;
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const orders: PurchaseOrder[] = useMemo(() => {
     const data = ordersData as any;

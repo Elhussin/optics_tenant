@@ -62,7 +62,7 @@ import {
   TabsTrigger,
 } from "@/src/shared/components/shadcn/ui/tabs";
 import { Badge } from "@/src/shared/components/shadcn/ui/badge";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 
 // Types
@@ -149,43 +149,43 @@ export default function ReportsPage() {
   const {
     data: financial,
     isLoading: financialLoading,
-    mutate: refreshFinancial,
-  } = useSWR<FinancialDashboard>(
-    ["financial-dashboard", period, branchId],
-    async () => {
+    refetch: refreshFinancial,
+  } = useQuery<FinancialDashboard>({
+    queryKey: ["financial-dashboard", period, branchId],
+    queryFn: async () => {
       const params: Record<string, string> = { period };
       if (branchId !== "all") params.branch_id = branchId;
       return api.customRequest("sales_reports_financial-dashboard", params);
     },
-    { revalidateOnFocus: false }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch receivables aging
-  const { data: aging } = useSWR<AgingData>(
-    ["receivables-aging", branchId],
-    async () => {
+  const { data: aging } = useQuery<AgingData>({
+    queryKey: ["receivables-aging", branchId],
+    queryFn: async () => {
       const params: Record<string, string> = {};
       if (branchId !== "all") params.branch_id = branchId;
       return api.customRequest("sales_reports_receivables-aging", params);
     },
-    { revalidateOnFocus: false }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch pending orders
-  const { data: pendingOrders } = useSWR<PendingOrders>(
-    ["pending-orders", branchId],
-    async () => {
+  const { data: pendingOrders } = useQuery<PendingOrders>({
+    queryKey: ["pending-orders", branchId],
+    queryFn: async () => {
       const params: Record<string, string> = {};
       if (branchId !== "all") params.branch_id = branchId;
       return api.customRequest("sales_reports_pending-orders", params);
     },
-    { revalidateOnFocus: false }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch top products
-  const { data: topProducts } = useSWR<TopProduct[]>(
-    ["top-products", period, branchId],
-    async () => {
+  const { data: topProducts } = useQuery<TopProduct[]>({
+    queryKey: ["top-products", period, branchId],
+    queryFn: async () => {
       const params: Record<string, string> = {
         days: period === "week" ? "7" : period === "month" ? "30" : "365",
       };
@@ -196,13 +196,13 @@ export default function ReportsPage() {
       );
       return Array.isArray(response) ? response : response?.results || [];
     },
-    { revalidateOnFocus: false }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch branch comparison
-  const { data: branchComparison } = useSWR<BranchComparison[]>(
-    ["branch-comparison", period],
-    async () => {
+  const { data: branchComparison } = useQuery<BranchComparison[]>({
+    queryKey: ["branch-comparison", period],
+    queryFn: async () => {
       const params = {
         days: period === "week" ? "7" : period === "month" ? "30" : "365",
       };
@@ -212,8 +212,8 @@ export default function ReportsPage() {
       );
       return Array.isArray(response) ? response : response?.results || [];
     },
-    { revalidateOnFocus: false }
-  );
+    refetchOnWindowFocus: false,
+  });
 
   const formatCurrency = (amount: number | undefined) => {
     if (!amount) return "0.00";

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { ActionButton } from "@/src/shared/components/ui/buttons";
@@ -125,18 +125,19 @@ export function PurchaseOrderDetails() {
     data: order,
     error,
     isLoading,
-    mutate,
-  } = useSWR<PurchaseOrder>(
-    orderId ? `purchase_order_detail_${orderId}` : null,
-    async () => {
+    refetch: mutate,
+  } = useQuery<PurchaseOrder>({
+    queryKey: ["purchase_order_detail", orderId],
+    queryFn: async () => {
       const response = await api.customRequest(
         "products_purchase_orders_retrieve",
         { id: orderId },
       );
       return response;
     },
-    { revalidateOnFocus: false },
-  );
+    enabled: !!orderId,
+    refetchOnWindowFocus: false,
+  });
 
   // Action mutations
   const submitMutation = useApiForm({

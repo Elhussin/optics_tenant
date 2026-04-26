@@ -37,7 +37,7 @@ import {
 } from "@/src/shared/components/shadcn/ui/tabs";
 import { Badge } from "@/src/shared/components/shadcn/ui/badge";
 import Link from "next/link";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import api from "@/src/shared/api/axios";
 import { Stock, StockTransfer } from "@/src/features/stock-management/types";
 import { extractArrayData } from "@/src/shared/utils/apiHelpers";
@@ -56,44 +56,44 @@ export default function StockListView() {
   const {
     data: stocks = [],
     isLoading: stocksLoading,
-    mutate: refreshStocks,
-  } = useSWR<Stock[]>(
-    formsConfig.stocks.listAlias!,
-    async () => {
+    refetch: refreshStocks,
+  } = useQuery<Stock[]>({
+    queryKey: [formsConfig.stocks.listAlias!],
+    queryFn: async () => {
       const response = await api.customRequest(
         formsConfig.stocks.listAlias!,
         {},
       );
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch pending transfers
-  const { data: pendingTransfers = [] } = useSWR<StockTransfer[]>(
-    formsConfig["product-stock-transfers"].listAlias!,
-    async () => {
+  const { data: pendingTransfers = [] } = useQuery<StockTransfer[]>({
+    queryKey: [formsConfig["product-stock-transfers"].listAlias!],
+    queryFn: async () => {
       const response = await api.customRequest(
         formsConfig["product-stock-transfers"].listAlias!,
         { status: "pending" },
       );
       return extractArrayData<StockTransfer>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Fetch low stock
-  const { data: lowStockItems = [] } = useSWR<Stock[]>(
-    formsConfig["products-stocks-low-stock"].listAlias!,
-    async () => {
+  const { data: lowStockItems = [] } = useQuery<Stock[]>({
+    queryKey: [formsConfig["products-stocks-low-stock"].listAlias!],
+    queryFn: async () => {
       const response = await api.customRequest(
         formsConfig["products-stocks-low-stock"].listAlias!,
         {},
       );
       return extractArrayData<Stock>(response);
     },
-    { revalidateOnFocus: false },
-  );
+    refetchOnWindowFocus: false,
+  });
 
   // Filter stocks - with useMemo for performance
   const filteredStocks = useMemo(() => {

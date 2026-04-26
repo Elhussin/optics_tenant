@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import useSWR from "swr";
+import { useQuery } from "@tanstack/react-query";
 import { Loader2, AlertCircle } from "lucide-react";
 import api from "@/src/shared/api/axios";
 import CreatePurchaseOrder from "@/src/features/stock-management/components/purchase-orders/CreatePurchaseOrder";
@@ -44,17 +44,18 @@ export default function PurchaseOrderEditPage() {
     data: order,
     error,
     isLoading,
-  } = useSWR<PurchaseOrder>(
-    orderId ? `purchase_order_edit_${orderId}` : null,
-    async () => {
+  } = useQuery<PurchaseOrder>({
+    queryKey: ["purchase_order_edit", orderId],
+    queryFn: async () => {
       const response = await api.customRequest(
         "products_purchase_orders_retrieve",
         { id: orderId },
       );
       return response;
     },
-    { revalidateOnFocus: false },
-  );
+    enabled: !!orderId,
+    refetchOnWindowFocus: false,
+  });
 
   // Check if order is editable
   const isEditable = order && EDITABLE_STATUSES.includes(order.status);
