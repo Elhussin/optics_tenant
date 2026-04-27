@@ -2,8 +2,8 @@ import os
 
 def remove_migration_files(base_dir, dry_run=True):
     # Folders to exclude to prevent traversing into virtual environments or system folders
-    exclude_dirs = {'.git', '.venv', 'venv', 'env', 'node_modules', '__pycache__', 'site-packages'}
-    
+    exclude_dirs = {'.git', '.venv', 'venv', 'env', 'node_modules', '__pycache__', 'site-packages', '__pypackages__'}
+
     found_files = []
 
     for root, dirs, files in os.walk(base_dir):

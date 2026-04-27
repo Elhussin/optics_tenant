@@ -60,8 +60,8 @@ pdm run python manage.py migrate_schemas --tenant
 
 pdm run python manage.py create_public_tenant
 # create tenant and migrate
- python manage.py create_tenant_and_migrate "My Store" store1
-
+# pdm run python manage.py create_tenant_and_migrate "My Store" store4
+pdm run python manage.py setup_tenant --name "Store 4" --schema store4 --domain store4.localhost --password "3112"
 pdm run python manage.py runserver
 
 
