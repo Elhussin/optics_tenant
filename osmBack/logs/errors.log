@@ -3834,3 +3834,462 @@ Traceback (most recent call last):
 AttributeError: 'CustomerPartnerLink' object has no attribute 'get_copay_amount'
 [2026-02-10 11:51:39,461] ERROR django.request: Internal Server Error: /api/sales/orders/
 [2026-02-10 11:51:39,463] ERROR django.server: "POST /api/sales/orders/ HTTP/1.1" 500 228
+[2026-04-27 23:36:24,389] ERROR core.exceptions: Unhandled exception: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\code\optics_tenant\osmBack\core\utils\pagination.py", line 13, in paginate_queryset
+    return super().paginate_queryset(queryset, request, view)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\pagination.py", line 211, in paginate_queryset
+    self.page = paginator.page(page_number)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 89, in page
+    number = self.validate_number(number)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 70, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 116, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+
+[2026-04-27 23:36:24,660] ERROR django.request: Internal Server Error: /api/sales/invoices/
+[2026-04-27 23:36:24,661] ERROR django.server: "GET /api/sales/invoices/?page=1&page_size=5&all=false HTTP/1.1" 500 329
+[2026-04-27 23:36:25,803] ERROR core.exceptions: Unhandled exception: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\code\optics_tenant\osmBack\core\utils\pagination.py", line 13, in paginate_queryset
+    return super().paginate_queryset(queryset, request, view)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\pagination.py", line 211, in paginate_queryset
+    self.page = paginator.page(page_number)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 89, in page
+    number = self.validate_number(number)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 70, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 116, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+
+[2026-04-27 23:36:25,813] ERROR django.request: Internal Server Error: /api/sales/invoices/
+[2026-04-27 23:36:25,814] ERROR django.server: "GET /api/sales/invoices/?page=1&page_size=5&all=false HTTP/1.1" 500 329
+[2026-04-27 23:36:27,913] ERROR core.exceptions: Unhandled exception: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+psycopg2.errors.UndefinedTable: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\mixins.py", line 40, in list
+    page = self.paginate_queryset(queryset)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\generics.py", line 175, in paginate_queryset
+    return self.paginator.paginate_queryset(queryset, self.request, view=self)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\code\optics_tenant\osmBack\core\utils\pagination.py", line 13, in paginate_queryset
+    return super().paginate_queryset(queryset, request, view)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\pagination.py", line 211, in paginate_queryset
+    self.page = paginator.page(page_number)
+                ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 89, in page
+    number = self.validate_number(number)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 70, in validate_number
+    if number > self.num_pages:
+                ^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 116, in num_pages
+    if self.count == 0 and not self.allow_empty_first_page:
+       ^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\utils\functional.py", line 47, in __get__
+    res = instance.__dict__[self.name] = self.func(instance)
+                                         ~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\core\paginator.py", line 110, in count
+    return c()
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\query.py", line 606, in count
+    return self.query.get_count(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\query.py", line 644, in get_count
+    return obj.get_aggregation(using, {"__count": Count("*")})["__count"]
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\query.py", line 626, in get_aggregation
+    result = compiler.execute_sql(SINGLE)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+django.db.utils.ProgrammingError: relation "sales_invoice" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "sales_invoice" WHERE NOT ...
+                                          ^
+
+[2026-04-27 23:36:27,922] ERROR django.request: Internal Server Error: /api/sales/invoices/
+[2026-04-27 23:36:27,923] ERROR django.server: "GET /api/sales/invoices/?page=1&page_size=5&all=false HTTP/1.1" 500 329
+[2026-04-27 23:45:14,421] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:45:14,439] ERROR django.request: Internal Server Error: /api/products/stocks/filter_options/
+[2026-04-27 23:45:14,443] ERROR django.server: "GET /api/products/stocks/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:45:15,539] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:45:15,545] ERROR django.request: Internal Server Error: /api/products/stocks/filter_options/
+[2026-04-27 23:45:15,546] ERROR django.server: "GET /api/products/stocks/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:45:17,735] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:45:17,739] ERROR django.request: Internal Server Error: /api/products/stocks/filter_options/
+[2026-04-27 23:45:17,740] ERROR django.server: "GET /api/products/stocks/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:45:21,836] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:45:21,841] ERROR django.request: Internal Server Error: /api/products/stocks/filter_options/
+[2026-04-27 23:45:21,842] ERROR django.server: "GET /api/products/stocks/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:06,172] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:06,178] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:06,180] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:07,272] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:07,276] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:07,277] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:09,363] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:09,367] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:09,368] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:13,457] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:13,461] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:13,462] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:35,714] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:35,719] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:35,723] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:36,820] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:36,827] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:36,829] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:39,051] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:39,058] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:39,059] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
+[2026-04-27 23:57:43,146] ERROR core.exceptions: Unhandled exception: 'list' object has no attribute 'keys'
+Traceback (most recent call last):
+  File "C:\Users\user\AppData\Local\pyapp\data\pdm\11459645249320305607\2.26.2\Lib\site-packages\rest_framework\views.py", line 512, in dispatch
+    response = handler(request, *args, **kwargs)
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 45, in filter_options
+    FilterSet = self.get_filterset_class()
+  File "C:\code\optics_tenant\osmBack\core\mixins\filterOptionsMixin.py", line 34, in get_filterset_class
+    return create_filterset_class(
+        model=model,
+        fields=fields,
+        serializer_class=getattr(self, "serializer_class", None),
+    )
+  File "C:\code\optics_tenant\osmBack\core\utils\create_filterset.py", line 32, in create_filterset_class
+    allowed_fields = set(fields.keys())
+                         ^^^^^^^^^^^
+AttributeError: 'list' object has no attribute 'keys'
+[2026-04-27 23:57:43,151] ERROR django.request: Internal Server Error: /api/sales/invoice-types/filter_options/
+[2026-04-27 23:57:43,152] ERROR django.server: "GET /api/sales/invoice-types/filter_options/ HTTP/1.1" 500 201
