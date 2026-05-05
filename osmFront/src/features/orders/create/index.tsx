@@ -334,9 +334,17 @@ export function CreateOrder() {
                   </label>
                   <SearchableSelect
                     fieldRow={{
+                      name: "branch",
+                      role: "admin",
+                      filter: "branch",
+                      entityName: "branch",
+                      // permission: "view",
+                      fieldName: "branch",
                       label: t("filters.branch"),
                       placeholder: t("filters.selectBranch"),
-                    }}
+                      required: true,
+                  }}
+
                     field={{
                       value: store.branchId,
                       onChange: (val: any) => {
@@ -354,8 +362,14 @@ export function CreateOrder() {
                   </label>
                   <SearchableSelect
                     fieldRow={{
+                      name: "sales_person",
+                      role: "admin",
+                      filter: "sales_person",
+                      entityName: "sales_person",
+                      fieldName: "sales_person",
                       label: t("filters.salesPerson"),
                       placeholder: t("filters.selectSalesPerson"),
+                      required: true,
                     }}
                     field={{
                       value: store.salesPersonId,
