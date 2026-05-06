@@ -113,6 +113,6 @@ class Command(BaseCommand):
 
 
 
-#  pdm run python manage.py setup_tenant --name "Public Site" --schema public --domain localhost --password "3112"
+#  pdm run python manage.py setup_tenant --name "Public Site" --schema public --domain osmbeta.cloud --password "3112"
 
-#  pdm run python manage.py setup_tenant --name "Store 1" --schema store1 --domain store1.localhost --password "3112"
+#  pdm run python manage.py setup_tenant --name "OSM Store 1" --schema osm1 --domain osm1.osmbeta.cloud --password "3112"
