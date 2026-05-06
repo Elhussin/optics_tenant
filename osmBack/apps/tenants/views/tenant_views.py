@@ -29,11 +29,14 @@ super_roles = ["TenantOwner", "TenantAdmin"]
 
 class IsPublicTenant(permissions.BasePermission):
     """
-    Allows access only on the public tenant schema.
+    Allows access only on the public tenant schema or the base domain.
     """
 
     def has_permission(self, request, view):
-        return get_tenant(request).schema_name == 'public'
+        from django.conf import settings
+        tenant = get_tenant(request)
+        hostname = request.get_host().split(':')[0]
+        return tenant.schema_name == 'public' or hostname == settings.TENANT_BASE_DOMAIN
 
 
 class RegisterTenantView(APIView):
@@ -58,7 +61,10 @@ class RegisterTenantView(APIView):
     )
     def post(self, request):
         tenant = get_tenant(request)
-        if tenant.schema_name != 'public':
+        from django.conf import settings
+        hostname = request.get_host().split(':')[0]
+        
+        if tenant.schema_name != 'public' and hostname != settings.TENANT_BASE_DOMAIN:
             return HttpResponseForbidden(T("Not allowed on tenant domains"))
 
         serializer = RegisterTenantSerializer(data=request.data)

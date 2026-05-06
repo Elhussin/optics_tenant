@@ -16,7 +16,10 @@ class PlanValidationMiddleware:
     def __call__(self, request):
         tenant = getattr(request, "tenant", None)
 
-        if tenant and tenant.schema_name != "public":
+        from django.conf import settings
+        hostname = request.get_host().split(':')[0]
+        
+        if tenant and tenant.schema_name != "public" and hostname != settings.TENANT_BASE_DOMAIN:
             # Exclude some paths (like payment or login)
             # exempt_paths = [
             #     reverse("tenants:upgrade"),
