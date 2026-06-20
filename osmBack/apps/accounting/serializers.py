@@ -6,8 +6,7 @@ Accounting Serializers
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
 from apps.accounting.models import (
-    ChartOfAccounts, GeneralJournal, JournalLine,
-    FinancialPeriod, Tax, AccountingCategory
+    ChartOfAccounts, GeneralJournal, JournalLine
 )
 
 
@@ -231,101 +230,7 @@ class GeneralJournalListSerializer(serializers.ModelSerializer):
         ]
 
 
-class FinancialPeriodSerializer(serializers.ModelSerializer):
-    """Serializer للفترة المالية"""
 
-    class Meta:
-        model = FinancialPeriod
-        fields = ['id', 'name', 'start_date', 'end_date', 'is_closed']
-        extra_kwargs = {
-            'name': {
-                'error_messages': {
-                    'required': _('Period name is required'),
-                    'blank': _('Period name cannot be blank'),
-                }
-            },
-            'start_date': {
-                'error_messages': {
-                    'required': _('Start date is required'),
-                    'invalid': _('Enter a valid start date'),
-                }
-            },
-            'end_date': {
-                'error_messages': {
-                    'required': _('End date is required'),
-                    'invalid': _('Enter a valid end date'),
-                }
-            },
-        }
-
-    def validate(self, data):
-        """التحقق من صحة التواريخ"""
-        start_date = data.get('start_date') or (
-            self.instance.start_date if self.instance else None)
-        end_date = data.get('end_date') or (
-            self.instance.end_date if self.instance else None)
-
-        if start_date and end_date and end_date <= start_date:
-            raise serializers.ValidationError({
-                'end_date': _('End date must be after start date')
-            })
-
-        return data
-
-
-class TaxSerializer(serializers.ModelSerializer):
-    """Serializer للضرائب"""
-
-    class Meta:
-        model = Tax
-        fields = ['id', 'name', 'rate',
-                  'effective_date', 'is_active', 'description']
-        extra_kwargs = {
-            'name': {
-                'error_messages': {
-                    'required': _('Tax name is required'),
-                    'blank': _('Tax name cannot be blank'),
-                }
-            },
-            'rate': {
-                'error_messages': {
-                    'required': _('Tax rate is required'),
-                }
-            },
-        }
-
-    def validate_rate(self, value):
-        """التحقق من نسبة الضريبة"""
-        if value < 0:
-            raise serializers.ValidationError(
-                _('Tax rate cannot be negative')
-            )
-        if value > 100:
-            raise serializers.ValidationError(
-                _('Tax rate cannot exceed 100%')
-            )
-        return value
-
-
-class AccountingCategorySerializer(serializers.ModelSerializer):
-    """Serializer للفئات المحاسبية"""
-
-    class Meta:
-        model = AccountingCategory
-        fields = ['id', 'name', 'category_type', 'parent', 'description']
-        extra_kwargs = {
-            'name': {
-                'error_messages': {
-                    'required': _('Category name is required'),
-                    'blank': _('Category name cannot be blank'),
-                }
-            },
-            'category_type': {
-                'error_messages': {
-                    'required': _('Category type is required'),
-                }
-            },
-        }
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

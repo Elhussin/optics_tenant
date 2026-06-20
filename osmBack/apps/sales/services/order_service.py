@@ -25,6 +25,21 @@ def confirm_order(order, user):
         raise ValidationError(
             _("Order must belong to a branch to manage stock"))
 
+    # Check Credit Limits for Credit orders
+    if order.order_type == 'credit':
+        customer = order.customer
+        if customer.credit_status != 'approved':
+            raise ValidationError(_("Customer credit is not approved"))
+        
+        if order.remaining_amount > customer.available_credit:
+            raise ValidationError(
+                _("Order amount exceeds customer's available credit. Available: {0}").format(customer.available_credit)
+            )
+        
+        # Deduct from available credit by increasing current balance
+        customer.current_balance += order.remaining_amount
+        customer.save(update_fields=['current_balance'])
+
     for item in order.items.select_related('product_variant'):
         stock, _created = Stock.objects.select_for_update().get_or_create(
             branch=order.branch,
@@ -56,6 +71,40 @@ def confirm_order(order, user):
     order.status = 'confirmed'
     order.confirmed_at = timezone.now()
     order.save(update_fields=['status', 'confirmed_at'])
+
+    # Create invoice automatically upon confirmation for ZATCA compliance
+    from apps.sales.models import Invoice, InvoiceItem, InvoiceType
+    from apps.sales.services.invoice_service import confirm_invoice
+    
+    sale_invoice_type = InvoiceType.objects.filter(action_type='sale').first()
+    
+    if sale_invoice_type:
+        invoice = Invoice.objects.create(
+            branch=order.branch,
+            customer=order.customer,
+            order=order,
+            invoice_type=sale_invoice_type,
+            subtotal=order.subtotal,
+            tax_rate=order.tax_rate,
+            tax_amount=order.tax_amount,
+            discount_amount=order.discount_amount,
+            total_amount=order.total_amount,
+            paid_amount=order.paid_amount,
+            status='draft',  # draft so confirm_invoice can process it
+            notes=_("Invoice for order {0}").format(order.order_number),
+        )
+
+        # Copy order items to invoice
+        for item in order.items.all():
+            InvoiceItem.objects.create(
+                invoice=invoice,
+                product_variant=item.product_variant,
+                quantity=item.quantity,
+                unit_price=item.unit_price,
+            )
+            
+        # Confirm the invoice immediately
+        confirm_invoice(invoice)
 
 
 @transaction.atomic
@@ -101,31 +150,9 @@ def deliver_order(order, user):
     order.delivered_at = timezone.now()
     order.save(update_fields=['status', 'delivered_at'])
 
-    # Create invoice automatically
-    from apps.sales.models import Invoice, InvoiceItem
-    invoice = Invoice.objects.create(
-        branch=order.branch,
-        customer=order.customer,
-        order=order,
-        invoice_type='sale',
-        subtotal=order.subtotal,
-        tax_rate=order.tax_rate,
-        tax_amount=order.tax_amount,
-        discount_amount=order.discount_amount,
-        total_amount=order.total_amount,
-        paid_amount=order.paid_amount,
-        status='confirmed',
-        notes=_("Invoice for order {0}").format(order.order_number),
-    )
-
-    # Copy order items to invoice
-    for item in order.items.all():
-        InvoiceItem.objects.create(
-            invoice=invoice,
-            product_variant=item.product_variant,
-            quantity=item.quantity,
-            unit_price=item.unit_price,
-        )
+    # Invoice was already created at confirm_order, just fetch and return it
+    from apps.sales.models import Invoice
+    invoice = Invoice.objects.filter(order=order).first()
 
     return invoice
 
@@ -140,6 +167,12 @@ def cancel_order(order, user):
 
     # Release reserved stock (only if confirmed)
     if order.status in ['confirmed', 'ready']:
+        # Rollback credit balance
+        if order.order_type == 'credit':
+            customer = order.customer
+            customer.current_balance = max(0, customer.current_balance - order.remaining_amount)
+            customer.save(update_fields=['current_balance'])
+
         for item in order.items.select_related('product_variant'):
             stock = Stock.objects.select_for_update().filter(
                 branch=order.branch,

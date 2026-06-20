@@ -74,7 +74,7 @@ class StocksViewSet(InventoryBaseViewSet):
     @action(detail=False, methods=['get'])
     def low_stock(self, request):
         """Low stock products"""
-        queryset = Stock.objects.low_stock().select_related('branch', 'variant__product')
+        queryset = self.filter_queryset(self.get_queryset()).low_stock().select_related('branch', 'variant__product')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -82,7 +82,7 @@ class StocksViewSet(InventoryBaseViewSet):
     @action(detail=False, methods=['get'])
     def out_of_stock(self, request):
         """Out of stock products"""
-        queryset = Stock.objects.out_of_stock().select_related('branch', 'variant__product')
+        queryset = self.filter_queryset(self.get_queryset()).out_of_stock().select_related('branch', 'variant__product')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -94,7 +94,7 @@ class StocksViewSet(InventoryBaseViewSet):
     @action(detail=False, methods=['get'], url_path='by-branch/(?P<branch_id>[^/.]+)')
     def by_branch(self, request, branch_id=None):
         """Stock for specific branch"""
-        queryset = Stock.objects.filter(branch_id=branch_id).select_related(
+        queryset = self.filter_queryset(self.get_queryset()).filter(branch_id=branch_id).select_related(
             'branch', 'variant__product')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -350,7 +350,7 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
     @action(detail=False, methods=['get'])
     def pending(self, request):
         """Pending transfers"""
-        queryset = self.queryset.filter(status='pending')
+        queryset = self.filter_queryset(self.get_queryset()).filter(status='pending')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -368,7 +368,7 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
                 {'detail': _('Branch must be specified.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        queryset = self.queryset.filter(
+        queryset = self.filter_queryset(self.get_queryset()).filter(
             to_branch_id=branch_id, status='shipped')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
@@ -387,7 +387,7 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
                 {'detail': _('Branch must be specified.')},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        queryset = self.queryset.filter(
+        queryset = self.filter_queryset(self.get_queryset()).filter(
             from_branch_id=branch_id).exclude(status='cancelled')
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)

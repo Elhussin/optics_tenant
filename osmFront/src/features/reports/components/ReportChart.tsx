@@ -1,19 +1,30 @@
 // features/reports/components/ReportChart.tsx
 /**
- * مكونات الرسوم البيانية للتقارير
+ * مكونات الرسوم البيانية للتقارير باستخدام Recharts
  */
 
 "use client";
 
 import React from "react";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/src/shared/components/shadcn/ui/card";
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart as RechartsLineChart,
+  Line,
+  PieChart as RechartsPieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
-// Simple Bar Chart (CSS-based)
+const DEFAULT_COLORS = ["#3b82f6", "#10b981", "#8b5cf6", "#f97316", "#ec4899", "#06b6d4"];
+
+// Simple Bar Chart
 interface BarChartProps {
   data: {
     label: string;
@@ -24,53 +35,33 @@ interface BarChartProps {
   height?: number;
 }
 
-export function BarChart({ data, title, height = 200 }: BarChartProps) {
-  const maxValue = Math.max(...data.map((d) => d.value), 1);
-  const defaultColors = [
-    "bg-blue-500",
-    "bg-green-500",
-    "bg-purple-500",
-    "bg-orange-500",
-    "bg-pink-500",
-    "bg-cyan-500",
-  ];
-
+export function BarChart({ data, title, height = 300 }: BarChartProps) {
   return (
-    <div>
-      {title && <h4 className="font-semibold mb-4">{title}</h4>}
-      <div className="flex items-end gap-2 justify-between" style={{ height }}>
-        {data.map((item, index) => {
-          const barHeight = (item.value / maxValue) * 100;
-          const color =
-            item.color || defaultColors[index % defaultColors.length];
-
-          return (
-            <div key={item.label} className="flex flex-col items-center flex-1">
-              <div className="w-full relative flex flex-col justify-end h-full">
-                <div
-                  className={`w-full rounded-t ${color} transition-all duration-500 hover:opacity-80`}
-                  style={{
-                    height: `${barHeight}%`,
-                    minHeight: item.value > 0 ? 4 : 0,
-                  }}
-                >
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-medium whitespace-nowrap">
-                    {item.value.toLocaleString()}
-                  </div>
-                </div>
-              </div>
-              <div className="text-xs text-gray-500 mt-2 truncate max-w-full text-center">
-                {item.label}
-              </div>
-            </div>
-          );
-        })}
+    <div className="w-full">
+      {title && <h4 className="font-semibold mb-4 text-gray-800 dark:text-gray-100">{title}</h4>}
+      <div style={{ height, width: "100%" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsBarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#6b7280" }} />
+            <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#6b7280" }} />
+            <Tooltip
+              cursor={{ fill: "rgba(0,0,0,0.05)" }}
+              contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }}
+            />
+            <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length]} />
+              ))}
+            </Bar>
+          </RechartsBarChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
 }
 
-// Simple Line Chart (CSS-based)
+// Simple Line Chart
 interface LineChartProps {
   data: number[];
   labels: string[];
@@ -83,209 +74,88 @@ export function LineChart({
   data,
   labels,
   title,
-  height = 200,
-  color = "text-primary",
+  height = 300,
+  color = "#3b82f6",
 }: LineChartProps) {
-  const maxValue = Math.max(...data, 1);
-  const minValue = Math.min(...data, 0);
-  const range = maxValue - minValue;
+  const chartData = labels.map((label, index) => ({
+    label,
+    value: data[index] || 0,
+  }));
 
   return (
-    <div>
-      {title && <h4 className="font-semibold mb-4">{title}</h4>}
-      <div className="relative" style={{ height }}>
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 bottom-6 flex flex-col justify-between text-xs text-gray-500 w-12">
-          <span>{maxValue.toLocaleString()}</span>
-          <span>{Math.round(maxValue / 2).toLocaleString()}</span>
-          <span>{minValue.toLocaleString()}</span>
-        </div>
-
-        {/* Chart Area */}
-        <div className="mr-14 h-full pb-6 relative">
-          {/* Grid Lines */}
-          <div className="absolute inset-0 flex flex-col justify-between">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="border-b border-gray-100 dark:border-gray-800"
-              />
-            ))}
-          </div>
-
-          {/* Line */}
-          <svg
-            className="absolute inset-0 overflow-visible"
-            viewBox={`0 0 ${data.length * 100} ${height - 24}`}
-            preserveAspectRatio="none"
-          >
-            {/* Area Fill */}
-            <path
-              d={`
-                M 0 ${height - 24}
-                ${data
-                  .map((value, i) => {
-                    const x = i * 100 + 50;
-                    const y =
-                      range > 0
-                        ? height -
-                          24 -
-                          ((value - minValue) / range) * (height - 24)
-                        : height / 2;
-                    return `L ${x} ${y}`;
-                  })
-                  .join(" ")}
-                L ${data.length * 100 - 50} ${height - 24}
-                Z
-              `}
-              fill="url(#gradient)"
-              opacity="0.2"
+    <div className="w-full">
+      {title && <h4 className="font-semibold mb-4 text-gray-800 dark:text-gray-100">{title}</h4>}
+      <div style={{ height, width: "100%" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsLineChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+            <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#6b7280" }} />
+            <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 12, fill: "#6b7280" }} />
+            <Tooltip
+              contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }}
             />
-
-            {/* Line */}
-            <path
-              d={data
-                .map((value, i) => {
-                  const x = i * 100 + 50;
-                  const y =
-                    range > 0
-                      ? height -
-                        24 -
-                        ((value - minValue) / range) * (height - 24)
-                      : height / 2;
-                  return `${i === 0 ? "M" : "L"} ${x} ${y}`;
-                })
-                .join(" ")}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="3"
-              className={color}
+            <Line
+              type="monotone"
+              dataKey="value"
+              stroke={color}
+              strokeWidth={3}
+              dot={{ r: 4, strokeWidth: 2, fill: "#fff", stroke: color }}
+              activeDot={{ r: 6 }}
             />
-
-            {/* Dots */}
-            {data.map((value, i) => {
-              const x = i * 100 + 50;
-              const y =
-                range > 0
-                  ? height - 24 - ((value - minValue) / range) * (height - 24)
-                  : height / 2;
-              return (
-                <circle
-                  key={i}
-                  cx={x}
-                  cy={y}
-                  r="4"
-                  fill="currentColor"
-                  className={color}
-                />
-              );
-            })}
-
-            <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="currentColor" className={color} />
-                <stop offset="100%" stopColor="transparent" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-
-        {/* X-axis labels */}
-        <div className="absolute bottom-0 left-14 right-0 flex justify-between text-xs text-gray-500">
-          {labels.map((label, i) => (
-            <span key={i} className="text-center">
-              {label}
-            </span>
-          ))}
-        </div>
+          </RechartsLineChart>
+        </ResponsiveContainer>
       </div>
     </div>
   );
 }
 
-// Donut Chart (CSS-based)
+// Donut Chart
 interface DonutChartProps {
   data: {
     label: string;
     value: number;
-    color: string;
+    color?: string;
   }[];
   title?: string;
-  size?: number;
+  height?: number;
   centerLabel?: string;
   centerValue?: string;
 }
 
-export function DonutChart({
-  data,
-  title,
-  size = 160,
-  centerLabel,
-  centerValue,
-}: DonutChartProps) {
-  const total = data.reduce((sum, d) => sum + d.value, 0);
-  let cumulativePercent = 0;
-
+export function DonutChart({ data, title, height = 300, centerLabel, centerValue }: DonutChartProps) {
   return (
-    <div className="flex flex-col items-center">
-      {title && <h4 className="font-semibold mb-4">{title}</h4>}
-      <div className="relative" style={{ width: size, height: size }}>
-        <svg viewBox="0 0 100 100" className="transform -rotate-90">
-          {data.map((item, index) => {
-            const percent = total > 0 ? (item.value / total) * 100 : 0;
-            const offset = cumulativePercent;
-            cumulativePercent += percent;
-
-            const strokeDasharray = `${percent} ${100 - percent}`;
-            const strokeDashoffset = -offset;
-
-            return (
-              <circle
-                key={item.label}
-                cx="50"
-                cy="50"
-                r="40"
-                fill="none"
-                stroke={item.color}
-                strokeWidth="12"
-                strokeDasharray={strokeDasharray}
-                strokeDashoffset={strokeDashoffset}
-                className="transition-all duration-500"
-              />
-            );
-          })}
-        </svg>
-
-        {/* Center Text */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {centerValue && (
-            <span className="text-2xl font-bold">{centerValue}</span>
-          )}
-          {centerLabel && (
-            <span className="text-xs text-gray-500">{centerLabel}</span>
-          )}
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mt-4 space-y-2">
-        {data.map((item) => (
-          <div key={item.label} className="flex items-center gap-2 text-sm">
-            <div
-              className="w-3 h-3 rounded-full"
-              style={{ backgroundColor: item.color }}
+    <div className="w-full relative">
+      {title && <h4 className="font-semibold mb-4 text-gray-800 dark:text-gray-100">{title}</h4>}
+      <div style={{ height, width: "100%" }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsPieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={80}
+              paddingAngle={5}
+              dataKey="value"
+              nameKey="label"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color || DEFAULT_COLORS[index % DEFAULT_COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{ borderRadius: "8px", border: "none", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }}
             />
-            <span className="text-gray-600 dark:text-gray-400">
-              {item.label}
-            </span>
-            <span className="font-medium mr-auto">
-              {item.value.toLocaleString()}
-            </span>
-          </div>
-        ))}
+            <Legend verticalAlign="bottom" height={36} iconType="circle" />
+          </RechartsPieChart>
+        </ResponsiveContainer>
       </div>
+      {(centerLabel || centerValue) && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none mt-8">
+          {centerValue && <span className="text-2xl font-bold">{centerValue}</span>}
+          {centerLabel && <span className="text-xs text-gray-500">{centerLabel}</span>}
+        </div>
+      )}
     </div>
   );
 }
-
-export default BarChart;

@@ -4,6 +4,7 @@ from rest_framework import status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework.permissions import AllowAny
+from rest_framework.throttling import AnonRateThrottle
 from rest_framework import viewsets
 from django.contrib.auth import get_user_model
 from django.utils.translation import gettext as _
@@ -15,11 +16,11 @@ from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
-from .models import Role, Permission, RolePermission, User, ContactUs, TenantSettings, Page, PageContent
+from .models import Role, Permission, RolePermission, User
 from .serializers import (PermissionSerializer, RolePermissionSerializer, RoleSerializer,
-                          TenantSettingsSerializer, RegisterSerializer, LoginSerializer,
-                          UserSerializer, ContactUsSerializer, PageSerializer, PageContentSerializer, PasswordResetConfirmSerializer,
-                          TenantSettings, HealthResponseSerializer)
+                          RegisterSerializer, LoginSerializer,
+                          UserSerializer, PasswordResetConfirmSerializer,
+                          HealthResponseSerializer)
 from apps.tenants.models import Client
 
 from .contexts.index import USER_RELATED_FIELDS, USER_FIELD_LABELS, USER_FILTER_FIELDS
@@ -46,6 +47,7 @@ class HealthCheckView(APIView):
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     @extend_schema(
         request=RegisterSerializer,
@@ -68,6 +70,7 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     @extend_schema(
         request=LoginSerializer,
@@ -149,6 +152,12 @@ class RefreshTokenView(APIView):
 
         try:
             refresh = RefreshToken(refresh_token)
+            
+            # Security check: Ensure token belongs to the current tenant
+            token_tenant = refresh.payload.get("tenant")
+            if token_tenant and token_tenant != connection.schema_name:
+                return Response({"detail": _("Invalid token for this tenant")}, status=status.HTTP_401_UNAUTHORIZED)
+                
             access = refresh.access_token
 
             # get user permissions from database
@@ -265,6 +274,7 @@ class RequestPasswordResetView(APIView):
 
 class PasswordResetConfirmView(APIView):
     permission_classes = [AllowAny]
+    throttle_classes = [AnonRateThrottle]
 
     @extend_schema(
         request=PasswordResetConfirmSerializer,
@@ -389,54 +399,4 @@ class UserViewSet(BaseViewSet):
         return User.objects.filter(id=user.id)
 
 
-class ContactUsViewSet(BaseViewSet):
-    permission_classes = [AllowAny]
-    queryset = ContactUs.objects.all()
-    serializer_class = ContactUsSerializer
 
-
-class TenantSettingsViewset(BaseViewSet):
-    queryset = TenantSettings.objects.all()
-    serializer_class = TenantSettingsSerializer
-
-    def get_permissions(self):
-        if self.action in ['list', 'retrieve']:
-            return [AllowAny()]
-        return [
-            IsAuthenticated(),
-            RoleOrPermissionRequired.with_requirements(
-                required_permissions=["view_tenant_settings"]
-            )
-        ]
-
-
-class PublicPageViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    For public pages only
-    """
-    queryset = Page.objects.filter(is_published=True, is_deleted=False)
-    serializer_class = PageSerializer
-    lookup_field = "slug"
-    permission_classes = [AllowAny]
-
-
-class PageViewSet(BaseViewSet):
-    queryset = Page.objects.all()
-    serializer_class = PageSerializer
-
-    def get_permissions(self):
-        """
-        Allow authenticated users to view/list pages.
-        Only admin/owner can create/update/delete.
-        """
-        if self.action in ['list', 'retrieve']:
-            return [IsAuthenticated()]
-        return [
-            IsAuthenticated(),
-            RoleOrPermissionRequired.with_requirements()
-        ]
-
-    def update(self, request, *args, **kwargs):
-        data = request.data
-        # Standard model serializer update is robust enough
-        return super().update(request, *args, **kwargs)

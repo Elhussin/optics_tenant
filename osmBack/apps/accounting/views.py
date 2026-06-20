@@ -18,13 +18,12 @@ from drf_spectacular.utils import extend_schema, inline_serializer, OpenApiParam
 from rest_framework import serializers
 
 from apps.accounting.models import (
-    ChartOfAccounts, GeneralJournal, JournalLine,
-    FinancialPeriod, Tax, AccountingCategory
+    ChartOfAccounts, GeneralJournal, JournalLine
 )
 from apps.accounting.serializers import (
     ChartOfAccountsSerializer, ChartOfAccountsTreeSerializer,
     GeneralJournalSerializer, GeneralJournalCreateSerializer, GeneralJournalListSerializer,
-    JournalLineSerializer, FinancialPeriodSerializer, TaxSerializer, AccountingCategorySerializer
+    JournalLineSerializer
 )
 from apps.accounting.services import AutoJournalService
 from core.views import BaseViewSet
@@ -290,61 +289,6 @@ class GeneralJournalViewSet(BaseViewSet):
         })
 
 
-class FinancialPeriodViewSet(BaseViewSet):
-    """ViewSet for Financial Periods"""
-    queryset = FinancialPeriod.objects.all()
-    serializer_class = FinancialPeriodSerializer
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES,
-            required_permissions=["view_accounting"]
-        )
-    ]
-
-    @extend_schema(responses=FinancialPeriodSerializer)
-    @action(detail=False, methods=['get'])
-    def current(self, request):
-        """Get current financial period"""
-        today = timezone.now().date()
-        period = FinancialPeriod.objects.filter(
-            start_date__lte=today,
-            end_date__gte=today,
-            is_closed=False
-        ).first()
-
-        if period:
-            serializer = self.get_serializer(period)
-            return Response(serializer.data)
-        return Response({'detail': str(_('No active financial period found'))}, status=404)
-
-
-class TaxViewSet(BaseViewSet):
-    """ViewSet for Taxes"""
-    queryset = Tax.objects.all()
-    serializer_class = TaxSerializer
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES + ['SalesClerk']
-        )
-    ]
-    filterset_fields = ['is_active']
-
-
-class AccountingCategoryViewSet(BaseViewSet):
-    """ViewSet for Accounting Categories"""
-    queryset = AccountingCategory.objects.all()
-    serializer_class = AccountingCategorySerializer
-    permission_classes = [
-        IsAuthenticated,
-        RoleOrPermissionRequired.with_requirements(
-            allowed_roles=ACCOUNTING_ROLES,
-            required_permissions=["view_accounting"]
-        )
-    ]
-    filterset_fields = ['category_type']
-
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Financial Reports
@@ -412,7 +356,7 @@ class TrialBalanceView(APIView):
         total_credit = Decimal('0')
 
         for account in accounts:
-            balance = account.current_balance
+            balance = account.get_balance_for_period(end_date=as_of_date)
 
             if balance != 0:
                 if account.normal_balance == 'debit':
@@ -509,18 +453,17 @@ class IncomeStatementView(APIView):
             is_header=False
         )
 
-        total_revenue = sum(
-            abs(acc.current_balance) for acc in revenue_accounts
-        )
-
-        revenue_items = [
-            {
-                'code': acc.code,
-                'name': acc.name,
-                'amount': abs(acc.current_balance)
-            }
-            for acc in revenue_accounts if acc.current_balance != 0
-        ]
+        total_revenue = Decimal('0')
+        revenue_items = []
+        for acc in revenue_accounts:
+            bal = acc.get_balance_for_period(start_date=start_date, end_date=end_date)
+            if bal != 0:
+                revenue_items.append({
+                    'code': acc.code,
+                    'name': acc.name,
+                    'amount': abs(bal)
+                })
+                total_revenue += abs(bal)
 
         # COGS
         cogs_accounts = ChartOfAccounts.objects.filter(
@@ -529,18 +472,17 @@ class IncomeStatementView(APIView):
             is_header=False
         )
 
-        total_cogs = sum(
-            acc.current_balance for acc in cogs_accounts
-        )
-
-        cogs_items = [
-            {
-                'code': acc.code,
-                'name': acc.name,
-                'amount': acc.current_balance
-            }
-            for acc in cogs_accounts if acc.current_balance != 0
-        ]
+        total_cogs = Decimal('0')
+        cogs_items = []
+        for acc in cogs_accounts:
+            bal = acc.get_balance_for_period(start_date=start_date, end_date=end_date)
+            if bal != 0:
+                cogs_items.append({
+                    'code': acc.code,
+                    'name': acc.name,
+                    'amount': bal
+                })
+                total_cogs += bal
 
         # Gross Profit
         gross_profit = total_revenue - total_cogs
@@ -552,18 +494,17 @@ class IncomeStatementView(APIView):
             is_header=False
         )
 
-        total_expenses = sum(
-            acc.current_balance for acc in expense_accounts
-        )
-
-        expense_items = [
-            {
-                'code': acc.code,
-                'name': acc.name,
-                'amount': acc.current_balance
-            }
-            for acc in expense_accounts if acc.current_balance != 0
-        ]
+        total_expenses = Decimal('0')
+        expense_items = []
+        for acc in expense_accounts:
+            bal = acc.get_balance_for_period(start_date=start_date, end_date=end_date)
+            if bal != 0:
+                expense_items.append({
+                    'code': acc.code,
+                    'name': acc.name,
+                    'amount': bal
+                })
+                total_expenses += bal
 
         # Net Income
         net_income = gross_profit - total_expenses
@@ -649,16 +590,17 @@ class BalanceSheetView(APIView):
             is_header=False
         )
 
-        total_assets = sum(acc.current_balance for acc in asset_accounts)
-
-        asset_items = [
-            {
-                'code': acc.code,
-                'name': acc.name,
-                'balance': acc.current_balance
-            }
-            for acc in asset_accounts if acc.current_balance != 0
-        ]
+        total_assets = Decimal('0')
+        asset_items = []
+        for acc in asset_accounts:
+            bal = acc.get_balance_for_period(end_date=as_of_date)
+            if bal != 0:
+                asset_items.append({
+                    'code': acc.code,
+                    'name': acc.name,
+                    'balance': bal
+                })
+                total_assets += bal
 
         # Liabilities
         liability_accounts = ChartOfAccounts.objects.filter(
@@ -667,17 +609,17 @@ class BalanceSheetView(APIView):
             is_header=False
         )
 
-        total_liabilities = sum(abs(acc.current_balance)
-                                for acc in liability_accounts)
-
-        liability_items = [
-            {
-                'code': acc.code,
-                'name': acc.name,
-                'balance': abs(acc.current_balance)
-            }
-            for acc in liability_accounts if acc.current_balance != 0
-        ]
+        total_liabilities = Decimal('0')
+        liability_items = []
+        for acc in liability_accounts:
+            bal = acc.get_balance_for_period(end_date=as_of_date)
+            if bal != 0:
+                liability_items.append({
+                    'code': acc.code,
+                    'name': acc.name,
+                    'balance': bal
+                })
+                total_liabilities += bal
 
         # Equity
         equity_accounts = ChartOfAccounts.objects.filter(
@@ -686,16 +628,36 @@ class BalanceSheetView(APIView):
             is_header=False
         )
 
-        total_equity = sum(abs(acc.current_balance) for acc in equity_accounts)
+        total_equity = Decimal('0')
+        equity_items = []
+        for acc in equity_accounts:
+            bal = acc.get_balance_for_period(end_date=as_of_date)
+            if bal != 0:
+                equity_items.append({
+                    'code': acc.code,
+                    'name': acc.name,
+                    'balance': bal
+                })
+                total_equity += bal
 
-        equity_items = [
-            {
-                'code': acc.code,
-                'name': acc.name,
-                'balance': abs(acc.current_balance)
-            }
-            for acc in equity_accounts if acc.current_balance != 0
-        ]
+        # Calculate Net Income to add to Equity (Retained Earnings)
+        revenue_accounts = ChartOfAccounts.objects.filter(account_type='revenue', is_active=True, is_header=False)
+        cogs_accounts = ChartOfAccounts.objects.filter(account_type='cogs', is_active=True, is_header=False)
+        expense_accounts = ChartOfAccounts.objects.filter(account_type='expense', is_active=True, is_header=False)
+
+        total_revenue = sum(acc.get_balance_for_period(end_date=as_of_date) for acc in revenue_accounts)
+        total_cogs = sum(acc.get_balance_for_period(end_date=as_of_date) for acc in cogs_accounts)
+        total_expenses = sum(acc.get_balance_for_period(end_date=as_of_date) for acc in expense_accounts)
+
+        net_income = total_revenue - total_cogs - total_expenses
+        
+        if net_income != 0:
+            equity_items.append({
+                'code': 'NET_INCOME',
+                'name': str(_('Net Income / (Loss)')),
+                'balance': net_income
+            })
+            total_equity += net_income
 
         return Response({
             'as_of_date': as_of_date,

@@ -1,38 +1,38 @@
 from decimal import Decimal
 from django.utils.translation import gettext_lazy as _
 
-def update_customer_balance(customer, amount, is_payment=False):
-    """تحديث رصيد العميل"""
+def update_partner_balance(partner, amount, is_payment=False):
+    """تحديث رصيد الشريك"""
     amount = Decimal(str(amount))
 
     if is_payment:
-        customer.current_balance -= amount
+        partner.current_balance -= amount
     else:
-        customer.current_balance += amount
+        partner.current_balance += amount
 
-    customer.save(update_fields=['current_balance'])
+    partner.save(update_fields=['current_balance'])
 
-def check_customer_credit_available(customer, amount):
+def check_partner_credit_available(partner, amount):
     """التحقق من توفر الائتمان للمبلغ المطلوب"""
-    if customer.credit_status != 'approved':
+    if partner.credit_status != 'approved':
         return False, str(_('You do not have approved credit'))
 
-    if customer.available_credit < amount:
+    if partner.available_credit < amount:
         return False, str(_('Available credit ({available}) is less than requested amount ({amount})').format(
-            available=customer.available_credit,
+            available=partner.available_credit,
             amount=amount
         ))
 
     return True, str(_('Credit available'))
 
-def get_applicable_customer_price(customer, product_variant):
-    """الحصول على السعر المناسب للعميل"""
+def get_applicable_partner_price(partner, product_variant):
+    """الحصول على السعر المناسب للشريك"""
     from apps.products.models import FlexiblePrice
 
-    # سعر خاص للعميل
+    # سعر خاص للشريك
     special_price = FlexiblePrice.objects.filter(
         variant=product_variant,
-        customer=customer,
+        partner=partner,
         is_active=True
     ).first()
 
@@ -42,7 +42,7 @@ def get_applicable_customer_price(customer, product_variant):
     # سعر المستوى (tier)
     tier_price = FlexiblePrice.objects.filter(
         variant=product_variant,
-        pricing_tier=customer.pricing_tier,
+        pricing_tier=partner.pricing_tier,
         is_active=True
     ).first()
 

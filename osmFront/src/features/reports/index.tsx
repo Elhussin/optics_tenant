@@ -21,6 +21,7 @@ export { SalesReportPage } from './pages/SalesReportPage';
 export { ReceivablesReportPage } from './pages/ReceivablesReportPage';
 
 import React, { useState } from "react";
+import { BarChart, LineChart, DonutChart } from "./components/ReportChart";
 import {
   BarChart3,
   TrendingUp,
@@ -215,6 +216,18 @@ export default function ReportsPage() {
     refetchOnWindowFocus: false,
   });
 
+  // Fetch available branches for the user
+  const { data: branchesData } = useQuery({
+    queryKey: ["available-branches"],
+    queryFn: async () => {
+      const response = await api.customRequest("branches_branches_list", { page_size: 100 });
+      return Array.isArray(response) ? response : response?.results || [];
+    },
+    refetchOnWindowFocus: false,
+  });
+
+  const branches = branchesData || [];
+
   const formatCurrency = (amount: number | undefined) => {
     if (!amount) return "0.00";
     return new Intl.NumberFormat("ar-SA", {
@@ -245,6 +258,12 @@ export default function ReportsPage() {
     year: "هذه السنة",
   };
 
+  const handleExport = (type: "excel" | "pdf") => {
+    console.log(`Exporting report to ${type}...`);
+    // Placeholder for actual export logic
+    alert(`جاري تصدير التقرير بصيغة ${type.toUpperCase()}`);
+  };
+
   return (
     <div className="min-h-screen bg-body py-8">
       <div className="container mx-auto px-4">
@@ -260,7 +279,35 @@ export default function ReportsPage() {
             </p>
           </div>
 
-          <div className="flex gap-3 mt-4 md:mt-0">
+          <div className="flex flex-wrap gap-3 mt-4 md:mt-0 items-center">
+            {/* Export Buttons */}
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
+              <Button variant="ghost" size="sm" onClick={() => handleExport("excel")} className="text-green-600 hover:bg-green-50">
+                Excel
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => handleExport("pdf")} className="text-red-600 hover:bg-red-50">
+                PDF
+              </Button>
+            </div>
+
+            {/* Branch Selector (Visible only if > 1 branch) */}
+            {branches.length > 1 && (
+              <Select value={branchId} onValueChange={setBranchId}>
+                <SelectTrigger className="w-40">
+                  <Building2 className="w-4 h-4 ml-2" />
+                  <SelectValue placeholder="اختر الفرع" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">كل الفروع</SelectItem>
+                  {branches.map((branch: any) => (
+                    <SelectItem key={branch.id} value={branch.id.toString()}>
+                      {branch.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
             {/* Period Selector */}
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger className="w-40">
@@ -619,33 +666,48 @@ export default function ReportsPage() {
                     <p className="text-secondary">لا توجد بيانات</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {topProducts.map((product, index) => (
-                      <div
-                        key={product.product_variant_id}
-                        className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
-                          {index + 1}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Donut Chart */}
+                    <div className="h-80">
+                      <DonutChart 
+                        data={topProducts.slice(0, 5).map(p => ({
+                          label: p.product_name,
+                          value: p.total_revenue
+                        }))}
+                        height={320}
+                        centerLabel="الإجمالي"
+                        centerValue={formatNumber(topProducts.slice(0, 5).reduce((s, p) => s + p.total_revenue, 0))}
+                      />
+                    </div>
+                    {/* List */}
+                    <div className="space-y-3">
+                      {topProducts.slice(0, 5).map((product, index) => (
+                        <div
+                          key={product.product_variant_id}
+                          className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800"
+                        >
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center font-bold text-primary">
+                            {index + 1}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium text-main">
+                              {product.product_name}
+                            </p>
+                            <p className="text-xs text-secondary">
+                              {product.variant_name}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-main">
+                              {formatNumber(product.total_sold)} وحدة
+                            </p>
+                            <p className="text-xs text-secondary">
+                              {formatCurrency(product.total_revenue)}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-main">
-                            {product.product_name}
-                          </p>
-                          <p className="text-xs text-secondary">
-                            {product.variant_name}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-main">
-                            {formatNumber(product.total_sold)} وحدة
-                          </p>
-                          <p className="text-xs text-secondary">
-                            {formatCurrency(product.total_revenue)}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 )}
               </CardContent>
@@ -666,68 +728,58 @@ export default function ReportsPage() {
                     <p className="text-secondary">لا توجد بيانات</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {branchComparison.map((branch, index) => {
-                      const maxRevenue = Math.max(
-                        ...branchComparison.map((b) => b.total_revenue || 0)
-                      );
-                      const percentage =
-                        maxRevenue > 0
-                          ? ((branch.total_revenue || 0) / maxRevenue) * 100
-                          : 0;
-
-                      return (
-                        <div key={branch.branch_id} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                                  index === 0
-                                    ? "bg-amber-100 text-amber-600"
-                                    : index === 1
-                                    ? "bg-gray-200 text-gray-600"
-                                    : index === 2
-                                    ? "bg-orange-100 text-orange-600"
-                                    : "bg-gray-100 text-gray-500"
-                                }`}
-                              >
-                                {index + 1}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    {/* Bar Chart */}
+                    <div className="h-80">
+                      <BarChart 
+                        data={branchComparison.map(b => ({
+                          label: b.branch_name,
+                          value: b.total_revenue
+                        }))}
+                        height={320}
+                      />
+                    </div>
+                    
+                    {/* Summary List */}
+                    <div className="space-y-4">
+                      {branchComparison.map((branch, index) => {
+                        return (
+                          <div key={branch.branch_id} className="space-y-2 p-3 border border-gray-100 rounded-xl hover:shadow-sm">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                                    index === 0
+                                      ? "bg-amber-100 text-amber-600"
+                                      : index === 1
+                                      ? "bg-gray-200 text-gray-600"
+                                      : index === 2
+                                      ? "bg-orange-100 text-orange-600"
+                                      : "bg-gray-100 text-gray-500"
+                                  }`}
+                                >
+                                  {index + 1}
+                                </div>
+                                <div>
+                                  <p className="font-medium text-main">
+                                    {branch.branch_name}
+                                  </p>
+                                  <p className="text-xs text-secondary">
+                                    {branch.orders_count} طلب | متوسط:{" "}
+                                    {formatCurrency(branch.avg_order)}
+                                  </p>
+                                </div>
                               </div>
-                              <div>
-                                <p className="font-medium text-main">
-                                  {branch.branch_name}
-                                </p>
-                                <p className="text-xs text-secondary">
-                                  {branch.orders_count} طلب | متوسط:{" "}
-                                  {formatCurrency(branch.avg_order)}
+                              <div className="text-right">
+                                <p className="text-lg font-bold text-primary">
+                                  {formatCurrency(branch.total_revenue)}
                                 </p>
                               </div>
                             </div>
-                            <div className="text-right">
-                              <p className="text-lg font-bold text-primary">
-                                {formatCurrency(branch.total_revenue)}
-                              </p>
-                            </div>
                           </div>
-
-                          {/* Progress Bar */}
-                          <div className="h-2 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden">
-                            <div
-                              className={`h-full rounded-full transition-all duration-500 ${
-                                index === 0
-                                  ? "bg-emerald-500"
-                                  : index === 1
-                                  ? "bg-blue-500"
-                                  : index === 2
-                                  ? "bg-purple-500"
-                                  : "bg-gray-400"
-                              }`}
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 )}
               </CardContent>

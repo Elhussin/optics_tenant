@@ -133,6 +133,7 @@ export const TextField = ({ fieldRow, field }: FieldsProps) => {
     <Input
       type={fieldRow.type}
       placeholder={fieldRow.placeholder}
+      step={fieldRow.type === "number" ? "0.0001" : undefined}
       {...field}
       value={field.value ?? ""}
       className={cn(

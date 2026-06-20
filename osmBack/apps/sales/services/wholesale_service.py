@@ -19,12 +19,12 @@ class WholesaleService:
     """
 
     @classmethod
-    def get_order_pricing(cls, customer, order_items, branch=None):
+    def get_order_pricing(cls, partner, order_items, branch=None):
         """
-        Get pricing for customer orders
+        Get pricing for wholesale orders
 
         Args:
-            customer: Customer
+            partner: Partner
             order_items: List of items [{variant, quantity}]
             branch: Branch (optional)
 
@@ -43,7 +43,7 @@ class WholesaleService:
 
             # Find appropriate price
             price_info = cls.get_variant_price(
-                variant, customer, quantity, branch
+                variant, partner, quantity, branch
             )
 
             line_total = price_info['price'] * quantity
@@ -64,40 +64,32 @@ class WholesaleService:
             subtotal += line_total
             total_discount += line_discount
 
-        # Apply additional customer level discount
-        customer_discount = Decimal('0')
-        if customer.default_discount_percentage > 0:
-            customer_discount = subtotal * \
-                (customer.default_discount_percentage / Decimal('100'))
+        # Apply additional partner level discount
+        partner_discount = Decimal('0')
+        if partner.default_discount > 0:
+            partner_discount = subtotal * \
+                (partner.default_discount / Decimal('100'))
 
         return {
             'items': priced_items,
             'subtotal': subtotal,
             'line_discounts': total_discount,
-            'customer_discount': customer_discount,
-            'total_discount': total_discount + customer_discount,
-            'final_total': subtotal - customer_discount,
+            'partner_discount': partner_discount,
+            'total_discount': total_discount + partner_discount,
+            'final_total': subtotal - partner_discount,
         }
 
     @classmethod
-    def get_variant_price(cls, variant, customer=None, quantity=1, branch=None):
+    def get_variant_price(cls, variant, partner=None, quantity=1, branch=None):
         """
         Get appropriate price for a variant using unified PriceCalculator
         """
         from apps.products.services.pricing_service import PriceCalculator
 
-        # Determine Partner from customer link if not explicitly passed
-        partner = None
-        if customer:
-            partner_link = customer.get_active_partner_link()
-            if partner_link:
-                partner = partner_link.partner
-
         context = {
-            'customer': customer,
+            'partner': partner,
             'quantity': quantity,
             'branch': branch,
-            'partner': partner,
             # 'policy': None  # Wholesale service typically doesn't know policy yet, unless passed
         }
 
@@ -110,7 +102,7 @@ class WholesaleService:
         }
 
     @classmethod
-    def validate_wholesale_order(cls, customer, order_items, use_credit=False):
+    def validate_wholesale_order(cls, partner, order_items, use_credit=False):
         """
         Validate wholesale order
 
@@ -120,35 +112,35 @@ class WholesaleService:
         errors = []
 
         # Check minimum order amount
-        if customer.minimum_order_amount > 0:
-            pricing = cls.get_order_pricing(customer, order_items)
-            if pricing['final_total'] < customer.minimum_order_amount:
+        if partner.minimum_order_amount > 0:
+            pricing = cls.get_order_pricing(partner, order_items)
+            if pricing['final_total'] < partner.minimum_order_amount:
                 errors.append(
                     _("Minimum order amount is {0} SAR, current amount: {1} SAR").format(
-                        customer.minimum_order_amount, pricing['final_total']
+                        partner.minimum_order_amount, pricing['final_total']
                     )
                 )
 
         # Check credit if payment is deferred
         if use_credit:
-            from apps.crm.services.customer_service import check_customer_credit_available
-            pricing = cls.get_order_pricing(customer, order_items)
-            is_available, message = check_customer_credit_available(
-                customer, pricing['final_total'])
+            from apps.crm.services.partner_service import check_partner_credit_available
+            pricing = cls.get_order_pricing(partner, order_items)
+            is_available, message = check_partner_credit_available(
+                partner, pricing['final_total'])
             if not is_available:
                 errors.append(message)
 
         # Check contract validity
-        if customer.contract_end_date:
+        if partner.contract_end:
             today = timezone.now().date()
-            if customer.contract_end_date < today:
-                errors.append(_("Contract with this customer has expired"))
+            if partner.contract_end < today:
+                errors.append(_("Contract with this partner has expired"))
 
         return len(errors) == 0, errors
 
     @classmethod
     @transaction.atomic
-    def create_wholesale_order(cls, customer, items, branch, user, payment_method='credit', notes=''):
+    def create_wholesale_order(cls, partner, items, branch, user, payment_method='credit', notes=''):
         """
         Create wholesale order
         """
@@ -157,18 +149,18 @@ class WholesaleService:
         # Validate order
         use_credit = payment_method == 'credit'
         is_valid, errors = cls.validate_wholesale_order(
-            customer, items, use_credit)
+            partner, items, use_credit)
 
         if not is_valid:
             raise ValueError('\n'.join(errors))
 
         # Get pricing
-        pricing = cls.get_order_pricing(customer, items, branch)
+        pricing = cls.get_order_pricing(partner, items, branch)
 
         # Create order
         order = Order.objects.create(
             branch=branch,
-            customer=customer,
+            partner=partner,
             order_type='wholesale',
             payment_method=payment_method,
             subtotal=pricing['subtotal'],
@@ -191,80 +183,76 @@ class WholesaleService:
                 total_price=item_data['line_total'],
             )
 
-        # Update customer balance if credit
+        # Update partner balance if credit
         if payment_method == 'credit':
-            from apps.crm.services.customer_service import update_customer_balance
-            update_customer_balance(customer, pricing['final_total'], is_payment=False)
+            from apps.crm.services.partner_service import update_partner_balance
+            update_partner_balance(partner, pricing['final_total'], is_payment=False)
 
         logger.info(
-            f"Wholesale order {order.order_number} created for customer {customer}")
+            f"Wholesale order {order.order_number} created for partner {partner}")
         return order
 
     @classmethod
-    def get_customer_statement(cls, customer, start_date=None, end_date=None):
+    def get_partner_statement(cls, partner, start_date=None, end_date=None):
         """
-        Customer Statement
+        Get statement of account for a partner
         """
-        from apps.sales.models import Order, Invoice, Payment
+        from apps.sales.models import Order, Payment
 
-        filters = {'customer': customer}
+        filters = {'partner': partner}
         if start_date:
             filters['created_at__date__gte'] = start_date
         if end_date:
             filters['created_at__date__lte'] = end_date
 
-        # Invoices
-        invoices = Invoice.objects.filter(**filters).values(
-            'invoice_number', 'created_at', 'total_amount', 'status'
-        )
+        # Get orders (invoices)
+        orders = Order.objects.filter(
+            **filters, order_type='wholesale').order_by('created_at')
 
-        # Payments
+        # Get payments
         payment_filters = filters.copy()
-        payment_filters.pop('customer', None)
-        payment_filters['invoice__customer'] = customer
+        payment_filters.pop('partner', None)
+        payment_filters['invoice__partner'] = partner
+        payments = Payment.objects.filter(
+            **payment_filters).order_by('created_at')
 
-        payments = Payment.objects.filter(**payment_filters).values(
-            'id', 'created_at', 'amount', 'payment_method', 'status'
-        )
-
-        # Merge and sort
+        # Combine and sort transactions
         transactions = []
-        running_balance = customer.opening_balance if hasattr(
-            customer, 'opening_balance') else Decimal('0')
+        running_balance = partner.opening_balance if hasattr(
+            partner, 'opening_balance') else Decimal('0')
 
-        for inv in invoices:
-            running_balance += inv['total_amount']
+        for order in orders:
+            running_balance += order.final_total
             transactions.append({
-                'date': inv['created_at'],
+                'date': order.created_at,
                 'type': 'invoice',
-                'reference': inv['invoice_number'],
-                'debit': inv['total_amount'],
+                'reference': order.order_number,
+                'debit': order.final_total,
                 'credit': Decimal('0'),
                 'balance': running_balance,
             })
 
-        for pay in payments:
-            if pay['status'] == 'completed':
-                running_balance -= pay['amount']
-                transactions.append({
-                    'date': pay['created_at'],
-                    'type': 'payment',
-                    'reference': f"PAY-{pay['id']}",
-                    'debit': Decimal('0'),
-                    'credit': pay['amount'],
-                    'balance': running_balance,
-                })
+        for payment in payments:
+            running_balance -= payment.amount
+            transactions.append({
+                'date': payment.created_at,
+                'type': 'payment',
+                'reference': payment.receipt_number,
+                'debit': Decimal('0'),
+                'credit': payment.amount,
+                'balance': running_balance,
+            })
 
         # Sort by date
         transactions.sort(key=lambda x: x['date'])
 
         return {
-            'customer': customer,
-            'opening_balance': Decimal('0'),
-            'transactions': transactions,
+            'partner': partner,
+            'statement_date': timezone.now(),
+            'period': {'start': start_date, 'end': end_date},
+            'opening_balance': partner.opening_balance if hasattr(partner, 'opening_balance') else Decimal('0'),
             'closing_balance': running_balance,
-            'total_invoices': sum(t['debit'] for t in transactions),
-            'total_payments': sum(t['credit'] for t in transactions),
+            'transactions': transactions
         }
 
 

@@ -91,3 +91,5 @@ if __name__ == "__main__":
     create_user_if_not_exists()
     create_db_if_not_exists()
     grant_privileges()
+
+# pdm run python scripts/setup_db.py

@@ -25,6 +25,7 @@ import {
 import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { useFinancialReports } from "../hooks/useAccounting";
+import { exportToPDF } from "@/src/shared/utils/exportPdf";
 import {
   TrialBalanceCard,
   IncomeStatementCard,
@@ -111,6 +112,10 @@ export function FinancialReportsPage() {
     window.print();
   };
 
+  const handleExportPDF = async () => {
+    await exportToPDF("report-container", `Financial-Report-${activeTab}.pdf`);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -129,7 +134,7 @@ export function FinancialReportsPage() {
             <Printer className="w-4 h-4 ml-2" />
             طباعة
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" onClick={handleExportPDF}>
             <Download className="w-4 h-4 ml-2" />
             تصدير
           </Button>
@@ -235,47 +240,42 @@ export function FinancialReportsPage() {
       </Card>
 
       {/* Report Content */}
-      {loading ? (
-        <Card className="border-0 shadow-lg">
-          <CardContent className="py-12 text-center">
-            <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <div id="report-container" className="pt-4 bg-white dark:bg-gray-900 rounded-xl">
+        {loading ? (
+          <div className="py-20 text-center">
+            <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gray-500">جاري تحميل التقرير...</p>
-          </CardContent>
-        </Card>
-      ) : error ? (
-        <Card className="border-0 shadow-lg">
-          <CardContent className="py-12 text-center text-red-500">
+          </div>
+        ) : error ? (
+          <div className="py-20 text-center text-red-500">
             <p>{error}</p>
             <Button variant="outline" onClick={fetchReport} className="mt-4">
               إعادة المحاولة
             </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          {activeTab === "trial-balance" && trialBalance && (
-            <TrialBalanceCard data={trialBalance} />
-          )}
-
-          {activeTab === "income-statement" && incomeStatement && (
-            <IncomeStatementCard data={incomeStatement} />
-          )}
-
-          {activeTab === "balance-sheet" && balanceSheet && (
-            <BalanceSheetCard data={balanceSheet} />
-          )}
-
-          {/* Empty State */}
-          {!trialBalance && activeTab === "trial-balance" && (
-            <Card className="border-0 shadow-lg">
-              <CardContent className="py-12 text-center text-gray-400">
-                <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                <p>اضغط &quot;تحديث&quot; لعرض التقرير</p>
-              </CardContent>
-            </Card>
-          )}
-        </>
-      )}
+          </div>
+        ) : (
+          <div className="animate-fade-in">
+            {activeTab === "trial-balance" && trialBalance && (
+              <TrialBalanceCard data={trialBalance} />
+            )}
+            {activeTab === "income-statement" && incomeStatement && (
+              <IncomeStatementCard data={incomeStatement} />
+            )}
+            {activeTab === "balance-sheet" && balanceSheet && (
+              <BalanceSheetCard data={balanceSheet} />
+            )}
+            
+            {!trialBalance && activeTab === "trial-balance" && (
+              <Card className="border-0 shadow-lg">
+                <CardContent className="py-12 text-center text-gray-400">
+                  <FileSpreadsheet className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p>اضغط &quot;تحديث&quot; لعرض التقرير</p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

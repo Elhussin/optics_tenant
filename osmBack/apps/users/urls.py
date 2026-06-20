@@ -1,8 +1,7 @@
 
 from django.urls import path
 from .views import( LoginView, RegisterView, LogoutView, RefreshTokenView, HealthCheckView,
-ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView,PageViewSet,PublicPageViewSet,
-ContactUsViewSet,TenantSettingsViewset,
+ProfileView,UserViewSet,RequestPasswordResetView,PasswordResetConfirmView,
 PermissionViewSet, RolePermissionViewSet, RoleViewSet)
 from rest_framework.routers import DefaultRouter
 from django.urls import include
@@ -14,10 +13,6 @@ router.register(r'users', UserViewSet, basename='users')
 router.register(r'permissions', PermissionViewSet, basename='permissions')
 router.register(r'role-permissions', RolePermissionViewSet, basename='role-permissions')
 router.register(r'roles', RoleViewSet, basename='roles')
-router.register(r'pages', PageViewSet, basename='pages')  
-router.register(r'public/pages', PublicPageViewSet, basename='public-pages')  # GET by slug                                                                                                                                                                                                                   
-router.register(r'contact-us', ContactUsViewSet, basename='contact-us')
-router.register(r'tenant-settings', TenantSettingsViewset, basename='tenant-settings')
 
 
 

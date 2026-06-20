@@ -90,6 +90,23 @@ class ClientSerializer(VerboseNameMixin, serializers.ModelSerializer):
         read_only_fields = ['uuid', 'created_at', 'plans']
 
 
+class TenantSettingsSerializer(serializers.ModelSerializer):
+    logo = serializers.ImageField(required=False, allow_null=True)
+    client = serializers.HiddenField(
+        default=ReusableFields.CurrentUserClientDefault())
+
+    class Meta:
+        from apps.tenants.models import TenantSettings
+        model = TenantSettings
+        fields = '__all__'
+
+class PublicTenantSettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        from apps.tenants.models import TenantSettings
+        model = TenantSettings
+        exclude = ['bank_name', 'account_number', 'iban', 'swift_code', 'client']
+
+
 class DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = Domain

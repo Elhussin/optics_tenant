@@ -1,0 +1,8 @@
+[2026-06-13 01:58:09,369] INFO product: FK fields for StokLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'purchase_order_items', 'orderitem_variant', 'invoiceitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_coatings']
+[2026-06-13 01:58:09,370] INFO product: Converted FK field: product_type=164 -> product_type_id=164
+[2026-06-13 01:58:09,371] INFO product: Converted FK field: lens_diameter=119 -> lens_diameter_id=119
+[2026-06-13 01:58:09,371] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-06-13 01:58:09,371] INFO product: clean_vdata for variant: {'product_type_id': 164, 'selling_price': '500', 'discount_percentage': '20', 'spherical': '-02.00', 'cylinder': '-04.00', 'lens_diameter_id': 119, 'lens_material_id': 5, 'lens_coatings': [195, 196]}
+[2026-06-13 01:58:09,372] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
+[2026-06-13 01:58:09,372] INFO product: Creating variant with data: {'product_type_id': 164, 'selling_price': '500', 'discount_percentage': '20', 'spherical': '-02.00', 'cylinder': '-04.00', 'lens_diameter_id': 119, 'lens_material_id': 5}
+[2026-06-13 01:58:09,438] INFO product: Set M2M field lens_coatings = [195, 196]

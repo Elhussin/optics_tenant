@@ -17,6 +17,8 @@ import {
   Calendar,
   Filter,
   AlertCircle,
+  Printer,
+  Download,
 } from "lucide-react";
 import {
   Card,
@@ -32,6 +34,7 @@ import type {
   JournalEntry,
   JournalEntryCreate,
 } from "../types/accounting.types";
+import { exportToPDF } from "@/src/shared/utils/exportPdf";
 
 const entryTypeLabels: Record<string, string> = {
   general: "عام",
@@ -313,17 +316,37 @@ export function JournalEntriesPage() {
       {selectedEntry && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <Card className="max-w-2xl w-full max-h-[80vh] overflow-auto">
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between print:hidden">
               <CardTitle>تفاصيل القيد {selectedEntry.entry_number}</CardTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedEntry(null)}
-              >
-                <X className="w-5 h-5" />
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => window.print()}
+                >
+                  <Printer className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => exportToPDF("entry-details-container", `JournalEntry-${selectedEntry.entry_number}.pdf`)}
+                >
+                  <Download className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedEntry(null)}
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent id="entry-details-container" className="space-y-4 bg-white dark:bg-gray-900 p-6 rounded-b-xl">
+              <div className="hidden print:block text-center mb-6 border-b pb-4">
+                <h1 className="text-2xl font-bold">قيد يومية</h1>
+                <p className="text-gray-500">رقم القيد: {selectedEntry.entry_number}</p>
+              </div>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-500">التاريخ:</span>

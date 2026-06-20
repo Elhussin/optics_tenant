@@ -309,8 +309,7 @@ class MobileCustomerLookupView(APIView):
             Q(phone__icontains=query) |
             Q(identification_number__icontains=query)
         ).only(
-            'id', 'first_name', 'last_name', 'phone',
-            'pricing_tier', 'credit_status'
+            'id', 'first_name', 'last_name', 'phone'
         )[:limit]
 
         return Response([
@@ -318,8 +317,8 @@ class MobileCustomerLookupView(APIView):
                 'id': c.id,
                 'name': c.full_name,
                 'phone': c.phone,
-                'tier': c.pricing_tier,
-                'has_credit': c.credit_status == 'approved',
+                'tier': 'retail', # Default since Customer is strictly B2C
+                'has_credit': False, # Default since Customer is strictly B2C
             }
             for c in customers
         ])
@@ -500,7 +499,6 @@ class MobileSyncDataView(APIView):
                             'first_name': serializers.CharField(),
                             'last_name': serializers.CharField(),
                             'phone': serializers.CharField(),
-                            'pricing_tier': serializers.CharField(),
                             'updated_at': serializers.DateTimeField(),
                         },
                         many=True
@@ -550,7 +548,7 @@ class MobileSyncDataView(APIView):
             **customers_filter
         ).values(
             'id', 'first_name', 'last_name', 'phone',
-            'pricing_tier', 'updated_at'
+            'updated_at'
         )[:500]
 
         data['customers'] = list(customers)

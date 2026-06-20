@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate
 from django.utils.translation import gettext_lazy as _
 from core.utils.ReusableFields import ReusableFields
 from core.utils.check_unique_field import check_unique_field
-from .models import Role, Permission, RolePermission, User, ContactUs, TenantSettings, Page, PageContent
+from .models import Role, Permission, RolePermission, User
 
 from django.db import connection
 User = get_user_model()
@@ -130,16 +130,9 @@ class RegisterSerializer(serializers.ModelSerializer):
     username = ReusableFields.username()
     email = ReusableFields.email()
     password = ReusableFields.password()
-    role_ids = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=Role.objects.all(),
-        required=False,
-        source='roles'
-    )
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'password', 'email', 'role_ids']
+        fields = ['id', 'username', 'password', 'email']
 
     def create(self, validated_data):
         from django.db import connection
@@ -155,18 +148,14 @@ class RegisterSerializer(serializers.ModelSerializer):
                 pass
 
         password = validated_data.pop("password")
-        roles = validated_data.pop("roles", [])
         user = User(**validated_data)
         user.set_password(password)
         user.is_active = True
         user.save()
 
-        if roles:
-            user.roles.set(roles)
-        else:
-            guest_role = Role.objects.filter(name='GUEST').first()
-            if guest_role:
-                user.roles.add(guest_role)
+        # Always assign default guest role on registration
+        guest_role, created = Role.objects.get_or_create(name='GUEST')
+        user.roles.add(guest_role)
 
         return user
 
@@ -214,112 +203,7 @@ class LoginSerializer(serializers.Serializer):
         return attrs
 
 
-class PageContentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PageContent
-        fields = [
-            'language', 'title', 'content',
-            'seo_title', 'meta_description', 'meta_keywords'
-        ]
 
-
-class PageSerializer(serializers.ModelSerializer):
-    translations = PageContentSerializer(many=True)
-    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    client = serializers.HiddenField(
-        default=ReusableFields.CurrentUserClientDefault())
-
-    class Meta:
-        model = Page
-        fields = [
-            'id', 'default_language', 'is_published', 'slug', 'is_deleted', 'is_active',
-            'created_at', 'updated_at', 'translations', 'author', 'client'
-        ]
-
-    def validate_slug(self, value):
-        return check_unique_field(Page, 'slug', value, self.instance)
-
-    def create(self, validated_data):
-        translations_data = validated_data.pop('translations')
-        page = Page.objects.create(**validated_data)
-
-        for translation_data in translations_data:
-            PageContent.objects.create(page=page, **translation_data)
-
-        return page
-
-    def update(self, instance, validated_data):
-
-        translations_data = validated_data.pop('translations', [])
-
-        # Standard serializer behavior: Update instance with validated_data
-        # We don't need to manually filter fields if serializer definitions are correct.
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-
-        instance.save()
-
-        # Update or create translations
-        if translations_data:
-            new_languages = {t.get('language')
-                             for t in translations_data if t.get('language')}
-
-            # Use transaction atomic if possible
-            instance.translations.exclude(language__in=new_languages).delete()
-
-            for translation_data in translations_data:
-                language = translation_data.get('language')
-                if language:
-                    PageContent.objects.update_or_create(
-                        page=instance,
-                        language=language,
-                        defaults=translation_data
-                    )
-
-        instance.refresh_from_db()
-        return instance
-
-
-class ContactUsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContactUs
-        fields = '__all__'
-
-    def validate_message(self, value):
-        """Validate message is not empty and has minimum length"""
-        if not value or len(value.strip()) < 10:
-            raise serializers.ValidationError(
-                _('Message must be at least 10 characters long')
-            )
-        return value
-
-    def validate_name(self, value):
-        """Validate name is not empty"""
-        if not value or len(value.strip()) < 2:
-            raise serializers.ValidationError(
-                _('Name must be at least 2 characters long')
-            )
-        return value
-
-    def validate_phone(self, value):
-        """Validate phone number format"""
-        import re
-        if value and not re.match(r'^\+?[\d\s\-\(\)]{10,20}$', value):
-            raise serializers.ValidationError(
-                _('Please enter a valid phone number')
-            )
-        return value
-
-
-class TenantSettingsSerializer(serializers.ModelSerializer):
-    logo = serializers.ImageField(required=False, allow_null=True)
-    client = serializers.HiddenField(
-        default=ReusableFields.CurrentUserClientDefault())
-
-    class Meta:
-        model = TenantSettings
-
-        fields = '__all__'
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):

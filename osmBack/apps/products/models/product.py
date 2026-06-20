@@ -140,7 +140,7 @@ class ProductVariant(BaseModel):
     BaseLensFields = ['lens_diameter', 'lens_color',
                       'lens_material', 'lens_coatings']
     BaseStokLensFields = ['spherical', 'cylinder']
-    BaseRxLensFields = ['lens_base_curve', 'addition']
+    BaseRxLensFields = ['lens_base_curve']
     BaseContactLensFields = ['lens_water_content',
                              'replacement_schedule', 'units', 'axis']
     BaseExtraVariantFields = ['variant_type',
@@ -187,11 +187,18 @@ class ProductVariant(BaseModel):
 
     def get_price_for(self, customer=None, branch=None, quantity=1, date=None):
         today = date or timezone.now().date()
-        rules = self.price_rules.all()
+        from django.db.models import Q
+        
+        rules = FlexiblePrice.objects.filter(
+            Q(variant=self) | 
+            Q(product=self.product) | 
+            Q(brand=self.product.brand) | 
+            Q(category__in=self.product.categories.all())
+        ).order_by('-priority', 'start_date')
 
         for rule in rules:
             if rule.is_valid(customer=customer, branch=branch, quantity=quantity, date=today):
-                return rule.special_price
+                return rule.get_final_price(base_price=self.discount_price or self.selling_price)
 
         return self.discount_price or self.selling_price
 
@@ -387,22 +394,13 @@ class RxLensVariant(ProductVariant, BaseLens):
 
     lens_base_curve = models.ForeignKey(AttributeValue, on_delete=models.CASCADE, related_name='%(class)s_lens_base_curve',
                                         blank=True, null=True, limit_choices_to={'attribute__name': 'Base Curve'})
-    addition = models.CharField(
-        max_length=20, choices=additional_lens_powers, blank=True, null=True, default=None)
-    right_or_left = models.CharField(max_length=5, choices=RIGHT_LEFT_CHOICES, blank=True,
-                                     null=True, help_text="Specify if lens is for right (R) or left (L) eye")
 
     def build_description(self):
         """Build detailed description for prescription lenses"""
         parts = [f"{self.product.brand.name} {self.product.model}"]
 
-        # Prescription details
+        # Prescription details (Removed addition and right/left as they belong to the patient prescription)
         specs = []
-        if self.addition:
-            specs.append(f"ADD: {self.addition}")
-        if self.right_or_left:
-            eye_text = "Right" if self.right_or_left == 'R' else "Left"
-            specs.append(eye_text)
 
         # Lens details
         details = []
@@ -440,8 +438,6 @@ class RxLensVariant(ProductVariant, BaseLens):
             str(getattr(self, 'lens_color_id', '') or ''),
             str(getattr(self, 'lens_material_id', '') or ''),
             str(getattr(self, 'lens_base_curve_id', '') or ''),
-            str(self.addition or ''),
-            str(self.right_or_left or ''),
         ]
 
 
@@ -593,7 +589,21 @@ class FlexiblePrice(BaseModel):
     ]
 
     variant = models.ForeignKey(
-        "ProductVariant", on_delete=models.CASCADE, related_name='price_rules')
+        "ProductVariant", on_delete=models.CASCADE, related_name='price_rules', null=True, blank=True,
+        verbose_name=_("Specific Variant")
+    )
+    product = models.ForeignKey(
+        "Product", on_delete=models.CASCADE, related_name='price_rules', null=True, blank=True,
+        verbose_name=_("Specific Model")
+    )
+    brand = models.ForeignKey(
+        "Brand", on_delete=models.CASCADE, related_name='price_rules', null=True, blank=True,
+        verbose_name=_("Brand")
+    )
+    category = models.ForeignKey(
+        "Category", on_delete=models.CASCADE, related_name='price_rules', null=True, blank=True,
+        verbose_name=_("Category")
+    )
 
     # Pricing by Customer/Group
     customer = models.ForeignKey(
@@ -674,9 +684,10 @@ class FlexiblePrice(BaseModel):
         ]
 
     def __str__(self):
-        target = self.customer or self.pricing_tier or self.partner or _(
-            "General")
-        return f"{self.variant} - {target}: {self.special_price}"
+        target = self.customer or self.pricing_tier or self.partner or _("General")
+        item = self.variant or self.product or self.brand or self.category or _("All")
+        val = self.special_price if self.special_price else f"{self.discount_percentage}%"
+        return f"{item} - {target}: {val}"
 
     def is_valid(self, customer=None, branch=None, quantity=1, date=None):
         """Check validity of this price for a specific customer"""

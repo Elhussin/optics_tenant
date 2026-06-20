@@ -18,6 +18,15 @@ class CookieJWTAuthentication(JWTAuthentication):
 
         try:
             validated_token = self.get_validated_token(raw_token)
+            
+            # Security check: Ensure token belongs to the current tenant
+            from django.db import connection
+            token_tenant = validated_token.get("tenant")
+            if token_tenant and token_tenant != connection.schema_name:
+                logger = logging.getLogger(__name__)
+                logger.warning(f"Cross-tenant authentication attempt! Token for {token_tenant} used on {connection.schema_name}")
+                return None
+                
             return self.get_user(validated_token), validated_token
         except Exception as e:
             logger = logging.getLogger(__name__)

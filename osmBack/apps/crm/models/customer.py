@@ -16,33 +16,8 @@ class Customer(BaseModel):
     CUSTOMER_TYPE_CHOICES = [
         ('individual', _('Individual')),
         ('company', _('Company')),
-        ('agent', _('Agent')),
-        ('supplier', _('Supplier')),
-        ('wholesaler', _('Wholesaler')),
-        ('retailer', _('Retailer')),
-        ('distributor', _('Distributor')),
     ]
 
-    PRICING_TIER_CHOICES = [
-        ('retail', _('Retail')),
-        ('wholesale_1', _('Wholesale - Level 1')),
-        ('wholesale_2', _('Wholesale - Level 2')),
-        ('wholesale_3', _('Wholesale - Level 3 (VIP)')),
-        ('distributor', _('Distributor')),
-        ('special', _('Special Price')),
-    ]
-
-    CREDIT_STATUS_CHOICES = [
-        ('none', _('No Credit')),
-        ('pending', _('Pending Review')),
-        ('approved', _('Approved')),
-        ('suspended', _('Suspended')),
-    ]
-
-    """عملاء المتجر"""
-    # Personal Information
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="crm_customers")
     # Personal Information
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="crm_customers")
@@ -99,90 +74,7 @@ class Customer(BaseModel):
     description = models.TextField(
         null=True, blank=True, verbose_name=_('Description'))
 
-    # ═══════════════════════════════════════════════════════════════════════════
-    # حقول البيع بالجملة - Wholesale Fields
-    # ═══════════════════════════════════════════════════════════════════════════
 
-    # مستوى التسعير
-    pricing_tier = models.CharField(
-        max_length=20,
-        choices=PRICING_TIER_CHOICES,
-        default='retail',
-        verbose_name=_('Pricing Tier')
-    )
-
-    # نسبة الخصم الافتراضية للعميل
-    default_discount_percentage = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        default=0,
-        verbose_name=_('Default Discount Percentage')
-    )
-
-    # حد الائتمان
-    credit_limit = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0,
-        verbose_name=_('Credit Limit')
-    )
-
-    # الرصيد الحالي (مستحق على العميل)
-    current_balance = models.DecimalField(
-        max_digits=12,
-        decimal_places=2,
-        default=0,
-        verbose_name=_('Current Balance')
-    )
-
-    # حالة الائتمان
-    credit_status = models.CharField(
-        max_length=15,
-        choices=CREDIT_STATUS_CHOICES,
-        default='none',
-        verbose_name=_('Credit Status')
-    )
-
-    # شروط الدفع (عدد الأيام)
-    payment_terms_days = models.PositiveIntegerField(
-        default=0,
-        verbose_name=_('Payment Terms (Days)'),
-        help_text=_('Number of days for deferred payment')
-    )
-
-    # الحد الأدنى للطلب (للجملة)
-    minimum_order_amount = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=0,
-        verbose_name=_('Minimum Order Amount')
-    )
-
-    # مندوب المبيعات المخصص
-    sales_representative = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="wholesale_customers",
-        verbose_name=_('Sales Representative')
-    )
-
-    # تاريخ التعاقد (للجملة)
-    contract_start_date = models.DateField(
-        null=True, blank=True,
-        verbose_name=_('Contract Start Date')
-    )
-    contract_end_date = models.DateField(
-        null=True, blank=True,
-        verbose_name=_('Contract End Date')
-    )
-
-    # ملاحظات الائتمان
-    credit_notes = models.TextField(
-        blank=True,
-        verbose_name=_('Credit Notes')
-    )
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -191,25 +83,7 @@ class Customer(BaseModel):
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
 
-    @property
-    def is_wholesale_customer(self):
-        """التحقق من أن العميل جملة"""
-        return self.customer_type in ['wholesaler', 'distributor'] or \
-            self.pricing_tier not in ['retail', 'special']
 
-    @property
-    def available_credit(self):
-        """الائتمان المتاح"""
-        if self.credit_status != 'approved':
-            return 0
-        return max(0, self.credit_limit - self.current_balance)
-
-    @property
-    def credit_utilization_percentage(self):
-        """نسبة استخدام الائتمان"""
-        if self.credit_limit <= 0:
-            return 0
-        return min(100, (self.current_balance / self.credit_limit) * 100)
 
     @property
     def has_active_insurance(self):

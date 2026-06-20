@@ -21,13 +21,14 @@ class PlanValidationMiddleware:
         
         if tenant and tenant.schema_name != "public" and hostname != settings.TENANT_BASE_DOMAIN:
             # Exclude some paths (like payment or login)
-            # exempt_paths = [
-            #     reverse("tenants:upgrade"),
-            #     reverse("users:login"),
-            #     reverse("users:logout"),
-            # ]
-            # if any(request.path.startswith(path) for path in exempt_paths):
-            #     return self.get_response(request)
+            exempt_paths = [
+                "/api/tenants/payment/",
+                "/api/users/login/",
+                "/api/users/logout/",
+                "/api/users/token/refresh/",
+            ]
+            if any(request.path.startswith(path) for path in exempt_paths):
+                return self.get_response(request)
 
             # Read plan data from public schema
             try:

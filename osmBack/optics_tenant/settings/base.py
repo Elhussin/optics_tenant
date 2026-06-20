@@ -64,6 +64,7 @@ AUTH_USER_MODEL = 'users.User'
 SHARED_APPS = (
     'django_tenants',
     'apps.users',
+    'apps.cms',
     'core',
     'apps.tenants',
     'admin_interface',
@@ -104,6 +105,7 @@ TENANT_APPS = (
 
     'core',
     'apps.users',
+    'apps.cms',
     'apps.prescriptions',
     'apps.products',
     'apps.crm',
@@ -154,7 +156,6 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'core.exceptions.custom_exception_handler',
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-        'rest_framework.permissions.AllowAny',
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PAGINATION_CLASS': 'core.utils.pagination.FlexiblePagination',
@@ -164,16 +165,21 @@ REST_FRAMEWORK = {
 CORS_ALLOW_CREDENTIALS = config(
     "CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
 CORS_ALLOW_ALL_ORIGINS = config(
-    "CORS_ALLOW_ALL_ORIGINS", default=True, cast=bool)
+    "CORS_ALLOW_ALL_ORIGINS", default=False, cast=bool)
+CORS_ALLOWED_ORIGINS = config(
+    "CORS_ALLOWED_ORIGINS", default="").split(',')
 CORS_ALLOW_HEADERS = config("CORS_ALLOW_HEADERS").split(',')
 CORS_ALLOW_METHODS = config(
     "CORS_ALLOW_METHODS", default="DELETE,GET,OPTIONS,PATCH,POST,PUT").split(',')
 CORS_ALLOWED_ORIGIN_REGEXES = config(
     "CORS_ALLOWED_ORIGIN_REGEXES", default=r"^http://localhost:3000$,^http://.+\.localhost:3000$", cast=lambda v: v.split(","))
 
+AUTH_COOKIE_SECURE = config('AUTH_COOKIE_SECURE', default=not DEBUG, cast=bool)
+AUTH_COOKIE_SAMESITE = 'Lax'
+
 WSGI_APPLICATION = 'optics_tenant.wsgi.application'
 ROOT_URLCONF = 'optics_tenant.urls'
-# PUBLIC_SCHEMA_URLCONF = 'optics_tenant.public_urls'
+PUBLIC_SCHEMA_URLCONF = 'optics_tenant.public_urls'
 TENANT_MODEL = 'tenants.Client'
 TENANT_DOMAIN_MODEL = 'tenants.Domain'
 

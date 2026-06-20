@@ -93,6 +93,36 @@ class Partner(BaseModel):
         verbose_name=_('Current Balance'),
         help_text=_('Amount due from/to partner')
     )
+    credit_status = models.CharField(
+        max_length=15,
+        choices=[
+            ('none', _('No Credit')),
+            ('pending', _('Pending Review')),
+            ('approved', _('Approved')),
+            ('suspended', _('Suspended')),
+        ],
+        default='none',
+        verbose_name=_('Credit Status')
+    )
+    pricing_tier = models.CharField(
+        max_length=20,
+        choices=[
+            ('retail', _('Retail')),
+            ('wholesale_1', _('Wholesale - Level 1')),
+            ('wholesale_2', _('Wholesale - Level 2')),
+            ('wholesale_3', _('Wholesale - Level 3 (VIP)')),
+            ('distributor', _('Distributor')),
+            ('special', _('Special Price')),
+        ],
+        default='retail',
+        verbose_name=_('Pricing Tier')
+    )
+    minimum_order_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+        verbose_name=_('Minimum Order Amount')
+    )
 
     # للتأمين: نسبة تغطية العميل (ما يدفعه العميل)
     patient_share_percentage = models.DecimalField(

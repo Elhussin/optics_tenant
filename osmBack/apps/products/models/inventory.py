@@ -127,6 +127,14 @@ class StockMovement(BaseModel):
     quantity_before = models.PositiveIntegerField()
     quantity_after = models.PositiveIntegerField()
     reference_number = models.CharField(max_length=50, blank=True)
+    invoice = models.ForeignKey(
+        'sales.Invoice', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_movements', help_text=_("Related Invoice")
+    )
+    purchase_order = models.ForeignKey(
+        'products.PurchaseOrder', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='stock_movements', help_text=_("Related Purchase Order")
+    )
     notes = models.TextField(blank=True)
     movement_date = models.DateTimeField(auto_now_add=True)
     cost_per_unit = models.DecimalField(

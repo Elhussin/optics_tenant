@@ -25,7 +25,9 @@ import { Button } from "@/src/shared/components/shadcn/ui/button";
 import { Input } from "@/src/shared/components/shadcn/ui/input";
 import { useChartOfAccounts } from "../hooks/useAccounting";
 import { AccountTree } from "../components/AccountTree";
+import { ChartOfAccountDialog } from "../components/ChartOfAccountDialog";
 import type { ChartOfAccount } from "../types/accounting.types";
+import type { AccountNode } from "../components/AccountTreeSelect";
 
 export function ChartOfAccountsPage() {
   const { accounts, loading, error, fetchAccounts, setupDefaults } =
@@ -35,6 +37,22 @@ export function ChartOfAccountsPage() {
     null
   );
   const [settingUp, setSettingUp] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Build tree for AccountTreeSelect
+  const buildTree = (data: ChartOfAccount[], parentId: number | null = null): AccountNode[] => {
+    return data
+      .filter((item) => item.parent === parentId)
+      .map((item) => ({
+        id: item.id,
+        account_code: item.code,
+        name: item.name,
+        account_type: item.account_type,
+        is_active: item.is_active,
+        children: buildTree(data, item.id),
+      }));
+  };
+  const accountsTree = buildTree(accounts);
 
   useEffect(() => {
     fetchAccounts();
@@ -90,7 +108,13 @@ export function ChartOfAccountsPage() {
           <Button variant="outline" onClick={fetchAccounts} disabled={loading}>
             <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-          <Button className="gap-2">
+          <Button 
+            className="gap-2" 
+            onClick={() => {
+              setSelectedAccount(null);
+              setIsDialogOpen(true);
+            }}
+          >
             <Plus className="w-4 h-4" />
             حساب جديد
           </Button>
@@ -111,6 +135,14 @@ export function ChartOfAccountsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ChartOfAccountDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onSuccess={() => fetchAccounts()}
+        account={selectedAccount}
+        accountsTree={accountsTree}
+      />
 
       {/* Content */}
       <div className="grid gap-6 lg:grid-cols-3">
@@ -210,7 +242,12 @@ export function ChartOfAccountsPage() {
                     دفتر الأستاذ
                   </Button>
                   {!selectedAccount.is_system && (
-                    <Button size="sm" variant="outline" className="flex-1">
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => setIsDialogOpen(true)}
+                    >
                       تعديل
                     </Button>
                   )}
@@ -227,6 +264,17 @@ export function ChartOfAccountsPage() {
           )}
         </div>
       </div>
+
+      <ChartOfAccountDialog
+        open={isDialogOpen}
+        onClose={() => {
+          setIsDialogOpen(false);
+          // If we want to clear selectedAccount on close we can, or keep it.
+        }}
+        onSuccess={() => fetchAccounts()}
+        account={selectedAccount}
+        accountsTree={accountsTree}
+      />
     </div>
   );
 }

@@ -61,9 +61,9 @@ export function useApiForm<
   // Get endpoint
   const endpoint = useMemo(() => {
     if (!alias) return null;
-    const found = api.api.find((e) => e.alias === alias);
-    if (!found) return null;
-    return found;
+    const endpoint: any = api.api.find((e: any) => e.alias === options.alias);
+    if (!endpoint) return null;
+    return endpoint;
   }, [alias]);
 
   // Extract Schema

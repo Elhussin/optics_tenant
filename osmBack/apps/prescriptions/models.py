@@ -14,6 +14,11 @@ class PrescriptionRecord(BaseModel):
     """Prescription Record"""
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE,
                                  related_name='prescriptions', verbose_name=_('Customer'))
+    dependent_name = models.CharField(
+        max_length=100, blank=True, null=True, 
+        verbose_name=_('Dependent Name'),
+        help_text=_('If the prescription is for a family member or dependent, enter their name here.')
+    )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+', verbose_name=_('Created By'))
 

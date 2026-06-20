@@ -218,80 +218,86 @@ export function MovementsList({
           description={t("movements.emptyDescription")}
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4">
-          {filteredMovements.map((movement: StockMovement, index: number) => (
-            <GlassCard
-              key={movement.id}
-              className="p-4 border-border-main hover:border-primary/50 transition-all duration-300 animate-fade-in-up"
-              // style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* Info */}
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center flex-wrap gap-2">
-                    {getMovementBadge(
-                      movement.movement_type,
-                      movement.movement_type_display,
-                    )}
-                    <span className="text-sm font-medium text-main">
+        <div className="bg-surface rounded-xl border border-border-main overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left rtl:text-right">
+              <thead className="text-xs text-secondary uppercase bg-gray-50 dark:bg-gray-800/50 border-b border-border-main">
+                <tr>
+                  <th scope="col" className="px-6 py-4">{t("movements.table.type") || "نوع الحركة"}</th>
+                  <th scope="col" className="px-6 py-4">{t("movements.table.product") || "المنتج"}</th>
+                  <th scope="col" className="px-6 py-4">{t("movements.table.branch") || "الفرع"}</th>
+                  <th scope="col" className="px-6 py-4">{t("movements.table.reference") || "المرجع"}</th>
+                  <th scope="col" className="px-6 py-4">{t("movements.table.date") || "التاريخ"}</th>
+                  <th scope="col" className="px-6 py-4">{t("movements.table.user") || "المستخدم"}</th>
+                  <th scope="col" className="px-6 py-4 text-center">{t("movements.table.quantity") || "الكمية"}</th>
+                  <th scope="col" className="px-6 py-4 text-center">{t("movements.table.actions") || "إجراءات"}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredMovements.map((movement: StockMovement, index: number) => (
+                  <tr key={movement.id} className="border-b border-border-main last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {getMovementBadge(movement.movement_type, movement.movement_type_display)}
+                    </td>
+                    <td className="px-6 py-4 font-medium text-main">
                       {movement.stock_info?.product_name}
-                    </span>
-                    <span className="text-xs text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">
-                      {movement.stock_info?.branch_name}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-xs text-secondary">
-                    <div className="flex items-center gap-1">
-                      <Calendar size={12} />
-                      {formatDate(movement.created_at)}
-                    </div>
-                    {movement.created_by_name && (
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs text-secondary bg-secondary/10 px-2 py-1 rounded-full">
+                        {movement.stock_info?.branch_name}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-mono text-secondary">
+                      {movement.reference_number ? (
+                        <button
+                          onClick={() => setSearchQuery(movement.reference_number)}
+                          className="hover:text-primary transition-colors hover:underline"
+                          title={t("movements.filterByRef")}
+                        >
+                          {movement.reference_number}
+                        </button>
+                      ) : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-secondary">
                       <div className="flex items-center gap-1">
-                        <User size={12} />
-                        {movement.created_by_name}
+                        <Calendar size={12} />
+                        {formatDate(movement.created_at)}
                       </div>
-                    )}
-                    {movement.reference_number && (
-                      <button
-                        onClick={() =>
-                          setSearchQuery(movement.reference_number)
-                        }
-                        className="font-mono bg-surface border px-1 rounded hover:bg-primary/10 hover:text-primary transition-colors"
-                        title={t("movements.filterByRef")}
-                      >
-                        {movement.reference_number}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* Values */}
-                <div className="flex flex-row md:flex-col items-center md:items-end justify-between gap-4">
-                  <div className="text-2xl font-bold">
-                    {formatQuantity(movement.quantity)}
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/dashboard/stock-management/movements/${movement.id}`}
-                      className="p-2 text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                      title={t("movements.view")}
-                    >
-                      <Eye size={18} />
-                    </Link>
-                    <Link
-                      href={`/dashboard/stock-management/movements/${movement.id}/edit`}
-                      className="p-2 text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                      title={t("movements.edit")}
-                    >
-                      <Edit2 size={18} />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
-          ))}
+                    </td>
+                    <td className="px-6 py-4 text-secondary">
+                      {movement.created_by_name ? (
+                        <div className="flex items-center gap-1">
+                          <User size={12} />
+                          {movement.created_by_name}
+                        </div>
+                      ) : "-"}
+                    </td>
+                    <td className="px-6 py-4 text-center text-lg font-bold">
+                      {formatQuantity(movement.quantity)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        <Link
+                          href={`/dashboard/stock-management/movements/${movement.id}`}
+                          className="p-1.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                          title={t("movements.view")}
+                        >
+                          <Eye size={16} />
+                        </Link>
+                        <Link
+                          href={`/dashboard/stock-management/movements/${movement.id}/edit`}
+                          className="p-1.5 text-secondary hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                          title={t("movements.edit")}
+                        >
+                          <Edit2 size={16} />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

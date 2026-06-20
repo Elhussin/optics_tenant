@@ -25,6 +25,7 @@ import type {
   IncomeStatement,
   BalanceSheet,
 } from "../types/accounting.types";
+import { RevenueExpenseChart, AssetDistributionChart } from "./AccountingCharts";
 
 // Trial Balance Card
 export function TrialBalanceCard({ data }: { data: TrialBalance }) {

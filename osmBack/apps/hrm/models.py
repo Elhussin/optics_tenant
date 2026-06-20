@@ -43,6 +43,12 @@ class Employee(BaseModel):
     # CHANGED: Renamed department_id -> department
     department = models.ForeignKey(
         Department, on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Department'))
+    branches = models.ManyToManyField(
+        'branches.Branch', blank=True, related_name='employees', verbose_name=_('Branches')
+    )
+    is_main_office = models.BooleanField(
+        default=False, verbose_name=_('Is Main Office')
+    )
     position = models.CharField(
         max_length=100, choices=Position, default='employee', verbose_name=_('Position'))
     salary = models.DecimalField(
@@ -128,6 +134,11 @@ class Attendance(BaseModel):
 
 
 class Payroll(BaseModel):
+    STATUS_CHOICES = [
+        ('draft', _('Draft')),
+        ('approved', _('Approved')),
+        ('paid', _('Paid')),
+    ]
     employee = models.ForeignKey(
         Employee, on_delete=models.CASCADE, related_name="payrolls", verbose_name=_('Employee'))
     month = models.CharField(max_length=20, verbose_name=_(
@@ -140,6 +151,13 @@ class Payroll(BaseModel):
         max_digits=10, decimal_places=2, default=0, verbose_name=_('Deductions'))
     net_salary = models.DecimalField(
         max_digits=10, decimal_places=2, blank=True, null=True, verbose_name=_('Net Salary'))
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default='draft', verbose_name=_('Status')
+    )
+    journal_entry = models.ForeignKey(
+        'accounting.GeneralJournal', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='payroll', verbose_name=_('Journal Entry')
+    )
 
     def save(self, *args, **kwargs):
         self.net_salary = self.basic_salary + self.bonuses - self.deductions

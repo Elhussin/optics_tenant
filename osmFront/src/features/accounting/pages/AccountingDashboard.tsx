@@ -31,6 +31,11 @@ import {
   useJournalEntries,
   useFinancialReports,
 } from "../hooks/useAccounting";
+import {
+  RevenueExpenseChart,
+  AssetDistributionChart,
+} from "../components/AccountingCharts";
+import { AccountingAlertsWidget } from "../components/AccountingAlertsWidget";
 
 // Premium Quick Stats Card
 interface StatCardProps {
@@ -337,6 +342,49 @@ export function AccountingDashboard() {
           delay={300}
         />
       </div>
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 rounded-2xl shadow-lg p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            الإيرادات والمصروفات
+          </h2>
+          <RevenueExpenseChart
+            data={[
+              { month: "يناير", revenue: 40000, expenses: 24000 },
+              { month: "فبراير", revenue: 30000, expenses: 13980 },
+              { month: "مارس", revenue: 20000, expenses: 9800 },
+              { month: "أبريل", revenue: 27800, expenses: 3908 },
+              { month: "مايو", revenue: 18900, expenses: 4800 },
+              { month: "يونيو", revenue: 23900, expenses: 3800 },
+            ]}
+          />
+        </div>
+        <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 rounded-2xl shadow-lg p-6">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+            توزيع الأصول
+          </h2>
+          <AssetDistributionChart
+            data={[
+              {
+                name: "النقدية",
+                value: parseFloat(stats.totalAssets) * 0.4 || 400,
+              },
+              {
+                name: "المخزون",
+                value: parseFloat(stats.totalAssets) * 0.3 || 300,
+              },
+              {
+                name: "الذمم المدينة",
+                value: parseFloat(stats.totalAssets) * 0.2 || 300,
+              },
+              {
+                name: "أصول ثابتة",
+                value: parseFloat(stats.totalAssets) * 0.1 || 200,
+              },
+            ]}
+          />
+        </div>
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -439,6 +487,8 @@ export function AccountingDashboard() {
               </div>
             )}
           </div>
+
+          <AccountingAlertsWidget unpostedCount={unpostedCount} />
         </div>
       </div>
 
@@ -459,7 +509,7 @@ export function AccountingDashboard() {
             { type: "cogs", label: "تكلفة البضاعة", count: 0, color: "pink" },
           ].map((item) => {
             const count = accounts.filter(
-              (a) => a.account_type === item.type,
+              (a) => a.account_type === item.type
             ).length;
             const colorMap: Record<string, string> = {
               blue: "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400",

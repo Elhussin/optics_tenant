@@ -40,19 +40,28 @@ def confirm_invoice(invoice):
     # invoice.tax_snapshot = ...
 
     # 2. Stock Movement
-    # Determine movement type based on Invoice Type Code
-    # This is a simplification. Ideally InvoiceType has 'stock_behavior' field.
-    # We assume 'SALE' and 'RETURN' codes or similar convention.
+    # Determine movement type based on InvoiceType action_type
     movement_type = None
     factor = 0
 
-    code = invoice.invoice_type.code.upper()
-    if 'SALE' in code or 'INV' in code:
-        movement_type = 'sale'
-        factor = -1
-    elif 'RET' in code or 'PUR' in code:  # Return or Purchase ?? logic needs to be strict
-        movement_type = 'return'  # Customer return
+    action_type = invoice.invoice_type.action_type
+    if action_type == 'sale':
+        # If invoice is linked to an order, the order handles physical stock movement upon delivery
+        if invoice.order_id:
+            movement_type = None
+            factor = 0
+        else:
+            movement_type = 'sale'
+            factor = -1
+    elif action_type == 'purchase':
+        movement_type = 'purchase'
         factor = 1
+    elif action_type == 'return_sale':
+        movement_type = 'return'
+        factor = 1
+    elif action_type == 'return_purchase':
+        movement_type = 'return_to_supplier'
+        factor = -1
 
     if movement_type:
         for item in invoice.items.select_related('product_variant'):
@@ -62,24 +71,37 @@ def confirm_invoice(invoice):
             ).first()
 
             if stock:
+                # factor determines if we add or remove stock
+                # quantity is always positive in the item
                 quantity_delta = item.quantity * factor
-
-                # Check sufficient stock for sales
+                
+                # Check sufficient stock for outgoing movements (sale, return_to_supplier)
                 if factor < 0 and stock.available_quantity < item.quantity:
                     raise ValidationError(
                         _("Not enough stock for {0}").format(item.product_variant))
 
                 before = stock.quantity_in_stock
                 stock.quantity_in_stock += quantity_delta
+                
+                # Update cost for purchases
+                if action_type == 'purchase' and item.unit_price > 0:
+                    stock.last_cost = item.unit_price
+                    # simple average cost recalculation
+                    total_value = (before * stock.average_cost) + (item.quantity * item.unit_price)
+                    if stock.quantity_in_stock > 0:
+                        stock.average_cost = total_value / stock.quantity_in_stock
+
                 stock.save()
 
                 StockMovement.objects.create(
                     stock=stock,
                     movement_type=movement_type,
-                    quantity=quantity_delta,
+                    quantity=abs(quantity_delta), # store positive quantity
                     quantity_before=before,
                     quantity_after=stock.quantity_in_stock,
                     reference_number=invoice.invoice_number,
+                    invoice=invoice,
+                    cost_per_unit=item.unit_price if action_type == 'purchase' else stock.average_cost,
                     notes=_("Invoice {0}").format(invoice.invoice_number),
                 )
 
@@ -87,8 +109,27 @@ def confirm_invoice(invoice):
     invoice.status = 'confirmed'
     invoice.confirmed_at = timezone.now()
 
+    # Generate final ZATCA tax number upon confirmation
+    from apps.sales.utils import generate_serial_number
+    if not invoice.zatca_tax_number:
+        invoice.zatca_tax_number = generate_serial_number(
+            invoice.__class__, 'TAX', 'zatca_tax_number'
+        )
+
     # 4. Accounting Entries (Now has access to confirmed_at)
     create_invoice_journal_entry(invoice)
 
     # 5. Save Changes
     invoice.save()
+    
+    # ---------------------------------------------------------
+    # ZATCA INTEGRATION POINT (Phase 2)
+    # ---------------------------------------------------------
+    # Once the ZATCA phase is activated, call the ZATCA service here.
+    # Example:
+    # try:
+    #     zatca_service.clear_or_report_invoice(invoice)
+    # except ZATCAError as e:
+    #     # Do not revert the invoice, just log it. ZATCA allows 24h for B2C reporting.
+    #     log_zatca_error(e)
+    # ---------------------------------------------------------

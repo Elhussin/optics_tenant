@@ -25,9 +25,26 @@ class Branch(BaseModel):
         choices=BRANCH_CHOICES,
         verbose_name=_('Branch Type')
     )
-    country = models.TextField(blank=True, verbose_name=_('Country'))
+    country = models.CharField(max_length=100, default='Saudi Arabia', verbose_name=_('Country'))
     city = models.CharField(max_length=100, blank=True, verbose_name=_('City'))
-    address = models.TextField(blank=True, verbose_name=_('Address'))
+    
+    # ZATCA Phase 2 National Address Fields
+    building_number = models.CharField(max_length=20, blank=True, verbose_name=_('Building Number'))
+    street_name = models.CharField(max_length=200, blank=True, verbose_name=_('Street Name'))
+    district = models.CharField(max_length=100, blank=True, verbose_name=_('District'))
+    postal_code = models.CharField(max_length=20, blank=True, verbose_name=_('Postal Code'))
+    additional_number = models.CharField(max_length=20, blank=True, verbose_name=_('Additional Number'))
+    
+    # Legacy address field (kept for backward compatibility or simple display)
+    address = models.TextField(blank=True, verbose_name=_('Full Address (Legacy)'))
+    
+    # Legal & Tax Information
+    cr_number = models.CharField(max_length=50, blank=True, verbose_name=_('CR Number (Sub)'))
+    tax_number = models.CharField(max_length=50, blank=True, verbose_name=_('Tax Number (VAT)'))
+    
+    # POS Receipt Configurations
+    receipt_header = models.TextField(blank=True, verbose_name=_('Receipt Header'), help_text=_('Text printed at the top of the receipt'))
+    receipt_footer = models.TextField(blank=True, verbose_name=_('Receipt Footer'), help_text=_('Text printed at the bottom (e.g. Return Policy)'))
     phone = models.CharField(max_length=20, blank=True,
                              verbose_name=_('Phone'))
     email = models.EmailField(blank=True, verbose_name=_('Email'))

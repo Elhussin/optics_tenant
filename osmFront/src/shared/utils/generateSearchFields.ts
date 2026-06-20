@@ -1,5 +1,4 @@
-
-import { endpoints } from '@/src/shared/api/schemas';
+import { endpoints } from "@/src/shared/api/schemas";
 import { SearchField } from '@/src/shared/types/search';
 import { formatLabel} from './cardViewHelper'
 
@@ -22,7 +21,7 @@ export function generateSearchFieldsFromEndpoint(
   alias: string,
   labels?: Record<string, string>
 ): SearchField[] {
-  const endpoint = endpoints.find((e) => e.alias === alias);
+  const endpoint: any = endpoints.find((e: any) => e.alias === alias);
   if (!endpoint || !("parameters" in endpoint) || !Array.isArray(endpoint.parameters)) {
     return [];
   }

@@ -127,36 +127,42 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        stock = validated_data['stock']
+        from django.db import transaction
+        from apps.products.models import Stock
+
+        stock_instance = validated_data['stock']
         movement_type = validated_data['movement_type']
         quantity = validated_data['quantity']
 
-        # Calculate quantities before and after
-        quantity_before = stock.quantity_in_stock
-
-        # Determine actual quantity (positive or negative)
-        # adjustment can be positive (add) or negative (subtract)
-        if movement_type == 'adjustment':
-            # For adjustment: use value as is (positive for addition, negative for subtraction)
-            actual_quantity = quantity
-            quantity_after = quantity_before + actual_quantity
-        elif movement_type in ['purchase', 'transfer_in', 'return']:
-            actual_quantity = abs(quantity)
-            quantity_after = quantity_before + actual_quantity
-        else:  # sale, transfer_out, damage, reserve
-            actual_quantity = -abs(quantity)
-            quantity_after = quantity_before + actual_quantity
-
-        validated_data['quantity'] = actual_quantity
-        validated_data['quantity_before'] = quantity_before
-        validated_data['quantity_after'] = max(0, quantity_after)
-
-        # Add user who created the movement
-        request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-            validated_data['created_by'] = request.user
-
         with transaction.atomic():
+            # Lock the stock row for update to prevent race conditions
+            stock = Stock.objects.select_for_update().get(id=stock_instance.id)
+
+            # Calculate quantities before and after based on the locked row
+            quantity_before = stock.quantity_in_stock
+
+            # Determine actual quantity (positive or negative)
+            # adjustment can be positive (add) or negative (subtract)
+            if movement_type == 'adjustment':
+                # For adjustment: use value as is (positive for addition, negative for subtraction)
+                actual_quantity = quantity
+                quantity_after = quantity_before + actual_quantity
+            elif movement_type in ['purchase', 'transfer_in', 'return']:
+                actual_quantity = abs(quantity)
+                quantity_after = quantity_before + actual_quantity
+            else:  # sale, transfer_out, damage, reserve
+                actual_quantity = -abs(quantity)
+                quantity_after = quantity_before + actual_quantity
+
+            validated_data['quantity'] = actual_quantity
+            validated_data['quantity_before'] = quantity_before
+            validated_data['quantity_after'] = max(0, quantity_after)
+
+            # Add user who created the movement
+            request = self.context.get('request')
+            if request and hasattr(request, 'user'):
+                validated_data['created_by'] = request.user
+
             # Update average cost for purchase (BEFORE updating quantity)
             if movement_type == 'purchase' and validated_data.get('cost_per_unit', 0) > 0:
                 from apps.products.services.inventory_service import update_stock_average_cost
@@ -168,6 +174,9 @@ class StockMovementCreateSerializer(serializers.ModelSerializer):
             # Update stock quantity
             stock.quantity_in_stock = max(0, quantity_after)
             stock.save()
+
+            # Assign the locked stock back to validated_data for the movement creation
+            validated_data['stock'] = stock
 
             return super().create(validated_data)
 

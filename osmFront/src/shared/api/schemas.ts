@@ -1,41 +1,6 @@
 import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
-const CategoryTypeEnum = z.enum(["income", "expense"]);
-const AccountingCategory = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(100),
-    category_type: CategoryTypeEnum,
-    parent: z.number().int().nullish(),
-    description: z.string().nullish(),
-  })
-  .passthrough();
-const PaginatedAccountingCategoryList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(AccountingCategory),
-  })
-  .passthrough();
-const AccountingCategoryRequest = z
-  .object({
-    name: z.string().min(1).max(100),
-    category_type: CategoryTypeEnum,
-    parent: z.number().int().nullish(),
-    description: z.string().nullish(),
-  })
-  .passthrough();
-const PatchedAccountingCategoryRequest = z
-  .object({
-    name: z.string().min(1).max(100),
-    category_type: CategoryTypeEnum,
-    parent: z.number().int().nullable(),
-    description: z.string().nullable(),
-  })
-  .partial()
-  .passthrough();
 const AccountTypeEnum = z.enum([
   "asset",
   "liability",
@@ -169,40 +134,6 @@ const PaginatedChartOfAccountsTreeList = z
     previous: z.string().url().nullish(),
     results: z.array(ChartOfAccountsTree),
   })
-  .passthrough();
-const FinancialPeriod = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(50),
-    start_date: z.string(),
-    end_date: z.string(),
-    is_closed: z.boolean().optional(),
-  })
-  .passthrough();
-const PaginatedFinancialPeriodList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(FinancialPeriod),
-  })
-  .passthrough();
-const FinancialPeriodRequest = z
-  .object({
-    name: z.string().min(1).max(50),
-    start_date: z.string(),
-    end_date: z.string(),
-    is_closed: z.boolean().optional(),
-  })
-  .passthrough();
-const PatchedFinancialPeriodRequest = z
-  .object({
-    name: z.string().min(1).max(50),
-    start_date: z.string(),
-    end_date: z.string(),
-    is_closed: z.boolean(),
-  })
-  .partial()
   .passthrough();
 const SourceTypeEnum = z.enum([
   "manual",
@@ -510,43 +441,6 @@ const TrialBalanceResponse = z
     totals: TrialBalanceTotals,
   })
   .passthrough();
-const Tax = z
-  .object({
-    id: z.number().int(),
-    name: z.string().max(100),
-    rate: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
-    effective_date: z.string(),
-    is_active: z.boolean().optional(),
-    description: z.string().nullish(),
-  })
-  .passthrough();
-const PaginatedTaxList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(Tax),
-  })
-  .passthrough();
-const TaxRequest = z
-  .object({
-    name: z.string().min(1).max(100),
-    rate: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
-    effective_date: z.string(),
-    is_active: z.boolean().optional(),
-    description: z.string().nullish(),
-  })
-  .passthrough();
-const PatchedTaxRequest = z
-  .object({
-    name: z.string().min(1).max(100),
-    rate: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
-    effective_date: z.string(),
-    is_active: z.boolean(),
-    description: z.string().nullable(),
-  })
-  .partial()
-  .passthrough();
 const BranchUsers = z
   .object({
     id: z.number().int(),
@@ -593,9 +487,18 @@ const Branch = z
     name: z.string().max(100),
     branch_code: z.string(),
     branch_type: BranchTypeEnum,
-    country: z.string().optional(),
+    country: z.string().max(100).optional(),
     city: z.string().max(100).optional(),
+    building_number: z.string().max(20).optional(),
+    street_name: z.string().max(200).optional(),
+    district: z.string().max(100).optional(),
+    postal_code: z.string().max(20).optional(),
+    additional_number: z.string().max(20).optional(),
     address: z.string().optional(),
+    cr_number: z.string().max(50).optional(),
+    tax_number: z.string().max(50).optional(),
+    receipt_header: z.string().optional(),
+    receipt_footer: z.string().optional(),
     phone: z.string().max(20).optional(),
     email: z.string().max(254).email().optional(),
     is_main_branch: z.boolean().optional(),
@@ -616,9 +519,18 @@ const BranchRequest = z
     is_active: z.boolean().optional(),
     name: z.string().min(1).max(100),
     branch_type: BranchTypeEnum,
-    country: z.string().optional(),
+    country: z.string().min(1).max(100).optional(),
     city: z.string().max(100).optional(),
+    building_number: z.string().max(20).optional(),
+    street_name: z.string().max(200).optional(),
+    district: z.string().max(100).optional(),
+    postal_code: z.string().max(20).optional(),
+    additional_number: z.string().max(20).optional(),
     address: z.string().optional(),
+    cr_number: z.string().max(50).optional(),
+    tax_number: z.string().max(50).optional(),
+    receipt_header: z.string().optional(),
+    receipt_footer: z.string().optional(),
     phone: z.string().max(20).optional(),
     email: z.string().max(254).email().optional(),
     is_main_branch: z.boolean().optional(),
@@ -631,9 +543,18 @@ const PatchedBranchRequest = z
     is_active: z.boolean(),
     name: z.string().min(1).max(100),
     branch_type: BranchTypeEnum,
-    country: z.string(),
+    country: z.string().min(1).max(100),
     city: z.string().max(100),
+    building_number: z.string().max(20),
+    street_name: z.string().max(200),
+    district: z.string().max(100),
+    postal_code: z.string().max(20),
+    additional_number: z.string().max(20),
     address: z.string(),
+    cr_number: z.string().max(50),
+    tax_number: z.string().max(50),
+    receipt_header: z.string(),
+    receipt_footer: z.string(),
     phone: z.string().max(20),
     email: z.string().max(254).email(),
     is_main_branch: z.boolean(),
@@ -683,6 +604,123 @@ const PatchedShiftRequest = z
     notes: z.string().nullable(),
     branch: z.number().int(),
     employee: z.number().int(),
+  })
+  .partial()
+  .passthrough();
+const ContactUs = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    email: z.string().max(254).email(),
+    phone: z.string().max(20),
+    name: z.string().max(100),
+    message: z.string().max(500),
+  })
+  .passthrough();
+const PaginatedContactUsList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(ContactUs),
+  })
+  .passthrough();
+const ContactUsRequest = z
+  .object({
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    email: z.string().min(1).max(254).email(),
+    phone: z.string().min(1).max(20),
+    name: z.string().min(1).max(100),
+    message: z.string().min(1).max(500),
+  })
+  .passthrough();
+const PatchedContactUsRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    email: z.string().min(1).max(254).email(),
+    phone: z.string().min(1).max(20),
+    name: z.string().min(1).max(100),
+    message: z.string().min(1).max(500),
+  })
+  .partial()
+  .passthrough();
+const DefaultLanguageEnum = z.enum(["en", "ar"]);
+const LanguageEnum = z.enum(["en", "ar"]);
+const PageContent = z
+  .object({
+    language: LanguageEnum,
+    title: z.string().max(200),
+    content: z.string().optional(),
+    seo_title: z.string().max(200).optional(),
+    meta_description: z.string().max(500).optional(),
+    meta_keywords: z.string().optional(),
+  })
+  .passthrough();
+const Page = z
+  .object({
+    id: z.number().int(),
+    default_language: DefaultLanguageEnum.optional(),
+    is_published: z.boolean().optional(),
+    slug: z
+      .string()
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    is_deleted: z.boolean().optional(),
+    is_active: z.boolean().optional(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    translations: z.array(PageContent),
+  })
+  .passthrough();
+const PaginatedPageList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(Page),
+  })
+  .passthrough();
+const PageContentRequest = z
+  .object({
+    language: LanguageEnum,
+    title: z.string().min(1).max(200),
+    content: z.string().optional(),
+    seo_title: z.string().max(200).optional(),
+    meta_description: z.string().max(500).optional(),
+    meta_keywords: z.string().optional(),
+  })
+  .passthrough();
+const PageRequest = z
+  .object({
+    default_language: DefaultLanguageEnum.optional(),
+    is_published: z.boolean().optional(),
+    slug: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    is_deleted: z.boolean().optional(),
+    is_active: z.boolean().optional(),
+    translations: z.array(PageContentRequest),
+  })
+  .passthrough();
+const PatchedPageRequest = z
+  .object({
+    default_language: DefaultLanguageEnum,
+    is_published: z.boolean(),
+    slug: z
+      .string()
+      .min(1)
+      .max(200)
+      .regex(/^[-a-zA-Z0-9_]+$/),
+    is_deleted: z.boolean(),
+    is_active: z.boolean(),
+    translations: z.array(PageContentRequest),
   })
   .partial()
   .passthrough();
@@ -1056,15 +1094,7 @@ const PatchedCustomerPartnerLinkRequest = z
   })
   .partial()
   .passthrough();
-const CustomerTypeEnum = z.enum([
-  "individual",
-  "company",
-  "agent",
-  "supplier",
-  "wholesaler",
-  "retailer",
-  "distributor",
-]);
+const CustomerTypeEnum = z.enum(["individual", "company"]);
 const PreferredContactEnum = z.enum(["email", "phone", "sms"]);
 const Customer = z
   .object({
@@ -2059,6 +2089,7 @@ const PatchedNotificationRequest = z
   })
   .partial()
   .passthrough();
+const PayrollStatusEnum = z.enum(["draft", "approved", "paid"]);
 const Payroll = z
   .object({
     id: z.number().int(),
@@ -2080,7 +2111,9 @@ const Payroll = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
+    status: PayrollStatusEnum.optional(),
     employee: z.number().int(),
+    journal_entry: z.number().int().nullish(),
   })
   .passthrough();
 const PaginatedPayrollList = z
@@ -2108,7 +2141,9 @@ const PayrollRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
+    status: PayrollStatusEnum.optional(),
     employee: z.number().int(),
+    journal_entry: z.number().int().nullish(),
   })
   .passthrough();
 const PatchedPayrollRequest = z
@@ -2122,7 +2157,9 @@ const PatchedPayrollRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
+    status: PayrollStatusEnum,
     employee: z.number().int(),
+    journal_entry: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
@@ -2296,7 +2333,6 @@ const SyncCustomer = z
     first_name: z.string(),
     last_name: z.string(),
     phone: z.string(),
-    pricing_tier: z.string(),
     updated_at: z.string().datetime({ offset: true }),
   })
   .passthrough();
@@ -2335,6 +2371,7 @@ const User = z
     client: z.number().int().nullable(),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
+    is_superuser: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
     deleted_at: z.string().datetime({ offset: true }).nullable(),
   })
@@ -3013,6 +3050,7 @@ const PrescriptionRecord = z
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
+    dependent_name: z.string().max(100).nullish(),
     right_sphere: z.union([RightSphereEnum, BlankEnum, NullEnum]).nullish(),
     right_cylinder: z.union([RightCylinderEnum, BlankEnum, NullEnum]).nullish(),
     right_axis: z.number().gte(0).lte(180).nullish(),
@@ -3048,6 +3086,7 @@ const PaginatedPrescriptionRecordList = z
 const PrescriptionRecordRequest = z
   .object({
     is_active: z.boolean().optional(),
+    dependent_name: z.string().max(100).nullish(),
     right_sphere: z.union([RightSphereEnum, BlankEnum, NullEnum]).nullish(),
     right_cylinder: z.union([RightCylinderEnum, BlankEnum, NullEnum]).nullish(),
     right_axis: z.number().gte(0).lte(180).nullish(),
@@ -3075,6 +3114,7 @@ const PrescriptionRecordRequest = z
 const PatchedPrescriptionRecordRequest = z
   .object({
     is_active: z.boolean(),
+    dependent_name: z.string().max(100).nullable(),
     right_sphere: z.union([RightSphereEnum, BlankEnum, NullEnum]).nullable(),
     right_cylinder: z
       .union([RightCylinderEnum, BlankEnum, NullEnum])
@@ -3953,6 +3993,8 @@ const StockMovement = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     stock: z.number().int(),
+    invoice: z.number().int().nullish(),
+    purchase_order: z.number().int().nullish(),
     created_by: z.number().int().nullish(),
   })
   .passthrough();
@@ -4002,6 +4044,8 @@ const StockMovementRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     stock: z.number().int(),
+    invoice: z.number().int().nullish(),
+    purchase_order: z.number().int().nullish(),
     created_by: z.number().int().nullish(),
   })
   .passthrough();
@@ -4014,6 +4058,8 @@ const PatchedStockMovementRequest = z
     notes: z.string(),
     cost_per_unit: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     stock: z.number().int(),
+    invoice: z.number().int().nullable(),
+    purchase_order: z.number().int().nullable(),
     created_by: z.number().int().nullable(),
   })
   .partial()
@@ -4546,8 +4592,18 @@ const InvoiceItem = z
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
-    unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
-    total_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    discount_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,4})?$/)
+      .optional(),
+    tax_percent: z
+      .string()
+      .regex(/^-?\d{0,1}(?:\.\d{0,4})?$/)
+      .optional(),
+    tax_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    subtotal: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    total_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
     product_variant: z.number().int().nullish(),
     invoice: z.number().int(),
   })
@@ -4564,6 +4620,10 @@ const InvoiceStatusEnum = z.enum([
   "partially_paid",
   "overdue",
   "confirmed",
+  "pending_clearance",
+  "cleared",
+  "rejected",
+  "reported",
 ]);
 const Invoice = z
   .object({
@@ -4589,7 +4649,19 @@ const Invoice = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
+    patient_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    partner_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     invoice_number: z.string(),
+    invoice_uuid: z.string().uuid().nullable(),
+    zatca_tax_number: z.string().nullable(),
+    previous_invoice_hash: z.string().nullable(),
+    current_invoice_hash: z.string().nullable(),
     invoice_type_code: InvoiceTypeCodeEnum.optional(),
     pricing_policy_snapshot: z.unknown(),
     tax_snapshot: z.unknown(),
@@ -4605,10 +4677,12 @@ const Invoice = z
     notes: z.string().nullish(),
     confirmed_at: z.string().datetime({ offset: true }).nullable(),
     branch: z.number().int().nullish(),
-    customer: z.number().int(),
+    customer: z.number().int().nullish(),
+    partner: z.number().int().nullish(),
     invoice_type: z.number().int().nullish(),
     created_by: z.number().int().nullable(),
     order: z.number().int().nullish(),
+    purchase_order: z.number().int().nullish(),
   })
   .passthrough();
 const PaginatedInvoiceList = z
@@ -4623,7 +4697,15 @@ const InvoiceItemRequest = z
   .object({
     is_active: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
-    unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    discount_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,4})?$/)
+      .optional(),
+    tax_percent: z
+      .string()
+      .regex(/^-?\d{0,1}(?:\.\d{0,4})?$/)
+      .optional(),
     product_variant: z.number().int().nullish(),
   })
   .passthrough();
@@ -4643,6 +4725,14 @@ const InvoiceRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
+    patient_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    partner_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     invoice_type_code: InvoiceTypeCodeEnum.optional(),
     currency: z.string().min(1).max(3).optional(),
     exchange_rate: z
@@ -4652,9 +4742,11 @@ const InvoiceRequest = z
     due_date: z.string().nullish(),
     notes: z.string().nullish(),
     branch: z.number().int().nullish(),
-    customer: z.number().int(),
+    customer: z.number().int().nullish(),
+    partner: z.number().int().nullish(),
     invoice_type: z.number().int().nullish(),
     order: z.number().int().nullish(),
+    purchase_order: z.number().int().nullish(),
   })
   .passthrough();
 const PatchedInvoiceRequest = z
@@ -4664,15 +4756,19 @@ const PatchedInvoiceRequest = z
     tax_rate: z.string().regex(/^-?\d{0,1}(?:\.\d{0,4})?$/),
     discount_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     paid_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    partner_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     invoice_type_code: InvoiceTypeCodeEnum,
     currency: z.string().min(1).max(3),
     exchange_rate: z.string().regex(/^-?\d{0,4}(?:\.\d{0,6})?$/),
     due_date: z.string().nullable(),
     notes: z.string().nullable(),
     branch: z.number().int().nullable(),
-    customer: z.number().int(),
+    customer: z.number().int().nullable(),
+    partner: z.number().int().nullable(),
     invoice_type: z.number().int().nullable(),
     order: z.number().int().nullable(),
+    purchase_order: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
@@ -4700,8 +4796,18 @@ const OrderItem = z
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
-    unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
-    total_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    discount_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,4})?$/)
+      .optional(),
+    tax_percent: z
+      .string()
+      .regex(/^-?\d{0,1}(?:\.\d{0,4})?$/)
+      .optional(),
+    tax_amount: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    subtotal: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    total_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
     product_variant: z.number().int().nullish(),
     order: z.number().int(),
     prescription: z.number().int().nullish(),
@@ -4754,6 +4860,14 @@ const Order = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
+    patient_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    partner_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     order_type: OrderTypeEnum.optional(),
     order_number: z.string(),
     status: OrderStatusEnum.optional(),
@@ -4772,7 +4886,7 @@ const Order = z
     delivered_at: z.string().datetime({ offset: true }).nullable(),
     expected_delivery: z.string().datetime({ offset: true }).nullish(),
     branch: z.number().int().nullish(),
-    customer: z.number().int(),
+    customer: z.number().int().nullish(),
     payment_method: z.number().int().nullish(),
     partner: z.number().int().nullish(),
     customer_partner_link: z.number().int().nullish(),
@@ -4791,7 +4905,15 @@ const OrderItemRequest = z
   .object({
     is_active: z.boolean().optional(),
     quantity: z.number().int().gte(0).lte(2147483647).optional(),
-    unit_price: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    unit_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,4})?$/),
+    discount_amount: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,4})?$/)
+      .optional(),
+    tax_percent: z
+      .string()
+      .regex(/^-?\d{0,1}(?:\.\d{0,4})?$/)
+      .optional(),
     product_variant: z.number().int().nullish(),
     prescription: z.number().int().nullish(),
   })
@@ -4812,6 +4934,14 @@ const OrderRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
+    patient_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    partner_amount: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     order_type: OrderTypeEnum.optional(),
     status: OrderStatusEnum.optional(),
     payment_status: PaymentStatusEnum.optional(),
@@ -4827,7 +4957,7 @@ const OrderRequest = z
     internal_notes: z.string().optional(),
     expected_delivery: z.string().datetime({ offset: true }).nullish(),
     branch: z.number().int().nullish(),
-    customer: z.number().int(),
+    customer: z.number().int().nullish(),
     payment_method: z.number().int().nullish(),
     partner: z.number().int().nullish(),
     customer_partner_link: z.number().int().nullish(),
@@ -4858,6 +4988,8 @@ const PatchedOrderRequest = z
     tax_rate: z.string().regex(/^-?\d{0,1}(?:\.\d{0,4})?$/),
     discount_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     paid_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    patient_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    partner_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
     order_type: OrderTypeEnum,
     status: OrderStatusEnum,
     payment_status: PaymentStatusEnum,
@@ -4867,7 +4999,7 @@ const PatchedOrderRequest = z
     internal_notes: z.string(),
     expected_delivery: z.string().datetime({ offset: true }).nullable(),
     branch: z.number().int().nullable(),
-    customer: z.number().int(),
+    customer: z.number().int().nullable(),
     payment_method: z.number().int().nullable(),
     partner: z.number().int().nullable(),
     customer_partner_link: z.number().int().nullable(),
@@ -4898,6 +5030,26 @@ const OrderDeliverResponse = z
   .passthrough();
 const OrderReadyResponse = z
   .object({ status: z.string(), message: z.string() })
+  .passthrough();
+const OrderBulkUpdateStatusRequestStatusEnum = z.enum([
+  "confirmed",
+  "ready",
+  "delivered",
+  "cancelled",
+]);
+const OrderBulkUpdateStatusRequestRequest = z
+  .object({
+    ids: z.array(z.number().int()),
+    status: OrderBulkUpdateStatusRequestStatusEnum,
+  })
+  .passthrough();
+const OrderBulkUpdateStatusResponse = z
+  .object({
+    status: z.string(),
+    message: z.string(),
+    updated_count: z.number().int(),
+    errors: z.array(z.string()),
+  })
   .passthrough();
 const OrderChoicesResponse = z
   .object({
@@ -5855,6 +6007,94 @@ const PatchedRegisterTenantRequest = z
   })
   .partial()
   .passthrough();
+const PublicTenantSettings = z
+  .object({
+    id: z.number().int(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    is_active: z.boolean().optional(),
+    is_deleted: z.boolean().optional(),
+    business_name: z.string().max(255).optional(),
+    description: z.string().optional(),
+    facebook: z.string().max(200).url().optional(),
+    instagram: z.string().max(200).url().optional(),
+    whatsapp: z.string().max(20).optional(),
+    twitter: z.string().max(200).url().optional(),
+    tiktok: z.string().max(200).url().optional(),
+    linkedin: z.string().max(200).url().optional(),
+    phone: z.string().max(20).optional(),
+    email: z.string().max(254).email().optional(),
+    website: z.string().max(200).url().optional(),
+    seo_title: z.string().max(255).optional(),
+    seo_description: z.string().optional(),
+    seo_keywords: z.string().max(255).optional(),
+    address: z.string().max(255).optional(),
+    city: z.string().max(100).optional(),
+    state: z.string().max(100).optional(),
+    postal_code: z.string().max(20).optional(),
+    country: z.string().max(100).optional(),
+  })
+  .passthrough();
+const PaginatedPublicTenantSettingsList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(PublicTenantSettings),
+  })
+  .passthrough();
+const PublicTenantSettingsRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    business_name: z.string().min(1).max(255),
+    description: z.string(),
+    facebook: z.string().max(200).url(),
+    instagram: z.string().max(200).url(),
+    whatsapp: z.string().max(20),
+    twitter: z.string().max(200).url(),
+    tiktok: z.string().max(200).url(),
+    linkedin: z.string().max(200).url(),
+    phone: z.string().max(20),
+    email: z.string().max(254).email(),
+    website: z.string().max(200).url(),
+    seo_title: z.string().max(255),
+    seo_description: z.string(),
+    seo_keywords: z.string().max(255),
+    address: z.string().max(255),
+    city: z.string().max(100),
+    state: z.string().max(100),
+    postal_code: z.string().max(20),
+    country: z.string().max(100),
+  })
+  .partial()
+  .passthrough();
+const PatchedPublicTenantSettingsRequest = z
+  .object({
+    is_active: z.boolean(),
+    is_deleted: z.boolean(),
+    business_name: z.string().min(1).max(255),
+    description: z.string(),
+    facebook: z.string().max(200).url(),
+    instagram: z.string().max(200).url(),
+    whatsapp: z.string().max(20),
+    twitter: z.string().max(200).url(),
+    tiktok: z.string().max(200).url(),
+    linkedin: z.string().max(200).url(),
+    phone: z.string().max(20),
+    email: z.string().max(254).email(),
+    website: z.string().max(200).url(),
+    seo_title: z.string().max(255),
+    seo_description: z.string(),
+    seo_keywords: z.string().max(255),
+    address: z.string().max(255),
+    city: z.string().max(100),
+    state: z.string().max(100),
+    postal_code: z.string().max(20),
+    country: z.string().max(100),
+  })
+  .partial()
+  .passthrough();
 const PaginatedSubscriptionPlanList = z
   .object({
     count: z.number().int(),
@@ -5909,48 +6149,6 @@ const PatchedSubscriptionPlanRequest = z
   })
   .partial()
   .passthrough();
-const ContactUs = z
-  .object({
-    id: z.number().int(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    email: z.string().max(254).email(),
-    phone: z.string().max(20),
-    name: z.string().max(100),
-    message: z.string().max(500),
-  })
-  .passthrough();
-const PaginatedContactUsList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(ContactUs),
-  })
-  .passthrough();
-const ContactUsRequest = z
-  .object({
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    email: z.string().min(1).max(254).email(),
-    phone: z.string().min(1).max(20),
-    name: z.string().min(1).max(100),
-    message: z.string().min(1).max(500),
-  })
-  .passthrough();
-const PatchedContactUsRequest = z
-  .object({
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    email: z.string().min(1).max(254).email(),
-    phone: z.string().min(1).max(20),
-    name: z.string().min(1).max(100),
-    message: z.string().min(1).max(500),
-  })
-  .partial()
-  .passthrough();
 const HealthResponse = z.object({ status: z.string() }).passthrough();
 const LoginRequest = z
   .object({ username: z.string().min(1), password: z.string().min(1) })
@@ -5963,81 +6161,6 @@ const LoginBadRequest = z
 const LoginForbidden = z.object({ detail: z.string() }).passthrough();
 const LogoutResponse = z.object({ detail: z.string() }).passthrough();
 const TokenRefreshError = z.object({ detail: z.string() }).passthrough();
-const DefaultLanguageEnum = z.enum(["en", "ar"]);
-const LanguageEnum = z.enum(["en", "ar"]);
-const PageContent = z
-  .object({
-    language: LanguageEnum,
-    title: z.string().max(200),
-    content: z.string().optional(),
-    seo_title: z.string().max(200).optional(),
-    meta_description: z.string().max(500).optional(),
-    meta_keywords: z.string().optional(),
-  })
-  .passthrough();
-const Page = z
-  .object({
-    id: z.number().int(),
-    default_language: DefaultLanguageEnum.optional(),
-    is_published: z.boolean().optional(),
-    slug: z
-      .string()
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
-    is_deleted: z.boolean().optional(),
-    is_active: z.boolean().optional(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    translations: z.array(PageContent),
-  })
-  .passthrough();
-const PaginatedPageList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(Page),
-  })
-  .passthrough();
-const PageContentRequest = z
-  .object({
-    language: LanguageEnum,
-    title: z.string().min(1).max(200),
-    content: z.string().optional(),
-    seo_title: z.string().max(200).optional(),
-    meta_description: z.string().max(500).optional(),
-    meta_keywords: z.string().optional(),
-  })
-  .passthrough();
-const PageRequest = z
-  .object({
-    default_language: DefaultLanguageEnum.optional(),
-    is_published: z.boolean().optional(),
-    slug: z
-      .string()
-      .min(1)
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
-    is_deleted: z.boolean().optional(),
-    is_active: z.boolean().optional(),
-    translations: z.array(PageContentRequest),
-  })
-  .passthrough();
-const PatchedPageRequest = z
-  .object({
-    default_language: DefaultLanguageEnum,
-    is_published: z.boolean(),
-    slug: z
-      .string()
-      .min(1)
-      .max(200)
-      .regex(/^[-a-zA-Z0-9_]+$/),
-    is_deleted: z.boolean(),
-    is_active: z.boolean(),
-    translations: z.array(PageContentRequest),
-  })
-  .partial()
-  .passthrough();
 const PasswordResetSuccessResponse = z
   .object({ detail: z.string() })
   .passthrough();
@@ -6085,7 +6208,6 @@ const RegisterRequest = z
       .min(8)
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     email: z.string().min(1).email(),
-    role_ids: z.array(z.number().int()).optional(),
   })
   .passthrough();
 const RegisterSuccessResponse = z
@@ -6140,109 +6262,6 @@ const PatchedRoleRequest = z
   })
   .partial()
   .passthrough();
-const TenantSettings = z
-  .object({
-    id: z.number().int(),
-    logo: z.string().url().nullish(),
-    created_at: z.string().datetime({ offset: true }),
-    updated_at: z.string().datetime({ offset: true }),
-    is_active: z.boolean().optional(),
-    is_deleted: z.boolean().optional(),
-    business_name: z.string().max(255).optional(),
-    description: z.string().optional(),
-    facebook: z.string().max(200).url().optional(),
-    instagram: z.string().max(200).url().optional(),
-    whatsapp: z.string().max(20).optional(),
-    twitter: z.string().max(200).url().optional(),
-    tiktok: z.string().max(200).url().optional(),
-    linkedin: z.string().max(200).url().optional(),
-    phone: z.string().max(20).optional(),
-    email: z.string().max(254).email().optional(),
-    website: z.string().max(200).url().optional(),
-    seo_title: z.string().max(255).optional(),
-    seo_description: z.string().optional(),
-    seo_keywords: z.string().max(255).optional(),
-    address: z.string().max(255).optional(),
-    city: z.string().max(100).optional(),
-    state: z.string().max(100).optional(),
-    postal_code: z.string().max(20).optional(),
-    country: z.string().max(100).optional(),
-    bank_name: z.string().max(100).optional(),
-    account_number: z.string().max(100).optional(),
-    iban: z.string().max(100).optional(),
-    swift_code: z.string().max(100).optional(),
-  })
-  .passthrough();
-const PaginatedTenantSettingsList = z
-  .object({
-    count: z.number().int(),
-    next: z.string().url().nullish(),
-    previous: z.string().url().nullish(),
-    results: z.array(TenantSettings),
-  })
-  .passthrough();
-const TenantSettingsRequest = z
-  .object({
-    logo: z.instanceof(File).nullable(),
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    business_name: z.string().min(1).max(255),
-    description: z.string(),
-    facebook: z.string().max(200).url(),
-    instagram: z.string().max(200).url(),
-    whatsapp: z.string().max(20),
-    twitter: z.string().max(200).url(),
-    tiktok: z.string().max(200).url(),
-    linkedin: z.string().max(200).url(),
-    phone: z.string().max(20),
-    email: z.string().max(254).email(),
-    website: z.string().max(200).url(),
-    seo_title: z.string().max(255),
-    seo_description: z.string(),
-    seo_keywords: z.string().max(255),
-    address: z.string().max(255),
-    city: z.string().max(100),
-    state: z.string().max(100),
-    postal_code: z.string().max(20),
-    country: z.string().max(100),
-    bank_name: z.string().max(100),
-    account_number: z.string().max(100),
-    iban: z.string().max(100),
-    swift_code: z.string().max(100),
-  })
-  .partial()
-  .passthrough();
-const PatchedTenantSettingsRequest = z
-  .object({
-    logo: z.instanceof(File).nullable(),
-    is_active: z.boolean(),
-    is_deleted: z.boolean(),
-    business_name: z.string().min(1).max(255),
-    description: z.string(),
-    facebook: z.string().max(200).url(),
-    instagram: z.string().max(200).url(),
-    whatsapp: z.string().max(20),
-    twitter: z.string().max(200).url(),
-    tiktok: z.string().max(200).url(),
-    linkedin: z.string().max(200).url(),
-    phone: z.string().max(20),
-    email: z.string().max(254).email(),
-    website: z.string().max(200).url(),
-    seo_title: z.string().max(255),
-    seo_description: z.string(),
-    seo_keywords: z.string().max(255),
-    address: z.string().max(255),
-    city: z.string().max(100),
-    state: z.string().max(100),
-    postal_code: z.string().max(20),
-    country: z.string().max(100),
-    bank_name: z.string().max(100),
-    account_number: z.string().max(100),
-    iban: z.string().max(100),
-    swift_code: z.string().max(100),
-  })
-  .partial()
-  .passthrough();
 const RefreshTokenResponse = z
   .object({ detail: z.string(), access: z.string() })
   .passthrough();
@@ -6271,6 +6290,7 @@ const UserRequest = z
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     is_active: z.boolean().optional(),
     is_staff: z.boolean().optional(),
+    is_superuser: z.boolean().optional(),
     is_deleted: z.boolean().optional(),
   })
   .passthrough();
@@ -6291,17 +6311,13 @@ const PatchedUserRequest = z
       .regex(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).+$/),
     is_active: z.boolean(),
     is_staff: z.boolean(),
+    is_superuser: z.boolean(),
     is_deleted: z.boolean(),
   })
   .partial()
   .passthrough();
 
 export const schemas = {
-  CategoryTypeEnum,
-  AccountingCategory,
-  PaginatedAccountingCategoryList,
-  AccountingCategoryRequest,
-  PatchedAccountingCategoryRequest,
   AccountTypeEnum,
   AccountSubtypeEnum,
   BlankEnum,
@@ -6314,10 +6330,6 @@ export const schemas = {
   SetupDefaultsResponse,
   ChartOfAccountsTree,
   PaginatedChartOfAccountsTreeList,
-  FinancialPeriod,
-  PaginatedFinancialPeriodList,
-  FinancialPeriodRequest,
-  PatchedFinancialPeriodRequest,
   SourceTypeEnum,
   GeneralJournalList,
   PaginatedGeneralJournalListList,
@@ -6353,10 +6365,6 @@ export const schemas = {
   TrialBalanceAccount,
   TrialBalanceTotals,
   TrialBalanceResponse,
-  Tax,
-  PaginatedTaxList,
-  TaxRequest,
-  PatchedTaxRequest,
   BranchUsers,
   PaginatedBranchUsersList,
   BranchUsersRequest,
@@ -6370,6 +6378,18 @@ export const schemas = {
   PaginatedShiftList,
   ShiftRequest,
   PatchedShiftRequest,
+  ContactUs,
+  PaginatedContactUsList,
+  ContactUsRequest,
+  PatchedContactUsRequest,
+  DefaultLanguageEnum,
+  LanguageEnum,
+  PageContent,
+  Page,
+  PaginatedPageList,
+  PageContentRequest,
+  PageRequest,
+  PatchedPageRequest,
   CSVImportRequest,
   CSVImportResponse,
   CSVImportError,
@@ -6497,6 +6517,7 @@ export const schemas = {
   PaginatedNotificationList,
   NotificationRequest,
   PatchedNotificationRequest,
+  PayrollStatusEnum,
   Payroll,
   PaginatedPayrollList,
   PayrollRequest,
@@ -6694,6 +6715,9 @@ export const schemas = {
   OrderConfirmResponse,
   OrderDeliverResponse,
   OrderReadyResponse,
+  OrderBulkUpdateStatusRequestStatusEnum,
+  OrderBulkUpdateStatusRequestRequest,
+  OrderBulkUpdateStatusResponse,
   OrderChoicesResponse,
   PaymentMethod,
   PaginatedPaymentMethodList,
@@ -6801,13 +6825,13 @@ export const schemas = {
   RegisterTenant,
   PaginatedRegisterTenantList,
   PatchedRegisterTenantRequest,
+  PublicTenantSettings,
+  PaginatedPublicTenantSettingsList,
+  PublicTenantSettingsRequest,
+  PatchedPublicTenantSettingsRequest,
   PaginatedSubscriptionPlanList,
   SubscriptionPlanRequest,
   PatchedSubscriptionPlanRequest,
-  ContactUs,
-  PaginatedContactUsList,
-  ContactUsRequest,
-  PatchedContactUsRequest,
   HealthResponse,
   LoginRequest,
   LoginSuccessResponse,
@@ -6815,14 +6839,6 @@ export const schemas = {
   LoginForbidden,
   LogoutResponse,
   TokenRefreshError,
-  DefaultLanguageEnum,
-  LanguageEnum,
-  PageContent,
-  Page,
-  PaginatedPageList,
-  PageContentRequest,
-  PageRequest,
-  PatchedPageRequest,
   PasswordResetSuccessResponse,
   PasswordResetBadRequest,
   PasswordResetConfirmRequest,
@@ -6840,10 +6856,6 @@ export const schemas = {
   PaginatedRoleList,
   RoleRequest,
   PatchedRoleRequest,
-  TenantSettings,
-  PaginatedTenantSettingsList,
-  TenantSettingsRequest,
-  PatchedTenantSettingsRequest,
   RefreshTokenResponse,
   PaginatedUserList,
   UserRequest,
@@ -6851,134 +6863,6 @@ export const schemas = {
 };
 
 export const endpoints = makeApi([
-  {
-    method: "get",
-    path: "/api/accounting/categories/",
-    alias: "accounting_categories_list",
-    description: `ViewSet for Accounting Categories`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "category_type",
-        type: "Query",
-        schema: z.enum(["expense", "income"]).optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedAccountingCategoryList,
-  },
-  {
-    method: "post",
-    path: "/api/accounting/categories/",
-    alias: "accounting_categories_create",
-    description: `ViewSet for Accounting Categories`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: AccountingCategoryRequest,
-      },
-    ],
-    response: AccountingCategory,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/categories/:id/",
-    alias: "accounting_categories_retrieve",
-    description: `ViewSet for Accounting Categories`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: AccountingCategory,
-  },
-  {
-    method: "put",
-    path: "/api/accounting/categories/:id/",
-    alias: "accounting_categories_update",
-    description: `ViewSet for Accounting Categories`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: AccountingCategoryRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: AccountingCategory,
-  },
-  {
-    method: "patch",
-    path: "/api/accounting/categories/:id/",
-    alias: "accounting_categories_partial_update",
-    description: `ViewSet for Accounting Categories`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedAccountingCategoryRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: AccountingCategory,
-  },
-  {
-    method: "delete",
-    path: "/api/accounting/categories/:id/",
-    alias: "accounting_categories_destroy",
-    description: `ViewSet for Accounting Categories`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/accounting/categories/filter_options/",
-    alias: "accounting_categories_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: AccountingCategory,
-  },
   {
     method: "get",
     path: "/api/accounting/chart-of-accounts/",
@@ -7329,162 +7213,6 @@ export const endpoints = makeApi([
       },
     ],
     response: PaginatedChartOfAccountsTreeList,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/financial-periods/",
-    alias: "accounting_financial_periods_list",
-    description: `ViewSet for Financial Periods`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "end_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_closed",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "start_date",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedFinancialPeriodList,
-  },
-  {
-    method: "post",
-    path: "/api/accounting/financial-periods/",
-    alias: "accounting_financial_periods_create",
-    description: `ViewSet for Financial Periods`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: FinancialPeriodRequest,
-      },
-    ],
-    response: FinancialPeriod,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/financial-periods/:id/",
-    alias: "accounting_financial_periods_retrieve",
-    description: `ViewSet for Financial Periods`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: FinancialPeriod,
-  },
-  {
-    method: "put",
-    path: "/api/accounting/financial-periods/:id/",
-    alias: "accounting_financial_periods_update",
-    description: `ViewSet for Financial Periods`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: FinancialPeriodRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: FinancialPeriod,
-  },
-  {
-    method: "patch",
-    path: "/api/accounting/financial-periods/:id/",
-    alias: "accounting_financial_periods_partial_update",
-    description: `ViewSet for Financial Periods`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedFinancialPeriodRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: FinancialPeriod,
-  },
-  {
-    method: "delete",
-    path: "/api/accounting/financial-periods/:id/",
-    alias: "accounting_financial_periods_destroy",
-    description: `ViewSet for Financial Periods`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/accounting/financial-periods/current/",
-    alias: "accounting_financial_periods_current_retrieve",
-    description: `Get current financial period`,
-    requestFormat: "json",
-    response: FinancialPeriod,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/financial-periods/filter_options/",
-    alias: "accounting_financial_periods_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: FinancialPeriod,
   },
   {
     method: "get",
@@ -7877,134 +7605,6 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
-    path: "/api/accounting/taxes/",
-    alias: "accounting_taxes_list",
-    description: `ViewSet for Taxes`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedTaxList,
-  },
-  {
-    method: "post",
-    path: "/api/accounting/taxes/",
-    alias: "accounting_taxes_create",
-    description: `ViewSet for Taxes`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: TaxRequest,
-      },
-    ],
-    response: Tax,
-  },
-  {
-    method: "get",
-    path: "/api/accounting/taxes/:id/",
-    alias: "accounting_taxes_retrieve",
-    description: `ViewSet for Taxes`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Tax,
-  },
-  {
-    method: "put",
-    path: "/api/accounting/taxes/:id/",
-    alias: "accounting_taxes_update",
-    description: `ViewSet for Taxes`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: TaxRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Tax,
-  },
-  {
-    method: "patch",
-    path: "/api/accounting/taxes/:id/",
-    alias: "accounting_taxes_partial_update",
-    description: `ViewSet for Taxes`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedTaxRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Tax,
-  },
-  {
-    method: "delete",
-    path: "/api/accounting/taxes/:id/",
-    alias: "accounting_taxes_destroy",
-    description: `ViewSet for Taxes`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/accounting/taxes/filter_options/",
-    alias: "accounting_taxes_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: Tax,
-  },
-  {
-    method: "get",
     path: "/api/branches/branch-users/",
     alias: "branches_branch_users_list",
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
@@ -8169,6 +7769,11 @@ export const endpoints = makeApi([
     requestFormat: "json",
     parameters: [
       {
+        name: "additional_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "address",
         type: "Query",
         schema: z.string().optional(),
@@ -8189,6 +7794,11 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "building_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "city",
         type: "Query",
         schema: z.string().optional(),
@@ -8199,7 +7809,17 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "cr_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "district",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -8254,7 +7874,32 @@ export const endpoints = makeApi([
         schema: z.string().optional(),
       },
       {
+        name: "postal_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "receipt_footer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "receipt_header",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "street_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_number",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -8526,6 +8171,387 @@ export const endpoints = makeApi([
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Shift,
+  },
+  {
+    method: "get",
+    path: "/api/cms/contact-us/",
+    alias: "cms_contact_us_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "message",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedContactUsList,
+  },
+  {
+    method: "post",
+    path: "/api/cms/contact-us/",
+    alias: "cms_contact_us_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactUsRequest,
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "get",
+    path: "/api/cms/contact-us/:id/",
+    alias: "cms_contact_us_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "put",
+    path: "/api/cms/contact-us/:id/",
+    alias: "cms_contact_us_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactUsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "patch",
+    path: "/api/cms/contact-us/:id/",
+    alias: "cms_contact_us_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedContactUsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "delete",
+    path: "/api/cms/contact-us/:id/",
+    alias: "cms_contact_us_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/cms/contact-us/filter_options/",
+    alias: "cms_contact_us_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ContactUs,
+  },
+  {
+    method: "get",
+    path: "/api/cms/pages/",
+    alias: "cms_pages_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "author",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "client",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "default_language",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_published",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "slug",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "translations",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPageList,
+  },
+  {
+    method: "post",
+    path: "/api/cms/pages/",
+    alias: "cms_pages_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "get",
+    path: "/api/cms/pages/:id/",
+    alias: "cms_pages_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "put",
+    path: "/api/cms/pages/:id/",
+    alias: "cms_pages_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "patch",
+    path: "/api/cms/pages/:id/",
+    alias: "cms_pages_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "delete",
+    path: "/api/cms/pages/:id/",
+    alias: "cms_pages_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/cms/pages/filter_options/",
+    alias: "cms_pages_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Page,
+  },
+  {
+    method: "get",
+    path: "/api/cms/public/pages/",
+    alias: "cms_public_pages_list",
+    description: `For public pages only`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPageList,
+  },
+  {
+    method: "get",
+    path: "/api/cms/public/pages/:slug/",
+    alias: "cms_public_pages_retrieve",
+    description: `For public pages only`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
   },
   {
     method: "post",
@@ -12486,6 +12512,11 @@ export const endpoints = makeApi([
         schema: z.boolean().optional(),
       },
       {
+        name: "journal_entry",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "month",
         type: "Query",
         schema: z.string().optional(),
@@ -12512,6 +12543,11 @@ export const endpoints = makeApi([
       },
       {
         name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -17913,6 +17949,11 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "current_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "customer",
         type: "Query",
         schema: z.string().optional(),
@@ -17949,6 +17990,11 @@ Users only see data from their assigned branches.`,
       },
       {
         name: "invoice_type_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_uuid",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -17993,7 +18039,32 @@ Users only see data from their assigned branches.`,
         schema: z.number().optional(),
       },
       {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "patient_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "previous_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "pricing_policy_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "purchase_order",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18044,6 +18115,11 @@ Users only see data from their assigned branches.`,
       },
       {
         name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_tax_number",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18204,6 +18280,11 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "current_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "customer",
         type: "Query",
         schema: z.string().optional(),
@@ -18240,6 +18321,11 @@ Users only see data from their assigned branches.`,
       },
       {
         name: "invoice_type_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_uuid",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18289,7 +18375,32 @@ Users only see data from their assigned branches.`,
         schema: z.number().optional(),
       },
       {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "patient_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "previous_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "pricing_policy_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "purchase_order",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18340,6 +18451,11 @@ Users only see data from their assigned branches.`,
       },
       {
         name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_tax_number",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -18475,7 +18591,17 @@ Users only see data from their assigned branches.`,
         schema: z.string().optional(),
       },
       {
+        name: "partner_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
         name: "partner_share",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "patient_amount",
         type: "Query",
         schema: z.number().optional(),
       },
@@ -18717,6 +18843,21 @@ Users only see data from their assigned branches.`,
       },
     ],
     response: CreateReturnResponse,
+  },
+  {
+    method: "post",
+    path: "/api/sales/orders/bulk-update-status/",
+    alias: "sales_orders_bulk_update_status_create",
+    description: `تحديث حالة مجموعة من الطلبات دفعة واحدة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderBulkUpdateStatusRequestRequest,
+      },
+    ],
+    response: OrderBulkUpdateStatusResponse,
   },
   {
     method: "get",
@@ -19955,6 +20096,274 @@ Allows listing, creating, and managing domains and subdomains.`,
   },
   {
     method: "get",
+    path: "/api/tenants/settings/",
+    alias: "tenants_settings_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "address",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "bank_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "business_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "city",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "client",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "country",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "facebook",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "iban",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "instagram",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "linkedin",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "postal_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_keywords",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "state",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "swift_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tiktok",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "twitter",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "website",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "whatsapp",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPublicTenantSettingsList,
+  },
+  {
+    method: "post",
+    path: "/api/tenants/settings/",
+    alias: "tenants_settings_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PublicTenantSettingsRequest,
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "get",
+    path: "/api/tenants/settings/:id/",
+    alias: "tenants_settings_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "put",
+    path: "/api/tenants/settings/:id/",
+    alias: "tenants_settings_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PublicTenantSettingsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "patch",
+    path: "/api/tenants/settings/:id/",
+    alias: "tenants_settings_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPublicTenantSettingsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "delete",
+    path: "/api/tenants/settings/:id/",
+    alias: "tenants_settings_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/tenants/settings/filter_options/",
+    alias: "tenants_settings_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PublicTenantSettings,
+  },
+  {
+    method: "get",
     path: "/api/tenants/subscription-plans/",
     alias: "tenants_subscription_plans_list",
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
@@ -20153,174 +20562,6 @@ Allows listing, creating, and managing domains and subdomains.`,
   },
   {
     method: "get",
-    path: "/api/users/contact-us/",
-    alias: "users_contact_us_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "email",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "message",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "phone",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedContactUsList,
-  },
-  {
-    method: "post",
-    path: "/api/users/contact-us/",
-    alias: "users_contact_us_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: ContactUsRequest,
-      },
-    ],
-    response: ContactUs,
-  },
-  {
-    method: "get",
-    path: "/api/users/contact-us/:id/",
-    alias: "users_contact_us_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: ContactUs,
-  },
-  {
-    method: "put",
-    path: "/api/users/contact-us/:id/",
-    alias: "users_contact_us_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: ContactUsRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: ContactUs,
-  },
-  {
-    method: "patch",
-    path: "/api/users/contact-us/:id/",
-    alias: "users_contact_us_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedContactUsRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: ContactUs,
-  },
-  {
-    method: "delete",
-    path: "/api/users/contact-us/:id/",
-    alias: "users_contact_us_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/users/contact-us/filter_options/",
-    alias: "users_contact_us_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: ContactUs,
-  },
-  {
-    method: "get",
     path: "/api/users/health/",
     alias: "users_health_retrieve",
     description: `Health check endpoint to verify that the API is running.`,
@@ -20372,184 +20613,6 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: z.object({ detail: z.string() }).passthrough(),
       },
     ],
-  },
-  {
-    method: "get",
-    path: "/api/users/pages/",
-    alias: "users_pages_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "author",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "client",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "default_language",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_published",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "slug",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "translations",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedPageList,
-  },
-  {
-    method: "post",
-    path: "/api/users/pages/",
-    alias: "users_pages_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PageRequest,
-      },
-    ],
-    response: Page,
-  },
-  {
-    method: "get",
-    path: "/api/users/pages/:id/",
-    alias: "users_pages_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Page,
-  },
-  {
-    method: "put",
-    path: "/api/users/pages/:id/",
-    alias: "users_pages_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PageRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Page,
-  },
-  {
-    method: "patch",
-    path: "/api/users/pages/:id/",
-    alias: "users_pages_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedPageRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: Page,
-  },
-  {
-    method: "delete",
-    path: "/api/users/pages/:id/",
-    alias: "users_pages_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/users/pages/filter_options/",
-    alias: "users_pages_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: Page,
   },
   {
     method: "post",
@@ -20737,41 +20800,6 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: z.object({ detail: z.string() }).passthrough(),
       },
     ],
-  },
-  {
-    method: "get",
-    path: "/api/users/public/pages/",
-    alias: "users_public_pages_list",
-    description: `For public pages only`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-    ],
-    response: PaginatedPageList,
-  },
-  {
-    method: "get",
-    path: "/api/users/public/pages/:slug/",
-    alias: "users_public_pages_retrieve",
-    description: `For public pages only`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "slug",
-        type: "Path",
-        schema: z.string(),
-      },
-    ],
-    response: Page,
   },
   {
     method: "post",
@@ -21068,274 +21096,6 @@ Allows listing, creating, and managing domains and subdomains.`,
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: Role,
-  },
-  {
-    method: "get",
-    path: "/api/users/tenant-settings/",
-    alias: "users_tenant_settings_list",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "account_number",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "address",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "bank_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "business_name",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "city",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "client",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "country",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "created_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "email",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "facebook",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "iban",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "id",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "instagram",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "is_active",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "is_deleted",
-        type: "Query",
-        schema: z.boolean().optional(),
-      },
-      {
-        name: "linkedin",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "ordering",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "page",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "page_size",
-        type: "Query",
-        schema: z.number().int().optional(),
-      },
-      {
-        name: "phone",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "postal_code",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "search",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "seo_description",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "seo_keywords",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "seo_title",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "state",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "swift_code",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "tiktok",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "twitter",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "updated_at",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "website",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-      {
-        name: "whatsapp",
-        type: "Query",
-        schema: z.string().optional(),
-      },
-    ],
-    response: PaginatedTenantSettingsList,
-  },
-  {
-    method: "post",
-    path: "/api/users/tenant-settings/",
-    alias: "users_tenant_settings_create",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: TenantSettingsRequest,
-      },
-    ],
-    response: TenantSettings,
-  },
-  {
-    method: "get",
-    path: "/api/users/tenant-settings/:id/",
-    alias: "users_tenant_settings_retrieve",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: TenantSettings,
-  },
-  {
-    method: "put",
-    path: "/api/users/tenant-settings/:id/",
-    alias: "users_tenant_settings_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: TenantSettingsRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: TenantSettings,
-  },
-  {
-    method: "patch",
-    path: "/api/users/tenant-settings/:id/",
-    alias: "users_tenant_settings_partial_update",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "body",
-        type: "Body",
-        schema: PatchedTenantSettingsRequest,
-      },
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: TenantSettings,
-  },
-  {
-    method: "delete",
-    path: "/api/users/tenant-settings/:id/",
-    alias: "users_tenant_settings_destroy",
-    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
-    requestFormat: "json",
-    parameters: [
-      {
-        name: "id",
-        type: "Path",
-        schema: z.number().int(),
-      },
-    ],
-    response: z.void(),
-  },
-  {
-    method: "get",
-    path: "/api/users/tenant-settings/filter_options/",
-    alias: "users_tenant_settings_filter_options_retrieve",
-    description: `API endpoint to fetch available filtering options (for frontend).`,
-    requestFormat: "json",
-    response: TenantSettings,
   },
   {
     method: "post",

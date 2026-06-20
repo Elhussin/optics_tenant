@@ -9,7 +9,9 @@ from core.models import BaseModel
 from apps.products.models import ProductVariant
 from apps.prescriptions.models import PrescriptionRecord
 from decimal import Decimal
+from django.core.exceptions import ValidationError
 import time
+import uuid
 
 # Services (Assuming they exist as imported)
 # Services imports moved to methods to avoid circular dependency
@@ -31,7 +33,14 @@ class BaseDocument(BaseModel):
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE,
         related_name='%(class)s_customer',
-        verbose_name=_("Customer")
+        verbose_name=_("Customer"),
+        null=True, blank=True
+    )
+    partner = models.ForeignKey(
+        'crm.Partner', on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='%(class)s_partner',
+        verbose_name=_("Partner (B2B/Insurance)")
     )
 
     subtotal = models.DecimalField(
@@ -58,6 +67,14 @@ class BaseDocument(BaseModel):
         max_digits=12, decimal_places=2, default=0,
         verbose_name=_("Paid Amount")
     )
+    patient_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Patient Amount (Copay/Cash)")
+    )
+    partner_amount = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Partner Amount (Insurance/B2B)")
+    )
 
     class Meta:
         abstract = True
@@ -82,11 +99,27 @@ class BaseItem(BaseModel):
         verbose_name=_("Quantity")
     )
     unit_price = models.DecimalField(
-        max_digits=12, decimal_places=2,
+        max_digits=12, decimal_places=4,
         verbose_name=_("Unit Price")
     )
+    discount_amount = models.DecimalField(
+        max_digits=12, decimal_places=4, default=0,
+        verbose_name=_("Discount Amount")
+    )
+    tax_percent = models.DecimalField(
+        max_digits=5, decimal_places=4, default=Decimal('0.15'),
+        verbose_name=_("Tax Percent")
+    )
+    tax_amount = models.DecimalField(
+        max_digits=12, decimal_places=4, default=0, editable=False,
+        verbose_name=_("Tax Amount")
+    )
+    subtotal = models.DecimalField(
+        max_digits=12, decimal_places=4, default=0, editable=False,
+        verbose_name=_("Subtotal (Before Tax)")
+    )
     total_price = models.DecimalField(
-        max_digits=12, decimal_places=2, editable=False,
+        max_digits=12, decimal_places=4, editable=False,
         verbose_name=_("Total Price")
     )
 
@@ -94,14 +127,38 @@ class BaseItem(BaseModel):
         abstract = True
 
     def save(self, *args, **kwargs):
-        self.total_price = self.quantity * self.unit_price
+        # Calculate subtotal, tax and total
+        quantity_decimal = Decimal(str(self.quantity))
+        
+        # Subtotal is qty * price - discount
+        self.subtotal = (quantity_decimal * self.unit_price) - self.discount_amount
+        if self.subtotal < 0:
+            self.subtotal = Decimal('0')
+            
+        self.tax_amount = self.subtotal * self.tax_percent
+        self.total_price = self.subtotal + self.tax_amount
+        
         super().save(*args, **kwargs)
 
 
 class InvoiceType(BaseModel):
+    class ActionType(models.TextChoices):
+        SALE = 'sale', _('Sale (Decrease Stock, Increase Revenue)')
+        PURCHASE = 'purchase', _('Purchase (Increase Stock, Increase Payable)')
+        RETURN_SALE = 'return_sale', _('Sale Return (Increase Stock, Decrease Revenue)')
+        RETURN_PURCHASE = 'return_purchase', _('Purchase Return (Decrease Stock, Decrease Payable)')
+        NEUTRAL = 'neutral', _('Neutral (No Stock Impact)')
+
     name = models.CharField(
         max_length=100, verbose_name=_("Invoice Type Name"))
     code = models.SlugField(max_length=50, unique=True, verbose_name=_("Code"))
+    action_type = models.CharField(
+        max_length=20,
+        choices=ActionType.choices,
+        default=ActionType.SALE,
+        verbose_name=_("Action Type"),
+        help_text=_("Defines how this invoice affects stock and accounting")
+    )
     pricing_policy = models.ForeignKey(
         PricingPolicy,
         on_delete=models.PROTECT,
@@ -343,12 +400,33 @@ class Invoice(BaseDocument):
         ('paid', _('Paid')),
         ('partially_paid', _('Partially Paid')),
         ('overdue', _('Overdue')),
-        ('confirmed', _('Confirmed'))
+        ('confirmed', _('Confirmed')),
+        # ZATCA Statuses
+        ('pending_clearance', _('Pending Clearance')),
+        ('cleared', _('Cleared (ZATCA)')),
+        ('rejected', _('Rejected (ZATCA)')),
+        ('reported', _('Reported (ZATCA)'))
     ]
 
     invoice_number = models.CharField(
         max_length=50, unique=True, editable=False,
-        verbose_name=_("Invoice Number")
+        verbose_name=_("Invoice Number (Draft/Internal)")
+    )
+    invoice_uuid = models.UUIDField(
+        default=uuid.uuid4, unique=True, editable=False, null=True,
+        verbose_name=_("Invoice UUID (ZATCA)")
+    )
+    zatca_tax_number = models.CharField(
+        max_length=50, unique=True, null=True, blank=True, editable=False,
+        verbose_name=_("ZATCA Tax Number (Final)")
+    )
+    previous_invoice_hash = models.CharField(
+        max_length=255, blank=True, null=True, editable=False,
+        verbose_name=_("Previous Invoice Hash (ZATCA)")
+    )
+    current_invoice_hash = models.CharField(
+        max_length=255, blank=True, null=True, editable=False,
+        verbose_name=_("Current Invoice Hash (ZATCA)")
     )
     invoice_type = models.ForeignKey(
         InvoiceType, on_delete=models.PROTECT, null=True,
@@ -391,6 +469,11 @@ class Invoice(BaseDocument):
         null=True, blank=True, related_name='%(class)s_order',
         verbose_name=_("Order")
     )
+    purchase_order = models.ForeignKey(
+        'products.PurchaseOrder', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='invoices',
+        verbose_name=_("Purchase Order")
+    )
     due_date = models.DateField(
         null=True, blank=True,
         verbose_name=_("Due Date")
@@ -413,7 +496,26 @@ class Invoice(BaseDocument):
         verbose_name_plural = _("Invoices")
 
     def __str__(self):
-        return f"Invoice {self.invoice_number} - {self.customer.first_name}"
+        # Handle cases where customer might be null
+        customer_name = self.customer.first_name if self.customer else "Unknown"
+        return f"Invoice {self.invoice_number} - {customer_name}"
+
+    def clean(self):
+        super().clean()
+        if self.pk:
+            old_instance = Invoice.objects.get(pk=self.pk)
+            # Immutability check for confirmed invoices
+            if old_instance.status in ['confirmed', 'cleared', 'reported', 'pending_clearance']:
+                # Allow status updates (e.g., from confirmed to cleared) but block other changes
+                allowed_fields = ['status', 'zatca_tax_number', 'previous_invoice_hash', 'current_invoice_hash', 'paid_amount', 'updated_at']
+                for field in self._meta.fields:
+                    if field.name not in allowed_fields:
+                        old_val = getattr(old_instance, field.name)
+                        new_val = getattr(self, field.name)
+                        if old_val != new_val:
+                            raise ValidationError(
+                                _("Cannot modify confirmed invoice. Use Credit Note instead. (Field: {})".format(field.name))
+                            )
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
@@ -787,3 +889,92 @@ class InvoiceTax(BaseModel):
     class Meta:
         verbose_name = _("Invoice Tax")
         verbose_name_plural = _("Invoice Taxes")
+
+
+class CreditNote(BaseDocument):
+    """
+    Credit Note (إشعار دائن) used for correcting or refunding confirmed invoices.
+    Required by ZATCA since confirmed invoices are immutable.
+    """
+    invoice = models.ForeignKey(
+        Invoice, on_delete=models.PROTECT, related_name='credit_notes',
+        verbose_name=_("Original Invoice")
+    )
+    credit_note_number = models.CharField(
+        max_length=50, unique=True, editable=False,
+        verbose_name=_("Credit Note Number")
+    )
+    credit_note_uuid = models.UUIDField(
+        default=uuid.uuid4, unique=True, editable=False, null=True,
+        verbose_name=_("Credit Note UUID (ZATCA)")
+    )
+    reason = models.CharField(
+        max_length=255, verbose_name=_("Reason for Issuance")
+    )
+    status = models.CharField(
+        max_length=20, choices=Invoice.INVOICE_STATUS, default='draft',
+        verbose_name=_("Status")
+    )
+    created_by = models.ForeignKey(
+        BranchUsers, on_delete=models.SET_NULL, null=True,
+        related_name='created_credit_notes',
+        verbose_name=_("Created By")
+    )
+    confirmed_at = models.DateTimeField(
+        null=True, blank=True,
+        verbose_name=_("Confirmation Date")
+    )
+    zatca_tax_number = models.CharField(
+        max_length=50, unique=True, null=True, blank=True, editable=False,
+        verbose_name=_("ZATCA Tax Number (Final)")
+    )
+    previous_hash = models.CharField(
+        max_length=255, blank=True, null=True, editable=False,
+        verbose_name=_("Previous Hash (ZATCA)")
+    )
+    current_hash = models.CharField(
+        max_length=255, blank=True, null=True, editable=False,
+        verbose_name=_("Current Hash (ZATCA)")
+    )
+
+    class Meta:
+        verbose_name = _("Credit Note")
+        verbose_name_plural = _("Credit Notes")
+
+    def __str__(self):
+        return f"Credit Note {self.credit_note_number} for Invoice {self.invoice.invoice_number}"
+
+    def clean(self):
+        super().clean()
+        if self.pk:
+            old_instance = CreditNote.objects.get(pk=self.pk)
+            if old_instance.status in ['confirmed', 'cleared', 'reported', 'pending_clearance']:
+                allowed_fields = ['status', 'zatca_tax_number', 'previous_hash', 'current_hash', 'updated_at']
+                for field in self._meta.fields:
+                    if field.name not in allowed_fields:
+                        old_val = getattr(old_instance, field.name)
+                        new_val = getattr(self, field.name)
+                        if old_val != new_val:
+                            raise ValidationError(
+                                _("Cannot modify confirmed credit note. (Field: {})".format(field.name))
+                            )
+
+    def save(self, *args, **kwargs):
+        if not self.credit_note_number:
+            from apps.sales.utils import generate_serial_number
+            self.credit_note_number = generate_serial_number(CreditNote, 'CN', 'credit_note_number')
+        super().save(*args, **kwargs)
+
+
+class CreditNoteItem(BaseItem):
+    credit_note = models.ForeignKey(
+        CreditNote, on_delete=models.CASCADE, related_name='items',
+        verbose_name=_("Credit Note")
+    )
+
+    class Meta:
+        verbose_name = _("Credit Note Item")
+        verbose_name_plural = _("Credit Note Items")
+
+    def __str__(self):
+        return f"{self.product_variant.product.model} - {self.quantity} (CN {self.credit_note.id})"

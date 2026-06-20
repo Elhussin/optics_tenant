@@ -154,6 +154,29 @@ class SubscriptionPlanViewSet(BaseViewSet):
             ]
         return [permission() for permission in permission_classes]
 
+class TenantSettingsViewset(BaseViewSet):
+    from apps.tenants.models import TenantSettings
+    from apps.tenants.serializers import TenantSettingsSerializer, PublicTenantSettingsSerializer
+    queryset = TenantSettings.objects.all()
+    serializer_class = TenantSettingsSerializer
+
+    def get_serializer_class(self):
+        if self.request and self.request.user and self.request.user.is_authenticated:
+            return super().get_serializer_class()
+        
+        from apps.tenants.serializers import PublicTenantSettingsSerializer
+        return PublicTenantSettingsSerializer
+
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            return [AllowAny()]
+        return [
+            IsAuthenticated(),
+            RoleOrPermissionRequired.with_requirements(
+                required_permissions=["view_tenant_settings"]
+            )
+        ]
+
 
 class RegisterTenantViewSet(BaseViewSet):
     # Only Admin/Owner can view pending requests

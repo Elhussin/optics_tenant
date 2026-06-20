@@ -181,6 +181,35 @@ class ChartOfAccounts(BaseModel):
 
         self.save(update_fields=['current_balance'])
 
+    def get_balance_for_period(self, start_date=None, end_date=None):
+        """
+        Calculate balance from posted journal entries within a specific period.
+        If start_date and end_date are provided, calculates the net change.
+        If only end_date is provided, calculates the cumulative balance up to that date.
+        """
+        from django.db.models import Sum
+        from decimal import Decimal
+
+        lines = self.journal_lines.filter(journal__is_posted=True)
+
+        if start_date:
+            lines = lines.filter(journal__entry_date__gte=start_date)
+        if end_date:
+            lines = lines.filter(journal__entry_date__lte=end_date)
+
+        totals = lines.aggregate(
+            total_debit=Sum('debit'),
+            total_credit=Sum('credit')
+        )
+
+        debit = totals['total_debit'] or Decimal('0')
+        credit = totals['total_credit'] or Decimal('0')
+
+        if self.normal_balance == 'debit':
+            return debit - credit
+        else:
+            return credit - debit
+
 
 class GeneralJournal(BaseModel):
     """

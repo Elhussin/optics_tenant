@@ -27,3 +27,20 @@ def generate_serial_number(model, prefix, field_name='number', with_date=True):
 
     new_serial = f"{serial_prefix}-{last_serial:04d}"
     return new_serial
+
+from decimal import Decimal, ROUND_HALF_UP
+
+class MoneyHelper:
+    """
+    Unified helper for financial calculations to prevent floating point and rounding issues.
+    Defaults to 2 decimal places with ROUND_HALF_UP policy.
+    """
+    PLACES = Decimal('0.01')
+    
+    @classmethod
+    def quantize(cls, amount: Decimal) -> Decimal:
+        if amount is None:
+            return Decimal('0.00')
+        if not isinstance(amount, Decimal):
+            amount = Decimal(str(amount))
+        return amount.quantize(cls.PLACES, rounding=ROUND_HALF_UP)

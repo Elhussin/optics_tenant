@@ -209,3 +209,67 @@ class Payment(BaseModel):
         else:
             payment_logger.warning(
                 f"Attempted to apply plan for non-successful payment: {self.id}")
+
+class TenantSettings(BaseModel):
+    client = models.OneToOneField(
+        'Client', on_delete=models.CASCADE, null=True, blank=True, verbose_name=_('Client'))
+    business_name = models.CharField(
+        max_length=255, default="Optics Tenant", verbose_name=_('Business Name'))
+    description = models.TextField(
+        blank=True, default="Default description.", verbose_name=_('Description'))
+    # Social Media
+    facebook = models.URLField(
+        blank=True, default='https://www.facebook.com', verbose_name=_('Facebook'))
+    instagram = models.URLField(
+        blank=True, default='https://www.instagram.com', verbose_name=_('Instagram'))
+    whatsapp = models.CharField(
+        max_length=20, blank=True, default='', verbose_name=_('WhatsApp'))
+    twitter = models.URLField(
+        blank=True, default='https://www.twitter.com', verbose_name=_('Twitter'))
+    tiktok = models.URLField(
+        blank=True, default='https://www.tiktok.com', verbose_name=_('TikTok'))
+    linkedin = models.URLField(
+        blank=True, default='https://www.linkedin.com', verbose_name=_('LinkedIn'))
+
+    # Contact Info
+    phone = models.CharField(max_length=20, blank=True,
+                             default='', verbose_name=_('Phone'))
+    email = models.EmailField(blank=True, default='', verbose_name=_('Email'))
+    website = models.URLField(blank=True, default='',
+                              verbose_name=_('Website'))
+
+    # SEO Settings
+    seo_title = models.CharField(
+        max_length=255, blank=True, default='', verbose_name=_('SEO Title'))
+    seo_description = models.TextField(
+        blank=True, default='', verbose_name=_('SEO Description'))
+    seo_keywords = models.CharField(
+        max_length=255, blank=True, default='', verbose_name=_('SEO Keywords'))
+
+    address = models.CharField(
+        max_length=255, blank=True, default='', verbose_name=_('Address'))
+    city = models.CharField(max_length=100, blank=True,
+                            default='', verbose_name=_('City'))
+    state = models.CharField(max_length=100, blank=True,
+                             default='', verbose_name=_('State'))
+    postal_code = models.CharField(
+        max_length=20, blank=True, default='', verbose_name=_('Postal Code'))
+    country = models.CharField(
+        max_length=100, blank=True, default='', verbose_name=_('Country'))
+
+    # bankDetails
+    bank_name = models.CharField(
+        max_length=100, blank=True, default='', verbose_name=_('Bank Name'))
+    account_number = models.CharField(
+        max_length=100, blank=True, default='', verbose_name=_('Account Number'))
+    iban = models.CharField(max_length=100, blank=True,
+                            default='', verbose_name=_('IBAN'))
+    swift_code = models.CharField(
+        max_length=100, blank=True, default='', verbose_name=_('SWIFT Code'))
+
+    class Meta:
+        verbose_name = _('Tenant Settings')
+        verbose_name_plural = _('Tenant Settings')
+
+    def __str__(self):
+        return self.business_name if self.business_name else "Tenant Settings"

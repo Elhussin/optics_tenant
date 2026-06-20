@@ -12,6 +12,7 @@ from .views import (
     SubscriptionPlanViewSet,
     PaymentListView,
     RegisterTenantViewSet,
+    TenantSettingsViewset,
 )
 from rest_framework.routers import DefaultRouter
 
@@ -20,6 +21,8 @@ router.register(r'clients', ClientViewSet, basename='clients')
 router.register(r'subscription-plans', SubscriptionPlanViewSet, basename='subscription-plans')
 router.register(r'registers', RegisterTenantViewSet, basename='register-tenant')
 router.register(r'domain', DomainViewSet, basename='domains')
+router.register(r'settings', TenantSettingsViewset, basename='tenant-settings')
+
 urlpatterns = [
     path("", include(router.urls)),
     path('register/', RegisterTenantView.as_view()),
