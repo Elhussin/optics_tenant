@@ -1,5 +1,5 @@
 'use client';
-import React, { createContext, useState, useContext, ReactNode } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useMemo, useCallback } from 'react';
 import MainLayout from '@/src/shared/components/layout/MainLayout';
 
 type AsideContextType = {
@@ -16,13 +16,17 @@ export function AsideProvider({ children }: { children: ReactNode }) {
   const [asideContent, setAsideContent] = useState<ReactNode>(null);
   const [isVisible, setIsVisible] = useState(false);
 
-  const toggleAside = () => setIsVisible((prev) => !prev);
+  const toggleAside = useCallback(() => setIsVisible((prev) => !prev), []);
 
+  const value = useMemo(() => ({
+    asideContent,
+    isVisible,
+    toggleAside,
+    setAsideContent
+  }), [asideContent, isVisible, toggleAside]);
 
   return (
-    <AsideContext.Provider
-      value={{ asideContent, isVisible, toggleAside, setAsideContent }}
-    >
+    <AsideContext.Provider value={value}>
       <MainLayout
         mainContent={children}
         // asideContent={ isVisible ? asideContent || <Aside /> : null}

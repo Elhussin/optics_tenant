@@ -125,11 +125,14 @@ def confirm_invoice(invoice):
     # ---------------------------------------------------------
     # ZATCA INTEGRATION POINT (Phase 2)
     # ---------------------------------------------------------
-    # Once the ZATCA phase is activated, call the ZATCA service here.
-    # Example:
-    # try:
-    #     zatca_service.clear_or_report_invoice(invoice)
-    # except ZATCAError as e:
-    #     # Do not revert the invoice, just log it. ZATCA allows 24h for B2C reporting.
-    #     log_zatca_error(e)
+    # Call ZATCA celery task asynchronously to prevent UI block
+    try:
+        from django.db import connection
+        from apps.sales.tasks import submit_invoice_to_zatca_task
+        submit_invoice_to_zatca_task.delay(connection.schema_name, invoice.id)
+    except Exception as e:
+        # Log error but do not fail checkout. ZATCA allows 24h for reporting B2C.
+        import logging
+        logger = logging.getLogger('tenant')
+        logger.error(f"Failed to queue ZATCA task for invoice {invoice.invoice_number}: {str(e)}")
     # ---------------------------------------------------------

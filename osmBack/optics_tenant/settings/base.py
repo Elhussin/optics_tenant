@@ -208,6 +208,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TENANT_BASE_DOMAIN = config('TENANT_BASE_DOMAIN')
 PORT = config('PORT', default=8000, cast=int)
 
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
@@ -391,3 +393,13 @@ LOGGING = {
 
 # WAGTAILADMIN_BASE_URL = config('WAGTAILADMIN_BASE_URL', default='http://localhost:8000')
 # WAGTAIL_SITE_NAME = config('WAGTAIL_SITE_NAME', default='Optics Tenant')
+
+# ===============================
+# Celery & Redis Configuration
+# ===============================
+CELERY_BROKER_URL = config('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = config('REDIS_URL', default='redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Riyadh'

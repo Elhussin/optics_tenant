@@ -25,7 +25,7 @@ from apps.accounting.serializers import (
     GeneralJournalSerializer, GeneralJournalCreateSerializer, GeneralJournalListSerializer,
     JournalLineSerializer
 )
-from apps.accounting.services import AutoJournalService
+from apps.accounting.services import AutoJournalService, AccountingService
 from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
 
@@ -343,49 +343,16 @@ class TrialBalanceView(APIView):
         }
     )
     def get(self, request):
-        as_of_date = request.query_params.get(
-            'as_of_date', timezone.now().date())
+        as_of_date = request.query_params.get('as_of_date')
+        if as_of_date:
+            from django.utils.dateparse import parse_date
+            parsed = parse_date(str(as_of_date))
+            as_of_date = parsed if parsed else timezone.now().date()
+        else:
+            as_of_date = timezone.now().date()
 
-        accounts = ChartOfAccounts.objects.filter(
-            is_active=True,
-            is_header=False
-        ).order_by('code')
-
-        trial_balance_data = []
-        total_debit = Decimal('0')
-        total_credit = Decimal('0')
-
-        for account in accounts:
-            balance = account.get_balance_for_period(end_date=as_of_date)
-
-            if balance != 0:
-                if account.normal_balance == 'debit':
-                    debit = balance if balance > 0 else 0
-                    credit = abs(balance) if balance < 0 else 0
-                else:
-                    credit = balance if balance > 0 else 0
-                    debit = abs(balance) if balance < 0 else 0
-
-                trial_balance_data.append({
-                    'account_code': account.code,
-                    'account_name': account.name,
-                    'account_type': account.get_account_type_display(),
-                    'debit': debit,
-                    'credit': credit,
-                })
-
-                total_debit += debit
-                total_credit += credit
-
-        return Response({
-            'as_of_date': as_of_date,
-            'accounts': trial_balance_data,
-            'totals': {
-                'debit': total_debit,
-                'credit': total_credit,
-                'is_balanced': total_debit == total_credit,
-            }
-        })
+        report_data = AccountingService.get_trial_balance(as_of_date=as_of_date)
+        return Response(report_data)
 
 
 class IncomeStatementView(APIView):
@@ -444,91 +411,24 @@ class IncomeStatementView(APIView):
     )
     def get(self, request):
         start_date = request.query_params.get('start_date')
-        end_date = request.query_params.get('end_date', timezone.now().date())
+        end_date = request.query_params.get('end_date')
 
-        # Revenue
-        revenue_accounts = ChartOfAccounts.objects.filter(
-            account_type='revenue',
-            is_active=True,
-            is_header=False
+        from django.utils.dateparse import parse_date
+        if start_date:
+            parsed_start = parse_date(str(start_date))
+            start_date = parsed_start if parsed_start else None
+
+        if end_date:
+            parsed_end = parse_date(str(end_date))
+            end_date = parsed_end if parsed_end else timezone.now().date()
+        else:
+            end_date = timezone.now().date()
+
+        report_data = AccountingService.get_income_statement(
+            start_date=start_date,
+            end_date=end_date
         )
-
-        total_revenue = Decimal('0')
-        revenue_items = []
-        for acc in revenue_accounts:
-            bal = acc.get_balance_for_period(start_date=start_date, end_date=end_date)
-            if bal != 0:
-                revenue_items.append({
-                    'code': acc.code,
-                    'name': acc.name,
-                    'amount': abs(bal)
-                })
-                total_revenue += abs(bal)
-
-        # COGS
-        cogs_accounts = ChartOfAccounts.objects.filter(
-            account_type='cogs',
-            is_active=True,
-            is_header=False
-        )
-
-        total_cogs = Decimal('0')
-        cogs_items = []
-        for acc in cogs_accounts:
-            bal = acc.get_balance_for_period(start_date=start_date, end_date=end_date)
-            if bal != 0:
-                cogs_items.append({
-                    'code': acc.code,
-                    'name': acc.name,
-                    'amount': bal
-                })
-                total_cogs += bal
-
-        # Gross Profit
-        gross_profit = total_revenue - total_cogs
-
-        # Expenses
-        expense_accounts = ChartOfAccounts.objects.filter(
-            account_type='expense',
-            is_active=True,
-            is_header=False
-        )
-
-        total_expenses = Decimal('0')
-        expense_items = []
-        for acc in expense_accounts:
-            bal = acc.get_balance_for_period(start_date=start_date, end_date=end_date)
-            if bal != 0:
-                expense_items.append({
-                    'code': acc.code,
-                    'name': acc.name,
-                    'amount': bal
-                })
-                total_expenses += bal
-
-        # Net Income
-        net_income = gross_profit - total_expenses
-
-        return Response({
-            'period': {
-                'start_date': start_date,
-                'end_date': end_date,
-            },
-            'revenue': {
-                'total': total_revenue,
-                'items': revenue_items,
-            },
-            'cogs': {
-                'total': total_cogs,
-                'items': cogs_items,
-            },
-            'gross_profit': gross_profit,
-            'expenses': {
-                'total': total_expenses,
-                'items': expense_items,
-            },
-            'net_income': net_income,
-        })
+        return Response(report_data)
 
 
 class BalanceSheetView(APIView):
@@ -580,102 +480,16 @@ class BalanceSheetView(APIView):
         }
     )
     def get(self, request):
-        as_of_date = request.query_params.get(
-            'as_of_date', timezone.now().date())
+        as_of_date = request.query_params.get('as_of_date')
+        if as_of_date:
+            from django.utils.dateparse import parse_date
+            parsed = parse_date(str(as_of_date))
+            as_of_date = parsed if parsed else timezone.now().date()
+        else:
+            as_of_date = timezone.now().date()
 
-        # Assets
-        asset_accounts = ChartOfAccounts.objects.filter(
-            account_type='asset',
-            is_active=True,
-            is_header=False
-        )
-
-        total_assets = Decimal('0')
-        asset_items = []
-        for acc in asset_accounts:
-            bal = acc.get_balance_for_period(end_date=as_of_date)
-            if bal != 0:
-                asset_items.append({
-                    'code': acc.code,
-                    'name': acc.name,
-                    'balance': bal
-                })
-                total_assets += bal
-
-        # Liabilities
-        liability_accounts = ChartOfAccounts.objects.filter(
-            account_type='liability',
-            is_active=True,
-            is_header=False
-        )
-
-        total_liabilities = Decimal('0')
-        liability_items = []
-        for acc in liability_accounts:
-            bal = acc.get_balance_for_period(end_date=as_of_date)
-            if bal != 0:
-                liability_items.append({
-                    'code': acc.code,
-                    'name': acc.name,
-                    'balance': bal
-                })
-                total_liabilities += bal
-
-        # Equity
-        equity_accounts = ChartOfAccounts.objects.filter(
-            account_type='equity',
-            is_active=True,
-            is_header=False
-        )
-
-        total_equity = Decimal('0')
-        equity_items = []
-        for acc in equity_accounts:
-            bal = acc.get_balance_for_period(end_date=as_of_date)
-            if bal != 0:
-                equity_items.append({
-                    'code': acc.code,
-                    'name': acc.name,
-                    'balance': bal
-                })
-                total_equity += bal
-
-        # Calculate Net Income to add to Equity (Retained Earnings)
-        revenue_accounts = ChartOfAccounts.objects.filter(account_type='revenue', is_active=True, is_header=False)
-        cogs_accounts = ChartOfAccounts.objects.filter(account_type='cogs', is_active=True, is_header=False)
-        expense_accounts = ChartOfAccounts.objects.filter(account_type='expense', is_active=True, is_header=False)
-
-        total_revenue = sum(acc.get_balance_for_period(end_date=as_of_date) for acc in revenue_accounts)
-        total_cogs = sum(acc.get_balance_for_period(end_date=as_of_date) for acc in cogs_accounts)
-        total_expenses = sum(acc.get_balance_for_period(end_date=as_of_date) for acc in expense_accounts)
-
-        net_income = total_revenue - total_cogs - total_expenses
-        
-        if net_income != 0:
-            equity_items.append({
-                'code': 'NET_INCOME',
-                'name': str(_('Net Income / (Loss)')),
-                'balance': net_income
-            })
-            total_equity += net_income
-
-        return Response({
-            'as_of_date': as_of_date,
-            'assets': {
-                'total': total_assets,
-                'items': asset_items,
-            },
-            'liabilities': {
-                'total': total_liabilities,
-                'items': liability_items,
-            },
-            'equity': {
-                'total': total_equity,
-                'items': equity_items,
-            },
-            'total_liabilities_and_equity': total_liabilities + total_equity,
-            'is_balanced': total_assets == (total_liabilities + total_equity),
-        })
+        report_data = AccountingService.get_balance_sheet(as_of_date=as_of_date)
+        return Response(report_data)
 
 
 class AccountLedgerView(APIView):

@@ -1,0 +1,35 @@
+# Hussam Optical ERP - Architectural Roadmap Tasks
+
+- [x] Stage 1: Design Finalization & Critical Quick Wins
+  - [x] Enterprise Design
+    - [x] Create `appdesign/Bounded Context Map.md`
+    - [x] Create `appdesign/Event Catalog.md`
+  - [x] Backend Refactoring
+    - [x] Remove hardcoded secrets from local `.env` and create `.env.template`
+    - [x] Add db indexes to `Order` and `Invoice` models (in `sales/models.py`)
+    - [x] Add db indexes to `StockMovement` model
+  - [x] Frontend Refactoring
+    - [x] Wrap `SearchContext` provider value in `useMemo`
+    - [x] Wrap `AsideContext` provider value in `useMemo`
+- [x] Stage 2: Service Layer & Database Blueprinting
+  - [x] Enterprise Design
+    - [x] Create `appdesign/Permission Matrix.md`
+    - [x] Create `appdesign/Database Blueprint.md`
+  - [x] Backend Refactoring
+    - [x] Establish `services/` directory structure in `apps/accounting`
+    - [x] Move trial balance & income statement queries to `AccountingService` with aggregates
+- [x] Stage 3: Module Decoupling & Clean Architecture
+  - [x] Enterprise Design
+    - [x] Create `appdesign/Module Specifications.md`
+  - [x] Backend Refactoring
+    - [x] Split Sales and Invoicing apps and models
+    - [x] Decouple Catalog and Inventory apps and models
+    - [x] Decouple CRM billing and Insurance claims
+- [x] Stage 4: ZATCA Compliance & Asynchronous Engine
+  - [x] Enterprise Design
+    - [x] Create `appdesign/ZATCA Integration Specs.md`
+  - [x] Backend Refactoring
+    - [x] Deploy and configure Redis & Celery engine
+    - [x] Implement ZATCA Phase 1 & 2 integration (XML, cryptographic hashing)
+    - [x] Refactor Mobile API BFF views to use service layer
+- [/] Stage 5: Enterprise Optimization

@@ -1,5 +1,5 @@
 // SearchContext.tsx
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useMemo, useCallback } from "react";
 
 interface SearchContextType {
   isSearchVisible: boolean;
@@ -11,10 +11,15 @@ const SearchContext = createContext<SearchContextType | undefined>(undefined);
 export const SearchProvider = ({ children }: { children: ReactNode }) => {
   const [isSearchVisible, setIsSearchVisible] = useState(false);
 
-  const toggleSearch = () => setIsSearchVisible(prev => !prev);
+  const toggleSearch = useCallback(() => setIsSearchVisible(prev => !prev), []);
+
+  const value = useMemo(() => ({
+    isSearchVisible,
+    toggleSearch
+  }), [isSearchVisible, toggleSearch]);
 
   return (
-    <SearchContext.Provider value={{ isSearchVisible, toggleSearch }}>
+    <SearchContext.Provider value={value}>
       {children}
     </SearchContext.Provider>
   );

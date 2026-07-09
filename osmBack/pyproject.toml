@@ -62,6 +62,8 @@ dependencies = [
     "mkdocstrings[python]>=0.24.0",
     "mkdocs-mermaid2-plugin>=1.1.0",
     "mkdocs-awesome-pages-plugin>=2.9.2",
+    "celery>=5.6.3",
+    "redis>=8.0.1",
 ]
 requires-python = ">=3.12"
 readme = "README.md"

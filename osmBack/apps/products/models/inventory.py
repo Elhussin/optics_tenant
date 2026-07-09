@@ -149,6 +149,10 @@ class StockMovement(BaseModel):
         indexes = [
             models.Index(fields=['stock', '-created_at']),
             models.Index(fields=['movement_type', '-created_at']),
+            models.Index(fields=['reference_number']),
+            models.Index(fields=['invoice']),
+            models.Index(fields=['purchase_order']),
+            models.Index(fields=['created_at']),
         ]
 
     def __str__(self):

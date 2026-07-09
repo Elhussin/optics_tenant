@@ -443,10 +443,9 @@ class MobileQuickSaleView(APIView):
                 tax_rate=tax_rate,
                 tax_amount=tax_amount,
                 total_amount=total_amount,
-                paid_amount=total_amount if payment_method == 'cash' else Decimal(
-                    '0'),
+                paid_amount=total_amount if payment_method == 'cash' else Decimal('0'),
                 payment_status='paid' if payment_method == 'cash' else 'pending',
-                status='confirmed',
+                status='pending',
             )
 
             for item in order_items:
@@ -456,6 +455,10 @@ class MobileQuickSaleView(APIView):
                     quantity=item['quantity'],
                     unit_price=item['price'],
                 )
+
+            # Delegate confirmation and ZATCA compliance to OrderService
+            from apps.sales.services.order_service import confirm_order
+            confirm_order(order, user)
 
         return Response({
             'success': True,
