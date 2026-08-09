@@ -1,55 +1,38 @@
-# Welcome to EyeCare Platform Documentation 🚀
+# موسوعة منصة البصريات الشاملة (Optics ERP Master Docs)
 
-Welcome to the comprehensive knowledge center for the **EyeCare Optics Management System (OMS)**. This documentation provides everything you need to understand, develop, and deploy the system.
-
-## 📌 System Overview
-**EyeCare** is a state-of-the-art SaaS platform designed for optics retailers. It supports **Multi-tenancy**, **Financial Accounting**, **CRM**, and **Inventory Management** out of the box, ensuring data isolation and high performance for multiple corporate clients properly.
+أهلاً بك في التوثيق المعماري والهندسي الشامل لمنظومة إدارة متاجر البصريات والمحاسبة والقيود المزدوجة والمخزون (`Optics Store Management Multi-Tenant ERP`).
 
 ---
 
-## 🛠 Documentation Sections
+## 🌟 نظرة عامة على المنظومة
 
-<div class="grid cards" markdown>
+هذا النظام هو **منظومة ERP سحابية متعددة المستأجرين (Multi-Tenant)** مصممة خصيصاً لقطاع النظارات والعدسات ومراكز الفحص الطبي.
 
--   :material-rocket-launch:{ .lg .middle } __Quick Start__
-
-    Learn how to install and run the system locally in under 5 minutes.
-
-    [:octicons-arrow-right-24: Get Started](./getting-started/installation.md)
-
--   :material-office-building:{ .lg .middle } __Architecture & Core__
-
-    Deep dive into Multi-tenancy, Authentication, RBAC, and System Design.
-
-    [:octicons-arrow-right-24: Explore Architecture](./architecture/overview.md)
-
--   :material-api:{ .lg .middle } __API Reference__
-
-    Complete documentation for standard and mobile-optimized Endpoints.
-
-    [:octicons-arrow-right-24: View APIs](./api/swagger.md)
-
--   :material-calculator:{ .lg .middle } __Business Modules__
-
-    Detailed guides for Accounting, Sales, Products, and CRM.
-
-    [:octicons-arrow-right-24: Explore Modules](./modules/accounting.md)
-
-</div>
+- **الواجهة الخلفية (Backend):** مبنية باستخدام `Django REST Framework` وتدعم العزل التام لقواعد البيانات لكل مستأجر عبر `django-tenants`.
+- **الواجهة الأمامية (Frontend):** مبنية باستخدام `Next.js 15` (App Router) بتصميم قائم على الموديلات والتطبيقات الموحدة (App-Centric Navigation).
+- **المهام الخلفية (Async Tasks):** معالجة طباعة الفواتير وتوليد الـ PDFs المعقدة عبر `Celery` و `Redis` و `WeasyPrint`.
 
 ---
 
-## 🧱 Project Structure
+## 🗺️ خريطة التوثيق الموحد
 
-```text
-optics_tenant/
-├── osmBack/              # Backend (Django REST Framework)
-│   ├── apps/             # Business Logic Modules (Accounting, Sales, etc.)
-│   ├── core/             # Shared Utilities (Auth, Caching, Middleware)
-│   └── docs/             # Documentation Source
-└── osmFront/             # Frontend (Next.js + Tailwind)
-    └── src/              # UI Components & Logic
+يمكنك التنقل بين أقسام التوثيق عبر التبويبات العلوية:
+
+| القسم | الوصف |
+| :--- | :--- |
+| **🤖 مرجع الذكاء الاصطناعي** | الدستور والقواعد الصارمة لأي وكيل ذكاء اصطناعي يعمل على هذا المشروع لمنع التكرار والحفاظ على جودة الأكواد. |
+| **🚀 البدء والتشغيل** | طريقة تشغيل جميع أجزاء النظام محلياً وفي بيئات الحاوية (Docker Dev/Prod). |
+| **⚙️ الواجهة الخلفية (Backend)** | شرح معمارية Django، تعدد المستأجرين، المحاسبة المزدوجة، الـ COGS، وتفاصيل التطبيقات. |
+| **🎨 الواجهة الأمامية (Frontend)** | شرح معمارية Next.js، نظام التطبيقات الجانبية (Accordion)، والمكونات التفاعلية. |
+| **📜 مواصفات الأعمال** | مواصفات الربط مع الفوترة الإلكترونية (ZATCA)، ومصفوفة الصلاحيات والأدوار. |
+
+---
+
+## 💡 طريقة تشغيل التوثيق محلياً
+
+لتشغيل هذا التوثيق التفاعلي في أي وقت والتصفح المحلي:
+```bash
+cd osmBack
+pdm run mkdocs serve
 ```
-
-## 🚀 Next Steps
-If you are a new developer on the team, we recommend starting with the [Installation & Setup](./getting-started/installation.md) guide.
+ثم افتح الرابط: `http://127.0.0.1:8000` في متصفحك.

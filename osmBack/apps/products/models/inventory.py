@@ -75,6 +75,11 @@ class Stock(BaseModel):
     last_restocked = models.DateTimeField(null=True, blank=True)
     last_sale = models.DateTimeField(null=True, blank=True)
     allow_backorder = models.BooleanField(default=False)
+    is_consignment = models.BooleanField(
+        default=False, verbose_name=_("Consignment Stock"),
+        help_text=_("Indicates if stock is vendor consignment inventory")
+    )
+
 
     objects = StockManager()
 

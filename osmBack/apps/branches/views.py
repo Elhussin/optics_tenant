@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
-from .serializers import BranchSerializer, BranchUsersSerializer, ShiftSerializer
-from .models import Branch, BranchUsers, Shift
+from .serializers import BranchSerializer, BranchUsersSerializer, ShiftSerializer, BranchShiftTemplateSerializer
+from .models import Branch, BranchUsers, Shift, BranchShiftTemplate
 from core.views import BaseViewSet
 
 
@@ -54,4 +54,24 @@ class ShiftViewSet(BaseViewSet):
         if employee_id:
             queryset = queryset.filter(employee_id=employee_id)
 
+        return queryset
+
+
+class BranchShiftTemplateViewSet(BaseViewSet):
+    permission_classes = [
+        IsAuthenticated,
+        RoleOrPermissionRequired.with_requirements(
+            allowed_roles=["BranchManager"],
+            required_permissions=["view_attendance"]
+        )
+    ]
+    queryset = BranchShiftTemplate.objects.all()
+    serializer_class = BranchShiftTemplateSerializer
+
+    def get_queryset(self):
+        # Optionally filter templates by branch, e.g., ?branch=X
+        queryset = super().get_queryset()
+        branch_id = self.request.query_params.get('branch')
+        if branch_id:
+            queryset = queryset.filter(branch_id=branch_id)
         return queryset

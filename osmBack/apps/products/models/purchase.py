@@ -81,9 +81,24 @@ class PurchaseOrder(BaseModel):
         max_digits=12, decimal_places=2, default=0,
         verbose_name=_("Tax Amount")
     )
+    shipping_cost = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Shipping Cost")
+    )
+    customs_cost = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Customs Cost")
+    )
+    other_landed_cost = models.DecimalField(
+        max_digits=12, decimal_places=2, default=0,
+        verbose_name=_("Other Landed Cost")
+    )
     total_amount = models.DecimalField(
         max_digits=12, decimal_places=2, default=0,
         verbose_name=_("Total Amount")
+    )
+    is_consignment = models.BooleanField(
+        default=False, verbose_name=_("Consignment Purchase Order")
     )
 
     notes = models.TextField(blank=True, verbose_name=_("Notes"))
@@ -101,12 +116,15 @@ class PurchaseOrder(BaseModel):
     def __str__(self):
         return f"{self.order_number} - {self.supplier.name}"
 
+    @property
+    def total_landed_cost(self) -> Decimal:
+        """Sum of all landed expenses (shipping + customs + other)"""
+        return Decimal(str(self.shipping_cost or 0)) + Decimal(str(self.customs_cost or 0)) + Decimal(str(self.other_landed_cost or 0))
+
     def save(self, *args, **kwargs):
         if not self.order_number:
             self.order_number = f"PO-{uuid.uuid4().hex[:8].upper()}"
         super().save(*args, **kwargs)
-
-
 
 
 class PurchaseOrderItem(BaseModel):
@@ -133,6 +151,10 @@ class PurchaseOrderItem(BaseModel):
         max_digits=10, decimal_places=2,
         verbose_name=_("Unit Cost")
     )
+    landed_cost_per_unit = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0,
+        verbose_name=_("Landed Cost Per Unit")
+    )
     notes = models.TextField(blank=True, verbose_name=_("Notes"))
 
     class Meta:
@@ -148,6 +170,11 @@ class PurchaseOrderItem(BaseModel):
         return Decimal(self.quantity_ordered) * self.unit_cost
 
     @property
+    def effective_unit_cost(self) -> Decimal:
+        """Effective unit cost including allocated landed cost"""
+        return Decimal(str(self.unit_cost or 0)) + Decimal(str(self.landed_cost_per_unit or 0))
+
+    @property
     def remaining_quantity(self) -> int:
         """Quantity yet to be received"""
         return self.quantity_ordered - self.quantity_received
@@ -156,3 +183,4 @@ class PurchaseOrderItem(BaseModel):
     def is_fully_received(self) -> bool:
         """Check if item is fully received"""
         return self.quantity_received >= self.quantity_ordered
+

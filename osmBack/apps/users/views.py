@@ -119,9 +119,16 @@ class LoginView(APIView):
             refresh["tenant"] = connection.schema_name
             refresh["permissions"] = list(all_permissions)
 
+            # Set the same claims on the access token
+            access = refresh.access_token
+            access["role_id"] = primary_role.id if primary_role else None
+            access["role"] = primary_role.name if primary_role else None
+            access["roles"] = role_names
+            access["tenant"] = connection.schema_name
+            access["permissions"] = list(all_permissions)
+
             response = Response({"detail": _("Login successful")})
-            set_token_cookies(response, access=str(
-                refresh.access_token), refresh=str(refresh))
+            set_token_cookies(response, access=str(access), refresh=str(refresh))
             return response
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

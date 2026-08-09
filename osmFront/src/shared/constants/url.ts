@@ -28,7 +28,12 @@ import {
   FileText,
   CreditCard,
   HelpCircle,
-  LucideIcon
+  LucideIcon,
+  ShoppingCart,
+  Package,
+  Settings,
+  Stethoscope,
+  Activity,
 } from "lucide-react";
 
 export interface NavItem {
@@ -37,22 +42,78 @@ export interface NavItem {
   icon: LucideIcon;
 }
 
-export const URLDATA: NavItem[] = [
-  { "path": "/", "name": "Home", icon: Home },
-  { "path": "/dashboard", "name": "dashboard", icon: Shield },
-  { "path": "/profile", "name": "Profile", icon: User },
-  { "path": "/admin", "name": "Admin", icon: Shield },
-  { "path": "/dashboard/invoices", "name": "Invoices", icon: FileText },
-  { "path": "/dashboard/payments", "name": "Payments", icon: CreditCard },
-  // { "path": "/prescriptions", "name": "Prescriptions", icon: Eye },
-  // { "path": "/about", "name": "About", icon: Info },
-  // { "path": "/contact", "name": "Contact", icon: Phone },
-  { "path": "/users", "name": "Users", icon: Users },
-  // { "path": "/tenants", "name": "Tenants", icon: Building2 },
-  // { "path": "/groups", "name": "Groups", icon: Users },
-  // { "path": "/crm", "name": "CRM", icon: BarChart3 },
-  // { "path": "/products/supplier", "name": "Suppliers", icon: Truck },
+export interface AppModule {
+  id: string;
+  name: string;
+  icon: LucideIcon;
+  color: string;
+  links: NavItem[];
+}
+
+export const APPS_MODULES: AppModule[] = [
+  {
+    id: "dashboard",
+    name: "Dashboard",
+    icon: BarChart3,
+    color: "from-blue-500/20 to-blue-500/5",
+    links: [
+      { path: "/", name: "Home", icon: Home },
+      { path: "/dashboard", name: "Overview", icon: BarChart3 },
+    ],
+  },
+  {
+    id: "sales",
+    name: "Sales",
+    icon: ShoppingCart,
+    color: "from-green-500/20 to-green-500/5",
+    links: [
+      { path: "/dashboard/invoices", name: "Invoices", icon: FileText },
+      { path: "/dashboard/payments", name: "Payments", icon: CreditCard },
+    ],
+  },
+  {
+    id: "crm",
+    name: "CRM",
+    icon: Users,
+    color: "from-purple-500/20 to-purple-500/5",
+    links: [
+      { path: "/users", name: "Customers", icon: Users },
+      // { path: "/crm", name: "CRM Overview", icon: BarChart3 },
+    ],
+  },
+  {
+    id: "medical",
+    name: "Medical",
+    icon: Stethoscope,
+    color: "from-teal-500/20 to-teal-500/5",
+    links: [
+      // { path: "/prescriptions", name: "Prescriptions", icon: Eye },
+    ],
+  },
+  {
+    id: "inventory",
+    name: "Inventory",
+    icon: Package,
+    color: "from-orange-500/20 to-orange-500/5",
+    links: [
+      // { path: "/products/supplier", name: "Suppliers", icon: Truck },
+    ],
+  },
+  {
+    id: "settings",
+    name: "Settings",
+    icon: Settings,
+    color: "from-gray-500/20 to-gray-500/5",
+    links: [
+      { path: "/profile", name: "Profile", icon: User },
+      { path: "/admin", name: "Admin", icon: Shield },
+      // { path: "/tenants", name: "Tenants", icon: Building2 },
+    ],
+  },
 ];
+
+// Fallback for flat mapping if needed anywhere else
+export const URLDATA: NavItem[] = APPS_MODULES.flatMap((app) => app.links);
 
 export const navUrl: NavItem[] = [
   { "path": "/", "name": "Home", icon: Home },

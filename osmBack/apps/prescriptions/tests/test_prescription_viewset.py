@@ -14,7 +14,8 @@ class PrescriptionViewSetTests(APITestCase):
         self.client = Client.objects.create(name="Test Client")
         self.role = Role.objects.create(name="Tester")
         # إنشاء مستخدم
-        self.user = User.objects.create_user(username="tester", password="pass", role=self.role, client=self.client)
+        self.user = User.objects.create_user(username="tester", password="pass", client=self.client)
+        self.user.roles.add(self.role)
         # إنشاء عملاء
         self.customer1 = Customer.objects.create(first_name="John", last_name="Doe", email="john@example.com", phone="123" ,created_by=self.user)
         self.customer2 = Customer.objects.create(first_name="Jane", last_name="Smith", email="jane@example.com", phone="456" ,created_by=self.user)

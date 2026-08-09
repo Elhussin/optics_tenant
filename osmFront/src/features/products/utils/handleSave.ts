@@ -17,6 +17,8 @@ export const handleSave = (
 
   form.handleSubmit(
     (formValues: any) => {
+      // Clear previous server/manual errors so stale phantom errors don't block submit
+      form.clearErrors();
       // Debug: Log form values after handleSubmit
       // console.log("📋 formValues after handleSubmit:", formValues);
       // console.log("📋 formValues.variants:", formValues.variants);
@@ -72,6 +74,46 @@ export const handleSave = (
             hasValidationErrors = true;
           }
         }
+
+        // Validate Minimum Selling Price
+        if (variant.min_selling_price && variant.selling_price) {
+          const sp = parseFloat(variant.selling_price);
+          const msp = parseFloat(variant.min_selling_price);
+          if (!isNaN(sp) && !isNaN(msp) && sp < msp) {
+            form.setError(`variants.${i}.selling_price`, {
+              type: "manual",
+              message: `سعر البيع لا يمكن أن يكون أقل من الحد الأدنى (${msp})`,
+            });
+            if (!hasValidationErrors) {
+              firstErrorDetail = `سعر البيع للمتغير #${i + 1} أقل من الحد الأدنى المسموح (${msp})`;
+            }
+            hasValidationErrors = true;
+          }
+        }
+      }
+
+      // Check duplicate variants in form
+      const seenSignatures = new Set<string>();
+      for (let i = 0; i < variantsData.length; i++) {
+        const v = variantsData[i];
+        const keyParts = [
+          v.product_type || "",
+          v.frame_color || "",
+          v.lens_diameter || "",
+          v.spherical || "",
+          v.cylinder || "",
+          v.axis || "",
+          v.lens_base_curve || ""
+        ].filter(Boolean);
+
+        if (keyParts.length > 0) {
+          const signature = keyParts.join("|");
+          if (seenSignatures.has(signature)) {
+            safeToast(`تنبيه: المتغير رقم #${i + 1} مكرر بنفس المواصفات!`, { type: "error" });
+            return;
+          }
+          seenSignatures.add(signature);
+        }
       }
 
       if (hasValidationErrors) {
@@ -79,6 +121,7 @@ export const handleSave = (
         safeToast(firstErrorDetail || t("validation.invalidVariantsData"), { type: "error" });
         return;
       }
+
 
       // Build Variant Payload (Cleaning fields based on config)
       const variantsPayload = buildPayload({

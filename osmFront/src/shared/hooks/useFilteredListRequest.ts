@@ -55,11 +55,19 @@ export function useFilteredListRequest(props: UseFilteredListRequestProps) {
     }
   }
 
+  const paramsKey = useMemo(() => {
+    try {
+      return JSON.stringify(paramsObj);
+    } catch {
+      return "";
+    }
+  }, [paramsObj]);
+
   useEffect(() => {
     (async () => {
       await fetchData();
     })();
-  }, [page, page_size, all, JSON.stringify(paramsObj), alias]);
+  }, [page, page_size, all, paramsKey, alias]);
 
   const setFilters = (filters: Record<string, string>) => {
     const params = new URLSearchParams({ ...paramsObj, ...filters, page: "1" });

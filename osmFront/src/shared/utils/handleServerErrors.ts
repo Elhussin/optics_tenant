@@ -28,6 +28,17 @@ import { handleErrorStatus } from "./handleErrorStatus";
  * }
  */
 
+const IGNORED_METADATA_FIELDS = new Set([
+  "status_code",
+  "timestamp",
+  "detail",
+  "non_field_errors",
+  "error",
+  "message",
+  "code",
+  "success",
+]);
+
 export function handleServerErrors(
   error: any,
   setError: (name: string, error: any) => void,
@@ -46,16 +57,14 @@ export function handleServerErrors(
       if (!Array.isArray(errorObj.details)) {
         const normalized = normalizeErrors(errorObj.details);
         for (const [field, message] of Object.entries(normalized)) {
+          if (IGNORED_METADATA_FIELDS.has(field)) continue;
           setError(field as any, { type: "server", message: translate(message, t) });
         }
       }
     }
 
     // B. Show Toast for main message (if not just a field error)
-    // If we have field errors, usually we don't toast unless it's a generic "Validation Failed" message
-    // But for safety, if there is a message, let's show it if it's not a 400 with field errors or if explicit toast requested
     if (showToast && errorObj.message) {
-      // Optional: logic to skip toast if it's just "Invalid input" and we set field errors
       safeToast(translate(errorObj.message, t), { type: "error" });
     }
     return;
@@ -67,6 +76,7 @@ export function handleServerErrors(
     const normalized = normalizeErrors(serverErrors);
 
     for (const [field, message] of Object.entries(normalized)) {
+      if (IGNORED_METADATA_FIELDS.has(field)) continue;
       setError(field as any, { type: "server", message: translate(message, t) });
     }
 

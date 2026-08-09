@@ -1,0 +1,117 @@
+services:
+  tenant_db:
+    image: postgres:16
+    container_name: optics_db_dev
+    env_file:
+      - ./.env
+    restart: always
+    environment:
+      POSTGRES_DB: "${DB_NAME:-optics_db}"
+      POSTGRES_USER: "${DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-postgres}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - optics_postgres_data_dev:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network_dev
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-optics_db} || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  redis:
+    image: redis:7-alpine
+    container_name: optics_redis_dev
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network_dev
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: optics_backend_dev
+    command: python manage.py runserver 0.0.0.0:8000
+    restart: always
+    env_file:
+      - ./osmBack/.env
+    environment:
+      - DB_HOST=tenant_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    volumes:
+      - ./osmBack:/app
+      - optics_static_volume_dev:/app/staticfiles
+      - optics_media_volume_dev:/app/media
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network_dev
+    depends_on:
+      tenant_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  celery_worker:
+    build:
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: optics_celery_dev
+    command: celery -A optics_tenant worker -l info
+    restart: always
+    env_file:
+      - ./osmBack/.env
+    environment:
+      - DB_HOST=tenant_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=True
+    volumes:
+      - ./osmBack:/app
+      - optics_media_volume_dev:/app/media
+    networks:
+      - app-network_dev
+    depends_on:
+      backend:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./osmFront
+      dockerfile: Dockerfile
+      target: development
+      args:
+        NEXT_PUBLIC_API_BASE: "http://localhost:8000"
+    container_name: optics_frontend_dev
+    command: npm run dev
+    restart: always
+    volumes:
+      - ./osmFront:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network_dev
+
+volumes:
+  optics_postgres_data_dev:
+  optics_static_volume_dev:
+  optics_media_volume_dev:
+
+networks:
+  app-network_dev:
+    name: optics_dev_network

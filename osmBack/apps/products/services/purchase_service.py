@@ -1,3 +1,5 @@
+from decimal import Decimal
+import logging
 from django.db import transaction
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -5,12 +7,30 @@ from django.utils.translation import gettext_lazy as _
 from apps.products.models.purchase import PurchaseOrder
 from apps.products.models.inventory import Stock, StockMovement
 
+logger = logging.getLogger(__name__)
+
+
 def calculate_purchase_order_totals(order):
-    """Recalculate order totals from items"""
-    items = order.items.all()
+    """Recalculate order totals from items and allocate landed costs proportionally"""
+    items = list(order.items.all())
     order.subtotal = sum(item.line_total for item in items)
-    order.total_amount = order.subtotal + order.tax_amount
+    total_landed = order.total_landed_cost
+
+    if order.subtotal > 0 and total_landed > 0:
+        for item in items:
+            if item.quantity_ordered > 0:
+                item_share = (item.line_total / order.subtotal) * total_landed
+                item.landed_cost_per_unit = (item_share / Decimal(str(item.quantity_ordered))).quantize(Decimal('0.01'))
+                item.save(update_fields=['landed_cost_per_unit'])
+    else:
+        for item in items:
+            if item.landed_cost_per_unit != 0:
+                item.landed_cost_per_unit = Decimal('0.00')
+                item.save(update_fields=['landed_cost_per_unit'])
+
+    order.total_amount = order.subtotal + order.tax_amount + total_landed
     order.save(update_fields=['subtotal', 'total_amount'])
+
 
 def submit_purchase_order(order):
     """Submit the order for approval"""
@@ -18,8 +38,11 @@ def submit_purchase_order(order):
         raise ValidationError(_("Only draft orders can be submitted"))
     if not order.items.exists():
         raise ValidationError(_("Cannot submit an empty order"))
+    
+    calculate_purchase_order_totals(order)
     order.status = PurchaseOrder.Status.SUBMITTED
     order.save(update_fields=['status'])
+
 
 def approve_purchase_order(order, user):
     """Approve the order"""
@@ -30,6 +53,7 @@ def approve_purchase_order(order, user):
     order.approved_date = timezone.now()
     order.save(update_fields=['status', 'approved_by', 'approved_date'])
 
+
 def cancel_purchase_order(order):
     """Cancel the order"""
     if order.status in [PurchaseOrder.Status.RECEIVED, PurchaseOrder.Status.CANCELLED]:
@@ -38,9 +62,10 @@ def cancel_purchase_order(order):
     order.status = PurchaseOrder.Status.CANCELLED
     order.save(update_fields=['status'])
 
+
 def receive_purchase_order_items(order, items_received: dict):
     """
-    Receive items and create stock movements.
+    Receive items and create stock movements using effective unit cost (including landed cost).
     items_received: {item_id: quantity_received}
     """
     if order.status not in [PurchaseOrder.Status.APPROVED, PurchaseOrder.Status.PARTIALLY_RECEIVED]:
@@ -73,19 +98,24 @@ def receive_purchase_order_items(order, items_received: dict):
             stock, created = Stock.objects.get_or_create(
                 branch=order.branch,
                 variant=item.variant,
-                defaults={'quantity_in_stock': 0}
+                defaults={'quantity_in_stock': 0, 'is_consignment': order.is_consignment}
             )
 
             # Calculate quantities
             quantity_before = stock.quantity_in_stock
             quantity_after = quantity_before + qty_to_receive
 
+            # Effective unit cost includes allocated landed cost
+            cost_unit = item.effective_unit_cost
+
             # Update average cost before updating quantity
             from apps.products.services.inventory_service import update_stock_average_cost
-            update_stock_average_cost(stock, qty_to_receive, item.unit_cost)
+            update_stock_average_cost(stock, qty_to_receive, cost_unit)
             
             stock.quantity_in_stock = quantity_after
             stock.last_restocked = timezone.now()
+            if order.is_consignment:
+                stock.is_consignment = True
             stock.save()
 
             # Create stock movement
@@ -95,7 +125,7 @@ def receive_purchase_order_items(order, items_received: dict):
                 quantity=qty_to_receive,
                 quantity_before=quantity_before,
                 quantity_after=quantity_after,
-                cost_per_unit=item.unit_cost,
+                cost_per_unit=cost_unit,
                 reference_number=order.order_number,
                 notes=_("Received from PO: {order}").format(
                     order=order.order_number)
@@ -118,9 +148,6 @@ def receive_purchase_order_items(order, items_received: dict):
         try:
             generate_purchase_invoice_from_order(order, items_received)
         except Exception as e:
-            # We can log this, but we shouldn't fail the receipt process completely
-            import logging
-            logger = logging.getLogger(__name__)
             logger.error(f"Failed to generate purchase invoice for PO {order.order_number}: {str(e)}")
 
 
@@ -170,7 +197,6 @@ def generate_purchase_invoice_from_order(order, items_received):
         invoice_type=invoice_type,
         purchase_order=order,
         status='draft',
-        # Assuming system currency or order currency
         total_amount_base=subtotal,
         total_amount=subtotal,
         subtotal=subtotal,

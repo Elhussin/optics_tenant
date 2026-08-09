@@ -75,3 +75,20 @@ export interface ProductAddProps {
   id?: string;
   initialData?: any;
 }
+
+export interface ProductVariantItem {
+  id?: number;
+  sku?: string;
+  barcode?: string;
+  factory_code?: string;
+  selling_price: number | string;
+  min_selling_price?: number | string;
+  discount_percentage?: number | string;
+  tax_category?: string;
+  tax_rate?: number | string;
+  spherical?: string;
+  cylinder?: string;
+  axis?: string;
+  addition?: string;
+  attributes?: any[];
+}

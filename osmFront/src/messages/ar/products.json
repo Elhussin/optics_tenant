@@ -163,7 +163,9 @@
     "selectVariantType": "يرجى اختيار نوع المتغير",
     "invalidVariantsData": "يرجى تعبئة بيانات المتغيرات بشكل صحيح",
     "variantAddedSuccess": "تم إضافة المتغير بنجاح",
-    "variantAddError": "فشل في إضافة المتغير: {error}"
+    "variantAddError": "فشل في إضافة المتغير: {error}",
+    "saveProductFirst": "يرجى حفظ المنتج أولاً قبل توليد مصفوفة العدسات",
+    "invalidPrice": "يرجى إدخال سعر بيع صحيح"
   },
   "actions": {
     "save": "حفظ المنتج",

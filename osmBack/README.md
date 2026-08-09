@@ -62,8 +62,8 @@ pdm run python manage.py migrate_schemas --tenant
 # create tenant and migrate
 # pdm run python manage.py create_tenant_and_migrate "My Store" store4
 pdm run python manage.py setup_tenant --name "Store 4" --schema store4 --domain store4.localhost --password "3112"
-pdm run python manage.py runserver
 
+pdm run python manage.py runserver
 # https://osmbeta.cloud/
 pdm run python manage.py createsuperuser
 pdm run python manage.py migrate_all_tenants
@@ -75,6 +75,13 @@ pdm run  python manage.py create_tenant_superuser --schema_name public --usernam
 pdm run python manage.py runserver
 ```
 
+## start worker
+```bash
+docker run -d --name optics-redis -p 6379:6379 redis:alpine
+
+pdm run celery -A optics_tenant worker -l info --pool=solo
+
+```
 ## Create Tenant
 
 ```bash
@@ -105,3 +112,14 @@ pdm run python manage.py showmigrations prescriptions
 يمكنك تشغيل مركز التوثيق محلياً لمشاهدة العمل الفني الذي تم بناؤه: -->
 cd osmBack
 pdm run mkdocs serve
+
+
+
+
+docker-compose -f docker-compose.dev.yml up -d
+
+docker-compose -f docker-compose.prod.yml up -d --build
+
+
+
+ pdm run celery -A optics_tenant worker -l info --pool=solo

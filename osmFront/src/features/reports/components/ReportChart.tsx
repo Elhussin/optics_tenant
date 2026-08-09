@@ -118,15 +118,17 @@ interface DonutChartProps {
   }[];
   title?: string;
   height?: number;
+  size?: number;
   centerLabel?: string;
   centerValue?: string;
 }
 
-export function DonutChart({ data, title, height = 300, centerLabel, centerValue }: DonutChartProps) {
+export function DonutChart({ data, title, height, size, centerLabel, centerValue }: DonutChartProps) {
+  const chartHeight = height ?? size ?? 300;
   return (
     <div className="w-full relative">
       {title && <h4 className="font-semibold mb-4 text-gray-800 dark:text-gray-100">{title}</h4>}
-      <div style={{ height, width: "100%" }}>
+      <div style={{ height: chartHeight, width: "100%" }}>
         <ResponsiveContainer width="100%" height="100%">
           <RechartsPieChart>
             <Pie

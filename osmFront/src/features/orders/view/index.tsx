@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ShoppingCart,
   User,
@@ -112,7 +113,16 @@ export function ViewOrder({ orderId }: ViewOrderProps) {
     enabled: !!orderId,
   });
 
+  const searchParams = useSearchParams();
   const order = query.data;
+
+  useEffect(() => {
+    if (searchParams.get('print') === 'true' && order && !isBusy) {
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+  }, [searchParams, order, isBusy]);
 
   const handleActionComplete = () => {
     query.refetch();

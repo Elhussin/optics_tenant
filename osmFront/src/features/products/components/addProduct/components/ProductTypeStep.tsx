@@ -30,6 +30,7 @@ import {
   FormMessage,
 } from "@/src/shared/components/shadcn/ui/form";
 import { useTranslations } from "next-intl";
+import { useProductFormStore } from "@/src/features/products/store/useProductFormStore";
 
 interface ProductTypeStepProps {
   form: any;
@@ -58,6 +59,7 @@ const PRODUCT_COLORS: Record<string, string> = {
 
 export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
   const t = useTranslations("products");
+  const store = useProductFormStore();
   const handleTypeSelect = (value: string) => {
     form.setValue("main_group", value, { shouldValidate: true });
     // Reset variant_type when product type changes
@@ -210,11 +212,16 @@ export function ProductTypeStep({ form, productType }: ProductTypeStepProps) {
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ delay: index * 0.05 }}
                             type="button"
-                            onClick={() =>
+                            onClick={() => {
                               form.setValue("variant_type", variant.value, {
                                 shouldValidate: true,
-                              })
-                            }
+                              });
+                              if (variant.value === "basic") {
+                                form.setValue("variant_count", 1);
+                                store.setVariantCount(1);
+                              }
+                            }}
+
                             className={cn(
                               "p-4 rounded-xl border-2",
                               "transition-all duration-200 text-center",

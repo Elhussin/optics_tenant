@@ -12,14 +12,16 @@ from django.utils import timezone
 from apps.crm.models import Customer
 from apps.branches.models import Branch
 from django.urls import reverse
-from apps.products.services.generate_sku_code import generate_sku_code
+from apps.products.services.generate_sku_code import generate_sku_code, generate_numeric_barcode
 # import logging
 # Import centralized choices from constants module
 from apps.products.constants import (
     PRODUCT_TYPE_CHOICES,
     VARIANT_TYPE_CHOICES,
     RIGHT_LEFT_CHOICES,
+    TAX_CATEGORY_CHOICES,
 )
+
 
 # product_logger = logging.getLogger('product')
 
@@ -87,6 +89,8 @@ class Product(BaseModel):
                            help_text=_("Unique product SKU generated automatically"))
     variant_type = models.CharField(
         max_length=20, choices=VARIANT_TYPE_CHOICES, default='basic')
+    tax_category = models.CharField(
+        max_length=20, choices=TAX_CATEGORY_CHOICES, default='standard', verbose_name=_("Tax Category"))
 
     objects = ProductManager()
 
@@ -119,6 +123,8 @@ class ProductVariant(BaseModel):
         max_length=50, unique=True, blank=True, null=True)
     sku = models.CharField(max_length=64, unique=True, editable=False,  help_text=_(
         "Unique product variant SKU generated automatically"))
+    barcode = models.CharField(max_length=50, unique=True, null=True, blank=True,
+                               help_text=_("Numeric barcode for POS scanners"))
     description = models.TextField(blank=True, editable=False,
                                    help_text=_("Auto-generated description based on variant specifications"))
     product_type = models.ForeignKey(AttributeValue, on_delete=models.CASCADE,
@@ -132,8 +138,14 @@ class ProductVariant(BaseModel):
     last_purchase_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True)
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
+    min_selling_price = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True, verbose_name=_("Minimum Selling Price"))
     discount_percentage = models.DecimalField(
         max_digits=10, decimal_places=2, default=0, null=True, blank=True)
+    tax_category = models.CharField(
+        max_length=20, choices=TAX_CATEGORY_CHOICES, default='standard', verbose_name=_("Tax Category"))
+    tax_rate = models.DecimalField(
+        max_digits=5, decimal_places=2, default=Decimal('15.00'), verbose_name=_("Tax Rate %"))
 
     BaseFrameFields = ['frame_color', 'temple_length',
                        'bridge_width', 'frame_shape', 'frame_material']
@@ -150,6 +162,10 @@ class ProductVariant(BaseModel):
         if not self.sku:
             self.sku = self.build_sku()
 
+        if self.min_selling_price and self.selling_price and Decimal(str(self.selling_price)) < Decimal(str(self.min_selling_price)):
+            raise ValidationError(
+                _("Selling price cannot be less than minimum selling price ({0}).").format(self.min_selling_price))
+
         # تحقق من التكرار
         exists = self.__class__.objects.filter(sku=self.sku)
         if self.pk:
@@ -157,6 +173,7 @@ class ProductVariant(BaseModel):
         if exists.exists():
             raise ValidationError(
                 _("Variant with identical specifications already exists."))
+
 
     @property
     def discount_price(self):
@@ -238,6 +255,10 @@ class ProductVariant(BaseModel):
 
         self.full_clean()  # This calls clean() and validates before saving
         super().save(*args, **kwargs)
+        if not self.barcode:
+            self.barcode = generate_numeric_barcode(self)
+            super().save(update_fields=['barcode'])
+
 
     def build_sku(self):
         """Prepare appropriate fields based on product type"""

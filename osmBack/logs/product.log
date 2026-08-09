@@ -6,3 +6,22 @@
 [2026-06-13 01:58:09,372] INFO product: M2M fields for StokLensVariant: ['lens_coatings']
 [2026-06-13 01:58:09,372] INFO product: Creating variant with data: {'product_type_id': 164, 'selling_price': '500', 'discount_percentage': '20', 'spherical': '-02.00', 'cylinder': '-04.00', 'lens_diameter_id': 119, 'lens_material_id': 5}
 [2026-06-13 01:58:09,438] INFO product: Set M2M field lens_coatings = [195, 196]
+[2026-08-01 18:23:59,237] INFO product: FK fields for ProductVariant: ['framevariant', 'stoklensvariant', 'rxlensvariant', 'contactlensvariant', 'images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'purchase_order_items', 'orderitem_variant', 'invoiceitem_variant', 'creditnoteitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions']
+[2026-08-01 18:23:59,240] INFO product: Converted FK field: product_type=172 -> product_type_id=172
+[2026-08-01 18:23:59,240] INFO product: Converted FK field: warranty=183 -> warranty_id=183
+[2026-08-01 18:23:59,240] INFO product: Converted FK field: weight=206 -> weight_id=206
+[2026-08-01 18:23:59,240] INFO product: Converted FK field: dimensions=184 -> dimensions_id=184
+[2026-08-01 18:23:59,241] INFO product: clean_vdata for variant: {'product_type_id': 172, 'selling_price': '200', 'discount_percentage': '20', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-08-01 18:23:59,241] INFO product: M2M fields for ProductVariant: []
+[2026-08-01 18:23:59,241] INFO product: Creating variant with data: {'product_type_id': 172, 'selling_price': '200', 'discount_percentage': '20', 'warranty_id': 183, 'weight_id': 206, 'dimensions_id': 184}
+[2026-08-01 23:36:56,432] INFO product: FK fields for ContactLensVariant: ['images', 'price_rules', 'marketing', 'reviews', 'questions', 'offers', 'stocks', 'stocktransferitem', 'purchase_order_items', 'orderitem_variant', 'invoiceitem_variant', 'creditnoteitem_variant', 'product', 'product_type', 'warranty', 'weight', 'dimensions', 'contactlensvariantexpirationdate', 'productvariant_ptr', 'lens_diameter', 'lens_color', 'lens_material', 'lens_water_content', 'replacement_schedule', 'units', 'lens_base_curve', 'lens_coatings']
+[2026-08-01 23:36:56,433] INFO product: Converted FK field: product_type=169 -> product_type_id=169
+[2026-08-01 23:36:56,433] INFO product: Converted FK field: replacement_schedule=178 -> replacement_schedule_id=178
+[2026-08-01 23:36:56,433] INFO product: Converted FK field: units=211 -> units_id=211
+[2026-08-01 23:36:56,433] INFO product: Converted FK field: lens_diameter=136 -> lens_diameter_id=136
+[2026-08-01 23:36:56,433] INFO product: Converted FK field: lens_color=14 -> lens_color_id=14
+[2026-08-01 23:36:56,434] INFO product: Converted FK field: lens_material=5 -> lens_material_id=5
+[2026-08-01 23:36:56,434] INFO product: clean_vdata for variant: {'product_type_id': 169, 'selling_price': '200', 'min_selling_price': '100', 'discount_percentage': 0, 'spherical': '-20.00', 'axis': '0', 'replacement_schedule_id': 178, 'units_id': 211, 'lens_diameter_id': 136, 'lens_color_id': 14, 'lens_material_id': 5, 'lens_coatings': [203], 'is_active': True}
+[2026-08-01 23:36:56,434] INFO product: M2M fields for ContactLensVariant: ['lens_coatings']
+[2026-08-01 23:36:56,434] INFO product: Creating variant with data: {'product_type_id': 169, 'selling_price': '200', 'min_selling_price': '100', 'discount_percentage': 0, 'spherical': '-20.00', 'axis': '0', 'replacement_schedule_id': 178, 'units_id': 211, 'lens_diameter_id': 136, 'lens_color_id': 14, 'lens_material_id': 5, 'is_active': True}
+[2026-08-01 23:36:56,505] INFO product: Set M2M field lens_coatings = [203]

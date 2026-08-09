@@ -1,7 +1,7 @@
 from .attributes import AttributesViewSet, AttributeValueViewSet
 from .marketing import ProductVariantMarketingViewSet
 from .product_support import ProductVariantReviewViewSet, ProductVariantQuestionViewSet, ProductVariantAnswerViewSet, ProductVariantOfferViewSet
-from .product import CategoryViewSet, ProductViewSet, ProductVariantViewSet, ProductImageViewSet, FlexiblePriceViewSet
+from .product import CategoryViewSet, ProductViewSet, ProductVariantViewSet, ProductImageViewSet, FlexiblePriceViewSet, LensMatrixGenerateAPIView
 from .suppliers import SupplierViewSet, ManufacturerViewSet, BrandViewSet
 from .inventory import StocksViewSet, StockMovementsViewSet, StockTransferViewSet, StockTransferItemViewSet
 from .purchase import PurchaseOrderViewSet
@@ -22,5 +22,6 @@ __all__ = [
     "FlexiblePriceViewSet", "ProductImportView",
     "VariantStockSummaryAPIView", "NearestBranchAPIView", "OrderFulfillmentCheckAPIView",
     "ActiveBranchesView", "MainBranchView", "LowStockByBranchView", "VariantTotalStockView",
-    "PricingPolicyViewSet"
+    "PricingPolicyViewSet", "LensMatrixGenerateAPIView"
 ]
+

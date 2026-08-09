@@ -64,7 +64,11 @@ export function formatRelatedValue(value: any, key: string, t: (key: string) => 
     const firstValue = Object.values(value).find((v) => typeof v === "string");
     if (firstValue) return String(firstValue);
 
-    return JSON.stringify(value);
+    try {
+      return JSON.stringify(value);
+    } catch {
+      return String(value);
+    }
   }
 
   return String(value);
@@ -102,5 +106,9 @@ export function formatTranslatedValue(
     ));
   }
 
-  return JSON.stringify(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
 }

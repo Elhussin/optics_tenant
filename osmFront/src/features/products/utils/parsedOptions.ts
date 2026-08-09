@@ -8,11 +8,16 @@ const mapOptions = (data: any[], fieldName: string) =>
 
 const filterOptions = (data: any[], fieldName: string, filter: string) =>
   data
-    .filter((v) => String(v[fieldName]) === String(filter))
+    .filter((v) => {
+      const matchFieldName = String(v[fieldName] || "").toLowerCase() === String(filter || "").toLowerCase();
+      const matchAttr = String(v.attribute_name || v?.attribute?.name || "").toLowerCase() === String(filter || "").toLowerCase();
+      return matchFieldName || matchAttr;
+    })
     .map((v) => ({
       label: v.label ?? v.value ?? v[fieldName] ?? "",
       value: v.id,
     }));
+
 
 export const parsedOptions = (data: any, item: any) => {
 

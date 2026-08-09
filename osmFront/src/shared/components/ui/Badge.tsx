@@ -16,7 +16,11 @@ type BadgeVariant =
   | "danger"
   | "warning"
   | "info"
-  | "neutral";
+  | "neutral"
+  | "outline"
+  | "default"
+  | "destructive"
+  | (string & {});
 type BadgeSize = "sm" | "md" | "lg";
 
 interface BadgeProps {
@@ -29,9 +33,13 @@ interface BadgeProps {
   className?: string;
 }
 
-const variantStyles: Record<BadgeVariant, { solid: string; outline: string }> =
+const variantStyles: Record<string, { solid: string; outline: string }> =
   {
     primary: {
+      solid: "bg-primary text-white",
+      outline: "border-primary text-primary bg-primary/10",
+    },
+    default: {
       solid: "bg-primary text-white",
       outline: "border-primary text-primary bg-primary/10",
     },
@@ -47,6 +55,10 @@ const variantStyles: Record<BadgeVariant, { solid: string; outline: string }> =
       solid: "bg-danger text-white",
       outline: "border-danger text-danger bg-danger/10",
     },
+    destructive: {
+      solid: "bg-danger text-white",
+      outline: "border-danger text-danger bg-danger/10",
+    },
     warning: {
       solid: "bg-highlight text-white",
       outline: "border-highlight text-highlight bg-highlight/10",
@@ -58,6 +70,10 @@ const variantStyles: Record<BadgeVariant, { solid: string; outline: string }> =
     neutral: {
       solid: "bg-elevated text-main",
       outline: "border-primary/20 text-secondary bg-transparent",
+    },
+    outline: {
+      solid: "border border-border text-foreground bg-transparent",
+      outline: "border border-border text-foreground bg-transparent",
     },
   };
 
@@ -76,14 +92,22 @@ export function Badge({
   outline = false,
   className,
 }: BadgeProps) {
+  const isOutline = outline || variant === "outline";
+  const currentVariantStyle =
+    (variant && variantStyles[variant]) || variantStyles.primary;
+
+  const styleClass = isOutline
+    ? currentVariantStyle?.outline
+      ? `border ${currentVariantStyle.outline}`
+      : "border border-border text-foreground bg-transparent"
+    : currentVariantStyle?.solid || "bg-primary text-white";
+
   return (
     <span
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full font-medium transition-colors",
-        outline
-          ? `border ${variantStyles[variant].outline}`
-          : variantStyles[variant].solid,
-        sizeStyles[size],
+        styleClass,
+        sizeStyles[size] || sizeStyles.md,
         className
       )}
     >

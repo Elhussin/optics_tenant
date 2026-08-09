@@ -1,5 +1,4 @@
-from django.core.mail import send_mail
-from django.conf import settings
+from core.tasks import async_send_email
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from optics_tenant.config_loader import config
@@ -26,8 +25,7 @@ def send_activation_email(email, token):
     )
     message = str(message_template).format(link=activation_link)
 
-    send_mail(str(_("Activate your account")), message,
-              settings.DEFAULT_FROM_EMAIL, [email])
+    async_send_email.delay(str(_("Activate your account")), message, [email])
 
 
 def send_message_acount_activated(email, schema_name, name):
@@ -54,8 +52,7 @@ def send_message_acount_activated(email, schema_name, name):
         email=email
     )
 
-    send_mail(str(_("Account Activated")), message,
-              settings.DEFAULT_FROM_EMAIL, [email])
+    async_send_email.delay(str(_("Account Activated")), message, [email])
 
 
 def send_password_reset_email(email, url):
@@ -69,8 +66,7 @@ def send_password_reset_email(email, url):
     )
     message = str(message_template).format(url=url)
 
-    send_mail(str(_("Reset your password")), message,
-              settings.DEFAULT_FROM_EMAIL, [email])
+    async_send_email.delay(str(_("Reset your password")), message, [email])
 
 
 def send_password_change_email(email):
@@ -80,8 +76,7 @@ def send_password_change_email(email):
         "Thanks,\n"
         "Solo Vizion Team"
     )
-    send_mail(str(_("Password Changed")), str(message),
-              settings.DEFAULT_FROM_EMAIL, [email])
+    async_send_email.delay(str(_("Password Changed")), str(message), [email])
 
 
 def send_failed_activation_email(email):
@@ -90,5 +85,4 @@ def send_failed_activation_email(email):
         "Your account activation failed.\n"
         "Please try again by clicking previous activation link.\n"
     )
-    send_mail(str(_("Account Activation Failed")), str(
-        message), settings.DEFAULT_FROM_EMAIL, [email])
+    async_send_email.delay(str(_("Account Activation Failed")), str(message), [email])

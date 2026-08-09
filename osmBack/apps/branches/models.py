@@ -42,6 +42,17 @@ class Branch(BaseModel):
     cr_number = models.CharField(max_length=50, blank=True, verbose_name=_('CR Number (Sub)'))
     tax_number = models.CharField(max_length=50, blank=True, verbose_name=_('Tax Number (VAT)'))
     
+    # ZATCA Phase 2 Credentials
+    zatca_csid = models.TextField(blank=True, verbose_name=_('ZATCA CSID Token'))
+    zatca_private_key = models.TextField(blank=True, verbose_name=_('ZATCA Private Key (ECDSA)'))
+    zatca_certificate = models.TextField(blank=True, verbose_name=_('ZATCA Stamp Certificate'))
+    zatca_environment = models.CharField(
+        max_length=20,
+        choices=[('sandbox', 'Sandbox'), ('simulation', 'Simulation'), ('production', 'Production')],
+        default='sandbox',
+        verbose_name=_('ZATCA Environment')
+    )
+    
     # POS Receipt Configurations
     receipt_header = models.TextField(blank=True, verbose_name=_('Receipt Header'), help_text=_('Text printed at the top of the receipt'))
     receipt_footer = models.TextField(blank=True, verbose_name=_('Receipt Footer'), help_text=_('Text printed at the bottom (e.g. Return Policy)'))
@@ -99,11 +110,45 @@ class BranchUsers(BaseModel):
         verbose_name_plural = _('Branch Users')
 
 
+class BranchShiftTemplate(BaseModel):
+    branch = models.ForeignKey(
+        Branch, on_delete=models.CASCADE, related_name='shift_templates', verbose_name=_('Branch'))
+    name = models.CharField(max_length=100, verbose_name=_('Shift Name'))
+    day_of_week = models.CharField(
+        max_length=20,
+        choices=[
+            ('sunday', _('Sunday')),
+            ('monday', _('Monday')),
+            ('tuesday', _('Tuesday')),
+            ('wednesday', _('Wednesday')),
+            ('thursday', _('Thursday')),
+            ('friday', _('Friday')),
+            ('saturday', _('Saturday')),
+        ],
+        verbose_name=_('Day of Week')
+    )
+    start_time = models.TimeField(verbose_name=_('Start Time'))
+    end_time = models.TimeField(verbose_name=_('End Time'))
+    is_active = models.BooleanField(default=True, verbose_name=_('Is Active'))
+
+    def __str__(self):
+        return f"{self.branch.name} - {self.name} ({self.get_day_of_week_display()})"
+
+    class Meta:
+        verbose_name = _('Branch Shift Template')
+        verbose_name_plural = _('Branch Shift Templates')
+        unique_together = ('branch', 'name', 'day_of_week')
+
+
 class Shift(BaseModel):
     branch = models.ForeignKey(
         Branch, on_delete=models.CASCADE, related_name='shifts', verbose_name=_('Branch'))
     employee = models.ForeignKey(
         Employee, on_delete=models.CASCADE, related_name='shifts', verbose_name=_('Employee'))
+    shift_template = models.ForeignKey(
+        BranchShiftTemplate, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='assigned_shifts', verbose_name=_('Shift Template')
+    )
     start_time = models.DateTimeField(verbose_name=_('Start Time'))
     end_time = models.DateTimeField(verbose_name=_('End Time'))
     notes = models.TextField(blank=True, null=True, verbose_name=_('Notes'))

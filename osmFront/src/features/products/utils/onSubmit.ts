@@ -32,19 +32,47 @@ export const onSubmit = async (data: any, form: any, t: any, id?: string) => {
             if (Object.keys(errorDetails).length > 0) {
                 const formValues = form.getValues();
 
+                const IGNORED_KEYS = new Set([
+                    "status_code",
+                    "timestamp",
+                    "detail",
+                    "non_field_errors",
+                    "error",
+                    "message",
+                    "code",
+                    "success",
+                ]);
+
+                const KNOWN_VARIANT_FIELDS = new Set([
+                    "selling_price",
+                    "cost_price",
+                    "min_selling_price",
+                    "spherical",
+                    "cylinder",
+                    "axis",
+                    "frame_color",
+                    "lens_diameter",
+                    "lens_material",
+                    "lens_color",
+                    "lens_base_curve",
+                    "stock",
+                    "barcode",
+                    "attributes",
+                    "sku",
+                    "product_type",
+                ]);
+
                 Object.entries(errorDetails).forEach(([key, messages]: [string, any]) => {
+                    if (IGNORED_KEYS.has(key)) return;
+
                     const message = Array.isArray(messages) ? messages[0] : String(messages);
 
                     // A. Attempt to set error on top-level field
                     form.setError(key, { type: 'manual', message });
 
-                    // B. Heuristic: If the key seems like a variant field (validation failure from backend often comes flat for manual creation),
-                    // try to attach it to variants if they exist.
-                    if (formValues?.variants && Array.isArray(formValues.variants)) {
+                    // B. Only attach to variants if key is actually a variant field
+                    if (KNOWN_VARIANT_FIELDS.has(key) && formValues?.variants && Array.isArray(formValues.variants)) {
                         formValues.variants.forEach((_: any, index: number) => {
-                            // We optimistically set the error on this field for all variants
-                            // This ensures that whichever variant caused the issue displays the error.
-                            // If the field doesn't exist on a variant, React Hook Form usually ignores/handles it gracefully.
                             form.setError(`variants.${index}.${key}`, { type: 'manual', message });
                         });
                     }

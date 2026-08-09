@@ -162,7 +162,7 @@ export function CreateOrder() {
     onSuccess: (data) => {
       safeToast(t("toasts.createSuccess"), { type: "success" });
       store.reset();
-      router.push(`/dashboard/orders/${data.id}`);
+      router.push(`/dashboard/orders/${data.id}?print=true`);
     },
     onError: (error) => {
       safeToast(

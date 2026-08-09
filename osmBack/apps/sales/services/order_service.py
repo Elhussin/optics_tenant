@@ -14,6 +14,68 @@ def calculate_order_totals(order):
 
 
 @transaction.atomic
+def create_order(branch, customer, items_data, payment_method, discount, user):
+    """
+    Creates an order, adds items, calculates totals, and confirms it.
+    items_data: list of dicts {'variant_id': int, 'quantity': int, 'price': Decimal/str}
+    """
+    from decimal import Decimal
+    from apps.sales.models import Order, OrderItem
+    from apps.products.models import ProductVariant
+    
+    subtotal = Decimal('0')
+    order_items = []
+    
+    for item in items_data:
+        try:
+            variant = ProductVariant.objects.get(id=item['variant_id'])
+            quantity = int(item.get('quantity', 1))
+            price = Decimal(item.get('price', str(variant.price)))
+            
+            subtotal += price * quantity
+            order_items.append({
+                'variant': variant,
+                'quantity': quantity,
+                'price': price,
+            })
+        except ProductVariant.DoesNotExist:
+            raise ValidationError(_('Product {id} not found').format(id=item['variant_id']))
+
+    tax_rate = Decimal('0.15')
+    discounted_subtotal = subtotal - discount
+    tax_amount = discounted_subtotal * tax_rate
+    total_amount = discounted_subtotal + tax_amount
+
+    order = Order.objects.create(
+        branch=branch,
+        customer=customer,
+        order_type='cash',
+        payment_method=payment_method,
+        subtotal=subtotal,
+        discount_amount=discount,
+        tax_rate=tax_rate,
+        tax_amount=tax_amount,
+        total_amount=total_amount,
+        paid_amount=total_amount if payment_method == 'cash' else Decimal('0'),
+        payment_status='paid' if payment_method == 'cash' else 'pending',
+        status='pending',
+    )
+
+    for item in order_items:
+        OrderItem.objects.create(
+            order=order,
+            product_variant=item['variant'],
+            quantity=item['quantity'],
+            unit_price=item['price'],
+        )
+
+    # Automatically confirm it to trigger invoice and stock reservations
+    confirm_order(order, user)
+    
+    return order
+
+
+@transaction.atomic
 def confirm_order(order, user):
     """
     Confirm Order: Reserves stock

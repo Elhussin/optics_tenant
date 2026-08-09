@@ -98,6 +98,59 @@ def create_invoice_journal_entry(invoice):
             description=f"Invoice Amount - {invoice.invoice_number}"
         ))
 
+    # -----------------------------------------------------
+    # Calculate COGS from Stock Movements for Sales
+    # -----------------------------------------------------
+    if invoice.invoice_type.action_type in ['sale', 'return_sale']:
+        cogs_amount = Decimal(0)
+        # Fetch related stock movements
+        for movement in invoice.stock_movements.all():
+            if movement.movement_type in ['sale', 'return']:
+                cogs_amount += Decimal(str(movement.quantity)) * Decimal(str(movement.cost_per_unit))
+                
+        if cogs_amount > 0:
+            inventory_account = ChartOfAccounts.get_by_subtype('inventory')
+            cogs_account = ChartOfAccounts.get_by_subtype('cost_of_goods')
+            
+            # Fallbacks
+            if not inventory_account:
+                inventory_account = ChartOfAccounts.objects.filter(account_type='asset', name__icontains='inventory').first()
+            if not cogs_account:
+                cogs_account = ChartOfAccounts.objects.filter(account_type='cogs').first()
+                
+            if inventory_account and cogs_account:
+                if invoice.invoice_type.action_type == 'sale':
+                    # Sale: Dr COGS, Cr Inventory
+                    lines.append(JournalLine(
+                        journal=journal_entry,
+                        account=cogs_account,
+                        credit=0,
+                        debit=cogs_amount,
+                        description=f"Cost of Goods Sold - {invoice.invoice_number}"
+                    ))
+                    lines.append(JournalLine(
+                        journal=journal_entry,
+                        account=inventory_account,
+                        credit=cogs_amount,
+                        debit=0,
+                        description=f"Inventory Deduction - {invoice.invoice_number}"
+                    ))
+                elif invoice.invoice_type.action_type == 'return_sale':
+                    # Return Sale: Dr Inventory, Cr COGS
+                    lines.append(JournalLine(
+                        journal=journal_entry,
+                        account=inventory_account,
+                        credit=0,
+                        debit=cogs_amount,
+                        description=f"Inventory Return - {invoice.invoice_number}"
+                    ))
+                    lines.append(JournalLine(
+                        journal=journal_entry,
+                        account=cogs_account,
+                        credit=cogs_amount,
+                        debit=0,
+                        description=f"COGS Reversal - {invoice.invoice_number}"
+                    ))
     # Bulk create lines
     if lines:
         JournalLine.objects.bulk_create(lines)

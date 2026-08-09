@@ -1,8 +1,7 @@
 # api/urls.py
 from django.urls import path, include
 
-urlpatterns = [
-
+v1_patterns = [
     path('core/', include('core.urls')),
     path('users/', include('apps.users.urls')),
     path('sales/', include('apps.sales.urls')),
@@ -17,4 +16,12 @@ urlpatterns = [
 
     # Mobile APIs
     path('', include('apps.api.urls')),
+]
+
+urlpatterns = [
+    # Path-based API Versioning (v1)
+    path('v1/', include(v1_patterns)),
+
+    # Legacy Fallback (without version prefix) for backward compatibility
+    path('', include(v1_patterns)),
 ]

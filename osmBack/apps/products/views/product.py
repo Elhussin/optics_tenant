@@ -103,3 +103,25 @@ class ProductVariantOfferViewSet(ProductBaseViewSet):
     """
     queryset = ProductVariantOffer.objects.all()
     serializer_class = ProductVariantOfferSerializer
+
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from apps.products.serializers.product import LensMatrixGenerateSerializer
+from apps.products.services.lens_matrix_service import generate_lens_matrix
+
+
+class LensMatrixGenerateAPIView(APIView):
+    """
+    API View for bulk generating SPH x CYL lens variants with duplicate prevention.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        serializer = LensMatrixGenerateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        result = generate_lens_matrix(**serializer.validated_data)
+        return Response(result, status=status.HTTP_201_CREATED)
+

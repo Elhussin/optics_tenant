@@ -26,6 +26,8 @@ import { useProductFormStore } from "@/src/features/products/store/useProductFor
 import { AttributesSection } from "./AttributesSection";
 import { motion, AnimatePresence } from "framer-motion";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
+import { LensMatrixModal } from "../../variant/LensMatrixModal";
+
 
 interface ProductVariantStepProps {
   form: any;
@@ -152,22 +154,35 @@ export function ProductVariantStep({
           </GlassCard>
         </div>
 
-        {variantType !== "basic" && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleAddVariant}
-            className={cn(
-              "gap-2 border-2 border-dashed border-primary/50",
-              "text-primary hover:bg-primary/10",
-              "hover:scale-105 transition-all",
-            )}
-          >
-            <Plus className="w-4 h-4" />
-            {t("variants.add")}
-          </Button>
-        )}
+        <div className="flex items-center gap-2">
+          {(variantType === "stockLenses" || variantType === "contactLenses") && (
+            <LensMatrixModal
+              productId={form.getValues("id")}
+              variantType={variantType}
+              onSuccess={() => {
+                // Trigger form refetch or reload if needed
+              }}
+            />
+          )}
+
+          {variantType !== "basic" && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddVariant}
+              className={cn(
+                "gap-2 border-2 border-dashed border-primary/50",
+                "text-primary hover:bg-primary/10",
+                "hover:scale-105 transition-all",
+              )}
+            >
+              <Plus className="w-4 h-4" />
+              {t("variants.add")}
+            </Button>
+          )}
+        </div>
       </div>
+
 
       {/* ✨ Variants Error Message */}
       <AnimatePresence>

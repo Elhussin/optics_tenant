@@ -10,25 +10,35 @@ export const filterData = (
   const selectedData = selectRelatedData(data, filterField);
   let filteredData = selectedData;
 
+  // Category dependent filtering based on selected main_group (e.g. FR, SL, CL)
+  if (filterField === "categories" && selectedType) {
+    filteredData = selectedData?.filter((cat: any) => {
+      if (!cat) return false;
+      if (cat.main_group) {
+        return cat.main_group === selectedType || cat.main_group === "all";
+      }
+      return true;
+    });
+  }
+
   // Apply subFilter logic if defined in config
   if (item.subFilter && selectedType) {
-    // Check if using prefix-based filtering
     if (item.subFilterType === "prefix") {
-      console.log("prefix", selectedType);
-      // Filter by prefix: value starts with selectedType (e.g., "FR-SG" starts with "FR")
       filteredData = selectedData?.filter((v: any) => {
         const value = v[item.subFilter] || v.value || "";
         return value.toString().startsWith(selectedType);
       });
     } else {
-      // Default: exact match or "All"
-      // Example: item.subFilter = "product_type", selectedType = "FR"
-      // We want brands where brand.product_type == "FR" or "All"
       filteredData = selectedData?.filter(
-        (v: any) => v[item.subFilter] === selectedType || v[item.subFilter] === "All"
+        (v: any) =>
+          !v[item.subFilter] ||
+          v[item.subFilter] === selectedType ||
+          v[item.subFilter] === "All" ||
+          v[item.subFilter] === "all"
       );
     }
   }
+
 
   return parsedOptions(filteredData, item);
 };

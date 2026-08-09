@@ -48,6 +48,7 @@ export default function LoginForm(props: formRequestProps) {
   const onSubmit = async (data: any) => {
     try {
       const result = await submitForm(data);
+      console.log("Login result:", result);
       if (!result?.success) return;
 
       if (mode === "login") {

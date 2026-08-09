@@ -258,10 +258,39 @@ export default function ReportsPage() {
     year: "هذه السنة",
   };
 
-  const handleExport = (type: "excel" | "pdf") => {
-    console.log(`Exporting report to ${type}...`);
-    // Placeholder for actual export logic
-    alert(`جاري تصدير التقرير بصيغة ${type.toUpperCase()}`);
+  const handleExport = async (type: "excel" | "pdf") => {
+    if (type === "pdf") {
+      const email = prompt("أدخل بريدك الإلكتروني لاستلام التقرير بصيغة PDF:");
+      if (!email) return;
+      
+      try {
+        await api.axios.get('/api/v1/sales/reports/async-financial-dashboard/', {
+          params: {
+            email,
+            branch_id: branchId === "all" ? undefined : branchId,
+            // Assuming period implies some dates, but for now we just pass what we have
+          }
+        });
+        alert("تم بدء تجهيز التقرير، سيصلك عبر البريد الإلكتروني قريباً.");
+      } catch (err) {
+        alert("حدث خطأ أثناء طلب التقرير.");
+      }
+    } else {
+      // Very basic CSV export for Excel
+      if (!financial) return;
+      
+      const csvContent = "data:text/csv;charset=utf-8,\uFEFF" 
+        + "المبيعات,المرتجعات,المشتريات,المبالغ المعلقة\n"
+        + `${financial.sales?.gross_total || 0},${financial.returns?.total || 0},${financial.purchases?.total || 0},${financial.sales?.pending_amount || 0}`;
+        
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `financial_report_${period}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   return (

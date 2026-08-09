@@ -80,6 +80,7 @@ export const ENTITY_TRANSLATION_MAP: Record<string, string> = {
     "stock-movements": "forms/operations",
     "transfers": "forms/inventory",
     "branches-shift": "forms/operations",
+    "branch-shift-templates": "forms/operations",
     "product-supplier": "forms/operations",
     "invoices": "forms/operations",
     "sales-payments": "forms/operations",

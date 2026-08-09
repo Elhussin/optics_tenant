@@ -5,8 +5,8 @@
   "scripts": {
     "gen-ts": "openapi-typescript APIfILE.yaml -o lib/api/types.ts",
     "gen-ts1": "openapi-zod-client APIfILE.yaml -o lib/api/zodClient.ts",
-    "gen-zod": "openapi-zod-client http://localhost:8000/api/schema -o src/shared/api/schemas.ts",
-    "gen-zod-client": "openapi-zod-client http://store1.localhost:8000/api/schema -o src/shared/api/schemas.ts",
+    "gen-zod": "openapi-zod-client http://localhost:8000/api/schema -o src/shared/api/schemas.ts && node scripts/fix-zod-schemas.js",
+    "gen-zod-client": "openapi-zod-client http://store22.localhost:8000/api/schema -o src/shared/api/schemas.ts && node scripts/fix-zod-schemas.js",
     "run": "next dev",
     "dev": "next dev  --turbopack",
     "build": "next build",

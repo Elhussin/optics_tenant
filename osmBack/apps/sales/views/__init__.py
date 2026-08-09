@@ -40,6 +40,7 @@ from apps.sales.views.reports import (
     TopProductsView,
     BranchComparisonView,
     FinancialDashboardView,
+    AsyncFinancialDashboardView,
     ReceivablesAgingView,
     PendingOrdersView,
 )

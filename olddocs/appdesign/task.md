@@ -30,6 +30,6 @@
     - [x] Create `appdesign/ZATCA Integration Specs.md`
   - [x] Backend Refactoring
     - [x] Deploy and configure Redis & Celery engine
-    - [x] Implement ZATCA Phase 1 & 2 integration (XML, cryptographic hashing)
+    - [x] Implement ZATCA Phase 1 & 2 int egration (XML, cryptographic hashing)
     - [x] Refactor Mobile API BFF views to use service layer
 - [/] Stage 5: Enterprise Optimization

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { api } from "@/src/shared/api/axios";
 import { GlassCard } from "@/src/shared/components/ui/GlassCard";
 import { Badge } from "@/src/shared/components/ui/Badge";
@@ -23,6 +23,7 @@ export function InvoiceDetailPage() {
   const t = useTranslations("invoices");
   const locale = useLocale();
   const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const id = params.id as string;
 
@@ -34,6 +35,15 @@ export function InvoiceDetailPage() {
   useEffect(() => {
     fetchInvoice();
   }, [id]);
+
+  useEffect(() => {
+    if (searchParams.get('print') === 'true' && invoice) {
+      // Small timeout to allow render
+      setTimeout(() => {
+        window.print();
+      }, 500);
+    }
+  }, [searchParams, invoice]);
 
   const fetchInvoice = async () => {
     try {
@@ -223,10 +233,14 @@ export function InvoiceDetailPage() {
 
         {/* Print Only: Return Policy */}
         <div className="hidden print:block mt-12 pt-8 border-t-2 border-gray-200 text-center text-sm text-gray-600">
-          <h4 className="font-bold text-gray-800 mb-2">سياسة الاسترجاع والاستبدال</h4>
-          <p>يحق للعميل استبدال أو استرجاع البضاعة خلال 3 أيام من تاريخ الشراء، بشرط أن تكون بحالتها الأصلية.</p>
-          <p>العدسات الطبية المفصلة لا ترد ولا تستبدل إلا في حال وجود خطأ مصنعي.</p>
-          <p className="mt-4 font-bold">شكراً لزيارتكم!</p>
+          <p className="font-bold mb-2">سياسة الاسترجاع والاستبدال</p>
+          <ul className="text-right list-disc list-inside space-y-1">
+            <li>الاسترجاع متاح خلال 3 أيام من تاريخ الفاتورة للمنتجات غير المستخدمة وبحالتها الأصلية.</li>
+            <li>الاستبدال متاح خلال 7 أيام من تاريخ الفاتورة.</li>
+            <li>العدسات الطبية والمنتجات المخصصة غير قابلة للاسترجاع إلا في حال وجود عيب مصنعي.</li>
+            <li>يجب إحضار أصل الفاتورة لإتمام أي عملية استرجاع أو استبدال.</li>
+          </ul>
+          <p className="mt-4 font-semibold text-lg text-main">شكراً لتسوقكم معنا!</p>
         </div>
       </GlassCard>
 

@@ -38,7 +38,7 @@ export const useQuickSale = () => {
     return useMutation({
         mutationFn: (data: Parameters<typeof api.mobile_quick_sale_create>[0]) =>
             api.mobile_quick_sale_create(data),
-        onSuccess: (data) => {
+        onSuccess: (data: any) => {
             toast.success(`Sale #${data.order_number} created successfully`);
             queryClient.invalidateQueries({ queryKey: ['mobile', 'dashboard'] });
         },

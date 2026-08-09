@@ -136,6 +136,17 @@ export function useApiForm<
   };
 
   const submitForm = async (data?: any) => {
+    const isEvent =
+      data &&
+      typeof data === "object" &&
+      ("nativeEvent" in data ||
+        "preventDefault" in data ||
+        (typeof Event !== "undefined" && data instanceof Event));
+
+    if (isEvent) {
+      data.preventDefault?.();
+    }
+
     const isValid = await methods.trigger();
     if (!isValid) {
       const fieldErrors = Object.values(methods.formState.errors).map(
@@ -147,7 +158,7 @@ export function useApiForm<
       };
     }
 
-    const values = data ?? methods.getValues();
+    const values = data && !isEvent ? data : methods.getValues();
     let payload = transform ? transform(values) : values;
 
     try {
@@ -189,7 +200,11 @@ export function useApiForm<
           } else {
             if (v !== null && v !== undefined) {
               if (typeof v === "object" && !(v instanceof Date)) {
-                fd.append(k, JSON.stringify(v));
+                try {
+                  fd.append(k, JSON.stringify(v));
+                } catch {
+                  fd.append(k, String(v));
+                }
               } else {
                 fd.append(k, String(v));
               }

@@ -10,8 +10,8 @@ import React from "react";
 import { Link } from "@/src/app/i18n/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@/src/features/auth/hooks/UserContext";
-import { X, ChevronRight, Sparkles, Search } from "lucide-react";
-import { URLDATA, navUrl } from "@/src/shared/constants/url";
+import { X, ChevronRight, Sparkles, Search, ChevronDown } from "lucide-react";
+import { URLDATA, navUrl, APPS_MODULES } from "@/src/shared/constants/url";
 import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
@@ -146,6 +146,23 @@ const AsideDefaultContent = () => {
   const locale = useLocale();
   const isRTL = locale === "ar";
   const { isVisible, toggleAside } = useAside();
+  
+  // Track which App module is currently expanded
+  const [expandedApp, setExpandedApp] = React.useState<string | null>(null);
+
+  // Auto-expand the active app module on pathname change
+  React.useEffect(() => {
+    const activeApp = APPS_MODULES.find(app =>
+      app.links.some(
+        link =>
+          pathname === link.path ||
+          (link.path !== "/" && pathname?.startsWith(link.path))
+      )
+    );
+    if (activeApp) {
+      setExpandedApp(activeApp.id);
+    }
+  }, [pathname]);
 
   /**
    * ✨ Enhanced NavItem with animations
@@ -330,10 +347,84 @@ const AsideDefaultContent = () => {
             <div className="h-px flex-1 bg-border" />
           </div>
 
-          {/* Navigation Items */}
-          {URLDATA.map((item, index) => (
-            <NavItem key={item.path} item={item} index={index} />
-          ))}
+          {/* App Modules (Accordion) */}
+          <div className="flex flex-col gap-2">
+            {APPS_MODULES.map((app, index) => {
+              const isExpanded = expandedApp === app.id;
+              const hasLinks = app.links.length > 0;
+              
+              // Check if any link inside is active to highlight parent
+              const isActiveApp = app.links.some(link => pathname === link.path || (link.path !== '/' && pathname?.startsWith(link.path)));
+
+              if (!hasLinks) return null; // Hide empty apps for now
+
+              return (
+                <div key={app.id} className="flex flex-col gap-1">
+                  <motion.button
+                    initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => {
+                      setExpandedApp(isExpanded ? null : app.id);
+                    }}
+                    className={cn(
+                      "flex items-center justify-between px-4 py-3 rounded-xl w-full text-left",
+                      "transition-all duration-200 group relative overflow-hidden outline-none",
+                      isActiveApp || isExpanded
+                        ? `bg-gradient-to-r ${app.color} text-foreground font-semibold shadow-sm border-2 border-primary/20`
+                        : "text-muted-foreground hover:text-foreground hover:bg-elevated hover:shadow-sm border-2 border-transparent hover:border-primary/10",
+                    )}
+                  >
+                    {/* Active highlight bg */}
+                    {(isActiveApp || isExpanded) && (
+                       <motion.div
+                         layoutId="active-app-sidebar"
+                         className={cn(
+                           "absolute inset-0 bg-gradient-to-r from-primary/5 to-transparent",
+                           "rounded-xl",
+                         )}
+                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                       />
+                    )}
+
+                    <div className="flex items-center gap-3 relative z-10">
+                      <span className={cn("transition-all duration-200 group-hover:scale-110 group-hover:rotate-3", (isActiveApp || isExpanded) && "text-primary scale-110")}>
+                        <app.icon size={20} strokeWidth={2} />
+                      </span>
+                      <span className="flex-1 text-sm">{t(app.name)}</span>
+                    </div>
+                    
+                    <ChevronDown
+                      className={cn(
+                        "relative z-10 transition-transform duration-200",
+                        isExpanded ? "rotate-180 text-primary" : "text-muted-foreground"
+                      )}
+                      size={16}
+                    />
+                  </motion.button>
+                  
+                  {/* Expanded Links */}
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <div className={cn("flex flex-col gap-1 mt-1", isRTL ? "pr-4 border-r-2" : "pl-4 border-l-2", "border-primary/20 ml-2 mr-2")}>
+                          {app.links.map((link, linkIndex) => (
+                            <NavItem key={link.path} item={link} index={linkIndex} />
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
+          </div>
         </>
       ) : (
         <>

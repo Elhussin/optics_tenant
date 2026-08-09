@@ -163,7 +163,9 @@
       "selectVariantType": "Please select a variant type",
       "invalidVariantsData": "Please fill in variant data correctly",
       "variantAddedSuccess": "Variant added successfully",
-      "variantAddError": "Failed to add variant: {error}"
+      "variantAddError": "Failed to add variant: {error}",
+      "saveProductFirst": "Please save the product first before generating the lens matrix",
+      "invalidPrice": "Please enter a valid selling price"
     },
     "actions": {
       "save": "Save Product",

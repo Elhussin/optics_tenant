@@ -1,0 +1,126 @@
+services:
+  tenant_db:
+    image: postgres:16
+    container_name: optics_db_prod
+    env_file:
+      - ./.env
+    restart: always
+    environment:
+      POSTGRES_DB: "${DB_NAME:-optics_db}"
+      POSTGRES_USER: "${DB_USER:-postgres}"
+      POSTGRES_PASSWORD: "${DB_PASSWORD:-postgres}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - optics_postgres_data_prod:/var/lib/postgresql/data
+    networks:
+      - app-network_prod
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-optics_db} || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 2G
+
+  redis:
+    image: redis:7-alpine
+    container_name: optics_redis_prod
+    restart: always
+    networks:
+      - app-network_prod
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    build:
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: optics_backend_prod
+    restart: always
+    env_file:
+      - ./osmBack/.env
+    environment:
+      - DB_HOST=tenant_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=False
+    volumes:
+      - optics_static_volume_prod:/app/staticfiles
+      - optics_media_volume_prod:/app/media
+    expose:
+      - "8000"
+    networks:
+      - app-network_prod
+    depends_on:
+      tenant_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  celery_worker:
+    build:
+      context: ./osmBack
+      dockerfile: Dockerfile
+    container_name: optics_celery_prod
+    command: celery -A optics_tenant worker -l warning --concurrency=2
+    restart: always
+    env_file:
+      - ./osmBack/.env
+    environment:
+      - DB_HOST=tenant_db
+      - REDIS_URL=redis://redis:6379/0
+      - DEBUG=False
+    volumes:
+      - optics_media_volume_prod:/app/media
+    networks:
+      - app-network_prod
+    depends_on:
+      backend:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  frontend:
+    build:
+      context: ./osmFront
+      dockerfile: Dockerfile
+      target: runner
+      args:
+        NEXT_PUBLIC_API_BASE: "https://osmbeta.cloud/api"
+    container_name: optics_frontend_prod
+    command: node server.js
+    restart: always
+    expose:
+      - "3000"
+    networks:
+      - app-network_prod
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+volumes:
+  optics_postgres_data_prod:
+  optics_static_volume_prod:
+  optics_media_volume_prod:
+
+networks:
+  app-network_prod:
+    name: optics_prod_network

@@ -15,8 +15,9 @@ import { getBaseUrl } from "@/src/shared/utils/getBaseUrl";
 import { Zodios, type ZodiosInstance } from "@zodios/core";
 import { parseCookies } from "nookies"; // مكتبة صغيرة لقراءة الكوكيز في server/client
 
-interface CustomZodiosInstance extends ZodiosInstance<typeof endpoints> {
+interface CustomZodiosInstance extends ZodiosInstance<any> {
   customRequest: (alias: string, data?: any) => Promise<any>;
+  [key: string]: any;
 }
 
 const axiosInstance = axios.create({
@@ -105,7 +106,7 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export const api: CustomZodiosInstance = new Zodios(endpoints, {
+export const api: CustomZodiosInstance = new Zodios(endpoints as any, {
   axiosInstance,
 }) as CustomZodiosInstance;
 
@@ -214,6 +215,7 @@ api.customRequest = async function (alias: string, data: any = {}) {
 
   try {
     const response = await axiosInstance(config);
+    console.log("Login result:", response.data);
     return response.data;
   } catch (error) {
     throw error;

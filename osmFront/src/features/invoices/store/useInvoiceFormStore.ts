@@ -115,14 +115,12 @@ export const useInvoiceFormStore = create<InvoiceFormState>((set, get) => ({
     calculateTotals: () => {
         const { items, paidAmount } = get();
 
-        // Calculate subtotal
+        // Calculate subtotal (tax-exclusive)
         const subtotal = items.reduce((sum, item) => {
-            return sum + (item.total_price || (item.quantity * item.unit_price));
+            return sum + (item.quantity * item.unit_price);
         }, 0);
 
-        // Calculate tax (assuming items include tax or tax is calculated separately)
-        // Check if items have tax_amount. If not, assume 0 for now or calculate global tax
-        // For simplicity, summing item tax_amount if available
+        // Calculate tax by summing item tax_amount
         const taxAmount = items.reduce((sum, item) => sum + (item.tax_amount || 0), 0);
 
         const totalAmount = subtotal + taxAmount;

@@ -333,7 +333,27 @@ export const dashboardLink = [
     isTenant: true,
     icon: Store,
   },
+  {
+    href: "branch-shift-templates",
+    roles: ["TenantOwner", "TenantAdmin", "BranchManager"],
+    group: "Branch",
+    isTenant: true,
+    icon: Store,
+  },
   // Product
+   {
+    href: "products",
+    roles: [
+      "TenantOwner",
+      "TenantAdmin",
+      "InventoryManager",
+      "BranchManager",
+      "SalesClerk",
+    ],
+    group: "Product",
+    isTenant: true,
+    icon: Package,
+  },
   {
     href: "attributes",
     roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],
@@ -376,19 +396,7 @@ export const dashboardLink = [
     isTenant: true,
     icon: Layers,
   },
-  {
-    href: "products",
-    roles: [
-      "TenantOwner",
-      "TenantAdmin",
-      "InventoryManager",
-      "BranchManager",
-      "SalesClerk",
-    ],
-    group: "Product",
-    isTenant: true,
-    icon: Package,
-  },
+ 
   {
     href: "product-images",
     roles: ["TenantOwner", "TenantAdmin", "InventoryManager"],

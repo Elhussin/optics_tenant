@@ -15,7 +15,8 @@ from apps.sales.views import (
 from apps.sales.views import (
     SalesSummaryView, SalesByDateView, InventorySummaryView,
     StockMovementsReportView, TopProductsView, BranchComparisonView,
-    FinancialDashboardView, ReceivablesAgingView, PendingOrdersView
+    FinancialDashboardView, ReceivablesAgingView, PendingOrdersView,
+    AsyncFinancialDashboardView
 )
 
 router = DefaultRouter()
@@ -71,6 +72,8 @@ urlpatterns = [
     # Reports - Financial (NEW)
     path('reports/financial-dashboard/',
          FinancialDashboardView.as_view(), name='financial-dashboard'),
+    path('reports/async-financial-dashboard/',
+         AsyncFinancialDashboardView.as_view(), name='async-financial-dashboard'),
     path('reports/receivables-aging/',
          ReceivablesAgingView.as_view(), name='receivables-aging'),
     path('reports/pending-orders/',

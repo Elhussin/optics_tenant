@@ -47,8 +47,10 @@ urlpatterns = [
          name='product-import-csv'),
 
     # Helper Views
+    path('lens-matrix/generate/', LensMatrixGenerateAPIView.as_view(), name='lens-matrix-generate'),
     path('variants/<int:variant_id>/stock-summary/',
          VariantStockSummaryAPIView.as_view(), name='variant-stock-summary'),
+
     path('variants/<int:variant_id>/nearest-branch/',
          NearestBranchAPIView.as_view(), name='nearest-branch'),
     path('orders/fulfillment-check/',

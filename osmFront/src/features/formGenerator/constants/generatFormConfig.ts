@@ -32,6 +32,18 @@ export const fieldTemplates: Record<string, FieldTemplate> = {
 };
 
 export const relationshipConfigs: RelationshipConfig = {
+  branch_shift_template: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'branch-shift-templates'
+  },
+  shift_template: {
+    labelField: 'name',
+    valueField: 'id',
+    searchField: 'name',
+    entityName: 'branch-shift-templates'
+  },
   categories_ids: {
     labelField: 'name',
     valueField: 'id',

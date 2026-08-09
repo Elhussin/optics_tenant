@@ -1,5 +1,5 @@
-site_name: EyeCare Platform Docs
-site_description: Comprehensive documentation for the EyeCare Optics Management System
+site_name: موسوعة منصة البصريات (Optics ERP Master Docs)
+site_description: التوثيق الهندسي الشامل والجامع لمنظومة البصريات والمحاسبة والمخزون
 site_author: Elhussin
 
 theme:
@@ -13,14 +13,14 @@ theme:
       accent: indigo
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: الانتقال للوضع الليلي
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
       accent: indigo
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
+        name: الانتقال للوضع النهار
   features:
     - navigation.tabs
     - navigation.sections
@@ -32,12 +32,6 @@ theme:
 
 plugins:
   - search
-  - mermaid2
-  - awesome-pages
-  - mkdocstrings:
-      handlers:
-        python:
-          paths: ["."]
 
 extra_css:
   - stylesheets/extra.css
@@ -55,17 +49,49 @@ markdown_extensions:
   - pymdownx.caret
   - pymdownx.critic
   - pymdownx.details
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
       custom_checkbox: true
+
+nav:
+  - 🏠 الرئيسية: index.md
+  - 🤖 مرجع الذكاء الاصطناعي: ai-reference.md
+  - 🚀 البدء والتشغيل:
+      - التشغيل المحلي: getting-started/local-setup.md
+      - بيئات Docker: getting-started/docker-environments.md
+  - ⚙️ الواجهة الخلفية (Backend):
+      - المعمارية وتعدد المستأجرين: backend/architecture.md
+      - المحاسبة وتكلفة البضاعة (COGS): backend/accounting-cogs.md
+      - دليل التطبيقات العام: backend/modules.md
+      - 📐 تطبيقات الخلفية المستقلة:
+          - 📊 المحاسبة (Accounting): backend/apps/accounting.md
+          - 🛒 المبيعات والفواتير (Sales): backend/apps/sales.md
+          - 📦 المنتجات والمخزون (Products): backend/apps/products.md
+          - 🩺 فحوصات النظر (Prescriptions): backend/apps/prescriptions.md
+          - 👥 إدارة العملاء (CRM): backend/apps/crm.md
+          - 👔 إدارة الموظفين (HRM): backend/apps/hrm.md
+          - 🏛️ الفروع والمخازن (Branches): backend/apps/branches.md
+          - 🌐 إدارة المستأجرين (Tenants): backend/apps/tenants.md
+          - 🔑 المستخدمين والأذونات (Users): backend/apps/users.md
+  - 🎨 الواجهة الأمامية (Frontend):
+      - المعمارية والـ Features: frontend/architecture.md
+      - نظام التطبيقات الجانبية: frontend/app-navigation.md
+      - دليل المكونات والنماذج: frontend/components-guide.md
+      - 📱 تطبيقات الواجهة المستقلة:
+          - 📊 تطبيق لوحة القيادة: frontend/modules/dashboard-app.md
+          - 🛒 تطبيق المبيعات: frontend/modules/sales-app.md
+          - 📦 تطبيق المخزون: frontend/modules/inventory-app.md
+          - 🩺 تطبيق العيادة: frontend/modules/medical-app.md
+          - 👥 تطبيق العملاء: frontend/modules/crm-app.md
+          - ⚙️ تطبيق الإعدادات: frontend/modules/settings-app.md
+  - 📜 مواصفات الأعمال:
+      - الفوترة الإلكترونية (ZATCA): business-specs/zatca-e-invoicing.md
+      - مصفوفة الصلاحيات والأدوار: business-specs/permissions-matrix.md

@@ -698,3 +698,21 @@ class ProductSerializer(serializers.ModelSerializer):
             logger.error(
                 f"Validation errors found in variants: {variant_errors}")
             raise serializers.ValidationError({'variants': variant_errors})
+
+
+class LensMatrixGenerateSerializer(serializers.Serializer):
+    product_id = serializers.IntegerField(required=True)
+    sph_start = serializers.FloatField(required=True)
+    sph_end = serializers.FloatField(required=True)
+    sph_step = serializers.FloatField(default=-0.25)
+    cyl_start = serializers.FloatField(default=0.0)
+    cyl_end = serializers.FloatField(default=0.0)
+    cyl_step = serializers.FloatField(default=-0.25)
+    lens_diameter_id = serializers.IntegerField(required=False, allow_null=True)
+    lens_material_id = serializers.IntegerField(required=False, allow_null=True)
+    lens_color_id = serializers.IntegerField(required=False, allow_null=True)
+    product_type_id = serializers.IntegerField(required=False, allow_null=True)
+    selling_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=True)
+    min_selling_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
+    variant_type = serializers.ChoiceField(choices=['stockLenses', 'contactLenses'], default='stockLenses')
+

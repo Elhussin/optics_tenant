@@ -441,6 +441,58 @@ const TrialBalanceResponse = z
     totals: TrialBalanceTotals,
   })
   .passthrough();
+const DayOfWeekEnum = z.enum([
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+]);
+const BranchShiftTemplate = z
+  .object({
+    id: z.number().int(),
+    branch__name: z.string(),
+    created_at: z.string().datetime({ offset: true }),
+    updated_at: z.string().datetime({ offset: true }),
+    name: z.string().max(100),
+    day_of_week: DayOfWeekEnum,
+    start_time: z.string(),
+    end_time: z.string(),
+    is_active: z.boolean().optional(),
+    branch: z.number().int(),
+  })
+  .passthrough();
+const PaginatedBranchShiftTemplateList = z
+  .object({
+    count: z.number().int(),
+    next: z.string().url().nullish(),
+    previous: z.string().url().nullish(),
+    results: z.array(BranchShiftTemplate),
+  })
+  .passthrough();
+const BranchShiftTemplateRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    day_of_week: DayOfWeekEnum,
+    start_time: z.string(),
+    end_time: z.string(),
+    is_active: z.boolean().optional(),
+    branch: z.number().int(),
+  })
+  .passthrough();
+const PatchedBranchShiftTemplateRequest = z
+  .object({
+    name: z.string().min(1).max(100),
+    day_of_week: DayOfWeekEnum,
+    start_time: z.string(),
+    end_time: z.string(),
+    is_active: z.boolean(),
+    branch: z.number().int(),
+  })
+  .partial()
+  .passthrough();
 const BranchUsers = z
   .object({
     id: z.number().int(),
@@ -478,6 +530,7 @@ const PatchedBranchUsersRequest = z
   .partial()
   .passthrough();
 const BranchTypeEnum = z.enum(["store", "branch"]);
+const ZatcaEnvironmentEnum = z.enum(["sandbox", "simulation", "production"]);
 const Branch = z
   .object({
     id: z.number().int(),
@@ -497,6 +550,10 @@ const Branch = z
     address: z.string().optional(),
     cr_number: z.string().max(50).optional(),
     tax_number: z.string().max(50).optional(),
+    zatca_csid: z.string().optional(),
+    zatca_private_key: z.string().optional(),
+    zatca_certificate: z.string().optional(),
+    zatca_environment: ZatcaEnvironmentEnum.optional(),
     receipt_header: z.string().optional(),
     receipt_footer: z.string().optional(),
     phone: z.string().max(20).optional(),
@@ -529,6 +586,10 @@ const BranchRequest = z
     address: z.string().optional(),
     cr_number: z.string().max(50).optional(),
     tax_number: z.string().max(50).optional(),
+    zatca_csid: z.string().optional(),
+    zatca_private_key: z.string().optional(),
+    zatca_certificate: z.string().optional(),
+    zatca_environment: ZatcaEnvironmentEnum.optional(),
     receipt_header: z.string().optional(),
     receipt_footer: z.string().optional(),
     phone: z.string().max(20).optional(),
@@ -553,6 +614,10 @@ const PatchedBranchRequest = z
     address: z.string(),
     cr_number: z.string().max(50),
     tax_number: z.string().max(50),
+    zatca_csid: z.string(),
+    zatca_private_key: z.string(),
+    zatca_certificate: z.string(),
+    zatca_environment: ZatcaEnvironmentEnum,
     receipt_header: z.string(),
     receipt_footer: z.string(),
     phone: z.string().max(20),
@@ -568,6 +633,7 @@ const Shift = z
     id: z.number().int(),
     branch__name: z.string(),
     employee__user__username: z.string(),
+    shift_template__name: z.string(),
     created_at: z.string().datetime({ offset: true }),
     updated_at: z.string().datetime({ offset: true }),
     is_active: z.boolean().optional(),
@@ -576,6 +642,7 @@ const Shift = z
     notes: z.string().nullish(),
     branch: z.number().int(),
     employee: z.number().int(),
+    shift_template: z.number().int().nullish(),
   })
   .passthrough();
 const PaginatedShiftList = z
@@ -594,6 +661,7 @@ const ShiftRequest = z
     notes: z.string().nullish(),
     branch: z.number().int(),
     employee: z.number().int(),
+    shift_template: z.number().int().nullish(),
   })
   .passthrough();
 const PatchedShiftRequest = z
@@ -604,6 +672,7 @@ const PatchedShiftRequest = z
     notes: z.string().nullable(),
     branch: z.number().int(),
     employee: z.number().int(),
+    shift_template: z.number().int().nullable(),
   })
   .partial()
   .passthrough();
@@ -725,7 +794,7 @@ const PatchedPageRequest = z
   .partial()
   .passthrough();
 const CSVImportRequest = z
-  .object({ csv_file: z.instanceof(File), config: z.unknown() })
+  .object({ csv_file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }), config: z.unknown() })
   .passthrough();
 const CSVImportResponse = z
   .object({
@@ -812,7 +881,7 @@ const ClaimDocumentRequest = z
     claim: z.number().int(),
     document_type: DocumentTypeEnum,
     title: z.string().min(1).max(200),
-    file: z.instanceof(File),
+    file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }),
     notes: z.string().optional(),
   })
   .passthrough();
@@ -821,7 +890,7 @@ const PatchedClaimDocumentRequest = z
     claim: z.number().int(),
     document_type: DocumentTypeEnum,
     title: z.string().min(1).max(200),
-    file: z.instanceof(File),
+    file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }),
     notes: z.string(),
   })
   .partial()
@@ -1205,7 +1274,7 @@ const DocumentRequest = z
   .object({
     is_active: z.boolean().optional(),
     title: z.string().min(1).max(255),
-    file: z.instanceof(File),
+    file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }),
     customer: z.number().int().nullish(),
   })
   .passthrough();
@@ -1213,7 +1282,7 @@ const PatchedDocumentRequest = z
   .object({
     is_active: z.boolean(),
     title: z.string().min(1).max(255),
-    file: z.instanceof(File),
+    file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }),
     customer: z.number().int().nullable(),
   })
   .partial()
@@ -1635,7 +1704,7 @@ const PartnerRequest = z
     name: z.string().min(1).max(200),
     name_en: z.string().max(200).optional(),
     partner_type: PartnerTypeEnum,
-    logo: z.instanceof(File).nullish(),
+    logo: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullish(),
     contact_person: z.string().max(100).optional(),
     phone: z.string().max(20).optional(),
     email: z.string().max(254).email().optional(),
@@ -1714,7 +1783,7 @@ const PatchedPartnerRequest = z
     name: z.string().min(1).max(200),
     name_en: z.string().max(200),
     partner_type: PartnerTypeEnum,
-    logo: z.instanceof(File).nullable(),
+    logo: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
     contact_person: z.string().max(100),
     phone: z.string().max(20),
     email: z.string().max(254).email(),
@@ -3284,6 +3353,7 @@ const Stock = z
     last_restocked: z.string().datetime({ offset: true }).nullable(),
     last_sale: z.string().datetime({ offset: true }).nullable(),
     allow_backorder: z.boolean().optional(),
+    is_consignment: z.boolean().optional(),
     branch: z.number().int(),
     variant: z.number().int(),
   })
@@ -3321,7 +3391,7 @@ const BrandRequest = z
     website: z.string().max(200).url().optional(),
     description: z.string().optional(),
     product_type: ProductTypeEnum.optional(),
-    logo: z.instanceof(File).nullish(),
+    logo: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullish(),
   })
   .passthrough();
 const PatchedBrandRequest = z
@@ -3333,7 +3403,7 @@ const PatchedBrandRequest = z
     website: z.string().max(200).url(),
     description: z.string(),
     product_type: ProductTypeEnum,
-    logo: z.instanceof(File).nullable(),
+    logo: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
   })
   .partial()
   .passthrough();
@@ -3522,7 +3592,7 @@ const ProductVariantMarketingRequest = z
       .min(1)
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
-    seo_image: z.instanceof(File).nullish(),
+    seo_image: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullish(),
     seo_image_alt: z.string().max(200).optional(),
     gender: GenderEnum.optional(),
     age_group: z.union([AgeGroupEnum, BlankEnum]).optional(),
@@ -3543,7 +3613,7 @@ const PatchedProductVariantMarketingRequest = z
       .min(1)
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
-    seo_image: z.instanceof(File).nullable(),
+    seo_image: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
     seo_image_alt: z.string().max(200),
     gender: GenderEnum,
     age_group: z.union([AgeGroupEnum, BlankEnum]),
@@ -3660,7 +3730,7 @@ const PaginatedProductImageList = z
   .passthrough();
 const ProductImageRequest = z
   .object({
-    image: z.instanceof(File),
+    image: z.custom().refine(f => f instanceof File, { message: "Must be a File" }),
     alt_text: z.string().max(200).optional(),
     order: z.number().int().gte(0).lte(2147483647).optional(),
     is_primary: z.boolean().optional(),
@@ -3669,7 +3739,7 @@ const ProductImageRequest = z
   .passthrough();
 const PatchedProductImageRequest = z
   .object({
-    image: z.instanceof(File),
+    image: z.custom().refine(f => f instanceof File, { message: "Must be a File" }),
     alt_text: z.string().max(200),
     order: z.number().int().gte(0).lte(2147483647),
     is_primary: z.boolean(),
@@ -3686,6 +3756,7 @@ const VariantTypeEnum = z.enum([
   "contactLenses",
   "custom",
 ]);
+const TaxCategoryEnum = z.enum(["standard", "zero_rated", "exempt"]);
 const Product = z
   .object({
     id: z.number().int(),
@@ -3703,6 +3774,7 @@ const Product = z
     description: z.string(),
     sku: z.string(),
     variant_type: VariantTypeEnum.optional(),
+    tax_category: TaxCategoryEnum.optional(),
     manufacturer: z.number().int().nullish(),
     brand: z.number().int(),
   })
@@ -3724,6 +3796,7 @@ const ProductRequest = z
     main_group: MainGroupEnum,
     name: z.string().max(200).optional(),
     variant_type: VariantTypeEnum.optional(),
+    tax_category: TaxCategoryEnum.optional(),
     manufacturer: z.number().int().nullish(),
     brand: z.number().int(),
   })
@@ -3737,6 +3810,7 @@ const PatchedProductRequest = z
     main_group: MainGroupEnum,
     name: z.string().max(200),
     variant_type: VariantTypeEnum,
+    tax_category: TaxCategoryEnum,
     manufacturer: z.number().int().nullable(),
     brand: z.number().int(),
   })
@@ -3773,6 +3847,10 @@ const PurchaseOrderItem = z
     quantity_ordered: z.number().int().gte(0).lte(2147483647),
     quantity_received: z.number().int(),
     unit_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    landed_cost_per_unit: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .optional(),
     notes: z.string().optional(),
     order: z.number().int(),
     variant: z.number().int(),
@@ -3810,7 +3888,20 @@ const PurchaseOrder = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
+    shipping_cost: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    customs_cost: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    other_landed_cost: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
     total_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    is_consignment: z.boolean().optional(),
     notes: z.string().optional(),
     supplier: z.number().int(),
     branch: z.number().int(),
@@ -3854,6 +3945,19 @@ const PurchaseOrderRequest = z
       .string()
       .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
       .optional(),
+    shipping_cost: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    customs_cost: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    other_landed_cost: z
+      .string()
+      .regex(/^-?\d{0,10}(?:\.\d{0,2})?$/)
+      .optional(),
+    is_consignment: z.boolean().optional(),
     notes: z.string().optional(),
     supplier: z.number().int(),
     branch: z.number().int(),
@@ -3868,6 +3972,10 @@ const PatchedPurchaseOrderRequest = z
     order_date: z.string(),
     expected_date: z.string().nullable(),
     tax_amount: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    shipping_cost: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    customs_cost: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    other_landed_cost: z.string().regex(/^-?\d{0,10}(?:\.\d{0,2})?$/),
+    is_consignment: z.boolean(),
     notes: z.string(),
     supplier: z.number().int(),
     branch: z.number().int(),
@@ -4223,6 +4331,7 @@ const StockRequest = z
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .optional(),
     allow_backorder: z.boolean().optional(),
+    is_consignment: z.boolean().optional(),
     branch: z.number().int(),
     variant: z.number().int(),
   })
@@ -4238,6 +4347,7 @@ const PatchedStockRequest = z
     average_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     last_cost: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
     allow_backorder: z.boolean(),
+    is_consignment: z.boolean(),
     branch: z.number().int(),
     variant: z.number().int(),
   })
@@ -4317,16 +4427,26 @@ const ProductVariant = z
     is_active: z.boolean().optional(),
     factory_code: z.string().max(50).nullish(),
     sku: z.string(),
+    barcode: z.string().max(50).nullish(),
     description: z.string(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
     selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    min_selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
+    tax_category: TaxCategoryEnum.optional(),
+    tax_rate: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
     product: z.number().int(),
     product_type: z.number().int(),
     warranty: z.number().int().nullish(),
@@ -4347,6 +4467,7 @@ const CreateProductVariantRequest = z
     variants_input: z.array(z.object({}).partial().passthrough()),
     is_active: z.boolean().nullable(),
     factory_code: z.string().max(50).nullable(),
+    barcode: z.string().max(50).nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
@@ -4355,9 +4476,18 @@ const CreateProductVariantRequest = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
+    min_selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
+    tax_category: z.union([TaxCategoryEnum, NullEnum]).nullable(),
+    tax_rate: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .nullable(),
     product: z.number().int().nullable(),
     product_type: z.number().int().nullable(),
@@ -4375,6 +4505,7 @@ const CreateProductVariant = z
     is_active: z.boolean().nullish(),
     factory_code: z.string().max(50).nullish(),
     sku: z.string().nullable(),
+    barcode: z.string().max(50).nullish(),
     description: z.string().nullable(),
     last_purchase_price: z
       .string()
@@ -4384,9 +4515,18 @@ const CreateProductVariant = z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
+    min_selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
+    tax_category: z.union([TaxCategoryEnum, NullEnum]).nullish(),
+    tax_rate: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
       .nullish(),
     product: z.number().int().nullish(),
     product_type: z.number().int().nullish(),
@@ -4399,15 +4539,25 @@ const ProductVariantRequest = z
   .object({
     is_active: z.boolean().optional(),
     factory_code: z.string().max(50).nullish(),
+    barcode: z.string().max(50).nullish(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
     selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    min_selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullish(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullish(),
+    tax_category: TaxCategoryEnum.optional(),
+    tax_rate: z
+      .string()
+      .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
+      .optional(),
     product_type: z.number().int(),
     warranty: z.number().int().nullish(),
     weight: z.number().int().nullish(),
@@ -4418,15 +4568,22 @@ const PatchedProductVariantRequest = z
   .object({
     is_active: z.boolean(),
     factory_code: z.string().max(50).nullable(),
+    barcode: z.string().max(50).nullable(),
     last_purchase_price: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
     selling_price: z.string().regex(/^-?\d{0,8}(?:\.\d{0,2})?$/),
+    min_selling_price: z
+      .string()
+      .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
+      .nullable(),
     discount_percentage: z
       .string()
       .regex(/^-?\d{0,8}(?:\.\d{0,2})?$/)
       .nullable(),
+    tax_category: TaxCategoryEnum,
+    tax_rate: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
     product_type: z.number().int(),
     warranty: z.number().int().nullable(),
     weight: z.number().int().nullable(),
@@ -5098,7 +5255,7 @@ const PaymentMethodRequest = z
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
     is_active: z.boolean().optional(),
-    icon: z.instanceof(File).nullish(),
+    icon: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullish(),
     provider_fees_percent: z
       .string()
       .regex(/^-?\d{0,3}(?:\.\d{0,2})?$/)
@@ -5117,7 +5274,7 @@ const PatchedPaymentMethodRequest = z
       .max(50)
       .regex(/^[-a-zA-Z0-9_]+$/),
     is_active: z.boolean(),
-    icon: z.instanceof(File).nullable(),
+    icon: z.custom().refine(f => f instanceof File, { message: "Must be a File" }).nullable(),
     provider_fees_percent: z.string().regex(/^-?\d{0,3}(?:\.\d{0,2})?$/),
     is_installment: z.boolean(),
     gl_account: z.number().int().nullable(),
@@ -5419,6 +5576,7 @@ const PaymentSummaryResponse = z
     installments: InstallmentSummary,
   })
   .passthrough();
+const AsyncReportResponse = z.object({ message: z.string() }).passthrough();
 const BranchComparisonResponse = z
   .object({
     branch_id: z.number().int(),
@@ -6365,11 +6523,17 @@ export const schemas = {
   TrialBalanceAccount,
   TrialBalanceTotals,
   TrialBalanceResponse,
+  DayOfWeekEnum,
+  BranchShiftTemplate,
+  PaginatedBranchShiftTemplateList,
+  BranchShiftTemplateRequest,
+  PatchedBranchShiftTemplateRequest,
   BranchUsers,
   PaginatedBranchUsersList,
   BranchUsersRequest,
   PatchedBranchUsersRequest,
   BranchTypeEnum,
+  ZatcaEnvironmentEnum,
   Branch,
   PaginatedBranchList,
   BranchRequest,
@@ -6611,6 +6775,7 @@ export const schemas = {
   PatchedProductImageRequest,
   MainGroupEnum,
   VariantTypeEnum,
+  TaxCategoryEnum,
   Product,
   PaginatedProductList,
   ProductRequest,
@@ -6746,6 +6911,7 @@ export const schemas = {
   PaymentTotal,
   InstallmentSummary,
   PaymentSummaryResponse,
+  AsyncReportResponse,
   BranchComparisonResponse,
   FinancialDashboardSales,
   FinancialDashboardPurchases,
@@ -7605,6 +7771,174 @@ export const endpoints = makeApi([
   },
   {
     method: "get",
+    path: "/api/branches/branch-shift-templates/",
+    alias: "branches_branch_shift_templates_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "day_of_week",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedBranchShiftTemplateList,
+  },
+  {
+    method: "post",
+    path: "/api/branches/branch-shift-templates/",
+    alias: "branches_branch_shift_templates_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchShiftTemplateRequest,
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "get",
+    path: "/api/branches/branch-shift-templates/:id/",
+    alias: "branches_branch_shift_templates_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "put",
+    path: "/api/branches/branch-shift-templates/:id/",
+    alias: "branches_branch_shift_templates_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchShiftTemplateRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "patch",
+    path: "/api/branches/branch-shift-templates/:id/",
+    alias: "branches_branch_shift_templates_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedBranchShiftTemplateRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "delete",
+    path: "/api/branches/branch-shift-templates/:id/",
+    alias: "branches_branch_shift_templates_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/branches/branch-shift-templates/filter_options/",
+    alias: "branches_branch_shift_templates_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "get",
     path: "/api/branches/branch-users/",
     alias: "branches_branch_users_list",
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
@@ -7908,6 +8242,26 @@ export const endpoints = makeApi([
         type: "Query",
         schema: z.string().optional(),
       },
+      {
+        name: "zatca_certificate",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_csid",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_environment",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_private_key",
+        type: "Query",
+        schema: z.string().optional(),
+      },
     ],
     response: PaginatedBranchList,
   },
@@ -8063,6 +8417,11 @@ export const endpoints = makeApi([
       },
       {
         name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "shift_template",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -8563,7 +8922,7 @@ export const endpoints = makeApi([
         name: "body",
         type: "Body",
         schema: z
-          .object({ csv_file: z.instanceof(File), config: z.unknown() })
+          .object({ csv_file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }), config: z.unknown() })
           .passthrough(),
       },
     ],
@@ -13109,7 +13468,42 @@ Returns only changes since last sync`,
     requestFormat: "json",
     parameters: [
       {
+        name: "created_by__first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by__username__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__email__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__last_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__phone__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -13399,6 +13793,11 @@ Returns only changes since last sync`,
     description: `Mixin that dynamically generates filtering options for any ViewSet.`,
     requestFormat: "json",
     parameters: [
+      {
+        name: "attribute__name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
       {
         name: "ordering",
         type: "Query",
@@ -14233,6 +14632,14 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
     description: `API endpoint to fetch available filtering options (for frontend).`,
     requestFormat: "json",
     response: FlexiblePrice,
+  },
+  {
+    method: "post",
+    path: "/api/products/lens-matrix/generate/",
+    alias: "products_lens_matrix_generate_create",
+    description: `API View for bulk generating SPH x CYL lens variants with duplicate prevention.`,
+    requestFormat: "json",
+    response: z.void(),
   },
   {
     method: "get",
@@ -15129,6 +15536,11 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
         schema: z.string().optional(),
       },
       {
+        name: "tax_category",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "updated_at",
         type: "Query",
         schema: z.string().optional(),
@@ -15249,7 +15661,7 @@ Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_q
       {
         name: "body",
         type: "Body",
-        schema: z.object({ file: z.instanceof(File) }).passthrough(),
+        schema: z.object({ file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }) }).passthrough(),
       },
     ],
     response: ProductImportSuccessResponse,
@@ -17322,6 +17734,11 @@ Custom logic for creation to support nested pricing/attributes.`,
     requestFormat: "json",
     parameters: [
       {
+        name: "barcode",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "created_at",
         type: "Query",
         schema: z.string().optional(),
@@ -17358,6 +17775,11 @@ Custom logic for creation to support nested pricing/attributes.`,
       },
       {
         name: "last_purchase_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "min_selling_price",
         type: "Query",
         schema: z.number().optional(),
       },
@@ -17400,6 +17822,16 @@ Custom logic for creation to support nested pricing/attributes.`,
         name: "sku",
         type: "Query",
         schema: z.string().optional(),
+      },
+      {
+        name: "tax_category",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.number().optional(),
       },
       {
         name: "updated_at",
@@ -19276,6 +19708,37 @@ Users only see data from their assigned branches.`,
   },
   {
     method: "get",
+    path: "/api/sales/reports/async-financial-dashboard/",
+    alias: "sales_reports_async_financial_dashboard_retrieve",
+    description: `Trigger async generation of the financial dashboard report
+which generates a PDF and sends it via email.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.object({ message: z.string() }).passthrough(),
+  },
+  {
+    method: "get",
     path: "/api/sales/reports/branch-comparison/",
     alias: "sales_reports_branch_comparison_list",
     description: `Branch Performance Comparison`,
@@ -20844,7 +21307,27 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: z.string().optional(),
       },
       {
+        name: "permission__code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "permission__code__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "role",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role__name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role__name__icontains",
         type: "Query",
         schema: z.string().optional(),
       },
@@ -21153,6 +21636,11 @@ Allows listing, creating, and managing domains and subdomains.`,
         schema: z.string().optional(),
       },
       {
+        name: "roles__name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
         name: "search",
         type: "Query",
         schema: z.string().optional(),
@@ -21258,10 +21746,14727 @@ Allows listing, creating, and managing domains and subdomains.`,
     requestFormat: "json",
     response: User,
   },
+  {
+    method: "get",
+    path: "/api/v1/accounting/chart-of-accounts/",
+    alias: "v1_accounting_chart_of_accounts_list",
+    description: `ViewSet for Chart of Accounts`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_subtype",
+        type: "Query",
+        schema: z
+          .enum([
+            "accrued",
+            "bank",
+            "capital",
+            "cash",
+            "cost_of_goods",
+            "deferred",
+            "fixed_asset",
+            "inventory",
+            "loan",
+            "marketing",
+            "other_expense",
+            "other_income",
+            "payable",
+            "prepaid",
+            "receivable",
+            "rent",
+            "reserves",
+            "retained",
+            "salary",
+            "sales",
+            "service",
+            "supplies",
+            "tax_payable",
+            "utilities",
+          ])
+          .optional(),
+      },
+      {
+        name: "account_type",
+        type: "Query",
+        schema: z
+          .enum(["asset", "cogs", "equity", "expense", "liability", "revenue"])
+          .optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_header",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedChartOfAccountsList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/accounting/chart-of-accounts/",
+    alias: "v1_accounting_chart_of_accounts_create",
+    description: `ViewSet for Chart of Accounts`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ChartOfAccountsRequest,
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/chart-of-accounts/:id/",
+    alias: "v1_accounting_chart_of_accounts_retrieve",
+    description: `ViewSet for Chart of Accounts`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "put",
+    path: "/api/v1/accounting/chart-of-accounts/:id/",
+    alias: "v1_accounting_chart_of_accounts_update",
+    description: `ViewSet for Chart of Accounts`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ChartOfAccountsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/accounting/chart-of-accounts/:id/",
+    alias: "v1_accounting_chart_of_accounts_partial_update",
+    description: `ViewSet for Chart of Accounts`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedChartOfAccountsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ChartOfAccounts,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/accounting/chart-of-accounts/:id/",
+    alias: "v1_accounting_chart_of_accounts_destroy",
+    description: `ViewSet for Chart of Accounts`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/chart-of-accounts/by_type/",
+    alias: "v1_accounting_chart_of_accounts_by_type_list",
+    description: `Filter accounts by type`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_subtype",
+        type: "Query",
+        schema: z
+          .enum([
+            "accrued",
+            "bank",
+            "capital",
+            "cash",
+            "cost_of_goods",
+            "deferred",
+            "fixed_asset",
+            "inventory",
+            "loan",
+            "marketing",
+            "other_expense",
+            "other_income",
+            "payable",
+            "prepaid",
+            "receivable",
+            "rent",
+            "reserves",
+            "retained",
+            "salary",
+            "sales",
+            "service",
+            "supplies",
+            "tax_payable",
+            "utilities",
+          ])
+          .optional(),
+      },
+      {
+        name: "account_type",
+        type: "Query",
+        schema: z
+          .enum(["asset", "cogs", "equity", "expense", "liability", "revenue"])
+          .optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_header",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "type",
+        type: "Query",
+        schema: z.string(),
+      },
+    ],
+    response: PaginatedChartOfAccountsList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/chart-of-accounts/choices/",
+    alias: "v1_accounting_chart_of_accounts_choices_retrieve",
+    description: `Available choices`,
+    requestFormat: "json",
+    response: ChartOfAccountsChoices,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/chart-of-accounts/filter_options/",
+    alias: "v1_accounting_chart_of_accounts_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ChartOfAccounts,
+  },
+  {
+    method: "post",
+    path: "/api/v1/accounting/chart-of-accounts/setup_defaults/",
+    alias: "v1_accounting_chart_of_accounts_setup_defaults_create",
+    description: `Setup default accounts`,
+    requestFormat: "json",
+    response: SetupDefaultsResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/chart-of-accounts/tree/",
+    alias: "v1_accounting_chart_of_accounts_tree_list",
+    description: `Display Chart of Accounts as a tree structure`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_subtype",
+        type: "Query",
+        schema: z
+          .enum([
+            "accrued",
+            "bank",
+            "capital",
+            "cash",
+            "cost_of_goods",
+            "deferred",
+            "fixed_asset",
+            "inventory",
+            "loan",
+            "marketing",
+            "other_expense",
+            "other_income",
+            "payable",
+            "prepaid",
+            "receivable",
+            "rent",
+            "reserves",
+            "retained",
+            "salary",
+            "sales",
+            "service",
+            "supplies",
+            "tax_payable",
+            "utilities",
+          ])
+          .optional(),
+      },
+      {
+        name: "account_type",
+        type: "Query",
+        schema: z
+          .enum(["asset", "cogs", "equity", "expense", "liability", "revenue"])
+          .optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_header",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedChartOfAccountsTreeList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/journal-entries/",
+    alias: "v1_accounting_journal_entries_list",
+    description: `ViewSet for General Journal Entries`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "entry_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "entry_type",
+        type: "Query",
+        schema: z
+          .enum(["adjustment", "closing", "opening", "reversal", "standard"])
+          .optional(),
+      },
+      {
+        name: "is_posted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "source_type",
+        type: "Query",
+        schema: z
+          .enum([
+            "adjustment",
+            "manual",
+            "payment",
+            "payroll",
+            "purchase_invoice",
+            "receipt",
+            "return",
+            "sales_invoice",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedGeneralJournalListList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/accounting/journal-entries/",
+    alias: "v1_accounting_journal_entries_create",
+    description: `ViewSet for General Journal Entries`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: GeneralJournalCreateRequest,
+      },
+    ],
+    response: GeneralJournalCreate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/journal-entries/:id/",
+    alias: "v1_accounting_journal_entries_retrieve",
+    description: `ViewSet for General Journal Entries`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: GeneralJournal,
+  },
+  {
+    method: "put",
+    path: "/api/v1/accounting/journal-entries/:id/",
+    alias: "v1_accounting_journal_entries_update",
+    description: `ViewSet for General Journal Entries`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: GeneralJournalRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: GeneralJournal,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/accounting/journal-entries/:id/",
+    alias: "v1_accounting_journal_entries_partial_update",
+    description: `ViewSet for General Journal Entries`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedGeneralJournalRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: GeneralJournal,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/accounting/journal-entries/:id/",
+    alias: "v1_accounting_journal_entries_destroy",
+    description: `ViewSet for General Journal Entries`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/accounting/journal-entries/:id/post_entry/",
+    alias: "v1_accounting_journal_entries_post_entry_create",
+    description: `Post the journal entry`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PostEntryResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/accounting/journal-entries/:id/reverse_entry/",
+    alias: "v1_accounting_journal_entries_reverse_entry_create",
+    description: `Reverse the journal entry`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ReverseEntryResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/journal-entries/by_source/",
+    alias: "v1_accounting_journal_entries_by_source_list",
+    description: `Get journals by source`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "entry_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "entry_type",
+        type: "Query",
+        schema: z
+          .enum(["adjustment", "closing", "opening", "reversal", "standard"])
+          .optional(),
+      },
+      {
+        name: "is_posted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "source_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "source_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedGeneralJournalListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/journal-entries/choices/",
+    alias: "v1_accounting_journal_entries_choices_retrieve",
+    description: `Available choices`,
+    requestFormat: "json",
+    response: GeneralJournalChoices,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/journal-entries/filter_options/",
+    alias: "v1_accounting_journal_entries_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: GeneralJournal,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/journal-entries/unposted/",
+    alias: "v1_accounting_journal_entries_unposted_list",
+    description: `Get unposted journals`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "entry_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "entry_type",
+        type: "Query",
+        schema: z
+          .enum(["adjustment", "closing", "opening", "reversal", "standard"])
+          .optional(),
+      },
+      {
+        name: "is_posted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "source_type",
+        type: "Query",
+        schema: z
+          .enum([
+            "adjustment",
+            "manual",
+            "payment",
+            "payroll",
+            "purchase_invoice",
+            "receipt",
+            "return",
+            "sales_invoice",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedGeneralJournalListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/reports/balance-sheet/",
+    alias: "v1_accounting_reports_balance_sheet_retrieve",
+    description: `Get Balance Sheet Report`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "as_of_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: BalanceSheetResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/reports/income-statement/",
+    alias: "v1_accounting_reports_income_statement_retrieve",
+    description: `Get Income Statement Report`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: IncomeStatementResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/reports/ledger/:account_id/",
+    alias: "v1_accounting_reports_ledger_retrieve",
+    description: `Get Ledger for a specific account`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: AccountLedgerResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/accounting/reports/trial-balance/",
+    alias: "v1_accounting_reports_trial_balance_retrieve",
+    description: `Get Trial Balance Report`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "as_of_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: TrialBalanceResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branch-shift-templates/",
+    alias: "v1_branches_branch_shift_templates_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "day_of_week",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedBranchShiftTemplateList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/branches/branch-shift-templates/",
+    alias: "v1_branches_branch_shift_templates_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchShiftTemplateRequest,
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branch-shift-templates/:id/",
+    alias: "v1_branches_branch_shift_templates_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "put",
+    path: "/api/v1/branches/branch-shift-templates/:id/",
+    alias: "v1_branches_branch_shift_templates_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchShiftTemplateRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/branches/branch-shift-templates/:id/",
+    alias: "v1_branches_branch_shift_templates_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedBranchShiftTemplateRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/branches/branch-shift-templates/:id/",
+    alias: "v1_branches_branch_shift_templates_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branch-shift-templates/filter_options/",
+    alias: "v1_branches_branch_shift_templates_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: BranchShiftTemplate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branch-users/",
+    alias: "v1_branches_branch_users_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedBranchUsersList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/branches/branch-users/",
+    alias: "v1_branches_branch_users_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchUsersRequest,
+      },
+    ],
+    response: BranchUsers,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branch-users/:id/",
+    alias: "v1_branches_branch_users_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchUsers,
+  },
+  {
+    method: "put",
+    path: "/api/v1/branches/branch-users/:id/",
+    alias: "v1_branches_branch_users_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchUsersRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchUsers,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/branches/branch-users/:id/",
+    alias: "v1_branches_branch_users_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedBranchUsersRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: BranchUsers,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/branches/branch-users/:id/",
+    alias: "v1_branches_branch_users_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branch-users/filter_options/",
+    alias: "v1_branches_branch_users_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: BranchUsers,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branches/",
+    alias: "v1_branches_branches_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "additional_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "address",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "allows_online_orders",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "branch_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "branch_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "building_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "city",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "country",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "cr_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "district",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_main_branch",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "operating_hours",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "postal_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "receipt_footer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "receipt_header",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "street_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_certificate",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_csid",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_environment",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_private_key",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedBranchList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/branches/branches/",
+    alias: "v1_branches_branches_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchRequest,
+      },
+    ],
+    response: Branch,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branches/:id/",
+    alias: "v1_branches_branches_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Branch,
+  },
+  {
+    method: "put",
+    path: "/api/v1/branches/branches/:id/",
+    alias: "v1_branches_branches_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BranchRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Branch,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/branches/branches/:id/",
+    alias: "v1_branches_branches_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedBranchRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Branch,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/branches/branches/:id/",
+    alias: "v1_branches_branches_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/branches/filter_options/",
+    alias: "v1_branches_branches_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Branch,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/shifts/",
+    alias: "v1_branches_shifts_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "shift_template",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_time",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedShiftList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/branches/shifts/",
+    alias: "v1_branches_shifts_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ShiftRequest,
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/shifts/:id/",
+    alias: "v1_branches_shifts_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "put",
+    path: "/api/v1/branches/shifts/:id/",
+    alias: "v1_branches_shifts_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ShiftRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/branches/shifts/:id/",
+    alias: "v1_branches_shifts_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedShiftRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Shift,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/branches/shifts/:id/",
+    alias: "v1_branches_shifts_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/branches/shifts/filter_options/",
+    alias: "v1_branches_shifts_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Shift,
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/contact-us/",
+    alias: "v1_cms_contact_us_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "message",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedContactUsList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/cms/contact-us/",
+    alias: "v1_cms_contact_us_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactUsRequest,
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/contact-us/:id/",
+    alias: "v1_cms_contact_us_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "put",
+    path: "/api/v1/cms/contact-us/:id/",
+    alias: "v1_cms_contact_us_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactUsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/cms/contact-us/:id/",
+    alias: "v1_cms_contact_us_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedContactUsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ContactUs,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/cms/contact-us/:id/",
+    alias: "v1_cms_contact_us_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/contact-us/filter_options/",
+    alias: "v1_cms_contact_us_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ContactUs,
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/pages/",
+    alias: "v1_cms_pages_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "author",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "client",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "default_language",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_published",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "slug",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "translations",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPageList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/cms/pages/",
+    alias: "v1_cms_pages_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/pages/:id/",
+    alias: "v1_cms_pages_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "put",
+    path: "/api/v1/cms/pages/:id/",
+    alias: "v1_cms_pages_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/cms/pages/:id/",
+    alias: "v1_cms_pages_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/cms/pages/:id/",
+    alias: "v1_cms_pages_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/pages/filter_options/",
+    alias: "v1_cms_pages_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Page,
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/public/pages/",
+    alias: "v1_cms_public_pages_list",
+    description: `For public pages only`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPageList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/cms/public/pages/:slug/",
+    alias: "v1_cms_public_pages_retrieve",
+    description: `For public pages only`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "slug",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Page,
+  },
+  {
+    method: "post",
+    path: "/api/v1/core/import-csv/",
+    alias: "v1_core_import_csv_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ csv_file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }), config: z.unknown() })
+          .passthrough(),
+      },
+    ],
+    response: CSVImportResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+      {
+        status: 403,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/campaigns/",
+    alias: "v1_crm_campaigns_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customers",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCampaignList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/campaigns/",
+    alias: "v1_crm_campaigns_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CampaignRequest,
+      },
+    ],
+    response: Campaign,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/campaigns/:id/",
+    alias: "v1_crm_campaigns_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Campaign,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/campaigns/:id/",
+    alias: "v1_crm_campaigns_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CampaignRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Campaign,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/campaigns/:id/",
+    alias: "v1_crm_campaigns_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCampaignRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Campaign,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/campaigns/:id/",
+    alias: "v1_crm_campaigns_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/campaigns/filter_options/",
+    alias: "v1_crm_campaigns_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Campaign,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/claim-documents/",
+    alias: "v1_crm_claim_documents_list",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "claim",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "document_type",
+        type: "Query",
+        schema: z
+          .enum(["authorization", "invoice", "other", "prescription", "report"])
+          .optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedClaimDocumentList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/claim-documents/",
+    alias: "v1_crm_claim_documents_create",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimDocumentRequest,
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/claim-documents/:id/",
+    alias: "v1_crm_claim_documents_retrieve",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/claim-documents/:id/",
+    alias: "v1_crm_claim_documents_update",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimDocumentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/claim-documents/:id/",
+    alias: "v1_crm_claim_documents_partial_update",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedClaimDocumentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimDocument,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/claim-documents/:id/",
+    alias: "v1_crm_claim_documents_destroy",
+    description: `مستندات المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/claim-documents/filter_options/",
+    alias: "v1_crm_claim_documents_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ClaimDocument,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/claim-items/",
+    alias: "v1_crm_claim_items_list",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "claim",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedClaimItemList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/claim-items/",
+    alias: "v1_crm_claim_items_create",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimItemRequest,
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/claim-items/:id/",
+    alias: "v1_crm_claim_items_retrieve",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/claim-items/:id/",
+    alias: "v1_crm_claim_items_update",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClaimItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/claim-items/:id/",
+    alias: "v1_crm_claim_items_partial_update",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedClaimItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ClaimItem,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/claim-items/:id/",
+    alias: "v1_crm_claim_items_destroy",
+    description: `عناصر المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/claim-items/filter_options/",
+    alias: "v1_crm_claim_items_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ClaimItem,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/complaints/",
+    alias: "v1_crm_complaints_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedComplaintList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/complaints/",
+    alias: "v1_crm_complaints_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ComplaintRequest,
+      },
+    ],
+    response: Complaint,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/complaints/:id/",
+    alias: "v1_crm_complaints_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Complaint,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/complaints/:id/",
+    alias: "v1_crm_complaints_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ComplaintRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Complaint,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/complaints/:id/",
+    alias: "v1_crm_complaints_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedComplaintRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Complaint,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/complaints/:id/",
+    alias: "v1_crm_complaints_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/complaints/filter_options/",
+    alias: "v1_crm_complaints_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Complaint,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/contact-us/",
+    alias: "v1_crm_contact_us_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "message",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedContactList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/contact-us/",
+    alias: "v1_crm_contact_us_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactRequest,
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/contact-us/:id/",
+    alias: "v1_crm_contact_us_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/contact-us/:id/",
+    alias: "v1_crm_contact_us_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ContactRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/contact-us/:id/",
+    alias: "v1_crm_contact_us_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedContactRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Contact,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/contact-us/:id/",
+    alias: "v1_crm_contact_us_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/contact-us/filter_options/",
+    alias: "v1_crm_contact_us_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Contact,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-groups/",
+    alias: "v1_crm_customer_groups_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customers",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerGroupList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/customer-groups/",
+    alias: "v1_crm_customer_groups_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerGroupRequest,
+      },
+    ],
+    response: CustomerGroup,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-groups/:id/",
+    alias: "v1_crm_customer_groups_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerGroup,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/customer-groups/:id/",
+    alias: "v1_crm_customer_groups_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerGroupRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerGroup,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/customer-groups/:id/",
+    alias: "v1_crm_customer_groups_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCustomerGroupRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerGroup,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/customer-groups/:id/",
+    alias: "v1_crm_customer_groups_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-groups/filter_options/",
+    alias: "v1_crm_customer_groups_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: CustomerGroup,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-partner-links/",
+    alias: "v1_crm_customer_partner_links_list",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerPartnerLinkList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/customer-partner-links/",
+    alias: "v1_crm_customer_partner_links_create",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerPartnerLinkRequest,
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-partner-links/:id/",
+    alias: "v1_crm_customer_partner_links_retrieve",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/customer-partner-links/:id/",
+    alias: "v1_crm_customer_partner_links_update",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerPartnerLinkRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/customer-partner-links/:id/",
+    alias: "v1_crm_customer_partner_links_partial_update",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCustomerPartnerLinkRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/customer-partner-links/:id/",
+    alias: "v1_crm_customer_partner_links_destroy",
+    description: `ربط العملاء بالشركاء`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/customer-partner-links/:id/deactivate/",
+    alias: "v1_crm_customer_partner_links_deactivate_create",
+    description: `تعطيل الربط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerPartnerLinkRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-partner-links/by_customer/",
+    alias: "v1_crm_customer_partner_links_by_customer_list",
+    description: `جلب ارتباطات عميل معين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "customer_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerPartnerLinkList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customer-partner-links/filter_options/",
+    alias: "v1_crm_customer_partner_links_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: CustomerPartnerLink,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customers/",
+    alias: "v1_crm_customers_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "customer_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/customers/",
+    alias: "v1_crm_customers_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerRequest,
+      },
+    ],
+    response: Customer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customers/:id/",
+    alias: "v1_crm_customers_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Customer,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/customers/:id/",
+    alias: "v1_crm_customers_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CustomerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Customer,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/customers/:id/",
+    alias: "v1_crm_customers_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCustomerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Customer,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/customers/:id/",
+    alias: "v1_crm_customers_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/customers/filter_options/",
+    alias: "v1_crm_customers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Customer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/documents/",
+    alias: "v1_crm_documents_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "file",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedDocumentList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/documents/",
+    alias: "v1_crm_documents_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DocumentRequest,
+      },
+    ],
+    response: Document,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/documents/:id/",
+    alias: "v1_crm_documents_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Document,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/documents/:id/",
+    alias: "v1_crm_documents_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DocumentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Document,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/documents/:id/",
+    alias: "v1_crm_documents_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedDocumentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Document,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/documents/:id/",
+    alias: "v1_crm_documents_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/documents/filter_options/",
+    alias: "v1_crm_documents_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Document,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/insurance-claims/",
+    alias: "v1_crm_insurance_claims_list",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "paid",
+            "partial",
+            "rejected",
+            "submitted",
+            "under_review",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedInsuranceClaimListList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/insurance-claims/",
+    alias: "v1_crm_insurance_claims_create",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimCreateRequest,
+      },
+    ],
+    response: InsuranceClaimCreate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/insurance-claims/:id/",
+    alias: "v1_crm_insurance_claims_retrieve",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/insurance-claims/:id/",
+    alias: "v1_crm_insurance_claims_update",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/insurance-claims/:id/",
+    alias: "v1_crm_insurance_claims_partial_update",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInsuranceClaimRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InsuranceClaim,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/insurance-claims/:id/",
+    alias: "v1_crm_insurance_claims_destroy",
+    description: `مطالبات التأمين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/insurance-claims/:id/approve/",
+    alias: "v1_crm_insurance_claims_approve_create",
+    description: `اعتماد المطالبة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ApproveClaimRequestRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ApproveClaimResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/insurance-claims/:id/mark_paid/",
+    alias: "v1_crm_insurance_claims_mark_paid_create",
+    description: `تسجيل السداد`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: MarkClaimPaidRequestRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: MarkClaimPaidResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/insurance-claims/:id/reject/",
+    alias: "v1_crm_insurance_claims_reject_create",
+    description: `رفض المطالبة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({ reason: z.string().min(1) }).passthrough(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RejectClaimResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/insurance-claims/:id/submit/",
+    alias: "v1_crm_insurance_claims_submit_create",
+    description: `تقديم المطالبة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubmitClaimResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/insurance-claims/approved_unpaid/",
+    alias: "v1_crm_insurance_claims_approved_unpaid_list",
+    description: `المطالبات المعتمدة غير المسددة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "paid",
+            "partial",
+            "rejected",
+            "submitted",
+            "under_review",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedInsuranceClaimListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/insurance-claims/choices/",
+    alias: "v1_crm_insurance_claims_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: z
+      .object({ claim_status: z.object({}).partial().passthrough() })
+      .passthrough(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/insurance-claims/filter_options/",
+    alias: "v1_crm_insurance_claims_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: InsuranceClaim,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/insurance-claims/pending/",
+    alias: "v1_crm_insurance_claims_pending_list",
+    description: `المطالبات المعلقة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "paid",
+            "partial",
+            "rejected",
+            "submitted",
+            "under_review",
+          ])
+          .optional(),
+      },
+    ],
+    response: PaginatedInsuranceClaimListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/interactions/",
+    alias: "v1_crm_interactions_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "interaction_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInteractionList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/interactions/",
+    alias: "v1_crm_interactions_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InteractionRequest,
+      },
+    ],
+    response: Interaction,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/interactions/:id/",
+    alias: "v1_crm_interactions_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Interaction,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/interactions/:id/",
+    alias: "v1_crm_interactions_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InteractionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Interaction,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/interactions/:id/",
+    alias: "v1_crm_interactions_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInteractionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Interaction,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/interactions/:id/",
+    alias: "v1_crm_interactions_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/interactions/filter_options/",
+    alias: "v1_crm_interactions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Interaction,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/opportunities/",
+    alias: "v1_crm_opportunities_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "stage",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedOpportunityList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/opportunities/",
+    alias: "v1_crm_opportunities_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OpportunityRequest,
+      },
+    ],
+    response: Opportunity,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/opportunities/:id/",
+    alias: "v1_crm_opportunities_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Opportunity,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/opportunities/:id/",
+    alias: "v1_crm_opportunities_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OpportunityRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Opportunity,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/opportunities/:id/",
+    alias: "v1_crm_opportunities_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedOpportunityRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Opportunity,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/opportunities/:id/",
+    alias: "v1_crm_opportunities_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/opportunities/filter_options/",
+    alias: "v1_crm_opportunities_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Opportunity,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partner-branches/",
+    alias: "v1_crm_partner_branches_list",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerBranchList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/partner-branches/",
+    alias: "v1_crm_partner_branches_create",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerBranchRequest,
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partner-branches/:id/",
+    alias: "v1_crm_partner_branches_retrieve",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/partner-branches/:id/",
+    alias: "v1_crm_partner_branches_update",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerBranchRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/partner-branches/:id/",
+    alias: "v1_crm_partner_branches_partial_update",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerBranchRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerBranch,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/partner-branches/:id/",
+    alias: "v1_crm_partner_branches_destroy",
+    description: `ربط الشركاء بالفروع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partner-branches/filter_options/",
+    alias: "v1_crm_partner_branches_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PartnerBranch,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partner-settlements/",
+    alias: "v1_crm_partner_settlements_list",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.enum(["confirmed", "disputed", "paid", "pending"]).optional(),
+      },
+    ],
+    response: PaginatedPartnerSettlementList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/partner-settlements/",
+    alias: "v1_crm_partner_settlements_create",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partner-settlements/:id/",
+    alias: "v1_crm_partner_settlements_retrieve",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/partner-settlements/:id/",
+    alias: "v1_crm_partner_settlements_update",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/partner-settlements/:id/",
+    alias: "v1_crm_partner_settlements_partial_update",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/partner-settlements/:id/",
+    alias: "v1_crm_partner_settlements_destroy",
+    description: `التسويات المالية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/partner-settlements/:id/calculate/",
+    alias: "v1_crm_partner_settlements_calculate_create",
+    description: `حساب التسوية من المطالبات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/partner-settlements/:id/confirm/",
+    alias: "v1_crm_partner_settlements_confirm_create",
+    description: `تأكيد التسوية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/partner-settlements/:id/mark_paid/",
+    alias: "v1_crm_partner_settlements_mark_paid_create",
+    description: `تسجيل سداد التسوية`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerSettlementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerSettlement,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partner-settlements/filter_options/",
+    alias: "v1_crm_partner_settlements_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PartnerSettlement,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/",
+    alias: "v1_crm_partners_list",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerListList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/partners/",
+    alias: "v1_crm_partners_create",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerRequest,
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/:id/",
+    alias: "v1_crm_partners_retrieve",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/partners/:id/",
+    alias: "v1_crm_partners_update",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PartnerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/partners/:id/",
+    alias: "v1_crm_partners_partial_update",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPartnerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Partner,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/partners/:id/",
+    alias: "v1_crm_partners_destroy",
+    description: `ViewSet للشركاء (تأمين، تقسيط، جملة، شركات)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/:id/claims_summary/",
+    alias: "v1_crm_partners_claims_summary_retrieve",
+    description: `ملخص مطالبات الشريك`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PartnerClaimsSummary,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/:id/customers/",
+    alias: "v1_crm_partners_customers_list",
+    description: `العملاء المرتبطين بهذا الشريك`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCustomerPartnerLinkList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/bnpl_providers/",
+    alias: "v1_crm_partners_bnpl_providers_list",
+    description: `شركات التقسيط (Tabby, Tamara)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/by_type/",
+    alias: "v1_crm_partners_by_type_list",
+    description: `جلب الشركاء حسب النوع`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "type",
+        type: "Query",
+        schema: z.string(),
+      },
+    ],
+    response: PaginatedPartnerListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/choices/",
+    alias: "v1_crm_partners_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: PartnerChoices,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/filter_options/",
+    alias: "v1_crm_partners_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Partner,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/partners/insurance_companies/",
+    alias: "v1_crm_partners_insurance_companies_list",
+    description: `شركات التأمين فقط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner_type",
+        type: "Query",
+        schema: z
+          .enum(["agent", "bnpl", "corporate", "insurance", "wholesaler"])
+          .optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPartnerListList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/subscriptions/",
+    alias: "v1_crm_subscriptions_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "subscription_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedSubscriptionList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/subscriptions/",
+    alias: "v1_crm_subscriptions_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SubscriptionRequest,
+      },
+    ],
+    response: Subscription,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/subscriptions/:id/",
+    alias: "v1_crm_subscriptions_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Subscription,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/subscriptions/:id/",
+    alias: "v1_crm_subscriptions_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SubscriptionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Subscription,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/subscriptions/:id/",
+    alias: "v1_crm_subscriptions_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedSubscriptionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Subscription,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/subscriptions/:id/",
+    alias: "v1_crm_subscriptions_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/subscriptions/filter_options/",
+    alias: "v1_crm_subscriptions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Subscription,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/tasks/",
+    alias: "v1_crm_tasks_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "completed",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "due_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "opportunity",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "priority",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedTaskList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/crm/tasks/",
+    alias: "v1_crm_tasks_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: TaskRequest,
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/tasks/:id/",
+    alias: "v1_crm_tasks_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "put",
+    path: "/api/v1/crm/tasks/:id/",
+    alias: "v1_crm_tasks_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: TaskRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/crm/tasks/:id/",
+    alias: "v1_crm_tasks_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedTaskRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/crm/tasks/:id/",
+    alias: "v1_crm_tasks_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/crm/tasks/filter_options/",
+    alias: "v1_crm_tasks_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Task,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/attendances/",
+    alias: "v1_hrm_attendances_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "check_in",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "check_out",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "hours_worked",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedAttendanceList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/attendances/",
+    alias: "v1_hrm_attendances_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttendanceRequest,
+      },
+    ],
+    response: Attendance,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/attendances/:id/",
+    alias: "v1_hrm_attendances_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attendance,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/attendances/:id/",
+    alias: "v1_hrm_attendances_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttendanceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attendance,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/attendances/:id/",
+    alias: "v1_hrm_attendances_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedAttendanceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attendance,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/attendances/:id/",
+    alias: "v1_hrm_attendances_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/attendances/filter_options/",
+    alias: "v1_hrm_attendances_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Attendance,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/departments/",
+    alias: "v1_hrm_departments_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "location",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedDepartmentList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/departments/",
+    alias: "v1_hrm_departments_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DepartmentRequest,
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/departments/:id/",
+    alias: "v1_hrm_departments_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/departments/:id/",
+    alias: "v1_hrm_departments_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DepartmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/departments/:id/",
+    alias: "v1_hrm_departments_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedDepartmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Department,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/departments/:id/",
+    alias: "v1_hrm_departments_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/departments/filter_options/",
+    alias: "v1_hrm_departments_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Department,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/employee-form-options/",
+    alias: "v1_hrm_employee_form_options_retrieve",
+    requestFormat: "json",
+    response: EmployeeFormOptionsResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/employees/",
+    alias: "v1_hrm_employees_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "department",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "hire_date_after",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "hire_date_before",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "position",
+        type: "Query",
+        schema: z
+          .array(
+            z.enum([
+              "accountant",
+              "admin",
+              "customer_service",
+              "delivery",
+              "employee",
+              "hr",
+              "manager",
+              "marketing",
+              "sales",
+            ])
+          )
+          .optional(),
+      },
+      {
+        name: "salary_max",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "salary_min",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "user__username",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedEmployeeList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/employees/",
+    alias: "v1_hrm_employees_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: EmployeeRequest,
+      },
+    ],
+    response: Employee,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/employees/:id/",
+    alias: "v1_hrm_employees_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Employee,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/employees/:id/",
+    alias: "v1_hrm_employees_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: EmployeeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Employee,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/employees/:id/",
+    alias: "v1_hrm_employees_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedEmployeeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Employee,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/employees/:id/",
+    alias: "v1_hrm_employees_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/employees/filter_options/",
+    alias: "v1_hrm_employees_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Employee,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/leaves/",
+    alias: "v1_hrm_leaves_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "leave_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedLeaveList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/leaves/",
+    alias: "v1_hrm_leaves_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: LeaveRequest,
+      },
+    ],
+    response: Leave,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/leaves/:id/",
+    alias: "v1_hrm_leaves_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Leave,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/leaves/:id/",
+    alias: "v1_hrm_leaves_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: LeaveRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Leave,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/leaves/:id/",
+    alias: "v1_hrm_leaves_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedLeaveRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Leave,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/leaves/:id/",
+    alias: "v1_hrm_leaves_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/leaves/filter_options/",
+    alias: "v1_hrm_leaves_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Leave,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/notifications/",
+    alias: "v1_hrm_notifications_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_read",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "message",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notification_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedNotificationList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/notifications/",
+    alias: "v1_hrm_notifications_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: NotificationRequest,
+      },
+    ],
+    response: Notification,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/notifications/:id/",
+    alias: "v1_hrm_notifications_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Notification,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/notifications/:id/",
+    alias: "v1_hrm_notifications_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: NotificationRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Notification,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/notifications/:id/",
+    alias: "v1_hrm_notifications_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedNotificationRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Notification,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/notifications/:id/",
+    alias: "v1_hrm_notifications_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/notifications/filter_options/",
+    alias: "v1_hrm_notifications_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Notification,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/payrolls/",
+    alias: "v1_hrm_payrolls_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "basic_salary",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "bonuses",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "deductions",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "journal_entry",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "month",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "net_salary",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPayrollList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/payrolls/",
+    alias: "v1_hrm_payrolls_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PayrollRequest,
+      },
+    ],
+    response: Payroll,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/payrolls/:id/",
+    alias: "v1_hrm_payrolls_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payroll,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/payrolls/:id/",
+    alias: "v1_hrm_payrolls_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PayrollRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payroll,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/payrolls/:id/",
+    alias: "v1_hrm_payrolls_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPayrollRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payroll,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/payrolls/:id/",
+    alias: "v1_hrm_payrolls_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/payrolls/filter_options/",
+    alias: "v1_hrm_payrolls_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Payroll,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/performance-reviews/",
+    alias: "v1_hrm_performance_reviews_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "comments",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "rating",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "review_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPerformanceReviewList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/performance-reviews/",
+    alias: "v1_hrm_performance_reviews_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PerformanceReviewRequest,
+      },
+    ],
+    response: PerformanceReview,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/performance-reviews/:id/",
+    alias: "v1_hrm_performance_reviews_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PerformanceReview,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/performance-reviews/:id/",
+    alias: "v1_hrm_performance_reviews_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PerformanceReviewRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PerformanceReview,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/performance-reviews/:id/",
+    alias: "v1_hrm_performance_reviews_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPerformanceReviewRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PerformanceReview,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/performance-reviews/:id/",
+    alias: "v1_hrm_performance_reviews_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/performance-reviews/filter_options/",
+    alias: "v1_hrm_performance_reviews_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PerformanceReview,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/tasks/",
+    alias: "v1_hrm_tasks_list",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "due_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "employee",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedTaskList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/hrm/tasks/",
+    alias: "v1_hrm_tasks_create",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: TaskRequest,
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/tasks/:id/",
+    alias: "v1_hrm_tasks_retrieve",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "put",
+    path: "/api/v1/hrm/tasks/:id/",
+    alias: "v1_hrm_tasks_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: TaskRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/hrm/tasks/:id/",
+    alias: "v1_hrm_tasks_partial_update",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedTaskRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Task,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/hrm/tasks/:id/",
+    alias: "v1_hrm_tasks_destroy",
+    description: `Base ViewSet for HRM that helps restrict access based on employee role.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/hrm/tasks/filter_options/",
+    alias: "v1_hrm_tasks_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Task,
+  },
+  {
+    method: "get",
+    path: "/api/v1/mobile/customers/search/",
+    alias: "v1_mobile_customers_search_list",
+    description: `Quick customer lookup for mobile`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "q",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.array(MobileCustomerLookupItem),
+  },
+  {
+    method: "get",
+    path: "/api/v1/mobile/dashboard/",
+    alias: "v1_mobile_dashboard_retrieve",
+    description: `Mobile Dashboard - All data in one request
+
+Aggregates:
+- Today&#x27;s statistics
+- Recent orders
+- Alerts
+- User performance`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: MobileDashboardResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/mobile/orders/:order_id/",
+    alias: "v1_mobile_orders_retrieve",
+    description: `Mobile order details - Optimized`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "order_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: MobileOrderDetailResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/mobile/products/search/",
+    alias: "v1_mobile_products_search_list",
+    description: `Quick product search for mobile
+Returns only required fields to minimize data size`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "q",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.array(MobileProductSearchItem),
+  },
+  {
+    method: "post",
+    path: "/api/v1/mobile/quick-sale/",
+    alias: "v1_mobile_quick_sale_create",
+    description: `Quick sale from mobile`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: MobileQuickSaleRequestRequest,
+      },
+    ],
+    response: MobileQuickSaleResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/mobile/sync/",
+    alias: "v1_mobile_sync_retrieve",
+    description: `Mobile data sync (offline-first)
+Returns only changes since last sync`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "since",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: MobileSyncResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/prescriptions/prescription/",
+    alias: "v1_prescriptions_prescription_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_by__first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by__username__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__email__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__last_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer__phone__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPrescriptionRecordList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/prescriptions/prescription/",
+    alias: "v1_prescriptions_prescription_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PrescriptionRecordRequest,
+      },
+    ],
+    response: PrescriptionRecord,
+  },
+  {
+    method: "get",
+    path: "/api/v1/prescriptions/prescription/:id/",
+    alias: "v1_prescriptions_prescription_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PrescriptionRecord,
+  },
+  {
+    method: "put",
+    path: "/api/v1/prescriptions/prescription/:id/",
+    alias: "v1_prescriptions_prescription_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PrescriptionRecordRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PrescriptionRecord,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/prescriptions/prescription/:id/",
+    alias: "v1_prescriptions_prescription_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPrescriptionRecordRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PrescriptionRecord,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/prescriptions/prescription/:id/",
+    alias: "v1_prescriptions_prescription_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/prescriptions/prescription/filter_options/",
+    alias: "v1_prescriptions_prescription_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PrescriptionRecord,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/answers/",
+    alias: "v1_products_answers_list",
+    description: `ViewSet for managing answers to customer questions.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "answer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "answered_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "question_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductVariantAnswerList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/answers/",
+    alias: "v1_products_answers_create",
+    description: `ViewSet for managing answers to customer questions.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantAnswerRequest,
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/answers/:id/",
+    alias: "v1_products_answers_retrieve",
+    description: `ViewSet for managing answers to customer questions.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/answers/:id/",
+    alias: "v1_products_answers_update",
+    description: `ViewSet for managing answers to customer questions.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantAnswerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/answers/:id/",
+    alias: "v1_products_answers_partial_update",
+    description: `ViewSet for managing answers to customer questions.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantAnswerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/answers/:id/",
+    alias: "v1_products_answers_destroy",
+    description: `ViewSet for managing answers to customer questions.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/answers/filter_options/",
+    alias: "v1_products_answers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductVariantAnswer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/attribute-values/",
+    alias: "v1_products_attribute_values_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "attribute__name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "value__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedAttributeValueList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/attribute-values/",
+    alias: "v1_products_attribute_values_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributeValueRequest,
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/attribute-values/:id/",
+    alias: "v1_products_attribute_values_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/attribute-values/:id/",
+    alias: "v1_products_attribute_values_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributeValueRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/attribute-values/:id/",
+    alias: "v1_products_attribute_values_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedAttributeValueRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: AttributeValue,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/attribute-values/:id/",
+    alias: "v1_products_attribute_values_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/attribute-values/filter_options/",
+    alias: "v1_products_attribute_values_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: AttributeValue,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/attributes/",
+    alias: "v1_products_attributes_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "values",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedAttributeList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/attributes/",
+    alias: "v1_products_attributes_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributeRequest,
+      },
+    ],
+    response: Attribute,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/attributes/:id/",
+    alias: "v1_products_attributes_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attribute,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/attributes/:id/",
+    alias: "v1_products_attributes_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: AttributeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attribute,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/attributes/:id/",
+    alias: "v1_products_attributes_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedAttributeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Attribute,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/attributes/:id/",
+    alias: "v1_products_attributes_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/attributes/filter_options/",
+    alias: "v1_products_attributes_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Attribute,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/branches/:branch_id/low-stock/",
+    alias: "v1_products_branches_low_stock_list",
+    description: `API View to list low stock items for a specific branch.
+Low stock is defined as: quantity_in_stock &lt;&#x3D; reorder_level + reserved_quantity`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.array(Stock),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/branches/active/",
+    alias: "v1_products_branches_active_list",
+    description: `API View to list all active branches.`,
+    requestFormat: "json",
+    response: z.array(Branch),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/branches/main/",
+    alias: "v1_products_branches_main_retrieve",
+    description: `API View to get the main branch details.`,
+    requestFormat: "json",
+    response: Branch,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/brands/",
+    alias: "v1_products_brands_list",
+    description: `ViewSet for managing Brands.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "country",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "logo",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "product_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "website",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedBrandList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/brands/",
+    alias: "v1_products_brands_create",
+    description: `ViewSet for managing Brands.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BrandRequest,
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/brands/:id/",
+    alias: "v1_products_brands_retrieve",
+    description: `ViewSet for managing Brands.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/brands/:id/",
+    alias: "v1_products_brands_update",
+    description: `ViewSet for managing Brands.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BrandRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/brands/:id/",
+    alias: "v1_products_brands_partial_update",
+    description: `ViewSet for managing Brands.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedBrandRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Brand,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/brands/:id/",
+    alias: "v1_products_brands_destroy",
+    description: `ViewSet for managing Brands.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/brands/filter_options/",
+    alias: "v1_products_brands_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Brand,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/categories/",
+    alias: "v1_products_categories_list",
+    description: `ViewSet for managing Product Categories.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "parent",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedCategoryList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/categories/",
+    alias: "v1_products_categories_create",
+    description: `ViewSet for managing Product Categories.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CategoryRequest,
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/categories/:id/",
+    alias: "v1_products_categories_retrieve",
+    description: `ViewSet for managing Product Categories.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/categories/:id/",
+    alias: "v1_products_categories_update",
+    description: `ViewSet for managing Product Categories.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CategoryRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/categories/:id/",
+    alias: "v1_products_categories_partial_update",
+    description: `ViewSet for managing Product Categories.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedCategoryRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Category,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/categories/:id/",
+    alias: "v1_products_categories_destroy",
+    description: `ViewSet for managing Product Categories.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/categories/filter_options/",
+    alias: "v1_products_categories_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Category,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/flexible-prices/",
+    alias: "v1_products_flexible_prices_list",
+    description: `ViewSet for managing Flexible Pricing rules.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer_group",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "min_quantity",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "pricing_policy",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "priority",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "special_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedFlexiblePriceList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/flexible-prices/",
+    alias: "v1_products_flexible_prices_create",
+    description: `ViewSet for managing Flexible Pricing rules.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: FlexiblePriceRequest,
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/flexible-prices/:id/",
+    alias: "v1_products_flexible_prices_retrieve",
+    description: `ViewSet for managing Flexible Pricing rules.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/flexible-prices/:id/",
+    alias: "v1_products_flexible_prices_update",
+    description: `ViewSet for managing Flexible Pricing rules.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: FlexiblePriceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/flexible-prices/:id/",
+    alias: "v1_products_flexible_prices_partial_update",
+    description: `ViewSet for managing Flexible Pricing rules.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedFlexiblePriceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: FlexiblePrice,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/flexible-prices/:id/",
+    alias: "v1_products_flexible_prices_destroy",
+    description: `ViewSet for managing Flexible Pricing rules.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/flexible-prices/filter_options/",
+    alias: "v1_products_flexible_prices_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: FlexiblePrice,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/lens-matrix/generate/",
+    alias: "v1_products_lens_matrix_generate_create",
+    description: `API View for bulk generating SPH x CYL lens variants with duplicate prevention.`,
+    requestFormat: "json",
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/manufacturers/",
+    alias: "v1_products_manufacturers_list",
+    description: `ViewSet for managing Manufacturers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "country",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "website",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedManufacturerList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/manufacturers/",
+    alias: "v1_products_manufacturers_create",
+    description: `ViewSet for managing Manufacturers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ManufacturerRequest,
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/manufacturers/:id/",
+    alias: "v1_products_manufacturers_retrieve",
+    description: `ViewSet for managing Manufacturers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/manufacturers/:id/",
+    alias: "v1_products_manufacturers_update",
+    description: `ViewSet for managing Manufacturers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ManufacturerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/manufacturers/:id/",
+    alias: "v1_products_manufacturers_partial_update",
+    description: `ViewSet for managing Manufacturers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedManufacturerRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Manufacturer,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/manufacturers/:id/",
+    alias: "v1_products_manufacturers_destroy",
+    description: `ViewSet for managing Manufacturers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/manufacturers/filter_options/",
+    alias: "v1_products_manufacturers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Manufacturer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/marketing/",
+    alias: "v1_products_marketing_list",
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "age_group",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "gender",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "meta_description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "meta_keywords",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "meta_title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_image",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_image_alt",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "slug",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductVariantMarketingList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/marketing/",
+    alias: "v1_products_marketing_create",
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantMarketingRequest,
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/marketing/:id/",
+    alias: "v1_products_marketing_retrieve",
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/marketing/:id/",
+    alias: "v1_products_marketing_update",
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantMarketingRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/marketing/:id/",
+    alias: "v1_products_marketing_partial_update",
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantMarketingRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/marketing/:id/",
+    alias: "v1_products_marketing_destroy",
+    description: `ViewSet for managing Product Variant Marketing details (e.g., SEO, campaigns).`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/marketing/filter_options/",
+    alias: "v1_products_marketing_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductVariantMarketing,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/offers/",
+    alias: "v1_products_offers_list",
+    description: `ViewSet for managing special offers on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ProductVariant_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "offer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductVariantOfferList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/offers/",
+    alias: "v1_products_offers_create",
+    description: `ViewSet for managing special offers on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantOfferRequest,
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/offers/:id/",
+    alias: "v1_products_offers_retrieve",
+    description: `ViewSet for managing special offers on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/offers/:id/",
+    alias: "v1_products_offers_update",
+    description: `ViewSet for managing special offers on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantOfferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/offers/:id/",
+    alias: "v1_products_offers_partial_update",
+    description: `ViewSet for managing special offers on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantOfferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantOffer,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/offers/:id/",
+    alias: "v1_products_offers_destroy",
+    description: `ViewSet for managing special offers on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/offers/filter_options/",
+    alias: "v1_products_offers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductVariantOffer,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/orders/fulfillment-check/",
+    alias: "v1_products_orders_fulfillment_check_create",
+    description: `Expecting JSON in the format:
+{
+    &quot;items&quot;: [
+        {&quot;variant_id&quot;: 1, &quot;quantity&quot;: 3},
+        {&quot;variant_id&quot;: 5, &quot;quantity&quot;: 2}
+    ]
+}`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderFulfillmentCheckRequestRequest,
+      },
+    ],
+    response: OrderFulfillmentCheckResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/pricing-policies/",
+    alias: "v1_products_pricing_policies_list",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPricingPolicyList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/pricing-policies/",
+    alias: "v1_products_pricing_policies_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PricingPolicyRequest,
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/pricing-policies/:id/",
+    alias: "v1_products_pricing_policies_retrieve",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/pricing-policies/:id/",
+    alias: "v1_products_pricing_policies_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PricingPolicyRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/pricing-policies/:id/",
+    alias: "v1_products_pricing_policies_partial_update",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPricingPolicyRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PricingPolicy,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/pricing-policies/:id/",
+    alias: "v1_products_pricing_policies_destroy",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/product-images/",
+    alias: "v1_products_product_images_list",
+    description: `ViewSet for managing Product Images.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "alt_text",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "image",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_primary",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductImageList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/product-images/",
+    alias: "v1_products_product_images_create",
+    description: `ViewSet for managing Product Images.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductImageRequest,
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/product-images/:id/",
+    alias: "v1_products_product_images_retrieve",
+    description: `ViewSet for managing Product Images.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/product-images/:id/",
+    alias: "v1_products_product_images_update",
+    description: `ViewSet for managing Product Images.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductImageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/product-images/:id/",
+    alias: "v1_products_product_images_partial_update",
+    description: `ViewSet for managing Product Images.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductImageRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductImage,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/product-images/:id/",
+    alias: "v1_products_product_images_destroy",
+    description: `ViewSet for managing Product Images.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/product-images/filter_options/",
+    alias: "v1_products_product_images_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductImage,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/products/",
+    alias: "v1_products_products_list",
+    description: `ViewSet for managing main Products.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "brand",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "categories",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "main_group",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "manufacturer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "model",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "sku",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_category",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variants",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/products/",
+    alias: "v1_products_products_create",
+    description: `ViewSet for managing main Products.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductRequest,
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/products/:id/",
+    alias: "v1_products_products_retrieve",
+    description: `ViewSet for managing main Products.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/products/:id/",
+    alias: "v1_products_products_update",
+    description: `ViewSet for managing main Products.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/products/:id/",
+    alias: "v1_products_products_partial_update",
+    description: `ViewSet for managing main Products.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Product,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/products/:id/",
+    alias: "v1_products_products_destroy",
+    description: `ViewSet for managing main Products.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/products/filter_options/",
+    alias: "v1_products_products_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Product,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/products/import-csv/",
+    alias: "v1_products_products_import_csv_create",
+    description: `Import products from CSV file using server-side configuration`,
+    requestFormat: "form-data",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({ file: z.custom().refine(f => f instanceof File, { message: "Must be a File" }) }).passthrough(),
+      },
+    ],
+    response: ProductImportSuccessResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ error: z.string() }).passthrough(),
+      },
+      {
+        status: 500,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/purchase-orders/",
+    alias: "v1_products_purchase_orders_list",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "approved",
+            "cancelled",
+            "draft",
+            "partially_received",
+            "received",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "supplier",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedPurchaseOrderList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/purchase-orders/",
+    alias: "v1_products_purchase_orders_create",
+    description: `Create a new purchase order with items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderCreateRequest,
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/purchase-orders/:id/",
+    alias: "v1_products_purchase_orders_retrieve",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/purchase-orders/:id/",
+    alias: "v1_products_purchase_orders_update",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/purchase-orders/:id/",
+    alias: "v1_products_purchase_orders_partial_update",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/purchase-orders/:id/",
+    alias: "v1_products_purchase_orders_destroy",
+    description: `ViewSet for Purchase Order Management
+
+Endpoints:
+- GET /purchase-orders/ - List orders
+- GET /purchase-orders/{id}/ - Order details
+- POST /purchase-orders/ - Create order
+- POST /purchase-orders/{id}/submit/ - Submit for approval
+- POST /purchase-orders/{id}/approve/ - Approve order
+- POST /purchase-orders/{id}/receive/ - Receive items
+- POST /purchase-orders/{id}/cancel/ - Cancel order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/purchase-orders/:id/approve/",
+    alias: "v1_products_purchase_orders_approve_create",
+    description: `Approve the order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/purchase-orders/:id/cancel/",
+    alias: "v1_products_purchase_orders_cancel_create",
+    description: `Cancel the order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/purchase-orders/:id/receive/",
+    alias: "v1_products_purchase_orders_receive_create",
+    description: `Receive items and update stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ReceiveItemsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/purchase-orders/:id/submit/",
+    alias: "v1_products_purchase_orders_submit_create",
+    description: `Submit order for approval`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PurchaseOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PurchaseOrder,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/purchase-orders/filter_options/",
+    alias: "v1_products_purchase_orders_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PurchaseOrder,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/questions/",
+    alias: "v1_products_questions_list",
+    description: `ViewSet for managing customer questions about product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ProductVariant_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "asked_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "question",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductVariantQuestionList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/questions/",
+    alias: "v1_products_questions_create",
+    description: `ViewSet for managing customer questions about product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantQuestionRequest,
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/questions/:id/",
+    alias: "v1_products_questions_retrieve",
+    description: `ViewSet for managing customer questions about product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/questions/:id/",
+    alias: "v1_products_questions_update",
+    description: `ViewSet for managing customer questions about product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantQuestionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/questions/:id/",
+    alias: "v1_products_questions_partial_update",
+    description: `ViewSet for managing customer questions about product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantQuestionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/questions/:id/",
+    alias: "v1_products_questions_destroy",
+    description: `ViewSet for managing customer questions about product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/questions/filter_options/",
+    alias: "v1_products_questions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductVariantQuestion,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/reviews/",
+    alias: "v1_products_reviews_list",
+    description: `ViewSet for managing customer reviews on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ProductVariant_id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "rating",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "review",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "reviewed_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductVariantReviewList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/reviews/",
+    alias: "v1_products_reviews_create",
+    description: `ViewSet for managing customer reviews on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantReviewRequest,
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/reviews/:id/",
+    alias: "v1_products_reviews_retrieve",
+    description: `ViewSet for managing customer reviews on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/reviews/:id/",
+    alias: "v1_products_reviews_update",
+    description: `ViewSet for managing customer reviews on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantReviewRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/reviews/:id/",
+    alias: "v1_products_reviews_partial_update",
+    description: `ViewSet for managing customer reviews on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantReviewRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariantReview,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/reviews/:id/",
+    alias: "v1_products_reviews_destroy",
+    description: `ViewSet for managing customer reviews on product variants.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/reviews/filter_options/",
+    alias: "v1_products_reviews_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductVariantReview,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-movements/",
+    alias: "v1_products_stock_movements_list",
+    description: `ViewSet for Stock Movements
+
+Endpoints:
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "movement_type",
+        type: "Query",
+        schema: z
+          .enum([
+            "adjustment",
+            "damage",
+            "purchase",
+            "release",
+            "reserve",
+            "return",
+            "return_to_supplier",
+            "sale",
+            "transfer_in",
+            "transfer_out",
+          ])
+          .optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "stock",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockMovementList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-movements/",
+    alias: "v1_products_stock_movements_create",
+    description: `Create new stock movement with user logging`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementCreateRequest,
+      },
+    ],
+    response: StockMovementCreate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-movements/:id/",
+    alias: "v1_products_stock_movements_retrieve",
+    description: `ViewSet for Stock Movements
+
+Endpoints:
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovement,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/stock-movements/:id/",
+    alias: "v1_products_stock_movements_update",
+    description: `ViewSet for Stock Movements
+
+Endpoints:
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovement,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/stock-movements/:id/",
+    alias: "v1_products_stock_movements_partial_update",
+    description: `ViewSet for Stock Movements
+
+Endpoints:
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockMovementRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockMovement,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/stock-movements/:id/",
+    alias: "v1_products_stock_movements_destroy",
+    description: `ViewSet for Stock Movements
+
+Endpoints:
+- GET /stock-movements/ - List movements
+- POST /stock-movements/ - Add new movement (purchase, sale, adjustment, etc.)
+- GET /stock-movements/by_stock/{stock_id}/ - Movements for specific stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-movements/adjustment/",
+    alias: "v1_products_stock_movements_adjustment_create",
+    description: `Stock adjustment (Increase or Decrease)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementCreateRequest,
+      },
+    ],
+    response: StockMovement,
+    errors: [
+      {
+        status: 400,
+        description: `No response body`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-movements/by-stock/:stock_id/",
+    alias: "v1_products_stock_movements_by_stock_list",
+    description: `Movements for specific stock`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "movement_type",
+        type: "Query",
+        schema: z
+          .enum([
+            "adjustment",
+            "damage",
+            "purchase",
+            "release",
+            "reserve",
+            "return",
+            "return_to_supplier",
+            "sale",
+            "transfer_in",
+            "transfer_out",
+          ])
+          .optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "stock",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "stock_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaginatedStockMovementList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-movements/filter_options/",
+    alias: "v1_products_stock_movements_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: StockMovement,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-movements/purchase/",
+    alias: "v1_products_stock_movements_purchase_create",
+    description: `Add purchase (Restock)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockMovementCreateRequest,
+      },
+    ],
+    response: StockMovement,
+    errors: [
+      {
+        status: 400,
+        description: `No response body`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfer-items/",
+    alias: "v1_products_stock_transfer_items_list",
+    description: `ViewSet for Transfer Items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "transfer",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferItemList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfer-items/",
+    alias: "v1_products_stock_transfer_items_create",
+    description: `ViewSet for Transfer Items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferItemRequest,
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfer-items/:id/",
+    alias: "v1_products_stock_transfer_items_retrieve",
+    description: `ViewSet for Transfer Items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/stock-transfer-items/:id/",
+    alias: "v1_products_stock_transfer_items_update",
+    description: `ViewSet for Transfer Items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/stock-transfer-items/:id/",
+    alias: "v1_products_stock_transfer_items_partial_update",
+    description: `ViewSet for Transfer Items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockTransferItemRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransferItem,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/stock-transfer-items/:id/",
+    alias: "v1_products_stock_transfer_items_destroy",
+    description: `ViewSet for Transfer Items`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfer-items/filter_options/",
+    alias: "v1_products_stock_transfer_items_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: StockTransferItem,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfers/",
+    alias: "v1_products_stock_transfers_list",
+    description: `ViewSet for Inter-Branch Transfers
+
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
+
+Endpoints:
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfers/",
+    alias: "v1_products_stock_transfers_create",
+    description: `ViewSet for Inter-Branch Transfers
+
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
+
+Endpoints:
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferCreateRequest,
+      },
+    ],
+    response: StockTransferCreate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfers/:id/",
+    alias: "v1_products_stock_transfers_retrieve",
+    description: `ViewSet for Inter-Branch Transfers
+
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
+
+Endpoints:
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/stock-transfers/:id/",
+    alias: "v1_products_stock_transfers_update",
+    description: `ViewSet for Inter-Branch Transfers
+
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
+
+Endpoints:
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/stock-transfers/:id/",
+    alias: "v1_products_stock_transfers_partial_update",
+    description: `ViewSet for Inter-Branch Transfers
+
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
+
+Endpoints:
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/stock-transfers/:id/",
+    alias: "v1_products_stock_transfers_destroy",
+    description: `ViewSet for Inter-Branch Transfers
+
+Uses TransferBranchAccessMixin to show transfers relevant to the user&#x27;s branch
+(either as sender or receiver).
+
+Endpoints:
+- GET /stock-transfers/ - List transfers
+- POST /stock-transfers/ - Create transfer
+- POST /stock-transfers/{id}/submit/ - Submit transfer for approval
+- POST /stock-transfers/{id}/approve/ - Approve transfer
+- POST /stock-transfers/{id}/ship/ - Ship transfer
+- POST /stock-transfers/{id}/receive/ - Receive transfer
+- POST /stock-transfers/{id}/cancel/ - Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfers/:id/approve/",
+    alias: "v1_products_stock_transfers_approve_create",
+    description: `Approve transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfers/:id/cancel/",
+    alias: "v1_products_stock_transfers_cancel_create",
+    description: `Cancel transfer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfers/:id/receive/",
+    alias: "v1_products_stock_transfers_receive_create",
+    description: `Receive transfer - Adds to receiving branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfers/:id/ship/",
+    alias: "v1_products_stock_transfers_ship_create",
+    description: `Ship transfer - Deducts from sending branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stock-transfers/:id/submit/",
+    alias: "v1_products_stock_transfers_submit_create",
+    description: `Submit transfer for approval`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockTransferRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: StockTransfer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfers/filter_options/",
+    alias: "v1_products_stock_transfers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: StockTransfer,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfers/incoming/",
+    alias: "v1_products_stock_transfers_incoming_list",
+    description: `Incoming transfers to current branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfers/outgoing/",
+    alias: "v1_products_stock_transfers_outgoing_list",
+    description: `Outgoing transfers from current branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stock-transfers/pending/",
+    alias: "v1_products_stock_transfers_pending_list",
+    description: `Pending transfers`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "from_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum([
+            "cancelled",
+            "completed",
+            "pending",
+            "received",
+            "shipped",
+            "submitted",
+          ])
+          .optional(),
+      },
+      {
+        name: "to_branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockTransferList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/",
+    alias: "v1_products_stocks_list",
+    description: `ViewSet for Inventory Management
+
+Endpoints:
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/stocks/",
+    alias: "v1_products_stocks_create",
+    description: `ViewSet for Inventory Management
+
+Endpoints:
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockRequest,
+      },
+    ],
+    response: Stock,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/:id/",
+    alias: "v1_products_stocks_retrieve",
+    description: `ViewSet for Inventory Management
+
+Endpoints:
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stock,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/stocks/:id/",
+    alias: "v1_products_stocks_update",
+    description: `ViewSet for Inventory Management
+
+Endpoints:
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: StockRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stock,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/stocks/:id/",
+    alias: "v1_products_stocks_partial_update",
+    description: `ViewSet for Inventory Management
+
+Endpoints:
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedStockRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Stock,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/stocks/:id/",
+    alias: "v1_products_stocks_destroy",
+    description: `ViewSet for Inventory Management
+
+Endpoints:
+- GET /stocks/ - List stock
+- GET /stocks/{id}/ - Stock details
+- POST /stocks/ - Add new stock (Warehouses only)
+- GET /stocks/low_stock/ - Low stock products
+- GET /stocks/out_of_stock/ - Out of stock products
+- GET /stocks/by_branch/{branch_id}/ - Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/by-branch/:branch_id/",
+    alias: "v1_products_stocks_by_branch_list",
+    description: `Stock for specific branch`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/filter_options/",
+    alias: "v1_products_stocks_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Stock,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/low_stock/",
+    alias: "v1_products_stocks_low_stock_list",
+    description: `Low stock products`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/out_of_stock/",
+    alias: "v1_products_stocks_out_of_stock_list",
+    description: `Out of stock products`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStockList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/stocks/stores_only/",
+    alias: "v1_products_stocks_stores_only_list",
+    description: `Warehouses only (Branches that can add stock)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "variant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedStoreBranchList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/suppliers/",
+    alias: "v1_products_suppliers_list",
+    description: `ViewSet for managing Suppliers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "address",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "contact_person",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "country",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "payment_terms",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "website",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedSupplierList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/suppliers/",
+    alias: "v1_products_suppliers_create",
+    description: `ViewSet for managing Suppliers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SupplierRequest,
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/suppliers/:id/",
+    alias: "v1_products_suppliers_retrieve",
+    description: `ViewSet for managing Suppliers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/suppliers/:id/",
+    alias: "v1_products_suppliers_update",
+    description: `ViewSet for managing Suppliers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SupplierRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/suppliers/:id/",
+    alias: "v1_products_suppliers_partial_update",
+    description: `ViewSet for managing Suppliers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedSupplierRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Supplier,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/suppliers/:id/",
+    alias: "v1_products_suppliers_destroy",
+    description: `ViewSet for managing Suppliers.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/suppliers/filter_options/",
+    alias: "v1_products_suppliers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Supplier,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/variants/",
+    alias: "v1_products_variants_list",
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "barcode",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "dimensions",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "discount_percentage",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "factory_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "last_purchase_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "min_selling_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "product",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "product_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "selling_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "sku",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_category",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "warranty",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "weight",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedProductVariantList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/products/variants/",
+    alias: "v1_products_variants_create",
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateProductVariantRequest,
+      },
+    ],
+    response: CreateProductVariant,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/variants/:id/",
+    alias: "v1_products_variants_retrieve",
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariant,
+  },
+  {
+    method: "put",
+    path: "/api/v1/products/variants/:id/",
+    alias: "v1_products_variants_update",
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ProductVariantRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariant,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/products/variants/:id/",
+    alias: "v1_products_variants_partial_update",
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedProductVariantRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: ProductVariant,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/products/variants/:id/",
+    alias: "v1_products_variants_destroy",
+    description: `ViewSet for managing Product Variants.
+Custom logic for creation to support nested pricing/attributes.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/variants/:variant_id/nearest-branch/",
+    alias: "v1_products_variants_nearest_branch_retrieve",
+    description: `API View to find the nearest branch with sufficient stock.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "min_quantity",
+        type: "Query",
+        schema: z.number().int().optional().default(1),
+      },
+      {
+        name: "variant_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: NearestBranchResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/variants/:variant_id/stock-summary/",
+    alias: "v1_products_variants_stock_summary_retrieve",
+    description: `API View to get stock summary for a specific variant across all branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "variant_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: VariantStockSummaryResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/variants/:variant_id/total-stock/",
+    alias: "v1_products_variants_total_stock_retrieve",
+    description: `API View to get total stock quantity for a variant across all branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "variant_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: VariantTotalStockResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/products/variants/filter_options/",
+    alias: "v1_products_variants_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: ProductVariant,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/installments/",
+    alias: "v1_sales_installments_list",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "payment",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum(["cancelled", "due", "overdue", "paid", "pending"])
+          .optional(),
+      },
+    ],
+    response: PaginatedInstallmentList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/installments/",
+    alias: "v1_sales_installments_create",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InstallmentRequest,
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/installments/:id/",
+    alias: "v1_sales_installments_retrieve",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "put",
+    path: "/api/v1/sales/installments/:id/",
+    alias: "v1_sales_installments_update",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InstallmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/sales/installments/:id/",
+    alias: "v1_sales_installments_partial_update",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInstallmentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Installment,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/sales/installments/:id/",
+    alias: "v1_sales_installments_destroy",
+    description: `ViewSet للأقساط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/installments/:id/mark_paid/",
+    alias: "v1_sales_installments_mark_paid_create",
+    description: `تسجيل سداد القسط`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ amount: z.string().regex(/^-?\d{0,18}(?:\.\d{0,2})?$/) })
+          .passthrough(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: MarkInstallmentPaidResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/installments/filter_options/",
+    alias: "v1_sales_installments_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Installment,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/installments/overdue/",
+    alias: "v1_sales_installments_overdue_list",
+    description: `الأقساط المتأخرة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "payment",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum(["cancelled", "due", "overdue", "paid", "pending"])
+          .optional(),
+      },
+    ],
+    response: PaginatedInstallmentList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/inventory/damage/",
+    alias: "v1_sales_inventory_damage_create",
+    description: `تسجيل تلف/إتلاف منتجات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateDamageRecordRequestRequest,
+      },
+    ],
+    response: CreateDamageRecordResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoice-types/",
+    alias: "v1_sales_invoice_types_list",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInvoiceTypeList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/invoice-types/",
+    alias: "v1_sales_invoice_types_create",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InvoiceTypeRequest,
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoice-types/:id/",
+    alias: "v1_sales_invoice_types_retrieve",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "put",
+    path: "/api/v1/sales/invoice-types/:id/",
+    alias: "v1_sales_invoice_types_update",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InvoiceTypeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/sales/invoice-types/:id/",
+    alias: "v1_sales_invoice_types_partial_update",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInvoiceTypeRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceType,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/sales/invoice-types/:id/",
+    alias: "v1_sales_invoice_types_destroy",
+    description: `ViewSet for Invoice Types.
+Read-only for most users, full access for admins.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoice-types/filter_options/",
+    alias: "v1_sales_invoice_types_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: InvoiceType,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoices/",
+    alias: "v1_sales_invoices_list",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "confirmed_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "current_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "discount_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "due_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "exchange_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_uuid",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "paid_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "patient_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "previous_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "pricing_policy_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "purchase_order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "subtotal",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_base",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_foreign",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_tax_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInvoiceList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/invoices/",
+    alias: "v1_sales_invoices_create",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InvoiceRequest,
+      },
+    ],
+    response: Invoice,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoices/:id/",
+    alias: "v1_sales_invoices_retrieve",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Invoice,
+  },
+  {
+    method: "put",
+    path: "/api/v1/sales/invoices/:id/",
+    alias: "v1_sales_invoices_update",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: InvoiceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Invoice,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/sales/invoices/:id/",
+    alias: "v1_sales_invoices_partial_update",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedInvoiceRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Invoice,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/sales/invoices/:id/",
+    alias: "v1_sales_invoices_destroy",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/invoices/:id/calculate_totals/",
+    alias: "v1_sales_invoices_calculate_totals_create",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceTotalsResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/invoices/:id/confirm/",
+    alias: "v1_sales_invoices_confirm_create",
+    description: `تأكيد الفاتورة وخصم المخزون`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: InvoiceConfirmResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoices/by_order/",
+    alias: "v1_sales_invoices_by_order_list",
+    description: `جلب فواتير طلب معين`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "confirmed_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_by",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "current_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "discount_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "due_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "exchange_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_type_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "invoice_uuid",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order_id",
+        type: "Query",
+        schema: z.number().int(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "paid_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "patient_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "previous_invoice_hash",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "pricing_policy_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "purchase_order",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "subtotal",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_snapshot",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_base",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount_foreign",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "zatca_tax_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedInvoiceList,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoices/choices/",
+    alias: "v1_sales_invoices_choices_retrieve",
+    requestFormat: "json",
+    response: InvoiceChoicesResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/invoices/filter_options/",
+    alias: "v1_sales_invoices_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Invoice,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/orders/",
+    alias: "v1_sales_orders_list",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "confirmed_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer_partner_link",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "customer_share",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "delivered_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "discount_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "expected_delivery",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "internal_notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "items",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "notes",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "order_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "paid_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "partner_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "partner_share",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "patient_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "payment_method",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "payment_status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "sales_person",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "subtotal",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "tax_rate",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "total_amount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedOrderList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/",
+    alias: "v1_sales_orders_create",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderRequest,
+      },
+    ],
+    response: Order,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/orders/:id/",
+    alias: "v1_sales_orders_retrieve",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Order,
+  },
+  {
+    method: "put",
+    path: "/api/v1/sales/orders/:id/",
+    alias: "v1_sales_orders_update",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Order,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/sales/orders/:id/",
+    alias: "v1_sales_orders_partial_update",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedOrderRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Order,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/sales/orders/:id/",
+    alias: "v1_sales_orders_destroy",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/:id/calculate_totals/",
+    alias: "v1_sales_orders_calculate_totals_create",
+    description: `Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
+Users only see data from their assigned branches.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: OrderTotalsResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/:id/cancel/",
+    alias: "v1_sales_orders_cancel_create",
+    description: `إلغاء الطلب وتحرير المخزون`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: OrderCancelResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/:id/confirm/",
+    alias: "v1_sales_orders_confirm_create",
+    description: `تأكيد الطلب وحجز المخزون`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: OrderConfirmResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/:id/deliver/",
+    alias: "v1_sales_orders_deliver_create",
+    description: `توصيل الطلب وخصم المخزون وإنشاء الفاتورة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: OrderDeliverResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/:id/ready/",
+    alias: "v1_sales_orders_ready_create",
+    description: `تجهيز الطلب للتسليم`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: OrderReadyResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/:order_id/return/",
+    alias: "v1_sales_orders_return_create",
+    description: `إنشاء مرتجع مبيعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateReturnRequestRequest,
+      },
+      {
+        name: "order_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: CreateReturnResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/orders/bulk-update-status/",
+    alias: "v1_sales_orders_bulk_update_status_create",
+    description: `تحديث حالة مجموعة من الطلبات دفعة واحدة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: OrderBulkUpdateStatusRequestRequest,
+      },
+    ],
+    response: OrderBulkUpdateStatusResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/orders/choices/",
+    alias: "v1_sales_orders_choices_retrieve",
+    requestFormat: "json",
+    response: OrderChoicesResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/orders/filter_options/",
+    alias: "v1_sales_orders_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Order,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payment-methods/",
+    alias: "v1_sales_payment_methods_list",
+    description: `ViewSet for dynamically managing payment methods`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_installment",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPaymentMethodList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payment-methods/",
+    alias: "v1_sales_payment_methods_create",
+    description: `ViewSet for dynamically managing payment methods`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentMethodRequest,
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payment-methods/:id/",
+    alias: "v1_sales_payment_methods_retrieve",
+    description: `ViewSet for dynamically managing payment methods`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "put",
+    path: "/api/v1/sales/payment-methods/:id/",
+    alias: "v1_sales_payment_methods_update",
+    description: `ViewSet for dynamically managing payment methods`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentMethodRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/sales/payment-methods/:id/",
+    alias: "v1_sales_payment_methods_partial_update",
+    description: `ViewSet for dynamically managing payment methods`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPaymentMethodRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PaymentMethod,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/sales/payment-methods/:id/",
+    alias: "v1_sales_payment_methods_destroy",
+    description: `ViewSet for dynamically managing payment methods`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payment-methods/filter_options/",
+    alias: "v1_sales_payment_methods_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PaymentMethod,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payments/",
+    alias: "v1_sales_payments_list",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "invoice",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "is_installment",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "order",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "partner",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "payment_method",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "status",
+        type: "Query",
+        schema: z
+          .enum(["disputed", "paid", "partial", "pending", "refunded"])
+          .optional(),
+      },
+    ],
+    response: PaginatedPaymentListList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payments/",
+    alias: "v1_sales_payments_create",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentCreateRequest,
+      },
+    ],
+    response: PaymentCreate,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payments/:id/",
+    alias: "v1_sales_payments_retrieve",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "put",
+    path: "/api/v1/sales/payments/:id/",
+    alias: "v1_sales_payments_update",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/sales/payments/:id/",
+    alias: "v1_sales_payments_partial_update",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPaymentRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Payment,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/sales/payments/:id/",
+    alias: "v1_sales_payments_destroy",
+    description: `ViewSet للدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payments/:id/mark_completed/",
+    alias: "v1_sales_payments_mark_completed_create",
+    description: `تحديد الدفعة كمكتملة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ transaction_id: z.string().min(1) })
+          .partial()
+          .passthrough(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: MarkCompletedResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payments/:id/mark_failed/",
+    alias: "v1_sales_payments_mark_failed_create",
+    description: `تحديد الدفعة كفاشلة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z
+          .object({ reason: z.string().min(1) })
+          .partial()
+          .passthrough(),
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: MarkFailedResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payments/:id/refund/",
+    alias: "v1_sales_payments_refund_create",
+    description: `استرجاع دفعة`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PaymentRefundRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RefundResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payments/bnpl_callback/",
+    alias: "v1_sales_payments_bnpl_callback_create",
+    description: `Webhook callback من BNPL providers`,
+    requestFormat: "json",
+    response: z.object({ status: z.string() }).passthrough(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payments/choices/",
+    alias: "v1_sales_payments_choices_retrieve",
+    description: `الخيارات المتاحة`,
+    requestFormat: "json",
+    response: PaymentChoices,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/payments/create_bnpl_session/",
+    alias: "v1_sales_payments_create_bnpl_session_create",
+    description: `إنشاء جلسة دفع BNPL (Tabby/Tamara)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: BNPLSessionRequestRequest,
+      },
+    ],
+    response: BNPLSessionResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payments/filter_options/",
+    alias: "v1_sales_payments_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Payment,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/payments/summary/",
+    alias: "v1_sales_payments_summary_retrieve",
+    description: `ملخص الدفعات`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "period",
+        type: "Query",
+        schema: z.enum(["month", "today", "week", "year"]).optional(),
+      },
+    ],
+    response: PaymentSummaryResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/async-financial-dashboard/",
+    alias: "v1_sales_reports_async_financial_dashboard_retrieve",
+    description: `Trigger async generation of the financial dashboard report
+which generates a PDF and sends it via email.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: z.object({ message: z.string() }).passthrough(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/branch-comparison/",
+    alias: "v1_sales_reports_branch_comparison_list",
+    description: `Branch Performance Comparison`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: z.array(BranchComparisonResponse),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/financial-dashboard/",
+    alias: "v1_sales_reports_financial_dashboard_retrieve",
+    description: `Comprehensive Financial Dashboard
+Includes:
+- Total Invoices
+- Total Payments
+- Pending Amounts (Unpaid)
+- Discounts
+- Taxes`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "period",
+        type: "Query",
+        schema: z.enum(["month", "today", "week", "year"]).optional(),
+      },
+    ],
+    response: FinancialDashboardResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/inventory-summary/",
+    alias: "v1_sales_reports_inventory_summary_retrieve",
+    description: `Inventory Summary`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: InventorySummaryResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/pending-orders/",
+    alias: "v1_sales_reports_pending_orders_retrieve",
+    description: `Pending Orders (Not Delivered)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PendingOrdersResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/receivables-aging/",
+    alias: "v1_sales_reports_receivables_aging_retrieve",
+    description: `Receivables Aging Report (Due Amounts)
+Shows unpaid invoices by age`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: ReceivablesAgingResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/sales-by-date/",
+    alias: "v1_sales_reports_sales_by_date_list",
+    description: `Sales by Date (for charts)`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: z.array(SalesByDateResponse),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/sales-summary/",
+    alias: "v1_sales_reports_sales_summary_retrieve",
+    description: `Sales Summary
+Parameters:
+    - branch_id: optional
+    - from_date: YYYY-MM-DD
+    - to_date: YYYY-MM-DD
+    - period: today, week, month, year`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "from_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "period",
+        type: "Query",
+        schema: z.enum(["month", "today", "week", "year"]).optional(),
+      },
+      {
+        name: "to_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: SalesSummaryResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/stock-movements/",
+    alias: "v1_sales_reports_stock_movements_retrieve",
+    description: `Stock Movements Report`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "movement_type",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: StockMovementsReportResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/reports/top-products/",
+    alias: "v1_sales_reports_top_products_list",
+    description: `Top Selling Products`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "branch_id",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "days",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "limit",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: z.array(TopProductsResponse),
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/wholesale/create-order/",
+    alias: "v1_sales_wholesale_create_order_create",
+    description: `Create Wholesale Order`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreateWholesaleOrderRequestRequest,
+      },
+    ],
+    response: CreateWholesaleOrderResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/wholesale/customer/:customer_id/credit/",
+    alias: "v1_sales_wholesale_customer_credit_create",
+    description: `Update Customer Credit`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: UpdateCustomerCreditRequestRequest,
+      },
+      {
+        name: "customer_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: UpdateCustomerCreditResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/wholesale/customer/:customer_id/statement/",
+    alias: "v1_sales_wholesale_customer_statement_retrieve",
+    description: `Customer Statement`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "customer_id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+      {
+        name: "end_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "start_date",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: CustomerStatementResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/wholesale/customers/",
+    alias: "v1_sales_wholesale_customers_list",
+    description: `List of Wholesale Customers`,
+    requestFormat: "json",
+    response: z.array(WholesaleCustomer),
+  },
+  {
+    method: "get",
+    path: "/api/v1/sales/wholesale/dashboard/",
+    alias: "v1_sales_wholesale_dashboard_retrieve",
+    description: `Wholesale Dashboard`,
+    requestFormat: "json",
+    response: WholesaleDashboardResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/wholesale/pricing/",
+    alias: "v1_sales_wholesale_pricing_create",
+    description: `Calculate wholesale pricing for a specific customer`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: GetWholesalePricingRequestRequest,
+      },
+    ],
+    response: GetWholesalePricingResponse,
+  },
+  {
+    method: "post",
+    path: "/api/v1/sales/wholesale/validate/",
+    alias: "v1_sales_wholesale_validate_create",
+    description: `Validate wholesale order before creation`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ValidateWholesaleOrderRequestRequest,
+      },
+    ],
+    response: ValidateWholesaleOrderResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/activate/",
+    alias: "v1_tenants_activate_retrieve",
+    description: `Main algorithm execution with improved flow control`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "token",
+        type: "Query",
+        schema: z.string(),
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/clients/",
+    alias: "v1_tenants_clients_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedClientList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/clients/",
+    alias: "v1_tenants_clients_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClientRequest,
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/clients/:id/",
+    alias: "v1_tenants_clients_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "put",
+    path: "/api/v1/tenants/clients/:id/",
+    alias: "v1_tenants_clients_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: ClientRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/tenants/clients/:id/",
+    alias: "v1_tenants_clients_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedClientRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: Client,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/tenants/clients/:id/",
+    alias: "v1_tenants_clients_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.string(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/clients/filter_options/",
+    alias: "v1_tenants_clients_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Client,
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/create-payment-order/",
+    alias: "v1_tenants_create_payment_order_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: CreatePaymentOrderRequest,
+      },
+    ],
+    response: CreatePaymentOrderResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/domain/",
+    alias: "v1_tenants_domain_list",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "is_primary",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tenant",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+    ],
+    response: PaginatedDomainList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/domain/",
+    alias: "v1_tenants_domain_create",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DomainRequest,
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/domain/:id/",
+    alias: "v1_tenants_domain_retrieve",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "put",
+    path: "/api/v1/tenants/domain/:id/",
+    alias: "v1_tenants_domain_update",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: DomainRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/tenants/domain/:id/",
+    alias: "v1_tenants_domain_partial_update",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedDomainRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Domain,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/tenants/domain/:id/",
+    alias: "v1_tenants_domain_destroy",
+    description: `ViewSet to manage domains.
+Only accessible on the public tenant.
+Allows listing, creating, and managing domains and subdomains.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/domain/filter_options/",
+    alias: "v1_tenants_domain_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Domain,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/payments/",
+    alias: "v1_tenants_payments_retrieve",
+    requestFormat: "json",
+    response: PaymentListResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/paypal/cancel/",
+    alias: "v1_tenants_paypal_cancel_retrieve",
+    requestFormat: "json",
+    response: z.void(),
+    errors: [
+      {
+        status: 302,
+        description: `No response body`,
+        schema: z.void(),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/paypal/execute/",
+    alias: "v1_tenants_paypal_execute_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PayPalExecuteRequestRequest,
+      },
+    ],
+    response: PayPalExecuteSuccessResponse,
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/paypal/webhook/",
+    alias: "v1_tenants_paypal_webhook_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
+    response: z.object({ status: z.string() }).passthrough(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/register/",
+    alias: "v1_tenants_register_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/registers/",
+    alias: "v1_tenants_registers_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "password",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedRegisterTenantList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/registers/",
+    alias: "v1_tenants_registers_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/registers/:id/",
+    alias: "v1_tenants_registers_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "put",
+    path: "/api/v1/tenants/registers/:id/",
+    alias: "v1_tenants_registers_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterTenantRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/tenants/registers/:id/",
+    alias: "v1_tenants_registers_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedRegisterTenantRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RegisterTenant,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/tenants/registers/:id/",
+    alias: "v1_tenants_registers_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/registers/filter_options/",
+    alias: "v1_tenants_registers_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: RegisterTenant,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/settings/",
+    alias: "v1_tenants_settings_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "account_number",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "address",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "bank_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "business_name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "city",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "client",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "country",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "created_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "email",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "facebook",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "iban",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "instagram",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "is_deleted",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "linkedin",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "postal_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_keywords",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "seo_title",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "state",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "swift_code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "tiktok",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "twitter",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "updated_at",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "website",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "whatsapp",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPublicTenantSettingsList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/settings/",
+    alias: "v1_tenants_settings_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PublicTenantSettingsRequest,
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/settings/:id/",
+    alias: "v1_tenants_settings_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "put",
+    path: "/api/v1/tenants/settings/:id/",
+    alias: "v1_tenants_settings_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PublicTenantSettingsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/tenants/settings/:id/",
+    alias: "v1_tenants_settings_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPublicTenantSettingsRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: PublicTenantSettings,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/tenants/settings/:id/",
+    alias: "v1_tenants_settings_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/settings/filter_options/",
+    alias: "v1_tenants_settings_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: PublicTenantSettings,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/subscription-plans/",
+    alias: "v1_tenants_subscription_plans_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "currency",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "discount",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "duration_months",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "duration_years",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "has_crm_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "has_eye_test_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "has_hr_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "has_inventory_module",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "max_branches",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "max_products",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "max_users",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "month_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "year_price",
+        type: "Query",
+        schema: z.number().optional(),
+      },
+    ],
+    response: PaginatedSubscriptionPlanList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/tenants/subscription-plans/",
+    alias: "v1_tenants_subscription_plans_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SubscriptionPlanRequest,
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/subscription-plans/:id/",
+    alias: "v1_tenants_subscription_plans_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "put",
+    path: "/api/v1/tenants/subscription-plans/:id/",
+    alias: "v1_tenants_subscription_plans_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: SubscriptionPlanRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/tenants/subscription-plans/:id/",
+    alias: "v1_tenants_subscription_plans_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedSubscriptionPlanRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: SubscriptionPlan,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/tenants/subscription-plans/:id/",
+    alias: "v1_tenants_subscription_plans_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/tenants/subscription-plans/filter_options/",
+    alias: "v1_tenants_subscription_plans_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: SubscriptionPlan,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/health/",
+    alias: "v1_users_health_retrieve",
+    description: `Health check endpoint to verify that the API is running.`,
+    requestFormat: "json",
+    response: z.object({ status: z.string() }).passthrough(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/login/",
+    alias: "v1_users_login_create",
+    description: `Login endpoint for users`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: LoginRequest,
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: LoginBadRequest,
+      },
+      {
+        status: 403,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/logout/",
+    alias: "v1_users_logout_create",
+    description: `Logout endpoint for users`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 401,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/password-reset-confirm/",
+    alias: "v1_users_password_reset_confirm_create",
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PasswordResetConfirmRequest,
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/password-reset/",
+    alias: "v1_users_password_reset_create",
+    description: `Request password reset`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: z.object({}).partial().passthrough(),
+      },
+    ],
+    response: z.object({ detail: z.string() }).passthrough(),
+    errors: [
+      {
+        status: 400,
+        schema: PasswordResetBadRequest,
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/permissions/",
+    alias: "v1_users_permissions_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedPermissionList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/permissions/",
+    alias: "v1_users_permissions_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PermissionRequest,
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/permissions/:id/",
+    alias: "v1_users_permissions_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "put",
+    path: "/api/v1/users/permissions/:id/",
+    alias: "v1_users_permissions_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/users/permissions/:id/",
+    alias: "v1_users_permissions_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedPermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Permission,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/users/permissions/:id/",
+    alias: "v1_users_permissions_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/permissions/filter_options/",
+    alias: "v1_users_permissions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Permission,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/profile/",
+    alias: "v1_users_profile_retrieve",
+    description: `Get current authenticated user profile data`,
+    requestFormat: "json",
+    response: User,
+    errors: [
+      {
+        status: 401,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/register/",
+    alias: "v1_users_register_create",
+    description: `Register endpoint for users`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RegisterRequest,
+      },
+    ],
+    response: RegisterSuccessResponse,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/role-permissions/",
+    alias: "v1_users_role_permissions_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "permission",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "permission__code",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "permission__code__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role__name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "role__name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedRolePermissionList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/role-permissions/",
+    alias: "v1_users_role_permissions_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RolePermissionRequest,
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/role-permissions/:id/",
+    alias: "v1_users_role_permissions_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "put",
+    path: "/api/v1/users/role-permissions/:id/",
+    alias: "v1_users_role_permissions_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RolePermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/users/role-permissions/:id/",
+    alias: "v1_users_role_permissions_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedRolePermissionRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: RolePermission,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/users/role-permissions/:id/",
+    alias: "v1_users_role_permissions_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/role-permissions/filter_options/",
+    alias: "v1_users_role_permissions_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: RolePermission,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/roles/",
+    alias: "v1_users_roles_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "description",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "id",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "is_active",
+        type: "Query",
+        schema: z.boolean().optional(),
+      },
+      {
+        name: "name",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "permissions",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedRoleList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/roles/",
+    alias: "v1_users_roles_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RoleRequest,
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/roles/:id/",
+    alias: "v1_users_roles_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "put",
+    path: "/api/v1/users/roles/:id/",
+    alias: "v1_users_roles_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: RoleRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/users/roles/:id/",
+    alias: "v1_users_roles_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedRoleRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: Role,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/users/roles/:id/",
+    alias: "v1_users_roles_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/roles/filter_options/",
+    alias: "v1_users_roles_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: Role,
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/token/refresh/",
+    alias: "v1_users_token_refresh_create",
+    requestFormat: "json",
+    response: RefreshTokenResponse,
+    errors: [
+      {
+        status: 401,
+        schema: z.object({ detail: z.string() }).passthrough(),
+      },
+    ],
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/users/",
+    alias: "v1_users_users_list",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "email__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "first_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "last_name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "ordering",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "page",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "page_size",
+        type: "Query",
+        schema: z.number().int().optional(),
+      },
+      {
+        name: "phone__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "roles__name__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "search",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+      {
+        name: "username__icontains",
+        type: "Query",
+        schema: z.string().optional(),
+      },
+    ],
+    response: PaginatedUserList,
+  },
+  {
+    method: "post",
+    path: "/api/v1/users/users/",
+    alias: "v1_users_users_create",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: UserRequest,
+      },
+    ],
+    response: User,
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/users/:id/",
+    alias: "v1_users_users_retrieve",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: User,
+  },
+  {
+    method: "put",
+    path: "/api/v1/users/users/:id/",
+    alias: "v1_users_users_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: UserRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: User,
+  },
+  {
+    method: "patch",
+    path: "/api/v1/users/users/:id/",
+    alias: "v1_users_users_partial_update",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "body",
+        type: "Body",
+        schema: PatchedUserRequest,
+      },
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: User,
+  },
+  {
+    method: "delete",
+    path: "/api/v1/users/users/:id/",
+    alias: "v1_users_users_destroy",
+    description: `Mixin that dynamically generates filtering options for any ViewSet.`,
+    requestFormat: "json",
+    parameters: [
+      {
+        name: "id",
+        type: "Path",
+        schema: z.number().int(),
+      },
+    ],
+    response: z.void(),
+  },
+  {
+    method: "get",
+    path: "/api/v1/users/users/filter_options/",
+    alias: "v1_users_users_filter_options_retrieve",
+    description: `API endpoint to fetch available filtering options (for frontend).`,
+    requestFormat: "json",
+    response: User,
+  },
 ]);
 
-export const api = new Zodios(endpoints);
+export const api = new Zodios(endpoints as any);
 
 export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-  return new Zodios(baseUrl, endpoints, options);
+  return new Zodios(baseUrl, endpoints as any, options);
 }

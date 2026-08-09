@@ -102,7 +102,11 @@ export const useProductFormStore = create<ProductFormState>((set, get) => ({
 
       // ✅ إذا القيمة مصفوفة، نستبدلها بالكامل
       if (Array.isArray(value)) {
-        if (JSON.stringify(existing) === JSON.stringify(value)) return state;
+        try {
+          if (JSON.stringify(existing) === JSON.stringify(value)) return state;
+        } catch {
+          // fallback if circular references exist
+        }
         return { data: { ...state.data, [key]: value } };
       }
 

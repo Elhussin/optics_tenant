@@ -32,7 +32,10 @@ def create_filterset_class(
     allowed_fields = set(fields.keys())
     if serializer_class:
         serializer_fields = set(serializer_class().fields.keys())
-        allowed_fields &= serializer_fields or allowed_fields
+        allowed_fields = {
+            f for f in allowed_fields
+            if f in serializer_fields or f.split("__")[0] in serializer_fields
+        }
 
     filters = {}
     type_map = {

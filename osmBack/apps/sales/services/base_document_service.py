@@ -1,6 +1,5 @@
 from apps.sales.utils import MoneyHelper
 
-
 def calculate_document_totals(document):
     """
     Calculate totals for a document (Order/Invoice).
@@ -8,7 +7,8 @@ def calculate_document_totals(document):
     Uses MoneyHelper for consistent rounding.
     """
     items = document.items.all()
-    subtotal = sum(item.total_price for item in items)
+    # Sum item.subtotal (tax-exclusive) to prevent double taxation
+    subtotal = sum(item.subtotal for item in items)
     document.subtotal = MoneyHelper.quantize(subtotal)
 
     # Apply discount

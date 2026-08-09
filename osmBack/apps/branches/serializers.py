@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.utils.translation import gettext_lazy as _
-from apps.branches.models import Branch, BranchUsers, Shift
+from apps.branches.models import Branch, BranchUsers, Shift, BranchShiftTemplate
 
 
 class BranchSerializer(serializers.ModelSerializer):
@@ -50,10 +50,21 @@ class BranchUsersSerializer(serializers.ModelSerializer):
         }
 
 
+class BranchShiftTemplateSerializer(serializers.ModelSerializer):
+    branch__name = serializers.CharField(source='branch.name', read_only=True)
+
+    class Meta:
+        model = BranchShiftTemplate
+        exclude = ['is_deleted']
+        read_only_fields = ['id', 'created_at', 'updated_at']
+
+
 class ShiftSerializer(serializers.ModelSerializer):
     branch__name = serializers.CharField(source='branch.name', read_only=True)
     employee__user__username = serializers.CharField(
         source='employee.user.username', read_only=True)
+    shift_template__name = serializers.CharField(
+        source='shift_template.name', read_only=True)
 
     class Meta:
         model = Shift
