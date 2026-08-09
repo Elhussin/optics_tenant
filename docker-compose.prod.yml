@@ -42,7 +42,7 @@ services:
     build:
       context: ./osmBack
       dockerfile: Dockerfile
-    container_name: optics_backend_prod
+    container_name: optics_backend
     restart: always
     env_file:
       - ./osmBack/.env
@@ -104,7 +104,7 @@ services:
       target: runner
       args:
         NEXT_PUBLIC_API_BASE: "https://osmbeta.cloud/api"
-    container_name: optics_frontend_prod
+    container_name: optics_frontend
     command: node server.js
     restart: always
     expose:
