@@ -51,12 +51,13 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - DEBUG=False
     volumes:
-      - optics_static_volume_prod:/app/staticfiles
-      - optics_media_volume_prod:/app/media
+      - optics_static_volume:/app/staticfiles
+      - optics_media_volume:/app/media
     expose:
       - "8000"
     networks:
       - app-network_prod
+      - shared-network # ربط بالشبكة المشتركة مع البوابة
     depends_on:
       tenant_db:
         condition: service_healthy
@@ -82,7 +83,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - DEBUG=False
     volumes:
-      - optics_media_volume_prod:/app/media
+      - optics_media_volume:/app/media # ربط بمجلد الميديا الخارجي
     networks:
       - app-network_prod
     depends_on:
@@ -110,6 +111,7 @@ services:
       - "3000"
     networks:
       - app-network_prod
+      - shared-network # ربط بالشبكة المشتركة لتصل إليها البوابة
     deploy:
       resources:
         limits:
@@ -135,9 +137,16 @@ services:
 
 volumes:
   optics_postgres_data_prod:
-  optics_static_volume_prod:
-  optics_media_volume_prod:
+  # جعل المجلدات خارجية لتتوافق مع البوابة
+  optics_static_volume:
+    external: true
+  optics_media_volume:
+    external: true
 
 networks:
   app-network_prod:
     name: optics_prod_network
+  # تعريف الشبكة المشتركة مع البوابة
+  shared-network:
+    name: osm_shared_network
+    external: true
