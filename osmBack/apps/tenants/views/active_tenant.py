@@ -262,14 +262,29 @@ class ActivateTenantView(APIView):
         }
 
         threading.Thread(target=self._background_activation,
-                         args=(pending,)).start()
+                         args=(pending.id,)).start()
 
         return Response(ResponseData, status=200)
 
-    def _background_activation(self, pending):
+    def _background_activation(self, pending_id):
+        from django.db import connection
+        from django_tenants.utils import schema_context
 
-        tenant, domain, creation_status = self.tenantActivation.create_tenant_atomic(
-            pending)
+        # 1. Close connection inherited from main thread to prevent InterfaceError
+        connection.close()
+
+        # 2. Get pending request in the context of the public schema
+        with schema_context('public'):
+            try:
+                pending = PendingTenantRequest.objects.get(id=pending_id)
+            except PendingTenantRequest.DoesNotExist:
+                self.tenantActivation.logger.error(
+                    f"PendingTenantRequest with ID {pending_id} not found"
+                )
+                return
+
+            tenant, domain, creation_status = self.tenantActivation.create_tenant_atomic(
+                pending)
 
         if creation_status != ActivationStatus.SUCCESS:
             send_failed_activation_email(pending.email)
