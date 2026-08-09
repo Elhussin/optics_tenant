@@ -168,8 +168,7 @@ CORS_ALLOW_CREDENTIALS = config(
     "CORS_ALLOW_CREDENTIALS", default=True, cast=bool)
 CORS_ALLOW_ALL_ORIGINS = config(
     "CORS_ALLOW_ALL_ORIGINS", default=False, cast=bool)
-CORS_ALLOWED_ORIGINS = config(
-    "CORS_ALLOWED_ORIGINS", default="").split(',')
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in config("CORS_ALLOWED_ORIGINS", default="").split(',') if origin.strip()]
 CORS_ALLOW_HEADERS = config("CORS_ALLOW_HEADERS").split(',')
 CORS_ALLOW_METHODS = config(
     "CORS_ALLOW_METHODS", default="DELETE,GET,OPTIONS,PATCH,POST,PUT").split(',')
