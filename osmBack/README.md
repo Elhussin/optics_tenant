@@ -63,8 +63,14 @@ pdm run python manage.py migrate_schemas --tenant
 # pdm run python manage.py create_tenant_and_migrate "My Store" store4
 pdm run python manage.py setup_tenant --name "Store 4" --schema store4 --domain store4.localhost --password "3112"
 
+
+# pdm run python manage.py setup_tenant --name "Store 4" --schema store4 --domain store4.localhost --password "3112"
 pdm run python manage.py runserver
 # https://osmbeta.cloud/
+
+# docker exec -it optics_backend python manage.py migrate_all_tenants
+# docker exec -it optics_backend python manage.py create_tenant_superuser --schema_name public --username admin --email admin@mail.com
+
 pdm run python manage.py createsuperuser
 pdm run python manage.py migrate_all_tenants
 pdm run python manage.py collectstatic
