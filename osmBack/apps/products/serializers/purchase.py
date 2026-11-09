@@ -44,7 +44,8 @@ class PurchaseOrderSerializer(serializers.ModelSerializer):
         exclude = ['is_deleted']
         read_only_fields = [
             'id', 'created_at', 'updated_at', 'order_number',
-            'approved_date', 'received_date', 'subtotal', 'total_amount'
+            'approved_date', 'received_date', 'subtotal', 'total_amount',
+            'status', 'approved_by', 'created_by'
         ]
 
     def get_created_by_name(self, obj):

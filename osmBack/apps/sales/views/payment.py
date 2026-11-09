@@ -25,15 +25,27 @@ from apps.sales.serializers.payment import (
 from apps.sales.services.payment_gateway import PaymentGatewayFactory, PaymentGatewayException
 from core.views import BaseViewSet
 from core.permissions.RoleOrPermissionRequired import RoleOrPermissionRequired
+from core.permissions.PaymentBranchAccessMixin import PaymentBranchAccessMixin
+from core.permissions.BranchAccessMixin import BranchAccessMixin
 
 # الأدوار المسموحة
 PAYMENT_ROLES = ["SalesClerk", "FinanceOfficer", "BranchManager"]
 
 
-class PaymentViewSet(BaseViewSet):
+class PaymentViewSet(PaymentBranchAccessMixin, BaseViewSet):
     """
     ViewSet للدفعات
     """
+    action_permissions = {
+        'create': ['create_payment'],
+        'update': ['edit_payment'],
+        'partial_update': ['edit_payment'],
+        'destroy': ['delete_payment'],
+        'mark_completed': ['create_payment'],
+        'mark_failed': ['edit_payment'],
+        'refund': ['refund_payment'],
+        'create_bnpl_session': ['create_payment'],
+    }
     queryset = Payment.objects.select_related(
         'invoice', 'order', 'partner'
     ).prefetch_related('installments').all()
@@ -174,6 +186,7 @@ class PaymentViewSet(BaseViewSet):
             )
 
         # تجهيز بيانات الطلب للبوابة
+        self.validate_branch_access(order.branch)
         order_data = {
             'order_id': order.order_number,
             'amount': float(order.total_amount),
@@ -257,9 +270,9 @@ class PaymentViewSet(BaseViewSet):
             # البحث عن الدفعة
             payment = None
             if payment_id:
-                payment = Payment.objects.filter(id=payment_id).first()
+                payment = self.get_queryset().filter(id=payment_id).first()
             elif order_id:
-                payment = Payment.objects.filter(
+                payment = self.get_queryset().filter(
                     bnpl_order_id=order_id).first()
 
             if not payment:
@@ -319,7 +332,7 @@ class PaymentViewSet(BaseViewSet):
         else:
             start_date = today
 
-        payments = Payment.objects.filter(
+        payments = self.get_queryset().filter(
             created_at__date__gte=start_date,
             status='completed'
         )
@@ -375,10 +388,17 @@ class PaymentViewSet(BaseViewSet):
         })
 
 
-class InstallmentViewSet(BaseViewSet):
+class InstallmentViewSet(BranchAccessMixin, BaseViewSet):
     """
     ViewSet للأقساط
     """
+    action_permissions = {
+        'create': ['edit_payment'],
+        'update': ['edit_payment'],
+        'partial_update': ['edit_payment'],
+        'destroy': ['delete_payment'],
+        'mark_paid': ['create_payment'],
+    }
     queryset = Installment.objects.select_related('payment').all()
     serializer_class = InstallmentSerializer
     permission_classes = [
@@ -389,6 +409,20 @@ class InstallmentViewSet(BaseViewSet):
     ]
     filterset_fields = ['payment', 'status']
     ordering = ['due_date']
+
+    def get_queryset(self):
+        scope = PaymentBranchAccessMixin()
+        scope.request = self.request
+        payments = scope.filter_queryset_by_branch(Payment.objects.all())
+        return self.queryset.filter(payment__in=payments)
+
+    def validate_serializer_branch(self, serializer):
+        payment = serializer.validated_data.get('payment', getattr(serializer.instance, 'payment', None))
+        scope = PaymentBranchAccessMixin()
+        scope.request = self.request
+        if payment is None or not scope.filter_queryset_by_branch(Payment.objects.filter(pk=payment.pk)).exists():
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied(_('You do not have permission to access this payment.'))
 
     @extend_schema(
         request=inline_serializer(name='MarkInstallmentPaidRequest', fields={
@@ -417,9 +451,6 @@ class InstallmentViewSet(BaseViewSet):
             due_date__lt=today,
             status__in=['pending', 'due']
         )
-
-        # تحديث الحالة
-        overdue_installments.update(status='overdue')
 
         serializer = self.get_serializer(overdue_installments, many=True)
         return Response(serializer.data)

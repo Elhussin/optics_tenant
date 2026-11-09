@@ -51,3 +51,15 @@ view_customer_history,Can view full purchase/medical history
 view_employee,Can view employee list
 manage_employee,Can create/edit employees
 manage_attendance,Can manage schedules and attendance
+delete_sale,Can delete draft sales
+delete_prescription,Can delete prescriptions
+view_purchaseorder,Can view purchase orders
+create_purchaseorder,Can create purchase orders
+edit_purchaseorder,Can edit purchase orders
+delete_purchaseorder,Can delete purchase orders
+approve_purchaseorder,Can approve purchase orders
+receive_purchaseorder,Can receive purchase orders
+cancel_purchaseorder,Can cancel purchase orders
+edit_payment,Can edit payments
+delete_payment,Can delete payments
+refund_payment,Can refund payments

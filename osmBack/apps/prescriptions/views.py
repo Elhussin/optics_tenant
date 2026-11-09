@@ -40,6 +40,12 @@ CUSTOMER_FILTER_FIELDS = {
 
 
 class PrescriptionViewSet(BaseViewSet):
+    action_permissions = {
+        'create': ['create_prescription'],
+        'update': ['edit_prescription'],
+        'partial_update': ['edit_prescription'],
+        'destroy': ['delete_prescription'],
+    }
     # Optimizing query: select_related is good practice here
     queryset = PrescriptionRecord.objects.select_related(
         "customer", "created_by").all()

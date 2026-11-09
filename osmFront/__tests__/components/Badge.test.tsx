@@ -21,19 +21,19 @@ describe("Badge", () => {
     render(<Badge variant="primary">Primary</Badge>);
     const badge = screen.getByText("Primary");
     expect(badge).toBeInTheDocument();
-    expect(badge).toHaveClass("bg-primary/10");
+    expect(badge).toHaveClass("bg-primary", "text-white");
   });
 
   it("renders with success variant", () => {
     render(<Badge variant="success">Success</Badge>);
     const badge = screen.getByText("Success");
-    expect(badge).toHaveClass("bg-success/10");
+    expect(badge).toHaveClass("bg-success", "text-white");
   });
 
   it("renders with danger variant", () => {
     render(<Badge variant="danger">Danger</Badge>);
     const badge = screen.getByText("Danger");
-    expect(badge).toHaveClass("bg-danger/10");
+    expect(badge).toHaveClass("bg-danger", "text-white");
   });
 
   it("renders with dot indicator", () => {
@@ -43,7 +43,7 @@ describe("Badge", () => {
       </Badge>
     );
     const badge = screen.getByText("Active");
-    expect(badge.previousSibling).toHaveClass("rounded-full");
+    expect(badge.querySelector("span")).toHaveClass("rounded-full");
   });
 
   it("renders with icon", () => {

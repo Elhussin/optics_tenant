@@ -56,7 +56,8 @@ class PaymentSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = [
             'id', 'gateway_transaction_id', 'paid_at', 'refunded_at',
-            'created_at', 'updated_at', 'allocations', 'created_by'
+            'created_at', 'updated_at', 'allocations', 'created_by',
+            'status', 'refund_amount', 'gateway_reference', 'bnpl_order_id'
         ]
 
     def get_installments(self, obj):

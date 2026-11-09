@@ -25,6 +25,14 @@ class InventoryBaseViewSet(BranchAccessMixin, BaseViewSet):
     Base ViewSet for inventory with branch-level access control.
     Users only see data from their assigned branches unless they are admin/owner.
     """
+    action_permissions = {
+        'create': ['adjust_inventory'],
+        'update': ['adjust_inventory'],
+        'partial_update': ['adjust_inventory'],
+        'destroy': ['adjust_inventory'],
+        'purchase': ['adjust_inventory'],
+        'adjustment': ['adjust_inventory'],
+    }
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
@@ -142,7 +150,8 @@ class StockMovementsViewSet(InventoryBaseViewSet):
             context={'request': request}
         )
         if serializer.is_valid():
-            movement = serializer.save()
+            self.perform_create(serializer)
+            movement = serializer.instance
             return Response(
                 StockMovementSerializer(movement).data,
                 status=status.HTTP_201_CREATED
@@ -157,7 +166,7 @@ class StockMovementsViewSet(InventoryBaseViewSet):
     @action(detail=False, methods=['get'], url_path='by-stock/(?P<stock_id>[^/.]+)')
     def by_stock(self, request, stock_id=None):
         """Movements for specific stock"""
-        queryset = self.queryset.filter(stock_id=stock_id)
+        queryset = self.get_queryset().filter(stock_id=stock_id)
         serializer = StockMovementSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -174,7 +183,8 @@ class StockMovementsViewSet(InventoryBaseViewSet):
         serializer = StockMovementCreateSerializer(
             data=data, context={'request': request})
         if serializer.is_valid():
-            movement = serializer.save()
+            self.perform_create(serializer)
+            movement = serializer.instance
             return Response(
                 StockMovementSerializer(movement).data,
                 status=status.HTTP_201_CREATED
@@ -194,7 +204,8 @@ class StockMovementsViewSet(InventoryBaseViewSet):
         serializer = StockMovementCreateSerializer(
             data=data, context={'request': request})
         if serializer.is_valid():
-            movement = serializer.save()
+            self.perform_create(serializer)
+            movement = serializer.instance
             return Response(
                 StockMovementSerializer(movement).data,
                 status=status.HTTP_201_CREATED
@@ -218,6 +229,12 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
     - POST /stock-transfers/{id}/receive/ - Receive transfer
     - POST /stock-transfers/{id}/cancel/ - Cancel transfer
     """
+    action_permissions = {
+        action: ['transfer_stock'] for action in (
+            'create', 'update', 'partial_update', 'destroy',
+            'submit', 'approve', 'ship', 'receive', 'cancel'
+        )
+    }
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
@@ -245,7 +262,8 @@ class StockTransferViewSet(TransferBranchAccessMixin, BaseViewSet):
             context={'request': request}
         )
         if serializer.is_valid():
-            transfer = serializer.save()
+            self.perform_create(serializer)
+            transfer = serializer.instance
             return Response(
                 StockTransferSerializer(transfer).data,
                 status=status.HTTP_201_CREATED

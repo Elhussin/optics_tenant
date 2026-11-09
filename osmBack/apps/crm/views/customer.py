@@ -22,6 +22,12 @@ CRM_ROLES = ["SalesClerk", "CustomerServiceRep",
 
 
 class CRMBaseViewSet(BaseViewSet):
+    action_permissions = {
+        'create': ['create_customer'],
+        'update': ['edit_customer'],
+        'partial_update': ['edit_customer'],
+        'destroy': ['delete_customer'],
+    }
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(

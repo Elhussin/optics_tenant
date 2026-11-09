@@ -50,12 +50,25 @@ class RoleOrPermissionRequired(BasePermission):
         if role_names.intersection(set(self.super_roles)):
             return True
 
-        # Check allowed roles
-        if self.allowed_roles and role_names.intersection(set(self.allowed_roles)):
+        # Mapped actions require their own permissions, even for an allowed role.
+        # Unmapped unsafe actions fail closed on views opting into this policy.
+        action_permissions = getattr(view, 'action_permissions', None)
+        required_permissions = self.required_permissions
+        mapped_action = action_permissions is not None
+        if mapped_action:
+            required_permissions = action_permissions.get(getattr(view, 'action', None))
+            if required_permissions is None:
+                if request.method not in ('GET', 'HEAD', 'OPTIONS'):
+                    raise PermissionDenied(detail=_("Permission denied."))
+                required_permissions = self.required_permissions
+                mapped_action = False
+
+        # Check allowed roles only for legacy or read-only actions.
+        if not mapped_action and self.allowed_roles and role_names.intersection(set(self.allowed_roles)):
             return True
 
         # Check required permissions
-        if self.required_permissions:
+        if required_permissions:
             if not user_roles:
                 # Permissions required but user has no roles
                 pass
@@ -64,7 +77,7 @@ class RoleOrPermissionRequired(BasePermission):
                 if "*" in user_permissions:
                     return True
 
-                required_perms = set(self.required_permissions)
+                required_perms = set(required_permissions)
 
                 if self.require_all:
                     if required_perms.issubset(user_permissions):

@@ -28,6 +28,18 @@ class BaseSalesViewSet(BranchAccessMixin, BaseViewSet):
     Base ViewSet for Sales with Branch Isolation via BranchAccessMixin.
     Users only see data from their assigned branches.
     """
+    action_permissions = {
+        'create': ['create_sale'],
+        'update': ['edit_sale'],
+        'partial_update': ['edit_sale'],
+        'destroy': ['delete_sale'],
+        'confirm': ['edit_sale'],
+        'ready': ['edit_sale'],
+        'deliver': ['edit_sale'],
+        'cancel': ['cancel_sale'],
+        'calculate_totals': ['edit_sale'],
+        'bulk_update_status': ['edit_sale', 'cancel_sale'],
+    }
     permission_classes = [
         IsAuthenticated,
         RoleOrPermissionRequired.with_requirements(
@@ -39,6 +51,16 @@ class BaseSalesViewSet(BranchAccessMixin, BaseViewSet):
     # Branch access configuration
     branch_field = 'branch'
     allow_all_branches_for_roles = super_roles
+
+    def validate_serializer_branch(self, serializer):
+        super().validate_serializer_branch(serializer)
+        # An invoice cannot use its own branch to expose another branch's order.
+        order = serializer.validated_data.get('order', getattr(serializer.instance, 'order', None))
+        if order is not None:
+            self.validate_branch_access(order.branch)
+            branch = serializer.validated_data.get('branch', getattr(serializer.instance, 'branch', None))
+            if order.branch_id != getattr(branch, 'pk', None):
+                raise serializers.ValidationError({'order': _('Order and invoice must belong to the same branch')})
 
 
 class OrderViewSet(BaseSalesViewSet):
@@ -223,11 +245,14 @@ class OrderViewSet(BaseSalesViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        required = 'cancel_sale' if new_status == 'cancelled' else 'edit_sale'
+        RoleOrPermissionRequired(required_permissions=[required]).has_permission(request, None)
+
         updated_count = 0
         errors = []
 
         # Fetch orders efficiently
-        orders = Order.objects.filter(id__in=ids, branch=request.branch)
+        orders = self.get_queryset().filter(id__in=ids)
 
         for order in orders:
             try:

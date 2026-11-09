@@ -22,7 +22,7 @@ class CookieJWTAuthentication(JWTAuthentication):
             # Security check: Ensure token belongs to the current tenant
             from django.db import connection
             token_tenant = validated_token.get("tenant")
-            if token_tenant and token_tenant != connection.schema_name:
+            if not token_tenant or token_tenant != connection.schema_name:
                 logger = logging.getLogger(__name__)
                 logger.warning(f"Cross-tenant authentication attempt! Token for {token_tenant} used on {connection.schema_name}")
                 return None

@@ -22,7 +22,7 @@ class BranchAccessMixin:
     # Override these in subclasses if needed
     branch_field = 'branch'  # Field name linking to Branch
     # Roles that can see all branches
-    allow_all_branches_for_roles = ['admin', 'owner']
+    allow_all_branches_for_roles = ['TenantAdmin', 'TenantOwner']
     # If True, users without branch assignment get empty queryset
     require_branch_assignment = True
 
@@ -91,6 +91,24 @@ class BranchAccessMixin:
         queryset = super().get_queryset()
         return self.filter_queryset_by_branch(queryset)
 
+    def validate_serializer_branch(self, serializer):
+        """Resolve the effective branch, including nested relations and PATCH."""
+        value = serializer.validated_data
+        for part in self.branch_field.split('__'):
+            if isinstance(value, dict):
+                value = value.get(part, getattr(serializer.instance, part, None))
+            else:
+                value = getattr(value, part, None)
+        self.validate_branch_access(value)
+
+    def perform_create(self, serializer):
+        self.validate_serializer_branch(serializer)
+        return super().perform_create(serializer)
+
+    def perform_update(self, serializer):
+        self.validate_serializer_branch(serializer)
+        return super().perform_update(serializer)
+
     def validate_branch_access(self, branch, action='access'):
         """
         Validate that user has access to a specific branch.
@@ -119,6 +137,14 @@ class TransferBranchAccessMixin(BranchAccessMixin):
     """
 
     branch_field = 'from_branch'  # Source branch for filtering
+
+    def get_object(self):
+        transfer = super().get_object()
+        if self.request.method not in ('GET', 'HEAD', 'OPTIONS'):
+            # Receiving belongs to the destination; all other mutations to source.
+            branch = transfer.to_branch if getattr(self, 'action', None) == 'receive' else transfer.from_branch
+            self.validate_branch_access(branch)
+        return transfer
 
     def filter_queryset_by_branch(self, queryset):
         """

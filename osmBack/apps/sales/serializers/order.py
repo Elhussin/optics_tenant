@@ -7,6 +7,9 @@ from apps.sales.models import Order, OrderItem, Invoice, InvoiceItem, Payment
 from apps.sales.services.order_service import calculate_order_totals
 from apps.sales.services.invoice_service import calculate_invoice_totals
 from apps.products.models import ProductVariant
+from decimal import Decimal
+from django.db import transaction
+from core.permissions.BranchAccessMixin import BranchAccessMixin
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -32,7 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
         model = Order
         exclude = ['is_deleted']
         read_only_fields = ['order_number', 'total_amount',
-                            'subtotal', 'tax_amount', 'confirmed_at', 'delivered_at', 'insurance_details']
+                            'subtotal', 'tax_amount', 'confirmed_at', 'delivered_at', 'insurance_details', 'status']
 
     insurance_details = serializers.SerializerMethodField()
 
@@ -95,52 +98,31 @@ class OrderSerializer(serializers.ModelSerializer):
                     str(_('Unit price cannot be negative'))
                 )
 
-        # Check stock (soft check)
-        from apps.products.models import Stock
-
-        # Get branch from request context
-        request = self.context.get('request')
-        if request and hasattr(request.user, 'branch_user'):
-            branch_id = request.user.branch_user.branch_id
-
-            for item in items:
-                variant_id = item.get('product_variant').id if hasattr(
-                    item.get('product_variant'), 'id') else item.get('product_variant')
-                quantity = item.get('quantity', 1)
-
-                stock = Stock.objects.filter(
-                    branch_id=branch_id,
-                    variant_id=variant_id
-                ).first()
-
-                if not stock:
-                    raise serializers.ValidationError(
-                        str(_('Product (ID: {id}) is not available in this branch stock').format(
-                            id=variant_id))
-                    )
-
-                if stock.available_quantity < quantity:
-                    raise serializers.ValidationError(
-                        str(_('Available quantity for product (ID: {id}) is only {available}, requested {requested}').format(
-                            id=variant_id,
-                            available=stock.available_quantity,
-                            requested=quantity
-                        ))
-                    )
-
+        # Availability is checked and stock is locked by confirm_order.
         return items
 
     def validate(self, data):
         """Validate entire order"""
-        items = data.get('items', [])
-        discount_amount = data.get('discount_amount', 0)
-        paid_amount = data.get('paid_amount', 0)
-        tax_rate = data.get('tax_rate', 0.15)
+        if self.instance and self.instance.status != 'pending':
+            raise serializers.ValidationError(_('Only pending orders can be edited'))
+        request = self.context.get('request')
+        if request:
+            access = BranchAccessMixin()
+            access.request = request
+            branch = data.get('branch', getattr(self.instance, 'branch', None))
+            access.validate_branch_access(branch)
+            sales_person = data.get('sales_person', getattr(self.instance, 'sales_person', None))
+            if sales_person and (not sales_person.is_active or sales_person.branch_id != getattr(branch, 'pk', None)):
+                raise serializers.ValidationError({'sales_person': _('Sales person must belong to the order branch')})
+        items = data.get('items')
+        discount_amount = data.get('discount_amount', getattr(self.instance, 'discount_amount', Decimal('0')))
+        paid_amount = data.get('paid_amount', getattr(self.instance, 'paid_amount', Decimal('0')))
+        tax_rate = data.get('tax_rate', getattr(self.instance, 'tax_rate', Decimal('0.15')))
 
         # Calculate initial subtotal
-        subtotal = sum(
+        subtotal = self.instance.subtotal if items is None and self.instance else sum(
             item.get('quantity', 1) * item.get('unit_price', 0)
-            for item in items
+            for item in (items or [])
         )
 
         # Check discount does not exceed subtotal
@@ -166,32 +148,9 @@ class OrderSerializer(serializers.ModelSerializer):
                 ))
             })
 
-        # Enforce Branch/Sales Person for non-admins
-        request = self.context.get('request')
-        if request and request.user:
-            user = request.user
-            # Check if user is Super Admin or Owner (assuming 'owner' role or permission)
-            is_admin = user.is_superuser or getattr(
-                user, 'role', '') == 'owner'
-
-            if not is_admin:
-                # Force Branch and Sales Person for regular users
-                if hasattr(user, 'branch_user'):
-                    data['branch'] = user.branch_user.branch
-                    data['sales_person'] = user.branch_user
-                else:
-                    # Fallback or error if user has no branch linked
-                    # For now ensure we don't accidentally allow setting arbitrary branch
-                    pass
-            else:
-                # Admin: If not provided in data, maybe default to their own if applicable,
-                # or leave it to be validated as required if model requires it.
-                # The model requires branch, so if admin doesn't send it, it might fail model validation
-                # unless we set a default. But frontend should send it.
-                pass
-
         return data
 
+    @transaction.atomic
     def create(self, validated_data):
         items_data = validated_data.pop('items', [])
         order = Order.objects.create(**validated_data)
@@ -200,7 +159,12 @@ class OrderSerializer(serializers.ModelSerializer):
         calculate_order_totals(order)
         return order
 
+    @transaction.atomic
     def update(self, instance, validated_data):
+        Order.objects.select_for_update().get(pk=instance.pk)
+        instance.refresh_from_db()
+        if instance.status != 'pending':
+            raise serializers.ValidationError(_('Only pending orders can be edited'))
         items_data = validated_data.pop('items', None)
 
         # Update order data

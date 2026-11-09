@@ -34,6 +34,16 @@ class PurchaseOrderViewSet(BranchAccessMixin, BaseViewSet):
     - POST /purchase-orders/{id}/receive/ - Receive items
     - POST /purchase-orders/{id}/cancel/ - Cancel order
     """
+    action_permissions = {
+        'create': ['create_purchaseorder'],
+        'update': ['edit_purchaseorder'],
+        'partial_update': ['edit_purchaseorder'],
+        'destroy': ['delete_purchaseorder'],
+        'submit': ['edit_purchaseorder'],
+        'approve': ['approve_purchaseorder'],
+        'receive': ['receive_purchaseorder'],
+        'cancel': ['cancel_purchaseorder'],
+    }
     queryset = PurchaseOrder.objects.select_related(
         'supplier', 'branch', 'created_by', 'approved_by'
     ).prefetch_related('items__variant__product').all()
@@ -70,7 +80,8 @@ class PurchaseOrderViewSet(BranchAccessMixin, BaseViewSet):
         """Create a new purchase order with items"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        order = serializer.save()
+        self.perform_create(serializer)
+        order = serializer.instance
 
         return Response(
             PurchaseOrderSerializer(order).data,

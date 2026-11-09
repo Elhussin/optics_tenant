@@ -162,7 +162,7 @@ class RefreshTokenView(APIView):
             
             # Security check: Ensure token belongs to the current tenant
             token_tenant = refresh.payload.get("tenant")
-            if token_tenant and token_tenant != connection.schema_name:
+            if not token_tenant or token_tenant != connection.schema_name:
                 return Response({"detail": _("Invalid token for this tenant")}, status=status.HTTP_401_UNAUTHORIZED)
                 
             access = refresh.access_token
@@ -170,6 +170,8 @@ class RefreshTokenView(APIView):
             # get user permissions from database
             user_id = refresh["user_id"]
             user = User.objects.get(id=user_id)
+            if not user.is_active or user.is_deleted:
+                return Response({"detail": _("Account disabled")}, status=status.HTTP_401_UNAUTHORIZED)
             # Aggregating roles and permissions
             user_roles = list(user.roles.all())
 
@@ -193,7 +195,7 @@ class RefreshTokenView(APIView):
             set_token_cookies(response, access=str(access))
             return response
 
-        except TokenError:
+        except (TokenError, User.DoesNotExist, KeyError):
             return Response({"detail": _("Invalid or expired refresh token")}, status=status.HTTP_401_UNAUTHORIZED)
 
 
